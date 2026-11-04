@@ -647,6 +647,8 @@ orch instance graph INST-001 --format text   # ASCII 摘要
 
 **验收**：验证报告，每个接缝给出“可用 / 受限 / 不可用”结论。**不做功能开发。**
 
+> **当前状态（2026-11-04）**：报告已完成，但含 **1 项未闭合**——真实宿主上的文件级落盘未取证（并发隔离的工具调用维），原因是阶段零的 mock 调用了 Windows 上被平台条件禁用的 `bash`。**补验 I0.2（不新增迭代，作为 I0.1 收尾项）通过前，阶段零不判通过**；清单与判定标准见 `docs/iterations/iteration-0/report.md` 附录 C。
+
 ---
 
 ### 阶段一：DSH 单宿主完整流程（13 个迭代）
@@ -691,7 +693,7 @@ orch instance graph INST-001 --format text   # ASCII 摘要
 - 共享工作区：`shared/`、`stage/`、`status.md`
 - 交接包 schema 校验：缺少必填字段或证据引用时拒绝投递
 - 持久化信箱：唤醒消息先落盘再投递，失败重试
-- CLI 核心命令集：
+- CLI 核心命令集（`orch run` / `orch status` 的**最小形态**已在 I1.1 交付，本迭代负责补全参数与输出格式，并**保持向后兼容**——I1.1 的调用方式不得失效）：
   - `orch run` / `orch status`
   - `orch instance status` / `orch instance log` / `orch instance graph --format json/text`
   - `orch attach <session_id>`

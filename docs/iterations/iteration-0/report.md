@@ -2,7 +2,8 @@
 
 > 依据：`docs/iterations/iteration-0.md`（任务拆分，8 个验证项）、`docs/index.md`（需求基线 §2.5 / I0.1）。
 > 结论口径：可用 / 受限 / 不可用；每条结论标注**证据来源（真实宿主 / mock）**。
-> 状态：**已收口（VR-1 ~ VR-4，覆盖 8 个验证项）**；VR-5 评审与复盘待人工排期；Tauri 构建链待 I1.10a 从零搭建并跑通 CI。
+> 状态：**已收口（VR-1 ~ VR-4，8 个验证项均有结论），但含 1 项未闭合**——真实宿主上的文件级落盘未取证（VP-3 第 2/3 步），见**附录 C**。
+> **因此本迭代暂不判「通过」**；补验 I0.2（附录 C）通过后方成立。VR-5 评审与复盘待人工排期；Tauri 构建链待 I1.10a 从零搭建并跑通 CI。
 
 > **验证代码处置（重要）**
 > 阶段零是 spike，验证代码**不进入产品工程**。收口后已删除：
@@ -18,7 +19,10 @@
 
 ## 0. 总体结论（VR-4）
 
-**结论：带约束启动。**
+**结论：带约束启动（暂定，待补验后成立）。**
+
+> **判定边界（重要）**：本结论以「8 个接缝各自的关键度量都有真实证据」为前提。其中**并发隔离**的工具调用 / 文件级维度在真实宿主上**没有取证**（阶段零的 mock 调用了 Windows 上被禁用的 `bash` 工具名），属于**未闭合项**，见附录 C。
+> 按 `iteration-0.md` §0 退出标准第 1 条「8 个接缝均有结论**且附原始证据**」，本迭代**暂不判通过**；I0.2 补验（附录 C）通过后才回到「带约束启动」。
 
 理由：
 
@@ -91,7 +95,7 @@
 |---|---|---|---|---|---|---|
 | **transport** | **可用**（真实 + mock 双证） | `runs/vp1/summary.json`；`runs/vp1/dsh-real/result.json`、`runs/vp1/dsh-http/result.json` | 核心哈希 `8ba2bdf0…` 四宿主一致；纯度违规 **0**；原语序列四方一致 `initialize→session/new→session/prompt`；全 `done`；耗时 2008 / 15134 / 217 / 143 ms（真实 stdio / 真实 HTTP / mock stdio / mock HTTP，HTTP 含冷启动） | 阶段一可直接采用「一份适配器 + 每宿主一份配置」 | 差异收敛在 `src/transport/*` 与 `hosts/*.json`；配置差异仅 `{args,command,cwd}` vs `{spawn,tokenEnv}` | 真实 HTTP 形状（响应走 SSE、`acp-connection-id` 亲和）与 WorkBuddy 未必一致，Phase 3 需重测 |
 | **恢复方言** | **受限**（DSH/mock 已统一，WorkBuddy 未验） | `runs/vp2-real/dsh-real/observation.json`、`runs/vp2/dsh-http/…`、`runs/vp2/summary.json`、`evidence-samples/real-dsh-resume.json` | 真实 DSH resume：`restored=true`，回放仅 1 条 `available_commands_update`（不含历史），62 ms / 74 ms（stdio / HTTP）；mock 三方言：resume 回放 0 条、load 回放 6 条（drain 97 ms）、无能力时回退 `new`；核心返回键恒为 `{id,cwd,restored}` | `resumeOrCreate` 抽象成立，核心零感知 | ① 回退链 `resume → load → new`，错误码同时认 `-32601`/`-32002`/`-32602`（**`-32602` 需按 message 细分**，见发现 D3）；② **load 后必须 drain-quiet**（见发现 D1） | WorkBuddy `load`「追加式」语义未验证；`replayMode` 若进核心即属泄露 |
-| **并发隔离** | **可用** | `runs/vp3-real/*/report.json`；`runs/vp3/mock-*` | 真实 DSH：5 会话并发 149 ms，串台 **0**，每会话恰好 5 条 update，5 个 `cwd` 全不同且 `session/list` 回读一致；cancel 目标 `cancelled`、其余 `end_turn`；close 后该会话报 `-32602`、存活会话正常。mock：3/5 并发 stdio+HTTP 串台 0，cancel 生效 16–17 ms，close 隔离，permission 三例正确（allow→落盘、reject→refusal 无落盘、越界 `optionId`→refusal） | 单连接多会话可直接作为阶段一默认形态 | 每会话独立 `cwd` + 独立事件归属校验纳入回归套件 | 真实 DSH 的 **文件级**串台未验证（`bash` 工具未挂载，无法落盘取证）；permission 在真实 DSH 未触发 |
+| **并发隔离** | **可用**（4/5 维有真实证据；文件级未取证） | `runs/vp3-real/*/report.json`；`runs/vp3/mock-*` | 真实 DSH：5 会话并发 149 ms，串台 **0**，每会话恰好 5 条 update，5 个 `cwd` 全不同且 `session/list` 回读一致；cancel 目标 `cancelled`、其余 `end_turn`；close 后该会话报 `-32602`、存活会话正常。mock：3/5 并发 stdio+HTTP 串台 0，cancel 生效 16–17 ms，close 隔离，permission 三例正确（allow→落盘、reject→refusal 无落盘、越界 `optionId`→refusal） | 单连接多会话可直接作为阶段一默认形态 | 每会话独立 `cwd` + 独立事件归属校验纳入回归套件 | 真实 DSH 的**文件级**串台未验证——**原因不是宿主缺能力**：阶段零 mock 硬编码调用 `bash`，而 `bash` 在 win32 被 profile 显式禁用（见附录 C）；permission 在真实 DSH 未触发 |
 | **证据提取** | **受限** | `evidence-samples/real-dsh-tool-call.json`；`runs/vp4/dsh-real-real/evidence.json`；`runs/vp4/mock-stdio/evidence.json` | 真实 DSH：`tool_call` 仅 `rawInput/locations`，`tool_call_update` 仅 `status/content`，**无 diff、无 rawOutput、无指纹** → 三要素 5 项全 `missing`。mock（宿主愿意上报 diff 的假设形态）：5 项全可得，且核心本地重算 sha256 与声明值**一致** | 证据模型需**下沉指纹计算**到核心，不能依赖宿主上报 | ① 核心按 `artifactRef` 自行 hash + 存在性 + `producedAt`；② `confirmedBy/confirmedAt` 走角色约定（final message 机器可读清单） | 「审核确认」的真实性仍只能靠独立审核角色；角色若不遵守约定则字段缺失 → 必须触发升级而非放行 |
 | **会话状态映射** | **受限**（3/6 直接可得） | `runs/vp6/state-mapping.json`；`runs/vp6/mock-permission/permission-turn.json`；`runs/vp6/real-dsh-real/state-mapping.json` | 真实帧回放：`idle` / `thinking` / `tool_running` 可达；mock permission 往返闭合（`thinking → tool_running → waiting_input → thinking → tool_running → thinking → idle`）；真实 DSH `permissionSeen=false`；未知 `sessionUpdate` 0 种；噪声帧占比 3/6、4/8、3/6（三份录制） | 适配器实现归一化器；6 状态中 3 个由核心侧推断/生成 | 归一化器只依赖 `sessionUpdate` 判别值 + 客户端侧 permission 回调，接口与宿主无关 | `waiting_input` 在真实宿主上尚无证据（需 DSH 开启审批或换宿主） |
 | **交接包状态推导** | **受限**（存在不可观测窗口） | `runs/vp7/handoff-summary.json`；`runs/vp7/real-dsh-real/handoff.json`；`runs/vp7/busy-real-dsh-real/busy-probe.json` | 真实 DSH：`delivered → accepted` **63ms**、`consumed` 72ms；mock：正常 4ms、慢接受 **1855ms**、TTL 500ms 时在第 701ms **误判 expired**（turn 实际仍在跑）；噪声口径 **64ms vs 1400ms**（提前 1336ms 误判接受）；忙时投递真实 DSH 2–3ms 内 `-32602` 失败，mock `-32603`，mock 排队 11.2s | `accepted` 必须由适配器从事件流推导并上报，核心不能等 RPC 返回 | 只认 turn 内事件（排除噪声）；TTL 只用于「重投」不用于「判失败」；忙时投递走退避重试而非判定会话失效 | 真实宿主首帧延迟受模型冷启动影响，长尾未知（mock LLM 掩盖了该分布） |
@@ -297,7 +301,7 @@ Tauri 侧：骨架与 CI 工作流**已随验证代码删除**（构建方案见
 |---|---|---|---|---|
 | R1 | WorkBuddy `load` 追加语义未验证 | 无 sidecar 环境 | 阶段三接 WorkBuddy 时可能出现「回放重复注入」 | Phase 3 首项验证；drain-quiet + 去重按 `messageId` |
 | R2 | Cursor ACP 稳定性未知 | 无 `cursor-agent` CLI | 阶段二排期风险 | 阶段二 I2.1 前置补齐；不可用则降级为「仅 DSH 单宿主交付」 |
-| R3 | 真实 DSH 的 `bash` 工具 `UNKNOWN_TOOL` | `tool-bash` 已挂载但会话不可见 | 真实文件级隔离与工具类证据无法取证 | I1.1 前定论工具可见性；否则隔离回归退回 mock + 文件系统直读 |
+| R3 | **真实宿主未取得文件级落盘证据（未闭合项）** | 阶段零 mock 发出 `tool_call name="bash"`；`bash` 在 win32 被 profile 显式 `disabled`（附录 C） | 原判「`tool-bash` 已挂载但会话不可见」**不成立**：配置里有、会话也可见，只是探针问错了工具名；VP-3 文件级隔离与 VP-4 产物取证缺真实证据 | **已立为 I0.2 补验**：改用 `write` 重跑，断言文件存在 + 内容匹配；通过则回「带约束启动」，不通过则 B-8 落「真实宿主不可落盘」，I1.1 AC-01/06/11 转夹具宿主 |
 | R4 | cancel 非即时 | 上游流不可中断 | 节点超时误判、回流计数错乱 | 超时与取消分离计时；取消后设 quarantine 窗口 |
 | R5 | 模型凭据缺失 | 无 `DEEPSEEK_API_KEY` | 真实推理/长任务/证据节点无法验证 | 阶段一开工前提供凭据；在此之前用 mock LLM 做链路回归 |
 | R6 | 上游包 Windows 缺陷 | `dsh-acp-server` 升级 | 升级可能再次打断启动 | 向上游提 issue；shim 保留并加版本断言 |
@@ -380,3 +384,79 @@ VR-5 迭代评审（~1d）与复盘（~0.5d）待人工排期；复盘需回答�
 
 见 `capability-matrix.md` §0：DSH CLI `0.2.1-rc.5`、`dsh-acp-server` `0.14.4`、DSH 桌面 `3.22.12`、WebView2 `156.0.4314.58`、Node 22。
 Windows 上的两个包级缺陷（`import(join(...))` 与 `spawnSync('dsh')`）在升级后需重新确认是否已修复。
+
+---
+
+## 附录 C：未闭合项与补验 I0.2（阶段零是否通过的判定依据）
+
+### C.1 未闭合的是哪一项
+
+`iteration-0.md` VP-3 的具体任务第 2、3 步原文要求：**「每 session 绑定独立 cwd，写 `marker-<sid>.txt`（内容 = sid），并执行一次工具调用」「交叉污染检测：扫描所有 cwd」**。
+
+真实 DSH 上这两步**没有做成**：工具调用返回 `unknown tool "bash"` / `ToolNotFoundError: UNKNOWN_TOOL`（`evidence-samples/real-dsh-tool-call.json`），所以没有落盘、也没有文件级扫描。报告 §3 把它记成未决风险 R3，却仍把「并发隔离」判「可用」——**这是判定过宽**：判「可用」的判定口径是「五维全部严格隔离」，实际只有 4 维有真实证据（cwd / 事件归属 / cancel / close），工具调用维只有 mock 证据。
+
+按 `iteration-0.md` §0 退出标准第 1 条（8 个接缝均有结论**且附原始证据**），**本迭代不判通过**，而是「1 项未闭合」。
+
+### C.2 根因：不是宿主缺能力，是探针用错了工具名
+
+阶段零的 mock LLM（`dsh-acp-server/test/mock-llm`）在 `CALL_TOOL` 分支**硬编码**发出 `name = "bash"`。而 DSH 的 profile 组合层对 shell 工具做了**平台条件挂载**：
+
+```yaml
+- id: tool-bash
+  name: '@deepseek-ai/dsh-tool-bash'
+  disabled: !!js process.platform === 'win32'    # ← Windows 上禁用
+- id: tool-pwsh
+  name: '@deepseek-ai/dsh-tool-pwsh'
+  disabled: !!js process.platform !== 'win32'    # ← Windows 上启用
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'               # ← 无条件挂载
+```
+
+于是：
+
+1. Windows 上没有 `bash` 这个工具 → `UNKNOWN_TOOL`，与「工具未挂载到会话」是两件事；
+2. **文件写入能力本来就在**：`dsh-tool-fs` 无条件挂载，注册 `read` / `write` / `edit` / `read_image` 四个工具；
+3. 因此阶段零由此推出的两条结论都要修正：
+   - ❌「`tool-bash` 已挂载但会话不可见」→ ✅「`tool-bash` 在 Windows 上是**未启用**，会话正确地不认识它」；
+   - ❌「真实文件级隔离与工具类证据无法取证」→ ✅「未取证，但可取证，需换工具名重跑」。
+
+### C.3 证据（可复现，不依赖已删除的 spike）
+
+```bash
+# 隔离 DSH_HOME，不碰用户 ~/.dsh
+export DSH_HOME=/tmp/dsh-home
+X="$LOCALAPPDATA/Programs/DeepSeek Harness"
+
+# 1) 确认 acp profile 的工具行及其平台条件（172–185 行）
+ELECTRON_RUN_AS_NODE=1 "$X/DeepSeek Harness.exe" \
+  "$X/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh/lib/bin.js" \
+  --profile acp --dump-config | sed -n '172,185p'
+
+# 2) 确认 fs 工具注册了哪些工具名
+#    dsh-tool-fs/lib/index.js: name: "read" / "write" / "edit" / "read_image"
+```
+
+实测输出（2026-11-04，DSH `0.2.1-rc.5`）：`tool-bash` 带 `disabled: !!js process.platform === 'win32'`，`tool-pwsh` 反向，`tool-fs` 无 `disabled`。
+另注：`0.2.1-rc.5` 的 `acp` profile 模板**自带** ACP server（`@deepseek-ai/dsh-acp-app`，`--dump-config` 中可见 `acp-app-startup` / `acp` 两行）。阶段零为了让第三方 `dsh-acp-server@0.14.4` 独占 stdio，才用其 patch 把这两行 `disabled` 掉——那两个 Windows 包级缺陷（`import(join(...))`、`spawnSync('dsh')`）来自第三方包，**不是 DSH 本身**。阶段一是否直接对接内置 `dsh-acp-app`、从根上省掉 shim，留 I1.1 开工第一步确认。
+
+### C.4 补验 I0.2 最小清单
+
+| # | 补验项 | 做法 | 判定 |
+|---|---|---|---|
+| G-1 | 真实宿主**能落盘** | mock 的 `CALL_TOOL` 改为发 `name="write"`、参数 `{file_path, content}`；真实 DSH 跑一轮 | 工具状态 `completed` + 文件存在 + 内容**逐字节相等** |
+| G-2 | 真实宿主**文件级隔离** | 5 会话并发，各写 `marker-<sid>.txt`，扫描全部 cwd | 0 串台；每文件内容等于所属 sid |
+| G-3 | 产物取证能拿到什么 | 用 G-1 的真实帧检查 `tool_call_update` 是否出现 `diff` / 路径 / 指纹 | 记录实际字段；若仍无指纹，维持「核心自算 sha256」（与 §4.4 一致即可，不改变结论） |
+
+- **可选项 G-4**：`request_permission` 在真实 DSH 上仍未观测到。若 profile 的 `approval: ask` 能在 `write` 这类动作上触发，则「等待审批」不必只靠夹具（直接影响 I1.1 AC-17）。
+- **成本**：mock 改一个字符串 + 重跑 VP-3 与 VP-4 脚本；不含重建 spike 之外的额外工作。
+- **不通过时的处置**：B-8 落「真实宿主不可落盘」→ I1.1 的 AC-01 / AC-06 / AC-11 改在「可写文件的夹具宿主」上验收，并在验收记录注明「真实 DSH 只验链路」。
+
+### C.5 结论措辞的连带修改
+
+| 位置 | 原措辞 | 改为 |
+|---|---|---|
+| 本报告 §0 | 「结论：带约束启动」 | 「带约束启动（暂定，待补验后成立）」+ 判定边界 |
+| `capability-matrix.md` §1 工具调用行 | 「✅ 已实测（但 `bash` 工具未挂载）」 | 「⚠️ 框架已实测，落盘待 G-1」 |
+| `capability-matrix.md` §4 第 6 条 | 「配置里有 ≠ 会话可见」 | 「平台条件挂载：win32 无 `bash`，探针须用 `write` / 平台对应 shell」 |
+
+

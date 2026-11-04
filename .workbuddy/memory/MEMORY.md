@@ -12,7 +12,12 @@
 - 迭代开始前先确认需求模板（用户会提供统一模板），不要自行发明结构。
 
 ## 本机环境硬事实（Windows）
-- DSH：`%LOCALAPPDATA%\Programs\DeepSeek Harness`，CLI `dsh.cmd` 实为 Electron 跑 `app.asar/cli.js`；**PATH 里没有 dsh**。
+- DSH：`%LOCALAPPDATA%\Programs\DeepSeek Harness`（`0.2.1-rc.5`）。**没有 `dsh.cmd`**；CLI 入口是
+  `ELECTRON_RUN_AS_NODE=1 "<安装目录>/DeepSeek Harness.exe" "<安装目录>/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh/lib/bin.js"`，
+  支持 `--profile acp --dump-config` / `headless "<task>"`。
+- **工具行是平台条件挂载**：`tool-bash` 带 `disabled: process.platform === 'win32'`（Windows 上不存在 `bash`，由另一个 shell 工具顶替）；
+  `tool-fs` 无条件挂载，注册 `read` / `write` / `edit` / `read_image`。**任何夹具/脚本禁止硬编码 `bash`**，落盘用 `write`（参数 `file_path` + `content`）。
+- `acp` profile 模板自带 ACP server（`@deepseek-ai/dsh-acp-app`）；第三方 `dsh-acp-server` 需用其 patch 把内置行 `disabled` 才独占 stdio。
 - ACP 需装 `dsh-acp-server`（`0.14.4`）。两个包级缺陷：bin 用 `import(join(...))` 触发 `ERR_UNSUPPORTED_ESM_URL_SCHEME`（需 `pathToFileURL`）；bootstrap 用 `spawnSync('dsh')` 解析不了 `.cmd`。
 - 无模型凭据时：在**隔离 DSH_HOME** 的 `profiles/acp/cordis.patch.yml` 注入 `dsh-acp-server/test/mock-llm` 并把 `agent-default-model` 指到 mock。**不要碰用户 `~/.dsh`**。
 - Cursor 只装了 IDE，**没有 `cursor-agent` CLI**（`agent acp` 不可用）。

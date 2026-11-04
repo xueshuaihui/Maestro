@@ -25,6 +25,8 @@
 2. 其 bootstrap 用 `spawnSync('dsh', ...)`，Windows 无法解析 `.cmd` → 首次启动必然失败。绕行：手动执行一次 `dsh plugin --profile acp add <pkg>`。
 3. `dsh` 在 Windows 是 `dsh.cmd`，实际用 Electron 以 node 模式跑 `app.asar` 内的 `cli.js`；纯 Node 既不能 spawn `.cmd` 也不能读 asar 路径。
 4. 真实模型凭据缺失（`no API key for provider route "deepseek-official"`）。为让会话层可验证，在**隔离的 DSH_HOME**（验证期 `.orch-spike/dsh-home`，已删）里把默认模型切到包内确定性 mock LLM（`dsh-acp-server/test/mock-llm`，官方 e2e 同款），**未触碰用户 `~/.dsh`**。因此本文「已实测」= ACP/DSH 会话层真实，**不代表真实模型推理质量**。
+5. **工具行是「平台条件挂载」，不是「全平台都挂」**：`tool-bash` 带 `disabled: process.platform === 'win32'`，Windows 上由 `tool-pwsh` 顶替；`tool-fs` 无条件挂载，注册 `read` / `write` / `edit` / `read_image`。因此 Windows 上探针写 `name="bash"` 必然 `UNKNOWN_TOOL`（阶段零即踩此坑，见 `report.md` 附录 C）。
+6. `0.2.1-rc.5` 的 `acp` profile 模板**自带** ACP server（`@deepseek-ai/dsh-acp-app`）。阶段零用第三方 `dsh-acp-server@0.14.4` 的 patch 把内置行 `disabled` 后才独占 stdio；那两个 Windows 包级缺陷来自第三方包，不是 DSH 本身。
 
 ## 1. 能力矩阵
 
@@ -44,7 +46,7 @@
 | `waiting_dependency` / `escalated` | ➖ 非 ACP 语义（核心侧推断/生成） | ➖ | ➖ | 同上 |
 | 移交接受信号（`accepted` 可观测性） | ✅ 有 turn 内首帧（实测 63ms） | ⚪ 未验证 | ⚪ 未验证 | `runs/vp7/real-dsh-real/handoff.json` |
 | 忙时会话再投递 | ❌ 立即失败 `-32602` + `a prompt is already in flight for this session`（2–3ms） | ⚪ 未验证 | ⚪ 未验证 | `runs/vp7/busy-real-dsh-real/busy-probe.json` |
-| 工具调用（`tool_call`/`tool_call_update`） | ✅ 已实测（但 `bash` 工具未挂载 → `UNKNOWN_TOOL`） | ⚪ 未验证 | ⚪ 未验证 | `evidence-samples/real-dsh-tool-call.json` |
+| 工具调用（`tool_call`/`tool_call_update`） | ⚠️ 框架已实测；**落盘未验证**：阶段零 mock 误调 win32 上被禁用的 `bash` → `UNKNOWN_TOOL`，文件工具 `write` 本身已挂载，待补验 G-1 | ⚪ 未验证 | ⚪ 未验证 | `evidence-samples/real-dsh-tool-call.json`；`report.md` 附录 C |
 | 产物 diff（`type:"diff"`） | ❌ 未观测到 | ⚪ 未验证 | ⚪ 未验证 | 同上 |
 | 产物指纹（`rawOutput.sha256` 等） | ❌ 协议无此字段 | ⚪ 未验证 | ⚪ 未验证 | 报告 §VP-4 |
 | 单连接多会话复用 | ✅ 已实测（5 会话 0 串台） | ⚪ 未验证 | ⚪ 未验证 | `runs/vp3-real/*` A |
@@ -84,7 +86,7 @@
 3. **错误码需归一**：DSH 用 `-32602` 表示未知会话，与 mock/ACP 习惯的 `-32002` 不同，降级链必须同时识别两者。
 4. **cancel 不等于即时终止**：节点超时与「cancel 后仍可能收到 update」必须分开设计。
 5. **Windows 上 DSH 需内置 shim**，否则阶段一在 Windows 开发机上无法跑通。
-6. **acp profile 的工具集需显式确认**：`tool-bash` 已挂载但运行时报 `UNKNOWN_TOOL`，说明「配置里有」≠「会话可见」，需在 I1.1 前定论。
+6. **工具集要按平台取，不能按「配置里有就以为会话可见」类推**：win32 上没有 `bash`（由 `pwsh` 顶替），文件写入走 `write`。阶段一任何「让角色落盘 / 取证」的夹具与验收脚本，工具名必须按平台映射，禁止硬编码 `bash`。
 7. **`-32602` 是双义词**：既是「会话不存在/已关闭」，也是「该会话已有 prompt 在飞行」。**禁止只按错误码判定会话失效**——必须结合 `session/list` 回读或错误消息分类，否则会把「目标忙」误判成「会话没了」并新建重复会话。
 8. **`accepted` 只能靠事件流观测**：`session/prompt` 阻塞到 turn 结束才返回，投递成功 ≠ 已接受。适配器必须把「首条 turn 内事件」上报为核心可用的接受信号，并显式携带不可观测窗口。
 9. **必须排除会话级噪声帧**：`available_commands_update` / `usage_update` 不代表 turn 进展；用「收到任何帧就算接受」会把接受时点提前（实测提前 1336ms）。
