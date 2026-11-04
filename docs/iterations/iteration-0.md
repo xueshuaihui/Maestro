@@ -1,7 +1,8 @@
 # 阶段零（I0.1）任务拆分 — ACP 适配器兼容性 + 桌面壳可行性验证
 
 > 依据：`docs/index.md` 第二部分「迭代规划 · 阶段零（I0.1，8 个验证项）」、第一部分 §2.5「剩余待验证项」。
-> 范围：本迭代只产出**验证结论**，不写产品代码；实验代码为可丢弃 spike，但必须留痕、可复现。
+> 范围：本迭代只产出**验证结论**，不写产品代码；实验代码为可丢弃 spike，执行期必须留痕、可复现，**收口后整体移除、只保留结论与原始帧**（处置见 `report.md` §1）。
+> 执行状态：**已收口**，结果见 `docs/iterations/iteration-0/report.md`。
 > 编号：阶段零在迭代依赖图中为 I0.1。
 
 ---
@@ -79,6 +80,9 @@
 ---
 
 ## 3. 验证工作包（8 个接缝）
+
+> 下列各工作包的「产出」路径为**执行期计划**。截至收口，`spike/**` 与 CI 工作流已全部移除；
+> 各包的**实际结论与度量**见 `report.md` §3/§4，可复核的原始帧见 `evidence-samples/`。
 
 ### VP-1 跨 transport 驱动
 
@@ -242,19 +246,19 @@
 
 ## 4. 交付物清单
 
-| 路径 | 内容 | 工作包 |
-|---|---|---|
-| `docs/iterations/iteration-0/report.md` | 验证报告（主，含总体结论） | VR-1 ~ VR-4 |
-| `docs/iterations/iteration-0/capability-matrix.md` | 宿主能力矩阵 + 环境指纹 | VP-5 + 全部 |
-| `docs/iterations/iteration-0/evidence-samples/` | 原始帧样本 | VP-4 |
-| `spike/acp-harness/` | 5 原语探活 harness（含原始帧落盘） | ENV-4 |
-| `spike/mock-acp-server/` | mock HTTP/SSE server | ENV-2 |
-| `spike/isolation-test/` | 并发隔离测试 | VP-3 |
-| `spike/cursor-concurrency/` | Cursor 并发压测 | VP-5 |
-| `spike/acp-harness/src/normalize/` | 会话状态归一化 + 交接包状态推导 | VP-6 / VP-7 |
-| `spike/desktop-shell/` | 桌面壳运行时冒烟（托盘 / 多窗口 / WebSocket） | VP-8 |
-| `spike/tauri-shell/` | Tauri 桌面壳骨架（构建走 CI） | VP-8 |
-| `.github/workflows/desktop-build.yml` | 桌面壳 CI 构建 + 启动冒烟 | VP-8 |
+| 路径 | 内容 | 工作包 | 收口后处置 |
+|---|---|---|---|
+| `docs/iterations/iteration-0/report.md` | 验证报告（主，含总体结论） | VR-1 ~ VR-4 | 保留 |
+| `docs/iterations/iteration-0/capability-matrix.md` | 宿主能力矩阵 + 环境指纹 | VP-5 + 全部 | 保留 |
+| `docs/iterations/iteration-0/evidence-samples/` | 原始帧样本 | VP-4 | 保留 |
+| `spike/acp-harness/` | 5 原语探活 harness（含原始帧落盘） | ENV-4 | 已移除 |
+| `spike/mock-acp-server/` | mock HTTP/SSE server | ENV-2 | 已移除（阶段一重建为正式资产） |
+| `spike/isolation-test/` | 并发隔离测试 | VP-3 | 已移除 |
+| `spike/cursor-concurrency/` | Cursor 并发压测 | VP-5 | 未产出（CLI 缺失，记阻塞） |
+| `spike/acp-harness/src/normalize/` | 会话状态归一化 + 交接包状态推导 | VP-6 / VP-7 | 已移除（结论进报告 §4.5/4.6） |
+| `spike/desktop-shell/` | 桌面壳运行时冒烟（托盘 / 多窗口 / WebSocket） | VP-8 | 已移除（证据固化为样本） |
+| `spike/tauri-shell/` | Tauri 桌面壳骨架（构建走 CI） | VP-8 | 已移除（方案见报告附录 A） |
+| `.github/workflows/desktop-build.yml` | 桌面壳 CI 构建 + 启动冒烟 | VP-8 | 已移除（方案见报告附录 A） |
 
 ---
 

@@ -2,7 +2,17 @@
 
 > 依据：`docs/iterations/iteration-0.md`（任务拆分，8 个验证项）、`docs/index.md`（需求基线 §2.5 / I0.1）。
 > 结论口径：可用 / 受限 / 不可用；每条结论标注**证据来源（真实宿主 / mock）**。
-> 状态：**已收口（VR-1 ~ VR-4，覆盖 8 个验证项）**；VR-5 评审与复盘待人工排期；Tauri CI 构建待首次运行验证。
+> 状态：**已收口（VR-1 ~ VR-4，覆盖 8 个验证项）**；VR-5 评审与复盘待人工排期；Tauri 构建链待 I1.10a 从零搭建并跑通 CI。
+
+> **验证代码处置（重要）**
+> 阶段零是 spike，验证代码**不进入产品工程**。收口后已删除：
+> - `spike/**`：harness、mock 宿主、隔离测试、DSH 绕行器、Tauri/Electron 桌面壳骨架
+> - `.orch-spike/**`：全部运行产物（原始帧 jsonl、临时 DSH_HOME、依赖）
+> - `.github/workflows/desktop-build.yml`：只服务上述 spike 目录的构建流
+>
+> 仓库只保留**结果**：本报告、`capability-matrix.md`、`evidence-samples/` 中的原始帧。
+> 正文出现的 `runs/...` 与 `spike/...` 是**验证期路径**，用于追溯度量出处，当前仓库不再包含；
+> 需要重建复现环境时从快照提交取回：`git show 604521b:spike/<path>`。
 
 ---
 
@@ -24,59 +34,31 @@
 
 ---
 
-## 1. 交付物与复现
+## 1. 交付物
+
+### 1.1 保留（本迭代的成果）
 
 | 路径 | 内容 |
 |---|---|
-| `spike/acp-harness/` | 5 原语 harness：`ACPTransport` 接口 + 3 个 transport（stdio / mock-HTTP / 真实 ACP-HTTP）+ 原始帧落盘 |
-| `spike/acp-harness/core/` | 编排循环与证据构造（**零宿主感知**，纯度检查守护） |
-| `spike/mock-acp-server/` | mock agent：stdio + HTTP/SSE，单连接多会话、resume/load 双方言、cancel/close/permission、状态持久化；可调 `--accept-delay-ms` / `--busy-policy` / `--noise-*` 复刻方言差异 |
-| `spike/isolation-test/` | VP-3 隔离测试（mock 版含文件级串台检测；real 版含路由归属检测） |
-| `spike/dsh-launcher/` | Windows 下启动真实 DSH ACP 的绕行器 |
-| `spike/acp-harness/src/normalize/` | 会话状态归一化 + 交接包状态推导（适配器层） |
-| `spike/desktop-shell/` | 桌面壳运行时冒烟（Electron：托盘 / 多窗口 / WebSocket / 关闭缩托盘） |
-| `spike/tauri-shell/` | Tauri 桌面壳骨架（构建走 CI） |
-| `.github/workflows/desktop-build.yml` | 桌面壳 CI 构建（Tauri）+ 启动冒烟 + Electron 冒烟 |
+| `docs/iterations/iteration-0/report.md` | 本报告：8 个接缝结论、度量、发现、阶段一决策、风险 |
 | `docs/iterations/iteration-0/capability-matrix.md` | 宿主能力矩阵 + 环境指纹 + 方言登记 |
-| `docs/iterations/iteration-0/evidence-samples/` | 原始帧样本：真实 DSH 工具调用 / resume / **忙时 `-32602` 双义** / **会话级噪声帧**；mock permission 往返；桌面壳冒烟证据 |
+| `docs/iterations/iteration-0/evidence-samples/` | 原始帧样本（7 份）：真实 DSH 工具调用 / resume / **忙时 `-32602` 双义** / **会话级噪声帧**；mock permission 往返；session/update 通用样本；桌面壳冒烟证据 |
+| `docs/iterations/iteration-0.md` | 任务拆分（含 ENV-1~5、VP-1~8 的判定口径） |
 
-**复现命令**（在仓库根目录）：
+### 1.2 已移除（一次性验证代码）
 
-```bash
-# VP-1：四个宿主（2 真实 + 2 mock），同一份编排循环
-node spike/acp-harness/scripts/measure-vp1.mjs --hosts=dsh-real,dsh-http,mock-stdio,mock-http
+| 路径 | 曾用于 | 处置 |
+|---|---|---|
+| `spike/acp-harness/` | 5 原语 harness、3 个 transport、核心编排循环、纯度检查、VP-1/2/4/6/7 脚本 | 删除，快照 `604521b` |
+| `spike/mock-acp-server/` | mock agent（stdio + HTTP/SSE 双方言、可调延迟/忙策略/噪声） | 删除，快照 `604521b` |
+| `spike/isolation-test/` | VP-3 隔离测试（mock 文件级 / real 路由归属） | 删除，快照 `604521b` |
+| `spike/dsh-launcher/` | Windows 下启动真实 DSH ACP 的绕行器 | 删除，快照 `604521b` |
+| `spike/desktop-shell/` | Electron 运行时冒烟（托盘/多窗口/WebSocket/关闭缩托盘） | 删除，冒烟证据已固化到 `evidence-samples/desktop-shell-smoke.json` |
+| `spike/tauri-shell/` | Tauri 桌面壳骨架 | 删除，CI 方案见附录 A |
+| `.github/workflows/desktop-build.yml` | 桌面壳 CI 构建 + 启动冒烟 | 删除，方案见附录 A |
 
-# VP-2：mock 三方言 + 真实 DSH 两种 transport
-node spike/acp-harness/bin/resume-experiment.mjs
-node spike/acp-harness/bin/resume-real.mjs --host=dsh-real
-node spike/acp-harness/bin/resume-real.mjs --host=dsh-http
-
-# VP-3：真实 DSH 5 并发隔离 / mock 五维隔离
-node spike/isolation-test/run-real.mjs --host=dsh-real --sessions=5
-node spike/isolation-test/run-isolation.mjs --host=mock-stdio --sessions=5
-
-# VP-4：真实 DSH 证据可得性 / mock 证据构造完整性
-node spike/acp-harness/bin/evidence-real.mjs --host=dsh-real
-node spike/acp-harness/bin/evidence-experiment.mjs --host=mock-stdio
-
-# VP-6：会话状态映射（离线回放真实帧 + mock permission 往返）
-node spike/acp-harness/bin/state-mapping-experiment.mjs
-node spike/acp-harness/bin/state-mapping-experiment.mjs --real=dsh-real
-
-# VP-7：交接包状态推导（mock 场景矩阵 + 真实 DSH）
-node spike/acp-harness/bin/handoff-experiment.mjs
-node spike/acp-harness/bin/handoff-experiment.mjs --real=dsh-real
-node spike/acp-harness/bin/busy-probe-real.mjs --host=dsh-real --rounds=4
-
-# VP-8：桌面壳（构建链探测 + Electron 运行时冒烟）
-node spike/tauri-shell/scripts/probe-build-chain.mjs
-cd spike/desktop-shell && npm install && node smoke.mjs
-
-# 核心纯度（阶段一每次改动都应跑）
-node spike/acp-harness/scripts/check-core-purity.mjs
-```
-
-产物默认落在 `.orch-spike/runs/`（不进版本库；下文出现的 `runs/...` 均指该目录，可用上面的命令复现）。真实宿主依赖见 `capability-matrix.md` §0 环境指纹。
+> **为什么删**：spike 代码的价值是「一次性证伪」，其结论已固化为文档与原始帧；留下会与阶段一的正式实现产生两份真相。
+> **代价**：原复现命令不再可直接执行（脚本清单与行为契约见附录 B）；阶段一需把 mock 与回归套件作为**正式资产**重建（见 §5「mock 去留」）。
 
 ---
 
@@ -103,6 +85,8 @@ node spike/acp-harness/scripts/check-core-purity.mjs
 
 ## 3. 逐接缝结论（VR-1）
 
+> 证据列中的 `runs/...` 为验证期运行产物（已随验证代码移除）；能长期复核的原始帧见 `evidence-samples/`，度量口径见 §4。
+
 | 接缝 | 结论 | 关键证据（路径 / 帧） | 度量 | 对阶段一的影响 | 缓解措施 | 未决风险 |
 |---|---|---|---|---|---|---|
 | **transport** | **可用**（真实 + mock 双证） | `runs/vp1/summary.json`；`runs/vp1/dsh-real/result.json`、`runs/vp1/dsh-http/result.json` | 核心哈希 `8ba2bdf0…` 四宿主一致；纯度违规 **0**；原语序列四方一致 `initialize→session/new→session/prompt`；全 `done`；耗时 2008 / 15134 / 217 / 143 ms（真实 stdio / 真实 HTTP / mock stdio / mock HTTP，HTTP 含冷启动） | 阶段一可直接采用「一份适配器 + 每宿主一份配置」 | 差异收敛在 `src/transport/*` 与 `hosts/*.json`；配置差异仅 `{args,command,cwd}` vs `{spawn,tokenEnv}` | 真实 HTTP 形状（响应走 SSE、`acp-connection-id` 亲和）与 WorkBuddy 未必一致，Phase 3 需重测 |
@@ -112,7 +96,7 @@ node spike/acp-harness/scripts/check-core-purity.mjs
 | **会话状态映射** | **受限**（3/6 直接可得） | `runs/vp6/state-mapping.json`；`runs/vp6/mock-permission/permission-turn.json`；`runs/vp6/real-dsh-real/state-mapping.json` | 真实帧回放：`idle` / `thinking` / `tool_running` 可达；mock permission 往返闭合（`thinking → tool_running → waiting_input → thinking → tool_running → thinking → idle`）；真实 DSH `permissionSeen=false`；未知 `sessionUpdate` 0 种；噪声帧占比 3/6、4/8、3/6（三份录制） | 适配器实现归一化器；6 状态中 3 个由核心侧推断/生成 | 归一化器只依赖 `sessionUpdate` 判别值 + 客户端侧 permission 回调，接口与宿主无关 | `waiting_input` 在真实宿主上尚无证据（需 DSH 开启审批或换宿主） |
 | **交接包状态推导** | **受限**（存在不可观测窗口） | `runs/vp7/handoff-summary.json`；`runs/vp7/real-dsh-real/handoff.json`；`runs/vp7/busy-real-dsh-real/busy-probe.json` | 真实 DSH：`delivered → accepted` **63ms**、`consumed` 72ms；mock：正常 4ms、慢接受 **1855ms**、TTL 500ms 时在第 701ms **误判 expired**（turn 实际仍在跑）；噪声口径 **64ms vs 1400ms**（提前 1336ms 误判接受）；忙时投递真实 DSH 2–3ms 内 `-32602` 失败，mock `-32603`，mock 排队 11.2s | `accepted` 必须由适配器从事件流推导并上报，核心不能等 RPC 返回 | 只认 turn 内事件（排除噪声）；TTL 只用于「重投」不用于「判失败」；忙时投递走退避重试而非判定会话失效 | 真实宿主首帧延迟受模型冷启动影响，长尾未知（mock LLM 掩盖了该分布） |
 | **Cursor 稳定性** | **不可判定（阻塞）** | `runs/vp5/cursor-probe.json` | IDE `3.22.12` 已装；`cursor-agent` / `agent` 均未找到；无并发数据 | 不影响阶段一（DSH 单宿主） | 按预案记录阻塞，阶段二首迭代优先回答 | 若 Cursor CLI 的 ACP 稳定性差，阶段二 4 个迭代的排期需重估 |
-| **桌面壳可行性** | **可用**（构建归属 CI） | `runs/vp8/build-chain.json`；`runs/vp8/desktop/evidence.json` | Electron 实测：托盘（3 菜单项 + tooltip + bounds）、2 个独立窗口、关闭缩托盘、webview 内 WebSocket 收到 14 条推送并渲染 3 角色/3 连接线；冷启动到渲染 **1.8s**；5 进程 working set **415MB**。Tauri：WebView2 `156.0.4314.58` 已装，但本机缺 Rust + MSVC + Windows SDK → 不能本地编译 | I1.10a 可按「Tauri 主路径 + CI 构建 + Electron 本地开发壳」推进 | `.github/workflows/desktop-build.yml` 提供 Tauri 安装包构建与启动冒烟；Electron 冒烟已可本地/CI 复跑 | Tauri 骨架未经过首次真实编译（API 版本漂移风险）；CI 首次运行前无法声称「已构建成功」 |
+| **桌面壳可行性** | **可用**（构建归属 CI） | `evidence-samples/desktop-shell-smoke.json`；`runs/vp8/build-chain.json`（验证期产物） | Electron 实测：托盘（3 菜单项 + tooltip + bounds）、2 个独立窗口、关闭缩托盘、webview 内 WebSocket 收到 14 条推送并渲染 3 角色/3 连接线；冷启动到渲染 **1.8s**；5 进程 working set **415MB**。Tauri：WebView2 `156.0.4314.58` 已装，但本机缺 Rust + MSVC + Windows SDK → 不能本地编译 | I1.10a 可按「Tauri 主路径 + CI 构建 + Electron 本地开发壳」推进 | 构建方案留档于附录 A（原 CI 工作流随 spike 删除），I1.10a 按此重建 | Tauri 骨架从未真实编译（删前未跑 CI）；I1.10a 首次跑通 CI 前不得声称「可构建」 |
 
 ### 发现 D1（适配器必须修的真问题）
 
@@ -271,7 +255,7 @@ thinking(prompt-echo) → tool_running(tool-call) → waiting_input(permission-r
 | MSVC / Windows SDK | ❌ `vswhere.exe` 缺失、`Windows Kits\10\bin` 为空 |
 | 结论 | `canBuildTauriLocally=false`、`canRunWebviewShellLocally=true` → **构建归属 CI** |
 
-**Electron 运行时冒烟**（`runs/vp8/desktop/evidence.json`，`node spike/desktop-shell/smoke.mjs`）：
+**Electron 运行时冒烟**（`evidence-samples/desktop-shell-smoke.json`；当时由 `spike/desktop-shell/smoke.mjs` 产出，脚本已移除）：
 
 | 检查 | 结果 |
 |---|---|
@@ -283,7 +267,7 @@ thinking(prompt-echo) → tool_running(tool-call) → waiting_input(permission-r
 | 冷启动到渲染完成 | **1.8s** |
 | 常驻内存 | working set **415MB / 5 进程**（Browser 97 / GPU 118 / Utility 51 / 2×Tab 74+75） |
 
-Tauri 侧：骨架（`spike/tauri-shell/`）+ CI（`.github/workflows/desktop-build.yml`）已就位，**尚未经过首次真实编译**。
+Tauri 侧：骨架与 CI 工作流**已随验证代码删除**（构建方案见附录 A），且从未经过真实编译。I1.10a 必须从零搭建并首次跑通 CI 后，才能声称「可构建」。
 
 ---
 
@@ -294,11 +278,11 @@ Tauri 侧：骨架（`spike/tauri-shell/`）+ CI（`.github/workflows/desktop-bu
 | **transport 实现** | 一份 `ACPTransport` 接口 + 3 个实现（stdio / 同步响应型 HTTP / streamed-response HTTP）。DSH 两种形态都必须支持，因为真实 HTTP 形状与 mock 差异很大（响应走 SSE） | §4.1 |
 | **方言处理** | `resumeOrCreate(sessionId?) → {id, cwd, restored}`；回退链 `resume → load → new`；错误码归一表同时认 `-32601 / -32002 / -32602`；`replayMode` 只进日志 | §4.2 |
 | **load 时序** | 强制 drain-quiet（idle 40 ms / cap 400 ms）后再返回 | 发现 D1 |
-| **mock 去留** | **保留**，定位为「回归套件的确定性夹具」：真实宿主需要凭据/外部进程，CI 里跑不动；mock 负责协议面与错误路径回归，真实宿主负责方言确认 | §2 |
+| **mock 去留** | **能力必须保留，阶段零的实现已删除**：阶段一把 mock 宿主重建为正式测试资产（如 `packages/acp-mock`），定位仍是「回归套件的确定性夹具」——真实宿主需凭据/外部进程，CI 跑不动 | §2、§1.2、附录 B |
 | **证据补充策略** | 证据模型改为：核心按 `artifactRef` 自算 sha256 + 校验存在性/时效；`confirmedBy/At` 由审核角色按角色契约附机器可读清单，缺失即拒绝交接并升级 | §4.4 |
 | **会话复用** | 阶段一默认 `fresh`（每节点新会话），`reuse` 待 `resume` 在真实宿主上更充分验证后再开 | §4.2 |
 | **Windows 支持** | 内置 `dsh-launcher` 等价逻辑（或推动上游修 `bin` 与 bootstrap），否则开发机跑不通 | §2 |
-| **回归套件** | `measure-vp1` + `run-isolation` + `resume-*` + `state-mapping` + `handoff` 五件套参数化到 host 名，作为阶段二/三的准入测试 | 全部脚本已 host 参数化 |
+| **回归套件** | 五件套（跨 transport / 并发隔离 / 恢复方言 / 状态映射 / 交接推导）作为**阶段二/三准入测试**重建；阶段零脚本已删除，行为清单见附录 B | §1.2 |
 | **会话状态归一化** | 适配器内实现 `SessionStateNormalizer`：只吃 `sessionUpdate` 判别值 + 客户端侧 permission 回调；**噪声帧显式白名单排除**；`waiting_dependency` / `escalated` 由核心调用 `outputSubmitted()` / `escalated()` 显式置位，不从事件猜 | §4.5 |
 | **交接接受判定** | `accepted` 只认 turn 内事件（排除 `usage_update` / `available_commands_update`）；适配器向上报 `handoff.accepted` 时附 `ambiguityWindowMs` | §4.6、发现 D2 |
 | **交接 TTL 语义** | TTL 到期只触发**重投**（`delivered → pending`），不得直接判 `expired`/失败；连续 N 次重投失败才升级 | §4.6 `ttl-false-expire` |
@@ -335,3 +319,64 @@ Tauri 侧：骨架（`spike/tauri-shell/`）+ CI（`.github/workflows/desktop-bu
 - 多宿主混跑（I2.3）
 
 VR-5 迭代评审（~1d）与复盘（~0.5d）待人工排期；复盘需回答：单人执行下 VP-5 是否继续排队、真实凭据何时到位。
+
+---
+
+## 附录 A：桌面壳 CI 构建方案（I1.10a 起点）
+
+原 `.github/workflows/desktop-build.yml` 已删除，此处留档其结构，避免 I1.10a 重新踩坑。
+
+**前提**：本机无 Rust / MSVC / Windows SDK，`tauri build` 只能在 `windows-latest` 上跑；WebView2 运行时本机已具备（Tauri 运行时前提）。
+
+**job 1 `tauri-windows`**（主路径）
+
+| 步骤 | 要点 |
+|---|---|
+| runner | `windows-latest`（自带 MSVC + Windows SDK） |
+| toolchain | `actions/setup-node@v4`（node 22）+ `dtolnay/rust-toolchain@stable` |
+| 缓存 | `swatinem/rust-cache@v2`，`workspaces: <src-tauri 目录>` |
+| 构建 | `npm install` → 生成图标（PNG 源 → `.ico` / 各尺寸）→ `npm run build` |
+| 产物 | 上传 `bundle/nsis/*.exe` 与 `bundle/msi/*.msi`（`if-no-files-found: warn`） |
+| 冒烟 | 起 daemon 桩 → `MAESTRO_SMOKE=1` 启动 exe → 等 15s → 断言进程未退出（能抓住托盘/窗口创建崩溃） |
+| 注意 | 冒烟步骤用 `shell: pwsh`；路径相对 `working-directory`，跨目录引用要显式 `../` |
+
+**job 2 `electron-smoke`**（回退壳 / 本地开发壳同款）
+
+`npm install`（Electron 走 `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/`，直连 GitHub 会卡）→ `node smoke.mjs` → 上传 `evidence.json`（`if: always()`）。
+
+> 触发方式：`workflow_dispatch` + 路径过滤（只改桌面壳相关目录时触发）。
+
+---
+
+## 附录 B：验证脚本与 mock 行为清单（阶段一重建对齐用）
+
+阶段零脚本已删除。下表是**行为契约**：阶段一重建 mock 与回归套件时按此对齐，不必重新推导。
+
+### B.1 mock 宿主需支持的行为开关
+
+| 开关 | 取值 | 复刻的宿主差异 |
+|---|---|---|
+| `--dialect` | `resume-no-replay` / `load-only` / `none` | 有 resume 无 load / 只有 load（回放历史）/ 都没有 |
+| `--permission` | `auto` / `ask` / `deny` | 不审批 / 发起 `request_permission` / 直接 `refusal` |
+| `--turn-delay-ms` | 数值 | 单轮基础耗时 |
+| `--accept-delay-ms` | 数值 | 宿主延迟发首帧（复刻模型冷启动，制造 `delivered → accepted` 窗口） |
+| `--busy-policy` | `error` / `queue` | 会话忙时新 prompt 立即报错 vs 排队 |
+| `--noise-on-session-new` + `--noise-delay-ms` | bool / 数值 | 建会话后发 `available_commands_update`（复刻真实 DSH 噪声，且可控制到达时机） |
+| `--noise-at-turn-end` | bool | turn 结束后再发噪声帧 |
+
+### B.2 回归脚本 → 断言
+
+| 脚本（阶段零名称） | 验证点 | 必须保留的断言 |
+|---|---|---|
+| `measure-vp1.mjs` | 跨 transport 一致性 | 核心文件哈希四方一致；原语序列恒为 `initialize → session/new → session/prompt`；编排循环 diff = 0 |
+| `check-core-purity.mjs` | 核心零宿主感知 | 核心目录禁用词（host / transport / stdio / http / sse / 宿主名 / replay / dialect）**0 命中**，注释豁免 |
+| `resume-experiment.mjs` / `resume-real.mjs` | 恢复方言 | 返回键恒为 `{id,cwd,restored}`，**不得出现** `replayMode` / `resolveMethod`；load 后 drain-quiet 生效（回放计数 0 → 6） |
+| `run-isolation.mjs` / `run-real.mjs` | 并发隔离 | 串台 0；cancel 只停目标；close 只释放目标；cwd 两两不同且 `session/list` 回读一致 |
+| `state-mapping-experiment.mjs` | 状态归一化 | 噪声帧不计入进展；`waiting_input` 往返闭合；未知 `sessionUpdate` 计数为 0 |
+| `handoff-experiment.mjs` | 交接状态推导 | 只认 turn 内事件时 `accepted` 时点正确；TTL 到期不直接判 `expired` |
+| `busy-probe-real.mjs` | 忙时投递 | 背靠背两次 prompt 的错误码与 message 分类正确（区分「忙」与「会话不存在」） |
+
+### B.3 真实宿主环境指纹（重建时需一致或重新记录）
+
+见 `capability-matrix.md` §0：DSH CLI `0.2.1-rc.5`、`dsh-acp-server` `0.14.4`、DSH 桌面 `3.22.12`、WebView2 `156.0.4314.58`、Node 22。
+Windows 上的两个包级缺陷（`import(join(...))` 与 `spawnSync('dsh')`）在升级后需重新确认是否已修复。

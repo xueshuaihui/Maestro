@@ -1,5 +1,6 @@
-# spike 运行产物（原始帧、临时工作区、依赖）
-.orch-spike/
-
 # 依赖
 node_modules/
+
+# 构建产物
+dist/
+target/

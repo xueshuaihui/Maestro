@@ -1,27 +1,30 @@
 # 宿主能力矩阵（草稿 · I0.1 产出）
 
-> 依据：`docs/iterations/iteration-0.md` §3 VP-1/VP-2/VP-5、§4 交付物清单。
+> 依据：`docs/iterations/iteration-0.md` §3（8 个验证项）、`docs/iterations/iteration-0/report.md`。
 > 状态口径：**已实测 = 真实宿主**；**mock 实测 = 自家 mock agent，只证明抽象成立**；**未验证 = 缺环境或未做**。
 > 更新规则：每个新宿主接入后必须填「环境指纹」行，否则结论不可复现。
+
+> **注**：阶段零验证代码（`spike/**`、`.orch-spike/**`、CI 工作流）已在收口后删除，仅保留结论与 `evidence-samples/`。
+> 本文中的 `runs/...` 为验证期产物路径，用于追溯度量出处；重建复现环境见 `report.md` 附录 A/B。
 
 ## 0. 环境指纹
 
 | 宿主 | 版本 | 启动方式 | 探测时间 | 证据 |
 |---|---|---|---|---|
-| **DSH（stdio）** | dsh CLI `0.2.1-rc.5` + `dsh-acp-server` `0.14.4` | `dsh-acp-server`（默认 stdio）；Windows 上需 `spike/dsh-launcher/dsh-acp-launcher.mjs` 绕行 | 2026-11-03 | `runs/env1/dsh/probe.json` |
+| **DSH（stdio）** | dsh CLI `0.2.1-rc.5` + `dsh-acp-server` `0.14.4` | `dsh-acp-server`（默认 stdio）；Windows 上需 `pathToFileURL` 绕行器（阶段零 `spike/dsh-launcher`，已删） | 2026-11-03 | `runs/env1/dsh/probe.json` |
 | **DSH（HTTP+SSE）** | 同上 | `dsh-acp-server serve --port 7801` | 2026-11-03 | `runs/env2/dsh-http/probe.json` |
 | **WorkBuddy（HTTP+SSE）** | 未接入 | sidecar 控制管道 | — | 未验证（Phase 3） |
 | **Cursor（stdio）** | IDE `3.22.12`，**CLI 缺失** | `cursor-agent acp`（未安装） | 2026-11-03 | `runs/vp5/cursor-probe.json` |
-| **mock agent** | 自建 `0.1.0` | `spike/mock-acp-server/*` | 2026-11-03 | `runs/vp1/*`、`runs/vp3/*` |
+| **mock agent** | 自建 `0.1.0`（**阶段零版本已删除**，阶段一重建为正式测试资产） | `spike/mock-acp-server/*`（已删，行为清单见 `report.md` 附录 B） | 2026-11-03 | `runs/vp1/*`、`runs/vp3/*` |
 
 注：`dsh-acp-server` 的 `agentInfo.version` 报 `0.14.4`（插件自身版本，不是 dsh 内核版本）。DSH 内核版本需另取（`dsh --version` = `0.2.1-rc.5`）。
 
 **关键环境事实（Windows）**
 
-1. `dsh-acp-server@0.14.4` 的 `bin/dsh-acp.mjs` 用 `import(join(...))` 加载本地模块 → Node 22 抛 `ERR_UNSUPPORTED_ESM_URL_SCHEME: Received protocol 'd:'`。绕行：`spike/dsh-launcher`（改用 `pathToFileURL`）。
+1. `dsh-acp-server@0.14.4` 的 `bin/dsh-acp.mjs` 用 `import(join(...))` 加载本地模块 → Node 22 抛 `ERR_UNSUPPORTED_ESM_URL_SCHEME: Received protocol 'd:'`。绕行：用 `pathToFileURL` 重写入口（阶段零 `spike/dsh-launcher` 已删，需在阶段一内置）。
 2. 其 bootstrap 用 `spawnSync('dsh', ...)`，Windows 无法解析 `.cmd` → 首次启动必然失败。绕行：手动执行一次 `dsh plugin --profile acp add <pkg>`。
 3. `dsh` 在 Windows 是 `dsh.cmd`，实际用 Electron 以 node 模式跑 `app.asar` 内的 `cli.js`；纯 Node 既不能 spawn `.cmd` 也不能读 asar 路径。
-4. 真实模型凭据缺失（`no API key for provider route "deepseek-official"`）。为让会话层可验证，在**隔离的 DSH_HOME**（`.orch-spike/dsh-home`）里把默认模型切到包内确定性 mock LLM（`dsh-acp-server/test/mock-llm`，官方 e2e 同款），**未触碰用户 `~/.dsh`**。因此本文「已实测」= ACP/DSH 会话层真实，**不代表真实模型推理质量**。
+4. 真实模型凭据缺失（`no API key for provider route "deepseek-official"`）。为让会话层可验证，在**隔离的 DSH_HOME**（验证期 `.orch-spike/dsh-home`，已删）里把默认模型切到包内确定性 mock LLM（`dsh-acp-server/test/mock-llm`，官方 e2e 同款），**未触碰用户 `~/.dsh`**。因此本文「已实测」= ACP/DSH 会话层真实，**不代表真实模型推理质量**。
 
 ## 1. 能力矩阵
 
@@ -65,11 +68,11 @@
 
 | 能力 | Electron（本机实测） | Tauri（本机构建链缺失） | 说明 |
 |---|---|---|---|
-| 系统托盘（图标/菜单/tooltip/点击） | ✅ | 骨架已写（`tray-icon` feature + config 声明） | Electron 实测 `menuItems=3`、`bounds` 正常 |
+| 系统托盘（图标/菜单/tooltip/点击） | ✅ | 骨架曾实现（`tray-icon` feature + config 声明）但**从未编译，且已随 spike 删除** | Electron 实测 `menuItems=3`、`bounds` 正常 |
 | 关闭窗口缩到托盘 | ✅ | 未验（`WindowEvent::CloseRequested` 需在首次 CI 构建确认） | Electron 实测 `closeToTray=true` |
 | 多窗口 | ✅ 2 个独立窗口 + 独立渲染进程 | 配置声明 2 窗口 | Electron 实测 5 个进程（Browser/GPU/Utility/2×Tab） |
 | webview 内 WebSocket 客户端 | ✅ 直连 daemon，14 条推送 + 快照 | 同一份前端代码，无需插件 | 快照 3 角色 / 3 连接线渲染成功 |
-| 构建归属 | 本机 `npm install` 即可 | **必须 CI**（缺 Rust + MSVC + Windows SDK） | `.github/workflows/desktop-build.yml` |
+| 构建归属 | 本机 `npm install` 即可 | **必须 CI**（缺 Rust + MSVC + Windows SDK） | 原 CI 工作流已删，结构留档于 `report.md` 附录 A |
 | WebView2 运行时 | — | ✅ `156.0.4314.58` 已装 | Tauri 运行时前提满足 |
 
 启动耗时 1.8s（冷启动到渲染完成），常驻内存 working set 约 415MB / 5 进程 —— 作为 I1.10a 选型基线。
@@ -84,5 +87,5 @@
 6. **acp profile 的工具集需显式确认**：`tool-bash` 已挂载但运行时报 `UNKNOWN_TOOL`，说明「配置里有」≠「会话可见」，需在 I1.1 前定论。
 7. **`-32602` 是双义词**：既是「会话不存在/已关闭」，也是「该会话已有 prompt 在飞行」。**禁止只按错误码判定会话失效**——必须结合 `session/list` 回读或错误消息分类，否则会把「目标忙」误判成「会话没了」并新建重复会话。
 8. **`accepted` 只能靠事件流观测**：`session/prompt` 阻塞到 turn 结束才返回，投递成功 ≠ 已接受。适配器必须把「首条 turn 内事件」上报为核心可用的接受信号，并显式携带不可观测窗口。
-9. **必须排除会话级噪声帧**：`available_commands_update` / `usage_update` 不代表 turn 进展；用「收到任何帧就算接受」会把接受时点提前（实测提前 840ms）。
+9. **必须排除会话级噪声帧**：`available_commands_update` / `usage_update` 不代表 turn 进展；用「收到任何帧就算接受」会把接受时点提前（实测提前 1336ms）。
 10. **桌面壳构建走 CI**：本机无 Rust/MSVC/SDK，Tauri 只能在 GitHub Actions 构建；本地开发用 Electron 壳验证交互。
