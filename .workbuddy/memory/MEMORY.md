@@ -21,7 +21,8 @@
   内置 server 广告 `sessionCapabilities={close,list,resume}`（**没有 load**）；第三方 `0.14.4` 有 `loadSession:true`。
 - **模型凭据可用**：`~/.dsh/.credentials.yaml` 里是账号令牌（`deepseek-account` 路由，`deepseek-flash`）。隔离 DSH_HOME 验会话时复制该文件（用完删），并在 profile patch 里把 `agent-default-model` 与 `acp` 两行 provider 改成 `deepseek-account`。
 - 真实宿主写 cwd 内文件**不触发** `session/request_permission`；「等待审批」只能靠夹具。
-- ACP 需装 `dsh-acp-server`（`0.14.4`）。两个包级缺陷：bin 用 `import(join(...))` 触发 `ERR_UNSUPPORTED_ESM_URL_SCHEME`（需 `pathToFileURL`）；bootstrap 用 `spawnSync('dsh')` 解析不了 `.cmd`。
+- **不需要**装第三方 `dsh-acp-server`：内置 acp app 直连即可（I1.1 已实证，省掉 shim）。该包两个缺陷（`ERR_UNSUPPORTED_ESM_URL_SCHEME`、`spawnSync('dsh')`）仅作历史记录。
+- **ACP 分帧是 NDJSON（按 `\n` 切行），不是 LSP 的 `Content-Length` 头**。按后者写解析器会一行都读不到（I1.1 探针实测纠正）。
 - 无模型凭据时：在**隔离 DSH_HOME** 的 `profiles/acp/cordis.patch.yml` 注入 `dsh-acp-server/test/mock-llm` 并把 `agent-default-model` 指到 mock。**不要碰用户 `~/.dsh`**。
 - Cursor 只装了 IDE，**没有 `cursor-agent` CLI**（`agent acp` 不可用）。
 - 无 Rust / MSVC / Windows SDK → Tauri 只能 CI 构建；WebView2 运行时可用。Electron 二进制必须走 `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/`。
@@ -35,3 +36,18 @@
 4. `accepted` 只认 turn 内事件，排除 `usage_update` / `available_commands_update` 噪声帧；TTL 只触发重投，不判失败。
 5. cancel 非即时（实测 4.3s），节点超时必须容忍取消后的迟到 update。
 6. 6 个会话状态里只有 3 个（idle/thinking/tool_running）由 ACP 直接可得；`waiting_dependency`/`escalated` 由核心显式置位。
+
+## 阶段一 I1.1 已落地（产品代码 `src/**` + `bin/orch.js`，216 用例，26/26 AC 通过）
+- **架构**：核心是独立进程，CLI 经 Windows 命名管道通信；管道名 = `sha256(realpath(root).toLowerCase()).slice(0,16)`
+  → **同一项目根才共用一个核心**（AC-07 并发用例必须同 cwd 执行，只用 `--cwd` 改任务目录）。
+- **`--project` / 管道按项目根算，不按 shell cwd 算**；`orch run` 的 `--cwd` 只决定任务工作目录。
+- **验收项目根绝不要放仓库目录**：DSH 会触发 pwsh 权限修复，turn 从 5s 膨胀到 24.8s。一律用 `%TEMP%` 下目录。
+- **`stopReason` 不判成败**：`blocked`/`error` 都被宿主映射成 `end_turn`，成败只由产出核对裁决。
+- **状态迁移唯一入口是 `orchestrator.transit()`**：以磁盘最新快照为 `from` 重新校验 + `save(expectedState)` 做 CAS，
+  禁止任何地方直接 `store.save` 改状态（否则终态可被内存副本静默覆盖）。
+- **事件先落盘再广播**；`emit` 失败不得改内存状态（S-4/S-11 仍未完全闭合，多节点前必修）。
+- **审批策略 `permissionPolicy: allow|reject|hold`（env `MAESTRO_PERMISSION_POLICY`）**，是 I1.11 人工队列的占位；
+  真实 DSH 写 cwd 内文件不触发审批，AC-17/18 只能走夹具。
+- **夹具与产品同一条链路**：`.orch/hosts/dsh.json` 的 `launch.command/args` 指向 `mock-acp-agent.js` 即接管宿主。
+- `npm test` 不可用（Node 22 `node --test test/` 报 MODULE_NOT_FOUND）；用 `node --test "test/**/*.test.js"`。
+
