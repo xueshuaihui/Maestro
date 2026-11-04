@@ -18,6 +18,9 @@
 - **工具行是平台条件挂载**：`tool-bash` 带 `disabled: process.platform === 'win32'`（Windows 上不存在 `bash`，由另一个 shell 工具顶替）；
   `tool-fs` 无条件挂载，注册 `read` / `write` / `edit` / `read_image`。**任何夹具/脚本禁止硬编码 `bash`**，落盘用 `write`（参数 `file_path` + `content`）。
 - `acp` profile 模板自带 ACP server（`@deepseek-ai/dsh-acp-app`）；第三方 `dsh-acp-server` 需用其 patch 把内置行 `disabled` 才独占 stdio。
+  内置 server 广告 `sessionCapabilities={close,list,resume}`（**没有 load**）；第三方 `0.14.4` 有 `loadSession:true`。
+- **模型凭据可用**：`~/.dsh/.credentials.yaml` 里是账号令牌（`deepseek-account` 路由，`deepseek-flash`）。隔离 DSH_HOME 验会话时复制该文件（用完删），并在 profile patch 里把 `agent-default-model` 与 `acp` 两行 provider 改成 `deepseek-account`。
+- 真实宿主写 cwd 内文件**不触发** `session/request_permission`；「等待审批」只能靠夹具。
 - ACP 需装 `dsh-acp-server`（`0.14.4`）。两个包级缺陷：bin 用 `import(join(...))` 触发 `ERR_UNSUPPORTED_ESM_URL_SCHEME`（需 `pathToFileURL`）；bootstrap 用 `spawnSync('dsh')` 解析不了 `.cmd`。
 - 无模型凭据时：在**隔离 DSH_HOME** 的 `profiles/acp/cordis.patch.yml` 注入 `dsh-acp-server/test/mock-llm` 并把 `agent-default-model` 指到 mock。**不要碰用户 `~/.dsh`**。
 - Cursor 只装了 IDE，**没有 `cursor-agent` CLI**（`agent acp` 不可用）。
@@ -27,6 +30,7 @@
 ## 阶段零已锁定的实现约束（阶段一必守）
 1. `load` 后必须 drain-quiet（idle 40ms / cap 400ms），否则 HTTP/SSE 回放帧漏进下一 turn。
 2. 核心**不得**依赖宿主上报产物指纹；`tool_call_update` 无 diff/指纹，指纹由核心自算。
+   `artifactRef` 只能从 `tool_call.rawInput.file_path`（write/edit 类工具）按工具类型提取。
 3. 错误码 `-32602` 在 DSH 上**同码双义**（会话不存在 / prompt 在飞行），禁止只按 code 判会话失效。
 4. `accepted` 只认 turn 内事件，排除 `usage_update` / `available_commands_update` 噪声帧；TTL 只触发重投，不判失败。
 5. cancel 非即时（实测 4.3s），节点超时必须容忍取消后的迟到 update。
