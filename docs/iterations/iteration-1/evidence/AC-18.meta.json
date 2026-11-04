@@ -1,0 +1,94 @@
+{
+  "id": "AC-18",
+  "title": "审批被拒时交接包是已拒绝",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-18",
+  "switches": [
+    "--permission=ask"
+  ],
+  "env": {
+    "MAESTRO_PERMISSION_POLICY": "reject"
+  },
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "输出含 审批被拒绝，任务中止于 write",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-32104-1\n任务已投递\n会话 等待审批：write\n会话 空闲\n节点 失败 · 审批被拒绝，任务中止于 write\n交接包 HO-001  已构造   23:54:25\n交接包 HO-001  已投递   23:54:25\n交接包 HO-001  已接受   23:54:25\n交接包 HO-001  已拒绝   23:54:25  原因 审批被拒\n审批被拒绝，任务中止于 write\n"
+      },
+      {
+        "id": "step 不是 null",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-32104-1\n任务已投递\n会话 等待审批：write\n会话 空闲\n节点 失败 · 审批被拒绝，任务中止于 write\n交接包 HO-001  已构造   23:54:25\n交接包 HO-001  已投递   23:54:25\n交接包 HO-001  已接受   23:54:25\n交接包 HO-001  已拒绝   23:54:25  原因 审批被拒\n审批被拒绝，任务中止于 write\n"
+      },
+      {
+        "id": "节点 = 失败",
+        "ok": true,
+        "actual": "failed"
+      },
+      {
+        "id": "node.failure.code = PERMISSION_DENIED",
+        "ok": true,
+        "actual": {
+          "code": "PERMISSION_DENIED",
+          "message": "write"
+        }
+      },
+      {
+        "id": "交接包 = 已拒绝",
+        "ok": true,
+        "actual": "rejected"
+      },
+      {
+        "id": "拒绝原因 = 审批被拒（permission_denied）",
+        "ok": true,
+        "actual": "permission_denied"
+      },
+      {
+        "id": "会话收敛到 idle",
+        "ok": true,
+        "actual": "idle"
+      },
+      {
+        "id": "事件含 handoff→rejected（审批被拒）",
+        "ok": true,
+        "actual": {
+          "seq": 12,
+          "ts": "2026-11-04T15:54:25.566Z",
+          "object": "handoff",
+          "objectId": "HO-001",
+          "from": "accepted",
+          "to": "rejected",
+          "result": "applied",
+          "reason": "handoff.rejected",
+          "detail": {
+            "reason": "permission_denied"
+          }
+        }
+      },
+      {
+        "id": "事件含 node→failed",
+        "ok": true,
+        "actual": {
+          "seq": 10,
+          "ts": "2026-11-04T15:54:25.557Z",
+          "object": "node",
+          "objectId": "T-001",
+          "from": "running",
+          "to": "failed",
+          "result": "applied",
+          "reason": "run.failed",
+          "detail": {
+            "code": "PERMISSION_DENIED",
+            "message": "write"
+          }
+        }
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "用环境变量 MAESTRO_PERMISSION_POLICY=reject 让核心对审批请求回 reject-once；--permission=ask 保证审批请求真的发生。"
+  ]
+}

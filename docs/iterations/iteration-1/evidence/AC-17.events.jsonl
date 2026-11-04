@@ -1,0 +1,13 @@
+# instance INST-001
+{"object":"instance","objectId":"INST-001","from":"created","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-6e6870b0378fc86d","seq":1,"ts":"2026-11-04T15:54:24.227Z"}
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-6e6870b0378fc86d","seq":2,"ts":"2026-11-04T15:54:24.233Z"}
+{"object":"handoff","objectId":"HO-001","from":null,"to":"created","result":"applied","reason":"handoff.created","detail":null,"gen":"gen-6e6870b0378fc86d","seq":3,"ts":"2026-11-04T15:54:24.237Z"}
+{"object":"handoff","objectId":"HO-001","from":"created","to":"delivered","result":"applied","reason":"handoff.delivered","detail":{"atMs":1793807664247},"gen":"gen-6e6870b0378fc86d","seq":4,"ts":"2026-11-04T15:54:24.248Z"}
+{"object":"session","objectId":"mock-sess-30332-1","from":"idle","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-6e6870b0378fc86d","seq":5,"ts":"2026-11-04T15:54:24.250Z"}
+{"object":"handoff","objectId":"HO-001","from":"delivered","to":"accepted","result":"applied","reason":"turn.first_event","detail":{"event":"agent_thought_chunk","ambiguityWindowMs":2},"gen":"gen-6e6870b0378fc86d","seq":6,"ts":"2026-11-04T15:54:24.253Z"}
+{"object":"session","objectId":"mock-sess-30332-1","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-6e6870b0378fc86d","seq":7,"ts":"2026-11-04T15:54:24.262Z"}
+{"object":"session","objectId":"mock-sess-30332-1","from":"tool_running","to":"waiting_input","result":"applied","reason":"permission.requested","detail":{"action":"write","toolCallId":"call_mock_30332_1"},"gen":"gen-6e6870b0378fc86d","seq":8,"ts":"2026-11-04T15:54:24.269Z"}
+{"object":"session","objectId":"mock-sess-30332-1","from":"waiting_input","to":"idle","result":"applied","reason":"run.cancelled","detail":null,"gen":"gen-6e6870b0378fc86d","seq":9,"ts":"2026-11-04T15:54:24.735Z"}
+{"object":"node","objectId":"T-001","from":"running","to":"cancelled","result":"applied","reason":"run.cancelled","detail":null,"gen":"gen-6e6870b0378fc86d","seq":10,"ts":"2026-11-04T15:54:24.745Z"}
+{"object":"handoff","objectId":"HO-001","from":"accepted","to":"rejected","result":"applied","reason":"handoff.rejected","detail":{"reason":"withdrawn"},"gen":"gen-6e6870b0378fc86d","seq":11,"ts":"2026-11-04T15:54:24.748Z"}
+{"object":"instance","objectId":"INST-001","from":"running","to":"cancelled","result":"applied","reason":"run.cancelled","detail":null,"gen":"gen-6e6870b0378fc86d","seq":12,"ts":"2026-11-04T15:54:24.758Z"}

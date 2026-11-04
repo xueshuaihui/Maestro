@@ -1,0 +1,64 @@
+{
+  "ac": "AC-05",
+  "instanceId": "INST-105",
+  "collectedAt": "2026-11-04T16:04:31.602Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-105 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 49278,
+      "startedAt": 1793808222224,
+      "endedAt": 1793808271502
+    },
+    {
+      "label": "orch status --instance INST-105 --events",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-105 --events",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 89,
+      "startedAt": 1793808271503,
+      "endedAt": 1793808271592
+    }
+  ],
+  "assertions": [
+    {
+      "name": "\"已接受\"时间早于\"已完成\"（consumed）",
+      "expected": "accepted.ts < consumed.ts",
+      "actual": "2026-11-04T16:03:51.757Z < 2026-11-04T16:04:31.436Z",
+      "pass": true
+    },
+    {
+      "name": "两者不是同一时刻",
+      "expected": "ts 不同",
+      "actual": "不同",
+      "pass": true
+    },
+    {
+      "name": "\"已接受\"之后节点先进入\"待校验\"（review 事件落在 accepted 与 consumed 之间）",
+      "expected": "存在 node → review 且 seq 在两者之间",
+      "actual": "seq 24: running→review",
+      "pass": true
+    },
+    {
+      "name": "节点\"已完成\"只能由核对通过触发，不是提前跳转",
+      "expected": "node→done 的 reason=verification.passed 且晚于 accepted",
+      "actual": "seq 25 reason=verification.passed ts=2026-11-04T16:04:31.434Z",
+      "pass": true
+    },
+    {
+      "name": "status --events 输出里 accepted 行早于 已完成 行",
+      "expected": "行序：已接受 → 已完成",
+      "actual": "交接包 HO-001  已构造   00:03:44 | 交接包 HO-001  已投递   00:03:44 | 交接包 HO-001  已接受   00:03:51 | 交接包 HO-001  已完成   00:04:31 | 00:03:44  交接包 HO-001  已构造  原因 handoff.created | 00:03:44  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered | 00:03:51  交接包 HO-001  已投递 → 已接受  原因 turn.first_event | 00:04:31  交接包 HO-001  已接受 → 已完成  原因 handoff.consumed",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "判据用 events.jsonl 的 seq 与 ISO 时间戳（AC-05 原文要求“事件记录里”）。status 显示的 HH:mm:ss 只到秒，两条同秒时无法区分，故以事件为准。"
+  ]
+}

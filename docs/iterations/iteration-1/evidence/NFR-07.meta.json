@@ -1,0 +1,97 @@
+{
+  "ac": "NFR-07",
+  "instanceId": "INST-601",
+  "collectedAt": "2026-11-04T16:01:57.738Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run（长任务，随后被杀）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-601 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 1,
+      "durationMs": 9634,
+      "startedAt": 1793808106272,
+      "endedAt": 1793808115906
+    },
+    {
+      "label": "taskkill /PID <pid> /T /F",
+      "argv": "taskkill /PID 30756 /F",
+      "cwd": null,
+      "exit": 0,
+      "durationMs": null,
+      "startedAt": 1793808115657,
+      "endedAt": 1793808115906
+    },
+    {
+      "label": "tasklist 复核 PID 是否还在",
+      "argv": "tasklist /FI PID eq 30756 /NH",
+      "cwd": null,
+      "exit": 0,
+      "durationMs": null,
+      "startedAt": 1793808117111,
+      "endedAt": 1793808117345
+    },
+    {
+      "label": "orch status --instance INST-601（CLI 被杀后）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-601",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 86,
+      "startedAt": 1793808117431,
+      "endedAt": 1793808117517
+    },
+    {
+      "label": "orch status --instance INST-601（再查一次）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-601",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 97,
+      "startedAt": 1793808117517,
+      "endedAt": 1793808117614
+    }
+  ],
+  "assertions": [
+    {
+      "name": "Given：CLI 进程确实在跑且已投递任务",
+      "expected": "会话 执行中",
+      "actual": "会话 执行中 · 调用工具（glob） · 已运行 9s",
+      "pass": true
+    },
+    {
+      "name": "taskkill /F 真的杀掉了 CLI 进程",
+      "expected": "tasklist 中已无该 PID",
+      "actual": "kill: exit=0 �ɹ�: ����ֹ PID Ϊ 30756 �Ľ��̡�；kill 后 tasklist: ��Ϣ: û�����е�����ƥ��ָ����׼��",
+      "pass": true
+    },
+    {
+      "name": "被杀的 CLI 进程确实以非 0 结束（不是自然跑完）",
+      "expected": "code≠0 或 signal 存在，且在 4s 内结束",
+      "actual": "code=1 signal=null 4s 内结束=true",
+      "pass": true
+    },
+    {
+      "name": "核心仍在（core.ping 可连，且 pid 与杀之前相同）",
+      "expected": "connected=true 且 pid 不变",
+      "actual": "{\"before\":30684,\"after\":30684}",
+      "pass": true
+    },
+    {
+      "name": "重新执行 orch status 仍能看到它在跑",
+      "expected": "会话 执行中 / 节点 执行中",
+      "actual": "节点 执行中 | 会话 执行中 · 调用工具（read） · 已运行 11s",
+      "pass": true
+    },
+    {
+      "name": "第二次 status 仍可见（不是偶然一次）",
+      "expected": "会话 执行中",
+      "actual": "会话 执行中 · 调用工具（read） · 已运行 11s",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "杀进程命令：taskkill /PID 30756 /T /F（Node spawn 直传，无 MSYS 路径转换）。杀之前 tasklist 证实该 PID 存在，杀之后同一条 tasklist 查不到。任务随后被 cancel 收尾（避免留下长跑会话）。"
+  ]
+}

@@ -1,0 +1,16 @@
+# NFR-02 原始输出（采集于 2026-11-04T16:00:03.585Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## （两轮 orch run，明细见 extra）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node bin/orch.js run --cwd ./demo --instance INST-5xx --task "写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md"
+[started 2026-11-04T16:00:03.585Z  duration ?ms  exit 0]
+[exit 0]
+
+## NFR-02 抽样明细
+session→思考/工具: 输出 +9343ms / 事件 +9327ms → 延迟 16ms  «会话 执行中 · 调用工具（pwsh） · 已运行 9s»
+session→等待下游: 输出 +29608ms / 事件 +29605ms → 延迟 3ms  «会话 等待下游 · 产出已提交»
+node→已完成: 输出 +29709ms / 事件 +29626ms → 延迟 83ms  «节点 已完成 · 耗时 30s»
+session→思考/工具: 输出 +10915ms / 事件 +10912ms → 延迟 3ms  «会话 执行中 · 调用工具（glob） · 已运行 11s»
+session→等待下游: 输出 +93306ms / 事件 +93302ms → 延迟 4ms  «会话 等待下游 · 产出已提交»
+node→已完成: 输出 +93384ms / 事件 +93322ms → 延迟 62ms  «节点 已完成 · 耗时 1m33s»

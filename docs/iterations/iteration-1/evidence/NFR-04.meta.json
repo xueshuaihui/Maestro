@@ -1,0 +1,115 @@
+{
+  "id": "NFR-04",
+  "title": "强杀核心后重启：实例/节点/会话/交接包/事件 5 项仍可查",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-04",
+  "switches": [
+    "--turn-delay-ms",
+    "8000",
+    "--slow-tool",
+    "write"
+  ],
+  "kill": {
+    "ok": true,
+    "meta": {
+      "version": 1,
+      "pipeName": "\\\\.\\pipe\\maestro-159601c386ee0331",
+      "pid": 6316,
+      "generation": "gen-afc3baee83806cd1",
+      "startedAt": "2026-11-04T15:55:04.633Z"
+    },
+    "exitCode": 0,
+    "output": "�ɹ�: ����ֹ PID Ϊ 6316 �Ľ��̡�"
+  },
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "status 列出 INST-001",
+        "ok": true,
+        "actual": "实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:04\n实例 INST-002 · 已中断 · 节点 执行中 · 会话 执行中 · 耗时 1s · 更新 23:55:06\n"
+      },
+      {
+        "id": "status 列出 INST-002 且标 已中断",
+        "ok": true,
+        "actual": "实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:04\n实例 INST-002 · 已中断 · 节点 执行中 · 会话 执行中 · 耗时 1s · 更新 23:55:06\n"
+      },
+      {
+        "id": "INST-001 仍为 已完成（5 项可查）",
+        "ok": true,
+        "actual": {
+          "schemaVersion": 1,
+          "instanceId": "INST-001",
+          "state": "completed",
+          "stateSince": "2026-11-04T15:55:04.979Z",
+          "updatedAt": "2026-11-04T15:55:04.994Z",
+          "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-04\\demo",
+          "node": {
+            "nodeId": "T-001",
+            "state": "done",
+            "startedAt": "2026-11-04T15:55:04.671Z",
+            "endedAt": "2026-11-04T15:55:04.991Z",
+            "failure": null,
+            "note": null
+          },
+          "session": {
+            "sessionId": "mock-sess-30664-1",
+            "hostId": "dsh",
+            "state": "idle",
+            "stateSince": "2026-11-04T15:55:04.991Z",
+            "lastEventAt": "2026-11-04T15:55:04.921Z",
+            "toolName": null,
+            "pendingPermission": null,
+            "quarantined": true,
+            "turnId": "turn-1"
+          },
+          "handoff": {
+            "handoffId": "HO-001",
+            "state": "consumed",
+            "createdAt": "2026-11-04T15:55:04.909Z",
+            "deliveredAt": "2026-11-04T15:55:04.919Z",
+            "acceptedAt": "2026-11-04T15:55:04.920Z",
+            "consumedAt": "2026-11-04T15:55:04.977Z",
+            "rejectedAt": null,
+            "rejectReason": null,
+            "acceptedSignal": "agent_thought_chunk"
+          },
+          "hostRaw": {
+            "stopReason": "end_turn",
+            "lastError": null,
+            "agentInfo": null
+          },
+          "artifactRefs": [],
+          "counters": {
+            "eventSeq": 15,
+            "runCount": 1
+          }
+        }
+      },
+      {
+        "id": "INST-002 状态 = interrupted",
+        "ok": true,
+        "actual": "interrupted"
+      },
+      {
+        "id": "INST-002 的节点/会话/交接包/事件仍可查",
+        "ok": true,
+        "actual": {
+          "node": "running",
+          "session": "tool_running",
+          "handoff": "accepted",
+          "events": 8
+        }
+      },
+      {
+        "id": "status --instance 显示停点",
+        "ok": true,
+        "actual": "实例 INST-002 · 已中断 ｜ 停在节点 执行中 / 会话 执行中\n节点 执行中\n会话 执行中 · 调用工具（write） · 已运行 1s\n交接包 HO-001  已构造   23:55:05\n交接包 HO-001  已投递   23:55:05\n交接包 HO-001  已接受   23:55:05\n23:55:05  实例 INST-002  已创建 → 运行中  原因 run.started\n23:55:05  节点 T-001  待执行 → 执行中  原因 run.started\n23:55:05  交接包 HO-001  已构造  原因 handoff.created\n23:55:05  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered\n23:55:05  会话 mock-sess-14816-1  空闲 → 执行中  原因 session.state\n23:55:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event\n23:55:05  会话 mock-sess-14816-1  执行中 → 执行中（tool_call）  原因 session.state\n23:55:06  实例 INST-002  运行中 → 已中断  原因 core.gone\n"
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "强杀发生在 INST-002 的 tool_running 阶段（8s 窗口内），确保不是“刚好跑完”。"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "instanceId": "INST-106",
+  "coreGeneration": "gen-5e938061088f9ad5",
+  "createdAt": "2026-11-04T15:50:28.373Z",
+  "updatedAt": "2026-11-04T15:50:55.473Z",
+  "state": "completed",
+  "stateSince": "2026-11-04T15:50:55.458Z",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "task": "写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+  "roleId": "worker",
+  "node": {
+    "nodeId": "T-001",
+    "state": "done",
+    "stateSince": "2026-11-04T15:50:55.448Z",
+    "startedAt": "2026-11-04T15:50:28.373Z",
+    "endedAt": "2026-11-04T15:50:55.471Z",
+    "failure": null,
+    "note": null
+  },
+  "session": {
+    "sessionId": "cb472d24-68e5-4eea-8c0b-66a1ab6d51f4",
+    "hostId": "dsh",
+    "state": "idle",
+    "stateSince": "2026-11-04T15:50:55.471Z",
+    "createdAt": "2026-11-04T15:50:30.701Z",
+    "lastEventAt": "2026-11-04T15:50:55.416Z",
+    "toolName": null,
+    "turnId": "turn-1",
+    "pendingPermission": null,
+    "quarantined": true,
+    "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo\\out\\long.md"
+  },
+  "handoff": {
+    "handoffId": "HO-001",
+    "state": "consumed",
+    "createdAt": "2026-11-04T15:50:30.716Z",
+    "deliveredAt": "2026-11-04T15:50:30.725Z",
+    "acceptedAt": "2026-11-04T15:50:39.021Z",
+    "consumedAt": "2026-11-04T15:50:55.456Z",
+    "rejectedAt": null,
+    "rejectReason": null,
+    "acceptedSignal": "agent_thought_chunk",
+    "ambiguityWindowMs": 8296
+  },
+  "artifactRefs": [
+    {
+      "ref": "out/long.md",
+      "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo\\out\\long.md",
+      "declared": true,
+      "exists": true,
+      "bytes": 981,
+      "sha256": null,
+      "verifiedAt": "2026-11-04T15:50:55.448Z"
+    }
+  ],
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "counters": {
+    "eventSeq": 22,
+    "runCount": 1
+  }
+}

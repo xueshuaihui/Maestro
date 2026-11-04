@@ -1,0 +1,79 @@
+{
+  "ac": "AC-13",
+  "instanceId": "INST-113",
+  "collectedAt": "2026-11-04T15:56:18.369Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run（先产生一个正常实例）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-113 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 48514,
+      "startedAt": 1793807729335,
+      "endedAt": 1793807777849
+    },
+    {
+      "label": "orch status --instance INST-113（state.json 已损坏）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-113",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 1,
+      "durationMs": 206,
+      "startedAt": 1793807778049,
+      "endedAt": 1793807778255
+    },
+    {
+      "label": "orch status（列表）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 105,
+      "startedAt": 1793807778256,
+      "endedAt": 1793807778361
+    }
+  ],
+  "assertions": [
+    {
+      "name": "Given：state.json 已被写成非法 JSON",
+      "expected": "{\"broken",
+      "actual": "\"{\\\"broken\"",
+      "pass": true
+    },
+    {
+      "name": "status 输出\"状态不可读\"",
+      "expected": "状态不可读",
+      "actual": "状态不可读，已备份为 state.json.corrupt（C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\.orch\\instances\\INST-113\\state.json.corrupt）",
+      "pass": true
+    },
+    {
+      "name": "告知备份到了哪个文件（state.json.corrupt）",
+      "expected": "…state.json.corrupt",
+      "actual": "状态不可读，已备份为 state.json.corrupt（C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\.orch\\instances\\INST-113\\state.json.corrupt）",
+      "pass": true
+    },
+    {
+      "name": "原始 state.json 仍在且内容未被清空/覆盖",
+      "expected": "仍为 {\"broken",
+      "actual": "\"{\\\"broken\"",
+      "pass": true
+    },
+    {
+      "name": "备份文件确实生成",
+      "expected": "state.json.corrupt 存在",
+      "actual": "true",
+      "pass": true
+    },
+    {
+      "name": "无参 status 列表仍显示该实例为\"状态不可读\"，不假装没有",
+      "expected": "实例 INST-113 · 状态不可读",
+      "actual": "实例 INST-113 · 状态不可读",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "损坏方式：core stop 后用 fs.writeFileSync 直接写 {\"broken（8 字节）；status 会冷启动核心触发 reconcile 读盘。"
+  ]
+}

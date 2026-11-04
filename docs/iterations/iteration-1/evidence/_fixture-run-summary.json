@@ -1,0 +1,178 @@
+[
+  {
+    "id": "AC-15",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-15.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-15.output.json",
+      "docs/iterations/iteration-1/evidence/AC-15.state.json",
+      "docs/iterations/iteration-1/evidence/AC-15.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-16",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-16.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-16.output.json",
+      "docs/iterations/iteration-1/evidence/AC-16.state.json",
+      "docs/iterations/iteration-1/evidence/AC-16.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-17",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-17.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-17.output.json",
+      "docs/iterations/iteration-1/evidence/AC-17.state.json",
+      "docs/iterations/iteration-1/evidence/AC-17.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-18",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-18.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-18.output.json",
+      "docs/iterations/iteration-1/evidence/AC-18.state.json",
+      "docs/iterations/iteration-1/evidence/AC-18.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-19",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-19.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-19.output.json",
+      "docs/iterations/iteration-1/evidence/AC-19.state.json",
+      "docs/iterations/iteration-1/evidence/AC-19.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-20",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-20.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-20.output.json",
+      "docs/iterations/iteration-1/evidence/AC-20.state.json",
+      "docs/iterations/iteration-1/evidence/AC-20.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-21",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-21.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-21.output.json",
+      "docs/iterations/iteration-1/evidence/AC-21.state.json",
+      "docs/iterations/iteration-1/evidence/AC-21.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-22",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-22.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-22.output.json",
+      "docs/iterations/iteration-1/evidence/AC-22.state.json",
+      "docs/iterations/iteration-1/evidence/AC-22.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-23",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-23.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-23.output.json",
+      "docs/iterations/iteration-1/evidence/AC-23.state.json",
+      "docs/iterations/iteration-1/evidence/AC-23.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-24",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-24.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-24.output.json",
+      "docs/iterations/iteration-1/evidence/AC-24.state.json",
+      "docs/iterations/iteration-1/evidence/AC-24.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-25",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-25.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-25.output.json",
+      "docs/iterations/iteration-1/evidence/AC-25.state.json",
+      "docs/iterations/iteration-1/evidence/AC-25.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-25.supplement",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-25.supplement.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-25.supplement.output.json",
+      "docs/iterations/iteration-1/evidence/AC-25.supplement.state.json",
+      "docs/iterations/iteration-1/evidence/AC-25.supplement.events.jsonl"
+    ]
+  },
+  {
+    "id": "AC-26",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/AC-26.meta.json",
+      "docs/iterations/iteration-1/evidence/AC-26.output.json",
+      "docs/iterations/iteration-1/evidence/AC-26.state.json",
+      "docs/iterations/iteration-1/evidence/AC-26.events.jsonl"
+    ]
+  },
+  {
+    "id": "NFR-03",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/NFR-03.meta.json",
+      "docs/iterations/iteration-1/evidence/NFR-03.output.json",
+      "docs/iterations/iteration-1/evidence/NFR-03.state.json",
+      "docs/iterations/iteration-1/evidence/NFR-03.events.jsonl"
+    ]
+  },
+  {
+    "id": "NFR-04",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/NFR-04.meta.json",
+      "docs/iterations/iteration-1/evidence/NFR-04.output.json",
+      "docs/iterations/iteration-1/evidence/NFR-04.state.json",
+      "docs/iterations/iteration-1/evidence/NFR-04.events.jsonl"
+    ]
+  },
+  {
+    "id": "NFR-06",
+    "verdict": "通过",
+    "failed": [],
+    "files": [
+      "docs/iterations/iteration-1/evidence/NFR-06.meta.json",
+      "docs/iterations/iteration-1/evidence/NFR-06.output.json",
+      "docs/iterations/iteration-1/evidence/NFR-06.state.json",
+      "docs/iterations/iteration-1/evidence/NFR-06.events.jsonl"
+    ]
+  }
+]

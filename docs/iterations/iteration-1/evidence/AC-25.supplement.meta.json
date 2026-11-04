@@ -1,0 +1,57 @@
+{
+  "id": "AC-25.supplement",
+  "title": "取消后的迟到 update 不改回执行中（用户提示口径，BR-06 相邻）",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-25-cancellate",
+  "switches": [
+    "--slow-tool",
+    "write",
+    "--turn-delay-ms",
+    "8000"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "会话回到 空闲（不显示执行中）",
+        "ok": true,
+        "actual": "实例 INST-001 · 已取消\n节点 已取消\n会话 空闲\n交接包 HO-001  已构造   23:54:56\n交接包 HO-001  已投递   23:54:56\n交接包 HO-001  已接受   23:54:56\n交接包 HO-001  已拒绝   23:54:57  原因 已撤回\n"
+      },
+      {
+        "id": "节点 = 已取消",
+        "ok": true,
+        "actual": "cancelled"
+      },
+      {
+        "id": "交接包 = 已拒绝（已撤回）",
+        "ok": true,
+        "actual": {
+          "handoffId": "HO-001",
+          "state": "rejected",
+          "createdAt": "2026-11-04T15:54:56.866Z",
+          "deliveredAt": "2026-11-04T15:54:56.873Z",
+          "acceptedAt": "2026-11-04T15:54:56.875Z",
+          "consumedAt": null,
+          "rejectedAt": "2026-11-04T15:54:57.001Z",
+          "rejectReason": "withdrawn",
+          "acceptedSignal": "agent_thought_chunk",
+          "ambiguityWindowMs": 2
+        }
+      },
+      {
+        "id": "取消后没有新的 session→tool_running 事件",
+        "ok": true,
+        "actual": []
+      },
+      {
+        "id": "迟到窗口已过（1609ms）",
+        "ok": true,
+        "actual": 1609
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "这条不是 requirement 里 AC-25 的 Gherkin 文本（AC-25 原文是“上一个任务的收尾不影响下一个”），作为补充观察记录。"
+  ]
+}

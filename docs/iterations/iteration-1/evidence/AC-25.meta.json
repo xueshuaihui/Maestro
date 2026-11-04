@@ -1,0 +1,155 @@
+{
+  "id": "AC-25",
+  "title": "上一个任务的收尾不影响下一个",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-25",
+  "switches": [
+    "INST-001: --noise-at-turn-end --turn-delay-ms 1500",
+    "INST-002: --noise-at-turn-end --turn-delay-ms 200 --accept-delay-ms 6000"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "采样时 INST-002 实例仍在运行（不是已完成的终态假象）",
+        "ok": true,
+        "actual": "实例 INST-002 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:56:11\n交接包 HO-001  已投递   23:56:11\n交接包 HO-001  已投递   等待目标响应 · 已等待 2s\n"
+      },
+      {
+        "id": "采样发生在 INST-002 自己开始处理之前（created→采样 1790ms < 6000ms）",
+        "ok": true,
+        "actual": 1790
+      },
+      {
+        "id": "INST-002 会话显示 空闲",
+        "ok": true,
+        "actual": "实例 INST-002 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:56:11\n交接包 HO-001  已投递   23:56:11\n交接包 HO-001  已投递   等待目标响应 · 已等待 2s\n"
+      },
+      {
+        "id": "INST-002 不显示 会话 执行中",
+        "ok": true,
+        "actual": "实例 INST-002 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:56:11\n交接包 HO-001  已投递   23:56:11\n交接包 HO-001  已投递   等待目标响应 · 已等待 2s\n"
+      },
+      {
+        "id": "state(INST-002).session.state = idle",
+        "ok": true,
+        "actual": "idle"
+      },
+      {
+        "id": "INST-002 无由噪声触发的会话状态事件",
+        "ok": true,
+        "actual": []
+      },
+      {
+        "id": "采样时 INST-002 还没有任何 thinking/tool_running 事件（确实没开始处理）",
+        "ok": true,
+        "actual": []
+      },
+      {
+        "id": "INST-002 后来确实有自己的首个 turn 事件",
+        "ok": true,
+        "actual": 4
+      },
+      {
+        "id": "INST-001 确实走完并产生 turn 结束噪声（probe noiseCount >= 1）",
+        "ok": true,
+        "actual": {
+          "inst1Completed": [
+            {
+              "seq": 1,
+              "ts": "2026-11-04T15:56:11.234Z",
+              "object": "instance",
+              "objectId": "INST-001",
+              "from": "created",
+              "to": "running",
+              "result": "applied",
+              "reason": "run.started",
+              "detail": null
+            },
+            {
+              "seq": 14,
+              "ts": "2026-11-04T15:56:12.822Z",
+              "object": "instance",
+              "objectId": "INST-001",
+              "from": "running",
+              "to": "completed",
+              "result": "applied",
+              "reason": "run.completed",
+              "detail": null
+            }
+          ],
+          "noiseCount": 1
+        }
+      },
+      {
+        "id": "INST-002 的会话事件全部属于它自己的 sessionId（无串台）",
+        "ok": true,
+        "actual": [
+          "mock-sess-21116-1",
+          "mock-sess-21116-1",
+          "mock-sess-21116-1",
+          "mock-sess-21116-1",
+          "mock-sess-21116-1"
+        ]
+      }
+    ],
+    "failed": []
+  },
+  "sample": {
+    "atMsAfterCreate": 1790,
+    "status": "实例 INST-002 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:56:11\n交接包 HO-001  已投递   23:56:11\n交接包 HO-001  已投递   等待目标响应 · 已等待 2s\n",
+    "state": {
+      "schemaVersion": 1,
+      "instanceId": "INST-002",
+      "state": "running",
+      "stateSince": "2026-11-04T15:56:11.352Z",
+      "updatedAt": "2026-11-04T15:56:11.606Z",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-25\\demo",
+      "node": {
+        "nodeId": "T-001",
+        "state": "running",
+        "startedAt": "2026-11-04T15:56:11.352Z",
+        "endedAt": null,
+        "failure": null,
+        "note": null
+      },
+      "session": {
+        "sessionId": "mock-sess-21116-1",
+        "hostId": "dsh",
+        "state": "idle",
+        "stateSince": "2026-11-04T15:56:11.565Z",
+        "lastEventAt": "2026-11-04T15:56:11.565Z",
+        "toolName": null,
+        "pendingPermission": null,
+        "quarantined": false,
+        "turnId": "turn-1"
+      },
+      "handoff": {
+        "handoffId": "HO-001",
+        "state": "delivered",
+        "createdAt": "2026-11-04T15:56:11.586Z",
+        "deliveredAt": "2026-11-04T15:56:11.601Z",
+        "acceptedAt": null,
+        "consumedAt": null,
+        "rejectedAt": null,
+        "rejectReason": null,
+        "acceptedSignal": null
+      },
+      "hostRaw": {
+        "stopReason": null,
+        "lastError": null,
+        "agentInfo": null
+      },
+      "artifactRefs": [],
+      "counters": {
+        "eventSeq": 4,
+        "runCount": 1
+      }
+    },
+    "instance002EventCountAtSample": 4
+  },
+  "notes": [
+    "构造：INST-001 在 turn 结束后推 usage/commands 噪声；INST-002 紧接着发起且 6s 内不开始处理，采样点在其发起后约 2s。",
+    "本迭代每次 run 都新建会话（fresh），因此第一个任务的 update 不可能路由到第二个会话；本条同时核对事件层没有串台。"
+  ]
+}

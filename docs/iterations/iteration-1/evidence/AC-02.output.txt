@@ -1,0 +1,70 @@
+# AC-02 原始输出（采集于 2026-11-04T15:48:29.355Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-102 --task 写一段 200 字的产品说明，保存到 out/intro.md
+[started 2026-11-04T15:48:05.046Z  duration 23348ms  exit 0]
++   2339ms  实例 INST-102 · 运行中
++   2339ms  会话已创建 0fc329fb-ad6a-4f79-9042-7b02db38bfe6
++   2339ms  任务已投递
++   2342ms  会话 空闲
++   4419ms  会话 执行中 · 调用工具（pwsh） · 已运行 4s
++   7956ms  会话 执行中 · 调用工具（read） · 已运行 8s
++  12530ms  会话 执行中 · 调用工具（write） · 已运行 12s
++  14411ms  会话 执行中 · 调用工具（pwsh） · 已运行 14s
++  17689ms  会话 执行中 · 调用工具（edit） · 已运行 18s
++  19457ms  会话 执行中 · 调用工具（pwsh） · 已运行 19s
++  21809ms  会话 执行中 · 调用工具（read） · 已运行 22s
++  23188ms  会话 执行中 · 已运行 23s
++  23208ms  会话 等待下游 · 产出已提交
++  23259ms  会话 空闲
++  23338ms  节点 已完成 · 耗时 23s
++  23339ms  交接包 HO-001  已构造   23:48:07
++  23339ms  交接包 HO-001  已投递   23:48:07
++  23339ms  交接包 HO-001  已接受   23:48:09
++  23339ms  交接包 HO-001  已完成   23:48:28
+[exit 0]
+
+## orch status --instance INST-102
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-102
+[started 2026-11-04T15:48:28.395Z  duration 110ms  exit 0]
++    101ms  实例 INST-102 · 已完成
++    101ms  节点 已完成 · 耗时 23s
++    101ms  会话 空闲
++    102ms  交接包 HO-001  已构造   23:48:07
++    102ms  交接包 HO-001  已投递   23:48:07
++    102ms  交接包 HO-001  已接受   23:48:09
++    102ms  交接包 HO-001  已完成   23:48:28
+[exit 0]
+
+## orch status（列表）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status
+[started 2026-11-04T15:48:28.505Z  duration 107ms  exit 0]
++    100ms  实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 19s · 更新 23:46:13
++    100ms  实例 INST-101 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 47s · 更新 23:48:04
++    100ms  实例 INST-102 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 23s · 更新 23:48:28
+[exit 0]
+
+## orch core stop
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js core stop
+[started 2026-11-04T15:48:28.720Z  duration 197ms  exit 0]
++    188ms  核心已停止（pid 32316，运行 1m12s）
+[exit 0]
+
+## orch status --instance INST-102（核心已停，应自动拉起）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-102
+[started 2026-11-04T15:48:29.021Z  duration 222ms  exit 0]
++    210ms  实例 INST-102 · 已完成
++    210ms  节点 已完成 · 耗时 23s
++    210ms  会话 空闲
++    213ms  交接包 HO-001  已构造   23:48:07
++    213ms  交接包 HO-001  已投递   23:48:07
++    213ms  交接包 HO-001  已接受   23:48:09
++    213ms  交接包 HO-001  已完成   23:48:28
+[exit 0]
+
+## core.ping 探测（ensure:false）
+stop 前: {"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj","connected":true,"pid":32316,"generation":"gen-75939ff2481c4728","code":null,"coldStart":false,"elapsedMs":2,"pingOk":true}
+stop 后: {"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj","connected":false,"pid":null,"generation":null,"code":"CORE_NOT_RUNNING"}
+status 之后: {"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj","connected":true,"pid":31480,"generation":"gen-c785301eadd35e63","code":null,"coldStart":false,"elapsedMs":1,"pingOk":true}

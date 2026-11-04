@@ -1,0 +1,74 @@
+{
+  "ac": "AC-14",
+  "instanceId": "INST-114",
+  "collectedAt": "2026-11-04T16:03:34.407Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-114 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 65292,
+      "startedAt": 1793808149020,
+      "endedAt": 1793808214312
+    },
+    {
+      "label": "orch status --instance INST-114 --events",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-114 --events",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 88,
+      "startedAt": 1793808214313,
+      "endedAt": 1793808214401
+    }
+  ],
+  "assertions": [
+    {
+      "name": "每条事件都带时间",
+      "expected": "HH:mm:ss 前缀",
+      "actual": "32 行，全部带时间=true",
+      "pass": true
+    },
+    {
+      "name": "每条事件都写明对象（实例/节点/会话/交接包）",
+      "expected": "层名前缀 + 对象 ID",
+      "actual": "32 行，全部带对象=true",
+      "pass": true
+    },
+    {
+      "name": "转移类事件都写明\"从什么状态到什么状态\"",
+      "expected": "其余事件含 →",
+      "actual": "31 条含 →，1 条为创建事件（from=null）",
+      "pass": true
+    },
+    {
+      "name": "创建事件（from=null）写明落到什么状态",
+      "expected": "交接包 HO-001 已构造 原因 handoff.created",
+      "actual": "00:02:31  交接包 HO-001  已构造  原因 handoff.created",
+      "pass": true
+    },
+    {
+      "name": "能按时间顺序读完（显示时钟单调不减）",
+      "expected": "单调不减",
+      "actual": "00:02:31 00:02:31 00:02:31 00:02:31 00:02:33 00:02:33 00:02:33 00:02:36 00:02:36 00:02:42 00:02:42 00:02:54 00:02:54 00:03:02 00:03:02 00:03:09 00:03:09 00:03:11 00:03:11 00:03:14 00:03:14 00:03:28 00:03:28 00:03:32 00:03:32 00:03:34 00:03:34 00:03:34 00:03:34 00:03:34 00:03:34 00:03:34",
+      "pass": true
+    },
+    {
+      "name": "事件条数与 events.jsonl 一致（不丢行）",
+      "expected": "32 条",
+      "actual": "32 行",
+      "pass": true
+    },
+    {
+      "name": "全过程不需要打开别的文件（一次 status --events 覆盖 created→completed）",
+      "expected": "含 已创建→…→已完成",
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "notes": []
+}

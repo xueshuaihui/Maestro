@@ -1,0 +1,28 @@
+# NFR-01 原始输出（采集于 2026-11-04T15:57:57.447Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## （无单条命令；10 次热启动 + 3 次冷启动，每条命令原文见 extra）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) (见 extra)
+[started 2026-11-04T15:57:57.449Z  duration ?ms  exit 0]
+[exit 0]
+
+## 热启动 10 次明细（毫秒）
+INST-301  created=2374  running=3598  exit=0
+INST-302  created=2466  running=3320  exit=0
+INST-303  created=2412  running=3429  exit=0
+INST-304  created=2425  running=3471  exit=0
+INST-305  created=2301  running=3212  exit=0
+INST-306  created=2319  running=3160  exit=0
+INST-307  created=2404  running=3259  exit=0
+INST-308  created=2173  running=2980  exit=0
+INST-309  created=2532  running=3386  exit=0
+INST-310  created=2433  running=3363  exit=0
+
+## 冷启动 3 次明细（毫秒）
+INST-401  created=2521  running=3303  exit=0
+INST-402  created=2418  running=3310  exit=0
+INST-403  created=2445  running=3387  exit=0
+
+## 命令模板
+orch run --cwd ./demo --instance INST-3xx --task "只回复 ok，不要写任何文件"

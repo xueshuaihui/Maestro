@@ -1,0 +1,48 @@
+{
+  "commands": [
+    {
+      "label": "status（tool_running 窗口内）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js status --instance INST-001",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-16",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 132,
+      "stdout": "实例 INST-001 · 运行中\n节点 执行中\n会话 执行中 · 调用工具（write） · 已运行 1s\n交接包 HO-001  已构造   23:54:18\n交接包 HO-001  已投递   23:54:18\n交接包 HO-001  已接受   23:54:18\n",
+      "stderr": ""
+    },
+    {
+      "label": "probe-adapter --observe tool-name",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\test\\fixtures\\probe-adapter.mjs --mock D:\\WWW\\Maestro\\test\\fixtures\\mock-acp-agent.js --switches --slow-tool write --turn-delay-ms 800 --observe tool-name",
+      "exitCode": 0,
+      "stdout": "{\"ok\":true,\"mode\":\"tool-name\",\"session\":{\"sessionId\":\"mock-sess-16868-1\",\"hostId\":\"mock\",\"state\":\"tool_running\",\"stateSince\":\"2026-11-04T15:54:18.900Z\",\"toolName\":\"write\",\"turnId\":\"turn-1\",\"quarantined\":false},\"handoff\":null,\"noiseCount\":0,\"turnEventCount\":5,\"stopReason\":\"end_turn\",\"promptError\":null}\n",
+      "stderr": "",
+      "json": {
+        "ok": true,
+        "mode": "tool-name",
+        "session": {
+          "sessionId": "mock-sess-16868-1",
+          "hostId": "mock",
+          "state": "tool_running",
+          "stateSince": "2026-11-04T15:54:18.900Z",
+          "toolName": "write",
+          "turnId": "turn-1",
+          "quarantined": false
+        },
+        "handoff": null,
+        "noiseCount": 0,
+        "turnEventCount": 5,
+        "stopReason": "end_turn",
+        "promptError": null
+      }
+    },
+    {
+      "label": "orch run（后台，--slow-tool write --turn-delay-ms 5000）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-16",
+      "exitCode": 0,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-9316-1\n任务已投递\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 5s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 5s\n交接包 HO-001  已构造   23:54:18\n交接包 HO-001  已投递   23:54:18\n交接包 HO-001  已接受   23:54:18\n交接包 HO-001  已完成   23:54:23\n",
+      "stderr": "",
+      "elapsedMs": 5532
+    }
+  ]
+}

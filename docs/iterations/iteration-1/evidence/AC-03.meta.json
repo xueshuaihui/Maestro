@@ -1,0 +1,79 @@
+{
+  "ac": "AC-03",
+  "instanceId": "INST-103",
+  "collectedAt": "2026-11-04T15:49:14.459Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run（长任务）流式输出",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-103 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 24987,
+      "startedAt": 1793807329462,
+      "endedAt": 1793807354449
+    },
+    {
+      "label": "第 1 次 orch status --instance INST-103（执行中）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-103",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 100,
+      "startedAt": 1793807334259,
+      "endedAt": 1793807334359
+    },
+    {
+      "label": "第 2 次 orch status --instance INST-103（4s 后）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-103",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 100,
+      "startedAt": 1793807338370,
+      "endedAt": 1793807338470
+    }
+  ],
+  "assertions": [
+    {
+      "name": "执行过程中第一次 status：会话行显示\"执行中\"",
+      "expected": "含 会话 执行中",
+      "actual": "会话 执行中 · 调用工具（pwsh） · 已运行 5s",
+      "pass": true
+    },
+    {
+      "name": "第一次 status 同时显示已运行时长",
+      "expected": "已运行 Ns",
+      "actual": "5s",
+      "pass": true
+    },
+    {
+      "name": "第二次 status 仍显示\"执行中\"",
+      "expected": "含 会话 执行中",
+      "actual": "会话 执行中 · 调用工具（pwsh） · 已运行 9s",
+      "pass": true
+    },
+    {
+      "name": "两次之间约 4s，且第二次时长严格更大",
+      "expected": "sec2 > sec1",
+      "actual": "5s(5s) → 9s(9s)",
+      "pass": true
+    },
+    {
+      "name": "orch run 流式输出里同样出现带时长的\"执行中\"",
+      "expected": "会话 执行中 · … 已运行 …",
+      "actual": "会话 执行中 · 调用工具（pwsh） · 已运行 5s",
+      "pass": true
+    },
+    {
+      "name": "时长口径来自核心快照（state.session.stateSince 存在）",
+      "expected": "session.stateSince 非空",
+      "actual": "2026-11-04T15:49:14.382Z",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "两次 status 间隔 4000ms；时长取自 status 输出的“已运行 …”片段，非 CLI 自计时。run 进程最终 exit=0。"
+  ]
+}

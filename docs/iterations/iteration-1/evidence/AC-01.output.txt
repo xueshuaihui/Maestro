@@ -1,0 +1,40 @@
+# AC-01 原始输出（采集于 2026-11-04T15:48:04.920Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## 预热（status 冷启动核心）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status
+[started 2026-11-04T15:47:17.038Z  duration 217ms  exit 0]
++    207ms  实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 19s · 更新 23:46:13
+[exit 0]
+
+## orch run
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-101 --task 写一段 200 字的产品说明，保存到 out/intro.md
+[started 2026-11-04T15:47:17.256Z  duration 47657ms  exit 0]
++   2337ms  实例 INST-101 · 运行中
++   2338ms  会话已创建 4ae7e126-c1bf-4bed-98eb-8742da0418af
++   2338ms  任务已投递
++   2339ms  会话 空闲
++   4091ms  会话 执行中 · 调用工具（pwsh） · 已运行 4s
++   9410ms  会话 执行中 · 调用工具（pwsh） · 已运行 9s
++  10086ms  会话 执行中 · 调用工具（write） · 已运行 10s
++  11422ms  会话 执行中 · 调用工具（pwsh） · 已运行 11s
++  16463ms  会话 执行中 · 调用工具（pwsh） · 已运行 16s
++  21507ms  会话 执行中 · 调用工具（pwsh） · 已运行 21s
++  23770ms  会话 执行中 · 调用工具（write） · 已运行 24s
++  25543ms  会话 执行中 · 调用工具（pwsh） · 已运行 25s
++  29214ms  会话 执行中 · 调用工具（read） · 已运行 29s
++  31579ms  会话 执行中 · 调用工具（pwsh） · 已运行 31s
++  36634ms  会话 执行中 · 调用工具（pwsh） · 已运行 37s
++  41658ms  会话 执行中 · 调用工具（pwsh） · 已运行 42s
++  43156ms  会话 执行中 · 调用工具（edit） · 已运行 43s
++  44690ms  会话 执行中 · 调用工具（pwsh） · 已运行 45s
++  47534ms  会话 执行中 · 已运行 47s
++  47541ms  会话 等待下游 · 产出已提交
++  47580ms  会话 空闲
++  47646ms  节点 已完成 · 耗时 47s
++  47648ms  交接包 HO-001  已构造   23:47:19
++  47648ms  交接包 HO-001  已投递   23:47:19
++  47648ms  交接包 HO-001  已接受   23:47:21
++  47648ms  交接包 HO-001  已完成   23:48:04
+[exit 0]

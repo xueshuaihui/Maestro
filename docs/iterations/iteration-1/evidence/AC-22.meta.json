@@ -1,0 +1,52 @@
+{
+  "id": "AC-22",
+  "title": "没见过的错误原样透出",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-22",
+  "switches": [
+    "--unknown-error"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "输出含「未知错误：mock-host: E_QUASAR_7719 unrecognized failure token」",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-27968-1\n任务已投递\n会话 空闲\n节点 失败 · 未知错误：mock-host: E_QUASAR_7719 unrecognized failure token\n交接包 HO-001  已构造   23:54:31\n交接包 HO-001  已投递   23:54:31\n交接包 HO-001  已拒绝   23:54:31  原因 目标拒绝\n未知错误：mock-host: E_QUASAR_7719 unrecognized failure token\n"
+      },
+      {
+        "id": "原文与 mock 固定串逐字一致",
+        "ok": true,
+        "actual": "mock-host: E_QUASAR_7719 unrecognized failure token"
+      },
+      {
+        "id": "原文长度未被截断",
+        "ok": true,
+        "actual": {
+          "got": 51,
+          "want": 51
+        }
+      },
+      {
+        "id": "节点 = 失败 且 code = UNKNOWN_ERROR",
+        "ok": true,
+        "actual": {
+          "nodeId": "T-001",
+          "state": "failed",
+          "stateSince": "2026-11-04T15:54:31.502Z",
+          "startedAt": "2026-11-04T15:54:31.258Z",
+          "endedAt": "2026-11-04T15:54:31.523Z",
+          "failure": {
+            "code": "UNKNOWN_ERROR",
+            "message": "mock-host: E_QUASAR_7719 unrecognized failure token"
+          },
+          "note": null
+        }
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "mock 返回 -32099 + 生僻原文，核心归入 UNKNOWN_ERROR 并原样保留。"
+  ]
+}

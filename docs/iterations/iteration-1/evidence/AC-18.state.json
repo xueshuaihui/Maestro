@@ -1,0 +1,53 @@
+{
+  "INST-001": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "failed",
+    "stateSince": "2026-11-04T15:54:25.559Z",
+    "updatedAt": "2026-11-04T15:54:25.568Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-18\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "failed",
+      "startedAt": "2026-11-04T15:54:25.265Z",
+      "endedAt": "2026-11-04T15:54:25.566Z",
+      "failure": {
+        "code": "PERMISSION_DENIED",
+        "message": "write"
+      },
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-32104-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:54:25.568Z",
+      "lastEventAt": "2026-11-04T15:54:25.515Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": true,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "rejected",
+      "createdAt": "2026-11-04T15:54:25.503Z",
+      "deliveredAt": "2026-11-04T15:54:25.513Z",
+      "acceptedAt": "2026-11-04T15:54:25.515Z",
+      "consumedAt": null,
+      "rejectedAt": "2026-11-04T15:54:25.566Z",
+      "rejectReason": "permission_denied",
+      "acceptedSignal": "agent_thought_chunk"
+    },
+    "hostRaw": {
+      "stopReason": "refusal",
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 12,
+      "runCount": 1
+    }
+  }
+}

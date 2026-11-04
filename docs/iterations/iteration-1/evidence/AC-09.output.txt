@@ -1,0 +1,29 @@
+# AC-09 原始输出（采集于 2026-11-04T15:53:21.239Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run（DSH 路径不存在）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-109 --task 写一段 200 字的产品说明，保存到 out/intro.md
+[started 2026-11-04T15:53:20.660Z  duration 209ms  exit 3]
++    203ms  无法启动 DSH：启动失败：spawn C:/maestro-acc-p-does-not-exist/NoSuchDSH.exe ENOENT
+[exit 3]
+
+## orch status --instance INST-109
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-109
+[started 2026-11-04T15:53:20.870Z  duration 89ms  exit 1]
++     83ms  实例 INST-109 · 不存在
+[exit 1]
+
+## orch status（列表）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status
+[started 2026-11-04T15:53:20.959Z  duration 91ms  exit 0]
++     85ms  实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 19s · 更新 23:46:13
++     85ms  实例 INST-101 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 47s · 更新 23:48:04
++     85ms  实例 INST-102 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 23s · 更新 23:48:28
++     85ms  实例 INST-103 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 25s · 更新 23:49:14
++     85ms  实例 INST-104 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 36s · 更新 23:49:51
++     85ms  实例 INST-105 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 36s · 更新 23:50:27
++     85ms  实例 INST-106 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 27s · 更新 23:50:55
++     85ms  实例 INST-107 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 17s · 更新 23:52:09
++     85ms  实例 INST-108 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1m2s · 更新 23:53:11
+[exit 0]

@@ -1,0 +1,115 @@
+/**
+ * 核心事件总线：补时间戳与序号 → 落盘 → 成功后才广播（§2.10 / BR-10）。
+ *
+ * 两条纪律：
+ * 1. 事件必落盘。`store.appendEvent` 失败时返回 `STORE_WRITE_FAILED` 且**不广播**，
+ *    不允许"只发内存事件"，否则事后复盘会缺行。
+ * 2. 单实例串行。按 `instanceId` 串成 promise 链，避免并发写同一 `events.jsonl`
+ *    导致行交错或 seq 重号。
+ *
+ * 注：`replay` 是拆分文档 §2.10 冻结的方法名，方法名沿用契约（不计入核心禁词）。
+ */
+export function createEventBus({ store, clock } = {}) {
+  if (!store || typeof store.appendEvent !== 'function' || typeof store.nextSeq !== 'function') {
+    throw new TypeError('createEventBus: 需要一个实现 appendEvent/nextSeq 的 store');
+  }
+
+  /** @type {Set<{handler: Function, instanceId: string|null}>} */
+  const subscribers = new Set();
+  /** @type {Map<string, Promise<void>>} */
+  const chains = new Map();
+
+  const nowMs = () => (typeof clock === 'function' ? clock() : Date.now());
+
+  function subscribe(handler, { instanceId } = {}) {
+    if (typeof handler !== 'function') {
+      throw new TypeError('subscribe: handler 必须是函数');
+    }
+    const entry = { handler, instanceId: instanceId ?? null };
+    subscribers.add(entry);
+    return () => {
+      subscribers.delete(entry);
+    };
+  }
+
+  function broadcast(instanceId, event) {
+    for (const entry of subscribers) {
+      if (entry.instanceId !== null && entry.instanceId !== instanceId) continue;
+      try {
+        entry.handler(event);
+      } catch {
+        // 订阅者自己的异常不得反向影响 emit 结果，也不得阻断其他订阅者。
+      }
+    }
+  }
+
+  function enqueue(instanceId, task) {
+    const previous = chains.get(instanceId) ?? Promise.resolve();
+    const next = previous.then(task, task);
+    const guard = next.catch(() => {});
+    chains.set(instanceId, guard);
+    guard.then(() => {
+      if (chains.get(instanceId) === guard) chains.delete(instanceId);
+    });
+    return next;
+  }
+
+  /**
+   * 发一条事件。
+   *
+   * `event.instanceId` 只作路由键：用于定位实例目录与订阅者，**不落盘、不广播**
+   * （落盘行的字段严格按 §3.2，避免多出一个不在契约里的字段）。
+   *
+   * @returns {Promise<{ok:true, seq:number, ts:string}
+   *   | {ok:false, code:'STORE_WRITE_FAILED', params?:{errno:string|null, path:string}}>}
+   */
+  function emit(event) {
+    if (event === null || typeof event !== 'object' || Array.isArray(event)) {
+      throw new TypeError('emit: event 必须是对象');
+    }
+    const { instanceId, ...rest } = event;
+    if (typeof instanceId !== 'string' || instanceId.length === 0) {
+      throw new TypeError('emit: event.instanceId 必填');
+    }
+
+    return enqueue(instanceId, async () => {
+      // 1) 序号从 events.jsonl 末行恢复，保证重启后不重号。
+      const seq = await store.nextSeq(instanceId);
+      // 2) 时间戳统一 ISO-8601 UTC 毫秒，不自拼格式。
+      const ts = new Date(nowMs()).toISOString();
+      const record = { ...rest, seq, ts };
+
+      // 3) 先落盘。
+      const appended = await store.appendEvent(instanceId, record);
+      if (!appended || appended.ok !== true) {
+        return { ok: false, code: 'STORE_WRITE_FAILED', params: appended?.params };
+      }
+
+      // 4) 只有落盘成功才广播。
+      broadcast(instanceId, record);
+      return { ok: true, seq, ts };
+    });
+  }
+
+  /** 读该实例的全部事件（单行损坏由 store 跳过并计数，不整体失败）。 */
+  async function replay(instanceId) {
+    if (typeof store.readEvents !== 'function') {
+      throw new TypeError('replay: store 未实现 readEvents');
+    }
+    const read = await store.readEvents(instanceId);
+    if (!read || read.ok !== true) {
+      const err = new Error(`replay: 读取事件失败（${read?.code ?? 'UNKNOWN'}）`);
+      err.code = read?.code ?? 'STORE_READ_FAILED';
+      err.params = read?.params;
+      throw err;
+    }
+    return read.events;
+  }
+
+  /** 启动时从 events.jsonl 末行恢复的下一个序号。 */
+  function nextSeq(instanceId) {
+    return store.nextSeq(instanceId);
+  }
+
+  return { emit, subscribe, replay, nextSeq };
+}

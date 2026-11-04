@@ -1,0 +1,8 @@
+# instance INST-001
+{"object":"instance","objectId":"INST-001","from":"created","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-12c15aafb2053b69","seq":1,"ts":"2026-11-04T15:54:30.050Z"}
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-12c15aafb2053b69","seq":2,"ts":"2026-11-04T15:54:30.053Z"}
+{"object":"handoff","objectId":"HO-001","from":null,"to":"created","result":"applied","reason":"handoff.created","detail":null,"gen":"gen-12c15aafb2053b69","seq":3,"ts":"2026-11-04T15:54:30.056Z"}
+{"object":"handoff","objectId":"HO-001","from":"created","to":"delivered","result":"applied","reason":"handoff.delivered","detail":{"atMs":1793807670061},"gen":"gen-12c15aafb2053b69","seq":4,"ts":"2026-11-04T15:54:30.062Z"}
+{"object":"node","objectId":"T-001","from":"running","to":"failed","result":"applied","reason":"run.failed","detail":{"code":"SESSION_INVALID","message":"unknown session"},"gen":"gen-12c15aafb2053b69","seq":5,"ts":"2026-11-04T15:54:30.076Z"}
+{"object":"instance","objectId":"INST-001","from":"running","to":"failed","result":"applied","reason":"run.failed","detail":null,"gen":"gen-12c15aafb2053b69","seq":6,"ts":"2026-11-04T15:54:30.084Z"}
+{"object":"handoff","objectId":"HO-001","from":"delivered","to":"rejected","result":"applied","reason":"handoff.rejected","detail":{"reason":"target_rejected"},"gen":"gen-12c15aafb2053b69","seq":7,"ts":"2026-11-04T15:54:30.085Z"}

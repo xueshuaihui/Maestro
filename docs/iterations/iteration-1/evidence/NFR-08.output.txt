@@ -1,0 +1,19 @@
+# NFR-08 原始输出（采集于 2026-11-04T16:00:52.028Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch cancel --instance INST-602
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js cancel --instance INST-602
+[started 2026-11-04T16:00:51.669Z  duration 268ms  exit 0]
++    260ms  会话 空闲
++    260ms  节点 已取消
++    260ms  交接包 HO-001 已拒绝（已撤回）
+[exit 0]
+
+## cancel 后 status 采样（最后一次）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) (见 extra)
+[started 2026-11-04T16:00:52.028Z  duration ?ms  exit ?]
+[exit ?]
+
+## 采样序列
++359ms  会话 空闲

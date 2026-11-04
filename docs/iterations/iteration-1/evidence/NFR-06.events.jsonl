@@ -1,0 +1,9 @@
+# instance INST-002
+{"object":"instance","objectId":"INST-002","from":"created","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-afc3baee83806cd1","seq":1,"ts":"2026-11-04T15:55:05.329Z"}
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-afc3baee83806cd1","seq":2,"ts":"2026-11-04T15:55:05.330Z"}
+{"object":"handoff","objectId":"HO-001","from":null,"to":"created","result":"applied","reason":"handoff.created","detail":null,"gen":"gen-afc3baee83806cd1","seq":3,"ts":"2026-11-04T15:55:05.332Z"}
+{"object":"handoff","objectId":"HO-001","from":"created","to":"delivered","result":"applied","reason":"handoff.delivered","detail":{"atMs":1793807705337},"gen":"gen-afc3baee83806cd1","seq":4,"ts":"2026-11-04T15:55:05.337Z"}
+{"object":"session","objectId":"mock-sess-14816-1","from":"idle","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-afc3baee83806cd1","seq":5,"ts":"2026-11-04T15:55:05.341Z"}
+{"object":"handoff","objectId":"HO-001","from":"delivered","to":"accepted","result":"applied","reason":"turn.first_event","detail":{"event":"agent_thought_chunk","ambiguityWindowMs":1},"gen":"gen-afc3baee83806cd1","seq":6,"ts":"2026-11-04T15:55:05.344Z"}
+{"object":"session","objectId":"mock-sess-14816-1","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-afc3baee83806cd1","seq":7,"ts":"2026-11-04T15:55:05.351Z"}
+{"object":"instance","objectId":"INST-002","from":"running","to":"interrupted","result":"applied","reason":"core.gone","detail":{"note":"停在节点 running / 会话 tool_running"},"gen":"gen-5e7d104351807181","seq":8,"ts":"2026-11-04T15:55:06.398Z"}

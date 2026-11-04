@@ -1,0 +1,82 @@
+{
+  "ac": "AC-07",
+  "instanceId": "INST-107",
+  "collectedAt": "2026-11-04T15:52:09.620Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "第一次 orch run（长任务，保持执行中）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-107 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 17513,
+      "startedAt": 1793807512093,
+      "endedAt": 1793807529606
+    },
+    {
+      "label": "第二次 orch run（同实例，应被拒）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-107 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 1,
+      "durationMs": 116,
+      "startedAt": 1793807516940,
+      "endedAt": 1793807517056
+    }
+  ],
+  "assertions": [
+    {
+      "name": "Given：第一次执行确实在跑",
+      "expected": "输出含 会话 执行中",
+      "actual": "会话 执行中 · 调用工具（pwsh） · 已运行 5s",
+      "pass": true
+    },
+    {
+      "name": "第二次 run 输出\"该节点正在执行，本次未发起\"",
+      "expected": "该节点正在执行，本次未发起",
+      "actual": "该节点正在执行，本次未发起",
+      "pass": true
+    },
+    {
+      "name": "第二次 run 没有出现\"会话已失效\"",
+      "expected": "不出现 会话已失效",
+      "actual": "未出现",
+      "pass": true
+    },
+    {
+      "name": "第二次 run 没有打印\"会话已创建\"",
+      "expected": "不出现 会话已创建",
+      "actual": "未出现",
+      "pass": true
+    },
+    {
+      "name": "第二次 run 以非 0 退出",
+      "expected": "exit 1",
+      "actual": "exit 1",
+      "pass": true
+    },
+    {
+      "name": "没有新建第二个会话（events 里 session 对象只有一个 id）",
+      "expected": "1 个 sessionId",
+      "actual": "1ba66cc6-2b7a-4c7a-a615-f74b0d720398",
+      "pass": true
+    },
+    {
+      "name": "state.json 的 sessionId 与第一次 run 打印的一致",
+      "expected": "1ba66cc6-2b7a-4c7a-a615-f74b0d720398",
+      "actual": "1ba66cc6-2b7a-4c7a-a615-f74b0d720398",
+      "pass": true
+    },
+    {
+      "name": "第一次 run 不受影响（最终 completed）",
+      "expected": "state=completed",
+      "actual": "completed / run exit 0",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "两次命令在同一项目根（C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj）下执行，只有 --cwd 指向任务目录，因此连的是同一个核心/同一根管道。"
+  ]
+}

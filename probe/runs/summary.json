@@ -1,0 +1,317 @@
+[
+  {
+    "runId": "write-01",
+    "mode": "write",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\write-01\\workspace",
+    "ok": true,
+    "framing": "ndjson",
+    "stopReason": "end_turn",
+    "timingsMs": {
+      "spawnAtMs": 0,
+      "initializeResult": 2000.688,
+      "sessionNewResult": 2209.191,
+      "promptSent": 2209.23,
+      "turnEnd": 6537.343
+    },
+    "firstPromptFrame": {
+      "tMs": 4321.125,
+      "kind": "session/update",
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    "updates": [
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update",
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update",
+      "agent_message_chunk",
+      "usage_update"
+    ],
+    "toolCalls": [
+      "write:in_progress>completed",
+      "read:in_progress>completed"
+    ],
+    "assertions": {
+      "toolCompleted": true,
+      "fileExists": true,
+      "contentExact": true,
+      "contentTrimmedEqual": true,
+      "stopReasonEndTurn": true,
+      "allPassed": true
+    },
+    "file": {
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\write-01\\workspace\\out\\probe.md",
+      "bytes": 57,
+      "sha256": "42ab47684c815782e997b5edad987736266a75e82ae536459062bf09a10bcc48",
+      "content": "# DSH ACP 探针\n探针写入成功：你好，Maestro。"
+    },
+    "permissionsRequested": 0
+  },
+  {
+    "runId": "write-02",
+    "mode": "write",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\write-02\\workspace",
+    "ok": true,
+    "framing": "ndjson",
+    "stopReason": "end_turn",
+    "timingsMs": {
+      "spawnAtMs": 0,
+      "initializeResult": 1715.408,
+      "sessionNewResult": 1974.851,
+      "promptSent": 1974.87,
+      "turnEnd": 5966.863
+    },
+    "firstPromptFrame": {
+      "tMs": 3752.358,
+      "kind": "session/update",
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    "updates": [
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update",
+      "agent_thought_chunk",
+      "agent_message_chunk",
+      "usage_update"
+    ],
+    "toolCalls": [
+      "write:in_progress>completed"
+    ],
+    "assertions": {
+      "toolCompleted": true,
+      "fileExists": true,
+      "contentExact": true,
+      "contentTrimmedEqual": true,
+      "stopReasonEndTurn": true,
+      "allPassed": true
+    },
+    "file": {
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\write-02\\workspace\\out\\probe.md",
+      "bytes": 57,
+      "sha256": "42ab47684c815782e997b5edad987736266a75e82ae536459062bf09a10bcc48",
+      "content": "# DSH ACP 探针\n探针写入成功：你好，Maestro。"
+    },
+    "permissionsRequested": 0
+  },
+  {
+    "runId": "write-03",
+    "mode": "write",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\write-03\\workspace",
+    "ok": true,
+    "framing": "ndjson",
+    "stopReason": "end_turn",
+    "timingsMs": {
+      "spawnAtMs": 0,
+      "initializeResult": 1780.415,
+      "sessionNewResult": 1938.41,
+      "promptSent": 1938.43,
+      "turnEnd": 6638.984
+    },
+    "firstPromptFrame": {
+      "tMs": 4757.809,
+      "kind": "session/update",
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    "updates": [
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update",
+      "agent_thought_chunk",
+      "agent_message_chunk",
+      "usage_update"
+    ],
+    "toolCalls": [
+      "write:in_progress>completed"
+    ],
+    "assertions": {
+      "toolCompleted": true,
+      "fileExists": true,
+      "contentExact": true,
+      "contentTrimmedEqual": true,
+      "stopReasonEndTurn": true,
+      "allPassed": true
+    },
+    "file": {
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\write-03\\workspace\\out\\probe.md",
+      "bytes": 57,
+      "sha256": "42ab47684c815782e997b5edad987736266a75e82ae536459062bf09a10bcc48",
+      "content": "# DSH ACP 探针\n探针写入成功：你好，Maestro。"
+    },
+    "permissionsRequested": 0
+  },
+  {
+    "runId": "busy-01",
+    "mode": "busy",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\busy-01\\workspace",
+    "ok": true,
+    "framing": "ndjson",
+    "stopReason": "end_turn",
+    "timingsMs": {
+      "spawnAtMs": 0,
+      "initializeResult": 3754.043,
+      "sessionNewResult": 3937.314,
+      "promptSent": 3937.364,
+      "turnEnd": 13778.84
+    },
+    "firstPromptFrame": {
+      "tMs": 5534.686,
+      "kind": "session/update",
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    "updates": [
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update",
+      "agent_message_chunk",
+      "usage_update"
+    ],
+    "toolCalls": [
+      "pwsh:in_progress>completed"
+    ],
+    "assertions": {},
+    "busy": {
+      "sentAtMs": 4245.365,
+      "respondedAtMs": 4248.122,
+      "latencyMs": 2.769,
+      "error": {
+        "code": -32602,
+        "message": "Invalid params: a prompt is already in flight for this session"
+      }
+    },
+    "permissionsRequested": 0
+  },
+  {
+    "runId": "cancel-01",
+    "mode": "cancel",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\cancel-01\\workspace",
+    "ok": true,
+    "framing": "ndjson",
+    "stopReason": "cancelled",
+    "timingsMs": {
+      "spawnAtMs": 0,
+      "initializeResult": 1716.186,
+      "sessionNewResult": 1936.806,
+      "promptSent": 1936.82,
+      "cancelSent": 3140.121,
+      "turnEnd": 3153.269
+    },
+    "firstPromptFrame": {
+      "tMs": 3152.635,
+      "kind": "session/update",
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    "updates": [
+      "agent_thought_chunk"
+    ],
+    "toolCalls": [],
+    "assertions": {},
+    "cancel": {
+      "sentAtMs": 3140.121,
+      "turnEndMs": 3153.269,
+      "effectiveLatencyMs": 13.148,
+      "stopReason": "cancelled"
+    },
+    "permissionsRequested": 0
+  },
+  {
+    "runId": "cancel-02",
+    "mode": "cancel",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\cancel-02\\workspace",
+    "ok": true,
+    "framing": "ndjson",
+    "stopReason": "cancelled",
+    "timingsMs": {
+      "spawnAtMs": 0,
+      "initializeResult": 1688.1,
+      "sessionNewResult": 1869.615,
+      "promptSent": 1869.628,
+      "cancelSent": 4747.45,
+      "turnEnd": 4803.623
+    },
+    "firstPromptFrame": {
+      "tMs": 3205.112,
+      "kind": "session/update",
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    "updates": [
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update"
+    ],
+    "toolCalls": [
+      "pwsh:in_progress>failed"
+    ],
+    "assertions": {},
+    "cancel": {
+      "sentAtMs": 4747.45,
+      "turnEndMs": 4803.623,
+      "effectiveLatencyMs": 56.173,
+      "stopReason": "cancelled"
+    },
+    "permissionsRequested": 0
+  },
+  {
+    "runId": "acl-repro-01",
+    "mode": "busy",
+    "cwd": "D:\\WWW\\Maestro\\probe\\runs\\acl-repro-01\\workspace",
+    "ok": true,
+    "framing": "ndjson",
+    "stopReason": "end_turn",
+    "timingsMs": {
+      "spawnAtMs": 0,
+      "initializeResult": 1693.324,
+      "sessionNewResult": 1914.868,
+      "promptSent": 1914.881,
+      "turnEnd": 24819.398
+    },
+    "firstPromptFrame": {
+      "tMs": 3325.063,
+      "kind": "session/update",
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    "updates": [
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update",
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update",
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update",
+      "agent_thought_chunk",
+      "usage_update",
+      "tool_call",
+      "tool_call_update",
+      "agent_message_chunk",
+      "usage_update"
+    ],
+    "toolCalls": [
+      "pwsh:in_progress>failed",
+      "skill:in_progress>completed",
+      "pwsh:in_progress>completed",
+      "pwsh:in_progress>completed"
+    ],
+    "assertions": {},
+    "busy": {
+      "sentAtMs": 2218.383,
+      "respondedAtMs": 2220.919,
+      "latencyMs": 2.549,
+      "error": {
+        "code": -32602,
+        "message": "Invalid params: a prompt is already in flight for this session"
+      }
+    },
+    "permissionsRequested": 1
+  }
+]

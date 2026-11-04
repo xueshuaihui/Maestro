@@ -1,0 +1,50 @@
+{
+  "INST-001": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "cancelled",
+    "stateSince": "2026-11-04T15:54:57.006Z",
+    "updatedAt": "2026-11-04T15:54:57.016Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-25-cancellate\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "cancelled",
+      "startedAt": "2026-11-04T15:54:56.625Z",
+      "endedAt": "2026-11-04T15:54:57.001Z",
+      "failure": null,
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-30380-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:54:56.988Z",
+      "lastEventAt": "2026-11-04T15:54:56.876Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": true,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "rejected",
+      "createdAt": "2026-11-04T15:54:56.866Z",
+      "deliveredAt": "2026-11-04T15:54:56.873Z",
+      "acceptedAt": "2026-11-04T15:54:56.875Z",
+      "consumedAt": null,
+      "rejectedAt": "2026-11-04T15:54:57.001Z",
+      "rejectReason": "withdrawn",
+      "acceptedSignal": "agent_thought_chunk"
+    },
+    "hostRaw": {
+      "stopReason": null,
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 11,
+      "runCount": 1
+    }
+  }
+}

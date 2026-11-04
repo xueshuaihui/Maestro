@@ -1,0 +1,65 @@
+# AC-11 原始输出（采集于 2026-11-04T15:55:10.484Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run（长任务，cancel 前）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-111 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md
+[started 2026-11-04T15:55:05.996Z  duration 4332ms  exit 1]
++   2537ms  实例 INST-111 · 运行中
++   2537ms  会话已创建 44d6afcc-2b73-410b-9c65-bdafb7d60156
++   2537ms  任务已投递
++   2539ms  会话 空闲
++   4141ms  会话 执行中 · 调用工具（working_directory） · 已运行 4s
++   4253ms  会话 空闲
++   4324ms  节点 已取消
++   4325ms  交接包 HO-001  已构造   23:55:08
++   4325ms  交接包 HO-001  已投递   23:55:08
++   4326ms  交接包 HO-001  已接受   23:55:10
++   4326ms  交接包 HO-001  已拒绝   23:55:10  原因 已撤回
+[exit 1]
+
+## orch cancel --instance INST-111
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js cancel --instance INST-111
+[started 2026-11-04T15:55:10.161Z  duration 125ms  exit 0]
++    117ms  会话 空闲
++    117ms  节点 已取消
++    117ms  交接包 HO-001 已拒绝（已撤回）
+[exit 0]
+
+## cancel 后采样（最后一次 status）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-111
+[started 2026-11-04T15:55:10.287Z  duration 99ms  exit 0]
++     91ms  实例 INST-111 · 已取消
++     91ms  节点 已取消
++     91ms  会话 空闲
++     92ms  交接包 HO-001  已构造   23:55:08
++     92ms  交接包 HO-001  已投递   23:55:08
++     92ms  交接包 HO-001  已接受   23:55:10
++     92ms  交接包 HO-001  已拒绝   23:55:10  原因 已撤回
+[exit 0]
+
+## orch status --instance INST-111 --events
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-111 --events
+[started 2026-11-04T15:55:10.387Z  duration 93ms  exit 0]
++     82ms  实例 INST-111 · 已取消
++     82ms  节点 已取消
++     82ms  会话 空闲
++     83ms  交接包 HO-001  已构造   23:55:08
++     83ms  交接包 HO-001  已投递   23:55:08
++     83ms  交接包 HO-001  已接受   23:55:10
++     83ms  交接包 HO-001  已拒绝   23:55:10  原因 已撤回
++     86ms  23:55:08  实例 INST-111  已创建 → 运行中  原因 run.started
++     86ms  23:55:08  节点 T-001  待执行 → 执行中  原因 run.started
++     86ms  23:55:08  交接包 HO-001  已构造  原因 handoff.created
++     86ms  23:55:08  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
++     86ms  23:55:10  会话 44d6afcc-2b73-410b-9c65-bdafb7d60156  空闲 → 执行中  原因 session.state
++     86ms  23:55:10  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
++     86ms  23:55:10  会话 44d6afcc-2b73-410b-9c65-bdafb7d60156  执行中 → 执行中（tool_call）  原因 session.state
++     86ms  23:55:10  会话 44d6afcc-2b73-410b-9c65-bdafb7d60156  执行中 → 空闲  原因 run.cancelled
++     86ms  23:55:10  节点 T-001  执行中 → 已取消  原因 run.cancelled
++     86ms  23:55:10  交接包 HO-001  已接受 → 已拒绝  原因 handoff.rejected
++     86ms  23:55:10  实例 INST-111  运行中 → 已取消  原因 run.cancelled
+[exit 0]
+
+## cancel 后 status 采样序列
++226ms  会话 空闲

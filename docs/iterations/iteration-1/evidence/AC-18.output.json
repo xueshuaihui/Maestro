@@ -1,0 +1,17 @@
+{
+  "commands": [
+    {
+      "label": "orch run（policy=reject + permission=ask）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-18",
+      "env": {
+        "MAESTRO_PERMISSION_POLICY": "reject"
+      },
+      "exitCode": 1,
+      "signal": null,
+      "elapsedMs": 551,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-32104-1\n任务已投递\n会话 等待审批：write\n会话 空闲\n节点 失败 · 审批被拒绝，任务中止于 write\n交接包 HO-001  已构造   23:54:25\n交接包 HO-001  已投递   23:54:25\n交接包 HO-001  已接受   23:54:25\n交接包 HO-001  已拒绝   23:54:25  原因 审批被拒\n审批被拒绝，任务中止于 write\n",
+      "stderr": ""
+    }
+  ]
+}

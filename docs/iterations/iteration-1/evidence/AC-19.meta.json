@@ -1,0 +1,89 @@
+{
+  "id": "AC-19",
+  "title": "只有对方真开始干活才算已接受",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-19",
+  "switches": [
+    "--noise-on-session-new",
+    "--accept-delay-ms",
+    "3000"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "status 交接包 = 已投递",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:26\n交接包 HO-001  已投递   23:54:26\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n"
+      },
+      {
+        "id": "status 不出现 已接受",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:26\n交接包 HO-001  已投递   23:54:26\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n"
+      },
+      {
+        "id": "state.handoff.state = delivered",
+        "ok": true,
+        "actual": "delivered"
+      },
+      {
+        "id": "probe：交付后首条噪声到达时 handoff 仍 = delivered",
+        "ok": true,
+        "actual": {
+          "handoffId": "HO-001",
+          "state": "delivered",
+          "createdAt": "2026-11-04T15:54:27.239Z",
+          "timestamps": {
+            "createdAt": "2026-11-04T15:54:27.239Z",
+            "deliveredAt": "2026-11-04T15:54:27.286Z",
+            "acceptedAt": null,
+            "consumedAt": null,
+            "rejectedAt": null
+          },
+          "acceptedSignal": null,
+          "ambiguityWindowMs": null,
+          "rejectReason": null,
+          "createdMeta": null,
+          "stateAfterTurn": "accepted"
+        }
+      },
+      {
+        "id": "probe 确实收到噪声帧（>=2：session/new + prompt）",
+        "ok": true,
+        "actual": 2
+      },
+      {
+        "id": "probe：噪声之后 turn 真的发生、最终才 accepted",
+        "ok": true,
+        "actual": {
+          "stateAfterTurn": "accepted",
+          "turnEventSeen": true,
+          "turnEventCount": 5
+        }
+      },
+      {
+        "id": "产品面 accepted 最终由 turn 事件触发（不是 usage/available_commands）",
+        "ok": true,
+        "actual": {
+          "seq": 6,
+          "ts": "2026-11-04T15:54:29.301Z",
+          "object": "handoff",
+          "objectId": "HO-001",
+          "from": "delivered",
+          "to": "accepted",
+          "result": "applied",
+          "reason": "turn.first_event",
+          "detail": {
+            "event": "agent_thought_chunk",
+            "ambiguityWindowMs": 3011
+          }
+        }
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "产品面：--noise-on-session-new 在 session/new 返回后立刻推 available_commands_update；--accept-delay-ms 3000 保证采样时目标还没开始处理。",
+    "probe 会自动补 --noise-on-prompt 与 250ms 接受延迟，因此“delivered 时收到噪声”的判定可被机读。"
+  ]
+}

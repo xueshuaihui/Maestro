@@ -1,0 +1,50 @@
+{
+  "INST-002": {
+    "schemaVersion": 1,
+    "instanceId": "INST-002",
+    "state": "interrupted",
+    "stateSince": "2026-11-04T15:55:06.390Z",
+    "updatedAt": "2026-11-04T15:55:06.391Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-04\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "running",
+      "startedAt": "2026-11-04T15:55:05.108Z",
+      "endedAt": null,
+      "failure": null,
+      "note": "stopped at node running / session tool_running"
+    },
+    "session": {
+      "sessionId": "mock-sess-14816-1",
+      "hostId": "dsh",
+      "state": "tool_running",
+      "stateSince": "2026-11-04T15:55:05.338Z",
+      "lastEventAt": "2026-11-04T15:55:05.338Z",
+      "toolName": "write",
+      "pendingPermission": null,
+      "quarantined": false,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "accepted",
+      "createdAt": "2026-11-04T15:55:05.331Z",
+      "deliveredAt": "2026-11-04T15:55:05.337Z",
+      "acceptedAt": "2026-11-04T15:55:05.338Z",
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "acceptedSignal": "agent_thought_chunk"
+    },
+    "hostRaw": {
+      "stopReason": null,
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 7,
+      "runCount": 1
+    }
+  }
+}

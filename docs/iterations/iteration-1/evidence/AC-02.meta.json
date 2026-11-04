@@ -1,0 +1,115 @@
+{
+  "ac": "AC-02",
+  "instanceId": "INST-102",
+  "collectedAt": "2026-11-04T15:48:29.359Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-102 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 23348,
+      "startedAt": 1793807285046,
+      "endedAt": 1793807308394
+    },
+    {
+      "label": "orch status --instance INST-102",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-102",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 110,
+      "startedAt": 1793807308395,
+      "endedAt": 1793807308505
+    },
+    {
+      "label": "orch status（列表）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 107,
+      "startedAt": 1793807308505,
+      "endedAt": 1793807308612
+    },
+    {
+      "label": "orch core stop",
+      "argv": "node D:/WWW/Maestro/bin/orch.js core stop",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 197,
+      "startedAt": 1793807308720,
+      "endedAt": 1793807308917
+    },
+    {
+      "label": "orch status --instance INST-102（核心已停，应自动拉起）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-102",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 222,
+      "startedAt": 1793807309021,
+      "endedAt": 1793807309243
+    }
+  ],
+  "assertions": [
+    {
+      "name": "status 显示实例行",
+      "expected": "实例 INST-102 · 已完成",
+      "actual": "实例 INST-102 · 已完成",
+      "pass": true
+    },
+    {
+      "name": "status 显示节点行",
+      "expected": "节点 已完成 · 耗时 …",
+      "actual": "节点 已完成 · 耗时 23s",
+      "pass": true
+    },
+    {
+      "name": "status 显示会话行",
+      "expected": "会话 …",
+      "actual": "会话 空闲",
+      "pass": true
+    },
+    {
+      "name": "status 显示交接包行",
+      "expected": "交接包 HO-…",
+      "actual": "交接包 HO-001  已构造   23:48:07",
+      "pass": true
+    },
+    {
+      "name": "无参 status 列表能认出该实例",
+      "expected": "含 INST-102 的列表行",
+      "actual": "实例 INST-102 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 23s · 更新 23:48:28",
+      "pass": true
+    },
+    {
+      "name": "IPC 佐证：core stop 前核心在跑",
+      "expected": "pingOk=true 且 pid 非空",
+      "actual": "{\"connected\":true,\"pid\":32316}",
+      "pass": true
+    },
+    {
+      "name": "IPC 佐证：core stop 后无核心",
+      "expected": "connected=false",
+      "actual": "{\"connected\":false,\"code\":\"CORE_NOT_RUNNING\"}",
+      "pass": true
+    },
+    {
+      "name": "IPC 佐证：status 自动拉起核心（新 pid）",
+      "expected": "connected=true 且 pid 不同于 stop 前",
+      "actual": "{\"before\":32316,\"after\":31480}",
+      "pass": true
+    },
+    {
+      "name": "status 在核心重启后仍能读到该实例（读的是核心，不是直接解析文件）",
+      "expected": "实例 INST-102 状态可见",
+      "actual": "实例 INST-102 · 已完成",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "AC-02 的 IPC 判据：① 该实例的取数路径是 client.request(\"instance.get\")（src/cli/main.js:406），无任何 fs 读取 instance 目录；② 实测 core stop 后 status 会拉起新核心（pid 变化），输出仍可读，说明数据来自 IPC 而非 CLI 直接读盘。"
+  ]
+}

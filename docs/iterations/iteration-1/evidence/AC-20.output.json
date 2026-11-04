@@ -1,0 +1,14 @@
+{
+  "commands": [
+    {
+      "label": "orch run（--session-missing）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-20",
+      "exitCode": 1,
+      "signal": null,
+      "elapsedMs": 504,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-27308-1\n任务已投递\n会话 空闲\n节点 失败 · 会话已失效，需要重新创建\n交接包 HO-001  已构造   23:54:30\n交接包 HO-001  已投递   23:54:30\n交接包 HO-001  已拒绝   23:54:30  原因 目标拒绝\n会话已失效，需要重新创建\n",
+      "stderr": ""
+    }
+  ]
+}

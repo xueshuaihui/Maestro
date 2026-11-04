@@ -1,0 +1,74 @@
+{
+  "commands": [
+    {
+      "label": "INST-001 orch run（--noise-at-turn-end --turn-delay-ms 1500）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-25",
+      "exitCode": 0,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-17144-1\n任务已投递\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 2s\n交接包 HO-001  已构造   23:56:11\n交接包 HO-001  已投递   23:56:11\n交接包 HO-001  已接受   23:56:11\n交接包 HO-001  已完成   23:56:12\n",
+      "stderr": "",
+      "elapsedMs": 2034
+    },
+    {
+      "label": "status INST-002（发起后 1790ms，第一个任务已结束、收尾噪声已发）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js status --instance INST-002",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-25",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 97,
+      "stdout": "实例 INST-002 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:56:11\n交接包 HO-001  已投递   23:56:11\n交接包 HO-001  已投递   等待目标响应 · 已等待 2s\n",
+      "stderr": ""
+    },
+    {
+      "label": "INST-002 orch run（--accept-delay-ms 6000）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-002 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-25",
+      "exitCode": 0,
+      "stdout": "实例 INST-002 · 运行中\n会话已创建 mock-sess-21116-1\n任务已投递\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 6s\n会话 执行中 · 已运行 6s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 7s\n交接包 HO-001  已构造   23:56:11\n交接包 HO-001  已投递   23:56:11\n交接包 HO-001  已接受   23:56:17\n交接包 HO-001  已完成   23:56:17\n",
+      "stderr": "",
+      "elapsedMs": 6643
+    },
+    {
+      "label": "probe-adapter --observe handoff（证明 turn 结束噪声确实存在）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\test\\fixtures\\probe-adapter.mjs --mock D:\\WWW\\Maestro\\test\\fixtures\\mock-acp-agent.js --switches --noise-at-turn-end --turn-delay-ms 200 --observe handoff",
+      "exitCode": 0,
+      "stdout": "{\"ok\":true,\"mode\":\"handoff\",\"session\":{\"sessionId\":\"mock-sess-25120-1\",\"hostId\":\"mock\",\"state\":\"thinking\",\"stateSince\":\"2026-11-04T15:56:18.133Z\",\"toolName\":null,\"turnId\":\"turn-1\",\"quarantined\":false},\"handoff\":{\"handoffId\":\"HO-001\",\"state\":\"accepted\",\"createdAt\":\"2026-11-04T15:56:18.132Z\",\"timestamps\":{\"createdAt\":\"2026-11-04T15:56:18.132Z\",\"deliveredAt\":\"2026-11-04T15:56:18.180Z\",\"acceptedAt\":\"2026-11-04T15:56:18.445Z\",\"consumedAt\":null,\"rejectedAt\":null},\"acceptedSignal\":\"agent_thought_chunk\",\"ambiguityWindowMs\":265,\"rejectReason\":null,\"createdMeta\":null,\"stateAfterTurn\":\"accepted\"},\"turnEventSeen\":true,\"noiseCount\":1,\"turnEventCount\":5,\"stopReason\":\"end_turn\",\"promptError\":null}\n",
+      "stderr": "",
+      "json": {
+        "ok": true,
+        "mode": "handoff",
+        "session": {
+          "sessionId": "mock-sess-25120-1",
+          "hostId": "mock",
+          "state": "thinking",
+          "stateSince": "2026-11-04T15:56:18.133Z",
+          "toolName": null,
+          "turnId": "turn-1",
+          "quarantined": false
+        },
+        "handoff": {
+          "handoffId": "HO-001",
+          "state": "accepted",
+          "createdAt": "2026-11-04T15:56:18.132Z",
+          "timestamps": {
+            "createdAt": "2026-11-04T15:56:18.132Z",
+            "deliveredAt": "2026-11-04T15:56:18.180Z",
+            "acceptedAt": "2026-11-04T15:56:18.445Z",
+            "consumedAt": null,
+            "rejectedAt": null
+          },
+          "acceptedSignal": "agent_thought_chunk",
+          "ambiguityWindowMs": 265,
+          "rejectReason": null,
+          "createdMeta": null,
+          "stateAfterTurn": "accepted"
+        },
+        "turnEventSeen": true,
+        "noiseCount": 1,
+        "turnEventCount": 5,
+        "stopReason": "end_turn",
+        "promptError": null
+      }
+    }
+  ]
+}

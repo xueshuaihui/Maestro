@@ -1,0 +1,98 @@
+{
+  "INST-001": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "completed",
+    "stateSince": "2026-11-04T15:56:12.818Z",
+    "updatedAt": "2026-11-04T15:56:12.825Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-25\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "done",
+      "startedAt": "2026-11-04T15:56:11.013Z",
+      "endedAt": "2026-11-04T15:56:12.825Z",
+      "failure": null,
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-17144-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:56:12.825Z",
+      "lastEventAt": "2026-11-04T15:56:12.769Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": true,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "consumed",
+      "createdAt": "2026-11-04T15:56:11.239Z",
+      "deliveredAt": "2026-11-04T15:56:11.253Z",
+      "acceptedAt": "2026-11-04T15:56:11.257Z",
+      "consumedAt": "2026-11-04T15:56:12.817Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "acceptedSignal": "agent_thought_chunk"
+    },
+    "hostRaw": {
+      "stopReason": "end_turn",
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 15,
+      "runCount": 1
+    }
+  },
+  "INST-002": {
+    "schemaVersion": 1,
+    "instanceId": "INST-002",
+    "state": "completed",
+    "stateSince": "2026-11-04T15:56:17.866Z",
+    "updatedAt": "2026-11-04T15:56:17.877Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-25\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "done",
+      "startedAt": "2026-11-04T15:56:11.352Z",
+      "endedAt": "2026-11-04T15:56:17.877Z",
+      "failure": null,
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-21116-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:56:17.877Z",
+      "lastEventAt": "2026-11-04T15:56:17.823Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": true,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "consumed",
+      "createdAt": "2026-11-04T15:56:11.586Z",
+      "deliveredAt": "2026-11-04T15:56:11.601Z",
+      "acceptedAt": "2026-11-04T15:56:17.607Z",
+      "consumedAt": "2026-11-04T15:56:17.864Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "acceptedSignal": "agent_thought_chunk"
+    },
+    "hostRaw": {
+      "stopReason": "end_turn",
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 15,
+      "runCount": 1
+    }
+  }
+}

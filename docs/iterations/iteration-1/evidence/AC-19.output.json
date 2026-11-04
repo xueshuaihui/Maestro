@@ -1,0 +1,65 @@
+{
+  "commands": [
+    {
+      "label": "status（噪声已到、目标尚未开始处理任务）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js status --instance INST-001",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-19",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 92,
+      "stdout": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:26\n交接包 HO-001  已投递   23:54:26\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n",
+      "stderr": ""
+    },
+    {
+      "label": "probe-adapter --observe handoff",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\test\\fixtures\\probe-adapter.mjs --mock D:\\WWW\\Maestro\\test\\fixtures\\mock-acp-agent.js --switches --noise-on-session-new --noise-on-prompt --accept-delay-ms 1500 --observe handoff",
+      "exitCode": 0,
+      "stdout": "{\"ok\":true,\"mode\":\"handoff\",\"session\":{\"sessionId\":\"mock-sess-12488-1\",\"hostId\":\"mock\",\"state\":\"thinking\",\"stateSince\":\"2026-11-04T15:54:27.239Z\",\"toolName\":null,\"turnId\":\"turn-1\",\"quarantined\":false},\"handoff\":{\"handoffId\":\"HO-001\",\"state\":\"delivered\",\"createdAt\":\"2026-11-04T15:54:27.239Z\",\"timestamps\":{\"createdAt\":\"2026-11-04T15:54:27.239Z\",\"deliveredAt\":\"2026-11-04T15:54:27.286Z\",\"acceptedAt\":null,\"consumedAt\":null,\"rejectedAt\":null},\"acceptedSignal\":null,\"ambiguityWindowMs\":null,\"rejectReason\":null,\"createdMeta\":null,\"stateAfterTurn\":\"accepted\"},\"turnEventSeen\":true,\"noiseCount\":2,\"turnEventCount\":5,\"stopReason\":\"end_turn\",\"promptError\":null}\n",
+      "stderr": "",
+      "json": {
+        "ok": true,
+        "mode": "handoff",
+        "session": {
+          "sessionId": "mock-sess-12488-1",
+          "hostId": "mock",
+          "state": "thinking",
+          "stateSince": "2026-11-04T15:54:27.239Z",
+          "toolName": null,
+          "turnId": "turn-1",
+          "quarantined": false
+        },
+        "handoff": {
+          "handoffId": "HO-001",
+          "state": "delivered",
+          "createdAt": "2026-11-04T15:54:27.239Z",
+          "timestamps": {
+            "createdAt": "2026-11-04T15:54:27.239Z",
+            "deliveredAt": "2026-11-04T15:54:27.286Z",
+            "acceptedAt": null,
+            "consumedAt": null,
+            "rejectedAt": null
+          },
+          "acceptedSignal": null,
+          "ambiguityWindowMs": null,
+          "rejectReason": null,
+          "createdMeta": null,
+          "stateAfterTurn": "accepted"
+        },
+        "turnEventSeen": true,
+        "noiseCount": 2,
+        "turnEventCount": 5,
+        "stopReason": "end_turn",
+        "promptError": null
+      }
+    },
+    {
+      "label": "orch run（后台，噪声 + 3000ms 接受延迟）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-19",
+      "exitCode": 0,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-32976-1\n任务已投递\n会话 空闲\n会话 执行中 · 已运行 3s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 3s\n交接包 HO-001  已构造   23:54:26\n交接包 HO-001  已投递   23:54:26\n交接包 HO-001  已接受   23:54:29\n交接包 HO-001  已完成   23:54:29\n",
+      "stderr": "",
+      "elapsedMs": 3572
+    }
+  ]
+}

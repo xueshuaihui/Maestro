@@ -1,0 +1,5 @@
+{
+  "_absent": true,
+  "instanceId": "INST-109",
+  "note": "该实例在 .orch/instances 下不存在（本次未产生实例或已被清理）"
+}

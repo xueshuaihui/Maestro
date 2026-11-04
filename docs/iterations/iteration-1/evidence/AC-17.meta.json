@@ -1,0 +1,72 @@
+{
+  "id": "AC-17",
+  "title": "等待审批时节点仍在执行中",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-17",
+  "switches": [
+    "--permission=ask"
+  ],
+  "env": {
+    "MAESTRO_PERMISSION_POLICY": "hold"
+  },
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "会话行 = 等待审批：write",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 等待审批：write\n交接包 HO-001  已构造   23:54:24\n交接包 HO-001  已投递   23:54:24\n交接包 HO-001  已接受   23:54:24\n"
+      },
+      {
+        "id": "节点行仍 = 执行中",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 等待审批：write\n交接包 HO-001  已构造   23:54:24\n交接包 HO-001  已投递   23:54:24\n交接包 HO-001  已接受   23:54:24\n"
+      },
+      {
+        "id": "节点未跳到 已完成",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 等待审批：write\n交接包 HO-001  已构造   23:54:24\n交接包 HO-001  已投递   23:54:24\n交接包 HO-001  已接受   23:54:24\n"
+      },
+      {
+        "id": "state.session.state = waiting_input",
+        "ok": true,
+        "actual": "waiting_input"
+      },
+      {
+        "id": "state.node.state = running（BR-03）",
+        "ok": true,
+        "actual": "running"
+      },
+      {
+        "id": "pendingPermission.action = write",
+        "ok": true,
+        "actual": {
+          "toolCallId": "call_mock_30332_1",
+          "action": "write"
+        }
+      },
+      {
+        "id": "有 session→waiting_input 事件（permission.requested）",
+        "ok": true,
+        "actual": {
+          "seq": 8,
+          "ts": "2026-11-04T15:54:24.269Z",
+          "object": "session",
+          "objectId": "mock-sess-30332-1",
+          "from": "tool_running",
+          "to": "waiting_input",
+          "result": "applied",
+          "reason": "permission.requested",
+          "detail": {
+            "action": "write",
+            "toolCallId": "call_mock_30332_1"
+          }
+        }
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "真实宿主写 cwd 内文件不触发审批（requirement v5 已注明），故本项只走夹具。"
+  ]
+}

@@ -1,0 +1,58 @@
+# AC-12 原始输出（采集于 2026-11-04T15:55:24.233Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run（跑到一半）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-112 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md
+[started 2026-11-04T15:55:10.685Z  duration 11703ms  exit 1]
++   2643ms  实例 INST-112 · 运行中
++   2643ms  会话已创建 0ebca9ec-7a30-4665-a71a-e0f2578af670
++   2643ms  任务已投递
++   2644ms  会话 空闲
++  10254ms  会话 执行中 · 调用工具（pwsh） · 已运行 10s
++  11696ms  实例 INST-112 · 已中断 ｜ 核心已停止
+[exit 1]
+
+## orch core stop（任务执行中）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js core stop
+[started 2026-11-04T15:55:22.166Z  duration 222ms  exit 0]
++    214ms  核心已停止（pid 8940，运行 12s）
+[exit 0]
+
+## 第 1 次 orch status --instance INST-112 --events
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-112 --events
+[started 2026-11-04T15:55:22.389Z  duration 219ms  exit 0]
++    209ms  实例 INST-112 · 已中断 ｜ 停在节点 执行中 / 会话 执行中
++    209ms  节点 执行中
++    209ms  会话 执行中 · 调用工具（pwsh） · 已运行 1s
++    210ms  交接包 HO-001  已构造   23:55:13
++    210ms  交接包 HO-001  已投递   23:55:13
++    210ms  交接包 HO-001  已接受   23:55:20
++    212ms  23:55:13  实例 INST-112  已创建 → 运行中  原因 run.started
++    212ms  23:55:13  节点 T-001  待执行 → 执行中  原因 run.started
++    212ms  23:55:13  交接包 HO-001  已构造  原因 handoff.created
++    212ms  23:55:13  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
++    212ms  23:55:20  会话 0ebca9ec-7a30-4665-a71a-e0f2578af670  空闲 → 执行中  原因 session.state
++    212ms  23:55:20  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
++    212ms  23:55:20  会话 0ebca9ec-7a30-4665-a71a-e0f2578af670  执行中 → 执行中（tool_call）  原因 session.state
++    212ms  23:55:22  实例 INST-112  运行中 → 已中断  原因 core.stop
+[exit 0]
+
+## 第 2 次 orch status --instance INST-112 --events（1.5s 后）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-112 --events
+[started 2026-11-04T15:55:24.117Z  duration 114ms  exit 0]
++    101ms  实例 INST-112 · 已中断 ｜ 停在节点 执行中 / 会话 执行中
++    101ms  节点 执行中
++    102ms  会话 执行中 · 调用工具（pwsh） · 已运行 2s
++    103ms  交接包 HO-001  已构造   23:55:13
++    103ms  交接包 HO-001  已投递   23:55:13
++    103ms  交接包 HO-001  已接受   23:55:20
++    105ms  23:55:13  实例 INST-112  已创建 → 运行中  原因 run.started
++    105ms  23:55:13  节点 T-001  待执行 → 执行中  原因 run.started
++    105ms  23:55:13  交接包 HO-001  已构造  原因 handoff.created
++    105ms  23:55:13  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
++    105ms  23:55:20  会话 0ebca9ec-7a30-4665-a71a-e0f2578af670  空闲 → 执行中  原因 session.state
++    105ms  23:55:20  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
++    105ms  23:55:20  会话 0ebca9ec-7a30-4665-a71a-e0f2578af670  执行中 → 执行中（tool_call）  原因 session.state
++    105ms  23:55:22  实例 INST-112  运行中 → 已中断  原因 core.stop
+[exit 0]

@@ -1,0 +1,8 @@
+# instance INST-001
+{"object":"instance","objectId":"INST-001","from":"created","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-6b87b8e1e0a2e8eb","seq":1,"ts":"2026-11-04T15:54:16.759Z"}
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-6b87b8e1e0a2e8eb","seq":2,"ts":"2026-11-04T15:54:16.761Z"}
+{"object":"handoff","objectId":"HO-001","from":null,"to":"created","result":"applied","reason":"handoff.created","detail":null,"gen":"gen-6b87b8e1e0a2e8eb","seq":3,"ts":"2026-11-04T15:54:16.763Z"}
+{"object":"handoff","objectId":"HO-001","from":"created","to":"delivered","result":"applied","reason":"handoff.delivered","detail":{"atMs":1793807656771},"gen":"gen-6b87b8e1e0a2e8eb","seq":4,"ts":"2026-11-04T15:54:16.772Z"}
+{"object":"node","objectId":"T-001","from":"running","to":"cancelled","result":"applied","reason":"run.cancelled","detail":null,"gen":"gen-6b87b8e1e0a2e8eb","seq":5,"ts":"2026-11-04T15:54:17.318Z"}
+{"object":"handoff","objectId":"HO-001","from":"delivered","to":"rejected","result":"applied","reason":"handoff.rejected","detail":{"reason":"withdrawn"},"gen":"gen-6b87b8e1e0a2e8eb","seq":6,"ts":"2026-11-04T15:54:17.321Z"}
+{"object":"instance","objectId":"INST-001","from":"running","to":"cancelled","result":"applied","reason":"run.cancelled","detail":null,"gen":"gen-6b87b8e1e0a2e8eb","seq":7,"ts":"2026-11-04T15:54:17.331Z"}

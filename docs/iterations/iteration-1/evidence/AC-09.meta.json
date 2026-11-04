@@ -1,0 +1,79 @@
+{
+  "ac": "AC-09",
+  "instanceId": "INST-109",
+  "collectedAt": "2026-11-04T15:53:21.247Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run（DSH 路径不存在）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-109 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 3,
+      "durationMs": 209,
+      "startedAt": 1793807600660,
+      "endedAt": 1793807600869
+    },
+    {
+      "label": "orch status --instance INST-109",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-109",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 1,
+      "durationMs": 89,
+      "startedAt": 1793807600870,
+      "endedAt": 1793807600959
+    },
+    {
+      "label": "orch status（列表）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 91,
+      "startedAt": 1793807600959,
+      "endedAt": 1793807601050
+    }
+  ],
+  "assertions": [
+    {
+      "name": "输出\"无法启动 DSH\"并附原因",
+      "expected": "无法启动 DSH：<原因>",
+      "actual": "无法启动 DSH：启动失败：spawn C:/maestro-acc-p-does-not-exist/NoSuchDSH.exe ENOENT",
+      "pass": true
+    },
+    {
+      "name": "没有出现\"会话已创建\"",
+      "expected": "不出现 会话已创建",
+      "actual": "未出现",
+      "pass": true
+    },
+    {
+      "name": "命令以非 0 退出（预检失败）",
+      "expected": "exit 3",
+      "actual": "exit 3",
+      "pass": true
+    },
+    {
+      "name": "orch status --instance 显示实例不存在（没有半截实例）",
+      "expected": "实例 INST-109 · 不存在",
+      "actual": "实例 INST-109 · 不存在",
+      "pass": true
+    },
+    {
+      "name": ".orch/instances/INST-109 目录不存在",
+      "expected": "目录不存在",
+      "actual": "false",
+      "pass": true
+    },
+    {
+      "name": "无参 status 列表里没有 INST-109",
+      "expected": "列表不含 INST-109",
+      "actual": "实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 19s · 更新 23:46:13 | 实例 INST-101 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 47s · 更新 23:48:04 | 实例 INST-102 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 23s · 更新 23:48:28 | 实例 INST-103 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 25s · 更新 23:49:14 | 实例 INST-104 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 36s · 更新 23:49:51 | 实例 INST-105 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 36s · 更新 23:50:27 | 实例 INST-106 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 27s · 更新 23:50:55 | 实例 INST-107 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 17s · 更新 23:52:09 | 实例 INST-108 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1m2s · 更新 23:53:11",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "环境变量名取自 src/adapter/dsh-launch.js:70-71（MAESTRO_DSH_EXE / MAESTRO_DSH_BIN）。两个都指向不存在的路径。"
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "ac": "AC-11",
+  "instanceId": "INST-111",
+  "collectedAt": "2026-11-04T15:55:10.489Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run（长任务，cancel 前）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-111 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 1,
+      "durationMs": 4332,
+      "startedAt": 1793807705996,
+      "endedAt": 1793807710328
+    },
+    {
+      "label": "orch cancel --instance INST-111",
+      "argv": "node D:/WWW/Maestro/bin/orch.js cancel --instance INST-111",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 125,
+      "startedAt": 1793807710161,
+      "endedAt": 1793807710286
+    },
+    {
+      "label": "cancel 后采样（最后一次 status）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-111",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 99,
+      "startedAt": 1793807710287,
+      "endedAt": 1793807710386
+    },
+    {
+      "label": "orch status --instance INST-111 --events",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-111 --events",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 93,
+      "startedAt": 1793807710387,
+      "endedAt": 1793807710480
+    }
+  ],
+  "assertions": [
+    {
+      "name": "Given：取消前会话在\"执行中\"",
+      "expected": "会话 执行中",
+      "actual": "会话 执行中 · 调用工具（working_directory） · 已运行 4s",
+      "pass": true
+    },
+    {
+      "name": "5 秒内会话行不再显示\"执行中\"，回到\"空闲\"",
+      "expected": "≤5000ms 且 会话 空闲",
+      "actual": "226ms → 会话 空闲",
+      "pass": true
+    },
+    {
+      "name": "节点显示\"已取消\"",
+      "expected": "节点 已取消",
+      "actual": "节点 已取消",
+      "pass": true
+    },
+    {
+      "name": "交接包显示\"已拒绝\"且原因写明\"已撤回\"",
+      "expected": "交接包 … 已拒绝  原因 已撤回",
+      "actual": "交接包 HO-001  已拒绝   23:55:10  原因 已撤回",
+      "pass": true
+    },
+    {
+      "name": "state.json：session=idle / node=cancelled / handoff=rejected(withdrawn)",
+      "expected": "idle / cancelled / rejected",
+      "actual": "idle / cancelled / rejected(withdrawn)",
+      "pass": true
+    },
+    {
+      "name": "没有任何一项停在\"执行中\"或\"已投递\"",
+      "expected": "节点≠running、交接包≠delivered、会话≠thinking/tool_running",
+      "actual": "node=cancelled handoff=rejected session=idle",
+      "pass": true
+    },
+    {
+      "name": "cancel 命令本身 exit 0",
+      "expected": "exit 0",
+      "actual": "exit 0",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "采样方式：cancel 返回后每 ~200ms 跑一次 orch status（单次进程约 150-300ms），记录第一次会话行不含\"执行中\"的时刻。"
+  ]
+}

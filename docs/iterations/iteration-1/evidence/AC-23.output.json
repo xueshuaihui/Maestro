@@ -1,0 +1,23 @@
+{
+  "commands": [
+    {
+      "label": "status（静默已超过 10s 阈值）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js status --instance INST-001",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-23",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 99,
+      "stdout": "实例 INST-001 · 运行中\n节点 执行中\n会话 执行中 · 已运行 11s · 无新事件\n交接包 HO-001  已构造   23:54:32\n交接包 HO-001  已投递   23:54:32\n交接包 HO-001  已接受   23:54:32\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（后台，--turn-delay-ms 12000）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-23",
+      "exitCode": 0,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-2132-1\n任务已投递\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 调用工具（write） · 已运行 5s\n会话 执行中 · 已运行 10s · 无新事件\n会话 执行中 · 已运行 12s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 12s\n交接包 HO-001  已构造   23:54:32\n交接包 HO-001  已投递   23:54:32\n交接包 HO-001  已接受   23:54:32\n交接包 HO-001  已完成   23:54:44\n",
+      "stderr": "",
+      "elapsedMs": 12552
+    }
+  ]
+}

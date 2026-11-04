@@ -1,0 +1,16 @@
+# instance INST-001
+{"object":"instance","objectId":"INST-001","from":"created","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-b78407c142464923","seq":1,"ts":"2026-11-04T15:54:32.230Z"}
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-b78407c142464923","seq":2,"ts":"2026-11-04T15:54:32.235Z"}
+{"object":"handoff","objectId":"HO-001","from":null,"to":"created","result":"applied","reason":"handoff.created","detail":null,"gen":"gen-b78407c142464923","seq":3,"ts":"2026-11-04T15:54:32.240Z"}
+{"object":"handoff","objectId":"HO-001","from":"created","to":"delivered","result":"applied","reason":"handoff.delivered","detail":{"atMs":1793807672250},"gen":"gen-b78407c142464923","seq":4,"ts":"2026-11-04T15:54:32.251Z"}
+{"object":"session","objectId":"mock-sess-2132-1","from":"idle","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-b78407c142464923","seq":5,"ts":"2026-11-04T15:54:32.255Z"}
+{"object":"handoff","objectId":"HO-001","from":"delivered","to":"accepted","result":"applied","reason":"turn.first_event","detail":{"event":"agent_thought_chunk","ambiguityWindowMs":2},"gen":"gen-b78407c142464923","seq":6,"ts":"2026-11-04T15:54:32.260Z"}
+{"object":"session","objectId":"mock-sess-2132-1","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-b78407c142464923","seq":7,"ts":"2026-11-04T15:54:32.274Z"}
+{"object":"session","objectId":"mock-sess-2132-1","from":"tool_running","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_message_chunk"},"gen":"gen-b78407c142464923","seq":8,"ts":"2026-11-04T15:54:44.255Z"}
+{"object":"session","objectId":"mock-sess-2132-1","from":"thinking","to":"waiting_dependency","result":"applied","reason":"output.submitted","detail":null,"gen":"gen-b78407c142464923","seq":9,"ts":"2026-11-04T15:54:44.272Z"}
+{"object":"node","objectId":"T-001","from":"running","to":"review","result":"applied","reason":"output.submitted","detail":null,"gen":"gen-b78407c142464923","seq":10,"ts":"2026-11-04T15:54:44.280Z"}
+{"object":"node","objectId":"T-001","from":null,"to":null,"result":"note","reason":"verification.skipped","detail":{"note":"未声明产出，跳过存在性检查"},"gen":"gen-b78407c142464923","seq":11,"ts":"2026-11-04T15:54:44.288Z"}
+{"object":"node","objectId":"T-001","from":"review","to":"done","result":"applied","reason":"verification.passed","detail":null,"gen":"gen-b78407c142464923","seq":12,"ts":"2026-11-04T15:54:44.299Z"}
+{"object":"handoff","objectId":"HO-001","from":"accepted","to":"consumed","result":"applied","reason":"handoff.consumed","detail":{"atMs":1793807684302},"gen":"gen-b78407c142464923","seq":13,"ts":"2026-11-04T15:54:44.303Z"}
+{"object":"instance","objectId":"INST-001","from":"running","to":"completed","result":"applied","reason":"run.completed","detail":null,"gen":"gen-b78407c142464923","seq":14,"ts":"2026-11-04T15:54:44.314Z"}
+{"object":"session","objectId":"mock-sess-2132-1","from":"waiting_dependency","to":"idle","result":"applied","reason":"run.completed","detail":null,"gen":"gen-b78407c142464923","seq":15,"ts":"2026-11-04T15:54:44.318Z"}

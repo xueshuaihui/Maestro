@@ -1,0 +1,34 @@
+# AC-08 原始输出（采集于 2026-11-04T16:02:28.807Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## 第一次 orch run（原执行）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-108 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md
+[started 2026-11-04T16:02:10.834Z  duration 17970ms  exit 0]
++   2286ms  实例 INST-108 · 运行中
++   2286ms  会话已创建 b42c8ed4-c2cf-4693-a0f8-5048b0189247
++   2286ms  任务已投递
++   2288ms  会话 空闲
++   9883ms  会话 执行中 · 调用工具（pwsh） · 已运行 10s
++  13377ms  会话 执行中 · 调用工具（write） · 已运行 13s
++  15453ms  会话 执行中 · 调用工具（pwsh） · 已运行 15s
++  17834ms  会话 执行中 · 已运行 18s
++  17853ms  会话 等待下游 · 产出已提交
++  17888ms  会话 空闲
++  17961ms  节点 已完成 · 耗时 18s
++  17963ms  交接包 HO-001  已构造   00:02:13
++  17963ms  交接包 HO-001  已投递   00:02:13
++  17963ms  交接包 HO-001  已接受   00:02:20
++  17963ms  交接包 HO-001  已完成   00:02:28
+[exit 0]
+
+## 第二次 orch run（重复发起，被拒）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-108 --task 写一段 200 字的产品说明，保存到 out/intro.md
+[started 2026-11-04T16:02:20.750Z  duration 109ms  exit 1]
++    102ms  该节点正在执行，本次未发起
+[exit 1]
+
+## node 事件
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-5d6662ce22b32788","seq":2,"ts":"2026-11-04T16:02:13.102Z"}
+{"object":"node","objectId":"T-001","from":"running","to":"review","result":"applied","reason":"output.submitted","detail":null,"gen":"gen-5d6662ce22b32788","seq":14,"ts":"2026-11-04T16:02:28.692Z"}
+{"object":"node","objectId":"T-001","from":"review","to":"done","result":"applied","reason":"verification.passed","detail":null,"gen":"gen-5d6662ce22b32788","seq":15,"ts":"2026-11-04T16:02:28.708Z"}

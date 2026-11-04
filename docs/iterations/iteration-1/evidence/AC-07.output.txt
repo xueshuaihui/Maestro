@@ -1,0 +1,34 @@
+# AC-07 原始输出（采集于 2026-11-04T15:52:09.613Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## 第一次 orch run（长任务，保持执行中）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-107 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md
+[started 2026-11-04T15:51:52.093Z  duration 17513ms  exit 0]
++   2315ms  实例 INST-107 · 运行中
++   2315ms  会话已创建 1ba66cc6-2b7a-4c7a-a615-f74b0d720398
++   2315ms  任务已投递
++   2317ms  会话 空闲
++   4823ms  会话 执行中 · 调用工具（pwsh） · 已运行 5s
++  10398ms  会话 执行中 · 调用工具（pwsh） · 已运行 10s
++  11498ms  会话 执行中 · 调用工具（write） · 已运行 11s
++  12821ms  会话 执行中 · 调用工具（pwsh） · 已运行 13s
++  16128ms  会话 执行中 · 调用工具（read） · 已运行 16s
++  17391ms  会话 执行中 · 已运行 17s
++  17400ms  会话 等待下游 · 产出已提交
++  17436ms  会话 空闲
++  17505ms  节点 已完成 · 耗时 17s
++  17507ms  交接包 HO-001  已构造   23:51:54
++  17507ms  交接包 HO-001  已投递   23:51:54
++  17507ms  交接包 HO-001  已接受   23:51:56
++  17507ms  交接包 HO-001  已完成   23:52:09
+[exit 0]
+
+## 第二次 orch run（同实例，应被拒）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-107 --task 写一段 200 字的产品说明，保存到 out/intro.md
+[started 2026-11-04T15:51:56.940Z  duration 116ms  exit 1]
++    108ms  该节点正在执行，本次未发起
+[exit 1]
+
+## 第二次 run 的完整输出
++108ms 该节点正在执行，本次未发起

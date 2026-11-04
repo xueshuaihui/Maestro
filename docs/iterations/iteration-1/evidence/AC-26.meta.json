@@ -1,0 +1,63 @@
+{
+  "id": "AC-26",
+  "title": "非法状态迁移被拒绝",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-26",
+  "switches": [
+    "--write-ref",
+    "out/intro.md",
+    "+ test/fixtures/attempt-transition.mjs"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "前置：节点确实是 done",
+        "ok": true,
+        "actual": "done"
+      },
+      {
+        "id": "attempt-transition 退出码 = 0（拒绝成功）",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "夹具输出含「已拒绝」",
+        "ok": true,
+        "actual": "{\n  \"ok\": false,\n  \"code\": \"ILLEGAL_TRANSITION\",\n  \"from\": \"done\",\n  \"to\": \"running\",\n  \"message\": \"node: done -> running is not in the transition table\"\n}\n已拒绝：node done -> running（ILLEGAL_TRANSITION）\n"
+      },
+      {
+        "id": "拒绝码 = ILLEGAL_TRANSITION",
+        "ok": true,
+        "actual": "{\n  \"ok\": false,\n  \"code\": \"ILLEGAL_TRANSITION\",\n  \"from\": \"done\",\n  \"to\": \"running\",\n  \"message\": \"node: done -> running is not in the transition table\"\n}\n已拒绝：node done -> running（ILLEGAL_TRANSITION）\n"
+      },
+      {
+        "id": "状态保持 done",
+        "ok": true,
+        "actual": "done"
+      },
+      {
+        "id": "events.jsonl 有 result=rejected 的拒绝迁移",
+        "ok": true,
+        "actual": {
+          "seq": 15,
+          "ts": "2026-11-04T15:54:59.480Z",
+          "object": "node",
+          "objectId": "T-001",
+          "from": "done",
+          "to": "running",
+          "result": "rejected",
+          "reason": "illegal_transition",
+          "detail": {
+            "source": "fixture/attempt-transition",
+            "message": "node: done -> running is not in the transition table"
+          }
+        }
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "requirement §3.3 列的 --illegal-transition 开关在 mock-acp-agent.js 中不存在；按任务书使用 attempt-transition.mjs 走同一 store/bus。"
+  ]
+}

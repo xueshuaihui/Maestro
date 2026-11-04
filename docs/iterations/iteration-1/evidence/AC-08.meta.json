@@ -1,0 +1,76 @@
+{
+  "ac": "AC-08",
+  "instanceId": "INST-108",
+  "collectedAt": "2026-11-04T16:02:28.813Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "第一次 orch run（原执行）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-108 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 17970,
+      "startedAt": 1793808130834,
+      "endedAt": 1793808148804
+    },
+    {
+      "label": "第二次 orch run（重复发起，被拒）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-108 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 1,
+      "durationMs": 109,
+      "startedAt": 1793808140750,
+      "endedAt": 1793808140859
+    }
+  ],
+  "assertions": [
+    {
+      "name": "Given：重复发起确实被拒",
+      "expected": "该节点正在执行，本次未发起",
+      "actual": "该节点正在执行，本次未发起",
+      "pass": true
+    },
+    {
+      "name": "原执行继续跑到节点\"已完成\"",
+      "expected": "节点 已完成 · 耗时 …",
+      "actual": "节点 已完成 · 耗时 18s",
+      "pass": true
+    },
+    {
+      "name": "原执行以 0 退出",
+      "expected": "exit 0",
+      "actual": "exit 0",
+      "pass": true
+    },
+    {
+      "name": "过程中没有第二次发起（instance 的 run.started 仅 1 条）",
+      "expected": "instance run.started 条数 = 1",
+      "actual": "1",
+      "pass": true
+    },
+    {
+      "name": "状态没有被第二次发起打断（节点只走了一次 review→done）",
+      "expected": "node→done 事件 1 条",
+      "actual": "1",
+      "pass": true
+    },
+    {
+      "name": "第二次发起没有产生任何会话/实例行",
+      "expected": "第二次输出无 实例/会话已创建/任务已投递",
+      "actual": "未出现",
+      "pass": true
+    },
+    {
+      "name": "最终实例为 completed",
+      "expected": "completed",
+      "actual": "completed",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "原执行总耗时 17970ms；第二次 run 在被拒后立即退出（exit 1），未订阅事件。"
+  ]
+}

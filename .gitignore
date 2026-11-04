@@ -4,3 +4,17 @@ node_modules/
 # 构建产物
 dist/
 target/
+
+# 运行时状态（核心进程 / 实例快照 / 事件）
+.orch/
+**/.orch/
+
+# 探针用的隔离 DSH_HOME（含会话缓存与本机路径，不作交付物）
+probe/dsh-home/
+
+# 探针运行时产物（ACL 备份含本机 SID / 绝对路径）
+probe/runs/*/acl-recovery/
+
+# 临时脚本
+probe/tmp-*.mjs
+.tmp-*.mjs

@@ -1,0 +1,82 @@
+{
+  "ac": "AC-01",
+  "instanceId": "INST-101",
+  "collectedAt": "2026-11-04T15:48:04.934Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "预热（status 冷启动核心）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 217,
+      "startedAt": 1793807237038,
+      "endedAt": 1793807237255
+    },
+    {
+      "label": "orch run",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-101 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 47657,
+      "startedAt": 1793807237256,
+      "endedAt": 1793807284913
+    }
+  ],
+  "assertions": [
+    {
+      "name": "三行（实例运行中/会话已创建/任务已投递）齐全",
+      "expected": "三行都在输出里",
+      "actual": "实例 INST-101 · 运行中 | 会话已创建 4ae7e126-c1bf-4bed-98eb-8742da0418af | 任务已投递",
+      "pass": true
+    },
+    {
+      "name": "热启动 5s 内看到三行",
+      "expected": "≤5000ms",
+      "actual": "2338ms",
+      "pass": true
+    },
+    {
+      "name": "会话行出现\"执行中\"且带已运行时长",
+      "expected": "会话 执行中 · 已运行 Ns",
+      "actual": "会话 执行中 · 调用工具（pwsh） · 已运行 4s",
+      "pass": true
+    },
+    {
+      "name": "节点行\"已完成\"并带耗时",
+      "expected": "节点 已完成 · 耗时 …",
+      "actual": "节点 已完成 · 耗时 47s",
+      "pass": true
+    },
+    {
+      "name": "交接包显示\"已完成\"",
+      "expected": "交接包 HO-00x  已完成",
+      "actual": "交接包 HO-001  已完成   23:48:04",
+      "pass": true
+    },
+    {
+      "name": "命令以 0 退出",
+      "expected": "exit 0",
+      "actual": "exit 0",
+      "pass": true
+    },
+    {
+      "name": "声明的产出真实落盘且非空",
+      "expected": "out/intro.md 存在且非空",
+      "actual": "exists=true bytes=632",
+      "pass": true
+    },
+    {
+      "name": "state.json 终态 completed",
+      "expected": "state=completed",
+      "actual": "completed",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "预热 status exit=0"
+  ]
+}

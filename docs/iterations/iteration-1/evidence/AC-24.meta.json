@@ -1,0 +1,52 @@
+{
+  "id": "AC-24",
+  "title": "目标迟迟不开始，也不判过期",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-24",
+  "switches": [
+    "--accept-delay-ms",
+    "3000"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "交接包仍显示 已投递",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:45\n交接包 HO-001  已投递   23:54:45\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n"
+      },
+      {
+        "id": "显示等待时长",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:45\n交接包 HO-001  已投递   23:54:45\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n"
+      },
+      {
+        "id": "没有出现 已过期",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:45\n交接包 HO-001  已投递   23:54:45\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n"
+      },
+      {
+        "id": "节点没有变成 失败",
+        "ok": true,
+        "actual": {
+          "stdout": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:45\n交接包 HO-001  已投递   23:54:45\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n",
+          "nodeState": "running"
+        }
+      },
+      {
+        "id": "state.handoff.state = delivered",
+        "ok": true,
+        "actual": "delivered"
+      },
+      {
+        "id": "已等待 > 0（实测 116ms）",
+        "ok": true,
+        "actual": 116
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "--accept-delay-ms 3000 让 prompt 后 3s 才发首帧；采样在 delivered 后立即进行。"
+  ]
+}

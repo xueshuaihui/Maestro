@@ -1,0 +1,136 @@
+{
+  "runId": "write-02",
+  "mode": "write",
+  "startedAt": "2026-11-04T13:31:30.272Z",
+  "dshDir": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness",
+  "dshHome": "D:\\WWW\\Maestro\\probe\\dsh-home",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\write-02\\workspace",
+  "framing": "ndjson",
+  "timingsMs": {
+    "spawnAtMs": 0,
+    "initializeResult": 1715.408,
+    "sessionNewResult": 1974.851,
+    "promptSent": 1974.87,
+    "turnEnd": 5966.863
+  },
+  "framingSniff": {
+    "firstBytesHex": "7b226a736f6e727063223a22322e30222c226964223a312c22726573756c74223a7b2270726f746f636f6c5665727369",
+    "firstBytesUtf8": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":1,\"agentInfo",
+    "startsWithContentLength": false,
+    "startsWithJson": true,
+    "hasCrLfCrLf": false
+  },
+  "updates": [
+    "agent_thought_chunk",
+    "usage_update",
+    "tool_call",
+    "tool_call_update",
+    "agent_thought_chunk",
+    "agent_message_chunk",
+    "usage_update"
+  ],
+  "toolCalls": [
+    {
+      "toolCallId": "call_00_8sZjvzlqH29GlpiahoBE9844",
+      "title": "write",
+      "kind": "other",
+      "statuses": [
+        "in_progress",
+        "completed"
+      ],
+      "rawInput": {
+        "file_path": "out/probe.md",
+        "content": "# DSH ACP 探针\n探针写入成功：你好，Maestro。"
+      },
+      "status": "completed"
+    }
+  ],
+  "stopReason": "end_turn",
+  "sessionId": "48ffcae8-e206-459e-898c-30db0a82ae32",
+  "assertions": {
+    "toolCompleted": true,
+    "fileExists": true,
+    "contentExact": true,
+    "contentTrimmedEqual": true,
+    "stopReasonEndTurn": true,
+    "allPassed": true
+  },
+  "errors": [],
+  "initialize": {
+    "protocolVersion": 1,
+    "agentInfo": {
+      "name": "deepseek-harness-acp",
+      "version": "0.0.1"
+    },
+    "agentCapabilities": {
+      "mcpCapabilities": {
+        "http": true
+      },
+      "promptCapabilities": {
+        "image": true,
+        "audio": false,
+        "embeddedContext": false
+      },
+      "sessionCapabilities": {
+        "close": {},
+        "list": {},
+        "resume": {}
+      }
+    },
+    "authMethods": []
+  },
+  "sessionNew": {
+    "sessionId": "48ffcae8-e206-459e-898c-30db0a82ae32",
+    "configOptionsCount": 2
+  },
+  "promptError": null,
+  "firstPromptFrame": {
+    "tMs": 3752.358,
+    "kind": "session/update",
+    "sessionUpdate": "agent_thought_chunk"
+  },
+  "permissionsRequested": 0,
+  "updateSequence": [
+    {
+      "tMs": 3752.331,
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    {
+      "tMs": 3752.735,
+      "sessionUpdate": "usage_update"
+    },
+    {
+      "tMs": 3753.11,
+      "sessionUpdate": "tool_call",
+      "status": "in_progress",
+      "title": "write",
+      "toolCallId": "call_00_8sZjvzlqH29GlpiahoBE9844"
+    },
+    {
+      "tMs": 3797.021,
+      "sessionUpdate": "tool_call_update",
+      "status": "completed",
+      "toolCallId": "call_00_8sZjvzlqH29GlpiahoBE9844"
+    },
+    {
+      "tMs": 5966.196,
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    {
+      "tMs": 5966.456,
+      "sessionUpdate": "agent_message_chunk"
+    },
+    {
+      "tMs": 5966.557,
+      "sessionUpdate": "usage_update"
+    }
+  ],
+  "file": {
+    "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\write-02\\workspace\\out\\probe.md",
+    "bytes": 57,
+    "sha256": "42ab47684c815782e997b5edad987736266a75e82ae536459062bf09a10bcc48",
+    "content": "# DSH ACP 探针\n探针写入成功：你好，Maestro。"
+  },
+  "ok": true,
+  "finishedAt": "2026-11-04T13:31:36.635Z"
+}

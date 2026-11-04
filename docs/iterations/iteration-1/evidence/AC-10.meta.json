@@ -1,0 +1,89 @@
+{
+  "ac": "AC-10",
+  "instanceId": "INST-110",
+  "collectedAt": "2026-11-04T15:55:03.037Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "icacls /deny（构造不可写目录）",
+      "argv": "icacls C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo\\readonly /deny XUESH\\xuesh:(OI)(CI)(W)",
+      "cwd": null,
+      "exit": 0,
+      "durationMs": null,
+      "startedAt": 1793807702529,
+      "endedAt": 1793807702574
+    },
+    {
+      "label": "orch run --cwd ./demo/readonly",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo/readonly --instance INST-110 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 3,
+      "durationMs": 224,
+      "startedAt": 1793807702685,
+      "endedAt": 1793807702909
+    },
+    {
+      "label": "orch status --instance INST-110",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-110",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 1,
+      "durationMs": 91,
+      "startedAt": 1793807702910,
+      "endedAt": 1793807703001
+    },
+    {
+      "label": "icacls /remove:d（恢复权限）",
+      "argv": "icacls C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo\\readonly /remove:d XUESH\\xuesh",
+      "cwd": null,
+      "exit": 0,
+      "durationMs": null,
+      "startedAt": 1793807703001,
+      "endedAt": 1793807703031
+    }
+  ],
+  "assertions": [
+    {
+      "name": "Given：目录确实不可写（icacls /deny + 写探针失败）",
+      "expected": "写探针 EACCES/EPERM",
+      "actual": "writable=false；deny exit=0",
+      "pass": true
+    },
+    {
+      "name": "输出\"工作目录不可写\"并附路径",
+      "expected": "工作目录不可写：<路径>",
+      "actual": "工作目录不可写：C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo\\readonly",
+      "pass": true
+    },
+    {
+      "name": "命令以失败退出",
+      "expected": "exit ≠ 0",
+      "actual": "exit 3",
+      "pass": true
+    },
+    {
+      "name": "没有创建任何会话（输出无\"会话已创建\"）",
+      "expected": "不出现 会话已创建",
+      "actual": "未出现",
+      "pass": true
+    },
+    {
+      "name": "没有落 .orch/instances/INST-110",
+      "expected": "目录不存在",
+      "actual": "false",
+      "pass": true
+    },
+    {
+      "name": "status 查询该实例为不存在",
+      "expected": "实例 INST-110 · 不存在",
+      "actual": "实例 INST-110 · 不存在",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "写探针失败（符合预期）：EPERM EPERM: operation not permitted, open 'C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo\\readonly\\.probe-write'",
+    "deny 命令：icacls C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo\\readonly /deny XUESH\\xuesh:(OI)(CI)(W)（exit 0）；恢复命令：icacls C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo\\readonly /remove:d XUESH\\xuesh（exit 0）。"
+  ]
+}

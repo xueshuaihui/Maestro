@@ -1,0 +1,118 @@
+{
+  "INST-001.before": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "completed",
+    "stateSince": "2026-11-04T15:54:59.363Z",
+    "updatedAt": "2026-11-04T15:54:59.370Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-26\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "done",
+      "startedAt": "2026-11-04T15:54:59.045Z",
+      "endedAt": "2026-11-04T15:54:59.370Z",
+      "failure": null,
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-23320-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:54:59.370Z",
+      "lastEventAt": "2026-11-04T15:54:59.302Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": true,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "consumed",
+      "createdAt": "2026-11-04T15:54:59.288Z",
+      "deliveredAt": "2026-11-04T15:54:59.298Z",
+      "acceptedAt": "2026-11-04T15:54:59.299Z",
+      "consumedAt": "2026-11-04T15:54:59.362Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "acceptedSignal": "agent_thought_chunk"
+    },
+    "hostRaw": {
+      "stopReason": "end_turn",
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [
+      {
+        "ref": "out/intro.md",
+        "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-26\\demo\\out\\intro.md",
+        "declared": true,
+        "exists": true,
+        "bytes": 15,
+        "sha256": null,
+        "verifiedAt": "2026-11-04T15:54:59.354Z"
+      }
+    ],
+    "counters": {
+      "eventSeq": 14,
+      "runCount": 1
+    }
+  },
+  "INST-001.after": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "completed",
+    "stateSince": "2026-11-04T15:54:59.363Z",
+    "updatedAt": "2026-11-04T15:54:59.370Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-26\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "done",
+      "startedAt": "2026-11-04T15:54:59.045Z",
+      "endedAt": "2026-11-04T15:54:59.370Z",
+      "failure": null,
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-23320-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:54:59.370Z",
+      "lastEventAt": "2026-11-04T15:54:59.302Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": true,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "consumed",
+      "createdAt": "2026-11-04T15:54:59.288Z",
+      "deliveredAt": "2026-11-04T15:54:59.298Z",
+      "acceptedAt": "2026-11-04T15:54:59.299Z",
+      "consumedAt": "2026-11-04T15:54:59.362Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "acceptedSignal": "agent_thought_chunk"
+    },
+    "hostRaw": {
+      "stopReason": "end_turn",
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [
+      {
+        "ref": "out/intro.md",
+        "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-26\\demo\\out\\intro.md",
+        "declared": true,
+        "exists": true,
+        "bytes": 15,
+        "sha256": null,
+        "verifiedAt": "2026-11-04T15:54:59.354Z"
+      }
+    ],
+    "counters": {
+      "eventSeq": 14,
+      "runCount": 1
+    }
+  }
+}

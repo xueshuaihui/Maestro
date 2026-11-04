@@ -1,0 +1,124 @@
+{
+  "commands": [
+    {
+      "label": "第 1 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 522,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-13256-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:00\n交接包 HO-001  已投递   23:55:00\n交接包 HO-001  已接受   23:55:00\n交接包 HO-001  已完成   23:55:00\n",
+      "stderr": ""
+    },
+    {
+      "label": "第 2 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-002 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 409,
+      "stdout": "实例 INST-002 · 运行中\n会话已创建 mock-sess-9488-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:00\n交接包 HO-001  已投递   23:55:00\n交接包 HO-001  已接受   23:55:00\n交接包 HO-001  已完成   23:55:00\n",
+      "stderr": ""
+    },
+    {
+      "label": "第 3 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-003 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 392,
+      "stdout": "实例 INST-003 · 运行中\n会话已创建 mock-sess-2028-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:00\n交接包 HO-001  已投递   23:55:00\n交接包 HO-001  已接受   23:55:00\n交接包 HO-001  已完成   23:55:01\n",
+      "stderr": ""
+    },
+    {
+      "label": "第 4 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-004 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 403,
+      "stdout": "实例 INST-004 · 运行中\n会话已创建 mock-sess-16580-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:01\n交接包 HO-001  已投递   23:55:01\n交接包 HO-001  已接受   23:55:01\n交接包 HO-001  已完成   23:55:01\n",
+      "stderr": ""
+    },
+    {
+      "label": "第 5 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-005 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 434,
+      "stdout": "实例 INST-005 · 运行中\n会话已创建 mock-sess-27700-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:01\n交接包 HO-001  已投递   23:55:01\n交接包 HO-001  已接受   23:55:01\n交接包 HO-001  已完成   23:55:01\n",
+      "stderr": ""
+    },
+    {
+      "label": "第 6 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-006 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 432,
+      "stdout": "实例 INST-006 · 运行中\n会话已创建 mock-sess-19120-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:02\n交接包 HO-001  已投递   23:55:02\n交接包 HO-001  已接受   23:55:02\n交接包 HO-001  已完成   23:55:02\n",
+      "stderr": ""
+    },
+    {
+      "label": "第 7 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-007 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 406,
+      "stdout": "实例 INST-007 · 运行中\n会话已创建 mock-sess-16976-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:02\n交接包 HO-001  已投递   23:55:02\n交接包 HO-001  已接受   23:55:02\n交接包 HO-001  已完成   23:55:02\n",
+      "stderr": ""
+    },
+    {
+      "label": "第 8 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-008 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 417,
+      "stdout": "实例 INST-008 · 运行中\n会话已创建 mock-sess-23184-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:03\n交接包 HO-001  已投递   23:55:03\n交接包 HO-001  已接受   23:55:03\n交接包 HO-001  已完成   23:55:03\n",
+      "stderr": ""
+    },
+    {
+      "label": "第 9 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-009 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 490,
+      "stdout": "实例 INST-009 · 运行中\n会话已创建 mock-sess-30192-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:03\n交接包 HO-001  已投递   23:55:03\n交接包 HO-001  已接受   23:55:03\n交接包 HO-001  已完成   23:55:03\n",
+      "stderr": ""
+    },
+    {
+      "label": "第 10 次 orch run",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-010 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 414,
+      "stdout": "实例 INST-010 · 运行中\n会话已创建 mock-sess-30696-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:03\n交接包 HO-001  已投递   23:55:03\n交接包 HO-001  已接受   23:55:03\n交接包 HO-001  已完成   23:55:04\n",
+      "stderr": ""
+    },
+    {
+      "label": "status（列出全部实例）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js status",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 108,
+      "stdout": "实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:00\n实例 INST-002 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:00\n实例 INST-003 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:01\n实例 INST-004 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:01\n实例 INST-005 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:01\n实例 INST-006 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:02\n实例 INST-007 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:02\n实例 INST-008 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:03\n实例 INST-009 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:03\n实例 INST-010 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:04\n",
+      "stderr": ""
+    },
+    {
+      "label": "status --instance INST-005 --events",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js status --instance INST-005 --events",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 99,
+      "stdout": "实例 INST-005 · 已完成\n节点 已完成 · 耗时 1s\n会话 空闲\n交接包 HO-001  已构造   23:55:01\n交接包 HO-001  已投递   23:55:01\n交接包 HO-001  已接受   23:55:01\n交接包 HO-001  已完成   23:55:01\n23:55:01  实例 INST-005  已创建 → 运行中  原因 run.started\n23:55:01  节点 T-001  待执行 → 执行中  原因 run.started\n23:55:01  交接包 HO-001  已构造  原因 handoff.created\n23:55:01  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered\n23:55:01  会话 mock-sess-27700-1  空闲 → 执行中  原因 session.state\n23:55:01  交接包 HO-001  已投递 → 已接受  原因 turn.first_event\n23:55:01  会话 mock-sess-27700-1  执行中 → 执行中（tool_call）  原因 session.state\n23:55:01  会话 mock-sess-27700-1  执行中 → 执行中（agent_message_chunk）  原因 session.state\n23:55:01  会话 mock-sess-27700-1  执行中 → 等待下游  原因 output.submitted\n23:55:01  节点 T-001  执行中 → 待校验  原因 output.submitted\n23:55:01  节点 T-001  未声明产出，跳过存在性检查  原因 verification.skipped\n23:55:01  节点 T-001  待校验 → 已完成  原因 verification.passed\n23:55:01  交接包 HO-001  已接受 → 已完成  原因 handoff.consumed\n23:55:01  实例 INST-005  运行中 → 已完成  原因 run.completed\n23:55:01  会话 mock-sess-27700-1  等待下游 → 空闲  原因 run.completed\n",
+      "stderr": ""
+    }
+  ]
+}

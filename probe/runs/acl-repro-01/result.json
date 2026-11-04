@@ -1,0 +1,248 @@
+{
+  "runId": "acl-repro-01",
+  "mode": "busy",
+  "startedAt": "2026-11-04T13:46:37.985Z",
+  "dshDir": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness",
+  "dshHome": "D:\\WWW\\Maestro\\probe\\dsh-home",
+  "cwd": "D:\\WWW\\Maestro\\probe\\runs\\acl-repro-01\\workspace",
+  "framing": "ndjson",
+  "timingsMs": {
+    "spawnAtMs": 0,
+    "initializeResult": 1693.324,
+    "sessionNewResult": 1914.868,
+    "promptSent": 1914.881,
+    "turnEnd": 24819.398
+  },
+  "framingSniff": {
+    "firstBytesHex": "7b226a736f6e727063223a22322e30222c226964223a312c22726573756c74223a7b2270726f746f636f6c5665727369",
+    "firstBytesUtf8": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":1,\"agentInfo",
+    "startsWithContentLength": false,
+    "startsWithJson": true,
+    "hasCrLfCrLf": false
+  },
+  "updates": [
+    "agent_thought_chunk",
+    "usage_update",
+    "tool_call",
+    "tool_call_update",
+    "agent_thought_chunk",
+    "usage_update",
+    "tool_call",
+    "tool_call_update",
+    "agent_thought_chunk",
+    "usage_update",
+    "tool_call",
+    "tool_call_update",
+    "agent_thought_chunk",
+    "usage_update",
+    "tool_call",
+    "tool_call_update",
+    "agent_message_chunk",
+    "usage_update"
+  ],
+  "toolCalls": [
+    {
+      "toolCallId": "call_00_br2ACkYapgSE83geJvJy7180",
+      "title": "pwsh",
+      "kind": "other",
+      "statuses": [
+        "in_progress",
+        "failed"
+      ],
+      "rawInput": {
+        "command": "Start-Sleep -Seconds 6; Write-Output \"slept 6 seconds\"",
+        "description": "Sleep six seconds then report",
+        "timeoutMs": 30000
+      },
+      "status": "failed"
+    },
+    {
+      "toolCallId": "call_00_1YsZgfR5MGeeEpjAnz2l7756",
+      "title": "skill",
+      "kind": "other",
+      "statuses": [
+        "in_progress",
+        "completed"
+      ],
+      "rawInput": {
+        "name": "diagnose-windows-sandbox-acl"
+      },
+      "status": "completed"
+    },
+    {
+      "toolCallId": "call_00_sXYGRNZR90fPmyWWovH47610",
+      "title": "pwsh",
+      "kind": "other",
+      "statuses": [
+        "in_progress",
+        "completed"
+      ],
+      "rawInput": {
+        "command": "& 'C:\\Users\\xuesh\\AppData\\Local\\Temp\\dsh-acl-skill-bCJ0Cg\\scripts\\diagnose-windows-sandbox-acl.ps1' -Path 'D:\\WWW\\Maestro\\probe\\runs\\acl-repro-01\\workspace' -AllowRoot 'D:\\WWW\\Maestro\\probe\\runs\\acl-repro-01\\workspace' -Out 'D:\\WWW\\Maestro\\probe\\runs\\acl-repro-01\\acl-recovery'\nexit $LASTEXITCODE",
+        "description": "Diagnose and repair workspace folder permissions",
+        "timeoutMs": 120000,
+        "sandbox_permissions": "danger-full-access",
+        "justification": "这个工作区被 Windows 文件权限挡住了，命令一启动就失败；需要以不受限模式运行一次随附的检查修复脚本，它会检查工作区及其上级文件夹的权限，在缺少权限的地方给当前登录用户补上完全控制，并移除无关的程序包条目，不改文件内容和所有者，运行完会打印撤销命令。"
+      },
+      "status": "completed"
+    },
+    {
+      "toolCallId": "call_00_WP6wgFLuej0Egqej37WJ7294",
+      "title": "pwsh",
+      "kind": "other",
+      "statuses": [
+        "in_progress",
+        "completed"
+      ],
+      "rawInput": {
+        "command": "Start-Sleep -Seconds 6; Write-Output \"slept 6 seconds\"",
+        "description": "Sleep six seconds then report",
+        "timeoutMs": 30000
+      },
+      "status": "completed"
+    }
+  ],
+  "stopReason": "end_turn",
+  "sessionId": "883901a3-3c5d-4a95-aee9-e30ac6e4ff17",
+  "assertions": {},
+  "errors": [],
+  "initialize": {
+    "protocolVersion": 1,
+    "agentInfo": {
+      "name": "deepseek-harness-acp",
+      "version": "0.0.1"
+    },
+    "agentCapabilities": {
+      "mcpCapabilities": {
+        "http": true
+      },
+      "promptCapabilities": {
+        "image": true,
+        "audio": false,
+        "embeddedContext": false
+      },
+      "sessionCapabilities": {
+        "close": {},
+        "list": {},
+        "resume": {}
+      }
+    },
+    "authMethods": []
+  },
+  "sessionNew": {
+    "sessionId": "883901a3-3c5d-4a95-aee9-e30ac6e4ff17",
+    "configOptionsCount": 2
+  },
+  "busy": {
+    "sentAtMs": 2218.383,
+    "respondedAtMs": 2220.919,
+    "latencyMs": 2.549,
+    "error": {
+      "code": -32602,
+      "message": "Invalid params: a prompt is already in flight for this session"
+    }
+  },
+  "promptError": null,
+  "firstPromptFrame": {
+    "tMs": 3325.063,
+    "kind": "session/update",
+    "sessionUpdate": "agent_thought_chunk"
+  },
+  "permissionsRequested": 1,
+  "updateSequence": [
+    {
+      "tMs": 3324.997,
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    {
+      "tMs": 3325.877,
+      "sessionUpdate": "usage_update"
+    },
+    {
+      "tMs": 3326.006,
+      "sessionUpdate": "tool_call",
+      "status": "in_progress",
+      "title": "pwsh",
+      "toolCallId": "call_00_br2ACkYapgSE83geJvJy7180"
+    },
+    {
+      "tMs": 3362.012,
+      "sessionUpdate": "tool_call_update",
+      "status": "failed",
+      "toolCallId": "call_00_br2ACkYapgSE83geJvJy7180"
+    },
+    {
+      "tMs": 5168.435,
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    {
+      "tMs": 5169.063,
+      "sessionUpdate": "usage_update"
+    },
+    {
+      "tMs": 5169.64,
+      "sessionUpdate": "tool_call",
+      "status": "in_progress",
+      "title": "skill",
+      "toolCallId": "call_00_1YsZgfR5MGeeEpjAnz2l7756"
+    },
+    {
+      "tMs": 5194.841,
+      "sessionUpdate": "tool_call_update",
+      "status": "completed",
+      "toolCallId": "call_00_1YsZgfR5MGeeEpjAnz2l7756"
+    },
+    {
+      "tMs": 10016.535,
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    {
+      "tMs": 10017.733,
+      "sessionUpdate": "usage_update"
+    },
+    {
+      "tMs": 10018.068,
+      "sessionUpdate": "tool_call",
+      "status": "in_progress",
+      "title": "pwsh",
+      "toolCallId": "call_00_sXYGRNZR90fPmyWWovH47610"
+    },
+    {
+      "tMs": 12339.982,
+      "sessionUpdate": "tool_call_update",
+      "status": "completed",
+      "toolCallId": "call_00_sXYGRNZR90fPmyWWovH47610"
+    },
+    {
+      "tMs": 13989.223,
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    {
+      "tMs": 13990.08,
+      "sessionUpdate": "usage_update"
+    },
+    {
+      "tMs": 13990.262,
+      "sessionUpdate": "tool_call",
+      "status": "in_progress",
+      "title": "pwsh",
+      "toolCallId": "call_00_WP6wgFLuej0Egqej37WJ7294"
+    },
+    {
+      "tMs": 21544.353,
+      "sessionUpdate": "tool_call_update",
+      "status": "completed",
+      "toolCallId": "call_00_WP6wgFLuej0Egqej37WJ7294"
+    },
+    {
+      "tMs": 24818.668,
+      "sessionUpdate": "agent_message_chunk"
+    },
+    {
+      "tMs": 24819.337,
+      "sessionUpdate": "usage_update"
+    }
+  ],
+  "ok": true,
+  "finishedAt": "2026-11-04T13:47:03.221Z"
+}

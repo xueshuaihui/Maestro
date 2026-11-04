@@ -1,0 +1,32 @@
+# AC-10 原始输出（采集于 2026-11-04T15:55:03.032Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## icacls /deny（构造不可写目录）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) icacls C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo\readonly /deny XUESH\xuesh:(OI)(CI)(W)
+[started 2026-11-04T15:55:02.529Z  duration ?ms  exit 0]
+�Ѵ������ļ�: C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo\readonly
+�ѳɹ����� 1 ���ļ�; ���� 0 ���ļ�ʱʧ��
+[exit 0]
+
+## orch run --cwd ./demo/readonly
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo/readonly --instance INST-110 --task 写一段 200 字的产品说明，保存到 out/intro.md
+[started 2026-11-04T15:55:02.685Z  duration 224ms  exit 3]
++    217ms  工作目录不可写：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo\readonly
+[exit 3]
+
+## orch status --instance INST-110
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-110
+[started 2026-11-04T15:55:02.910Z  duration 91ms  exit 1]
++     85ms  实例 INST-110 · 不存在
+[exit 1]
+
+## icacls /remove:d（恢复权限）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) icacls C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo\readonly /remove:d XUESH\xuesh
+[started 2026-11-04T15:55:03.001Z  duration ?ms  exit 0]
+�Ѵ������ļ�: C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo\readonly
+�ѳɹ����� 1 ���ļ�; ���� 0 ���ļ�ʱʧ��
+[exit 0]
+
+## 写探针结果
+writable=false

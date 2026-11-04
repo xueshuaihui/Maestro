@@ -1,0 +1,127 @@
+{
+  "runId": "busy-01",
+  "mode": "busy",
+  "startedAt": "2026-11-04T13:40:13.924Z",
+  "dshDir": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness",
+  "dshHome": "D:\\WWW\\Maestro\\probe\\dsh-home",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\busy-01\\workspace",
+  "framing": "ndjson",
+  "timingsMs": {
+    "spawnAtMs": 0,
+    "initializeResult": 3754.043,
+    "sessionNewResult": 3937.314,
+    "promptSent": 3937.364,
+    "turnEnd": 13778.84
+  },
+  "framingSniff": {
+    "firstBytesHex": "7b226a736f6e727063223a22322e30222c226964223a312c22726573756c74223a7b2270726f746f636f6c5665727369",
+    "firstBytesUtf8": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":1,\"agentInfo",
+    "startsWithContentLength": false,
+    "startsWithJson": true,
+    "hasCrLfCrLf": false
+  },
+  "updates": [
+    "agent_thought_chunk",
+    "usage_update",
+    "tool_call",
+    "tool_call_update",
+    "agent_message_chunk",
+    "usage_update"
+  ],
+  "toolCalls": [
+    {
+      "toolCallId": "call_00_e6kQiwA9Eee1rfvEXe5K9290",
+      "title": "pwsh",
+      "kind": "other",
+      "statuses": [
+        "in_progress",
+        "completed"
+      ],
+      "rawInput": {
+        "command": "Start-Sleep -Seconds 6",
+        "description": "Wait six seconds"
+      },
+      "status": "completed"
+    }
+  ],
+  "stopReason": "end_turn",
+  "sessionId": "843088d6-81ae-4805-b7bc-e661519ad57e",
+  "assertions": {},
+  "errors": [],
+  "initialize": {
+    "protocolVersion": 1,
+    "agentInfo": {
+      "name": "deepseek-harness-acp",
+      "version": "0.0.1"
+    },
+    "agentCapabilities": {
+      "mcpCapabilities": {
+        "http": true
+      },
+      "promptCapabilities": {
+        "image": true,
+        "audio": false,
+        "embeddedContext": false
+      },
+      "sessionCapabilities": {
+        "close": {},
+        "list": {},
+        "resume": {}
+      }
+    },
+    "authMethods": []
+  },
+  "sessionNew": {
+    "sessionId": "843088d6-81ae-4805-b7bc-e661519ad57e",
+    "configOptionsCount": 2
+  },
+  "busy": {
+    "sentAtMs": 4245.365,
+    "respondedAtMs": 4248.122,
+    "latencyMs": 2.769,
+    "error": {
+      "code": -32602,
+      "message": "Invalid params: a prompt is already in flight for this session"
+    }
+  },
+  "promptError": null,
+  "firstPromptFrame": {
+    "tMs": 5534.686,
+    "kind": "session/update",
+    "sessionUpdate": "agent_thought_chunk"
+  },
+  "permissionsRequested": 0,
+  "updateSequence": [
+    {
+      "tMs": 5534.657,
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    {
+      "tMs": 5535.549,
+      "sessionUpdate": "usage_update"
+    },
+    {
+      "tMs": 5535.637,
+      "sessionUpdate": "tool_call",
+      "status": "in_progress",
+      "title": "pwsh",
+      "toolCallId": "call_00_e6kQiwA9Eee1rfvEXe5K9290"
+    },
+    {
+      "tMs": 12985.726,
+      "sessionUpdate": "tool_call_update",
+      "status": "completed",
+      "toolCallId": "call_00_e6kQiwA9Eee1rfvEXe5K9290"
+    },
+    {
+      "tMs": 13778.224,
+      "sessionUpdate": "agent_message_chunk"
+    },
+    {
+      "tMs": 13778.632,
+      "sessionUpdate": "usage_update"
+    }
+  ],
+  "ok": true,
+  "finishedAt": "2026-11-04T13:40:28.112Z"
+}

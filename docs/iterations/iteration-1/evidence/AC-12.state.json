@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "instanceId": "INST-112",
+  "coreGeneration": "gen-f403bc3dab09e635",
+  "createdAt": "2026-11-04T15:55:10.911Z",
+  "updatedAt": "2026-11-04T15:55:22.309Z",
+  "state": "interrupted",
+  "stateSince": "2026-11-04T15:55:22.308Z",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "task": "写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+  "roleId": "worker",
+  "node": {
+    "nodeId": "T-001",
+    "state": "running",
+    "stateSince": "2026-11-04T15:55:10.911Z",
+    "startedAt": "2026-11-04T15:55:10.911Z",
+    "endedAt": null,
+    "failure": null,
+    "note": "stopped at node running / session tool_running"
+  },
+  "session": {
+    "sessionId": "0ebca9ec-7a30-4665-a71a-e0f2578af670",
+    "hostId": "dsh",
+    "state": "tool_running",
+    "stateSince": "2026-11-04T15:55:20.935Z",
+    "createdAt": "2026-11-04T15:55:13.299Z",
+    "lastEventAt": "2026-11-04T15:55:20.935Z",
+    "toolName": "pwsh",
+    "turnId": "turn-1",
+    "pendingPermission": null,
+    "quarantined": false
+  },
+  "handoff": {
+    "handoffId": "HO-001",
+    "state": "accepted",
+    "createdAt": "2026-11-04T15:55:13.312Z",
+    "deliveredAt": "2026-11-04T15:55:13.320Z",
+    "acceptedAt": "2026-11-04T15:55:20.934Z",
+    "consumedAt": null,
+    "rejectedAt": null,
+    "rejectReason": null,
+    "acceptedSignal": "agent_thought_chunk",
+    "ambiguityWindowMs": 7614,
+    "note": "stopped at handoff accepted"
+  },
+  "artifactRefs": [],
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "counters": {
+    "eventSeq": 7,
+    "runCount": 1
+  }
+}

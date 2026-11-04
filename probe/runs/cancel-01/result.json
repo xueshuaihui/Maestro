@@ -1,0 +1,80 @@
+{
+  "runId": "cancel-01",
+  "mode": "cancel",
+  "startedAt": "2026-11-04T13:42:22.059Z",
+  "dshDir": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness",
+  "dshHome": "D:\\WWW\\Maestro\\probe\\dsh-home",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\cancel-01\\workspace",
+  "framing": "ndjson",
+  "timingsMs": {
+    "spawnAtMs": 0,
+    "initializeResult": 1716.186,
+    "sessionNewResult": 1936.806,
+    "promptSent": 1936.82,
+    "cancelSent": 3140.121,
+    "turnEnd": 3153.269
+  },
+  "framingSniff": {
+    "firstBytesHex": "7b226a736f6e727063223a22322e30222c226964223a312c22726573756c74223a7b2270726f746f636f6c5665727369",
+    "firstBytesUtf8": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":1,\"agentInfo",
+    "startsWithContentLength": false,
+    "startsWithJson": true,
+    "hasCrLfCrLf": false
+  },
+  "updates": [
+    "agent_thought_chunk"
+  ],
+  "toolCalls": [],
+  "stopReason": "cancelled",
+  "sessionId": "9ca295db-42ac-4d15-8e0e-a2553f1f452a",
+  "assertions": {},
+  "errors": [],
+  "initialize": {
+    "protocolVersion": 1,
+    "agentInfo": {
+      "name": "deepseek-harness-acp",
+      "version": "0.0.1"
+    },
+    "agentCapabilities": {
+      "mcpCapabilities": {
+        "http": true
+      },
+      "promptCapabilities": {
+        "image": true,
+        "audio": false,
+        "embeddedContext": false
+      },
+      "sessionCapabilities": {
+        "close": {},
+        "list": {},
+        "resume": {}
+      }
+    },
+    "authMethods": []
+  },
+  "sessionNew": {
+    "sessionId": "9ca295db-42ac-4d15-8e0e-a2553f1f452a",
+    "configOptionsCount": 2
+  },
+  "promptError": null,
+  "firstPromptFrame": {
+    "tMs": 3152.635,
+    "kind": "session/update",
+    "sessionUpdate": "agent_thought_chunk"
+  },
+  "permissionsRequested": 0,
+  "updateSequence": [
+    {
+      "tMs": 3152.611,
+      "sessionUpdate": "agent_thought_chunk"
+    }
+  ],
+  "cancel": {
+    "sentAtMs": 3140.121,
+    "turnEndMs": 3153.269,
+    "effectiveLatencyMs": 13.148,
+    "stopReason": "cancelled"
+  },
+  "ok": true,
+  "finishedAt": "2026-11-04T13:42:25.594Z"
+}

@@ -1,0 +1,81 @@
+# AC-04 原始输出（采集于 2026-11-04T15:49:51.269Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-104 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md
+[started 2026-11-04T15:49:14.560Z  duration 36619ms  exit 0]
++   2338ms  实例 INST-104 · 运行中
++   2338ms  会话已创建 9ab92440-68ea-4c02-a79d-f58761878bb7
++   2338ms  任务已投递
++   2339ms  会话 空闲
++   4010ms  会话 执行中 · 调用工具（glob） · 已运行 4s
++   4364ms  会话 执行中 · 调用工具（pwsh） · 已运行 4s
++   7322ms  会话 执行中 · 调用工具（read） · 已运行 7s
++   9460ms  会话 执行中 · 调用工具（pwsh） · 已运行 9s
++  15437ms  会话 执行中 · 调用工具（pwsh） · 已运行 15s
++  17628ms  会话 执行中 · 调用工具（write） · 已运行 18s
++  18927ms  会话 执行中 · 调用工具（pwsh） · 已运行 19s
++  24468ms  会话 执行中 · 调用工具（edit） · 已运行 24s
++  26032ms  会话 执行中 · 调用工具（read） · 已运行 26s
++  26040ms  会话 执行中 · 调用工具（pwsh） · 已运行 26s
++  31381ms  会话 执行中 · 调用工具（edit） · 已运行 31s
++  33120ms  会话 执行中 · 调用工具（pwsh） · 已运行 33s
++  35586ms  会话 执行中 · 调用工具（read） · 已运行 35s
++  36518ms  会话 执行中 · 已运行 36s
++  36524ms  会话 等待下游 · 产出已提交
++  36556ms  会话 空闲
++  36612ms  节点 已完成 · 耗时 36s
++  36613ms  交接包 HO-001  已构造   23:49:16
++  36613ms  交接包 HO-001  已投递   23:49:16
++  36613ms  交接包 HO-001  已接受   23:49:18
++  36613ms  交接包 HO-001  已完成   23:49:51
+[exit 0]
+
+## orch status --instance INST-104 --events
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-104 --events
+[started 2026-11-04T15:49:51.180Z  duration 87ms  exit 0]
++     77ms  实例 INST-104 · 已完成
++     77ms  节点 已完成 · 耗时 36s
++     77ms  会话 空闲
++     78ms  交接包 HO-001  已构造   23:49:16
++     78ms  交接包 HO-001  已投递   23:49:16
++     78ms  交接包 HO-001  已接受   23:49:18
++     78ms  交接包 HO-001  已完成   23:49:51
++     79ms  23:49:16  实例 INST-104  已创建 → 运行中  原因 run.started
++     79ms  23:49:16  节点 T-001  待执行 → 执行中  原因 run.started
++     79ms  23:49:16  交接包 HO-001  已构造  原因 handoff.created
++     79ms  23:49:16  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
++     79ms  23:49:18  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  空闲 → 执行中  原因 session.state
++     79ms  23:49:18  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
++     79ms  23:49:18  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（tool_call）  原因 session.state
++     79ms  23:49:21  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     80ms  23:49:21  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（tool_call）  原因 session.state
++     80ms  23:49:24  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     80ms  23:49:24  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（tool_call）  原因 session.state
++     80ms  23:49:32  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     80ms  23:49:32  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（tool_call）  原因 session.state
++     80ms  23:49:33  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     80ms  23:49:33  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（tool_call）  原因 session.state
++     80ms  23:49:39  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     80ms  23:49:39  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（tool_call）  原因 session.state
++     80ms  23:49:40  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     80ms  23:49:40  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（tool_call）  原因 session.state
++     80ms  23:49:45  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     80ms  23:49:45  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（tool_call）  原因 session.state
++     80ms  23:49:47  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     80ms  23:49:47  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（tool_call）  原因 session.state
++     80ms  23:49:51  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     80ms  23:49:51  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  执行中 → 等待下游  原因 output.submitted
++     80ms  23:49:51  节点 T-001  执行中 → 待校验  原因 output.submitted
++     80ms  23:49:51  节点 T-001  待校验 → 已完成  原因 verification.passed
++     80ms  23:49:51  交接包 HO-001  已接受 → 已完成  原因 handoff.consumed
++     80ms  23:49:51  实例 INST-104  运行中 → 已完成  原因 run.completed
++     80ms  23:49:51  会话 9ab92440-68ea-4c02-a79d-f58761878bb7  等待下游 → 空闲  原因 run.completed
+[exit 0]
+
+## handoff 事件（原样）
+{"object":"handoff","objectId":"HO-001","from":null,"to":"created","result":"applied","reason":"handoff.created","detail":null,"gen":"gen-5e938061088f9ad5","seq":3,"ts":"2026-11-04T15:49:16.885Z"}
+{"object":"handoff","objectId":"HO-001","from":"created","to":"delivered","result":"applied","reason":"handoff.delivered","detail":{"atMs":1793807356891},"gen":"gen-5e938061088f9ad5","seq":4,"ts":"2026-11-04T15:49:16.891Z"}
+{"object":"handoff","objectId":"HO-001","from":"delivered","to":"accepted","result":"applied","reason":"turn.first_event","detail":{"event":"agent_thought_chunk","ambiguityWindowMs":1676},"gen":"gen-5e938061088f9ad5","seq":6,"ts":"2026-11-04T15:49:18.569Z"}
+{"object":"handoff","objectId":"HO-001","from":"accepted","to":"consumed","result":"applied","reason":"handoff.consumed","detail":{"atMs":1793807391102},"gen":"gen-5e938061088f9ad5","seq":28,"ts":"2026-11-04T15:49:51.102Z"}

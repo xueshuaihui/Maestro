@@ -1,0 +1,49 @@
+{
+  "ac": "NFR-01",
+  "instanceId": null,
+  "collectedAt": "2026-11-04T15:57:57.452Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "（无单条命令；10 次热启动 + 3 次冷启动，每条命令原文见 extra）",
+      "argv": "(见 extra)",
+      "cwd": null,
+      "exit": 0,
+      "durationMs": null,
+      "startedAt": null,
+      "endedAt": null
+    }
+  ],
+  "assertions": [
+    {
+      "name": "热启动 10 次：看到\"执行中\"最大耗时 ≤ 5000ms",
+      "expected": "≤5000ms",
+      "actual": "3598ms（10 次明细见 extra）",
+      "pass": true
+    },
+    {
+      "name": "热启动 10 次：看到\"会话已创建\"最大耗时 ≤ 5000ms",
+      "expected": "≤5000ms",
+      "actual": "2532ms",
+      "pass": true
+    },
+    {
+      "name": "冷启动 3 次：看到\"执行中\"最大耗时 ≤ 30000ms",
+      "expected": "≤30000ms",
+      "actual": "3387ms（3 次明细见 extra）",
+      "pass": true
+    },
+    {
+      "name": "10 次热启动全部 exit 0",
+      "expected": "0 次失败",
+      "actual": "0 次非零",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "NFR-01 口径：从 spawn(node orch.js) 到输出中第一次出现匹配行（毫秒，CLI 自身计时不可用于此处，用的是采集侧 Date.now 差值）。冷启动只测 3 次（每次都要 core stop + 重新拉起 DSH 会话），如实记 3 次而不是凑满 10 次。"
+  ]
+}

@@ -1,0 +1,61 @@
+# AC-13 原始输出（采集于 2026-11-04T15:56:18.362Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run（先产生一个正常实例）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-113 --task 写一段 200 字的产品说明，保存到 out/intro.md
+[started 2026-11-04T15:55:29.335Z  duration 48514ms  exit 0]
++   2463ms  实例 INST-113 · 运行中
++   2463ms  会话已创建 5c1063ca-8628-4599-8deb-4c57bc1455be
++   2463ms  任务已投递
++   2464ms  会话 空闲
++   4486ms  会话 执行中 · 调用工具（pwsh） · 已运行 4s
++   7043ms  会话 执行中 · 调用工具（read） · 已运行 7s
++  10874ms  会话 执行中 · 调用工具（pwsh） · 已运行 11s
++  16553ms  会话 执行中 · 调用工具（pwsh） · 已运行 16s
++  21587ms  会话 执行中 · 调用工具（pwsh） · 已运行 21s
++  22130ms  会话 执行中 · 调用工具（write） · 已运行 22s
++  23497ms  会话 执行中 · 调用工具（pwsh） · 已运行 23s
++  25949ms  会话 执行中 · 调用工具（read） · 已运行 26s
++  28095ms  会话 执行中 · 调用工具（pwsh） · 已运行 28s
++  33240ms  会话 执行中 · 调用工具（pwsh） · 已运行 33s
++  38694ms  会话 执行中 · 调用工具（pwsh） · 已运行 38s
++  43726ms  会话 执行中 · 调用工具（pwsh） · 已运行 44s
++  47181ms  会话 执行中 · 调用工具（write） · 已运行 47s
++  48391ms  会话 执行中 · 已运行 48s
++  48397ms  会话 等待下游 · 产出已提交
++  48438ms  会话 空闲
++  48504ms  节点 已完成 · 耗时 48s
++  48507ms  交接包 HO-001  已构造   23:55:31
++  48507ms  交接包 HO-001  已投递   23:55:31
++  48507ms  交接包 HO-001  已接受   23:55:33
++  48507ms  交接包 HO-001  已完成   23:56:17
+[exit 0]
+
+## orch status --instance INST-113（state.json 已损坏）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-113
+[started 2026-11-04T15:56:18.049Z  duration 206ms  exit 1]
++    199ms  状态不可读，已备份为 state.json.corrupt（C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\.orch\instances\INST-113\state.json.corrupt）
+[exit 1]
+
+## orch status（列表）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status
+[started 2026-11-04T15:56:18.256Z  duration 105ms  exit 0]
++     98ms  实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 19s · 更新 23:46:13
++     98ms  实例 INST-101 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 47s · 更新 23:48:04
++     98ms  实例 INST-102 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 23s · 更新 23:48:28
++     98ms  实例 INST-103 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 25s · 更新 23:49:14
++     98ms  实例 INST-104 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 36s · 更新 23:49:51
++     98ms  实例 INST-105 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 36s · 更新 23:50:27
++     98ms  实例 INST-106 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 27s · 更新 23:50:55
++     98ms  实例 INST-107 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 17s · 更新 23:52:09
++     98ms  实例 INST-108 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1m2s · 更新 23:53:11
++     98ms  实例 INST-111 · 已取消 · 节点 已取消 · 会话 空闲 · 耗时 4s · 更新 23:55:10
++     98ms  实例 INST-112 · 已中断 · 节点 执行中 · 会话 执行中 · 耗时 56s · 更新 23:55:22
++     98ms  实例 INST-113 · 状态不可读
+[exit 0]
+
+## 损坏前后 state.json 原文
+写坏的内容: "{\"broken"
+status 之后读回: "{\"broken"
+备份文件: C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\.orch\instances\INST-113\state.json.corrupt (exists=true)

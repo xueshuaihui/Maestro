@@ -1,0 +1,58 @@
+{
+  "commands": [
+    {
+      "label": "status（--hold-session 停住、未接任务）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js status --instance INST-001",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-15",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 112,
+      "stdout": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:16\n交接包 HO-001  已投递   23:54:16\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n",
+      "stderr": ""
+    },
+    {
+      "label": "cancel（收尾，避免留孤儿）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js cancel --instance INST-001",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-15",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 149,
+      "stdout": "会话 空闲\n节点 已取消\n交接包 HO-001 已拒绝（已撤回）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（后台，--hold-session）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-15",
+      "exitCode": 1,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-13776-1\n任务已投递\n会话 空闲\n节点 已取消\n交接包 HO-001  已构造   23:54:16\n交接包 HO-001  已投递   23:54:16\n交接包 HO-001  已拒绝   23:54:17  原因 已撤回\n",
+      "stderr": "",
+      "elapsedMs": 1031
+    },
+    {
+      "label": "probe-adapter --observe session-state",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\test\\fixtures\\probe-adapter.mjs --mock D:\\WWW\\Maestro\\test\\fixtures\\mock-acp-agent.js --switches --hold-session --observe session-state",
+      "exitCode": 0,
+      "stdout": "{\"ok\":true,\"mode\":\"session-state\",\"session\":{\"sessionId\":\"mock-sess-24188-1\",\"hostId\":\"mock\",\"state\":\"idle\",\"stateSince\":\"2026-11-04T15:54:17.634Z\",\"toolName\":null,\"turnId\":null,\"quarantined\":false},\"observedState\":null,\"handoff\":null,\"noiseCount\":0,\"turnEventCount\":0,\"stopReason\":null}\n",
+      "stderr": "",
+      "json": {
+        "ok": true,
+        "mode": "session-state",
+        "session": {
+          "sessionId": "mock-sess-24188-1",
+          "hostId": "mock",
+          "state": "idle",
+          "stateSince": "2026-11-04T15:54:17.634Z",
+          "toolName": null,
+          "turnId": null,
+          "quarantined": false
+        },
+        "observedState": null,
+        "handoff": null,
+        "noiseCount": 0,
+        "turnEventCount": 0,
+        "stopReason": null
+      }
+    }
+  ]
+}

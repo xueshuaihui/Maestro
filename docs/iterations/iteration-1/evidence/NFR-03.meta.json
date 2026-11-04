@@ -1,0 +1,280 @@
+{
+  "id": "NFR-03",
+  "title": "连续 10 个任务：0 次状态错乱、0 条记录缺失",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-03",
+  "switches": [
+    "--turn-delay-ms",
+    "0"
+  ],
+  "runs": 10,
+  "totalMs": 4334,
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "INST-001 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-001 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-001",
+          "node": "T-001",
+          "session": "mock-sess-13256-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-001 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "INST-002 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-002 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-002",
+          "node": "T-001",
+          "session": "mock-sess-9488-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-002 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "INST-003 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-003 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-003",
+          "node": "T-001",
+          "session": "mock-sess-2028-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-003 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "INST-004 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-004 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-004",
+          "node": "T-001",
+          "session": "mock-sess-16580-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-004 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "INST-005 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-005 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-005",
+          "node": "T-001",
+          "session": "mock-sess-27700-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-005 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "INST-006 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-006 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-006",
+          "node": "T-001",
+          "session": "mock-sess-19120-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-006 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "INST-007 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-007 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-007",
+          "node": "T-001",
+          "session": "mock-sess-16976-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-007 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "INST-008 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-008 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-008",
+          "node": "T-001",
+          "session": "mock-sess-23184-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-008 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "INST-009 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-009 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-009",
+          "node": "T-001",
+          "session": "mock-sess-30192-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-009 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "INST-010 退出码 0",
+        "ok": true,
+        "actual": 0
+      },
+      {
+        "id": "INST-010 五类信息齐全",
+        "ok": true,
+        "actual": {
+          "instanceId": "INST-010",
+          "node": "T-001",
+          "session": "mock-sess-30696-1",
+          "handoff": "HO-001",
+          "events": 15
+        }
+      },
+      {
+        "id": "INST-010 节点 done / 交接包 consumed",
+        "ok": true,
+        "actual": {
+          "node": "done",
+          "handoff": "consumed"
+        }
+      },
+      {
+        "id": "status 列出 10 个实例",
+        "ok": true,
+        "actual": 10
+      },
+      {
+        "id": "status --instance --events 能查到事件",
+        "ok": true,
+        "actual": [
+          "实例 INST-005 · 已完成",
+          "节点 已完成 · 耗时 1s",
+          "会话 空闲",
+          "交接包 HO-001  已构造   23:55:01",
+          "交接包 HO-001  已投递   23:55:01",
+          "交接包 HO-001  已接受   23:55:01",
+          "交接包 HO-001  已完成   23:55:01",
+          "23:55:01  实例 INST-005  已创建 → 运行中  原因 run.started"
+        ]
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "每个实例独立跑完；逐实例核对 实例/节点/会话/交接包/事件 五项。"
+  ]
+}

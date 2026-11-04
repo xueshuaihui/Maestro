@@ -1,0 +1,53 @@
+# NFR-07 原始输出（采集于 2026-11-04T16:01:57.728Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run（长任务，随后被杀）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-601 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md
+[started 2026-11-04T16:01:46.272Z  duration 9634ms  exit 1]
++   2191ms  实例 INST-601 · 运行中
++   2192ms  会话已创建 09ecdcf0-7925-491b-bb29-fa068cc41693
++   2192ms  任务已投递
++   2194ms  会话 空闲
++   8983ms  会话 执行中 · 调用工具（glob） · 已运行 9s
+[exit 1]
+
+## taskkill /PID <pid> /T /F
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) taskkill /PID 30756 /F
+[started 2026-11-04T16:01:55.657Z  duration ?ms  exit 0]
+�ɹ�: ����ֹ PID Ϊ 30756 �Ľ��̡�
+[exit 0]
+
+## tasklist 复核 PID 是否还在
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) tasklist /FI PID eq 30756 /NH
+[started 2026-11-04T16:01:57.111Z  duration ?ms  exit 0]
+��Ϣ: û�����е�����ƥ��ָ����׼��
+[exit 0]
+
+## orch status --instance INST-601（CLI 被杀后）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-601
+[started 2026-11-04T16:01:57.431Z  duration 86ms  exit 0]
++     79ms  实例 INST-601 · 运行中
++     79ms  节点 执行中
++     79ms  会话 执行中 · 调用工具（read） · 已运行 11s
++     80ms  交接包 HO-001  已构造   00:01:48
++     80ms  交接包 HO-001  已投递   00:01:48
++     80ms  交接包 HO-001  已接受   00:01:55
+[exit 0]
+
+## orch status --instance INST-601（再查一次）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-601
+[started 2026-11-04T16:01:57.517Z  duration 97ms  exit 0]
++     89ms  实例 INST-601 · 运行中
++     89ms  节点 执行中
++     89ms  会话 执行中 · 调用工具（read） · 已运行 11s
++     90ms  交接包 HO-001  已构造   00:01:48
++     90ms  交接包 HO-001  已投递   00:01:48
++     90ms  交接包 HO-001  已接受   00:01:55
+[exit 0]
+
+## core.ping（CLI 被杀后）
+{"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj","connected":true,"pid":30684,"generation":"gen-bce558bb77a6901e","code":null,"coldStart":false,"elapsedMs":2,"pingOk":true}
+
+## kill 前 tasklist
+node.exe                     30756 Console                    4     56,832 K

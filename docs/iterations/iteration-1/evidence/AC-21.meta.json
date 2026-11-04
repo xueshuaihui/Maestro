@@ -1,0 +1,68 @@
+{
+  "id": "AC-21",
+  "title": "执行失败保留宿主原文与出错步骤",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-21",
+  "switches": [
+    "--host-error"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "输出含「执行失败：mock-host: upstream model request failed (code 500)」",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-29156-1\n任务已投递\n会话 空闲\n节点 失败 · 执行失败：mock-host: upstream model request failed (code 500)\n交接包 HO-001  已构造   23:54:30\n交接包 HO-001  已投递   23:54:30\n交接包 HO-001  已拒绝   23:54:30  原因 目标拒绝\n执行失败：mock-host: upstream model request failed (code 500)\n"
+      },
+      {
+        "id": "宿主原文未被改写/截断",
+        "ok": true,
+        "actual": {
+          "code": -32603,
+          "message": "mock-host: upstream model request failed (code 500)",
+          "at": "2026-11-04T15:54:30.789Z"
+        }
+      },
+      {
+        "id": "节点 = 失败",
+        "ok": true,
+        "actual": "failed"
+      },
+      {
+        "id": "能看出停在哪一步（节点 T-001 执行中→失败）",
+        "ok": true,
+        "actual": {
+          "seq": 5,
+          "ts": "2026-11-04T15:54:30.794Z",
+          "object": "node",
+          "objectId": "T-001",
+          "from": "running",
+          "to": "failed",
+          "result": "applied",
+          "reason": "run.failed",
+          "detail": {
+            "code": "HOST_ERROR",
+            "message": "mock-host: upstream model request failed (code 500)"
+          }
+        }
+      },
+      {
+        "id": "交接包不显示已完成",
+        "ok": true,
+        "actual": {
+          "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-29156-1\n任务已投递\n会话 空闲\n节点 失败 · 执行失败：mock-host: upstream model request failed (code 500)\n交接包 HO-001  已构造   23:54:30\n交接包 HO-001  已投递   23:54:30\n交接包 HO-001  已拒绝   23:54:30  原因 目标拒绝\n执行失败：mock-host: upstream model request failed (code 500)\n",
+          "handoffState": "rejected"
+        }
+      },
+      {
+        "id": "交接包 = 已拒绝",
+        "ok": true,
+        "actual": "rejected"
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "“停在哪一步”在本迭代只有单节点，由节点 T-001 的 running→failed 事件与「节点 失败」行共同表达。"
+  ]
+}

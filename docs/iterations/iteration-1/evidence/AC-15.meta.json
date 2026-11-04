@@ -1,0 +1,60 @@
+{
+  "id": "AC-15",
+  "title": "会话建好但没接任务是空闲",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-15",
+  "switches": [
+    "--hold-session"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "status 显示 会话 空闲",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:16\n交接包 HO-001  已投递   23:54:16\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n"
+      },
+      {
+        "id": "status 不出现 会话 执行中",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 空闲\n交接包 HO-001  已构造   23:54:16\n交接包 HO-001  已投递   23:54:16\n交接包 HO-001  已投递   等待目标响应 · 已等待 1s\n"
+      },
+      {
+        "id": "state.session.state = idle",
+        "ok": true,
+        "actual": "idle"
+      },
+      {
+        "id": "无 session→thinking 事件",
+        "ok": true,
+        "actual": []
+      },
+      {
+        "id": "probe 观察值为 idle 且 observedState 为 null（未自证）",
+        "ok": true,
+        "actual": {
+          "ok": true,
+          "mode": "session-state",
+          "session": {
+            "sessionId": "mock-sess-24188-1",
+            "hostId": "mock",
+            "state": "idle",
+            "stateSince": "2026-11-04T15:54:17.634Z",
+            "toolName": null,
+            "turnId": null,
+            "quarantined": false
+          },
+          "observedState": null,
+          "handoff": null,
+          "noiseCount": 0,
+          "turnEventCount": 0,
+          "stopReason": null
+        }
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "--hold-session 让 prompt 收到后完全不发帧，复现“会话已建、未接任务”窗口。"
+  ]
+}

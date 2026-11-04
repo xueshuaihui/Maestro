@@ -1,0 +1,116 @@
+{
+  "runId": "cancel-02",
+  "mode": "cancel",
+  "startedAt": "2026-11-04T13:44:27.780Z",
+  "dshDir": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness",
+  "dshHome": "D:\\WWW\\Maestro\\probe\\dsh-home",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i11-probe\\cancel-02\\workspace",
+  "framing": "ndjson",
+  "timingsMs": {
+    "spawnAtMs": 0,
+    "initializeResult": 1688.1,
+    "sessionNewResult": 1869.615,
+    "promptSent": 1869.628,
+    "cancelSent": 4747.45,
+    "turnEnd": 4803.623
+  },
+  "framingSniff": {
+    "firstBytesHex": "7b226a736f6e727063223a22322e30222c226964223a312c22726573756c74223a7b2270726f746f636f6c5665727369",
+    "firstBytesUtf8": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":1,\"agentInfo",
+    "startsWithContentLength": false,
+    "startsWithJson": true,
+    "hasCrLfCrLf": false
+  },
+  "updates": [
+    "agent_thought_chunk",
+    "usage_update",
+    "tool_call",
+    "tool_call_update"
+  ],
+  "toolCalls": [
+    {
+      "toolCallId": "call_00_ivxiEfaqMS5pd4cPuFAz2540",
+      "title": "pwsh",
+      "kind": "other",
+      "statuses": [
+        "in_progress",
+        "failed"
+      ],
+      "rawInput": {
+        "command": "Start-Sleep -Seconds 20",
+        "description": "Wait 20 seconds via Start-Sleep",
+        "timeoutMs": 40000
+      },
+      "status": "failed"
+    }
+  ],
+  "stopReason": "cancelled",
+  "sessionId": "f6ca581e-e7c1-437e-8ba9-d1553d37d241",
+  "assertions": {},
+  "errors": [],
+  "initialize": {
+    "protocolVersion": 1,
+    "agentInfo": {
+      "name": "deepseek-harness-acp",
+      "version": "0.0.1"
+    },
+    "agentCapabilities": {
+      "mcpCapabilities": {
+        "http": true
+      },
+      "promptCapabilities": {
+        "image": true,
+        "audio": false,
+        "embeddedContext": false
+      },
+      "sessionCapabilities": {
+        "close": {},
+        "list": {},
+        "resume": {}
+      }
+    },
+    "authMethods": []
+  },
+  "sessionNew": {
+    "sessionId": "f6ca581e-e7c1-437e-8ba9-d1553d37d241",
+    "configOptionsCount": 2
+  },
+  "promptError": null,
+  "firstPromptFrame": {
+    "tMs": 3205.112,
+    "kind": "session/update",
+    "sessionUpdate": "agent_thought_chunk"
+  },
+  "permissionsRequested": 0,
+  "updateSequence": [
+    {
+      "tMs": 3205.097,
+      "sessionUpdate": "agent_thought_chunk"
+    },
+    {
+      "tMs": 3205.633,
+      "sessionUpdate": "usage_update"
+    },
+    {
+      "tMs": 3205.89,
+      "sessionUpdate": "tool_call",
+      "status": "in_progress",
+      "title": "pwsh",
+      "toolCallId": "call_00_ivxiEfaqMS5pd4cPuFAz2540"
+    },
+    {
+      "tMs": 4801.099,
+      "sessionUpdate": "tool_call_update",
+      "status": "failed",
+      "toolCallId": "call_00_ivxiEfaqMS5pd4cPuFAz2540"
+    }
+  ],
+  "cancel": {
+    "sentAtMs": 4747.45,
+    "turnEndMs": 4803.623,
+    "effectiveLatencyMs": 56.173,
+    "stopReason": "cancelled"
+  },
+  "ok": true,
+  "finishedAt": "2026-11-04T13:44:32.970Z"
+}

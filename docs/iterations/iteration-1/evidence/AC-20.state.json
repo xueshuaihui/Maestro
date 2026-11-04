@@ -1,0 +1,53 @@
+{
+  "INST-001": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "failed",
+    "stateSince": "2026-11-04T15:54:30.078Z",
+    "updatedAt": "2026-11-04T15:54:30.087Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-20\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "failed",
+      "startedAt": "2026-11-04T15:54:29.834Z",
+      "endedAt": "2026-11-04T15:54:30.085Z",
+      "failure": {
+        "code": "SESSION_INVALID",
+        "message": "unknown session"
+      },
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-27308-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:54:30.086Z",
+      "lastEventAt": "2026-11-04T15:54:30.043Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": true,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "rejected",
+      "createdAt": "2026-11-04T15:54:30.055Z",
+      "deliveredAt": "2026-11-04T15:54:30.061Z",
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": "2026-11-04T15:54:30.085Z",
+      "rejectReason": "target_rejected",
+      "acceptedSignal": null
+    },
+    "hostRaw": {
+      "stopReason": null,
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 7,
+      "runCount": 1
+    }
+  }
+}

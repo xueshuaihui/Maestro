@@ -1,0 +1,21 @@
+{
+  "commands": [
+    {
+      "label": "orch run（--write-ref out/intro.md，先造出 done）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段 200 字的产品说明，保存到 out/intro.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-26",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 555,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-23320-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:54:59\n交接包 HO-001  已投递   23:54:59\n交接包 HO-001  已接受   23:54:59\n交接包 HO-001  已完成   23:54:59\n",
+      "stderr": ""
+    },
+    {
+      "label": "attempt-transition --object node --from done --to running",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\test\\fixtures\\attempt-transition.mjs --root C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-26 --instance INST-001 --object node --from done --to running",
+      "exitCode": 0,
+      "stdout": "{\n  \"ok\": false,\n  \"code\": \"ILLEGAL_TRANSITION\",\n  \"from\": \"done\",\n  \"to\": \"running\",\n  \"message\": \"node: done -> running is not in the transition table\"\n}\n已拒绝：node done -> running（ILLEGAL_TRANSITION）\n",
+      "stderr": ""
+    }
+  ]
+}

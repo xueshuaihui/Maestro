@@ -1,0 +1,57 @@
+{
+  "INST-001": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "failed",
+    "stateSince": "2026-11-04T15:54:30.796Z",
+    "updatedAt": "2026-11-04T15:54:30.807Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-21\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "failed",
+      "startedAt": "2026-11-04T15:54:30.546Z",
+      "endedAt": "2026-11-04T15:54:30.802Z",
+      "failure": {
+        "code": "HOST_ERROR",
+        "message": "mock-host: upstream model request failed (code 500)"
+      },
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-29156-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:54:30.805Z",
+      "lastEventAt": "2026-11-04T15:54:30.755Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": true,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "rejected",
+      "createdAt": "2026-11-04T15:54:30.770Z",
+      "deliveredAt": "2026-11-04T15:54:30.780Z",
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": "2026-11-04T15:54:30.802Z",
+      "rejectReason": "target_rejected",
+      "acceptedSignal": null
+    },
+    "hostRaw": {
+      "stopReason": null,
+      "lastError": {
+        "code": -32603,
+        "message": "mock-host: upstream model request failed (code 500)",
+        "at": "2026-11-04T15:54:30.789Z"
+      },
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 7,
+      "runCount": 1
+    }
+  }
+}

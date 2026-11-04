@@ -1,0 +1,69 @@
+{
+  "id": "AC-20",
+  "title": "会话失效与“正在执行”是两条不同提示",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-20",
+  "switches": [
+    "--session-missing"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "输出含「会话已失效，需要重新创建」",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-27308-1\n任务已投递\n会话 空闲\n节点 失败 · 会话已失效，需要重新创建\n交接包 HO-001  已构造   23:54:30\n交接包 HO-001  已投递   23:54:30\n交接包 HO-001  已拒绝   23:54:30  原因 目标拒绝\n会话已失效，需要重新创建\n"
+      },
+      {
+        "id": "输出不含「该节点正在执行，本次未发起」",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-27308-1\n任务已投递\n会话 空闲\n节点 失败 · 会话已失效，需要重新创建\n交接包 HO-001  已构造   23:54:30\n交接包 HO-001  已投递   23:54:30\n交接包 HO-001  已拒绝   23:54:30  原因 目标拒绝\n会话已失效，需要重新创建\n"
+      },
+      {
+        "id": "两条提示不是同一条（逐字不同）",
+        "ok": true,
+        "actual": {
+          "MSG_INVALID": "会话已失效，需要重新创建",
+          "MSG_BUSY": "该节点正在执行，本次未发起"
+        }
+      },
+      {
+        "id": "node.failure.code = SESSION_INVALID",
+        "ok": true,
+        "actual": {
+          "code": "SESSION_INVALID",
+          "message": "unknown session"
+        }
+      },
+      {
+        "id": "节点 = 失败",
+        "ok": true,
+        "actual": "failed"
+      },
+      {
+        "id": "事件里没有把 SESSION_INVALID 记成 NODE_BUSY",
+        "ok": true,
+        "actual": [
+          {
+            "seq": 5,
+            "ts": "2026-11-04T15:54:30.076Z",
+            "object": "node",
+            "objectId": "T-001",
+            "from": "running",
+            "to": "failed",
+            "result": "applied",
+            "reason": "run.failed",
+            "detail": {
+              "code": "SESSION_INVALID",
+              "message": "unknown session"
+            }
+          }
+        ]
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "mock 的 session/new 正常返回 id 后立刻标记 closed，后续 prompt 回 -32602 unknown session。"
+  ]
+}

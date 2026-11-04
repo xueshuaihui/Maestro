@@ -1,0 +1,49 @@
+# AC-03 原始输出（采集于 2026-11-04T15:49:14.453Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run（长任务）流式输出
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-103 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md
+[started 2026-11-04T15:48:49.462Z  duration 24987ms  exit 0]
++   2329ms  实例 INST-103 · 运行中
++   2329ms  会话已创建 f1d12099-30cc-41a9-9641-e67c105d42d5
++   2329ms  任务已投递
++   2331ms  会话 空闲
++   4766ms  会话 执行中 · 调用工具（pwsh） · 已运行 5s
++  10378ms  会话 执行中 · 调用工具（pwsh） · 已运行 10s
++  11939ms  会话 执行中 · 调用工具（write） · 已运行 12s
++  13439ms  会话 执行中 · 调用工具（read） · 已运行 13s
++  13448ms  会话 执行中 · 调用工具（pwsh） · 已运行 13s
++  18886ms  会话 执行中 · 调用工具（write） · 已运行 19s
++  20464ms  会话 执行中 · 调用工具（pwsh） · 已运行 20s
++  24878ms  会话 执行中 · 已运行 25s
++  24888ms  会话 等待下游 · 产出已提交
++  24921ms  会话 空闲
++  24977ms  节点 已完成 · 耗时 25s
++  24979ms  交接包 HO-001  已构造   23:48:51
++  24979ms  交接包 HO-001  已投递   23:48:51
++  24979ms  交接包 HO-001  已接受   23:48:54
++  24979ms  交接包 HO-001  已完成   23:49:14
+[exit 0]
+
+## 第 1 次 orch status --instance INST-103（执行中）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-103
+[started 2026-11-04T15:48:54.259Z  duration 100ms  exit 0]
++     93ms  实例 INST-103 · 运行中
++     93ms  节点 执行中
++     93ms  会话 执行中 · 调用工具（pwsh） · 已运行 5s
++     94ms  交接包 HO-001  已构造   23:48:51
++     94ms  交接包 HO-001  已投递   23:48:51
++     94ms  交接包 HO-001  已接受   23:48:54
+[exit 0]
+
+## 第 2 次 orch status --instance INST-103（4s 后）
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-103
+[started 2026-11-04T15:48:58.370Z  duration 100ms  exit 0]
++     91ms  实例 INST-103 · 运行中
++     91ms  节点 执行中
++     91ms  会话 执行中 · 调用工具（pwsh） · 已运行 9s
++     93ms  交接包 HO-001  已构造   23:48:51
++     93ms  交接包 HO-001  已投递   23:48:51
++     93ms  交接包 HO-001  已接受   23:48:54
+[exit 0]

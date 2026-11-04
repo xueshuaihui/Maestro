@@ -1,0 +1,88 @@
+# AC-14 原始输出（采集于 2026-11-04T16:03:34.403Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-114 --task 写一段 200 字的产品说明，保存到 out/intro.md
+[started 2026-11-04T16:02:29.020Z  duration 65292ms  exit 0]
++   2211ms  实例 INST-114 · 运行中
++   2211ms  会话已创建 276970f7-57b8-427b-9751-8dbd58b3b34b
++   2211ms  任务已投递
++   2213ms  会话 空闲
++   4312ms  会话 执行中 · 调用工具（pwsh） · 已运行 4s
++   6994ms  会话 执行中 · 调用工具（read） · 已运行 7s
++  12296ms  会话 执行中 · 调用工具（read） · 已运行 12s
++  13098ms  会话 执行中 · 调用工具（write） · 已运行 13s
++  15321ms  会话 执行中 · 调用工具（pwsh） · 已运行 15s
++  20358ms  会话 执行中 · 调用工具（pwsh） · 已运行 20s
++  25389ms  会话 执行中 · 调用工具（pwsh） · 已运行 25s
++  25695ms  会话 执行中 · 调用工具（write） · 已运行 26s
++  27398ms  会话 执行中 · 调用工具（pwsh） · 已运行 27s
++  32438ms  会话 执行中 · 调用工具（pwsh） · 已运行 32s
++  37476ms  会话 执行中 · 调用工具（pwsh） · 已运行 37s
++  40881ms  会话 执行中 · 调用工具（edit） · 已运行 41s
++  42210ms  会话 执行中 · 调用工具（read） · 已运行 42s
++  45648ms  会话 执行中 · 调用工具（write） · 已运行 45s
++  47536ms  会话 执行中 · 调用工具（pwsh） · 已运行 47s
++  52579ms  会话 执行中 · 调用工具（pwsh） · 已运行 52s
++  57617ms  会话 执行中 · 调用工具（pwsh） · 已运行 57s
++  58626ms  会话 执行中 · 已运行 58s · 无新事件
++  59128ms  会话 执行中 · 调用工具（write） · 已运行 59s
++  60644ms  会话 执行中 · 调用工具（pwsh） · 已运行 1m
++  63646ms  会话 执行中 · 调用工具（read） · 已运行 1m3s
++  65160ms  会话 执行中 · 已运行 1m5s
++  65180ms  会话 等待下游 · 产出已提交
++  65212ms  会话 空闲
++  65284ms  节点 已完成 · 耗时 1m5s
++  65285ms  交接包 HO-001  已构造   00:02:31
++  65285ms  交接包 HO-001  已投递   00:02:31
++  65285ms  交接包 HO-001  已接受   00:02:33
++  65285ms  交接包 HO-001  已完成   00:03:34
+[exit 0]
+
+## orch status --instance INST-114 --events
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-114 --events
+[started 2026-11-04T16:03:34.313Z  duration 88ms  exit 0]
++     78ms  实例 INST-114 · 已完成
++     78ms  节点 已完成 · 耗时 1m5s
++     78ms  会话 空闲
++     79ms  交接包 HO-001  已构造   00:02:31
++     79ms  交接包 HO-001  已投递   00:02:31
++     79ms  交接包 HO-001  已接受   00:02:33
++     79ms  交接包 HO-001  已完成   00:03:34
++     81ms  00:02:31  实例 INST-114  已创建 → 运行中  原因 run.started
++     81ms  00:02:31  节点 T-001  待执行 → 执行中  原因 run.started
++     81ms  00:02:31  交接包 HO-001  已构造  原因 handoff.created
++     81ms  00:02:31  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
++     81ms  00:02:33  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  空闲 → 执行中  原因 session.state
++     81ms  00:02:33  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
++     81ms  00:02:33  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:02:36  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     81ms  00:02:36  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:02:42  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     81ms  00:02:42  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:02:54  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     81ms  00:02:54  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:03:02  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     81ms  00:03:02  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:03:09  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     81ms  00:03:09  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:03:11  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     81ms  00:03:11  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:03:14  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     81ms  00:03:14  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:03:28  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     81ms  00:03:28  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:03:32  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     81ms  00:03:32  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（tool_call）  原因 session.state
++     81ms  00:03:34  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 执行中（agent_message_chunk）  原因 session.state
++     81ms  00:03:34  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  执行中 → 等待下游  原因 output.submitted
++     81ms  00:03:34  节点 T-001  执行中 → 待校验  原因 output.submitted
++     81ms  00:03:34  节点 T-001  待校验 → 已完成  原因 verification.passed
++     81ms  00:03:34  交接包 HO-001  已接受 → 已完成  原因 handoff.consumed
++     81ms  00:03:34  实例 INST-114  运行中 → 已完成  原因 run.completed
++     81ms  00:03:34  会话 276970f7-57b8-427b-9751-8dbd58b3b34b  等待下游 → 空闲  原因 run.completed
+[exit 0]
+
+## events.jsonl 行数
+32

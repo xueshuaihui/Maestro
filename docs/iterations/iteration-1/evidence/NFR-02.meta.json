@@ -1,0 +1,37 @@
+{
+  "ac": "NFR-02",
+  "instanceId": null,
+  "collectedAt": "2026-11-04T16:00:03.590Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "（两轮 orch run，明细见 extra）",
+      "argv": "node bin/orch.js run --cwd ./demo --instance INST-5xx --task \"写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md\"",
+      "cwd": null,
+      "exit": 0,
+      "durationMs": null,
+      "startedAt": null,
+      "endedAt": null
+    }
+  ],
+  "assertions": [
+    {
+      "name": "抽查 6 个状态变化点，显示延迟均 ≤ 1000ms",
+      "expected": "≤1000ms",
+      "actual": "最大 83ms",
+      "pass": true
+    },
+    {
+      "name": "抽样覆盖三类对象（会话/节点）",
+      "expected": "含会话与节点",
+      "actual": "session→思考/工具,session→等待下游,node→已完成",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "抽样方式：跑 2 轮真实任务，把 orch run 流式输出的每行时间戳（相对 CLI spawn）与 events.jsonl 中对应迁移的 ISO 时间戳（同样换算成相对 CLI spawn）相减。抽样点=每轮 4 个可观测迁移（会话开始执行、会话等待下游、节点待校验、节点已完成），共 8 个。"
+  ]
+}

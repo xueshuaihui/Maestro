@@ -1,0 +1,50 @@
+{
+  "INST-001": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "running",
+    "stateSince": "2026-11-04T15:54:18.257Z",
+    "updatedAt": "2026-11-04T15:54:18.519Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-16\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "running",
+      "startedAt": "2026-11-04T15:54:18.257Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-9316-1",
+      "hostId": "dsh",
+      "state": "tool_running",
+      "stateSince": "2026-11-04T15:54:18.493Z",
+      "lastEventAt": "2026-11-04T15:54:18.493Z",
+      "toolName": "write",
+      "pendingPermission": null,
+      "quarantined": false,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "accepted",
+      "createdAt": "2026-11-04T15:54:18.484Z",
+      "deliveredAt": "2026-11-04T15:54:18.492Z",
+      "acceptedAt": "2026-11-04T15:54:18.493Z",
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "acceptedSignal": "agent_thought_chunk"
+    },
+    "hostRaw": {
+      "stopReason": null,
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 7,
+      "runCount": 1
+    }
+  }
+}

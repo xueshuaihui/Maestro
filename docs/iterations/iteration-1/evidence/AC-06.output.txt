@@ -1,0 +1,66 @@
+# AC-06 原始输出（采集于 2026-11-04T15:50:55.678Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-106 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md
+[started 2026-11-04T15:50:28.265Z  duration 27300ms  exit 0]
++   2471ms  实例 INST-106 · 运行中
++   2471ms  会话已创建 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4
++   2471ms  任务已投递
++   2473ms  会话 空闲
++  10773ms  会话 执行中 · 调用工具（write） · 已运行 11s
++  12205ms  会话 执行中 · 调用工具（read） · 已运行 12s
++  13916ms  会话 执行中 · 调用工具（pwsh） · 已运行 14s
++  19601ms  会话 执行中 · 调用工具（pwsh） · 已运行 19s
++  19922ms  会话 执行中 · 调用工具（write） · 已运行 20s
++  21616ms  会话 执行中 · 调用工具（pwsh） · 已运行 22s
++  25388ms  会话 执行中 · 调用工具（read） · 已运行 25s
++  27153ms  会话 执行中 · 已运行 27s
++  27171ms  会话 等待下游 · 产出已提交
++  27208ms  会话 空闲
++  27290ms  节点 已完成 · 耗时 27s
++  27292ms  交接包 HO-001  已构造   23:50:30
++  27292ms  交接包 HO-001  已投递   23:50:30
++  27292ms  交接包 HO-001  已接受   23:50:39
++  27292ms  交接包 HO-001  已完成   23:50:55
+[exit 0]
+
+## orch status --instance INST-106 --events
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-106 --events
+[started 2026-11-04T15:50:55.567Z  duration 108ms  exit 0]
++     97ms  实例 INST-106 · 已完成
++     97ms  节点 已完成 · 耗时 27s
++     97ms  会话 空闲
++     98ms  交接包 HO-001  已构造   23:50:30
++     98ms  交接包 HO-001  已投递   23:50:30
++     98ms  交接包 HO-001  已接受   23:50:39
++     98ms  交接包 HO-001  已完成   23:50:55
++     99ms  23:50:30  实例 INST-106  已创建 → 运行中  原因 run.started
++     99ms  23:50:30  节点 T-001  待执行 → 执行中  原因 run.started
++     99ms  23:50:30  交接包 HO-001  已构造  原因 handoff.created
++     99ms  23:50:30  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
++     99ms  23:50:39  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  空闲 → 执行中  原因 session.state
++     99ms  23:50:39  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
++     99ms  23:50:39  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（tool_call）  原因 session.state
++     99ms  23:50:40  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     99ms  23:50:40  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（tool_call）  原因 session.state
++     99ms  23:50:42  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     99ms  23:50:42  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（tool_call）  原因 session.state
++     99ms  23:50:48  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     99ms  23:50:48  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（tool_call）  原因 session.state
++     99ms  23:50:53  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     99ms  23:50:53  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（tool_call）  原因 session.state
++     99ms  23:50:55  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     99ms  23:50:55  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  执行中 → 等待下游  原因 output.submitted
++     99ms  23:50:55  节点 T-001  执行中 → 待校验  原因 output.submitted
++     99ms  23:50:55  节点 T-001  待校验 → 已完成  原因 verification.passed
++     99ms  23:50:55  交接包 HO-001  已接受 → 已完成  原因 handoff.consumed
++     99ms  23:50:55  实例 INST-106  运行中 → 已完成  原因 run.completed
++     99ms  23:50:55  会话 cb472d24-68e5-4eea-8c0b-66a1ab6d51f4  等待下游 → 空闲  原因 run.completed
+[exit 0]
+
+## node 事件
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-5e938061088f9ad5","seq":2,"ts":"2026-11-04T15:50:30.715Z"}
+{"object":"node","objectId":"T-001","from":"running","to":"review","result":"applied","reason":"output.submitted","detail":null,"gen":"gen-5e938061088f9ad5","seq":18,"ts":"2026-11-04T15:50:55.441Z"}
+{"object":"node","objectId":"T-001","from":"review","to":"done","result":"applied","reason":"verification.passed","detail":null,"gen":"gen-5e938061088f9ad5","seq":19,"ts":"2026-11-04T15:50:55.455Z"}

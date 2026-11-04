@@ -1,0 +1,136 @@
+{
+  "id": "NFR-06",
+  "title": "中断后重开不偷偷重跑",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-04",
+  "switches": [
+    "--turn-delay-ms",
+    "8000",
+    "--slow-tool",
+    "write"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "重启后没有新增 node→running 事件",
+        "ok": true,
+        "actual": []
+      },
+      {
+        "id": "run.started（节点）只发生 1 次",
+        "ok": true,
+        "actual": [
+          {
+            "seq": 2,
+            "ts": "2026-11-04T15:55:05.330Z",
+            "object": "node",
+            "objectId": "T-001",
+            "from": "pending",
+            "to": "running",
+            "result": "applied",
+            "reason": "run.started",
+            "detail": null
+          }
+        ]
+      },
+      {
+        "id": "handoff delivered 只发生 1 次",
+        "ok": true,
+        "actual": [
+          {
+            "seq": 4,
+            "ts": "2026-11-04T15:55:05.337Z",
+            "object": "handoff",
+            "objectId": "HO-001",
+            "from": "created",
+            "to": "delivered",
+            "result": "applied",
+            "reason": "handoff.delivered",
+            "detail": {
+              "atMs": 1793807705337
+            }
+          }
+        ]
+      },
+      {
+        "id": "重启后 2s 内事件数不再增长（未自动重跑）",
+        "ok": true,
+        "actual": {
+          "before": 8,
+          "after": 8
+        }
+      },
+      {
+        "id": "实例保持 interrupted",
+        "ok": true,
+        "actual": "interrupted"
+      },
+      {
+        "id": "重启后的新增事件只有 interrupted 判定",
+        "ok": true,
+        "actual": [
+          {
+            "seq": 8,
+            "ts": "2026-11-04T15:55:06.398Z",
+            "object": "instance",
+            "objectId": "INST-002",
+            "from": "running",
+            "to": "interrupted",
+            "result": "applied",
+            "reason": "core.gone",
+            "detail": {
+              "note": "停在节点 running / 会话 tool_running"
+            }
+          }
+        ]
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "与 NFR-04 同一份现场；额外观察 2s 窗口内事件数不增长、run.started 次数不增加。"
+  ],
+  "nodeProcesses": [
+    {
+      "image": "node.exe",
+      "pid": 31596,
+      "mem": "61,652 K"
+    },
+    {
+      "image": "node.exe",
+      "pid": 19072,
+      "mem": "70,540 K"
+    },
+    {
+      "image": "node.exe",
+      "pid": 26556,
+      "mem": "89,444 K"
+    },
+    {
+      "image": "node.exe",
+      "pid": 1972,
+      "mem": "59,336 K"
+    },
+    {
+      "image": "node.exe",
+      "pid": 22480,
+      "mem": "58,156 K"
+    },
+    {
+      "image": "node.exe",
+      "pid": 29012,
+      "mem": "58,428 K"
+    },
+    {
+      "image": "node.exe",
+      "pid": 19476,
+      "mem": "60,828 K"
+    },
+    {
+      "image": "node.exe",
+      "pid": 17112,
+      "mem": "59,920 K"
+    }
+  ]
+}

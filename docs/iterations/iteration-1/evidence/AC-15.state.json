@@ -1,0 +1,50 @@
+{
+  "INST-001": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "running",
+    "stateSince": "2026-11-04T15:54:16.541Z",
+    "updatedAt": "2026-11-04T15:54:16.777Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-15\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "running",
+      "startedAt": "2026-11-04T15:54:16.541Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-13776-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:54:16.752Z",
+      "lastEventAt": "2026-11-04T15:54:16.752Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": false,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "delivered",
+      "createdAt": "2026-11-04T15:54:16.762Z",
+      "deliveredAt": "2026-11-04T15:54:16.771Z",
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "acceptedSignal": null
+    },
+    "hostRaw": {
+      "stopReason": null,
+      "lastError": null,
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 4,
+      "runCount": 1
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "INST-001": {
+    "schemaVersion": 1,
+    "instanceId": "INST-001",
+    "state": "failed",
+    "stateSince": "2026-11-04T15:54:31.514Z",
+    "updatedAt": "2026-11-04T15:54:31.527Z",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-22\\demo",
+    "node": {
+      "nodeId": "T-001",
+      "state": "failed",
+      "startedAt": "2026-11-04T15:54:31.258Z",
+      "endedAt": "2026-11-04T15:54:31.523Z",
+      "failure": {
+        "code": "UNKNOWN_ERROR",
+        "message": "mock-host: E_QUASAR_7719 unrecognized failure token"
+      },
+      "note": null
+    },
+    "session": {
+      "sessionId": "mock-sess-27968-1",
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-04T15:54:31.526Z",
+      "lastEventAt": "2026-11-04T15:54:31.467Z",
+      "toolName": null,
+      "pendingPermission": null,
+      "quarantined": true,
+      "turnId": "turn-1"
+    },
+    "handoff": {
+      "handoffId": "HO-001",
+      "state": "rejected",
+      "createdAt": "2026-11-04T15:54:31.480Z",
+      "deliveredAt": "2026-11-04T15:54:31.492Z",
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": "2026-11-04T15:54:31.523Z",
+      "rejectReason": "target_rejected",
+      "acceptedSignal": null
+    },
+    "hostRaw": {
+      "stopReason": null,
+      "lastError": {
+        "code": -32099,
+        "message": "mock-host: E_QUASAR_7719 unrecognized failure token",
+        "at": "2026-11-04T15:54:31.501Z"
+      },
+      "agentInfo": null
+    },
+    "artifactRefs": [],
+    "counters": {
+      "eventSeq": 7,
+      "runCount": 1
+    }
+  }
+}

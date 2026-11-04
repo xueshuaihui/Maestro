@@ -1,0 +1,92 @@
+# AC-05 原始输出（采集于 2026-11-04T16:04:31.596Z）
+# 项目根：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj
+# 任务工作目录：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj\demo
+
+## orch run
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-105 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md
+[started 2026-11-04T16:03:42.224Z  duration 49278ms  exit 0]
++   2081ms  实例 INST-105 · 运行中
++   2081ms  会话已创建 74d49dc8-ac46-4b7a-a985-4112b320cb50
++   2081ms  任务已投递
++   2083ms  会话 空闲
++   9534ms  会话 执行中 · 调用工具（pwsh） · 已运行 9s
++  15163ms  会话 执行中 · 调用工具（pwsh） · 已运行 15s
++  20189ms  会话 执行中 · 调用工具（pwsh） · 已运行 20s
++  21201ms  会话 执行中 · 已运行 21s · 无新事件
++  25666ms  会话 执行中 · 调用工具（write） · 已运行 26s
++  27408ms  会话 执行中 · 调用工具（pwsh） · 已运行 27s
++  31901ms  会话 执行中 · 调用工具（read） · 已运行 32s
++  35055ms  会话 执行中 · 调用工具（pwsh） · 已运行 35s
++  40385ms  会话 执行中 · 调用工具（pwsh） · 已运行 40s
++  44095ms  会话 执行中 · 调用工具（edit） · 已运行 44s
++  45725ms  会话 执行中 · 调用工具（pwsh） · 已运行 46s
++  49186ms  会话 执行中 · 已运行 49s
++  49195ms  会话 等待下游 · 产出已提交
++  49219ms  会话 空闲
++  49271ms  节点 已完成 · 耗时 49s
++  49272ms  交接包 HO-001  已构造   00:03:44
++  49272ms  交接包 HO-001  已投递   00:03:44
++  49272ms  交接包 HO-001  已接受   00:03:51
++  49272ms  交接包 HO-001  已完成   00:04:31
+[exit 0]
+
+## orch status --instance INST-105 --events
+$ (cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p\proj) node D:/WWW/Maestro/bin/orch.js status --instance INST-105 --events
+[started 2026-11-04T16:04:31.503Z  duration 89ms  exit 0]
++     80ms  实例 INST-105 · 已完成
++     80ms  节点 已完成 · 耗时 49s
++     80ms  会话 空闲
++     82ms  交接包 HO-001  已构造   00:03:44
++     82ms  交接包 HO-001  已投递   00:03:44
++     82ms  交接包 HO-001  已接受   00:03:51
++     82ms  交接包 HO-001  已完成   00:04:31
++     83ms  00:03:44  实例 INST-105  已创建 → 运行中  原因 run.started
++     83ms  00:03:44  节点 T-001  待执行 → 执行中  原因 run.started
++     83ms  00:03:44  交接包 HO-001  已构造  原因 handoff.created
++     83ms  00:03:44  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
++     83ms  00:03:51  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  空闲 → 执行中  原因 session.state
++     83ms  00:03:51  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
++     83ms  00:03:51  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（tool_call）  原因 session.state
++     83ms  00:04:07  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     83ms  00:04:07  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（tool_call）  原因 session.state
++     83ms  00:04:09  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     83ms  00:04:09  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（tool_call）  原因 session.state
++     83ms  00:04:14  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     83ms  00:04:14  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（tool_call）  原因 session.state
++     83ms  00:04:17  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     83ms  00:04:17  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（tool_call）  原因 session.state
++     83ms  00:04:20  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     83ms  00:04:20  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（tool_call）  原因 session.state
++     83ms  00:04:26  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     83ms  00:04:26  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（tool_call）  原因 session.state
++     83ms  00:04:27  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     83ms  00:04:27  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（tool_call）  原因 session.state
++     83ms  00:04:31  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 执行中（agent_thought_chunk）  原因 session.state
++     83ms  00:04:31  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  执行中 → 等待下游  原因 output.submitted
++     83ms  00:04:31  节点 T-001  执行中 → 待校验  原因 output.submitted
++     83ms  00:04:31  节点 T-001  待校验 → 已完成  原因 verification.passed
++     83ms  00:04:31  交接包 HO-001  已接受 → 已完成  原因 handoff.consumed
++     83ms  00:04:31  实例 INST-105  运行中 → 已完成  原因 run.completed
++     83ms  00:04:31  会话 74d49dc8-ac46-4b7a-a985-4112b320cb50  等待下游 → 空闲  原因 run.completed
+[exit 0]
+
+## accepted 与 consumed 之间的事件
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-79a4a96bb3d830d6","seq":7,"ts":"2026-11-04T16:03:51.772Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"tool_running","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-79a4a96bb3d830d6","seq":8,"ts":"2026-11-04T16:04:07.887Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-79a4a96bb3d830d6","seq":9,"ts":"2026-11-04T16:04:07.895Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"tool_running","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-79a4a96bb3d830d6","seq":10,"ts":"2026-11-04T16:04:09.628Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-79a4a96bb3d830d6","seq":11,"ts":"2026-11-04T16:04:09.645Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"tool_running","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-79a4a96bb3d830d6","seq":12,"ts":"2026-11-04T16:04:14.121Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-79a4a96bb3d830d6","seq":13,"ts":"2026-11-04T16:04:14.132Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"tool_running","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-79a4a96bb3d830d6","seq":14,"ts":"2026-11-04T16:04:17.277Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-79a4a96bb3d830d6","seq":15,"ts":"2026-11-04T16:04:17.285Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"tool_running","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-79a4a96bb3d830d6","seq":16,"ts":"2026-11-04T16:04:20.586Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-79a4a96bb3d830d6","seq":17,"ts":"2026-11-04T16:04:20.597Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"tool_running","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-79a4a96bb3d830d6","seq":18,"ts":"2026-11-04T16:04:26.317Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-79a4a96bb3d830d6","seq":19,"ts":"2026-11-04T16:04:26.324Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"tool_running","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-79a4a96bb3d830d6","seq":20,"ts":"2026-11-04T16:04:27.935Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"thinking","to":"tool_running","result":"applied","reason":"session.state","detail":{"event":"tool_call"},"gen":"gen-79a4a96bb3d830d6","seq":21,"ts":"2026-11-04T16:04:27.954Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"tool_running","to":"thinking","result":"applied","reason":"session.state","detail":{"event":"agent_thought_chunk"},"gen":"gen-79a4a96bb3d830d6","seq":22,"ts":"2026-11-04T16:04:31.408Z"}
+{"object":"session","objectId":"74d49dc8-ac46-4b7a-a985-4112b320cb50","from":"thinking","to":"waiting_dependency","result":"applied","reason":"output.submitted","detail":null,"gen":"gen-79a4a96bb3d830d6","seq":23,"ts":"2026-11-04T16:04:31.416Z"}
+{"object":"node","objectId":"T-001","from":"running","to":"review","result":"applied","reason":"output.submitted","detail":null,"gen":"gen-79a4a96bb3d830d6","seq":24,"ts":"2026-11-04T16:04:31.422Z"}
+{"object":"node","objectId":"T-001","from":"review","to":"done","result":"applied","reason":"verification.passed","detail":null,"gen":"gen-79a4a96bb3d830d6","seq":25,"ts":"2026-11-04T16:04:31.434Z"}

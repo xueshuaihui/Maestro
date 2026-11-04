@@ -1,0 +1,50 @@
+{
+  "commands": [
+    {
+      "label": "INST-001 run（先完成一个）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-001 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-04",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 561,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-30664-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   23:55:04\n交接包 HO-001  已投递   23:55:04\n交接包 HO-001  已接受   23:55:04\n交接包 HO-001  已完成   23:55:04\n",
+      "stderr": ""
+    },
+    {
+      "label": "taskkill /F 核心（核心 pid 来自 .orch/core.json）",
+      "exitCode": 0,
+      "stdout": "�ɹ�: ����ֹ PID Ϊ 6316 �Ľ��̡�",
+      "stderr": "",
+      "command": "taskkill /F /PID 6316"
+    },
+    {
+      "label": "INST-002 orch run（核心被强杀后自行收尾）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd ./demo --instance INST-002 --task 写一段说明，完成后直接结束。",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-04",
+      "exitCode": 1,
+      "stdout": "实例 INST-002 · 运行中\n会话已创建 mock-sess-14816-1\n任务已投递\n会话 执行中 · 调用工具（write） · 已运行 1s\n实例 INST-002 · 已中断 ｜ 核心已停止\n",
+      "stderr": "",
+      "elapsedMs": 578
+    },
+    {
+      "label": "status（重启核心，列出全部实例）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js status",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-04",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 216,
+      "stdout": "实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1s · 更新 23:55:04\n实例 INST-002 · 已中断 · 节点 执行中 · 会话 执行中 · 耗时 1s · 更新 23:55:06\n",
+      "stderr": ""
+    },
+    {
+      "label": "status --instance INST-002 --events（重启后）",
+      "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js status --instance INST-002 --events",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\NFR-04",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 102,
+      "stdout": "实例 INST-002 · 已中断 ｜ 停在节点 执行中 / 会话 执行中\n节点 执行中\n会话 执行中 · 调用工具（write） · 已运行 1s\n交接包 HO-001  已构造   23:55:05\n交接包 HO-001  已投递   23:55:05\n交接包 HO-001  已接受   23:55:05\n23:55:05  实例 INST-002  已创建 → 运行中  原因 run.started\n23:55:05  节点 T-001  待执行 → 执行中  原因 run.started\n23:55:05  交接包 HO-001  已构造  原因 handoff.created\n23:55:05  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered\n23:55:05  会话 mock-sess-14816-1  空闲 → 执行中  原因 session.state\n23:55:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event\n23:55:05  会话 mock-sess-14816-1  执行中 → 执行中（tool_call）  原因 session.state\n23:55:06  实例 INST-002  运行中 → 已中断  原因 core.gone\n",
+      "stderr": ""
+    }
+  ]
+}

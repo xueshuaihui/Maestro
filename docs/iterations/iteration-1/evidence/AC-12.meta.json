@@ -1,0 +1,106 @@
+{
+  "ac": "AC-12",
+  "instanceId": "INST-112",
+  "collectedAt": "2026-11-04T15:55:24.238Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run（跑到一半）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-112 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 1,
+      "durationMs": 11703,
+      "startedAt": 1793807710685,
+      "endedAt": 1793807722388
+    },
+    {
+      "label": "orch core stop（任务执行中）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js core stop",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 222,
+      "startedAt": 1793807722166,
+      "endedAt": 1793807722388
+    },
+    {
+      "label": "第 1 次 orch status --instance INST-112 --events",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-112 --events",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 219,
+      "startedAt": 1793807722389,
+      "endedAt": 1793807722608
+    },
+    {
+      "label": "第 2 次 orch status --instance INST-112 --events（1.5s 后）",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-112 --events",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 114,
+      "startedAt": 1793807724117,
+      "endedAt": 1793807724231
+    }
+  ],
+  "assertions": [
+    {
+      "name": "Given：core stop 前任务在跑",
+      "expected": "会话 执行中",
+      "actual": "会话 执行中 · 调用工具（pwsh） · 已运行 10s",
+      "pass": true
+    },
+    {
+      "name": "status 显示实例\"已中断\"",
+      "expected": "实例 INST-112 · 已中断",
+      "actual": "实例 INST-112 · 已中断 ｜ 停在节点 执行中 / 会话 执行中",
+      "pass": true
+    },
+    {
+      "name": "仍能看到节点/会话停在哪一步",
+      "expected": "实例 … 已中断 ｜ 停在节点 … / 会话 …",
+      "actual": "实例 INST-112 · 已中断 ｜ 停在节点 执行中 / 会话 执行中",
+      "pass": true
+    },
+    {
+      "name": "仍能看到交接包状态",
+      "expected": "交接包 HO-…",
+      "actual": "交接包 HO-001  已构造   23:55:13 | 交接包 HO-001  已投递   23:55:13 | 交接包 HO-001  已接受   23:55:20",
+      "pass": true
+    },
+    {
+      "name": "仍能看到事件记录（--events 有行）",
+      "expected": "事件行数 > 0",
+      "actual": "8",
+      "pass": true
+    },
+    {
+      "name": "没有自动重跑（两次 status 之间事件数不变）",
+      "expected": "事件数不变",
+      "actual": "8 → 8",
+      "pass": true
+    },
+    {
+      "name": "没有出现新的 run.started",
+      "expected": "0 条新 run.started",
+      "actual": "0",
+      "pass": true
+    },
+    {
+      "name": "state.json 落盘为 interrupted",
+      "expected": "interrupted",
+      "actual": "interrupted",
+      "pass": true
+    },
+    {
+      "name": "orch run 自身收尾为\"已中断\"而非\"未知错误\"",
+      "expected": "含 已中断，不含 未知错误",
+      "actual": "任务已投递 | 会话 空闲 | 会话 执行中 · 调用工具（pwsh） · 已运行 10s | 实例 INST-112 · 已中断 ｜ 核心已停止",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "core stop 输出：核心已停止（pid 8940，运行 12s）（exit 0）。两次 status 间隔 1500ms。"
+  ]
+}

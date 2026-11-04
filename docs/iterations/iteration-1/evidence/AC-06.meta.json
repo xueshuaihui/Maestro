@@ -1,0 +1,62 @@
+{
+  "ac": "AC-06",
+  "instanceId": "INST-106",
+  "collectedAt": "2026-11-04T15:50:55.684Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-106 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 27300,
+      "startedAt": 1793807428265,
+      "endedAt": 1793807455565
+    },
+    {
+      "label": "orch status --instance INST-106 --events",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-106 --events",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 108,
+      "startedAt": 1793807455567,
+      "endedAt": 1793807455675
+    }
+  ],
+  "assertions": [
+    {
+      "name": "事件里有节点 执行中→待校验",
+      "expected": "node running→review",
+      "actual": "seq 18 running→review",
+      "pass": true
+    },
+    {
+      "name": "事件里有节点 待校验→已完成",
+      "expected": "node review→done",
+      "actual": "seq 19 review→done",
+      "pass": true
+    },
+    {
+      "name": "两步顺序正确（review 在 done 之前）",
+      "expected": "seq(review) < seq(done)",
+      "actual": "18 < 19",
+      "pass": true
+    },
+    {
+      "name": "会话在提交产出后显示\"等待下游\"而不是\"已完成\"",
+      "expected": "会话 等待下游 · 产出已提交",
+      "actual": "会话 等待下游 · 产出已提交",
+      "pass": true
+    },
+    {
+      "name": "输出中不存在\"会话 已完成\"这种状态",
+      "expected": "无 会话 已完成",
+      "actual": "未出现",
+      "pass": true
+    }
+  ],
+  "notes": []
+}

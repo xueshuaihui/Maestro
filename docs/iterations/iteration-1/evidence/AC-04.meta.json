@@ -1,0 +1,68 @@
+{
+  "ac": "AC-04",
+  "instanceId": "INST-104",
+  "collectedAt": "2026-11-04T15:49:51.273Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch run",
+      "argv": "node D:/WWW/Maestro/bin/orch.js run --cwd ./demo --instance INST-104 --task 写一篇 400 字左右的产品介绍，分三段，保存到 out/long.md",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 36619,
+      "startedAt": 1793807354560,
+      "endedAt": 1793807391179
+    },
+    {
+      "label": "orch status --instance INST-104 --events",
+      "argv": "node D:/WWW/Maestro/bin/orch.js status --instance INST-104 --events",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 87,
+      "startedAt": 1793807391180,
+      "endedAt": 1793807391267
+    }
+  ],
+  "assertions": [
+    {
+      "name": "四个状态全部出现且顺序为 已构造→已投递→已接受→已完成",
+      "expected": "created→delivered→accepted→consumed",
+      "actual": "created→delivered→accepted→consumed",
+      "pass": true
+    },
+    {
+      "name": "每个状态都有时间戳（ISO 非空）",
+      "expected": "4 个时间戳",
+      "actual": "2026-11-04T15:49:16.885Z , 2026-11-04T15:49:16.891Z , 2026-11-04T15:49:18.567Z , 2026-11-04T15:49:51.102Z",
+      "pass": true
+    },
+    {
+      "name": "时间戳不早于前一条（ISO 单调不减）",
+      "expected": "t0 ≤ t1 ≤ t2 ≤ t3",
+      "actual": "单调",
+      "pass": true
+    },
+    {
+      "name": "status 显示的交接包行顺序与事件一致",
+      "expected": "created→delivered→accepted→consumed",
+      "actual": "created→delivered→accepted→consumed",
+      "pass": true
+    },
+    {
+      "name": "显示行时间戳不早于前一条",
+      "expected": "HH:mm:ss 单调不减",
+      "actual": "23:49:16 , 23:49:16 , 23:49:18 , 23:49:51",
+      "pass": true
+    },
+    {
+      "name": "事件里的 handoff seq 单调（顺序与显示一致）",
+      "expected": "seq 递增",
+      "actual": "3,4,6,28",
+      "pass": true
+    }
+  ],
+  "notes": []
+}

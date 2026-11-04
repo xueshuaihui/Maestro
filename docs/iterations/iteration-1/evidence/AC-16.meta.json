@@ -1,0 +1,49 @@
+{
+  "id": "AC-16",
+  "title": "调工具时看得见工具名",
+  "face": "夹具",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f\\proj\\AC-16",
+  "switches": [
+    "--slow-tool",
+    "write",
+    "--turn-delay-ms",
+    "5000"
+  ],
+  "judgment": {
+    "verdict": "通过",
+    "checks": [
+      {
+        "id": "会话行 = 执行中 · 调用工具（write）",
+        "ok": true,
+        "actual": "实例 INST-001 · 运行中\n节点 执行中\n会话 执行中 · 调用工具（write） · 已运行 1s\n交接包 HO-001  已构造   23:54:18\n交接包 HO-001  已投递   23:54:18\n交接包 HO-001  已接受   23:54:18\n"
+      },
+      {
+        "id": "工具名非空白",
+        "ok": true,
+        "actual": "write"
+      },
+      {
+        "id": "state.session.toolName = write",
+        "ok": true,
+        "actual": "write"
+      },
+      {
+        "id": "probe 观察到 tool_running + 工具名 write",
+        "ok": true,
+        "actual": {
+          "sessionId": "mock-sess-16868-1",
+          "hostId": "mock",
+          "state": "tool_running",
+          "stateSince": "2026-11-04T15:54:18.900Z",
+          "toolName": "write",
+          "turnId": "turn-1",
+          "quarantined": false
+        }
+      }
+    ],
+    "failed": []
+  },
+  "notes": [
+    "--turn-delay-ms 撑宽 tool_call 到 completed 之间的观察窗口；probe 另起一次自带 800ms 窗口。"
+  ]
+}

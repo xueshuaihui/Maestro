@@ -1,0 +1,52 @@
+{
+  "ac": "NFR-08",
+  "instanceId": "INST-602",
+  "collectedAt": "2026-11-04T16:00:52.035Z",
+  "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+  "taskCwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj\\demo",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\dsh-home",
+  "node": "v22.22.2",
+  "steps": [
+    {
+      "label": "orch cancel --instance INST-602",
+      "argv": "node D:/WWW/Maestro/bin/orch.js cancel --instance INST-602",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p\\proj",
+      "exit": 0,
+      "durationMs": 268,
+      "startedAt": 1793808051669,
+      "endedAt": 1793808051937
+    },
+    {
+      "label": "cancel 后 status 采样（最后一次）",
+      "argv": "(见 extra)",
+      "cwd": null,
+      "exit": null,
+      "durationMs": null,
+      "startedAt": null,
+      "endedAt": null
+    }
+  ],
+  "assertions": [
+    {
+      "name": "cancel 返回耗时",
+      "expected": "记录用",
+      "actual": "269ms",
+      "pass": true
+    },
+    {
+      "name": "取消后 ≤5s 不再显示\"执行中\"",
+      "expected": "≤5000ms",
+      "actual": "359ms",
+      "pass": true
+    },
+    {
+      "name": "cancel 命令 exit 0",
+      "expected": "exit 0",
+      "actual": "exit 0",
+      "pass": true
+    }
+  ],
+  "notes": [
+    "采样：cancel 返回后立即用 orch status 轮询（每次约 100-250ms），记录第一次会话行不含\"执行中\"的时刻；该耗时含一次 CLI 进程启动，是用户真实感知口径。"
+  ]
+}
