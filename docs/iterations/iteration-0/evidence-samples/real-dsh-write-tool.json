@@ -1,0 +1,52 @@
+{
+  "note": "I0.2 G-1：真实 DSH（内置 ACP server dsh-acp-app）+ 真实模型，write 工具真实落盘。tool_call 携带 rawInput.file_path/content；tool_call_update 只有 text 渲染——无 diff、无 rawOutput、无指纹。",
+  "probe": {
+    "date": "2026-11-04",
+    "dshVersion": "0.2.1-rc.5",
+    "acpServer": "@deepseek-ai/dsh-acp（内置，profile=acp）",
+    "model": "deepseek-account / deepseek-flash（真实账号凭据，非 mock）",
+    "home": "隔离 DSH_HOME（未触碰用户 ~/.dsh）"
+  },
+  "result": {
+    "stopReason": "end_turn",
+    "turnMs": 1845,
+    "permissionRequested": false,
+    "fileExists": true,
+    "bytes": 23,
+    "content": "hello-i02-落盘验证\n",
+    "sha256": "405d90809ee65703d97637abb6d947cfb296689451fdff9c1cc5bc42a1dc3381"
+  },
+  "frames": [
+    {
+      "sessionId": "97ceac7e-57a1-458d-8069-5e5ab412ca45",
+      "update": {
+        "sessionUpdate": "tool_call",
+        "toolCallId": "call_00_ET_ZoevLZ0gX1HQIoHlPV8n5134",
+        "title": "write",
+        "kind": "other",
+        "status": "in_progress",
+        "rawInput": {
+          "file_path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-probe\\workspace\\g1\\out\\probe.txt",
+          "content": "hello-i02-落盘验证\n"
+        }
+      }
+    },
+    {
+      "sessionId": "97ceac7e-57a1-458d-8069-5e5ab412ca45",
+      "update": {
+        "sessionUpdate": "tool_call_update",
+        "toolCallId": "call_00_ET_ZoevLZ0gX1HQIoHlPV8n5134",
+        "status": "completed",
+        "content": [
+          {
+            "type": "content",
+            "content": {
+              "type": "text",
+              "text": "<path>C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-probe\\workspace\\g1\\out\\probe.txt</path>\n<type>file</type>\n<content>\nCreated file\n</content>"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "note": "I0.2 G-2：5 个并发 ACP 会话、5 个独立 cwd，各自 write 落盘；按 sid 扫描全部 cwd，串台 0。同时可见 Windows 上的 shell 工具名为 pwsh（bash 在 win32 被 profile 禁用）。",
+  "probe": {
+    "date": "2026-11-04",
+    "dshVersion": "0.2.1-rc.5",
+    "sessions": 5,
+    "model": "deepseek-account / deepseek-flash"
+  },
+  "sessions": [
+    {
+      "sessionId": "b1abd681-b717-48ce-ac55-93f42cb08c5f",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-probe\\workspace\\g2\\s0",
+      "stopReason": "end_turn",
+      "turnMs": 6686,
+      "tools": [
+        "pwsh:completed",
+        "write:completed",
+        "read:completed"
+      ],
+      "files": [
+        {
+          "path": "out/marker-b1abd681-b717-48ce-ac55-93f42cb08c5f.txt",
+          "bytes": 36,
+          "contentPrefix": "b1abd681-b717-48ce-ac55-93f42cb08c5f",
+          "belongsToThisSession": true,
+          "containsForeignSessionId": false
+        }
+      ]
+    },
+    {
+      "sessionId": "dbd8995b-722d-432a-a033-4e63e0356744",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-probe\\workspace\\g2\\s1",
+      "stopReason": "end_turn",
+      "turnMs": 3098,
+      "tools": [
+        "write:completed"
+      ],
+      "files": [
+        {
+          "path": "out/marker-dbd8995b-722d-432a-a033-4e63e0356744.txt",
+          "bytes": 36,
+          "contentPrefix": "dbd8995b-722d-432a-a033-4e63e0356744",
+          "belongsToThisSession": true,
+          "containsForeignSessionId": false
+        }
+      ]
+    },
+    {
+      "sessionId": "8d548b21-383a-463a-b3fd-51d500602881",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-probe\\workspace\\g2\\s2",
+      "stopReason": "end_turn",
+      "turnMs": 2788,
+      "tools": [
+        "write:completed"
+      ],
+      "files": [
+        {
+          "path": "out/marker-8d548b21-383a-463a-b3fd-51d500602881.txt",
+          "bytes": 37,
+          "contentPrefix": "8d548b21-383a-463a-b3fd-51d500602881\n",
+          "belongsToThisSession": true,
+          "containsForeignSessionId": false
+        }
+      ]
+    },
+    {
+      "sessionId": "018071e7-bfb0-4ec3-874f-92a7dd0418a8",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-probe\\workspace\\g2\\s3",
+      "stopReason": "end_turn",
+      "turnMs": 5215,
+      "tools": [
+        "pwsh:completed",
+        "write:completed"
+      ],
+      "files": [
+        {
+          "path": "out/marker-018071e7-bfb0-4ec3-874f-92a7dd0418a8.txt",
+          "bytes": 37,
+          "contentPrefix": "018071e7-bfb0-4ec3-874f-92a7dd0418a8\n",
+          "belongsToThisSession": true,
+          "containsForeignSessionId": false
+        }
+      ]
+    },
+    {
+      "sessionId": "6d94423f-7154-44b8-94fa-7517d9037302",
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-probe\\workspace\\g2\\s4",
+      "stopReason": "end_turn",
+      "turnMs": 5664,
+      "tools": [
+        "pwsh:completed",
+        "write:completed"
+      ],
+      "files": [
+        {
+          "path": "out/marker-6d94423f-7154-44b8-94fa-7517d9037302.txt",
+          "bytes": 36,
+          "contentPrefix": "6d94423f-7154-44b8-94fa-7517d9037302",
+          "belongsToThisSession": true,
+          "containsForeignSessionId": false
+        }
+      ]
+    }
+  ],
+  "verdict": {
+    "crossTalk": 0,
+    "allFilesOwnedByOwnSession": true,
+    "wallClockMsAllFive": 6686
+  }
+}

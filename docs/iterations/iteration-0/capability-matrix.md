@@ -12,7 +12,8 @@
 | 宿主 | 版本 | 启动方式 | 探测时间 | 证据 |
 |---|---|---|---|---|
 | **DSH（stdio）** | dsh CLI `0.2.1-rc.5` + `dsh-acp-server` `0.14.4` | `dsh-acp-server`（默认 stdio）；Windows 上需 `pathToFileURL` 绕行器（阶段零 `spike/dsh-launcher`，已删） | 2026-11-03 | `runs/env1/dsh/probe.json` |
-| **DSH（HTTP+SSE）** | 同上 | `dsh-acp-server serve --port 7801` | 2026-11-03 | `runs/env2/dsh-http/probe.json` |
+| **DSH 内置 ACP（补验用）** | dsh `0.2.1-rc.5` + **内置** `@deepseek-ai/dsh-acp` | `Electron(node 模式) bin.js --profile acp`，stdio；模型 `deepseek-account/deepseek-flash` | 2026-11-04 | `evidence-samples/real-dsh-write-tool.json` |
+| **DSH（HTTP+SSE）** | 同上（第三方 server） | `dsh-acp-server serve --port 7801` | 2026-11-03 | `runs/env2/dsh-http/probe.json` |
 | **WorkBuddy（HTTP+SSE）** | 未接入 | sidecar 控制管道 | — | 未验证（Phase 3） |
 | **Cursor（stdio）** | IDE `3.22.12`，**CLI 缺失** | `cursor-agent acp`（未安装） | 2026-11-03 | `runs/vp5/cursor-probe.json` |
 | **mock agent** | 自建 `0.1.0`（**阶段零版本已删除**，阶段一重建为正式测试资产） | `spike/mock-acp-server/*`（已删，行为清单见 `report.md` 附录 B） | 2026-11-03 | `runs/vp1/*`、`runs/vp3/*` |
@@ -23,10 +24,11 @@
 
 1. `dsh-acp-server@0.14.4` 的 `bin/dsh-acp.mjs` 用 `import(join(...))` 加载本地模块 → Node 22 抛 `ERR_UNSUPPORTED_ESM_URL_SCHEME: Received protocol 'd:'`。绕行：用 `pathToFileURL` 重写入口（阶段零 `spike/dsh-launcher` 已删，需在阶段一内置）。
 2. 其 bootstrap 用 `spawnSync('dsh', ...)`，Windows 无法解析 `.cmd` → 首次启动必然失败。绕行：手动执行一次 `dsh plugin --profile acp add <pkg>`。
-3. `dsh` 在 Windows 是 `dsh.cmd`，实际用 Electron 以 node 模式跑 `app.asar` 内的 `cli.js`；纯 Node 既不能 spawn `.cmd` 也不能读 asar 路径。
-4. 真实模型凭据缺失（`no API key for provider route "deepseek-official"`）。为让会话层可验证，在**隔离的 DSH_HOME**（验证期 `.orch-spike/dsh-home`，已删）里把默认模型切到包内确定性 mock LLM（`dsh-acp-server/test/mock-llm`，官方 e2e 同款），**未触碰用户 `~/.dsh`**。因此本文「已实测」= ACP/DSH 会话层真实，**不代表真实模型推理质量**。
+3. `dsh` 在 Windows **没有 `dsh.cmd`**；CLI 入口在 asar 内：`ELECTRON_RUN_AS_NODE=1 "<安装目录>/DeepSeek Harness.exe" "<安装目录>/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh/lib/bin.js"`。纯 Node 读不了 asar 路径，必须借 Electron 的 node 模式。
+4. 阶段零时真实模型凭据缺失（`no API key for provider route "deepseek-official"`），只能用包内确定性 mock LLM（`dsh-acp-server/test/mock-llm`）验证会话层。**2026-11-04 补验时账号凭据已就位**（`~/.dsh/.credentials.yaml`，provider `deepseek-account`）：补验用真实模型，未使用 mock，**未触碰用户 `~/.dsh`**（复制到隔离 home 使用）。
 5. **工具行是「平台条件挂载」，不是「全平台都挂」**：`tool-bash` 带 `disabled: process.platform === 'win32'`，Windows 上由 `tool-pwsh` 顶替；`tool-fs` 无条件挂载，注册 `read` / `write` / `edit` / `read_image`。因此 Windows 上探针写 `name="bash"` 必然 `UNKNOWN_TOOL`（阶段零即踩此坑，见 `report.md` 附录 C）。
 6. `0.2.1-rc.5` 的 `acp` profile 模板**自带** ACP server（`@deepseek-ai/dsh-acp-app`）。阶段零用第三方 `dsh-acp-server@0.14.4` 的 patch 把内置行 `disabled` 后才独占 stdio；那两个 Windows 包级缺陷来自第三方包，不是 DSH 本身。
+7. **两种 ACP server 的能力集不同**：内置 `@deepseek-ai/dsh-acp` 的 `initialize` 广告 `sessionCapabilities = {close, list, resume}`（**无 `load`**）；第三方 `dsh-acp-server@0.14.4` 广告 `loadSession:true`。I1.1 若对接内置 server，恢复链退化为 `resume → new`（阶段一本来也是 `fresh` 默认，影响可控）。
 
 ## 1. 能力矩阵
 
@@ -46,8 +48,9 @@
 | `waiting_dependency` / `escalated` | ➖ 非 ACP 语义（核心侧推断/生成） | ➖ | ➖ | 同上 |
 | 移交接受信号（`accepted` 可观测性） | ✅ 有 turn 内首帧（实测 63ms） | ⚪ 未验证 | ⚪ 未验证 | `runs/vp7/real-dsh-real/handoff.json` |
 | 忙时会话再投递 | ❌ 立即失败 `-32602` + `a prompt is already in flight for this session`（2–3ms） | ⚪ 未验证 | ⚪ 未验证 | `runs/vp7/busy-real-dsh-real/busy-probe.json` |
-| 工具调用（`tool_call`/`tool_call_update`） | ⚠️ 框架已实测；**落盘未验证**：阶段零 mock 误调 win32 上被禁用的 `bash` → `UNKNOWN_TOOL`，文件工具 `write` 本身已挂载，待补验 G-1 | ⚪ 未验证 | ⚪ 未验证 | `evidence-samples/real-dsh-tool-call.json`；`report.md` 附录 C |
-| 产物 diff（`type:"diff"`） | ❌ 未观测到 | ⚪ 未验证 | ⚪ 未验证 | 同上 |
+| 工具调用（`tool_call`/`tool_call_update`） | ✅ 已实测（补验 G-1/G-2）：`write` 真实落盘、`completed`；Windows 上 shell 工具为 `pwsh` 并可用 | ⚪ 未验证 | ⚪ 未验证 | `evidence-samples/real-dsh-write-tool.json`、`real-dsh-write-isolation.json` |
+| 文件落盘（`write`） | ✅ 已实测：23 字节逐字节一致，sha256 核心可自算 | ⚪ 未验证 | ⚪ 未验证 | 同上（G-1） |
+| 产物 diff（`type:"diff"`） | ❌ 未观测到；但 `tool_call.rawInput.file_path` 可作 `artifactRef` 来源 | ⚪ 未验证 | ⚪ 未验证 | 同上（G-3） |
 | 产物指纹（`rawOutput.sha256` 等） | ❌ 协议无此字段 | ⚪ 未验证 | ⚪ 未验证 | 报告 §VP-4 |
 | 单连接多会话复用 | ✅ 已实测（5 会话 0 串台） | ⚪ 未验证 | ⚪ 未验证 | `runs/vp3-real/*` A |
 | transport 双形态（stdio / HTTP+SSE） | ✅ 已实测（同一 DSH，两种 transport） | ⚪ 未验证 | ⚪ 未验证 | `runs/vp1/summary.json` |
@@ -82,12 +85,14 @@
 ## 4. 对阶段一的直接约束
 
 1. **适配器必须实现 `load` 后的 drain-quiet**，否则 HTTP/SSE 上回放帧会漏进下一个 turn。
-2. **核心不得依赖宿主上报产物指纹**；指纹由核心按 `artifactRef` 自行计算（真实 DSH 实测无 diff/rawOutput）。
+2. **核心不得依赖宿主上报产物指纹**；指纹由核心按 `artifactRef` 自行计算（真实 DSH 实测无 diff / rawOutput）。
+   `artifactRef` 的来源是 **`tool_call.rawInput.file_path`**（只对 `write` / `edit` 这类入参含路径的工具成立），`tool_call_update` 里没有——适配器/核心必须按**工具类型**提取，不能只读 update。
 3. **错误码需归一**：DSH 用 `-32602` 表示未知会话，与 mock/ACP 习惯的 `-32002` 不同，降级链必须同时识别两者。
 4. **cancel 不等于即时终止**：节点超时与「cancel 后仍可能收到 update」必须分开设计。
-5. **Windows 上 DSH 需内置 shim**，否则阶段一在 Windows 开发机上无法跑通。
-6. **工具集要按平台取，不能按「配置里有就以为会话可见」类推**：win32 上没有 `bash`（由 `pwsh` 顶替），文件写入走 `write`。阶段一任何「让角色落盘 / 取证」的夹具与验收脚本，工具名必须按平台映射，禁止硬编码 `bash`。
-7. **`-32602` 是双义词**：既是「会话不存在/已关闭」，也是「该会话已有 prompt 在飞行」。**禁止只按错误码判定会话失效**——必须结合 `session/list` 回读或错误消息分类，否则会把「目标忙」误判成「会话没了」并新建重复会话。
-8. **`accepted` 只能靠事件流观测**：`session/prompt` 阻塞到 turn 结束才返回，投递成功 ≠ 已接受。适配器必须把「首条 turn 内事件」上报为核心可用的接受信号，并显式携带不可观测窗口。
-9. **必须排除会话级噪声帧**：`available_commands_update` / `usage_update` 不代表 turn 进展；用「收到任何帧就算接受」会把接受时点提前（实测提前 1336ms）。
-10. **桌面壳构建走 CI**：本机无 Rust/MSVC/SDK，Tauri 只能在 GitHub Actions 构建；本地开发用 Electron 壳验证交互。
+5. **Windows 上 DSH 需内置 shim**：必须用 Electron 的 node 模式跑 asar 内的 `bin.js`，纯 Node 读不了 asar。
+6. **工具集要按平台取**：win32 上没有 `bash`（由另一个 shell 工具顶替，实测可用），文件写入走 `write`（参数 `file_path` + `content`）。阶段一任何「让角色落盘 / 取证」的夹具与验收脚本，工具名必须按平台映射，禁止硬编码 `bash`。
+7. **「等待审批」在真实 DSH 上仍无证据**：写工作目录内文件不触发 `session/request_permission`。I1.1 的 AC-17 / AC-18 必须走夹具，验收记录要注明。
+8. **`-32602` 是双义词**：既是「会话不存在/已关闭」，也是「该会话已有 prompt 在飞行」。**禁止只按错误码判定会话失效**——必须结合 `session/list` 回读或错误消息分类，否则会把「目标忙」误判成「会话没了」并新建重复会话。
+9. **`accepted` 只能靠事件流观测**：`session/prompt` 阻塞到 turn 结束才返回，投递成功 ≠ 已接受。适配器必须把「首条 turn 内事件」上报为核心可用的接受信号，并显式携带不可观测窗口。
+10. **必须排除会话级噪声帧**：`available_commands_update` / `usage_update` 不代表 turn 进展；用「收到任何帧就算接受」会把接受时点提前（实测提前 1336ms）。
+11. **桌面壳构建走 CI**：本机无 Rust/MSVC/SDK，Tauri 只能在 GitHub Actions 构建；本地开发用 Electron 壳验证交互。
