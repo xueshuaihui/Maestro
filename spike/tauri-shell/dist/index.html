@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>Maestro</title>
+    <style>
+      :root { color-scheme: light; }
+      body { margin: 0; font: 13px/1.5 "Segoe UI", system-ui, sans-serif; background: #f6f7f9; color: #1f2430; }
+      header { padding: 10px 16px; background: #fff; border-bottom: 1px solid #e3e6ec; display: flex; gap: 12px; align-items: center; }
+      .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #3346b3; }
+      .ok { background: #e8f7ee; color: #1a7f43; }
+      main { display: grid; grid-template-columns: 260px 1fr; gap: 14px; padding: 14px 16px; }
+      section { background: #fff; border: 1px solid #e3e6ec; border-radius: 10px; padding: 12px; }
+      h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; }
+      .role { display: flex; justify-content: space-between; padding: 6px 8px; border-radius: 8px; background: #f9fafc; margin-bottom: 6px; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+      .busy { background: #2f6fed; } .available { background: #18a058; } .cooldown { background: #9aa4b2; }
+      .conn { font-size: 12px; padding: 4px 0; border-bottom: 1px dashed #eef0f4; }
+      #log { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: #4b5563; max-height: 240px; overflow: auto; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>Maestro</strong>
+      <span class="badge" id="win"></span>
+      <span class="badge" id="ws-state">WebSocket 连接中…</span>
+      <span class="badge" id="count"></span>
+    </header>
+    <main>
+      <section>
+        <h3>角色实例</h3>
+        <div id="roles"></div>
+      </section>
+      <section>
+        <h3>连接线与实时事件</h3>
+        <div id="conns"></div>
+        <pre id="log"></pre>
+      </section>
+    </main>
+    <script>
+      // Tauri 下同样走浏览器 WebSocket：无需额外插件，也无需 IPC 代理
+      const params = new URLSearchParams(location.search);
+      const daemon = params.get('daemon') || 'http://127.0.0.1:4319';
+      const wsUrl = daemon.replace(/^http/, 'ws') + '/instances/INST-001/graph/stream';
+      document.getElementById('win').textContent = params.get('window') || 'main';
+
+      const log = (m) => {
+        const el = document.getElementById('log');
+        el.textContent = `[${new Date().toISOString().slice(11, 23)}] ${m}\n` + el.textContent;
+      };
+      let messages = 0;
+
+      fetch(`${daemon}/instances/INST-001/graph`)
+        .then((r) => r.json())
+        .then((g) => {
+          document.getElementById('roles').innerHTML = g.roles
+            .map((r) => `<div class="role"><span><span class="dot ${r.status}"></span>${r.role_id}</span><span>${r.status}</span></div>`)
+            .join('');
+          document.getElementById('conns').innerHTML = g.connections
+            .map((c) => `<div class="conn">${c.from_role} → ${c.to_role} · ${c.aggregate_status}${c.direction === 'backflow' ? '（回流）' : ''}</div>`)
+            .join('');
+          log(`GET graph → ${g.roles.length} 角色 / ${g.connections.length} 连接`);
+        })
+        .catch((e) => log(`GET graph 失败：${e.message}`));
+
+      const ws = new WebSocket(wsUrl);
+      ws.onopen = () => {
+        const el = document.getElementById('ws-state');
+        el.textContent = 'WebSocket 已连接';
+        el.className = 'badge ok';
+      };
+      ws.onmessage = (e) => {
+        messages += 1;
+        document.getElementById('count').textContent = `${messages} 条推送`;
+        const msg = JSON.parse(e.data);
+        log(msg.type === 'graph.snapshot' ? `graph.snapshot → ${msg.graph.roles.length} 角色` : `${msg.type} · seq=${msg.seq ?? '-'}`);
+      };
+      ws.onclose = () => {
+        const el = document.getElementById('ws-state');
+        el.textContent = 'WebSocket 已断开';
+        el.className = 'badge';
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,127 @@
+{
+  "note": "真实 DSH 重连后 session/resume 的往返帧：响应前不注入会话历史（仅 available_commands_update 等会话级通知）",
+  "source": "runs/vp2-real/dsh-real/stdio-p2-2.jsonl",
+  "frames": [
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-1c08bb5c-80a5-4949-a03d-aaf706f1bc5b",
+        "update": {
+          "sessionUpdate": "available_commands_update",
+          "availableCommands": [
+            {
+              "name": "compact",
+              "description": "Compact older conversation history"
+            },
+            {
+              "name": "feedback",
+              "description": "Record feedback about this session"
+            },
+            {
+              "name": "goal",
+              "description": "Set or view the goal for a long-running task"
+            },
+            {
+              "name": "permission",
+              "description": "Switch the permission preset (sandbox mode + approval policy)"
+            },
+            {
+              "name": "plan",
+              "description": "Enter or leave plan mode"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-1c08bb5c-80a5-4949-a03d-aaf706f1bc5b",
+        "update": {
+          "sessionUpdate": "agent_thought_chunk",
+          "messageId": "m-2-1",
+          "content": {
+            "type": "text",
+            "text": "mock thought"
+          }
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-1c08bb5c-80a5-4949-a03d-aaf706f1bc5b",
+        "update": {
+          "sessionUpdate": "agent_message_chunk",
+          "messageId": "m-2-1",
+          "content": {
+            "type": "text",
+            "text": "Hello from dsh-acp mock. "
+          }
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-1c08bb5c-80a5-4949-a03d-aaf706f1bc5b",
+        "update": {
+          "sessionUpdate": "agent_message_chunk",
+          "messageId": "m-2-1",
+          "content": {
+            "type": "text",
+            "text": "Second chunk."
+          }
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-1c08bb5c-80a5-4949-a03d-aaf706f1bc5b",
+        "update": {
+          "sessionUpdate": "usage_update",
+          "used": 15,
+          "size": 32768
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-1c08bb5c-80a5-4949-a03d-aaf706f1bc5b",
+        "update": {
+          "sessionUpdate": "available_commands_update",
+          "availableCommands": [
+            {
+              "name": "compact",
+              "description": "Compact older conversation history"
+            },
+            {
+              "name": "feedback",
+              "description": "Record feedback about this session"
+            },
+            {
+              "name": "goal",
+              "description": "Set or view the goal for a long-running task"
+            },
+            {
+              "name": "permission",
+              "description": "Switch the permission preset (sandbox mode + approval policy)"
+            },
+            {
+              "name": "plan",
+              "description": "Enter or leave plan mode"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

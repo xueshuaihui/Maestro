@@ -1,0 +1,17 @@
+{
+  "name": "dsh-real",
+  "kind": "stdio",
+  "evidence": "real",
+  "represents": "DSH（dsh-acp-server 0.14.4 → dsh 0.2.1-rc.5，profile=acp）",
+  "note": "Windows 上经 spike/dsh-launcher 绕行包内 ESM 路径缺陷；DSH_HOME 隔离到 .orch-spike/dsh-home，不污染用户 ~/.dsh。",
+  "command": "node",
+  "args": ["${SPIKE}/dsh-launcher/dsh-acp-launcher.mjs"],
+  "cwd": "${WORKSPACE}",
+  "env": {
+    "DSH_ACP_PKG_ROOT": "${WORKSPACE}/.orch-spike/dsh-acp/node_modules/dsh-acp-server",
+    "DSH_EXE": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness/DeepSeek Harness.exe",
+    "DSH_CLI_JS": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-desktop-host/lib/cli.js",
+    "DSH_HOME": "${WORKSPACE}/.orch-spike/dsh-home"
+  },
+  "sessionDefaults": { "cwd": "${RUN_DIR}/sessions" }
+}

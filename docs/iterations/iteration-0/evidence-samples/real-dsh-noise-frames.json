@@ -1,0 +1,82 @@
+{
+  "note": "真实 DSH 的会话级噪声帧：available_commands_update（建会话后 / turn 结束后）与 usage_update（turn 中）。它们不代表 turn 进展，归一化与 accepted 判定必须排除",
+  "source": "runs/vp1/dsh-real/stdio.jsonl",
+  "frames": [
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-700f4d0e-027f-4522-9006-9d7b7b6965d6",
+        "update": {
+          "sessionUpdate": "available_commands_update",
+          "availableCommands": [
+            {
+              "name": "compact",
+              "description": "Compact older conversation history"
+            },
+            {
+              "name": "feedback",
+              "description": "Record feedback about this session"
+            },
+            {
+              "name": "goal",
+              "description": "Set or view the goal for a long-running task"
+            },
+            {
+              "name": "permission",
+              "description": "Switch the permission preset (sandbox mode + approval policy)"
+            },
+            {
+              "name": "plan",
+              "description": "Enter or leave plan mode"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-700f4d0e-027f-4522-9006-9d7b7b6965d6",
+        "update": {
+          "sessionUpdate": "usage_update",
+          "used": 15,
+          "size": 32768
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-700f4d0e-027f-4522-9006-9d7b7b6965d6",
+        "update": {
+          "sessionUpdate": "available_commands_update",
+          "availableCommands": [
+            {
+              "name": "compact",
+              "description": "Compact older conversation history"
+            },
+            {
+              "name": "feedback",
+              "description": "Record feedback about this session"
+            },
+            {
+              "name": "goal",
+              "description": "Set or view the goal for a long-running task"
+            },
+            {
+              "name": "permission",
+              "description": "Switch the permission preset (sandbox mode + approval policy)"
+            },
+            {
+              "name": "plan",
+              "description": "Enter or leave plan mode"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

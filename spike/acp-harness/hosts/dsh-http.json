@@ -1,0 +1,19 @@
+{
+  "name": "dsh-http",
+  "kind": "acp-http-stream",
+  "evidence": "real",
+  "represents": "DSH（dsh-acp-server serve --port，ACP over HTTP+SSE）",
+  "note": "真实 HTTP 形状：POST /acp 只回 202，响应与通知走 GET /acp/stream；需要 acp-connection-id 亲和。",
+  "baseUrl": "http://127.0.0.1:7801",
+  "spawn": {
+    "command": "node",
+    "args": ["${SPIKE}/dsh-launcher/dsh-acp-launcher.mjs", "serve", "--port", "7801"],
+    "cwd": "${WORKSPACE}",
+    "env": {
+      "DSH_ACP_PKG_ROOT": "${WORKSPACE}/.orch-spike/dsh-acp/node_modules/dsh-acp-server",
+      "DSH_EXE": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness/DeepSeek Harness.exe",
+      "DSH_CLI_JS": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-desktop-host/lib/cli.js",
+      "DSH_HOME": "${WORKSPACE}/.orch-spike/dsh-home"
+    }
+  }
+}

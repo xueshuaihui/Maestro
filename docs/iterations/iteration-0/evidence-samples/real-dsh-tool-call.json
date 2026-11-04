@@ -1,0 +1,65 @@
+{
+  "note": "真实 DSH 上 tool_call 与 tool_call_update 的实际字段（无 diff、无 rawOutput、无指纹）",
+  "source": "runs/vp4/dsh-real-real/stdio.jsonl",
+  "frames": [
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-f730fb65-d2b2-41b2-9431-caf3a78411f4",
+        "update": {
+          "sessionUpdate": "tool_call",
+          "toolCallId": "mock-call-1",
+          "title": "echo acp-e2e-ok",
+          "kind": "execute",
+          "status": "pending",
+          "locations": [],
+          "rawInput": {
+            "command": "echo acp-e2e-ok",
+            "description": "e2e echo"
+          }
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-f730fb65-d2b2-41b2-9431-caf3a78411f4",
+        "update": {
+          "sessionUpdate": "tool_call_update",
+          "toolCallId": "mock-call-1",
+          "status": "in_progress"
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "session/update",
+      "params": {
+        "sessionId": "acp-f730fb65-d2b2-41b2-9431-caf3a78411f4",
+        "update": {
+          "sessionUpdate": "tool_call_update",
+          "toolCallId": "mock-call-1",
+          "status": "failed",
+          "content": [
+            {
+              "type": "content",
+              "content": {
+                "type": "text",
+                "text": "Error: unknown tool \"bash\""
+              }
+            },
+            {
+              "type": "content",
+              "content": {
+                "type": "text",
+                "text": "error ToolNotFoundError: UNKNOWN_TOOL"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

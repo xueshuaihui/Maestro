@@ -1,0 +1,95 @@
+{
+  "note": "Electron 桌面壳冒烟证据：托盘 / 多窗口 / 关闭缩托盘 / webview 内 WebSocket / 渲染结果 / 内存与进程",
+  "claims": "本机 Electron 运行时实测；Tauri 未编译见 runs/vp8/build-chain.json",
+  "evidence": {
+    "startedAt": "2026-11-04T11:46:37.769Z",
+    "electron": "38.8.6",
+    "chrome": "140.0.7339.249",
+    "node": "22.22.0",
+    "platform": "win32 x64",
+    "checks": {
+      "tray": true,
+      "multiWindow": true,
+      "closeToTray": true,
+      "websocket": true,
+      "daemonHttp": true,
+      "rendererDom": true
+    },
+    "windows": [
+      {
+        "name": "main",
+        "id": 1,
+        "pid": 0,
+        "show": false,
+        "alive": true
+      },
+      {
+        "name": "graph",
+        "id": 2,
+        "pid": 0,
+        "show": false,
+        "alive": true
+      }
+    ],
+    "tray": {
+      "created": true,
+      "destroyed": false,
+      "tooltipSet": true,
+      "bounds": {
+        "x": 2679,
+        "y": 1680,
+        "width": 33,
+        "height": 48
+      },
+      "menuItems": 3
+    },
+    "renderer": {
+      "window": "graph",
+      "messages": 14,
+      "snapshot": {
+        "roles": 3,
+        "connections": 3,
+        "health": "slow"
+      },
+      "domNodes": 6,
+      "wsState": "WebSocket 已连接"
+    },
+    "errors": [],
+    "memory": {
+      "rss": 102154240,
+      "heapTotal": 7864320,
+      "heapUsed": 4392196,
+      "external": 2409292,
+      "arrayBuffers": 0
+    },
+    "metrics": [
+      {
+        "type": "Browser",
+        "pid": 25772,
+        "workingSetMB": 97
+      },
+      {
+        "type": "GPU",
+        "pid": 19816,
+        "workingSetMB": 118
+      },
+      {
+        "type": "Utility",
+        "pid": 26488,
+        "workingSetMB": 51
+      },
+      {
+        "type": "Tab",
+        "pid": 30972,
+        "workingSetMB": 74
+      },
+      {
+        "type": "Tab",
+        "pid": 31556,
+        "workingSetMB": 75
+      }
+    ],
+    "endedAt": "2026-11-04T11:46:39.555Z",
+    "durationMs": 1786
+  }
+}

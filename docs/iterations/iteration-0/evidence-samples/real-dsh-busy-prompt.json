@@ -1,0 +1,52 @@
+{
+  "note": "真实 DSH 上对同一会话背靠背投递两次 prompt 的原始帧：第二个请求 2–3ms 内返回 -32602，message 为 a prompt is already in flight for this session（同码双义，不可仅凭 code 判会话失效）",
+  "source": "runs/vp7/busy-real-dsh-real/stdio.jsonl",
+  "requests": [
+    {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "method": "session/prompt",
+      "params": {
+        "sessionId": "acp-b4472edd-1b05-41ee-a5fc-fe3633bc7fff",
+        "prompt": [
+          {
+            "type": "text",
+            "text": "任务 A-1"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 4,
+      "method": "session/prompt",
+      "params": {
+        "sessionId": "acp-b4472edd-1b05-41ee-a5fc-fe3633bc7fff",
+        "prompt": [
+          {
+            "type": "text",
+            "text": "任务 B-1"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "jsonrpc": "2.0",
+      "id": 4,
+      "error": {
+        "code": -32602,
+        "message": "a prompt is already in flight for this session"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 6,
+      "error": {
+        "code": -32602,
+        "message": "a prompt is already in flight for this session"
+      }
+    }
+  ]
+}

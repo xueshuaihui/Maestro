@@ -1,0 +1,17 @@
+[package]
+name = "maestro-shell"
+version = "0.0.1"
+edition = "2021"
+description = "Maestro 桌面壳（Tauri 骨架）"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

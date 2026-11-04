@@ -1,0 +1,14 @@
+{
+  "name": "maestro-tauri-shell-spike",
+  "version": "0.0.1",
+  "private": true,
+  "description": "VP-8 Tauri 桌面壳骨架：构建在 GitHub Actions 上完成（本地无 Rust/MSVC 工具链）",
+  "scripts": {
+    "icon": "node scripts/make-icon.mjs && tauri icon src-tauri/icons/source.png -o src-tauri/icons",
+    "dev": "tauri dev",
+    "build": "tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.1.0"
+  }
+}

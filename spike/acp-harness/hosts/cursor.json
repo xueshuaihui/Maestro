@@ -1,0 +1,11 @@
+{
+  "name": "cursor",
+  "kind": "stdio",
+  "evidence": "real",
+  "represents": "Cursor CLI（agent acp）",
+  "note": "本机未安装 cursor-agent（见 report.md §VP-5 阻塞记录）。阶段二首迭代优先补测。",
+  "command": "cursor-agent",
+  "args": ["acp"],
+  "cwd": "${WORKSPACE}",
+  "sessionDefaults": { "cwd": "${RUN_DIR}/sessions" }
+}

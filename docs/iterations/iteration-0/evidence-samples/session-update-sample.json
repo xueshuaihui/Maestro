@@ -1,0 +1,106 @@
+{
+  "note": "VP-4 原始帧样本：tool_call_update（含 diff + rawOutput 指纹）与 agent_message_chunk（含机器可读审核清单）",
+  "source": {
+    "host": "mock-stdio",
+    "evidence": "mock",
+    "runId": "vp4/mock-stdio",
+    "frames": "D:\\WWW\\Maestro\\.orch-spike\\runs\\vp4\\mock-stdio\\stdio.jsonl"
+  },
+  "frames": [
+    {
+      "seq": 14,
+      "ts": "2026-11-03T15:34:49.334Z",
+      "dir": "in",
+      "method": "session/update",
+      "id": null,
+      "frame": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "sess_ccbc03fc465d4e66",
+          "update": {
+            "sessionUpdate": "tool_call_update",
+            "toolCallId": "call_sess_ccbc03fc465d4e66_1",
+            "status": "completed",
+            "content": [
+              {
+                "type": "diff",
+                "path": "D:\\WWW\\Maestro\\.orch-spike\\runs\\vp4\\mock-stdio\\workspace\\artifacts\\docs\\draft.md",
+                "oldText": null,
+                "newText": "EVIDENCE: 撰写一份 200 字产品说明，输出到 artifacts/docs/draft.md"
+              }
+            ],
+            "rawOutput": {
+              "path": "D:\\WWW\\Maestro\\.orch-spike\\runs\\vp4\\mock-stdio\\workspace\\artifacts\\docs\\draft.md",
+              "sha256": "23cab383a436263f9e1d23d1b7c4e9e4da529041624abdbda3ea0e635989e3ae",
+              "bytes": 78
+            }
+          }
+        }
+      }
+    },
+    {
+      "seq": 15,
+      "ts": "2026-11-03T15:34:49.334Z",
+      "dir": "in",
+      "method": "session/update",
+      "id": null,
+      "frame": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "sess_ccbc03fc465d4e66",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "content": {
+              "type": "text",
+              "text": "[mock] 产物已写入 artifacts/docs/draft.md（sha256=23cab383a436…）\n```json\n{\n  \"artifacts\": [\n    {\n      \"ref\": \"D:\\\\WWW\\\\Maestro\\\\.orch-spike\\\\runs\\\\vp4\\\\mock-stdio\\\\workspace\\\\artifacts\\\\docs\\\\draft.md\",\n      \"fingerprint\": \"sha256:23cab383a436263f9e1d23d1b7c4e9e4da529041624abdbda3ea0e635989e3ae\",\n      \"producedAt\": \"2026-11-03T15:34:49.334Z\"\n    }\n  ],\n  \"review\": {\n    \"confirmedBy\": \"mock-reviewer\",\n    \"confirmedAt\": \"2026-11-03T15:34:49.334Z\",\n    \"verdict\": \"approved\"\n  }\n}\n```"
+            }
+          }
+        }
+      }
+    },
+    {
+      "seq": 23,
+      "ts": "2026-11-03T15:34:49.379Z",
+      "dir": "in",
+      "method": "session/update",
+      "id": null,
+      "frame": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "sess_b88f7a71c3d94055",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "content": {
+              "type": "text",
+              "text": "[mock] 收到任务，cwd=D:\\WWW\\Maestro\\.orch-spike\\runs\\vp4\\mock-stdio\\workspace"
+            }
+          }
+        }
+      }
+    },
+    {
+      "seq": 24,
+      "ts": "2026-11-03T15:34:49.424Z",
+      "dir": "in",
+      "method": "session/update",
+      "id": null,
+      "frame": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "sess_b88f7a71c3d94055",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "content": {
+              "type": "text",
+              "text": "[mock] 审核完成，产物符合声明。\n```json\n{\n  \"review\": {\n    \"confirmedBy\": \"mock-reviewer\",\n    \"confirmedAt\": \"2026-11-03T15:34:49.424Z\",\n    \"verdict\": \"approved\"\n  }\n}\n```"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

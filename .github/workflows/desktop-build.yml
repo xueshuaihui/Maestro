@@ -1,0 +1,106 @@
+name: desktop-build
+
+# 桌面壳构建不在本机做（本机无 Rust / MSVC / Windows SDK），统一在 CI 上构建与冒烟。
+# 触发：手动，或改动 spike/tauri-shell、spike/desktop-shell、本文件时。
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'spike/tauri-shell/**'
+      - 'spike/desktop-shell/**'
+      - '.github/workflows/desktop-build.yml'
+  pull_request:
+    paths:
+      - 'spike/tauri-shell/**'
+      - 'spike/desktop-shell/**'
+      - '.github/workflows/desktop-build.yml'
+
+jobs:
+  tauri-windows:
+    name: Tauri 桌面壳（Windows，主路径）
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: spike/tauri-shell
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust 构建缓存
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: spike/tauri-shell/src-tauri
+
+      - name: 安装前端依赖（Tauri CLI）
+        run: npm install --no-audit --no-fund
+
+      - name: 生成图标（PNG 源 → ico/各尺寸）
+        run: npm run icon
+
+      - name: 构建安装包
+        run: npm run build
+
+      - name: 产物清单
+        run: Get-ChildItem -Recurse src-tauri/target/release/bundle | Select-Object FullName, Length
+        shell: pwsh
+
+      - name: 上传安装包
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-tauri-windows
+          path: |
+            spike/tauri-shell/src-tauri/target/release/bundle/nsis/*.exe
+            spike/tauri-shell/src-tauri/target/release/bundle/msi/*.msi
+          if-no-files-found: warn
+
+      - name: 启动冒烟（托盘 + 双窗口不崩溃）
+        shell: pwsh
+        run: |
+          # 注意：本 job 的 working-directory 是 spike/tauri-shell，路径都相对它写
+          $stubPath = "../desktop-shell/daemon-stub.mjs"
+          if (-not (Test-Path $stubPath)) { throw "未找到 daemon 桩 $stubPath" }
+          $stub = Start-Process node -ArgumentList $stubPath -PassThru -WindowStyle Hidden
+          Start-Sleep -Seconds 2
+          $env:MAESTRO_SMOKE = "1"
+          $exe = "src-tauri/target/release/maestro-shell.exe"
+          if (-not (Test-Path $exe)) { throw "未找到可执行文件 $exe" }
+          $app = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 15
+          if ($app.HasExited) { throw "应用提前退出，exit=$($app.ExitCode)" }
+          Write-Host "应用存活 15s，托盘与窗口创建未崩溃"
+          Stop-Process -Id $app.Id -Force
+          Stop-Process -Id $stub.Id -Force -ErrorAction SilentlyContinue
+
+  electron-smoke:
+    name: Electron 回退壳（Windows，运行时冒烟）
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: spike/desktop-shell
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 安装 Electron
+        run: npm install --no-audit --no-fund
+
+      - name: 托盘 / 多窗口 / WebSocket 冒烟
+        shell: pwsh
+        run: node smoke.mjs
+
+      - name: 上传冒烟证据
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-electron-smoke-evidence
+          path: .orch-spike/runs/vp8/desktop/evidence.json
+          if-no-files-found: warn

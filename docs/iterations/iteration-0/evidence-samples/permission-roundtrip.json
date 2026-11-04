@@ -1,0 +1,41 @@
+{
+  "note": "mock 宿主的 session/request_permission 往返（agent → client 请求 + client → agent 结果），对应 waiting_input 的进入与离开",
+  "source": "runs/vp6/mock-permission/stdio.jsonl",
+  "frames": [
+    {
+      "jsonrpc": "2.0",
+      "id": "srv-1",
+      "method": "session/request_permission",
+      "params": {
+        "sessionId": "sess_1a4b1096a3c24684",
+        "toolCall": {
+          "toolCallId": "call_sess_1a4b1096a3c24684_1",
+          "title": "写入产物 artifacts/docs/draft.md",
+          "kind": "edit"
+        },
+        "options": [
+          {
+            "optionId": "allow-once",
+            "name": "Allow once",
+            "kind": "allow_once"
+          },
+          {
+            "optionId": "reject-once",
+            "name": "Reject",
+            "kind": "reject_once"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": "srv-1",
+      "result": {
+        "outcome": {
+          "outcome": "selected",
+          "optionId": "allow-once"
+        }
+      }
+    }
+  ]
+}

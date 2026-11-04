@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Maestro",
+  "version": "0.0.1",
+  "identifier": "dev.maestro.shell",
+  "build": {
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Maestro · 控制台",
+        "width": 980,
+        "height": 700,
+        "resizable": true,
+        "visible": false
+      },
+      {
+        "label": "graph",
+        "title": "Maestro · 角色流程图",
+        "width": 760,
+        "height": 560,
+        "resizable": true,
+        "visible": false
+      }
+    ],
+    "trayIcon": {
+      "id": "main",
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": false
+    },
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"]
+  }
+}
