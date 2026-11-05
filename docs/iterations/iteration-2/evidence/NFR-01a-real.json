@@ -1,0 +1,70 @@
+{
+  "definition": "§3.2 NFR-01a：orch core stop 后 time orch status > /dev/null，10 次取最大，5 秒内",
+  "note": "用 node bin/orch.js 代替 orch；spawnSync 墙钟计时，含核心冷启动拉起 + 列出实例。",
+  "samples": [
+    {
+      "i": 1,
+      "ms": 202.64,
+      "coreStopExit": 0,
+      "statusExit": 0
+    },
+    {
+      "i": 2,
+      "ms": 196.57,
+      "coreStopExit": 0,
+      "statusExit": 0
+    },
+    {
+      "i": 3,
+      "ms": 199.02,
+      "coreStopExit": 0,
+      "statusExit": 0
+    },
+    {
+      "i": 4,
+      "ms": 190.44,
+      "coreStopExit": 0,
+      "statusExit": 0
+    },
+    {
+      "i": 5,
+      "ms": 188.34,
+      "coreStopExit": 0,
+      "statusExit": 0
+    },
+    {
+      "i": 6,
+      "ms": 186.81,
+      "coreStopExit": 0,
+      "statusExit": 0
+    },
+    {
+      "i": 7,
+      "ms": 210.86,
+      "coreStopExit": 0,
+      "statusExit": 0
+    },
+    {
+      "i": 8,
+      "ms": 193.69,
+      "coreStopExit": 0,
+      "statusExit": 0
+    },
+    {
+      "i": 9,
+      "ms": 200.82,
+      "coreStopExit": 0,
+      "statusExit": 0
+    },
+    {
+      "i": 10,
+      "ms": 205.83,
+      "coreStopExit": 0,
+      "statusExit": 0
+    }
+  ],
+  "sampleCount": 10,
+  "maxMs": 210.86,
+  "targetMs": 5000,
+  "pass": true
+}

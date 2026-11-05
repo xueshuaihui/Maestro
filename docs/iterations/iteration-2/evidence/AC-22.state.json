@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-304",
+  "coreGeneration": "gen-5b6004db1741dc65",
+  "createdAt": "2026-11-05T13:35:01.732Z",
+  "updatedAt": "2026-11-05T13:35:34.217Z",
+  "state": "completed",
+  "stateSince": "2026-11-05T13:35:34.209Z",
+  "template": "single",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p2\\proj-ac22\\demo",
+  "task": "写一段 200 字的产品说明，保存到 out/intro.md",
+  "halted": false,
+  "rev": 21,
+  "counters": {
+    "eventSeq": 24,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "worker",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-05T13:35:34.201Z",
+      "startedAt": "2026-11-05T13:35:01.732Z",
+      "roundStartedAt": "2026-11-05T13:35:01.732Z",
+      "endedAt": "2026-11-05T13:35:34.217Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "50a5d7b5-3401-4819-ad3b-9e828171ea37",
+      "artifactRefs": [
+        {
+          "ref": "out/intro.md",
+          "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p2\\proj-ac22\\demo\\out\\intro.md",
+          "declared": true,
+          "exists": true,
+          "bytes": 617,
+          "sha256": null,
+          "verifiedAt": "2026-11-05T13:35:34.200Z"
+        }
+      ]
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "50a5d7b5-3401-4819-ad3b-9e828171ea37",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-05T13:35:34.217Z",
+      "createdAt": "2026-11-05T13:35:03.958Z",
+      "lastEventAt": "2026-11-05T13:35:34.178Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "out/intro.md",
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": null,
+      "state": "consumed",
+      "createdAt": "2026-11-05T13:35:03.983Z",
+      "deliveredAt": "2026-11-05T13:35:03.999Z",
+      "acceptedAt": "2026-11-05T13:35:05.970Z",
+      "consumedAt": "2026-11-05T13:35:34.207Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 1971,
+      "defects": [],
+      "note": null
+    }
+  ],
+  "escalations": []
+}

@@ -1,0 +1,123 @@
+{
+  "ac": "AC-27",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "retest-fail --keep 跑完（已有 ESC-001），且核心在跑",
+      "ok": true,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "第 1 次 stdout 含 \"ESC-001\"（期望包含 \"ESC-001\"）",
+      "ok": true,
+      "actual": "{\"ok\":true,\"escalationId\":\"ESC-001\",\"reused\":true}\n"
+    },
+    {
+      "text": "第 1 次 stdout 含 \"reused\":true（期望包含 \"\\\"reused\\\":true\"）",
+      "ok": true,
+      "actual": "{\"ok\":true,\"escalationId\":\"ESC-001\",\"reused\":true}\n"
+    },
+    {
+      "text": "第 2 次 stdout 含 \"ESC-001\"（期望包含 \"ESC-001\"）",
+      "ok": true,
+      "actual": "{\"ok\":true,\"escalationId\":\"ESC-001\",\"reused\":true}\n"
+    },
+    {
+      "text": "第 2 次 stdout 含 \"reused\":true（期望包含 \"\\\"reused\\\":true\"）",
+      "ok": true,
+      "actual": "{\"ok\":true,\"escalationId\":\"ESC-001\",\"reused\":true}\n"
+    },
+    {
+      "text": "机检：escalations.length=1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "机检：escalationId 仍是 'ESC-001'（期望 \"ESC-001\"）",
+      "ok": true,
+      "actual": "\"ESC-001\""
+    },
+    {
+      "text": "orch status 只出现一个以「升级 ESC-」开头的块（期望 1）",
+      "ok": true,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario retest-fail --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac27",
+        "--scenario",
+        "retest-fail",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test)",
+      "stderr": ""
+    },
+    {
+      "label": "seam escalateOnce T-002",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\call-seam.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac27",
+        "--instance",
+        "INST-001",
+        "--call",
+        "escalateOnce",
+        "--node",
+        "T-002"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 79,
+      "stdout": "{\"ok\":true,\"escalationId\":\"ESC-001\",\"reused\":true}\n",
+      "stderr": "",
+      "note": "第 1 次 call-seam --call escalateOnce --node T-002"
+    },
+    {
+      "label": "seam escalateOnce T-002",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\call-seam.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac27",
+        "--instance",
+        "INST-001",
+        "--call",
+        "escalateOnce",
+        "--node",
+        "T-002"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 100,
+      "stdout": "{\"ok\":true,\"escalationId\":\"ESC-001\",\"reused\":true}\n",
+      "stderr": "",
+      "note": "第 2 次 call-seam --call escalateOnce --node T-002"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac27",
+      "exitCode": 0,
+      "durationMs": 96,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n会话 已升级\n交接包 HO-001  开发→测试  已构造   22:00:43\n交接包 HO-001  开发→测试  已投递   22:00:43\n交接包 HO-001  开发→测试  已接受   22:00:43\n交接包 HO-001  开发→测试  已完成   22:00:43\n交接包 HO-002  测试→开发（回流）  已构造   22:00:43\n交接包 HO-002  测试→开发（回流）  已投递   22:00:43\n交接包 HO-002  测试→开发（回流）  已接受   22:00:43\n交接包 HO-002  测试→开发（回流）  已完成   22:00:43\n交接包 HO-003  开发→测试（复测）  已构造   22:00:44\n交接包 HO-003  开发→测试（复测）  已投递   22:00:44\n交接包 HO-003  开发→测试（复测）  已接受   22:00:44\n交接包 HO-003  开发→测试（复测）  已完成   22:00:44\n升级 ESC-001 待处理\n  原因：回流超上限：测试已派发 2 次仍未通过\n  节点：T-002 测试 · 第 2 轮\n  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

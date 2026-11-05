@@ -1,0 +1,22 @@
+{
+  "ac": "AC-06",
+  "face": "夹具",
+  "startedAt": "2026-11-05T13:06:18.600Z",
+  "finishedAt": "2026-11-05T13:06:20.869Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac06",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac06"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "回流不新建节点卡片",
+  "narrativeId": "INST-204"
+}

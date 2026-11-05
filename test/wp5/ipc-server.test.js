@@ -28,8 +28,8 @@ function createFakeOrchestrator({ bus, generation } = {}) {
   const calls = [];
   return {
     calls,
-    async startRun({ cwd, task, instanceId = 'INST-001', onProgress }) {
-      calls.push({ method: 'startRun', cwd, task, instanceId });
+    async startRun({ cwd, task, instanceId = 'INST-001', hostId = null, template = null, onProgress }) {
+      calls.push({ method: 'startRun', cwd, task, instanceId, hostId, template });
       if (typeof onProgress === 'function') onProgress({ phase: 'session.created', sessionId: 'sess-001' });
       const stream = (async function* withBus() {
         yield { object: 'node', objectId: 'T-001', from: 'pending', to: 'running', result: 'applied', reason: 'run.start' };
@@ -39,11 +39,38 @@ function createFakeOrchestrator({ bus, generation } = {}) {
     },
     async cancel({ instanceId }) {
       calls.push({ method: 'cancel', instanceId });
-      return { ok: true, session: { state: 'idle' }, node: { state: 'cancelled' }, handoff: { state: 'rejected' } };
+      // v2 形状（M-10）：四个数组，IPC 原样透传。
+      return {
+        ok: true,
+        nodes: [{ nodeId: 'T-001', state: 'cancelled' }],
+        sessions: [{ sessionId: 'sess-001', state: 'idle' }],
+        handoffs: [{ handoffId: 'HO-001', state: 'rejected', rejectReason: 'withdrawn' }],
+        escalations: [{ escalationId: 'ESC-001', state: 'voided' }],
+      };
     },
     async getStatus({ instanceId }) {
       calls.push({ method: 'getStatus', instanceId });
-      return { ok: true, snapshot: { instanceId, state: 'running', node: { state: 'running' } } };
+      return {
+        ok: true,
+        snapshot: {
+          instanceId,
+          state: 'running',
+          template: 'code-loop',
+          cwd: 'D:/demo',
+          node: { state: 'running' },
+          nodes: [{ nodeId: 'T-001', state: 'running' }],
+          escalations: [{ escalationId: 'ESC-001', state: 'pending' }],
+        },
+      };
+    },
+    // 仅 test 接缝（M-14）；是否挂载由 server 按 NODE_ENV 决定。
+    async dispatchToNode(instanceId, nodeId) {
+      calls.push({ method: 'dispatchToNode', instanceId, nodeId });
+      return { ok: true, nodeId };
+    },
+    async escalateOnce(instanceId, nodeId) {
+      calls.push({ method: 'escalateOnce', instanceId, nodeId });
+      return { ok: true, escalationId: 'ESC-001', reused: true };
     },
     async listInstances() {
       calls.push({ method: 'listInstances' });
@@ -260,7 +287,11 @@ test('instance.get / list / events / cancel 直通 orchestrator', async () => {
 
     const cancelled = await client.request('instance.cancel', { instanceId: 'INST-001' });
     assert.equal(cancelled.ok, true);
-    assert.equal(cancelled.result.node.state, 'cancelled');
+    // C-05 / M-10：四个数组原样透传，IPC 不重建单对象。
+    assert.equal(cancelled.result.nodes[0].state, 'cancelled');
+    assert.equal(cancelled.result.sessions[0].state, 'idle');
+    assert.equal(cancelled.result.handoffs[0].state, 'rejected');
+    assert.equal(cancelled.result.escalations[0].state, 'voided');
 
     const missing = await client.request('instance.get', {});
     assert.equal(missing.ok, false);
@@ -268,6 +299,88 @@ test('instance.get / list / events / cancel 直通 orchestrator', async () => {
   } finally {
     await client.close();
     await server.close();
+  }
+});
+
+test('run.start：template / hostId 不再被白名单静默丢弃（C-05）', async () => {
+  const { client, orchestrator, server } = await boot('runstart-template');
+  try {
+    const res = await client.request('run.start', {
+      cwd: '.',
+      task: '给 calc.js 补 div 函数；产物：calc.js',
+      template: 'code-loop',
+      hostId: 'mock',
+    });
+    assert.equal(res.ok, true, JSON.stringify(res));
+
+    const call = orchestrator.calls.find((item) => item.method === 'startRun');
+    assert.equal(call.template, 'code-loop');
+    assert.equal(call.hostId, 'mock');
+  } finally {
+    await client.close();
+    await server.close();
+  }
+});
+
+test('instance.get：透出 template / cwd / pendingEscalations（C-07）', async () => {
+  const { client, server } = await boot('instance-get-v2');
+  try {
+    const got = await client.request('instance.get', { instanceId: 'INST-001' });
+    assert.equal(got.ok, true, JSON.stringify(got));
+    assert.equal(got.result.template, 'code-loop');
+    assert.equal(got.result.cwd, 'D:/demo');
+    assert.equal(got.result.pendingEscalations, 1);
+    assert.ok(Array.isArray(got.result.nodes));
+  } finally {
+    await client.close();
+    await server.close();
+  }
+});
+
+test('test.dispatch / test.escalate：仅 NODE_ENV=test 挂载，结果原样透传（M-14 / C-14）', async () => {
+  const previous = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'test';
+  const { client, orchestrator, server } = await boot('seam');
+  try {
+    const dispatched = await client.request('test.dispatch', { instanceId: 'INST-001', nodeId: 'T-002' });
+    assert.equal(dispatched.ok, true, JSON.stringify(dispatched));
+    assert.deepEqual(dispatched.result, { ok: true, nodeId: 'T-002' });
+    assert.deepEqual(
+      orchestrator.calls.find((call) => call.method === 'dispatchToNode'),
+      { method: 'dispatchToNode', instanceId: 'INST-001', nodeId: 'T-002' },
+    );
+
+    const escalated = await client.request('test.escalate', { instanceId: 'INST-001', nodeId: 'T-002' });
+    assert.equal(escalated.ok, true, JSON.stringify(escalated));
+    assert.deepEqual(escalated.result, { ok: true, escalationId: 'ESC-001', reused: true });
+
+    const bad = await client.request('test.dispatch', { instanceId: 'INST-001' });
+    assert.equal(bad.ok, false);
+    assert.equal(bad.code, 'IPC_BAD_PARAMS');
+    assert.equal(bad.params.field, 'nodeId');
+  } finally {
+    await client.close();
+    await server.close();
+    process.env.NODE_ENV = previous;
+  }
+});
+
+test('非 test 环境：test.dispatch / test.escalate 返回 IPC_BAD_METHOD，核心不崩', async () => {
+  const previous = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  const { client, server } = await boot('noseam');
+  try {
+    for (const method of ['test.dispatch', 'test.escalate']) {
+      const res = await client.request(method, { instanceId: 'INST-001', nodeId: 'T-001' });
+      assert.equal(res.ok, false, method);
+      assert.equal(res.code, 'IPC_BAD_METHOD', method);
+    }
+    const pong = await client.ping();
+    assert.equal(pong.ok, true);
+  } finally {
+    await client.close();
+    await server.close();
+    process.env.NODE_ENV = previous;
   }
 });
 

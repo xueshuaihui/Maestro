@@ -1,0 +1,22 @@
+{
+  "ac": "AC-04",
+  "face": "混合（夹具推进 + 产品命令 status）",
+  "startedAt": "2026-11-05T13:06:13.714Z",
+  "finishedAt": "2026-11-05T13:06:16.340Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac04",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac04"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "节点表能看全两行、轮次与两条方向的交接包",
+  "narrativeId": "INST-202"
+}

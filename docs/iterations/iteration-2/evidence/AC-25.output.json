@@ -1,0 +1,96 @@
+{
+  "ac": "AC-25",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "机检：events.jsonl 新增一条 result='rejected'、reason='illegal_transition' 的记录",
+      "ok": true,
+      "actual": "exit=0 added=[{\"gen\":\"gen-45e941493d954eea\",\"object\":\"node\",\"objectId\":\"T-002\",\"from\":\"cancelled\",\"to\":\"running\",\"result\":\"rejected\",\"reason\":\"illegal_transition\",\"detail\":{\"source\":\"fixture/attempt-transition\",\"message\":\"node: cancelled -> running is not in the transition table\"},\"seq\":56,\"ts\":\"2026-11-05T14:00:40.046Z\"}] stdout={\n  \"ok\": false,\n  \"code\": \"ILLEGAL_TRANSITION\",\n  \"from\": \"cancelled\",\n  \"to\": \"running\",\n  \"message\": \"node: cancelled -> running is not in the transition table\"\n}\n已拒绝：node cancelled -> running（ILLEGAL_TRANSITION）\n"
+    },
+    {
+      "text": "机检：detail.message 含 'not in the transition table'（期望包含 \"not in the transition table\"）",
+      "ok": true,
+      "actual": "[{\"gen\":\"gen-45e941493d954eea\",\"object\":\"node\",\"objectId\":\"T-002\",\"from\":\"cancelled\",\"to\":\"running\",\"result\":\"rejected\",\"reason\":\"illegal_transition\",\"detail\":{\"source\":\"fixture/attempt-transition\",\"message\":\"node: cancelled -> running is not in the transition table\"},\"seq\":56,\"ts\":\"2026-11-05T14:00:40.046Z\"}]"
+    },
+    {
+      "text": "机检：T-002 的 state 仍为 'cancelled'（期望 \"cancelled\"）",
+      "ok": true,
+      "actual": "\"cancelled\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario retest-fail",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac25",
+        "--scenario",
+        "retest-fail"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1971,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac25\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac25\\\\demo-code-pass\",\"scenario\":\"retest-fail\",\"resolvedScenario\":\"rounds-exceeded\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"escalated\"}],\"handoffs\":3,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"rounds_exceeded\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1534,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"nodes[1]=escalated round=2\",\"ok\":true},{\"name\":\"escalation reason=rounds_exceeded\",\"ok\":true,\"detail\":\"rounds_exceeded\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-29104-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 retest-fail 已跑完"
+    },
+    {
+      "label": "orch cancel --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "cancel",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac25",
+      "exitCode": 0,
+      "durationMs": 251,
+      "stdout": "会话 空闲\n会话 空闲\n会话 空闲\n会话 空闲\n节点 T-001 开发 已完成\n节点 T-002 测试 已取消\n交接包 HO-001 已完成\n交接包 HO-002 已完成\n交接包 HO-003 已完成\n升级 ESC-001 已作废\n",
+      "stderr": "",
+      "note": "orch cancel --instance INST-001（使 nodes[1]/T-002 变 cancelled）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac25",
+      "exitCode": 0,
+      "durationMs": 189,
+      "stdout": "核心已停止（pid 11616，运行 1s）\n",
+      "stderr": "",
+      "note": "orch core stop（夹具直接调状态机，不得与核心并发写 events.jsonl）"
+    },
+    {
+      "label": "attempt-transition node cancelled->running",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\attempt-transition.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac25",
+        "--instance",
+        "INST-001",
+        "--object",
+        "node",
+        "--from",
+        "cancelled",
+        "--to",
+        "running",
+        "--node",
+        "T-002"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 94,
+      "stdout": "{\n  \"ok\": false,\n  \"code\": \"ILLEGAL_TRANSITION\",\n  \"from\": \"cancelled\",\n  \"to\": \"running\",\n  \"message\": \"node: cancelled -> running is not in the transition table\"\n}\n已拒绝：node cancelled -> running（ILLEGAL_TRANSITION）\n",
+      "stderr": "",
+      "note": "attempt-transition.mjs --object node --node T-002 --from cancelled --to running"
+    }
+  ]
+}

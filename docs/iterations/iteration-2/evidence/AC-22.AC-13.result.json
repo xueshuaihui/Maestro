@@ -1,0 +1,13 @@
+{
+  "i11AC": "AC-13 状态记录损坏时不静默清空",
+  "expected": "看到「状态不可读」并被告知备份文件；原文件仍在，没有被清空或覆盖",
+  "statusExit": 1,
+  "statusOutput": "状态不可读，已备份为 state.json.corrupt（C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p2\\proj-ac22\\.orch\\instances\\INST-304\\state.json.corrupt）\n",
+  "hasStateUnreadable": true,
+  "mentionsBackupName": true,
+  "corruptBackupExists": true,
+  "corruptBackupContent": "{\"broken\": ",
+  "corruptBackupHoldsBrokenOriginal": true,
+  "stateJsonAfter": "{\"broken\": ",
+  "judgment": true
+}

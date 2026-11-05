@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "instanceId": "OLD-002",
+  "coreGeneration": "gen-legacy",
+  "state": "running",
+  "stateSince": "2026-10-01T10:02:00.000Z",
+  "cwd": "D:\\WWW\\Maestro\\demo-legacy-2",
+  "task": "旧格式实例：运行中，重启后不得被对账改成已中断",
+  "roleId": "coordinator",
+  "createdAt": "2026-10-01T10:00:00.000Z",
+  "updatedAt": "2026-10-01T10:02:00.000Z",
+  "node": {
+    "nodeId": "T-001",
+    "state": "running",
+    "stateSince": "2026-10-01T10:02:00.000Z",
+    "startedAt": "2026-10-01T10:00:05.000Z",
+    "endedAt": null,
+    "failure": null,
+    "note": null
+  },
+  "session": {
+    "sessionId": "sess-legacy-2",
+    "hostId": "dsh",
+    "state": "tool_running",
+    "stateSince": "2026-10-01T10:01:40.000Z",
+    "createdAt": "2026-10-01T10:00:05.500Z",
+    "lastEventAt": "2026-10-01T10:01:59.000Z",
+    "toolName": "write",
+    "turnId": "turn-1",
+    "pendingPermission": null,
+    "quarantined": false,
+    "artifactRef": "out/report.md"
+  },
+  "handoff": {
+    "handoffId": "HO-001",
+    "state": "accepted",
+    "createdAt": "2026-10-01T10:00:04.000Z",
+    "deliveredAt": "2026-10-01T10:00:04.100Z",
+    "acceptedAt": "2026-10-01T10:00:05.000Z",
+    "consumedAt": null,
+    "rejectedAt": null,
+    "rejectReason": null,
+    "wakeConsumedAt": null,
+    "acceptedSignal": "agent_thought_chunk",
+    "ambiguityWindowMs": 63,
+    "note": null
+  },
+  "artifactRefs": [],
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": {
+      "name": "deepseek-harness-acp",
+      "version": "0.0.1"
+    }
+  },
+  "counters": {
+    "eventSeq": 7,
+    "runCount": 1
+  }
+}

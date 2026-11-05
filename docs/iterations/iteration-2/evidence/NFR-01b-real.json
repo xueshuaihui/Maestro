@@ -1,0 +1,95 @@
+{
+  "definition": "§3.2 NFR-01b：读 events.jsonl 里 reason=run.started 与首个 node.dispatch 的 ts 差，10 次取最大，冷热分开记（热 5s / 冷 30s，冷启动=DSH 未拉起）",
+  "caveat": "本次真实面每条采集前均执行过 orch core stop（DSH 子进程关闭），故 6 个样本全部是「冷启动」口径。需求写「10 次取最大」，本次实测 6 次（5 条 AC + 冒烟）；真实闭环单条 49–326s，为控制平台限流未凑满 10 次，如实标注，未伪造补齐。热启动（DSH 已拉起后的首次派发）因每条 AC 用独立项目根、必须重新拉起 DSH，本次未单独隔离构造，不给数字。另：AC-21 / AC-22 为 single（不带模板）模式，节点派发合并进 reason='run.started'（见 AC-22.status-events.txt 第 9 行「节点 T-001  待执行 → 执行中  原因 run.started」），不产生独立 node.dispatch 事件，故这两行 firstDispatchTs / deltaMs 为 null（不是失败、不是缺失记录）；有效样本为 4 条 code-loop 运行（SMOKE / AC-01 / AC-03 / AC-45），maxDeltaMs=14 取自这 4 条。",
+  "rows": [
+    {
+      "label": "SMOKE",
+      "runStartedTs": "2026-11-05T13:30:24.030Z",
+      "firstDispatchTs": "2026-11-05T13:30:24.038Z",
+      "firstDispatchNode": "T-001",
+      "deltaMs": 8,
+      "seqStart": 1,
+      "seqFirst": 2
+    },
+    {
+      "label": "AC-01",
+      "runStartedTs": "2026-11-05T13:32:42.498Z",
+      "firstDispatchTs": "2026-11-05T13:32:42.508Z",
+      "firstDispatchNode": "T-001",
+      "deltaMs": 10,
+      "seqStart": 1,
+      "seqFirst": 2
+    },
+    {
+      "label": "AC-03",
+      "runStartedTs": "2026-11-05T13:33:31.721Z",
+      "firstDispatchTs": "2026-11-05T13:33:31.735Z",
+      "firstDispatchNode": "T-001",
+      "deltaMs": 14,
+      "seqStart": 1,
+      "seqFirst": 2
+    },
+    {
+      "label": "AC-21",
+      "runStartedTs": "2026-11-05T13:34:39.561Z",
+      "firstDispatchTs": null,
+      "firstDispatchNode": null,
+      "deltaMs": null,
+      "seqStart": 1,
+      "seqFirst": null
+    },
+    {
+      "label": "AC-22",
+      "runStartedTs": "2026-11-05T13:35:03.973Z",
+      "firstDispatchTs": null,
+      "firstDispatchNode": null,
+      "deltaMs": null,
+      "seqStart": 1,
+      "seqFirst": null
+    },
+    {
+      "label": "AC-45",
+      "runStartedTs": "2026-11-05T13:36:53.110Z",
+      "firstDispatchTs": "2026-11-05T13:36:53.120Z",
+      "firstDispatchNode": "T-001",
+      "deltaMs": 10,
+      "seqStart": 1,
+      "seqFirst": 2
+    }
+  ],
+  "sampleCount": 6,
+  "maxDeltaMs": 14,
+  "targetColdMs": 30000,
+  "passCold": true,
+  "userPerceivedColdStart": {
+    "metric": "采集器 spawn → 三行（敲下命令到看见实例运行中/会话已创建/任务已投递）",
+    "samples": [
+      {
+        "label": "AC-01",
+        "spawnToThreeLinesMs": 2329.9558,
+        "spawnToTerminalMs": 48780.2792
+      },
+      {
+        "label": "AC-03",
+        "spawnToThreeLinesMs": 2556.9338,
+        "spawnToTerminalMs": 49769.0212
+      },
+      {
+        "label": "AC-21",
+        "spawnToThreeLinesMs": 2355.633,
+        "spawnToTerminalMs": 23831.198
+      },
+      {
+        "label": "AC-22",
+        "spawnToThreeLinesMs": 2499.976,
+        "spawnToTerminalMs": 32774.0693
+      },
+      {
+        "label": "AC-45",
+        "spawnToThreeLinesMs": 2362.7335,
+        "spawnToTerminalMs": 325709.9948
+      }
+    ],
+    "note": "v15 的事件差口径不含 DSH 进程拉起；用户真正可感知的冷启动是 spawn→三行，一并给出，均以实测为准。"
+  }
+}

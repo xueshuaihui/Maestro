@@ -1,0 +1,243 @@
+/**
+ * Graph + role constants (`src/templates/index.js`).
+ *
+ * This is the ONLY product directory allowed to spell the built-in template names
+ * and role names (AC-28). `src/core` and `src/daemon` stay literal-free: the engine
+ * receives these objects by injection and never looks a template up by name.
+ *
+ * Node shape:
+ *   { id, nodeId, roleId, order, title, artifactPolicy, judge, products, wakeFrom, prompt }
+ * `id` is the iteration-2 spelling; `nodeId` is kept as the same value so the
+ * snapshot/D-6 field name needs no translation inside the engine.
+ *
+ * Edge shape: { from, to, kind:'forward'|'backflow'|'retest', condition }
+ * `terminal` is the single terminal node id; `terminals` is the array form kept for
+ * readers that project D-6 snapshots.
+ */
+
+/** Built-in roles. The coordinator is defined but not dispatched this iteration (D-1). */
+export const ROLES = Object.freeze({
+  developer: Object.freeze({
+    roleId: 'developer',
+    labelKey: 'developer',
+    dispatchable: true,
+    duty: '按任务修改代码，交出「产物：」一行声明的文件',
+    mustDeliver: ['任务里「产物：<路径>」声明的文件'],
+    prompt: 'forward'
+  }),
+  tester: Object.freeze({
+    roleId: 'tester',
+    labelKey: 'tester',
+    dispatchable: true,
+    duty: '运行测试命令，并以 out/verdict.json 交出结构化判定',
+    mustDeliver: ['out/verdict.json'],
+    prompt: 'verify'
+  }),
+  coordinator: Object.freeze({
+    roleId: 'coordinator',
+    labelKey: 'coordinator',
+    dispatchable: false,
+    duty: '汇总两节点的结论并给出下一步（本迭代只定义，不派发）',
+    mustDeliver: [],
+    prompt: null
+  })
+});
+
+/**
+ * Three built-in prompts (forward / backflow / retest) plus the unchanged
+ * single-node prompt. Wording lives here so the engine never assembles Chinese.
+ *
+ * `single` is byte-for-byte the I1.1 text.
+ */
+export const PROMPT_TEMPLATES = Object.freeze({
+  single: '{task}\n\n完成后直接结束，不需要额外说明。',
+  forward: '{task}',
+  backflow:
+    '{task}\n\n上一轮判定不通过，请按下列缺陷修正：\n{defectLines}\n复测要求：{retestRequirement}',
+  retest: '{task}\n\n上一轮缺陷：{defectCount} 条\n产物：{products}\n请复测并把结构化判定写到 out/verdict.json。'
+});
+
+/** Verdict requirement appended to a judging node's prompt (never to a worker's). */
+export const VERDICT_REQUIREMENT =
+  '\n\n完成后把结构化判定写到 out/verdict.json：{"verdict":"pass"|"fail","defects":[{"summary":"一句话缺陷","evidence":"证据文件路径"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。';
+
+/** Backflow detail line; rendered one per defect. */
+export const DEFECT_LINE = '缺陷 {i}：{summary}（证据 {evidence}）';
+
+/** Default retest requirement when a verdict carries none. */
+export const DEFAULT_RETEST_REQUIREMENT = '按上方每条缺陷修正后重新提交产物';
+
+function nodeOf(graph, id) {
+  if (!graph || !Array.isArray(graph.nodes)) return null;
+  return graph.nodes.find((node) => node.id === id || node.nodeId === id) ?? null;
+}
+
+/** Single-node graph: identical to I1.1 (node T-001, handoff HO-001, roleId 'worker'). */
+const single = Object.freeze({
+  id: 'single',
+  showTemplate: false,
+  entry: 'T-001',
+  terminal: 'T-001',
+  terminals: Object.freeze(['T-001']),
+  maxRounds: Object.freeze({ 'T-001': 1 }),
+  nodes: Object.freeze([
+    Object.freeze({
+      id: 'T-001',
+      nodeId: 'T-001',
+      roleId: 'worker',
+      order: 1,
+      title: null,
+      artifactPolicy: 'heuristic',
+      judge: 'none',
+      products: Object.freeze([]),
+      wakeFrom: Object.freeze([]),
+      prompt: 'single'
+    })
+  ]),
+  edges: Object.freeze([])
+});
+
+/** Two-node coding loop: build, then verify, then backflow or retest. */
+const codeLoop = Object.freeze({
+  id: 'code-loop',
+  showTemplate: true,
+  entry: 'T-001',
+  terminal: 'T-002',
+  terminals: Object.freeze(['T-002']),
+  maxRounds: Object.freeze({ 'T-001': 2, 'T-002': 2 }),
+  nodes: Object.freeze([
+    Object.freeze({
+      id: 'T-001',
+      nodeId: 'T-001',
+      roleId: 'developer',
+      order: 1,
+      title: '开发',
+      artifactPolicy: 'declared',
+      judge: 'none',
+      products: Object.freeze([]),
+      wakeFrom: Object.freeze(['backflow']),
+      prompt: 'forward'
+    }),
+    Object.freeze({
+      id: 'T-002',
+      nodeId: 'T-002',
+      roleId: 'tester',
+      order: 2,
+      title: '测试',
+      artifactPolicy: 'verdict',
+      judge: 'verdict',
+      products: Object.freeze(['out/verdict.json']),
+      wakeFrom: Object.freeze(['retest']),
+      prompt: 'verify'
+    })
+  ]),
+  edges: Object.freeze([
+    Object.freeze({ from: 'T-001', to: 'T-002', kind: 'forward', condition: null }),
+    Object.freeze({
+      from: 'T-002',
+      to: 'T-001',
+      kind: 'backflow',
+      condition: 'verdict-fail',
+      requiresHandoff: true
+    }),
+    Object.freeze({ from: 'T-001', to: 'T-002', kind: 'retest', condition: 'reopen-failed-target' })
+  ])
+});
+
+export const GRAPHS = Object.freeze({ single, 'code-loop': codeLoop });
+
+export const DEFAULT_GRAPH = 'single';
+
+/** Resolve a graph by name; unknown names return null (never throw). */
+export function getGraph(name) {
+  if (typeof name !== 'string' || name.length === 0) return null;
+  return Object.prototype.hasOwnProperty.call(GRAPHS, name) ? GRAPHS[name] : null;
+}
+
+/** The default graph object. */
+export function defaultGraph() {
+  return GRAPHS[DEFAULT_GRAPH];
+}
+
+/**
+ * Initial `nodes[]` in the D-6 shape. `stateAt` is stamped verbatim (caller owns time).
+ */
+export function initialNodes(graph, { stateAt = null } = {}) {
+  const nodes = Array.isArray(graph?.nodes) ? graph.nodes : [];
+  return nodes.map((node) => ({
+    nodeId: node.id ?? node.nodeId,
+    roleId: node.roleId,
+    round: 0,
+    state: 'pending',
+    stateSince: stateAt,
+    startedAt: null,
+    roundStartedAt: null,
+    endedAt: null,
+    failure: null,
+    note: null,
+    verdict: null,
+    sessionId: null,
+    artifactRefs: []
+  }));
+}
+
+function fill(template, vars) {
+  return String(template).replace(/\{(\w+)\}/g, (match, key) => {
+    const value = vars[key];
+    return value === undefined || value === null ? '' : String(value);
+  });
+}
+
+function defectLines(defects) {
+  return (Array.isArray(defects) ? defects : [])
+    .map((defect, index) =>
+      fill(DEFECT_LINE, {
+        i: index + 1,
+        summary: defect?.summary ?? '',
+        evidence: defect?.evidence ?? ''
+      })
+    )
+    .join('\n');
+}
+
+/**
+ * Assemble the dispatch prompt.
+ *
+ * @param {{graph?:object, node?:object, handoff?:object, task?:string,
+ *          products?:string[], defects?:object[], retestRequirement?:string,
+ *          defectCount?:number}} options
+ * @returns {string}
+ */
+export function promptFor({
+  graph = null,
+  node = null,
+  handoff = null,
+  task = '',
+  products = [],
+  defects = [],
+  retestRequirement = null,
+  defectCount = null
+} = {}) {
+  const kind = handoff?.edge?.kind ?? null;
+  const target = node ?? (graph ? nodeOf(graph, handoff?.edge?.to) : null);
+
+  if (kind === 'backflow') {
+    return fill(PROMPT_TEMPLATES.backflow, {
+      task,
+      defectLines: defectLines(defects),
+      retestRequirement: retestRequirement || DEFAULT_RETEST_REQUIREMENT
+    });
+  }
+  if (kind === 'retest') {
+    return fill(PROMPT_TEMPLATES.retest, {
+      task,
+      defectCount: Number.isInteger(defectCount) ? defectCount : (defects?.length ?? 0),
+      products: (Array.isArray(products) ? products : []).join(' ')
+    });
+  }
+  if (!target || target.prompt === 'single') {
+    return fill(PROMPT_TEMPLATES.single, { task });
+  }
+  const base = fill(PROMPT_TEMPLATES.forward, { task });
+  return target.judge === 'verdict' ? `${base}${VERDICT_REQUIREMENT}` : base;
+}

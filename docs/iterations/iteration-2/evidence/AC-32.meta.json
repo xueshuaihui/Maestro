@@ -1,0 +1,22 @@
+{
+  "ac": "AC-32",
+  "face": "夹具",
+  "startedAt": "2026-11-05T14:00:54.894Z",
+  "finishedAt": "2026-11-05T14:00:56.715Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac32",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac32"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "同一实例的同一节点被二次投递时被拒",
+  "narrativeId": "INST-226"
+}

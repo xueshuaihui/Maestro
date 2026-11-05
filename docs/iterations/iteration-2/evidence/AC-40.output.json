@@ -1,0 +1,70 @@
+{
+  "ac": "AC-40",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "retest-fail --keep 让 INST-001 处于「已挂起」，绑定目录 demo-code-pass，核心在跑",
+      "ok": true,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "输出含「该目录已有未结束的实例 INST-001，本次未发起」（期望包含 \"该目录已有未结束的实例 INST-001，本次未发起\"）",
+      "ok": true,
+      "actual": "该目录已有未结束的实例 INST-001，本次未发起\n"
+    },
+    {
+      "text": "退出码 1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "`ls .orch/instances | wc -l` 与执行前相同（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "机检：INST-001 的 state 仍是 'suspended'（新闭环不会解除挂起）（期望 \"suspended\"）",
+      "ok": true,
+      "actual": "\"suspended\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario retest-fail --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac40",
+        "--scenario",
+        "retest-fail",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test)",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --cwd ./demo-code-pass --template code-loop --task 给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-code-pass",
+        "--template",
+        "code-loop",
+        "--task",
+        "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac40",
+      "exitCode": 1,
+      "durationMs": 110,
+      "stdout": "该目录已有未结束的实例 INST-001，本次未发起\n",
+      "stderr": "",
+      "note": "orch run --cwd ./demo-code-pass --template code-loop --task \"…产物：calc.js\"（不带 --instance）"
+    }
+  ]
+}

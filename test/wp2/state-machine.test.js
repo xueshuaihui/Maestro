@@ -5,40 +5,93 @@ import {
   INSTANCE_STATES,
   NODE_STATES,
   HANDOFF_STATES,
+  ESCALATION_STATES,
+  SESSION_STATES,
+  TERMINAL_INSTANCE,
+  CORE_IMMUTABLE_INSTANCE,
+  RUN_DONE_INSTANCE,
+  CANCELABLE_NODE,
+  CANCELABLE_HANDOFF,
   IllegalTransitionError,
   createInstanceSM,
   createNodeSM,
-  createHandoffSM
+  createHandoffSM,
+  createEscalationSM,
+  createSessionSM
 } from '../../src/core/state-machine.js';
 
-/** Expected tables, transcribed one row per source state from requirement 2.2 / 2.4 / 2.5. */
+/** Expected tables, transcribed one row per source state from requirement D-1 / D-4 / D-6. */
 const INSTANCE_EDGES = [
   ['created', 'running'],
   ['created', 'cancelled'],
   ['running', 'completed'],
   ['running', 'failed'],
   ['running', 'cancelled'],
-  ['running', 'interrupted']
+  ['running', 'interrupted'],
+  ['running', 'suspended'],
+  ['suspended', 'cancelled']
 ];
 
+/**
+ * Requirement D-1. The 10 edges added over the I1.1 seven-state table are:
+ * pending->escalated, running->escalated, review->escalated, review->cancelled,
+ * done->running, done->escalated, failed->running, failed->escalated,
+ * failed->cancelled, escalated->cancelled.
+ * `running->failed` and `review->failed` are kept; `done` deliberately has no cancel edge.
+ */
 const NODE_EDGES = [
   ['pending', 'running'],
+  ['pending', 'escalated'],
   ['pending', 'cancelled'],
   ['running', 'review'],
   ['running', 'failed'],
+  ['running', 'escalated'],
   ['running', 'cancelled'],
   ['review', 'done'],
-  ['review', 'failed']
+  ['review', 'failed'],
+  ['review', 'escalated'],
+  ['review', 'cancelled'],
+  ['done', 'running'],
+  ['done', 'escalated'],
+  ['failed', 'running'],
+  ['failed', 'escalated'],
+  ['failed', 'cancelled'],
+  ['escalated', 'cancelled']
 ];
 
 const HANDOFF_EDGES = [
   ['created', 'delivered'],
+  ['created', 'rejected'],
   ['delivered', 'accepted'],
   ['delivered', 'rejected'],
   ['accepted', 'consumed'],
   ['accepted', 'rejected'],
   ['pending', 'delivered'],
   ['pending', 'expired']
+];
+
+const ESCALATION_EDGES = [['pending', 'voided']];
+
+/** Requirement D-6: session guard table. `escalated` has no exit except cancel (`idle`). */
+const SESSION_EDGES = [
+  ['idle', 'thinking'],
+  ['idle', 'escalated'],
+  ['thinking', 'tool_running'],
+  ['thinking', 'waiting_dependency'],
+  ['thinking', 'waiting_input'],
+  ['thinking', 'idle'],
+  ['thinking', 'escalated'],
+  ['tool_running', 'thinking'],
+  ['tool_running', 'waiting_dependency'],
+  ['tool_running', 'waiting_input'],
+  ['tool_running', 'idle'],
+  ['tool_running', 'escalated'],
+  ['waiting_input', 'thinking'],
+  ['waiting_input', 'idle'],
+  ['waiting_input', 'escalated'],
+  ['waiting_dependency', 'idle'],
+  ['waiting_dependency', 'escalated'],
+  ['escalated', 'idle']
 ];
 
 const CASES = [
@@ -51,12 +104,14 @@ const CASES = [
     definedOnly: []
   },
   {
+    // `cancelled` is the only state with no outbound edge: `done` can be reopened by a
+    // backflow wake-up, `failed` by a retest, `escalated` still has to be cancellable.
     name: 'node',
     states: NODE_STATES,
     edges: NODE_EDGES,
     create: createNodeSM,
-    terminal: ['done', 'failed', 'cancelled'],
-    definedOnly: ['escalated']
+    terminal: ['cancelled'],
+    definedOnly: []
   },
   {
     name: 'handoff',
@@ -64,6 +119,22 @@ const CASES = [
     edges: HANDOFF_EDGES,
     create: createHandoffSM,
     terminal: ['consumed', 'rejected', 'expired'],
+    definedOnly: []
+  },
+  {
+    name: 'escalation',
+    states: ESCALATION_STATES,
+    edges: ESCALATION_EDGES,
+    create: createEscalationSM,
+    terminal: ['voided'],
+    definedOnly: []
+  },
+  {
+    name: 'session',
+    states: SESSION_STATES,
+    edges: SESSION_EDGES,
+    create: createSessionSM,
+    terminal: [],
     definedOnly: []
   }
 ];
@@ -123,12 +194,7 @@ for (const c of CASES) {
         assert.equal(typeof res.message, 'string');
 
         if (from === to) {
-          // No event for a repeat set; the code stays whatever the table says,
-          // except that a defined-only source reports DEFINED_ONLY first.
-          assert.ok(
-            res.code === 'ILLEGAL_TRANSITION' || res.code === 'DEFINED_ONLY',
-            `unexpected repeat code ${res.code}`
-          );
+          assert.equal(res.code, 'ILLEGAL_TRANSITION', `unexpected repeat code ${res.code}`);
           assert.equal(events.length, 0, 'repeat set must not emit');
         } else {
           assert.equal(events.length, 1);
@@ -150,39 +216,149 @@ for (const c of CASES) {
     }
   });
 
-  test(`${c.name}: definedOnly() reports ${c.definedOnly.length} state(s)`, () => {
+  test(`${c.name}: definedOnly() is empty`, () => {
     const sm = c.create({ emit: () => {} });
     assert.deepEqual(sm.definedOnly(), c.definedOnly);
   });
+
+  test(`${c.name}: assert / apply / isTerminal share one verdict`, () => {
+    const sm = c.create({ emit: () => {} });
+    assert.equal(sm.object, c.name);
+    assert.deepEqual(sm.states, [...c.states]);
+  });
 }
 
-test('explicit out-of-table samples from the acceptance list', () => {
+test('node: only cancelled is terminal; done / failed / escalated still have exits', () => {
+  const sm = createNodeSM({ emit: () => {} });
+  assert.equal(sm.isTerminal('cancelled'), true);
+  assert.equal(sm.isTerminal('done'), false);
+  assert.equal(sm.isTerminal('failed'), false);
+  assert.equal(sm.isTerminal('escalated'), false);
+  assert.equal(sm.isTerminal('nope'), false);
+});
+
+test('node: escalated has exactly one exit (cancel)', async () => {
+  const sm = createNodeSM({ emit: () => {} });
+
+  assert.deepEqual(sm.can('escalated', 'cancelled'), { ok: true });
+  const res = await sm.apply('escalated', 'cancelled', { objectId: 'T-002' });
+  assert.deepEqual(res, { ok: true, from: 'escalated', to: 'cancelled' });
+
+  const denied = sm.can('escalated', 'done');
+  assert.equal(denied.ok, false);
+  assert.equal(denied.code, 'ILLEGAL_TRANSITION');
+  // No state is defined-only any more.
+  assert.notEqual(sm.can('escalated', 'running').code, 'DEFINED_ONLY');
+});
+
+test('node: done is reopened by backflow, failed by retest, and done is never cancelled', () => {
+  const sm = createNodeSM({ emit: () => {} });
+  assert.equal(sm.can('done', 'running').ok, true);
+  assert.equal(sm.can('done', 'escalated').ok, true);
+  assert.equal(sm.can('done', 'cancelled').ok, false);
+  assert.equal(sm.can('failed', 'running').ok, true);
+  assert.equal(sm.can('failed', 'escalated').ok, true);
+  assert.equal(sm.can('failed', 'cancelled').ok, true);
+  assert.equal(sm.can('review', 'cancelled').ok, true);
+  assert.equal(sm.can('running', 'failed').ok, true);
+  assert.equal(sm.can('review', 'failed').ok, true);
+});
+
+test('escalation: pending->voided only', async () => {
+  const sm = createEscalationSM({ emit: () => {} });
+  assert.equal(sm.isTerminal('pending'), false);
+  assert.equal(sm.isTerminal('voided'), true);
+
+  const ok = await sm.apply('pending', 'voided', { objectId: 'ESC-001' });
+  assert.deepEqual(ok, { ok: true, from: 'pending', to: 'voided' });
+
+  const back = sm.can('voided', 'pending');
+  assert.equal(back.ok, false);
+  assert.equal(back.code, 'ILLEGAL_TRANSITION');
+  assert.equal(sm.can('voided', 'voided').code, 'ILLEGAL_TRANSITION');
+});
+
+test('session: escalated only leaves on cancel (idle)', () => {
+  const sm = createSessionSM({ emit: () => {} });
+
+  const thinking = sm.can('escalated', 'thinking');
+  assert.equal(thinking.ok, false);
+  assert.equal(thinking.code, 'ILLEGAL_TRANSITION');
+
+  assert.equal(sm.can('escalated', 'idle').ok, true);
+  assert.equal(sm.can('escalated', 'waiting_dependency').ok, false);
+  assert.equal(sm.can('escalated', 'tool_running').ok, false);
+});
+
+test('session: every state can be escalated, and idle only starts a turn', () => {
+  const sm = createSessionSM({ emit: () => {} });
+  for (const state of ['idle', 'thinking', 'tool_running', 'waiting_input', 'waiting_dependency']) {
+    assert.equal(sm.can(state, 'escalated').ok, true, `${state}->escalated`);
+  }
+  assert.equal(sm.can('idle', 'thinking').ok, true);
+  assert.equal(sm.can('idle', 'tool_running').ok, false);
+  assert.equal(sm.can('idle', 'waiting_dependency').ok, false);
+  assert.equal(sm.can('thinking', 'tool_running').ok, true);
+  assert.equal(sm.can('tool_running', 'thinking').ok, true);
+});
+
+test('instance: suspended is reachable from running and only leaves on cancel', () => {
+  const sm = createInstanceSM({ emit: () => {} });
+  assert.equal(sm.can('running', 'suspended').ok, true);
+  assert.equal(sm.can('suspended', 'cancelled').ok, true);
+  assert.equal(sm.can('suspended', 'running').ok, false);
+  assert.equal(sm.can('suspended', 'completed').ok, false);
+  assert.equal(sm.isTerminal('suspended'), false);
+});
+
+test('five constant groups match requirement D-4', () => {
+  // suspended must NOT be terminal: cancel is its only exit.
+  assert.deepEqual([...TERMINAL_INSTANCE], ['completed', 'failed', 'cancelled', 'interrupted']);
+  assert.equal(TERMINAL_INSTANCE.includes('suspended'), false);
+
+  assert.deepEqual([...CORE_IMMUTABLE_INSTANCE], [
+    'completed',
+    'failed',
+    'cancelled',
+    'interrupted',
+    'suspended'
+  ]);
+  assert.deepEqual([...RUN_DONE_INSTANCE], [
+    'completed',
+    'failed',
+    'cancelled',
+    'interrupted',
+    'suspended'
+  ]);
+
+  assert.deepEqual([...CANCELABLE_NODE], ['pending', 'running', 'review', 'failed', 'escalated']);
+  assert.equal(CANCELABLE_NODE.includes('failed'), true);
+  assert.equal(CANCELABLE_NODE.includes('escalated'), true);
+  assert.equal(CANCELABLE_NODE.includes('done'), false);
+  assert.equal(CANCELABLE_NODE.includes('cancelled'), false);
+
+  assert.deepEqual([...CANCELABLE_HANDOFF], ['created', 'delivered', 'accepted']);
+  assert.equal(CANCELABLE_HANDOFF.includes('consumed'), false);
+});
+
+test('explicit out-of-table samples from the acceptance list', async () => {
   const node = createNodeSM({ emit: () => {} });
   const instance = createInstanceSM({ emit: () => {} });
   const handoff = createHandoffSM({ emit: () => {} });
 
-  assert.equal(node.can('done', 'running').ok, false);
-  assert.equal(node.can('done', 'running').code, 'ILLEGAL_TRANSITION');
-  assert.equal(instance.can('completed', 'running').ok, false);
-  assert.equal(handoff.can('created', 'accepted').ok, false);
-  assert.equal(handoff.can('rejected', 'delivered').ok, false);
-});
-
-test('escalated accepts no transition at all', async () => {
-  const sm = createNodeSM({ emit: () => {} });
-
+  assert.equal(node.can('done', 'review').ok, false);
+  assert.equal(node.can('escalated', 'running').ok, false);
   for (const to of NODE_STATES) {
-    const verdict = sm.can('escalated', to);
-    assert.equal(verdict.ok, false);
-    assert.equal(verdict.code, 'DEFINED_ONLY', `escalated->${to} should be DEFINED_ONLY`);
-
-    const res = await sm.apply('escalated', to, { objectId: 'T-001' });
-    assert.equal(res.ok, false);
-    assert.equal(res.code, 'DEFINED_ONLY');
+    assert.equal(node.can('cancelled', to).ok, false, `cancelled->${to}`);
   }
 
-  // Applying with escalated as the target is also rejected (no inbound edge).
-  assert.equal(sm.can('done', 'escalated').code, 'ILLEGAL_TRANSITION');
+  assert.equal(instance.can('completed', 'running').ok, false);
+  // escalated does not participate in instances at all.
+  assert.equal(instance.can('running', 'escalated').code, 'UNKNOWN_STATE');
+  assert.equal(instance.can('escalated', 'cancelled').code, 'UNKNOWN_STATE');
+
+  assert.equal(handoff.can('created', 'accepted').ok, false);
+  assert.equal(handoff.can('rejected', 'delivered').ok, false);
 });
 
 test('from === to is ILLEGAL_TRANSITION and emits nothing', async () => {
@@ -201,8 +377,8 @@ test('rejected apply emits one rejected event with the attempted target', async 
   const events = [];
   const sm = createNodeSM({ emit: (ev) => events.push(ev) });
 
-  const res = await sm.apply('done', 'running', {
-    objectId: 'T-001',
+  const res = await sm.apply('escalated', 'done', {
+    objectId: 'T-002',
     reason: 'fixture.attempt_transition',
     detail: { source: 'fixture/attempt-transition' }
   });
@@ -213,13 +389,13 @@ test('rejected apply emits one rejected event with the attempted target', async 
 
   const ev = events[0];
   assert.equal(ev.object, 'node');
-  assert.equal(ev.objectId, 'T-001');
-  assert.equal(ev.from, 'done');
-  assert.equal(ev.to, 'running');
+  assert.equal(ev.objectId, 'T-002');
+  assert.equal(ev.from, 'escalated');
+  assert.equal(ev.to, 'done');
   assert.equal(ev.result, 'rejected');
   assert.equal(ev.reason, 'illegal_transition');
   assert.equal(ev.detail.source, 'fixture/attempt-transition');
-  assert.match(ev.detail.message, /done/);
+  assert.match(ev.detail.message, /escalated/);
 });
 
 test('apply awaits an async emit before returning', async () => {
@@ -250,8 +426,9 @@ test('assert throws IllegalTransitionError carrying from/to/code', () => {
     }
   );
 
-  assert.throws(() => createNodeSM({ emit: () => {} }).assert('escalated', 'done'), /defined-only/);
+  assert.throws(() => createNodeSM({ emit: () => {} }).assert('escalated', 'done'), /not in the transition table/);
   assert.doesNotThrow(() => sm.assert('created', 'delivered'));
+  assert.doesNotThrow(() => createNodeSM({ emit: () => {} }).assert('escalated', 'cancelled'));
 });
 
 test('can and apply never throw on garbage input', async () => {

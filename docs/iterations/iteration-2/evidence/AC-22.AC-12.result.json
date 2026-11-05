@@ -1,0 +1,10 @@
+{
+  "i11AC": "AC-12 重启后能查，但不偷偷重跑",
+  "eventsBeforeLines": 24,
+  "eventsAfterLines": 24,
+  "eventsUnchanged": true,
+  "statusFirstLine": "实例 INST-304 · 已完成",
+  "instanceStillCompleted": true,
+  "noNewDispatchAfterStop": true,
+  "judgment": true
+}

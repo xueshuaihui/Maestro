@@ -1,0 +1,22 @@
+{
+  "ac": "AC-40",
+  "face": "混合",
+  "startedAt": "2026-11-05T13:16:56.945Z",
+  "finishedAt": "2026-11-05T13:16:59.542Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac40",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac40"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "同一目录不能同时跑两个闭环",
+  "narrativeId": "INST-234"
+}

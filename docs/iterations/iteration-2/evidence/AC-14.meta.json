@@ -1,0 +1,34 @@
+{
+  "ac": "AC-14",
+  "face": "夹具（4 个独立项目根）",
+  "startedAt": "2026-11-05T14:00:18.973Z",
+  "finishedAt": "2026-11-05T14:00:24.914Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac14-verdict-bad-json",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac14-verdict-bad-json"
+    },
+    {
+      "case": "ac14-verdict-no-field",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac14-verdict-no-field"
+    },
+    {
+      "case": "ac14-verdict-maybe",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac14-verdict-maybe"
+    },
+    {
+      "case": "ac14-verdict-pass-with-defects",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac14-verdict-pass-with-defects"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "判定不可解析的四种样本都不回流",
+  "narrativeId": "INST-212"
+}

@@ -1,0 +1,106 @@
+{
+  "ac": "AC-46",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "机检：state='completed'（期望 \"completed\"）",
+      "ok": true,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "机检：nodes[0].round=2 且 state=done（期望 \"2/done\"）",
+      "ok": true,
+      "actual": "\"2/done\""
+    },
+    {
+      "text": "机检：nodes[1].round=2 且 state=done（期望 \"2/done\"）",
+      "ok": true,
+      "actual": "\"2/done\""
+    },
+    {
+      "text": "机检：handoffs 恰好 3 条（期望 3）",
+      "ok": true,
+      "actual": "3"
+    },
+    {
+      "text": "机检：edge.kind 依次 forward、backflow、retest（期望 \"forward,backflow,retest\"）",
+      "ok": true,
+      "actual": "\"forward,backflow,retest\""
+    },
+    {
+      "text": "机检：state 都是 'consumed'（期望 \"consumed,consumed,consumed\"）",
+      "ok": true,
+      "actual": "\"consumed,consumed,consumed\""
+    },
+    {
+      "text": "夹具：prompts/3.json 的 task 含「div 在除数为 0 时返回 Infinity，未抛错」（期望包含 \"div 在除数为 0 时返回 Infinity，未抛错\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物"
+    },
+    {
+      "text": "夹具：prompts/3.json 的 task 含「out/test-log.txt」（期望包含 \"out/test-log.txt\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物"
+    },
+    {
+      "text": "夹具：prompts/3.json 的 task 含「div 在整除场景存在浮点误差」（期望包含 \"div 在整除场景存在浮点误差\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物"
+    },
+    {
+      "text": "夹具：prompts/3.json 的 task 含「out/test-log-2.txt」（期望包含 \"out/test-log-2.txt\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物"
+    },
+    {
+      "text": "夹具：prompts/4.json 的 task 含「上一轮缺陷：2 条」（期望包含 \"上一轮缺陷：2 条\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。"
+    },
+    {
+      "text": "orch status 有一行匹配 ^节点 T-002 测试 已完成 · 第 2 轮 · 耗时 \\S+ · 判定 通过$（期望匹配 /^节点 T-002 测试 已完成 · 第 2 轮 · 耗时 \\S+ · 判定 通过$/m）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 1s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:17:08\n交接包 HO-001  开发→测试  已投递   21:17:08\n交接包 HO-001  开发→测试  已接受   21:17:08\n交接包 HO-001  开发→测试  已完成   21:17:08\n交接包 HO-002  测试→开发（回流）  已构造   21:17:08\n交接包 HO-002  测试→开发（回流）  已投递   21:17:09\n交接包 HO-002  测试→开发（回流）  已接受   21:17:09\n交接包 HO-002  测试→开发（回流）  已完成   21:17:09\n交接包 HO-003  开发→测试（复测）  已构造   21:17:09\n交接包 HO-003  开发→测试（复测）  已投递   21:17:09\n交接包 HO-003  开发→测试（复测）  已接受   21:17:09\n交接包 HO-003  开发→测试（复测）  已完成   21:17:09\n升级 —\n"
+    },
+    {
+      "text": "orch status 输出含「升级 —」（期望包含 \"升级 —\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 1s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:17:08\n交接包 HO-001  开发→测试  已投递   21:17:08\n交接包 HO-001  开发→测试  已接受   21:17:08\n交接包 HO-001  开发→测试  已完成   21:17:08\n交接包 HO-002  测试→开发（回流）  已构造   21:17:08\n交接包 HO-002  测试→开发（回流）  已投递   21:17:09\n交接包 HO-002  测试→开发（回流）  已接受   21:17:09\n交接包 HO-002  测试→开发（回流）  已完成   21:17:09\n交接包 HO-003  开发→测试（复测）  已构造   21:17:09\n交接包 HO-003  开发→测试（复测）  已投递   21:17:09\n交接包 HO-003  开发→测试（复测）  已接受   21:17:09\n交接包 HO-003  开发→测试（复测）  已完成   21:17:09\n升级 —\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario backflow-once",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac46",
+        "--scenario",
+        "backflow-once"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1930,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac46\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac46\\\\demo-code-pass\",\"scenario\":\"backflow-once\",\"resolvedScenario\":\"backflow\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":0,\"instanceId\":\"INST-001\",\"state\":\"completed\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"done\"}],\"handoffs\":3,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1536,\"checks\":[{\"name\":\"state=completed\",\"ok\":true,\"detail\":\"completed\"},{\"name\":\"两节点 round=2 done\",\"ok\":true},{\"name\":\"handoffs=3 forward/backflow/retest\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-30264-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 1s · 判定 通过\n交接包 HO-001  开发→测试  已构造   21:17:08\n交接包 HO-001  开发→测试  已投递   21:17:08\n交接包 HO-001  开发→测试  已接受   21:17:08\n交接包 HO-001  开发→测试  已完成   21:17:08\n交接包 HO-002  测试→开发（回流）  已构造   21:17:08\n交接包 HO-002  测试→开发（回流）  已投递   21:17:09\n交接包 HO-002  测试→开发（回流）  已接受   21:17:09\n交接包 HO-002  测试→开发（回流）  已完成   21:17:09\n交接包 HO-003  开发→测试（复测）  已构造   21:17:09\n交接包 HO-003  开发→测试（复测）  已投递   21:17:09\n交接包 HO-003  开发→测试（复测）  已接受   21:17:09\n交接包 HO-003  开发→测试（复测）  已完成   21:17:09\n升级 —\n",
+      "note": "node code-loop-driver.mjs --scenario backflow-once 跑完整场景"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac46",
+      "exitCode": 0,
+      "durationMs": 209,
+      "stdout": "实例 INST-001 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 1s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:17:08\n交接包 HO-001  开发→测试  已投递   21:17:08\n交接包 HO-001  开发→测试  已接受   21:17:08\n交接包 HO-001  开发→测试  已完成   21:17:08\n交接包 HO-002  测试→开发（回流）  已构造   21:17:08\n交接包 HO-002  测试→开发（回流）  已投递   21:17:09\n交接包 HO-002  测试→开发（回流）  已接受   21:17:09\n交接包 HO-002  测试→开发（回流）  已完成   21:17:09\n交接包 HO-003  开发→测试（复测）  已构造   21:17:09\n交接包 HO-003  开发→测试（复测）  已投递   21:17:09\n交接包 HO-003  开发→测试（复测）  已接受   21:17:09\n交接包 HO-003  开发→测试（复测）  已完成   21:17:09\n升级 —\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

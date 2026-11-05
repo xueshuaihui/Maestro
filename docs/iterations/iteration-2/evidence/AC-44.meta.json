@@ -1,0 +1,22 @@
+{
+  "ac": "AC-44",
+  "face": "夹具（核心侧 after_output:T-002）",
+  "startedAt": "2026-11-05T13:17:05.893Z",
+  "finishedAt": "2026-11-05T13:17:07.948Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac44",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac44"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "核对期间会话显示「等待下游」",
+  "narrativeId": "INST-238"
+}

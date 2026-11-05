@@ -1,0 +1,160 @@
+{
+  "ac": "AC-38",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "命令在 10 秒内返回",
+      "ok": true,
+      "actual": "1454ms"
+    },
+    {
+      "text": "退出码是 5（期望 5）",
+      "ok": true,
+      "actual": "5"
+    },
+    {
+      "text": "输出含「无法记录升级：」（期望包含 \"无法记录升级：\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-21660-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n无法记录升级：state_write:escalation；已停止推进\n实例 INST-001 · 运行中 · 已停止推进 · 模板 编码闭环\n节点 T-002 测试 待校验（升级未记录） · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消\n"
+    },
+    {
+      "text": "输出含「；已停止推进」（期望包含 \"；已停止推进\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-21660-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n无法记录升级：state_write:escalation；已停止推进\n实例 INST-001 · 运行中 · 已停止推进 · 模板 编码闭环\n节点 T-002 测试 待校验（升级未记录） · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消\n"
+    },
+    {
+      "text": "输出含「运行中 · 已停止推进」（期望包含 \"运行中 · 已停止推进\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-21660-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n无法记录升级：state_write:escalation；已停止推进\n实例 INST-001 · 运行中 · 已停止推进 · 模板 编码闭环\n节点 T-002 测试 待校验（升级未记录） · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消\n"
+    },
+    {
+      "text": "输出不含「已挂起」（期望不含 \"已挂起\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-21660-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n无法记录升级：state_write:escalation；已停止推进\n实例 INST-001 · 运行中 · 已停止推进 · 模板 编码闭环\n节点 T-002 测试 待校验（升级未记录） · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消\n"
+    },
+    {
+      "text": "输出含「节点 T-002 测试 待校验（升级未记录） · 第 2 轮」（期望包含 \"节点 T-002 测试 待校验（升级未记录） · 第 2 轮\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-21660-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n无法记录升级：state_write:escalation；已停止推进\n实例 INST-001 · 运行中 · 已停止推进 · 模板 编码闭环\n节点 T-002 测试 待校验（升级未记录） · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消\n"
+    },
+    {
+      "text": "最后一行含「下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消」（期望包含 \"下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消\"）",
+      "ok": true,
+      "actual": "下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消"
+    },
+    {
+      "text": "全部输出不含以「交接包 HO-」开头的行（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "机检：state='running'（期望 \"running\"）",
+      "ok": true,
+      "actual": "\"running\""
+    },
+    {
+      "text": "机检：halted=true（期望 true）",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "机检：escalations 为空（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "机检：nodes[1].state='review'（不是 failed 也不是 escalated）（期望 \"review\"）",
+      "ok": true,
+      "actual": "\"review\""
+    },
+    {
+      "text": "第一行含「已中断」（期望包含 \"已中断\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已中断 ｜ 停在节点 已完成 / 会话 等待下游"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario retest-fail --prepare-only",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac38",
+        "--scenario",
+        "retest-fail",
+        "--prepare-only"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 85,
+      "stdout": "{\"ok\":true,\"prepareOnly\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac38\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac38\\\\demo-code-pass\",\"scenario\":\"retest-fail\",\"resolvedScenario\":\"rounds-exceeded\",\"cursorPath\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac38\\\\.mock\\\\cursor.json\",\"hostPath\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac38\\\\.orch\\\\hosts\\\\mock.json\",\"cursor\":{\"next\":1},\"host\":{\"id\":\"mock\",\"transport\":\"stdio\",\"launch\":{\"command\":\"C:\\\\Users\\\\xuesh\\\\.workbuddy\\\\binaries\\\\node\\\\versions\\\\22.22.2-6\\\\node.exe\",\"args\":[\"D:\\\\WWW\\\\Maestro\\\\test\\\\fixtures\\\\mock-acp-agent.js\",\"--root\",\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac38\",\"--scenario\",\"retest-fail\"]}}}\n",
+      "stderr": "",
+      "note": "driver --scenario retest-fail --prepare-only（不启核心、不建实例）"
+    },
+    {
+      "label": "夹具：核心已停（全新根，未执行任何会拉起核心的命令）",
+      "argv": [
+        "(fixture) 核心已停（全新根，未执行任何会拉起核心的命令）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "保证 NODE_ENV=test 与 MAESTRO_FAULT 在冷启动时被读取",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --cwd ./demo-code-pass --template code-loop --host mock --task 给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-code-pass",
+        "--template",
+        "code-loop",
+        "--host",
+        "mock",
+        "--task",
+        "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac38",
+      "exitCode": 5,
+      "durationMs": 1454,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-21660-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n无法记录升级：state_write:escalation；已停止推进\n实例 INST-001 · 运行中 · 已停止推进 · 模板 编码闭环\n节点 T-002 测试 待校验（升级未记录） · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消\n",
+      "stderr": "",
+      "note": "MAESTRO_FAULT=state_write:escalation NODE_ENV=test orch run --cwd ./demo-code-pass --template code-loop --host mock --task \"…产物：calc.js\""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac38",
+      "exitCode": 0,
+      "durationMs": 191,
+      "stdout": "核心已停止（pid 28500，运行 1s）\n",
+      "stderr": "",
+      "note": "orch core stop"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac38",
+      "exitCode": 0,
+      "durationMs": 215,
+      "stdout": "实例 INST-001 · 已中断 ｜ 停在节点 已完成 / 会话 等待下游\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 待校验（升级未记录） · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n会话 等待下游\n交接包 HO-001  开发→测试  已构造   21:16:53\n交接包 HO-001  开发→测试  已投递   21:16:53\n交接包 HO-001  开发→测试  已接受   21:16:53\n交接包 HO-001  开发→测试  已完成   21:16:53\n交接包 HO-002  测试→开发（回流）  已构造   21:16:53\n交接包 HO-002  测试→开发（回流）  已投递   21:16:53\n交接包 HO-002  测试→开发（回流）  已接受   21:16:53\n交接包 HO-002  测试→开发（回流）  已完成   21:16:54\n交接包 HO-003  开发→测试（复测）  已构造   21:16:54\n交接包 HO-003  开发→测试（复测）  已投递   21:16:54\n交接包 HO-003  开发→测试（复测）  已接受   21:16:54\n交接包 HO-003  开发→测试（复测）  已完成   21:16:54\n升级 —\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

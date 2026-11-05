@@ -1,0 +1,22 @@
+{
+  "ac": "NFR-07",
+  "face": "夹具（本地根）",
+  "startedAt": "2026-11-05T13:17:24.496Z",
+  "finishedAt": "2026-11-05T13:17:34.873Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "nfr07",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr07"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "NFR-07 频繁查询不让闭环多跑",
+  "narrativeId": "NFR-07"
+}

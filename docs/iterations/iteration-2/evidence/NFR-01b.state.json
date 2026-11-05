@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-a0df6680224f6251",
+  "createdAt": "2026-11-05T13:17:14.367Z",
+  "updatedAt": "2026-11-05T13:17:14.984Z",
+  "state": "completed",
+  "stateSince": "2026-11-05T13:17:14.984Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01b\\demo-code-pass",
+  "task": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 23,
+  "counters": {
+    "eventSeq": 22,
+    "runCount": 1,
+    "dispatchCount": 2
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-05T13:17:14.652Z",
+      "startedAt": "2026-11-05T13:17:14.383Z",
+      "roundStartedAt": "2026-11-05T13:17:14.383Z",
+      "endedAt": "2026-11-05T13:17:14.658Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-1488-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01b\\demo-code-pass\\calc.js",
+          "exists": true,
+          "bytes": 251,
+          "mtime": "2026-11-05T13:17:14.615Z",
+          "verifiedAt": "2026-11-05T13:17:14.652Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-05T13:17:14.948Z",
+      "startedAt": "2026-11-05T13:17:14.680Z",
+      "roundStartedAt": "2026-11-05T13:17:14.680Z",
+      "endedAt": "2026-11-05T13:17:14.960Z",
+      "failure": null,
+      "note": null,
+      "verdict": {
+        "value": "pass",
+        "defectCount": 0,
+        "verdictPath": "out/verdict.json",
+        "readAt": "2026-11-05T13:17:14.944Z"
+      },
+      "sessionId": "mock-sess-22928-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-1488-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-05T13:17:14.660Z",
+      "createdAt": "2026-11-05T13:17:14.609Z",
+      "lastEventAt": "2026-11-05T13:17:14.616Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01b\\demo-code-pass\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-22928-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-05T13:17:14.972Z",
+      "createdAt": "2026-11-05T13:17:14.890Z",
+      "lastEventAt": "2026-11-05T13:17:14.903Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01b\\demo-code-pass\\out\\verdict.json",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-05T13:17:14.673Z",
+      "deliveredAt": "2026-11-05T13:17:14.890Z",
+      "acceptedAt": "2026-11-05T13:17:14.898Z",
+      "consumedAt": "2026-11-05T13:17:14.960Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 8,
+      "defects": [],
+      "note": null
+    }
+  ],
+  "escalations": []
+}

@@ -1,0 +1,90 @@
+{
+  "label": "AC-21",
+  "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd demo --task 写一段 200 字的产品说明，保存到 out/intro.md --instance INST-303",
+  "displayCommand": "orch run --cwd demo --task 写一段 200 字的产品说明，保存到 out/intro.md --instance INST-303",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p2\\proj-ac21",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p2\\proj-ac21\\demo",
+  "task": "写一段 200 字的产品说明，保存到 out/intro.md",
+  "template": null,
+  "instance": "INST-303",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p2\\dsh-home",
+  "exitCode": 0,
+  "signal": null,
+  "timeouts": {
+    "spawnToThreeLinesMs": 2355.633,
+    "spawnToTerminalMs": 23831.198,
+    "totalMs": 23831.198
+  },
+  "lineCount": 17,
+  "sawThreeLines": true,
+  "stdoutLines": [
+    "实例 INST-303 · 运行中",
+    "会话已创建 5378212d-d370-4696-b0a8-cee2480534b0",
+    "任务已投递",
+    "会话 空闲",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 4s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 9s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 14s",
+    "会话 执行中 · 调用工具（write） · 已运行 19s",
+    "会话 执行中 · 调用工具（read） · 已运行 20s",
+    "会话 执行中 · 已运行 23s",
+    "会话 等待下游 · 产出已提交",
+    "会话 空闲",
+    "节点 已完成 · 耗时 24s",
+    "交接包 HO-001  已构造   21:34:39",
+    "交接包 HO-001  已投递   21:34:39",
+    "交接包 HO-001  已接受   21:34:41",
+    "交接包 HO-001  已完成   21:35:00"
+  ],
+  "stderr": "",
+  "statusExit": 0,
+  "statusEventsExit": 0,
+  "coreStop": {
+    "exitCode": 0,
+    "stdout": "核心已停止（pid 32416，运行 24s）\n",
+    "stderr": ""
+  },
+  "stateSummary": {
+    "schemaVersion": 2,
+    "instanceId": "INST-303",
+    "state": "completed",
+    "template": "single",
+    "halted": false,
+    "rev": 19,
+    "nodes": [
+      {
+        "nodeId": "T-001",
+        "roleId": "worker",
+        "round": 1,
+        "state": "done",
+        "verdict": null,
+        "startedAt": "2026-11-05T13:34:37.449Z",
+        "roundStartedAt": "2026-11-05T13:34:37.449Z",
+        "endedAt": "2026-11-05T13:35:00.994Z"
+      }
+    ],
+    "sessions": [
+      {
+        "sessionId": "5378212d-d370-4696-b0a8-cee2480534b0",
+        "nodeId": "T-001",
+        "round": 1,
+        "state": "idle"
+      }
+    ],
+    "handoffs": [
+      {
+        "handoffId": "HO-001",
+        "edge": null,
+        "state": "consumed",
+        "defects": 0,
+        "wakeConsumedAt": null
+      }
+    ],
+    "escalations": [],
+    "counters": {
+      "eventSeq": 22,
+      "runCount": 1,
+      "dispatchCount": 1
+    }
+  }
+}

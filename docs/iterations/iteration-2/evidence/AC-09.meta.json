@@ -1,0 +1,22 @@
+{
+  "ac": "AC-09",
+  "face": "夹具（核心 --keep 在跑 + 真实 60 秒静默）",
+  "startedAt": "2026-11-05T13:07:25.157Z",
+  "finishedAt": "2026-11-05T13:08:27.779Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac09",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac09"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "挂起后不再自动继续",
+  "narrativeId": "INST-207"
+}

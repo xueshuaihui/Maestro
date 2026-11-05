@@ -1,0 +1,71 @@
+{
+  "ac": "AC-37",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "test -f .mock/paused：核心停在「读完判定、回流包已构造但未投递」",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "暂停中 backflow 包已构造（created）",
+      "ok": true,
+      "actual": "[{\"handoffId\":\"HO-001\",\"edge\":{\"from\":\"T-001\",\"to\":\"T-002\",\"kind\":\"forward\"},\"state\":\"consumed\",\"createdAt\":\"2026-11-05T13:16:50.017Z\",\"deliveredAt\":\"2026-11-05T13:16:50.234Z\",\"acceptedAt\":\"2026-11-05T13:16:50.241Z\",\"consumedAt\":\"2026-11-05T13:16:50.284Z\",\"rejectedAt\":null,\"rejectReason\":null,\"wakeConsumedAt\":null,\"acceptedSignal\":\"agent_thought_chunk\",\"ambiguityWindowMs\":7,\"defects\":[],\"note\":null},{\"handoffId\":\"HO-002\",\"edge\":{\"from\":\"T-002\",\"to\":\"T-001\",\"kind\":\"backflow\"},\"state\":\"created\",\"createdAt\":\"2026-11-05T13:16:50.308Z\",\"deliveredAt\":null,\"acceptedAt\":null,\"consumedAt\":null,\"rejectedAt\":null,\"rejectReason\":null,\"wakeConsumedAt\":\"2026-11-05T13:16:50.308Z\",\"acceptedSignal\":null,\"ambiguityWindowMs\":null,\"defects\":[{\"summary\":\"div 在除数为 0 时返回 Infinity，未抛错\",\"evidence\":\"out/test-log.txt\"},{\"summary\":\"div 在整除场景存在浮点误差\",\"evidence\":\"out/test-log-2.txt\"}],\"note\":null}]"
+    },
+    {
+      "text": "机检：backflow 交接包 state='rejected'（期望 \"rejected\"）",
+      "ok": true,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检：backflow 交接包 rejectReason='withdrawn'（期望 \"withdrawn\"）",
+      "ok": true,
+      "actual": "\"withdrawn\""
+    },
+    {
+      "text": "机检：nodes[0].state=done 且 nodes[0].round=1（开发没有被拉起）（期望 \"done/1\"）",
+      "ok": true,
+      "actual": "\"done/1\""
+    },
+    {
+      "text": "机检：events.jsonl 有一条 reason='handoff.rejected' 且 detail.reason='withdrawn'",
+      "ok": true,
+      "actual": "[{\"object\":\"handoff\",\"objectId\":\"HO-002\",\"from\":\"created\",\"to\":\"rejected\",\"result\":\"applied\",\"reason\":\"handoff.rejected\",\"detail\":{\"reason\":\"withdrawn\"},\"gen\":\"gen-7e377f7dc0c55552\",\"seq\":26,\"ts\":\"2026-11-05T13:16:50.481Z\"}]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario backflow-once --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac37",
+        "--scenario",
+        "backflow-once",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test, MAESTRO_TEST_PAUSE=after_verdict)",
+      "stderr": ""
+    },
+    {
+      "label": "orch cancel --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "cancel",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac37",
+      "exitCode": 0,
+      "durationMs": 116,
+      "stdout": "会话 空闲\n会话 空闲\n节点 T-001 开发 已完成\n节点 T-002 测试 已取消\n交接包 HO-001 已完成\n交接包 HO-002 已拒绝（已撤回）\n",
+      "stderr": "",
+      "note": "orch cancel --instance INST-001"
+    }
+  ]
+}

@@ -1,0 +1,303 @@
+{
+  "ac": "NFR-01a",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "核心冷启动：10 次取最大 < 5000ms",
+      "ok": true,
+      "actual": "max=223ms times=[197,198,203,196,217,206,203,223,218,220]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 80,
+      "stdout": "核心未在运行\n",
+      "stderr": "",
+      "note": "第 1 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 197,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 1 次 orch status（冷启动计时）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 190,
+      "stdout": "核心已停止（pid 19624，运行 1s）\n",
+      "stderr": "",
+      "note": "第 2 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 198,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 2 次 orch status（冷启动计时）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 186,
+      "stdout": "核心已停止（pid 12460，运行 1s）\n",
+      "stderr": "",
+      "note": "第 3 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 203,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 3 次 orch status（冷启动计时）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 190,
+      "stdout": "核心已停止（pid 32788，运行 1s）\n",
+      "stderr": "",
+      "note": "第 4 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 196,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 4 次 orch status（冷启动计时）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 190,
+      "stdout": "核心已停止（pid 20732，运行 1s）\n",
+      "stderr": "",
+      "note": "第 5 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 217,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 5 次 orch status（冷启动计时）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 184,
+      "stdout": "核心已停止（pid 23720，运行 1s）\n",
+      "stderr": "",
+      "note": "第 6 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 206,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 6 次 orch status（冷启动计时）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 187,
+      "stdout": "核心已停止（pid 21448，运行 1s）\n",
+      "stderr": "",
+      "note": "第 7 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 203,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 7 次 orch status（冷启动计时）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 185,
+      "stdout": "核心已停止（pid 12488，运行 1s）\n",
+      "stderr": "",
+      "note": "第 8 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 223,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 8 次 orch status（冷启动计时）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 188,
+      "stdout": "核心已停止（pid 15092，运行 1s）\n",
+      "stderr": "",
+      "note": "第 9 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 218,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 9 次 orch status（冷启动计时）"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 187,
+      "stdout": "核心已停止（pid 20648，运行 1s）\n",
+      "stderr": "",
+      "note": "第 10 次 orch core stop"
+    },
+    {
+      "label": "orch status",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a",
+      "exitCode": 0,
+      "durationMs": 220,
+      "stdout": "实例 无\n",
+      "stderr": "",
+      "note": "第 10 次 orch status（冷启动计时）"
+    }
+  ]
+}

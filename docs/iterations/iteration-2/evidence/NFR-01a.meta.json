@@ -1,0 +1,22 @@
+{
+  "ac": "NFR-01a",
+  "face": "夹具（本地根，无真实 DSH）",
+  "startedAt": "2026-11-05T13:17:10.118Z",
+  "finishedAt": "2026-11-05T13:17:13.985Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "nfr01a",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01a"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "NFR-01a 核心冷启动 5 秒内",
+  "narrativeId": "NFR-01a"
+}

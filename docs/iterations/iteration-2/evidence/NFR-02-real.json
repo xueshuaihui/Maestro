@@ -1,0 +1,15 @@
+{
+  "definition": "§3.2 NFR-02：verdict.read 与紧随其后的 node.dispatch 的 ts 差（1 秒内）",
+  "source": "AC-45 真实回流闭环（唯一产生 verdict.read(fail) 的真实面样本）",
+  "verdictReadTs": "2026-11-05T13:40:19.875Z",
+  "verdictReadSeq": 87,
+  "nextDispatch": {
+    "seq": 93,
+    "nodeId": "T-001",
+    "round": 2,
+    "ts": "2026-11-05T13:40:20.114Z"
+  },
+  "deltaMs": 239,
+  "targetMs": 1000,
+  "pass": true
+}

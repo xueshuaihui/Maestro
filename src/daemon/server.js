@@ -129,7 +129,8 @@ export function createServer({
 
       // 早返回契约：orchestrator.startRun 必须在会话建立后立即 resolve，
       // 之后的进展通过返回的 `stream`（遍历后转 bus）或它自己往 bus 里 emit 推进。
-      // onProgress 作为可选回调一并传入：支持它的实现可以先把关键节点推出来。
+      // 白名单固定为 `{cwd,task,earlyReturn,instanceId,hostId,template}`：`template`
+      // 以前被静默丢弃（C-05），现在全链路透传。
       const started = await withProgress(orchestrator, {
         cwd: path.resolve(cwd),
         task,
@@ -137,6 +138,7 @@ export function createServer({
         earlyReturn: true,
         ...(params?.instanceId ? { instanceId: params.instanceId } : {}),
         ...(typeof params?.hostId === 'string' ? { hostId: params.hostId } : {}),
+        ...(typeof params?.template === 'string' ? { template: params.template } : {}),
       });
 
       if (!started || started.ok !== true) {
@@ -192,7 +194,7 @@ export function createServer({
           params: backupPath === null ? res?.params : { ...(res?.params ?? {}), backupPath },
         };
       }
-      return { ok: true, result: res.snapshot ?? res.result ?? res };
+      return { ok: true, result: shapeSnapshot(res.snapshot ?? res.result ?? res) };
     },
 
     'instance.list': async () => {
@@ -219,7 +221,10 @@ export function createServer({
       if (!res || res.ok !== true) {
         return { ok: false, code: res?.code ?? 'UNKNOWN_ERROR', params: res?.params };
       }
-      return { ok: true, result: { session: res.session ?? null, node: res.node ?? null, handoff: res.handoff ?? null } };
+      // C-05：结果原样透传 `{nodes,sessions,handoffs,escalations}`，IPC 层不重建单对象。
+      // v1 兼容：orchestrator 仍返回 `{session,node,handoff}` 时按原键透传。
+      const { ok: _ok, ...result } = res;
+      return { ok: true, result };
     },
 
     'instance.subscribe': async (params, ctx) => {
@@ -229,6 +234,19 @@ export function createServer({
       return { ok: true, result: { stream: `instance:${instanceId.value}` } };
     },
   };
+
+  // 仅 test 接缝（§1.8 / M-14）：生产进程的 methods 表里没有这两个键。
+  // 非 test 环境调用走通用未知方法分支，返回 `{ok:false, code:'IPC_BAD_METHOD'}`。
+  if (process.env.NODE_ENV === 'test') {
+    if (typeof orchestrator.dispatchToNode === 'function') {
+      methods['test.dispatch'] = async (params) =>
+        callSeam('test.dispatch', params, () => orchestrator.dispatchToNode(params?.instanceId, params?.nodeId));
+    }
+    if (typeof orchestrator.escalateOnce === 'function') {
+      methods['test.escalate'] = async (params) =>
+        callSeam('test.escalate', params, () => orchestrator.escalateOnce(params?.instanceId, params?.nodeId));
+    }
+  }
 
   // ---------------------------------------------------------------- 生命周期
 
@@ -653,6 +671,41 @@ function requireInstanceId(params) {
     return { ok: false, code: 'IPC_BAD_PARAMS', params: { field: 'instanceId' } };
   }
   return { ok: true, value: params.instanceId };
+}
+
+/**
+ * 仅 test 的接缝调用：只做参数校验与包装，返回值原样放在 `result` 里，
+ * 让 `call-seam.mjs` 能直接 `JSON.stringify` 出 `{ok:true,…}`。
+ */
+async function callSeam(method, params, invoke) {
+  const instanceId = requireInstanceId(params);
+  if (!instanceId.ok) return instanceId;
+  if (typeof params?.nodeId !== 'string' || params.nodeId.length === 0) {
+    return { ok: false, code: 'IPC_BAD_PARAMS', params: { method, field: 'nodeId' } };
+  }
+  const res = await invoke();
+  if (!res || res.ok !== true) {
+    return { ok: false, code: res?.code ?? 'UNKNOWN_ERROR', params: res?.detail ?? res?.params ?? { method } };
+  }
+  return { ok: true, result: res };
+}
+
+/**
+ * `instance.get` 的只读投影：补齐渲染层需要的 `template` / `pendingEscalations`，
+ * 其余字段（`cwd` / `backupPath` / `nodes[]` …）原样透传，不改写核心的对象。
+ */
+function shapeSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') return snapshot ?? null;
+  const escalations = Array.isArray(snapshot.escalations) ? snapshot.escalations : [];
+  const pendingEscalations = Number.isInteger(snapshot.pendingEscalations)
+    ? snapshot.pendingEscalations
+    : escalations.filter((entry) => entry?.state === 'pending').length;
+  return {
+    ...snapshot,
+    // 未知 / 缺省模板按 `single`：`single` 实例行不打印模板，旧格式因此不会多出一段。
+    template: typeof snapshot.template === 'string' && snapshot.template.length > 0 ? snapshot.template : 'single',
+    pendingEscalations,
+  };
 }
 
 function summarizeEvent(event) {

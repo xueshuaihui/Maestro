@@ -1,20 +1,26 @@
 /**
- * Three state machines for I1.1: instance, node, handoff.
+ * Five state machines for I1.2: instance, node, handoff, escalation, session.
  *
  * Consistency rules (see iteration doc 2.3 / 1.8):
  *   - can() never throws
  *   - assert() throws IllegalTransitionError only
  *   - apply() never throws for transition verdicts; it awaits emit before returning
  *
- * Node status mapping (6 observable states <-> baseline 9 states), kept for I1.2:
+ * Node status mapping (6 observable states <-> baseline 9 states):
  *   pending  <-> blocked + ready      (merged display)
  *   running  <-> assigned + running   (merged display)
  *   review / done / failed / cancelled / escalated keep the same name.
- * The 6-state table is the only authority this iteration: a baseline step such as
- * blocked -> ready or assigned -> running is deliberately not an edge here.
+ * A baseline step such as blocked -> ready or assigned -> running is deliberately
+ * not an edge here: the tables below are the only authority.
  *
- * `escalated` is defined-only in this iteration: no inbound edge, no outbound edge,
- * every verdict is DEFINED_ONLY.
+ * I1.2 extension (requirement D-1): `escalated` is a real state with exactly one
+ * outbound edge (`cancelled`, the cancel path), `done` can be reopened by a
+ * backflow wake-up, `failed` can be reopened by a retest dispatch, and every
+ * "cannot continue" verdict lands on `escalated`. `DEFINED_ONLY.node` is now empty.
+ *
+ * `done` deliberately has no `cancelled` edge: a finished node is never rolled back
+ * by cancel. `running -> failed` and `review -> failed` are kept because the
+ * `single` template still lands failures there.
  */
 
 export const INSTANCE_STATES = Object.freeze([
@@ -23,7 +29,8 @@ export const INSTANCE_STATES = Object.freeze([
   'completed',
   'failed',
   'cancelled',
-  'interrupted'
+  'interrupted',
+  'suspended'
 ]);
 
 export const NODE_STATES = Object.freeze([
@@ -46,46 +53,108 @@ export const HANDOFF_STATES = Object.freeze([
   'expired'
 ]);
 
+export const ESCALATION_STATES = Object.freeze(['pending', 'voided']);
+
+/**
+ * Session states used by the guard only (requirement D-6). The engine's direct
+ * writes keep their I1.1 behaviour; this table only serves `transit('session', ...)`
+ * plus the escalation and cancel paths.
+ */
+export const SESSION_STATES = Object.freeze([
+  'idle',
+  'thinking',
+  'tool_running',
+  'waiting_input',
+  'waiting_dependency',
+  'escalated'
+]);
+
 /** Transition tables, one row per source state. Terminal states carry an empty row. */
 const TABLES = {
   instance: {
     created: ['running', 'cancelled'],
-    running: ['completed', 'failed', 'cancelled', 'interrupted'],
+    running: ['completed', 'failed', 'cancelled', 'interrupted', 'suspended'],
     completed: [],
     failed: [],
     cancelled: [],
-    interrupted: []
+    interrupted: [],
+    suspended: ['cancelled']
   },
   node: {
-    pending: ['running', 'cancelled'],
-    running: ['review', 'failed', 'cancelled'],
-    review: ['done', 'failed'],
-    done: [],
-    failed: [],
+    pending: ['running', 'escalated', 'cancelled'],
+    running: ['review', 'failed', 'escalated', 'cancelled'],
+    review: ['done', 'failed', 'escalated', 'cancelled'],
+    // Reopened by a backflow wake-up or by a failed backflow dispatch.
+    done: ['running', 'escalated'],
+    // Reopened by a retest dispatch or by a failed retest dispatch.
+    failed: ['running', 'escalated', 'cancelled'],
+    // The only exit is cancel; human adjudication is I1.4.
+    escalated: ['cancelled'],
     cancelled: []
   },
   handoff: {
-    created: ['delivered'],
+    created: ['delivered', 'rejected'],
     delivered: ['accepted', 'rejected'],
     accepted: ['consumed', 'rejected'],
     pending: ['delivered', 'expired'],
     consumed: [],
     rejected: [],
     expired: []
+  },
+  escalation: {
+    pending: ['voided'],
+    voided: []
+  },
+  session: {
+    idle: ['thinking', 'escalated'],
+    thinking: ['tool_running', 'waiting_dependency', 'waiting_input', 'idle', 'escalated'],
+    tool_running: ['thinking', 'waiting_dependency', 'waiting_input', 'idle', 'escalated'],
+    waiting_input: ['thinking', 'idle', 'escalated'],
+    waiting_dependency: ['idle', 'escalated'],
+    // Escalated has no outbound edge except cancel.
+    escalated: ['idle']
   }
 };
 
 const STATE_SETS = {
   instance: INSTANCE_STATES,
   node: NODE_STATES,
-  handoff: HANDOFF_STATES
+  handoff: HANDOFF_STATES,
+  escalation: ESCALATION_STATES,
+  session: SESSION_STATES
 };
 
 const DEFINED_ONLY = {
   instance: Object.freeze([]),
-  node: Object.freeze(['escalated']),
-  handoff: Object.freeze([])
+  node: Object.freeze([]),
+  handoff: Object.freeze([]),
+  escalation: Object.freeze([]),
+  session: Object.freeze([])
 };
+
+/**
+ * Five constant groups for I1.2 (requirement D-4). They are exported as frozen
+ * arrays so they serialise and compare cheaply; wrap them in a Set when a membership
+ * test is hot. Never merge one group into another: `suspended` must stay out of
+ * TERMINAL_INSTANCE, otherwise cancel would answer "already finished" for a
+ * suspended instance and the only exit would disappear.
+ */
+export const TERMINAL_INSTANCE = Object.freeze([
+  'completed',
+  'failed',
+  'cancelled',
+  'interrupted'
+]);
+
+/** Only for reconcileOnBoot / interruptAll: `core stop` must not rewrite a suspended instance. */
+export const CORE_IMMUTABLE_INSTANCE = Object.freeze([...TERMINAL_INSTANCE, 'suspended']);
+
+/** waitForRun completion plus the "refuse to reuse this instance" check. */
+export const RUN_DONE_INSTANCE = Object.freeze([...TERMINAL_INSTANCE, 'suspended']);
+
+export const CANCELABLE_NODE = Object.freeze(['pending', 'running', 'review', 'failed', 'escalated']);
+
+export const CANCELABLE_HANDOFF = Object.freeze(['created', 'delivered', 'accepted']);
 
 export class IllegalTransitionError extends Error {
   constructor(from, to, code, message) {
@@ -201,4 +270,12 @@ export function createNodeSM(options = {}) {
 
 export function createHandoffSM(options = {}) {
   return createSM('handoff', options);
+}
+
+export function createEscalationSM(options = {}) {
+  return createSM('escalation', options);
+}
+
+export function createSessionSM(options = {}) {
+  return createSM('session', options);
 }

@@ -1,0 +1,22 @@
+{
+  "ac": "AC-39",
+  "face": "夹具",
+  "startedAt": "2026-11-05T13:16:54.764Z",
+  "finishedAt": "2026-11-05T13:16:56.930Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac39",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac39"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "升级时目标会话显示为已升级",
+  "narrativeId": "INST-233"
+}

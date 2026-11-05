@@ -1,0 +1,22 @@
+{
+  "ac": "NFR-01b",
+  "face": "夹具（mock 宿主热启动）",
+  "startedAt": "2026-11-05T13:17:13.998Z",
+  "finishedAt": "2026-11-05T13:17:15.246Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "nfr01b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01b"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "NFR-01b 首次派发（热启动 5 秒内）",
+  "narrativeId": "NFR-01b"
+}

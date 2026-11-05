@@ -1,0 +1,51 @@
+{
+  "ac": "NFR-07",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "100 次 status 后 sessions.length 不变（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "100 次 status 后 events 行数不变（期望 23）",
+      "ok": true,
+      "actual": "23"
+    },
+    {
+      "text": "100 次 status 后 state 不变（期望 \"completed\"）",
+      "ok": true,
+      "actual": "\"completed\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario code-pass",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr07",
+        "--scenario",
+        "code-pass"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1233,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr07\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr07\\\\demo-code-pass\",\"scenario\":\"code-pass\",\"resolvedScenario\":\"pass\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":0,\"instanceId\":\"INST-001\",\"state\":\"completed\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"done\"}],\"handoffs\":1,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":873,\"checks\":[{\"name\":\"state=completed\",\"ok\":true,\"detail\":\"completed\"},{\"name\":\"两节点 done\",\"ok\":true},{\"name\":\"handoffs=1 forward\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-9156-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过\n交接包 HO-001  开发→测试  已构造   21:17:25\n交接包 HO-001  开发→测试  已投递   21:17:25\n交接包 HO-001  开发→测试  已接受   21:17:25\n交接包 HO-001  开发→测试  已完成   21:17:25\n升级 —\n",
+      "note": "code-pass 场景（已完成的稳定实例）"
+    },
+    {
+      "label": "夹具：for i in $(seq 100); do orch status > /dev/null; done",
+      "argv": [
+        "(fixture) for i in $(seq 100); do orch status > /dev/null; done"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "100 次 status 实际执行，耗时 9140ms",
+      "stderr": ""
+    }
+  ]
+}

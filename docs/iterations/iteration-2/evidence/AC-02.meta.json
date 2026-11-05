@@ -1,0 +1,22 @@
+{
+  "ac": "AC-02",
+  "face": "夹具（mock 宿主复现产品成功路径 + 产品命令 status --events）",
+  "startedAt": "2026-11-05T13:06:12.183Z",
+  "finishedAt": "2026-11-05T13:06:13.702Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac02",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac02"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "顺序推进，执行区间不重叠",
+  "narrativeId": "INST-201"
+}

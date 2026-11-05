@@ -1,0 +1,22 @@
+{
+  "ac": "AC-08",
+  "face": "夹具",
+  "startedAt": "2026-11-05T13:07:23.032Z",
+  "finishedAt": "2026-11-05T13:07:25.149Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac08",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac08"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "升级挂在具体节点上，说得清为什么",
+  "narrativeId": "INST-206"
+}

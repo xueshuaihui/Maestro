@@ -1,0 +1,133 @@
+{
+  "ac": "AC-05",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "驱动停在「开发第 2 轮产出已核对通过、复测尚未派发」（.mock/stopped-after-3 存在）",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "夹具：.mock/prompts/3.json 存在",
+      "ok": true,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac05\\.mock\\prompts\\3.json"
+    },
+    {
+      "text": "夹具：prompts/3.json 的 task 含「div 在除数为 0 时返回 Infinity，未抛错」（期望包含 \"div 在除数为 0 时返回 Infinity，未抛错\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物"
+    },
+    {
+      "text": "夹具：prompts/3.json 的 task 含「out/test-log.txt」（期望包含 \"out/test-log.txt\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物"
+    },
+    {
+      "text": "夹具：prompts/3.json 的 task 含「div 在整除场景存在浮点误差」（期望包含 \"div 在整除场景存在浮点误差\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物"
+    },
+    {
+      "text": "夹具：prompts/3.json 的 task 含「out/test-log-2.txt」（期望包含 \"out/test-log-2.txt\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物"
+    },
+    {
+      "text": "机检：存在 edge.kind=backflow 的交接包",
+      "ok": true,
+      "actual": "{\"handoffId\":\"HO-002\",\"edge\":{\"from\":\"T-002\",\"to\":\"T-001\",\"kind\":\"backflow\"},\"state\":\"consumed\",\"createdAt\":\"2026-11-05T13:06:17.362Z\",\"deliveredAt\":\"2026-11-05T13:06:17.586Z\",\"acceptedAt\":\"2026-11-05T13:06:17.590Z\",\"consumedAt\":\"2026-11-05T13:06:17.638Z\",\"rejectedAt\":null,\"rejectReason\":null,\"wakeConsumedAt\":\"2026-11-05T13:06:17.362Z\",\"acceptedSignal\":\"agent_thought_chunk\",\"ambiguityWindowMs\":4,\"defects\":[{\"summary\":\"div 在除数为 0 时返回 Infinity，未抛错\",\"evidence\":\"out/test-log.txt\"},{\"summary\":\"div 在整除场景存在浮点误差\",\"evidence\":\"out/test-log-2.txt\"}],\"note\":null}"
+    },
+    {
+      "text": "机检：backflow 包 defects[] 恰好 2 条（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "机检：缺陷证据可打开且非空 out/test-log.txt",
+      "ok": true,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac05\\demo-code-pass\\out\\test-log.txt size=71"
+    },
+    {
+      "text": "机检：缺陷证据可打开且非空 out/test-log-2.txt",
+      "ok": true,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac05\\demo-code-pass\\out\\test-log-2.txt size=79"
+    },
+    {
+      "text": "机检：nodes[0].state=done（期望 \"done\"）",
+      "ok": true,
+      "actual": "\"done\""
+    },
+    {
+      "text": "机检：nodes[0].round=2（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "机检：nodes[1].state=failed（期望 \"failed\"）",
+      "ok": true,
+      "actual": "\"failed\""
+    },
+    {
+      "text": "机检：nodes[1].round=1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "机检：backflow 包 state=consumed（期望 \"consumed\"）",
+      "ok": true,
+      "actual": "\"consumed\""
+    },
+    {
+      "text": "机检：backflow 包 wakeConsumedAt 非空",
+      "ok": true,
+      "actual": "2026-11-05T13:06:17.362Z"
+    },
+    {
+      "text": "机检：sessions 里 nodeId=T-001 的两条记录 sessionId 不同",
+      "ok": true,
+      "actual": "[\"mock-sess-26432-1\",\"mock-sess-12708-1\"]"
+    },
+    {
+      "text": "orch status 输出含「节点 T-001 开发 已完成 · 第 2 轮」（期望包含 \"节点 T-001 开发 已完成 · 第 2 轮\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 失败（等待复测） · 第 1 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:06:17\n交接包 HO-001  开发→测试  已投递   21:06:17\n交接包 HO-001  开发→测试  已接受   21:06:17\n交接包 HO-001  开发→测试  已完成   21:06:17\n交接包 HO-002  测试→开发（回流）  已构造   21:06:17\n交接包 HO-002  测试→开发（回流）  已投递   21:06:17\n交接包 HO-002  测试→开发（回流）  已接受   21:06:17\n交接包 HO-002  测试→开发（回流）  已完成   21:06:17\n升级 —\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario backflow-once --keep --stop-after 3（长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac05",
+        "--scenario",
+        "backflow-once",
+        "--keep",
+        "--stop-after",
+        "3"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test, MAESTRO_TEST_STOP_AFTER=3)",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac05",
+      "exitCode": 0,
+      "durationMs": 101,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 失败（等待复测） · 第 1 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:06:17\n交接包 HO-001  开发→测试  已投递   21:06:17\n交接包 HO-001  开发→测试  已接受   21:06:17\n交接包 HO-001  开发→测试  已完成   21:06:17\n交接包 HO-002  测试→开发（回流）  已构造   21:06:17\n交接包 HO-002  测试→开发（回流）  已投递   21:06:17\n交接包 HO-002  测试→开发（回流）  已接受   21:06:17\n交接包 HO-002  测试→开发（回流）  已完成   21:06:17\n升级 —\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

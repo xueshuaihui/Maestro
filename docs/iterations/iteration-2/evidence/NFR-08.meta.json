@@ -1,0 +1,22 @@
+{
+  "ac": "NFR-08",
+  "face": "夹具（常驻核心 + 暂停点）",
+  "startedAt": "2026-11-05T13:17:34.900Z",
+  "finishedAt": "2026-11-05T13:17:37.535Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "nfr08",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr08"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "NFR-08 关掉命令窗口闭环不被带走",
+  "narrativeId": "NFR-08"
+}

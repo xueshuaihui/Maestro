@@ -1,0 +1,22 @@
+{
+  "ac": "NFR-02",
+  "face": "夹具",
+  "startedAt": "2026-11-05T13:17:15.270Z",
+  "finishedAt": "2026-11-05T13:17:17.175Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "nfr02",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr02"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "NFR-02 判定落地后 1 秒内回流",
+  "narrativeId": "NFR-02"
+}

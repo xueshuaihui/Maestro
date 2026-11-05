@@ -1,0 +1,30 @@
+{
+  "ac": "AC-29",
+  "face": "夹具（3 个独立项目根）",
+  "startedAt": "2026-11-05T14:00:45.565Z",
+  "finishedAt": "2026-11-05T14:00:49.186Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac29-artifact-missing",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac29-artifact-missing"
+    },
+    {
+      "case": "ac29-artifact-empty",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac29-artifact-empty"
+    },
+    {
+      "case": "ac29-artifact-stale",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac29-artifact-stale"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "开发产出缺失、为空、或不是本轮新写时不进「已完成」",
+  "narrativeId": "INST-224"
+}

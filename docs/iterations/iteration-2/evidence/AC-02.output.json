@@ -1,0 +1,62 @@
+{
+  "ac": "AC-02",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "输出里恰有 2 行匹配「节点 T-00n  派发 → 执行中  原因 派发 · 第 N 轮」（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "两行 n 依次为 1、2（期望 \"1,2\"）",
+      "ok": true,
+      "actual": "\"1,2\""
+    },
+    {
+      "text": "两行的 [#序号] 严格递增",
+      "ok": true,
+      "actual": "[2,11]"
+    },
+    {
+      "text": "不存在 [#序号] 更小、含「节点 T-002」且含「执行中」的行出现在「节点 T-001」的「待校验 → 已完成」之前",
+      "ok": true,
+      "actual": "t1doneSeqLine=16 earlierT002RunningLine=-1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario code-pass",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac02",
+        "--scenario",
+        "code-pass"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1291,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac02\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac02\\\\demo-code-pass\",\"scenario\":\"code-pass\",\"resolvedScenario\":\"pass\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":0,\"instanceId\":\"INST-001\",\"state\":\"completed\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"done\"}],\"handoffs\":1,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":890,\"checks\":[{\"name\":\"state=completed\",\"ok\":true,\"detail\":\"completed\"},{\"name\":\"两节点 done\",\"ok\":true},{\"name\":\"handoffs=1 forward\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-16372-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过\n交接包 HO-001  开发→测试  已构造   21:06:12\n交接包 HO-001  开发→测试  已投递   21:06:13\n交接包 HO-001  开发→测试  已接受   21:06:13\n交接包 HO-001  开发→测试  已完成   21:06:13\n升级 —\n",
+      "note": "code-pass 场景跑完（成功路径）"
+    },
+    {
+      "label": "orch status --instance INST-001 --events",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001",
+        "--events"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac02",
+      "exitCode": 0,
+      "durationMs": 217,
+      "stdout": "实例 INST-001 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:06:12\n交接包 HO-001  开发→测试  已投递   21:06:13\n交接包 HO-001  开发→测试  已接受   21:06:13\n交接包 HO-001  开发→测试  已完成   21:06:13\n升级 —\n[#1] 21:06:12  实例 INST-001  已创建 → 运行中  原因 开始运行\n[#2] 21:06:12  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮\n[#3] 21:06:12  会话 mock-sess-16372-1  空闲 → 执行中  原因 会话状态\n[#4] 21:06:12  会话 mock-sess-16372-1  执行中 → 执行中（tool_call）  原因 会话状态\n[#5] 21:06:12  会话 mock-sess-16372-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态\n[#6] 21:06:12  会话 mock-sess-16372-1  执行中 → 等待下游  原因 产出已提交\n[#7] 21:06:12  节点 T-001  执行中 → 待校验  原因 产出已提交\n[#8] 21:06:12  节点 T-001  待校验 → 已完成  原因 核对通过\n[#9] 21:06:12  会话 mock-sess-16372-1  等待下游 → 空闲  原因 运行完成\n[#10] 21:06:12  交接包 HO-001  已构造  原因 构造交接\n[#11] 21:06:12  节点 T-002  派发 → 执行中  原因 派发 · 第 1 轮\n[#12] 21:06:13  交接包 HO-001  已构造 → 已投递  原因 交接已投递\n[#13] 21:06:13  会话 mock-sess-27492-1  空闲 → 执行中  原因 会话状态\n[#14] 21:06:13  交接包 HO-001  已投递 → 已接受  原因 首个事件\n[#15] 21:06:13  会话 mock-sess-27492-1  执行中 → 执行中（tool_call）  原因 会话状态\n[#16] 21:06:13  会话 mock-sess-27492-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态\n[#17] 21:06:13  会话 mock-sess-27492-1  执行中 → 等待下游  原因 产出已提交\n[#18] 21:06:13  节点 T-002  执行中 → 待校验  原因 产出已提交\n[#19] 21:06:13  节点 T-002  verdict.read  原因 读取判定\n[#20] 21:06:13  节点 T-002  待校验 → 已完成  原因 核对通过\n[#21] 21:06:13  交接包 HO-001  已接受 → 已完成  原因 产出核对通过\n[#22] 21:06:13  会话 mock-sess-27492-1  等待下游 → 空闲  原因 运行完成\n[#23] 21:06:13  实例 INST-001  运行中 → 已完成  原因 运行完成\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001 --events"
+    }
+  ]
+}

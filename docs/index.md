@@ -139,6 +139,12 @@ blocked → ready → assigned → running → review → done
                     └→ cancelled（终态，折叠显示）
 ```
 
+**基线 9 态的增补边（共 7 条，I1.2 实现）**：`ready→escalated`（首派建会话失败）、`running→escalated`（`code-loop` 宿主报错 / 会话中途失效）、`done→running`（仅开发节点，下游驳回回流）、`done→escalated`（回流派发失败）、`review→cancelled`、`failed→cancelled`、`escalated→cancelled`。
+
+`review→escalated`、`failed→running`、`failed→escalated` 已在上图，不重复添加；`pending` 是 I1.1 的合并显示态（`blocked + ready`），不是基线状态。
+
+**I1.4 扩展**：`escalated → done / failed / 重新分配` 三条人工裁决出边（`orch escalate resolve`）与交接包 `pending` 重投不在 I1.2 实现，本次只落 `escalated→cancelled`。
+
 | 状态 | 含义 | 进入条件 | 离开条件 |
 |---|---|---|---|
 | `blocked` | 依赖未满足 | 节点创建时依赖未全部 done | 所有依赖 done |
@@ -146,9 +152,9 @@ blocked → ready → assigned → running → review → done
 | `assigned` | 已绑定会话 | 核心选定/创建会话 | 会话开始执行 |
 | `running` | 执行中 | 会话开始执行 | 产出提交 / 超时 / 失败 |
 | `review` | 待校验 | 会话产出提交 | 证据通过 → done；失败 → failed；等待下游 → 保持 |
-| `done` | 验收通过 | 证据校验通过 + 下游接受 | 终态 |
-| `failed` | 执行失败 | 会话崩溃 / 证据缺失 / 契约不满足 | 回流到 running 或升级 |
-| `escalated` | 升级人工 | 轮次超限 / 依赖死锁 / 连续失败 | 人工裁决后 → done / failed / 重新分配 |
+| `done` | 本轮验收通过（可被下游驳回重新打开） | 证据校验通过；I1.2 不等待下游接受，I1.3 起加 `review_reason: downstream` 门控 | 下游驳回 → running（仅开发节点，见 §3.5 t2）；否则终态 |
+| `failed` | 本轮执行/判定未通过（含测试判定不通过） | 会话崩溃 / 证据缺失 / 契约不满足 / 测试判定不通过（`code-loop`，`failed_reason: verdict_fail`） | 回流到 running 或升级 |
+| `escalated` | 升级人工 | 轮次超限 / 依赖死锁 / 连续失败 / 派发失败 / 核对失败 | 人工裁决后 → done / failed / 重新分配；取消 → cancelled（I1.2 仅实现取消，裁决入口在 I1.4） |
 | `cancelled` | 被取消 | 人工终止 / 上游取消 | 终态 |
 
 **`review` 的两个子原因**（不新增看板列，卡片标签区分）：
@@ -171,7 +177,7 @@ blocked → ready → assigned → running → review → done
 | `thinking` | 推理/执行中 | 蓝色脉冲，显示“执行中 · 已运行 3m” |
 | `tool_running` | 调用工具中 | 蓝色脉冲 + 工具图标 |
 | `waiting_input` | 等待外部输入（审批/澄清） | 黄色圆点，显示“等待审批：git_push” |
-| `waiting_dependency` | 已产出，等待下游或证据校验 | 黄色圆点，显示“等待校验” |
+| `waiting_dependency` | 已产出，等待证据核对或下游接受 | 黄色圆点，显示“等待下游” |
 | `escalated` | 已升级，等待人工 | 红色圆点 |
 
 **会话状态与 ACP 事件映射**（适配器层职责）：
@@ -221,9 +227,10 @@ role_instance:
 
 ```
 created → delivered → accepted → consumed
-              │           │
-              │           └→ rejected
-              └→ pending → expired
+   │          │           │
+   │          │           └→ rejected（目标拒绝 / 取消撤回）
+   │          └→ pending → expired
+   └→ rejected（取消撤回）
 ```
 
 | 状态 | 含义 | 触发 |
@@ -231,12 +238,12 @@ created → delivered → accepted → consumed
 | `created` | 交接包已构造，未投递 | 写入持久化信箱 |
 | `delivered` | 已投递到目标会话 | 等待目标接受 |
 | `pending` | 宿主不在线，投递未确认 | 重试投递，超时后 `expired` |
-| `accepted` | 目标会话已接受 | 目标节点从 `assigned` 进入 `running` |
-| `consumed` | 目标节点产出提交 | 交接包被消费完毕 |
-| `rejected` | 目标会话拒绝 | 触发回流或升级 |
+| `accepted` | 目标会话首个事件已到达（已开始工作） | 目标节点已进入 `running` 后的首个 turn 内事件 |
+| `consumed` | 目标节点本轮产出核对通过（不等于测试判定通过） | 交接包被消费完毕 |
+| `rejected` | 目标会话拒绝；或交接包已构造未投递时取消撤回（`rejectReason: withdrawn`） | 目标拒绝触发回流或升级；取消撤回不触发回流/升级 |
 | `expired` | 超过 TTL 未接受 | 触发升级人工 |
 
-**关键**：`accepted` 只表示目标接受了交接包，`consumed` 才表示目标节点已完成。连接线“已完成”条件是所有交接包均为 `consumed`。
+**关键**：`accepted` 只表示目标接受了交接包；`consumed` 只在**目标节点本轮产出核对通过后**置位，表示产出已核对完毕，不等同于“测试判定通过”，也不等于节点 `done`（判定不通过时节点可为 `failed` / `escalated`）。轮次上限停止时，交接包仍走完到 `consumed`，停止语义由节点的「已挂起」+「已升级」承载。连接线“已完成”条件是所有交接包均为 `consumed`。
 
 ### 3.5 状态变更的完整时序（一次回流）
 
@@ -252,8 +259,8 @@ t1  核心构造交接包 HO-006（缺陷引用 + 复测命令）
     → 目标会话 dev_1: cooldown → thinking
 
 t2  dev_1 接受交接包
-    → HO-006: delivered → accepted
     → 节点 T-003: done → running（轮次 1/2）
+    → HO-006: delivered → accepted（目标会话首个事件后置位）
     → 节点 T-005: review → failed（等待复测）
 
 t3  dev_1 修复完成
@@ -261,13 +268,14 @@ t3  dev_1 修复完成
     → 节点 T-003: running → review (evidence)
     → 核心校验通过 → review (downstream)
     → 构造 HO-007（复测指令）
-    → HO-007: created → delivered → accepted
+    → HO-007: created → delivered
     → 节点 T-005: failed → running（复测）
+    → HO-007: delivered → accepted（目标会话首个事件后置位）
 
 t4  测试复测通过
     → 节点 T-005: running → review → done
     → 节点 T-003: review → done
-    → HO-006 / HO-007: accepted → consumed
+    → HO-006 / HO-007: accepted → consumed（目标节点本轮产出核对通过后置位）
     → 实例健康度更新
 ```
 
@@ -282,6 +290,13 @@ t4  测试复测通过
 | `blocked` / `ready` | 原状态 | 依赖关系不变 |
 | 角色实例 `busy` + 会话不可恢复 | `available` | 重新调度其服务节点 |
 | 交接包 `delivered` 未 `accepted` | `pending` | 重投 |
+| 实例 `suspended`（已挂起） | 保持 `suspended` | 核心重启后保持挂起，不判 `interrupted`、不自动推进 |
+| 节点 `escalated` | `escalated` | 待人工，不重派；I1.2 唯一出口是取消（裁决入口在 I1.4） |
+| 节点 `failed`（`code-loop`） | `failed` | 等待复测或升级，不自动重跑 |
+
+**挂起期间的恢复口径**：实例 `suspended` 时，节点 `running` 与 `review` 一律保持原状，不按上表重派、不重新校验；`escalated` 节点保持 `escalated`，不重派。
+
+> **阶段适用（I1.2）**：I1.2 不实现 `session/resume` 与自动重校。`running` 核心消失按 `interrupted` 处理；`review` 不自动重新校验；上表 `assigned` / 重新校验 行自 I1.8 起生效。
 
 **恢复后不重放已完成节点**，轮次计数从检查点恢复，不重置。
 
@@ -672,6 +687,8 @@ orch instance graph INST-001 --format text   # ASCII 摘要
 - 交接包构造与 ACP 投递；轮次计数与升级生成
 - 交接包 `accepted → consumed` 流转验证
 
+> 模板固定两节点（开发 → 测试）；协调者角色在 I1.5 注册表启用时再进图。`--template` 在 I1.2 先占最小形态，I1.4 补全参数族并保持向后兼容。
+
 **验收**：测试第 2 轮失败 → 核心停止回流、生成升级、实例挂起等待人工；交接包状态正确流转。
 
 ---
@@ -701,6 +718,8 @@ orch instance graph INST-001 --format text   # ASCII 摘要
   - `orch approve <approval_id> --decision allow|deny`
   - `orch handoff list / show <handoff_id>`
   - `orch workflow pause / resume / abort <instance_id>`
+
+> 参数归属：`--template` 的完整参数族在 I1.4 补全，I1.2 的调用方式不得失效。
 
 **验收**：CLI 能完成实例启动、状态查看、会话附着、升级处理、审批、交接查看、实例暂停/恢复/终止；交接包缺证据时被拒绝并触发升级。
 

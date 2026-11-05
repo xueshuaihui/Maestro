@@ -1,0 +1,135 @@
+{
+  "label": "AC-01",
+  "command": "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe D:\\WWW\\Maestro\\bin\\orch.js run --cwd demo-code-pass --task 给 calc.js 补 div 函数，让 node --test 全绿；产物：calc.js --template code-loop --instance INST-301",
+  "displayCommand": "orch run --cwd demo-code-pass --task 给 calc.js 补 div 函数，让 node --test 全绿；产物：calc.js --template code-loop --instance INST-301",
+  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p2\\proj-ac01",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p2\\proj-ac01\\demo-code-pass",
+  "task": "给 calc.js 补 div 函数，让 node --test 全绿；产物：calc.js",
+  "template": "code-loop",
+  "instance": "INST-301",
+  "dshHome": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p2\\dsh-home",
+  "exitCode": 0,
+  "signal": null,
+  "timeouts": {
+    "spawnToThreeLinesMs": 2329.9558,
+    "spawnToTerminalMs": 48780.2792,
+    "totalMs": 48780.2792
+  },
+  "lineCount": 37,
+  "sawThreeLines": true,
+  "stdoutLines": [
+    "实例 INST-301 · 运行中 · 模板 编码闭环",
+    "会话已创建 2045d3c7-143c-4d66-9abf-40be1fa499cc",
+    "任务已投递",
+    "会话 空闲",
+    "会话 执行中 · 调用工具（working_directory） · 已运行 3s",
+    "会话 执行中 · 调用工具（glob） · 已运行 4s",
+    "会话 执行中 · 调用工具（read） · 已运行 5s",
+    "会话 执行中 · 调用工具（edit） · 已运行 7s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 9s",
+    "会话 等待审批：pwsh",
+    "会话 执行中 · 已运行 12s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 13s",
+    "会话 执行中 · 已运行 15s",
+    "会话 等待下游 · 产出已提交",
+    "会话 空闲",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 4s",
+    "会话 执行中 · 调用工具（read） · 已运行 5s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 7s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 12s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 17s",
+    "会话 等待审批：pwsh",
+    "会话 执行中 · 已运行 20s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 20s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 25s",
+    "会话 执行中 · 调用工具（write） · 已运行 27s",
+    "会话 执行中 · 调用工具（read） · 已运行 29s",
+    "会话 执行中 · 调用工具（pwsh） · 已运行 29s",
+    "会话 执行中 · 已运行 33s",
+    "会话 等待下游 · 产出已提交",
+    "会话 空闲",
+    "节点 T-001 开发 已完成 · 第 1 轮 · 耗时 15s",
+    "节点 T-002 测试 已完成 · 第 1 轮 · 耗时 33s · 判定 通过",
+    "交接包 HO-001  开发→测试  已构造   21:32:57",
+    "交接包 HO-001  开发→测试  已投递   21:32:59",
+    "交接包 HO-001  开发→测试  已接受   21:33:01",
+    "交接包 HO-001  开发→测试  已完成   21:33:30",
+    "升级 —"
+  ],
+  "stderr": "",
+  "statusExit": 0,
+  "statusEventsExit": 0,
+  "coreStop": {
+    "exitCode": 0,
+    "stdout": "核心已停止（pid 32124，运行 49s）\n",
+    "stderr": ""
+  },
+  "stateSummary": {
+    "schemaVersion": 2,
+    "instanceId": "INST-301",
+    "state": "completed",
+    "template": "code-loop",
+    "halted": false,
+    "rev": 44,
+    "nodes": [
+      {
+        "nodeId": "T-001",
+        "roleId": "developer",
+        "round": 1,
+        "state": "done",
+        "verdict": null,
+        "startedAt": "2026-11-05T13:32:42.500Z",
+        "roundStartedAt": "2026-11-05T13:32:42.500Z",
+        "endedAt": "2026-11-05T13:32:57.392Z"
+      },
+      {
+        "nodeId": "T-002",
+        "roleId": "tester",
+        "round": 1,
+        "state": "done",
+        "verdict": {
+          "value": "pass",
+          "defectCount": 0,
+          "verdictPath": "out/verdict.json",
+          "readAt": "2026-11-05T13:33:30.948Z"
+        },
+        "startedAt": "2026-11-05T13:32:57.537Z",
+        "roundStartedAt": "2026-11-05T13:32:57.537Z",
+        "endedAt": "2026-11-05T13:33:30.959Z"
+      }
+    ],
+    "sessions": [
+      {
+        "sessionId": "2045d3c7-143c-4d66-9abf-40be1fa499cc",
+        "nodeId": "T-001",
+        "round": 1,
+        "state": "idle"
+      },
+      {
+        "sessionId": "0a068c30-bc1f-4208-94db-f0c8cac6ba15",
+        "nodeId": "T-002",
+        "round": 1,
+        "state": "idle"
+      }
+    ],
+    "handoffs": [
+      {
+        "handoffId": "HO-001",
+        "edge": {
+          "from": "T-001",
+          "to": "T-002",
+          "kind": "forward"
+        },
+        "state": "consumed",
+        "defects": 0,
+        "wakeConsumedAt": null
+      }
+    ],
+    "escalations": [],
+    "counters": {
+      "eventSeq": 43,
+      "runCount": 1,
+      "dispatchCount": 2
+    }
+  }
+}

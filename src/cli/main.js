@@ -29,6 +29,10 @@ const EXIT_OK = 0;
 const EXIT_FAILED = 1;
 const EXIT_USAGE = 2;
 const EXIT_PREFLIGHT = 3;
+/** 实例因待处理升级挂起，不是失败（需求 M-9 / B-18）。 */
+const EXIT_SUSPENDED = 4;
+/** 升级写入失败、实例已停止推进，也不是失败（需求 M-9 / AC-38）。 */
+const EXIT_HALTED = 5;
 
 const PREFLIGHT_CODES = new Set(['DSH_SPAWN_FAILED', 'CWD_NOT_WRITABLE', 'CORE_START_FAILED']);
 
@@ -40,7 +44,7 @@ const CONNECTION_LOST_CODES = new Set(['IPC_CLOSED', 'IPC_TIMEOUT', 'IPC_BAD_FRA
 
 const COMMANDS = new Set(['run', 'status', 'cancel', 'core']);
 const BOOLEAN_FLAGS = new Set(['events']);
-const VALUE_FLAGS = new Set(['cwd', 'task', 'instance', 'project', 'generation']);
+const VALUE_FLAGS = new Set(['cwd', 'task', 'instance', 'project', 'generation', 'template', 'host']);
 
 // ---------------------------------------------------------------- 参数解析
 
@@ -215,6 +219,8 @@ async function runCommand(flags, ctx) {
 
     // `--cwd` 相对当前 shell 目录解析，不相对仓库根
     const taskCwd = path.resolve(ctx.cwd, flags.cwd);
+    /** 缺省不传 `template`（核心按 `single` 处理）；仅在显式给了 `--template` 时透传。 */
+    const templateHint = typeof flags.template === 'string' ? flags.template : 'single';
 
     // ② 发起（`run.start` 是早返回：会话建立后立刻回包）
     const started = await client.request(
@@ -223,6 +229,9 @@ async function runCommand(flags, ctx) {
         cwd: taskCwd,
         task: flags.task,
         ...(typeof flags.instance === 'string' ? { instanceId: flags.instance } : {}),
+        ...(typeof flags.template === 'string' ? { template: flags.template } : {}),
+        // `--host` 仅验收夹具注入用（附录 B-20），不进用户任务样例。
+        ...(typeof flags.host === 'string' ? { hostId: flags.host } : {}),
       },
       { timeoutMs: CONNECT_HANDSHAKE_TIMEOUT_MS },
     );
@@ -241,7 +250,12 @@ async function runCommand(flags, ctx) {
     const snapshot0 = first.ok
       ? first.result
       : { instanceId, state: 'running', session: sessionId ? { sessionId, state: 'thinking' } : null };
-    out(render.renderInstanceLine(snapshot0));
+    out(
+      render.renderInstanceLine({
+        ...snapshot0,
+        template: typeof snapshot0?.template === 'string' ? snapshot0.template : templateHint,
+      }),
+    );
     out(render.renderSessionCreated(sessionId));
     out(render.renderTaskSubmitted());
 
@@ -316,17 +330,26 @@ async function runCommand(flags, ctx) {
     }
 
     const snapshot = waited.result;
+    const template = typeof snapshot?.template === 'string' ? snapshot.template : templateHint;
 
-    // ⑦ 节点行
-    const nodeLine = render.renderNodeLine(snapshot);
-    if (nodeLine) out(nodeLine);
+    // ⑦ 挂起 / 停止推进：按附录 A-4 立即收尾（不打印节点表其余行、交接包行与等待行，B-18）
+    if (snapshot?.state === 'suspended' || snapshot?.halted === true) {
+      for (const line of render.renderRunTail({ ...snapshot, template }, { template })) out(line);
+      return snapshot?.state === 'suspended' ? EXIT_SUSPENDED : EXIT_HALTED;
+    }
 
-    // ⑧ 交接包四行（仍未终态时补“等待目标响应”）
-    for (const line of render.renderHandoffLines(snapshot)) out(line);
+    // ⑧ 成功结束时补一次终态节点行（B-19：运行期间只流式打印会话行）
+    for (const line of render.renderNodeLines(snapshot, { template })) out(line);
+
+    // ⑨ 交接包逐包多状态行（仍未终态时补“等待目标响应”）
+    for (const line of render.renderHandoffLines(snapshot, { template })) out(line);
     const wait = render.renderHandoffWait(snapshot, ctx.now());
     if (wait) out(wait);
 
-    // ⑨ 退出码
+    // ⑩ 升级块：`single` 不打印；`code-loop` 无升级时打印 `升级 —`
+    for (const line of render.renderEscalationBlock(snapshot, { template })) out(line);
+
+    // ⑪ 退出码
     if (snapshot?.state === 'completed') return EXIT_OK;
     if (snapshot?.state === 'interrupted') {
       out(render.renderInterruptedNote(snapshot));
@@ -423,6 +446,7 @@ async function statusCommand(flags, ctx) {
     }
 
     const snapshot = res.result;
+    const template = typeof snapshot?.template === 'string' ? snapshot.template : 'single';
 
     // interrupted 时只打带停点的那一行（它已含实例号与状态），不重复实例行（C-7）。
     if (snapshot?.state === 'interrupted') {
@@ -430,15 +454,16 @@ async function statusCommand(flags, ctx) {
     } else {
       out(render.renderInstanceLine(snapshot));
     }
-    const nodeLine = render.renderNodeLine(snapshot);
-    if (nodeLine) out(nodeLine);
+    // 节点表：`single` 1 行（I1.1）、`code-loop` 按 T-001/002 逐行（A-2 第 3 段）
+    for (const line of render.renderNodeLines(snapshot, { template })) out(line);
     // 与 `orch run` 同口径：先试"无新事件"，没有静默再回落到普通会话行（AC-23）。
     const sessionLine =
-      render.renderSessionStall(snapshot, ctx.now()) ?? render.renderSessionLine(snapshot, ctx.now());
+      render.renderSessionStall(snapshot, ctx.now()) ?? render.renderSessionLine(snapshot, ctx.now(), { template });
     if (sessionLine) out(sessionLine);
-    for (const line of render.renderHandoffLines(snapshot)) out(line);
+    for (const line of render.renderHandoffLines(snapshot, { template })) out(line);
     const wait = render.renderHandoffWait(snapshot, ctx.now());
     if (wait) out(wait);
+    for (const line of render.renderEscalationBlock(snapshot, { template })) out(line);
 
     if (flags.events === true) {
       const events = await client.request('instance.events', { instanceId }, { timeoutMs: 10_000 });
@@ -448,11 +473,8 @@ async function statusCommand(flags, ctx) {
       }
       const list = [...(events.result?.events ?? [])].sort((a, b) => (a?.seq ?? 0) - (b?.seq ?? 0));
       for (const event of list) {
-        const line =
-          event?.result === 'rejected'
-            ? render.renderRejectedTransition(event)
-            : render.renderEventLine(event);
-        if (line) out(line);
+        // C-10：模板上下文必须显式传入；`rejected` 两模板都走 I1.1 版式。
+        for (const line of render.renderEventLines(event, { template })) out(line);
       }
     }
 
@@ -481,7 +503,7 @@ async function cancelCommand(flags, ctx) {
         out(render.renderInstanceMissing(flags.instance));
         return EXIT_FAILED;
       }
-      // 已终态走 INSTANCE_TERMINAL 文案（含中文状态名），退出码 1
+      // 已终态走 CANCEL_NOT_NEEDED 文案（含中文状态名），退出码 1
       out(render.renderError({ code: res.code, params: res.params ?? {} }));
       return exitCodeFor(res.code);
     }

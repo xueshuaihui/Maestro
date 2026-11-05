@@ -1,0 +1,31 @@
+实例 INST-304 · 已完成
+节点 已完成 · 耗时 32s
+会话 空闲
+交接包 HO-001  已构造   21:35:03
+交接包 HO-001  已投递   21:35:03
+交接包 HO-001  已接受   21:35:05
+交接包 HO-001  已完成   21:35:34
+21:35:03  实例 INST-304  已创建 → 运行中  原因 run.started
+21:35:03  节点 T-001  待执行 → 执行中  原因 run.started
+21:35:03  交接包 HO-001  已构造  原因 handoff.created
+21:35:04  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
+21:35:05  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  空闲 → 执行中  原因 session.state
+21:35:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
+21:35:05  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（tool_call）  原因 session.state
+21:35:10  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（agent_thought_chunk）  原因 session.state
+21:35:10  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（tool_call）  原因 session.state
+21:35:12  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（agent_thought_chunk）  原因 session.state
+21:35:12  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（tool_call）  原因 session.state
+21:35:20  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（agent_thought_chunk）  原因 session.state
+21:35:20  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（tool_call）  原因 session.state
+21:35:28  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（agent_thought_chunk）  原因 session.state
+21:35:28  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（tool_call）  原因 session.state
+21:35:32  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（agent_thought_chunk）  原因 session.state
+21:35:32  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（tool_call）  原因 session.state
+21:35:34  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 执行中（agent_thought_chunk）  原因 session.state
+21:35:34  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  执行中 → 等待下游  原因 output.submitted
+21:35:34  节点 T-001  执行中 → 待校验  原因 output.submitted
+21:35:34  节点 T-001  待校验 → 已完成  原因 verification.passed
+21:35:34  交接包 HO-001  已接受 → 已完成  原因 handoff.consumed
+21:35:34  实例 INST-304  运行中 → 已完成  原因 run.completed
+21:35:34  会话 50a5d7b5-3401-4819-ad3b-9e828171ea37  等待下游 → 空闲  原因 run.completed

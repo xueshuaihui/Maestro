@@ -1,0 +1,22 @@
+{
+  "ac": "AC-19",
+  "face": "夹具",
+  "startedAt": "2026-11-05T14:00:32.325Z",
+  "finishedAt": "2026-11-05T14:00:33.815Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac19",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac19"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "缺陷证据打不开，也不回流",
+  "narrativeId": "INST-216"
+}

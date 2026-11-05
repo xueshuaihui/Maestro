@@ -335,3 +335,460 @@ test('renderError：params.raw 超长时不被截断', () => {
   assert.equal(text.slice('未知错误：'.length), raw);
   assert.equal(text.length, '未知错误：'.length + 5000);
 });
+
+// ================================================================ I1.2 / WP-5
+// 以下用例逐字断言需求附录 A-1/A-2/A-3/A-4；上面所有 `single` 用例是 I1.1 回归红线。
+
+/** 一张 `code-loop` 快照：T-001 已完成、T-002 执行中、一张正向交接包。 */
+function loopSnapshot(overrides = {}) {
+  return {
+    instanceId: 'INST-001',
+    state: 'running',
+    template: 'code-loop',
+    halted: false,
+    elapsedMs: 12_000,
+    updatedAt: at(10, 31, 14),
+    nodes: [
+      {
+        nodeId: 'T-001',
+        roleId: 'developer',
+        state: 'done',
+        round: 1,
+        startedAt: at(10, 29, 0),
+        endedAt: at(10, 30, 12),
+      },
+      { nodeId: 'T-002', roleId: 'tester', state: 'running', round: 1, startedAt: at(10, 30, 3) },
+    ],
+    sessions: [{ sessionId: 'sess-1', state: 'thinking', stateSince: at(10, 30, 55) }],
+    handoffs: [
+      {
+        handoffId: 'HO-001',
+        state: 'accepted',
+        createdAt: at(10, 30, 2),
+        deliveredAt: at(10, 30, 3),
+        acceptedAt: at(10, 30, 3),
+        consumedAt: null,
+        rejectedAt: null,
+        edge: { from: 'T-001', to: 'T-002', kind: 'forward' },
+      },
+    ],
+    escalations: [],
+    ...overrides,
+  };
+}
+
+// ---------------------------------------------------------------- A-2 实例行
+
+test('A-2 实例行：code-loop 带模板，halted 时“已停止推进”在模板前，single 不带', () => {
+  assert.equal(render.renderInstanceLine(loopSnapshot()), '实例 INST-001 · 运行中 · 模板 编码闭环');
+  assert.equal(
+    render.renderInstanceLine(loopSnapshot({ halted: true })),
+    '实例 INST-001 · 运行中 · 已停止推进 · 模板 编码闭环',
+  );
+  assert.equal(
+    render.renderInstanceLine({ instanceId: 'INST-001', state: 'suspended', template: 'code-loop' }),
+    '实例 INST-001 · 已挂起 · 模板 编码闭环',
+  );
+  // 红线：single 全文不出现“模板”
+  assert.equal(render.renderInstanceLine({ instanceId: 'INST-001', state: 'running', template: 'single' }), '实例 INST-001 · 运行中');
+  assert.ok(!render.renderInstanceLine({ instanceId: 'INST-001', state: 'running' }).includes('模板'));
+});
+
+test('A-2 列表行：code-loop 追加模板与“待处理升级 N”，v1/single 不追加（C-07）', () => {
+  const snapshot = loopSnapshot({ escalations: [{ escalationId: 'ESC-001', state: 'pending' }] });
+  assert.equal(
+    render.renderInstanceListRow({ instanceId: 'INST-001', schemaVersion: 2, template: 'code-loop', pendingEscalations: 1 }, snapshot),
+    '实例 INST-001 · 运行中 · 模板 编码闭环 · 待处理升级 1 · 节点 已完成 · 会话 执行中 · 耗时 1m12s · 更新 10:31:14',
+  );
+  // v1 投影不显示模板与升级
+  assert.equal(
+    render.renderInstanceListRow(
+      { instanceId: 'INST-009', schemaVersion: 1, template: 'single', pendingEscalations: 0 },
+      { instanceId: 'INST-009', state: 'completed', elapsedMs: 72_000, updatedAt: at(10, 31, 14), nodes: [{ nodeId: 'T-001', state: 'done' }], sessions: [{ state: 'idle' }], template: 'single' },
+    ),
+    '实例 INST-009 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 1m12s · 更新 10:31:14',
+  );
+  // 无待处理升级时不打印该段
+  assert.ok(!render.renderInstanceListRow({ instanceId: 'INST-001', schemaVersion: 2, template: 'code-loop' }, loopSnapshot()).includes('待处理升级'));
+});
+
+// ---------------------------------------------------------------- A-2 节点表
+
+test('A-2 节点行：号/角色/状态/轮次/耗时，单空格不对齐；未派发不带轮次与耗时', () => {
+  assert.deepEqual(render.renderNodeLines(loopSnapshot()), [
+    '节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1m12s',
+    '节点 T-002 测试 执行中 · 第 1 轮',
+  ]);
+
+  const pending = render.renderNodeLines(
+    loopSnapshot({
+      nodes: [
+        { nodeId: 'T-001', roleId: 'developer', state: 'pending', round: 0 },
+        { nodeId: 'T-002', roleId: 'tester', state: 'pending', round: 0 },
+      ],
+    }),
+  );
+  assert.deepEqual(pending, ['节点 T-001 开发 待执行', '节点 T-002 测试 待执行']);
+  for (const line of pending) {
+    assert.ok(!line.includes('第 0 轮'));
+    assert.ok(!line.includes('耗时'));
+  }
+});
+
+test('A-2 节点行：判定通过 / 不通过 + 缺陷条数；失败带“等待复测”限定词', () => {
+  const lines = render.renderNodeLines(
+    loopSnapshot({
+      nodes: [
+        { nodeId: 'T-001', roleId: 'developer', state: 'running', round: 2, verdict: null },
+        {
+          nodeId: 'T-002',
+          roleId: 'tester',
+          state: 'failed',
+          round: 1,
+          verdict: { value: 'fail', defectCount: 2 },
+        },
+        { nodeId: 'T-003', roleId: 'tester', state: 'done', round: 2, startedAt: at(10, 30, 0), endedAt: at(10, 31, 0), verdict: { value: 'pass' } },
+      ],
+    }),
+  );
+  assert.deepEqual(lines, [
+    '节点 T-001 开发 执行中 · 第 2 轮',
+    '节点 T-002 测试 失败（等待复测） · 第 1 轮 · 判定 不通过 · 缺陷 2 条',
+    '节点 T-003 测试 已完成 · 第 2 轮 · 耗时 1m · 判定 通过',
+  ]);
+});
+
+test('A-2 节点行：升级未记录只挂在升级前的那个节点上；已升级不带限定词', () => {
+  const snapshot = loopSnapshot({
+    halted: true,
+    nodes: [
+      { nodeId: 'T-001', roleId: 'developer', state: 'done', round: 1, startedAt: at(10, 29, 0), endedAt: at(10, 30, 12) },
+      { nodeId: 'T-002', roleId: 'tester', state: 'review', round: 2 },
+    ],
+  });
+  assert.deepEqual(render.renderNodeLines(snapshot), [
+    '节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1m12s',
+    '节点 T-002 测试 待校验（升级未记录） · 第 2 轮',
+  ]);
+
+  const escalated = render.renderNodeLines(
+    loopSnapshot({
+      state: 'suspended',
+      nodes: [{ nodeId: 'T-002', roleId: 'tester', state: 'escalated', round: 2 }],
+    }),
+  );
+  assert.deepEqual(escalated, ['节点 T-002 测试 已升级 · 第 2 轮']);
+});
+
+test('renderNodeLines：single 仍是 I1.1 一行，且不带号/角色/轮次', () => {
+  assert.deepEqual(
+    render.renderNodeLines({ instanceId: 'INST-001', template: 'single', nodes: [{ nodeId: 'T-001', roleId: 'worker', state: 'review', round: 1 }] }),
+    ['节点 待校验'],
+  );
+});
+
+// ---------------------------------------------------------------- A-2 会话行
+
+test('A-2 会话行：六种分支各一行，只渲染当前 1 行', () => {
+  const at11 = Date.parse(at(10, 31, 14));
+  const cases = [
+    [{ state: 'idle' }, '会话 空闲'],
+    [{ state: 'thinking', stateSince: at(10, 31, 11) }, '会话 执行中 · 已运行 3s'],
+    [{ state: 'tool_running', toolName: 'write', stateSince: at(10, 31, 11) }, '会话 执行中 · 调用工具（write） · 已运行 3s'],
+    [{ state: 'waiting_input', pendingPermission: 'write' }, '会话 等待审批：write'],
+    [{ state: 'waiting_dependency' }, '会话 等待下游'],
+    [{ state: 'escalated' }, '会话 已升级'],
+  ];
+  for (const [session, expected] of cases) {
+    assert.equal(render.renderSessionLine({ sessions: [{ sessionId: 's-0', state: 'idle' }, session] }, at11), expected);
+  }
+});
+
+// ---------------------------------------------------------------- A-2 交接包
+
+test('A-2 交接包：code-loop 带方向（号/方向/状态各 2 空格），single 无方向', () => {
+  const snapshot = loopSnapshot();
+  assert.deepEqual(render.renderHandoffLines(snapshot), [
+    '交接包 HO-001  开发→测试  已构造   10:30:02',
+    '交接包 HO-001  开发→测试  已投递   10:30:03',
+    '交接包 HO-001  开发→测试  已接受   10:30:03',
+  ]);
+
+  const backflow = {
+    ...snapshot,
+    handoffs: [
+      {
+        handoffId: 'HO-002',
+        state: 'delivered',
+        createdAt: at(10, 31, 0),
+        deliveredAt: at(10, 31, 0),
+        acceptedAt: null,
+        consumedAt: null,
+        rejectedAt: null,
+        edge: { from: 'T-002', to: 'T-001', kind: 'backflow' },
+      },
+      {
+        handoffId: 'HO-003',
+        state: 'created',
+        createdAt: at(10, 32, 0),
+        deliveredAt: null,
+        acceptedAt: null,
+        consumedAt: null,
+        rejectedAt: null,
+        edge: { from: 'T-001', to: 'T-002', kind: 'retest' },
+      },
+    ],
+  };
+  assert.deepEqual(render.renderHandoffLines(backflow), [
+    '交接包 HO-002  测试→开发（回流）  已构造   10:31:00',
+    '交接包 HO-002  测试→开发（回流）  已投递   10:31:00',
+    '交接包 HO-003  开发→测试（复测）  已构造   10:32:00',
+  ]);
+
+  // 同一张带 edge 的包在 single 下整段方向消失（I1.1 逐字）
+  assert.deepEqual(render.renderHandoffLines(snapshot, { template: 'single' }), [
+    '交接包 HO-001  已构造   10:30:02',
+    '交接包 HO-001  已投递   10:30:03',
+    '交接包 HO-001  已接受   10:30:03',
+  ]);
+});
+
+test('A-2 交接包等待行：code-loop 带方向，single 逐字保留', () => {
+  const snapshot = loopSnapshot({
+    handoffs: [
+      {
+        handoffId: 'HO-002',
+        state: 'delivered',
+        createdAt: at(10, 31, 0),
+        deliveredAt: at(10, 31, 0),
+        edge: { from: 'T-002', to: 'T-001', kind: 'backflow' },
+      },
+    ],
+    handoffWaitMs: 120_000,
+  });
+  assert.equal(
+    render.renderHandoffWait(snapshot, Date.parse(at(10, 33, 0))),
+    '交接包 HO-002  测试→开发（回流）  已投递   等待目标响应 · 已等待 2m',
+  );
+  const single = {
+    state: 'running',
+    template: 'single',
+    handoff: { handoffId: 'HO-001', state: 'delivered', deliveredAt: at(10, 30, 2) },
+    handoffWaitMs: 120_000,
+  };
+  assert.equal(render.renderHandoffWait(single, Date.parse(at(10, 32, 2))), '交接包 HO-001  已投递   等待目标响应 · 已等待 2m');
+});
+
+// ---------------------------------------------------------------- A-2 升级块
+
+test('A-2 升级块：single 不打印；code-loop 无升级打“升级 —”，有升级打 1+4 行', () => {
+  assert.deepEqual(render.renderEscalationBlock({ template: 'single', escalations: [{ escalationId: 'ESC-001', state: 'pending' }] }), []);
+  assert.deepEqual(render.renderEscalationBlock(loopSnapshot()), ['升级 —']);
+
+  const pending = loopSnapshot({
+    state: 'suspended',
+    escalations: [
+      {
+        escalationId: 'ESC-001',
+        nodeId: 'T-002',
+        round: 2,
+        reasonCode: 'rounds_exceeded',
+        reasonDetail: '回流超上限：测试已派发 2 次仍未通过',
+        defects: [{ summary: 'div 在除数为 0 时返回 Infinity', evidence: 'out/test-log.txt' }],
+        state: 'pending',
+      },
+    ],
+  });
+  assert.deepEqual(render.renderEscalationBlock(pending), [
+    '升级 ESC-001 待处理',
+    '  原因：回流超上限：测试已派发 2 次仍未通过',
+    '  节点：T-002 测试 · 第 2 轮',
+    '  缺陷：div 在除数为 0 时返回 Infinity（证据 out/test-log.txt）',
+    '  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001',
+  ]);
+});
+
+// ---------------------------------------------------------------- A-3 / A-4 收尾
+
+test('A-4 挂起收尾：正好三行（实例 + 升级摘要 + 下一步），不含节点/交接包行', () => {
+  const snapshot = loopSnapshot({
+    state: 'suspended',
+    nodes: [{ nodeId: 'T-002', roleId: 'tester', state: 'escalated', round: 2 }],
+    escalations: [
+      { escalationId: 'ESC-001', nodeId: 'T-002', round: 2, state: 'pending', reasonDetail: '回流超上限' },
+    ],
+  });
+  assert.deepEqual(render.renderRunTail(snapshot), [
+    '实例 INST-001 · 已挂起 · 模板 编码闭环',
+    '升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮',
+    '下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001',
+  ]);
+});
+
+test('A-4 停止推进收尾：错误行 + 三行，节点行是唯一状态行且带“升级未记录”', () => {
+  const snapshot = loopSnapshot({
+    halted: true,
+    haltCause: 'state_write_failed',
+    nodes: [
+      { nodeId: 'T-001', roleId: 'developer', state: 'done', round: 1, startedAt: at(10, 29, 0), endedAt: at(10, 30, 12) },
+      { nodeId: 'T-002', roleId: 'tester', state: 'review', round: 2 },
+    ],
+  });
+  assert.deepEqual(render.renderRunTail(snapshot), [
+    '无法记录升级：state_write_failed；已停止推进',
+    '实例 INST-001 · 运行中 · 已停止推进 · 模板 编码闭环',
+    '节点 T-002 测试 待校验（升级未记录） · 第 2 轮',
+    '下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消',
+  ]);
+});
+
+// ---------------------------------------------------------------- C-10 事件行
+
+test('C-10 事件行：code-loop 加 [#seq] 与中文原因；single 保持 I1.1 逐字', () => {
+  const event = {
+    seq: 18,
+    ts: at(10, 30, 5),
+    object: 'handoff',
+    objectId: 'HO-001',
+    from: 'delivered',
+    to: 'accepted',
+    result: 'applied',
+    reason: 'turn.first_event',
+  };
+  assert.equal(render.renderEventLine(event, { template: 'code-loop' }), '[#18] 10:30:05  交接包 HO-001  已投递 → 已接受  原因 首个事件');
+  assert.equal(render.renderEventLine(event), '10:30:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event');
+  assert.equal(render.renderEventLine(event, { template: 'single' }), '10:30:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event');
+});
+
+test('C-10 事件行：node.dispatch 中段固定“派发 → 执行中”、原因带轮次', () => {
+  assert.equal(
+    render.renderEventLine(
+      {
+        seq: 13,
+        ts: at(10, 31, 5),
+        object: 'node',
+        objectId: 'T-001',
+        from: 'done',
+        to: 'running',
+        result: 'applied',
+        reason: 'node.dispatch',
+        detail: { round: 2, nodeId: 'T-001', roleId: 'developer' },
+      },
+      { template: 'code-loop' },
+    ),
+    '[#13] 10:31:05  节点 T-001  派发 → 执行中  原因 派发 · 第 2 轮',
+  );
+});
+
+test('C-10 事件行：escalation 进入 pending 时中段是“待处理”', () => {
+  assert.equal(
+    render.renderEventLine(
+      {
+        seq: 20,
+        ts: at(10, 32, 0),
+        object: 'escalation',
+        objectId: 'ESC-001',
+        from: null,
+        to: 'pending',
+        result: 'applied',
+        reason: 'escalation.created',
+      },
+      { template: 'code-loop' },
+    ),
+    '[#20] 10:32:00  升级 ESC-001  待处理  原因 创建升级',
+  );
+});
+
+test('C-10 回流事件：行 + 6 空格缩进的缺陷明细与复测要求（AC-24）', () => {
+  const event = {
+    seq: 12,
+    ts: at(10, 31, 0),
+    object: 'handoff',
+    objectId: 'HO-002',
+    from: null,
+    to: 'created',
+    result: 'applied',
+    reason: 'backflow.constructed',
+    detail: {
+      defects: [
+        { summary: 'div 在除数为 0 时返回 Infinity，未抛错', evidence: 'out/test-log.txt' },
+        { summary: 'div(6,0) 未返回 NaN', evidence: 'out/test-log.txt' },
+      ],
+      retestRequirement: '修完后请重跑 node --test，并确认上述 2 条都不再出现',
+    },
+  };
+  assert.deepEqual(render.renderEventLines(event, { template: 'code-loop' }), [
+    '[#12] 10:31:00  交接包 HO-002  已构造  原因 构造回流',
+    '      缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）',
+    '      缺陷 2：div(6,0) 未返回 NaN（证据 out/test-log.txt）',
+    '      复测要求：修完后请重跑 node --test，并确认上述 2 条都不再出现',
+  ]);
+  // single 不追加明细（I1.1 版式红线）
+  assert.deepEqual(render.renderEventLines(event, { template: 'single' }), [
+    '10:31:00  交接包 HO-002  已构造  原因 backflow.constructed',
+  ]);
+});
+
+test('C-10 rejected：两种模板都保持 I1.1 版式（无 seq、无原因）', () => {
+  const event = {
+    seq: 26,
+    ts: at(10, 31, 20),
+    object: 'node',
+    objectId: 'T-001',
+    from: 'done',
+    to: 'running',
+    result: 'rejected',
+    reason: 'illegal_transition',
+  };
+  const expected = '10:31:20  节点 T-001  拒绝的迁移：已完成 → 执行中';
+  assert.equal(render.renderEventLine(event, { template: 'single' }), expected);
+  assert.equal(render.renderEventLine(event, { template: 'code-loop' }), expected);
+  assert.deepEqual(render.renderEventLines(event, { template: 'code-loop' }), [expected]);
+});
+
+// ---------------------------------------------------------------- 取消（数组）
+
+test('renderCancelLines：v2 数组按 会话 → 节点 → 交接包 → 升级 展开', () => {
+  assert.deepEqual(
+    render.renderCancelLines({
+      sessions: [{ state: 'idle' }],
+      nodes: [{ nodeId: 'T-001', roleId: 'developer', state: 'cancelled' }],
+      handoffs: [{ handoffId: 'HO-001', state: 'rejected', rejectReason: 'withdrawn' }],
+      escalations: [{ escalationId: 'ESC-001', state: 'voided' }],
+    }),
+    ['会话 空闲', '节点 T-001 开发 已取消', '交接包 HO-001 已拒绝（已撤回）', '升级 ESC-001 已作废'],
+  );
+});
+
+// ---------------------------------------------------------------- C-11 占位符
+
+test('C-11 renderError：新占位符 name/instanceId/i/summary/evidence/text 不再残留 {...}', () => {
+  const cases = [
+    [{ code: 'TEMPLATE_UNKNOWN', params: { name: 'code-lop' } }, '未知模板：code-lop'],
+    [
+      { code: 'DIR_BUSY', params: { instanceId: 'INST-001' } },
+      '该目录已有未结束的实例 INST-001，本次未发起',
+    ],
+    [{ code: 'TASK_EMPTY', params: {} }, '任务描述不能为空'],
+    [
+      { code: 'PRODUCT_LINE_MISSING' },
+      '编码闭环需要在任务里写「产物：<路径>」一行（全角冒号，例如 产物：calc.js）',
+    ],
+    [{ code: 'INSTANCE_RUNNING', params: {} }, '该实例正在执行，本次未发起'],
+    [
+      { code: 'INSTANCE_SUSPENDED' },
+      '该实例已挂起，不能再次发起；如要重来请新建实例',
+    ],
+    [{ code: 'LEGACY_READ_ONLY' }, '该实例为旧格式，本版本只支持查看'],
+    [
+      { code: 'ESCALATION_WRITE_FAILED', params: { cause: 'state_write_failed' } },
+      '无法记录升级：state_write_failed；已停止推进',
+    ],
+    [{ code: 'CANCEL_NOT_NEEDED', params: { state: 'completed' } }, '实例已结束（已完成），无需取消'],
+  ];
+  for (const [input, expected] of cases) {
+    const text = render.renderError(input);
+    assert.equal(text, expected);
+    assert.ok(!/\{\w+\}/.test(text), text);
+  }
+});

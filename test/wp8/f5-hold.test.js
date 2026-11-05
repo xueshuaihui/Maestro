@@ -4,7 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { promisify } from 'node:util';
 
-import { MOCK, setup, sleep } from './helpers.js';
+import { MOCK, currentSession, setup, sleep } from './helpers.js';
 
 const run = promisify(execFile);
 const PROBE = path.resolve('test/fixtures/probe-adapter.mjs');
@@ -43,7 +43,7 @@ test('F-5 产品：--hold-session 下建会话后不推进，status 会话行仍
     const status = await env.orch.getStatus({ instanceId: INSTANCE });
     assert.equal(status.ok, true);
     assert.equal(status.snapshot.state, 'running');
-    assert.equal(status.snapshot.session.state, 'idle', '会话建好但未开始处理时应为空闲');
+    assert.equal(currentSession(status.snapshot).state, 'idle', '会话建好但未开始处理时应为空闲');
 
     const events = (await env.store.readEvents(INSTANCE)).events;
     assert.equal(

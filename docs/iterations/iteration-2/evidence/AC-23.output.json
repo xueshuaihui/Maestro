@@ -1,0 +1,108 @@
+{
+  "ac": "AC-23",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "① 输出含「未知模板：no-such-template」（期望包含 \"未知模板：no-such-template\"）",
+      "ok": true,
+      "actual": "未知模板：no-such-template\n"
+    },
+    {
+      "text": "② 输出含「任务描述不能为空」（期望包含 \"任务描述不能为空\"）",
+      "ok": true,
+      "actual": "任务描述不能为空\n"
+    },
+    {
+      "text": "③ 输出含「编码闭环需要在任务里写「产物：<路径>」一行（全角冒号，例如 产物：calc.js）」（期望包含 \"编码闭环需要在任务里写「产物：<路径>」一行（全角冒号，例如 产物：calc.js）\"）",
+      "ok": true,
+      "actual": "编码闭环需要在任务里写「产物：<路径>」一行（全角冒号，例如 产物：calc.js）\n"
+    },
+    {
+      "text": "① 退出码是 1（不是 2）（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "② 退出码是 1（不是 2）（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "③ 退出码是 1（不是 2）（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "`ls .orch/instances | wc -l` 与执行前相同（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "机检：events.jsonl 没有被创建（三个目录都不存在）（期望 0）",
+      "ok": true,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --cwd ./demo-code-pass --template no-such-template --task 给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-code-pass",
+        "--template",
+        "no-such-template",
+        "--task",
+        "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac23",
+      "exitCode": 1,
+      "durationMs": 316,
+      "stdout": "未知模板：no-such-template\n",
+      "stderr": "",
+      "note": "① orch run --template no-such-template --task \"…产物：calc.js\""
+    },
+    {
+      "label": "orch run --cwd ./demo-code-pass --template code-loop --task    ",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-code-pass",
+        "--template",
+        "code-loop",
+        "--task",
+        "   "
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac23",
+      "exitCode": 1,
+      "durationMs": 105,
+      "stdout": "任务描述不能为空\n",
+      "stderr": "",
+      "note": "② orch run --template code-loop --task \"   \""
+    },
+    {
+      "label": "orch run --cwd ./demo-code-pass --template code-loop --task 给 calc.js 补 div",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-code-pass",
+        "--template",
+        "code-loop",
+        "--task",
+        "给 calc.js 补 div"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac23",
+      "exitCode": 1,
+      "durationMs": 146,
+      "stdout": "编码闭环需要在任务里写「产物：<路径>」一行（全角冒号，例如 产物：calc.js）\n",
+      "stderr": "",
+      "note": "③ orch run --template code-loop --task \"给 calc.js 补 div\"（缺产物行）"
+    }
+  ]
+}

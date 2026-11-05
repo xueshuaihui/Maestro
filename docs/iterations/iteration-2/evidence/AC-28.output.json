@@ -1,0 +1,64 @@
+{
+  "ac": "AC-28",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "purity-check 退出码 0（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "stdout 含「零命中」（期望包含 \"零命中\"）",
+      "ok": true,
+      "actual": "OK: 扫描 14 个文件，src/core, src/daemon 内 code-loop, developer, tester, coordinator 零命中\n"
+    },
+    {
+      "text": "扫描范围只有 --dirs src/core,src/daemon（stdout 回显）（期望包含 \"src/core, src/daemon\"）",
+      "ok": true,
+      "actual": "OK: 扫描 14 个文件，src/core, src/daemon 内 code-loop, developer, tester, coordinator 零命中\n"
+    },
+    {
+      "text": "stdout 报告扫描文件数（14 个）",
+      "ok": true,
+      "actual": "OK: 扫描 14 个文件，src/core, src/daemon 内 code-loop, developer, tester, coordinator 零命中"
+    },
+    {
+      "text": "node --test fake-graph.test.js 退出码 0（通过）（期望 0）",
+      "ok": true,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "purity-check",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\purity-check.mjs",
+        "--dirs",
+        "src/core,src/daemon",
+        "--forbid",
+        "code-loop,developer,tester,coordinator"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 85,
+      "stdout": "OK: 扫描 14 个文件，src/core, src/daemon 内 code-loop, developer, tester, coordinator 零命中\n",
+      "stderr": "",
+      "note": "node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid code-loop,developer,tester,coordinator"
+    },
+    {
+      "label": "node --test test/templates/fake-graph.test.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "--test",
+        "test/templates/fake-graph.test.js"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 184,
+      "stdout": "TAP version 13\n# Subtest: 注入图的查询函数：入口 / 节点 / 出边 / 终节点 / 轮次上限\nok 1 - 注入图的查询函数：入口 / 节点 / 出边 / 终节点 / 轮次上限\n  ---\n  duration_ms: 1.3945\n  type: 'test'\n  ...\n# Subtest: planAdvance：顺序推进 → dispatch（目标轮次 = 派发前 +1）\nok 2 - planAdvance：顺序推进 → dispatch（目标轮次 = 派发前 +1）\n  ---\n  duration_ms: 2.0728\n  type: 'test'\n  ...\n# Subtest: planAdvance：判定不通过且未超上限 → backflow（回开发第 2 轮）\nok 3 - planAdvance：判定不通过且未超上限 → backflow（回开发第 2 轮）\n  ---\n  duration_ms: 0.3836\n  type: 'test'\n  ...\n# Subtest: planAdvance：第 2 轮仍不通过 → escalate（超上限，不回流）\nok 4 - planAdvance：第 2 轮仍不通过 → escalate（超上限，不回流）\n  ---\n  duration_ms: 0.139\n  type: 'test'\n  ...\n# Subtest: planAdvance：终节点完成 → complete\nok 5 - planAdvance：终节点完成 → complete\n  ---\n  duration_ms: 0.1849\n  type: 'test'\n  ...\n# Subtest: planAdvance：halted 优先于一切，且结果可复现、入参不被修改\nok 6 - planAdvance：halted 优先于一切，且结果可复现、入参不被修改\n  ---\n  duration_ms: 0.1621\n  type: 'test'\n  ...\n# Subtest: shouldWake：缺包 / 轮次超限 / 目标不合法三种拒绝\nok 7 - shouldWake：缺包 / 轮次超限 / 目标不合法三种拒绝\n  ---\n  duration_ms: 0.2771\n  type: 'test'\n  ...\n# Subtest: checkWakeGate：从快照里找到待唤醒包才算通过\nok 8 - checkWakeGate：从快照里找到待唤醒包才算通过\n  ---\n  duration_ms: 0.3065\n  type: 'test'\n  ...\n# Subtest: buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据\nok 9 - buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据\n  ---\n  duration_ms: 0.9237\n  type: 'test'\n  ...\n# Subtest: classifyNodeOutcome 与 nextHandoffId\nok 10 - classifyNodeOutcome 与 nextHandoffId\n  ---\n  duration_ms: 0.4201\n  type: 'test'\n  ...\n# Subtest: src/core 不含编码模板 / 角色字面量（注释也算）\nok 11 - src/core 不含编码模板 / 角色字面量（注释也算）\n  ---\n  duration_ms: 2.1419\n  type: 'test'\n  ...\n# Subtest: 图查询与推进规划不读文件、不写状态\nok 12 - 图查询与推进规划不读文件、不写状态\n  ---\n  duration_ms: 0.5124\n  type: 'test'\n  ...\n1..12\n# tests 12\n# suites 0\n# pass 12\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 96.7205\n",
+      "stderr": "",
+      "note": "node --test test/templates/fake-graph.test.js"
+    }
+  ]
+}

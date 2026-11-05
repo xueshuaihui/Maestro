@@ -37,6 +37,45 @@ function readFailed(err, filePath) {
   return { ok: false, code: 'STORE_READ_FAILED', params: { errno: err?.code ?? null, path: filePath } };
 }
 
+function hasOwn(value, key) {
+  return Object.prototype.hasOwnProperty.call(value, key);
+}
+
+/**
+ * 磁盘快照的 CAS 摘要。缺字段按「未写」处理（`rev` 缺失视为 0），不抛错 ——
+ * v1 快照没有 `halted` / `rev`，读取方不应该因为字段缺失而失败。
+ */
+function casSnapshot(snapshot) {
+  return {
+    state: snapshot?.state ?? null,
+    halted: Boolean(snapshot?.halted),
+    rev: Number.isInteger(snapshot?.rev) ? snapshot.rev : 0,
+  };
+}
+
+/**
+ * 逐字段比较，**只比 `expected` 里显式提供了的键**（便于「只写 halted」这类窄条件写）。
+ *
+ * - `string`：v1 旧语义，只比 `disk.state.state`；冲突时 `actual` 也是字符串（旧断言不变）。
+ * - `{state?, halted?, rev?}`：v2 新语义；冲突时 `actual` 是三元摘要。
+ * - 其他形状（null / 数字 / 数组）：一律按冲突处理，绝不静默放行。
+ *
+ * @returns {null | {expected:any, actual:any}}
+ */
+function compareExpected(expected, actual) {
+  if (typeof expected === 'string') {
+    return actual.state === expected ? null : { expected, actual: actual.state };
+  }
+  if (expected === null || typeof expected !== 'object' || Array.isArray(expected)) {
+    return { expected, actual };
+  }
+  const mismatch =
+    (hasOwn(expected, 'state') && actual.state !== expected.state) ||
+    (hasOwn(expected, 'halted') && actual.halted !== Boolean(expected.halted)) ||
+    (hasOwn(expected, 'rev') && actual.rev !== expected.rev);
+  return mismatch ? { expected, actual } : null;
+}
+
 export function createStore({ root } = {}) {
   if (typeof root !== 'string' || root.length === 0) {
     throw new TypeError('createStore: root 必填');
@@ -48,6 +87,8 @@ export function createStore({ root } = {}) {
   const appendChains = new Map();
   // 单实例快照串行化：让 CAS 的“读 → 比较 → 写”在同一进程内不被打断。
   const saveChains = new Map();
+  // 已知的整快照版本：只在内存里缓存，作为读盘失败时的补充（`rev` 基准优先取磁盘现值）。
+  const revCache = new Map();
 
   function enqueueSave(id, task) {
     const previous = saveChains.get(id) ?? Promise.resolve();
@@ -91,7 +132,11 @@ export function createStore({ root } = {}) {
       corrupt = true;
     }
     if (!corrupt && !isReadableState(parsed)) corrupt = true;
-    if (!corrupt) return { ok: true, state: parsed };
+    if (!corrupt) {
+      // 只登记内存里的版本，不写盘：v1 快照「看也不改」（AC-20）。
+      revCache.set(id, Number.isInteger(parsed.rev) ? parsed.rev : 0);
+      return { ok: true, state: parsed };
+    }
 
     const marked = await markCorrupt(id);
     return {
@@ -103,7 +148,8 @@ export function createStore({ root } = {}) {
   }
 
   /**
-   * 读磁盘上的实例状态；仅用于 save 的比较并交换（不触发损坏备份）。
+   * 读磁盘上的实例状态；save 用它取重放前值（CAS 比较 / 无 CAS 时的 rev 基准），
+   * 不触发损坏备份。
    * @returns {Promise<{ok:true, state:object}|{ok:false}>}
    */
   async function readDiskState(id) {
@@ -120,42 +166,76 @@ export function createStore({ root } = {}) {
   /**
    * 落盘快照。
    *
-   * `opts.expectedState`（可选）：比较并交换 —— 磁盘上现有 `state.state` 与它不一致时
-   * 不写，返回 `STORE_CONFLICT`。不传时行为与旧实现完全一致（最后写者胜）。
+   * `opts.expectedState`（可选）：比较并交换 —— 与磁盘现值不符时不写，返回 `STORE_CONFLICT`。
+   * - `string`（I1.1 旧语义）：只比磁盘 `state.state`；
+   * - `{state?, halted?, rev?}`（v2）：逐字段比较**提供了的键**。
+   * 不传时与旧实现行为一致（最后写者胜，不做 CAS 比较），但**仍然读盘取前值**——
+   * `rev` 必须全局单调，不能因为内存缓存未命中就回落到 0（进程重启后首个无 CAS 写
+   * 会把 `rev` 打回 1，后续 `expectedState:{rev}` 全部误判）。
+   *
+   * 每次成功写入把 `state.rev` 置为 `prevRev + 1`，`prevRev` 一律以**磁盘现值为准**
+   * （读盘失败才退回内存缓存 / 入参快照自带的 `rev` / 0），并在返回值里回报。
    */
   async function save(id, state, opts = {}) {
     return enqueueSave(id, () => persist(id, state, opts));
+  }
+
+  /**
+   * 无 CAS 比较时的前值来源：**磁盘现值优先**，读不到才退回内存缓存 → 入参快照自带 rev → 0。
+   *
+   * 缓存只当"读盘失败时的补充"，且与磁盘取较大值 —— 缓存命中也不能让 `rev` 回退
+   * （例如另一进程已经写过更大的 `rev`）。
+   */
+  function knownRev(id, state, diskRev) {
+    let prev = 0;
+    if (Number.isInteger(diskRev)) prev = diskRev;
+    const cached = revCache.get(id);
+    if (Number.isInteger(cached) && cached > prev) prev = cached;
+    if (Number.isInteger(state.rev) && state.rev > prev) prev = state.rev;
+    return prev;
   }
 
   async function persist(id, state, opts = {}) {
     if (writeBlocked.has(id)) {
       return { ok: false, code: 'STORE_WRITE_BLOCKED_CORRUPT', params: { path: statePath(root, id) } };
     }
+    const file = statePath(root, id);
     if (state === null || typeof state !== 'object' || Array.isArray(state)) {
-      return { ok: false, code: 'STORE_WRITE_FAILED', params: { errno: 'EINVAL', path: statePath(root, id) } };
+      return { ok: false, code: 'STORE_WRITE_FAILED', params: { errno: 'EINVAL', path: file } };
     }
 
-    if (Object.prototype.hasOwnProperty.call(opts, 'expectedState')) {
-      const disk = await readDiskState(id);
-      const actual = disk.ok ? disk.state.state ?? null : null;
-      if (actual !== opts.expectedState) {
+    // 任何形态都先读一次盘：CAS 要拿它比较，"不带 expectedState"要拿它做 rev 基准。
+    const disk = await readDiskState(id);
+    const actual = casSnapshot(disk.ok ? disk.state : null);
+    const diskRev = disk.ok ? actual.rev : null;
+
+    let prevRev = null;
+    if (hasOwn(opts, 'expectedState')) {
+      const conflict = compareExpected(opts.expectedState, actual);
+      if (conflict) {
+        // 冲突不写盘：原文件字节保持不变。
         return {
           ok: false,
           code: 'STORE_CONFLICT',
-          params: { expected: opts.expectedState, actual, path: statePath(root, id) },
+          params: { expected: conflict.expected, actual: conflict.actual, path: file },
         };
       }
+      prevRev = actual.rev;
     }
+    if (prevRev === null) prevRev = knownRev(id, state, diskRev);
 
+    const rev = prevRev + 1;
     // 快照每次落盘都刷新 updatedAt（§3.1），返回值与入参保持同一时刻。
     const updatedAt = new Date().toISOString();
     state.updatedAt = updatedAt;
+    state.rev = rev;
 
-    const written = await writeJsonAtomic(statePath(root, id), state);
+    const written = await writeJsonAtomic(file, state);
     if (!written.ok) {
       return { ok: false, code: 'STORE_WRITE_FAILED', params: written.params };
     }
-    return { ok: true, updatedAt };
+    revCache.set(id, rev);
+    return { ok: true, updatedAt, rev };
   }
 
   function appendEvent(id, ev) {
@@ -252,8 +332,9 @@ export function createStore({ root } = {}) {
       }
 
       if (!isReadableState(parsed)) {
-        // 损坏实例仍然可见（不能假装"没有这个实例"），但标记不可读并阻断后续写入。
-        await markCorrupt(id);
+        // 损坏实例仍然可见（不能假装"没有这个实例"），但只在**内存**里标记写入阻断：
+        // 读路径不写任何文件（评审 S-9），`.corrupt` 备份只由显式 load 失败路径产生。
+        writeBlocked.add(id);
         let mtime = null;
         try {
           mtime = (await fs.stat(file)).mtime.toISOString();
@@ -264,15 +345,8 @@ export function createStore({ root } = {}) {
         continue;
       }
 
-      items.push({
-        instanceId: id,
-        state: parsed.state ?? null,
-        nodeState: parsed.node?.state ?? null,
-        sessionState: parsed.session?.state ?? null,
-        handoffState: parsed.handoff?.state ?? null,
-        updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : null,
-        readable: true,
-      });
+      revCache.set(id, Number.isInteger(parsed.rev) ? parsed.rev : 0);
+      items.push(projectItem(root, id, parsed));
     }
 
     items.sort((a, b) => (a.instanceId < b.instanceId ? -1 : a.instanceId > b.instanceId ? 1 : 0));
@@ -308,13 +382,59 @@ export function createStore({ root } = {}) {
   return { root, load, save, appendEvent, readEvents, list, markCorrupt, nextSeq };
 }
 
+/**
+ * `list()` 的只读投影：只取摘要字段，**不复制数组元素**（大对象留在原快照里）。
+ *
+ * v2 读数组（`nodes[0]` / 最后一个会话 / 最后一张交接包 / `escalations` 计数）；
+ * v1 读单对象，`template` 固定 `single`、`pendingEscalations` 为 0。
+ * 任何字段缺失都退化成 `null` / `0`，不抛错。
+ */
+function projectItem(root, id, snapshot) {
+  const schemaVersion = Number.isInteger(snapshot.schemaVersion) ? snapshot.schemaVersion : 1;
+  const isV2 = schemaVersion >= 2;
+  const nodes = isV2 && Array.isArray(snapshot.nodes) ? snapshot.nodes : [];
+  const sessions = isV2 && Array.isArray(snapshot.sessions) ? snapshot.sessions : [];
+  const handoffs = isV2 && Array.isArray(snapshot.handoffs) ? snapshot.handoffs : [];
+  const escalations = isV2 && Array.isArray(snapshot.escalations) ? snapshot.escalations : [];
+
+  let pendingEscalations = 0;
+  if (isV2) {
+    for (const escalation of escalations) {
+      if (escalation?.state === 'pending') pendingEscalations += 1;
+    }
+  }
+
+  return {
+    instanceId: id,
+    schemaVersion,
+    template: isV2 ? (typeof snapshot.template === 'string' ? snapshot.template : null) : 'single',
+    // v1 快照可能自带 cwd；缺失时退回项目根（实例目录 `.orch/instances/<id>` 的上级祖先）。
+    cwd: typeof snapshot.cwd === 'string' && snapshot.cwd.length > 0 ? snapshot.cwd : root,
+    state: snapshot.state ?? null,
+    nodeState: isV2 ? (nodes[0]?.state ?? null) : (snapshot.node?.state ?? null),
+    sessionState: isV2
+      ? (sessions[sessions.length - 1]?.state ?? null)
+      : (snapshot.session?.state ?? null),
+    handoffState: isV2
+      ? (handoffs[handoffs.length - 1]?.state ?? null)
+      : (snapshot.handoff?.state ?? null),
+    pendingEscalations,
+    updatedAt: typeof snapshot.updatedAt === 'string' ? snapshot.updatedAt : null,
+    readable: true,
+  };
+}
+
 function emptyItem(instanceId, updatedAt) {
   return {
     instanceId,
+    schemaVersion: null,
+    template: null,
+    cwd: null,
     state: null,
     nodeState: null,
     sessionState: null,
     handoffState: null,
+    pendingEscalations: 0,
     updatedAt,
     readable: false,
   };

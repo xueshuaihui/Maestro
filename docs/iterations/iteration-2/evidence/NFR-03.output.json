@@ -1,0 +1,193 @@
+{
+  "ac": "NFR-03",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "[code-pass] 最终 state=completed（期望 \"completed\"）",
+      "ok": true,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "[code-pass] 两节点（nodes.length=2）（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "[code-pass] 无 round>2（轮次不错乱）（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "[code-pass] node.dispatch 事件 seq 严格递增（节点不乱序）",
+      "ok": true,
+      "actual": "[2,11]"
+    },
+    {
+      "text": "[backflow-once] 最终 state=completed（期望 \"completed\"）",
+      "ok": true,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "[backflow-once] 两节点（nodes.length=2）（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "[backflow-once] 无 round>2（轮次不错乱）（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "[backflow-once] node.dispatch 事件 seq 严格递增（节点不乱序）",
+      "ok": true,
+      "actual": "[2,11,25,37]"
+    },
+    {
+      "text": "[retest-fail] 最终 state=suspended（期望 \"suspended\"）",
+      "ok": true,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "[retest-fail] 两节点（nodes.length=2）（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "[retest-fail] 无 round>2（轮次不错乱）（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "[retest-fail] node.dispatch 事件 seq 严格递增（节点不乱序）",
+      "ok": true,
+      "actual": "[2,11,25,37]"
+    },
+    {
+      "text": "[artifact-missing] 最终 state=suspended（期望 \"suspended\"）",
+      "ok": true,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "[artifact-missing] 两节点（nodes.length=2）（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "[artifact-missing] 无 round>2（轮次不错乱）（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "[artifact-missing] node.dispatch 事件 seq 严格递增（节点不乱序）",
+      "ok": true,
+      "actual": "[2]"
+    },
+    {
+      "text": "[verdict-missing] 最终 state=suspended（期望 \"suspended\"）",
+      "ok": true,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "[verdict-missing] 两节点（nodes.length=2）（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "[verdict-missing] 无 round>2（轮次不错乱）（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "[verdict-missing] node.dispatch 事件 seq 严格递增（节点不乱序）",
+      "ok": true,
+      "actual": "[2,11]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario code-pass",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-code-pass",
+        "--scenario",
+        "code-pass"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1247,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-code-pass\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-code-pass\\\\demo-code-pass\",\"scenario\":\"code-pass\",\"resolvedScenario\":\"pass\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":0,\"instanceId\":\"INST-001\",\"state\":\"completed\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"done\"}],\"handoffs\":1,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":888,\"checks\":[{\"name\":\"state=completed\",\"ok\":true,\"detail\":\"completed\"},{\"name\":\"两节点 done\",\"ok\":true},{\"name\":\"handoffs=1 forward\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-26232-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过\n交接包 HO-001  开发→测试  已构造   21:17:17\n交接包 HO-001  开发→测试  已投递   21:17:18\n交接包 HO-001  开发→测试  已接受   21:17:18\n交接包 HO-001  开发→测试  已完成   21:17:18\n升级 —\n",
+      "note": "NFR-03 场景 code-pass 跑一次"
+    },
+    {
+      "label": "driver --scenario backflow-once",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-backflow-once",
+        "--scenario",
+        "backflow-once"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1918,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-backflow-once\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-backflow-once\\\\demo-code-pass\",\"scenario\":\"backflow-once\",\"resolvedScenario\":\"backflow\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":0,\"instanceId\":\"INST-001\",\"state\":\"completed\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"done\"}],\"handoffs\":3,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1534,\"checks\":[{\"name\":\"state=completed\",\"ok\":true,\"detail\":\"completed\"},{\"name\":\"两节点 round=2 done\",\"ok\":true},{\"name\":\"handoffs=3 forward/backflow/retest\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-24244-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 1s · 判定 通过\n交接包 HO-001  开发→测试  已构造   21:17:19\n交接包 HO-001  开发→测试  已投递   21:17:19\n交接包 HO-001  开发→测试  已接受   21:17:19\n交接包 HO-001  开发→测试  已完成   21:17:19\n交接包 HO-002  测试→开发（回流）  已构造   21:17:19\n交接包 HO-002  测试→开发（回流）  已投递   21:17:19\n交接包 HO-002  测试→开发（回流）  已接受   21:17:19\n交接包 HO-002  测试→开发（回流）  已完成   21:17:19\n交接包 HO-003  开发→测试（复测）  已构造   21:17:19\n交接包 HO-003  开发→测试（复测）  已投递   21:17:20\n交接包 HO-003  开发→测试（复测）  已接受   21:17:20\n交接包 HO-003  开发→测试（复测）  已完成   21:17:20\n升级 —\n",
+      "note": "NFR-03 场景 backflow-once 跑一次"
+    },
+    {
+      "label": "driver --scenario retest-fail",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-retest-fail",
+        "--scenario",
+        "retest-fail"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1925,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-retest-fail\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-retest-fail\\\\demo-code-pass\",\"scenario\":\"retest-fail\",\"resolvedScenario\":\"rounds-exceeded\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"escalated\"}],\"handoffs\":3,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"rounds_exceeded\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1541,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"nodes[1]=escalated round=2\",\"ok\":true},{\"name\":\"escalation reason=rounds_exceeded\",\"ok\":true,\"detail\":\"rounds_exceeded\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-26292-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "NFR-03 场景 retest-fail 跑一次"
+    },
+    {
+      "label": "driver --scenario artifact-missing",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-artifact-missing",
+        "--scenario",
+        "artifact-missing"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 925,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-artifact-missing\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-artifact-missing\\\\demo-code-pass\",\"scenario\":\"artifact-missing\",\"resolvedScenario\":\"product-missing\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"escalated\"},{\"nodeId\":\"T-002\",\"round\":0,\"state\":\"pending\"}],\"handoffs\":0,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"artifact_missing\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":552,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"存在升级\",\"ok\":true},{\"name\":\"reason 属于产物核对\",\"ok\":true,\"detail\":\"artifact_missing\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-31952-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "NFR-03 场景 artifact-missing 跑一次"
+    },
+    {
+      "label": "driver --scenario verdict-missing",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-verdict-missing",
+        "--scenario",
+        "verdict-missing"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1250,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-verdict-missing\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr03-verdict-missing\\\\demo-code-pass\",\"scenario\":\"verdict-missing\",\"resolvedScenario\":\"verdict-missing\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"escalated\"}],\"handoffs\":1,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"verdict_missing\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":879,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"escalation reason=verdict_missing\",\"ok\":true,\"detail\":\"verdict_missing\"},{\"name\":\"无 backflow 交接包\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-12636-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "NFR-03 场景 verdict-missing 跑一次"
+    }
+  ]
+}

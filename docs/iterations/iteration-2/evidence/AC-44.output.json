@@ -1,0 +1,71 @@
+{
+  "ac": "AC-44",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "test -f .mock/paused：核心停在「测试第 1 轮已出料、尚未核对」",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "机检：nodes[1].state='review'（期望 \"review\"）",
+      "ok": true,
+      "actual": "\"review\""
+    },
+    {
+      "text": "输出含「节点 T-002 测试 待校验」（期望包含 \"节点 T-002 测试 待校验\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 待校验 · 第 1 轮\n会话 等待下游\n交接包 HO-001  开发→测试  已构造   21:17:06\n交接包 HO-001  开发→测试  已投递   21:17:06\n交接包 HO-001  开发→测试  已接受   21:17:06\n升级 —\n"
+    },
+    {
+      "text": "输出含独立行「会话 等待下游」（期望包含 \"会话 等待下游\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 待校验 · 第 1 轮\n会话 等待下游\n交接包 HO-001  开发→测试  已构造   21:17:06\n交接包 HO-001  开发→测试  已投递   21:17:06\n交接包 HO-001  开发→测试  已接受   21:17:06\n升级 —\n"
+    },
+    {
+      "text": "输出不含「会话 执行中」（期望不含 \"会话 执行中\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 待校验 · 第 1 轮\n会话 等待下游\n交接包 HO-001  开发→测试  已构造   21:17:06\n交接包 HO-001  开发→测试  已投递   21:17:06\n交接包 HO-001  开发→测试  已接受   21:17:06\n升级 —\n"
+    },
+    {
+      "text": "写 .mock/release 放行后 nodes[1].state 不再停在 'review'（进入 failed 或 done）",
+      "ok": true,
+      "actual": "state=failed"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario backflow-once --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac44",
+        "--scenario",
+        "backflow-once",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test, MAESTRO_TEST_PAUSE=after_output:T-002)",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac44",
+      "exitCode": 0,
+      "durationMs": 96,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 待校验 · 第 1 轮\n会话 等待下游\n交接包 HO-001  开发→测试  已构造   21:17:06\n交接包 HO-001  开发→测试  已投递   21:17:06\n交接包 HO-001  开发→测试  已接受   21:17:06\n升级 —\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

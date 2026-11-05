@@ -1,0 +1,86 @@
+{
+  "ac": "AC-08",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "输出含「节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条」（期望包含 \"节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n会话 已升级\n交接包 HO-001  开发→测试  已构造   21:07:23\n交接包 HO-001  开发→测试  已投递   21:07:23\n交接包 HO-001  开发→测试  已接受   21:07:23\n交接包 HO-001  开发→测试  已完成   21:07:24\n交接包 HO-002  测试→开发（回流）  已构造   21:07:24\n交接包 HO-002  测试→开发（回流）  已投递   21:07:24\n交接包 HO-002  测试→开发（回流）  已接受   21:07:24\n交接包 HO-002  测试→开发（回流）  已完成   21:07:24\n交接包 HO-003  开发→测试（复测）  已构造   21:07:24\n交接包 HO-003  开发→测试（复测）  已投递   21:07:24\n交接包 HO-003  开发→测试（复测）  已接受   21:07:24\n交接包 HO-003  开发→测试（复测）  已完成   21:07:24\n升级 ESC-001 待处理\n  原因：回流超上限：测试已派发 2 次仍未通过\n  节点：T-002 测试 · 第 2 轮\n  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "输出含「升级 ESC-001 待处理」（期望包含 \"升级 ESC-001 待处理\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n会话 已升级\n交接包 HO-001  开发→测试  已构造   21:07:23\n交接包 HO-001  开发→测试  已投递   21:07:23\n交接包 HO-001  开发→测试  已接受   21:07:23\n交接包 HO-001  开发→测试  已完成   21:07:24\n交接包 HO-002  测试→开发（回流）  已构造   21:07:24\n交接包 HO-002  测试→开发（回流）  已投递   21:07:24\n交接包 HO-002  测试→开发（回流）  已接受   21:07:24\n交接包 HO-002  测试→开发（回流）  已完成   21:07:24\n交接包 HO-003  开发→测试（复测）  已构造   21:07:24\n交接包 HO-003  开发→测试（复测）  已投递   21:07:24\n交接包 HO-003  开发→测试（复测）  已接受   21:07:24\n交接包 HO-003  开发→测试（复测）  已完成   21:07:24\n升级 ESC-001 待处理\n  原因：回流超上限：测试已派发 2 次仍未通过\n  节点：T-002 测试 · 第 2 轮\n  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "输出含「原因：回流超上限：测试已派发 2 次仍未通过」（期望包含 \"原因：回流超上限：测试已派发 2 次仍未通过\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n会话 已升级\n交接包 HO-001  开发→测试  已构造   21:07:23\n交接包 HO-001  开发→测试  已投递   21:07:23\n交接包 HO-001  开发→测试  已接受   21:07:23\n交接包 HO-001  开发→测试  已完成   21:07:24\n交接包 HO-002  测试→开发（回流）  已构造   21:07:24\n交接包 HO-002  测试→开发（回流）  已投递   21:07:24\n交接包 HO-002  测试→开发（回流）  已接受   21:07:24\n交接包 HO-002  测试→开发（回流）  已完成   21:07:24\n交接包 HO-003  开发→测试（复测）  已构造   21:07:24\n交接包 HO-003  开发→测试（复测）  已投递   21:07:24\n交接包 HO-003  开发→测试（复测）  已接受   21:07:24\n交接包 HO-003  开发→测试（复测）  已完成   21:07:24\n升级 ESC-001 待处理\n  原因：回流超上限：测试已派发 2 次仍未通过\n  节点：T-002 测试 · 第 2 轮\n  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "输出含「节点：T-002 测试 · 第 2 轮」（期望包含 \"节点：T-002 测试 · 第 2 轮\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n会话 已升级\n交接包 HO-001  开发→测试  已构造   21:07:23\n交接包 HO-001  开发→测试  已投递   21:07:23\n交接包 HO-001  开发→测试  已接受   21:07:23\n交接包 HO-001  开发→测试  已完成   21:07:24\n交接包 HO-002  测试→开发（回流）  已构造   21:07:24\n交接包 HO-002  测试→开发（回流）  已投递   21:07:24\n交接包 HO-002  测试→开发（回流）  已接受   21:07:24\n交接包 HO-002  测试→开发（回流）  已完成   21:07:24\n交接包 HO-003  开发→测试（复测）  已构造   21:07:24\n交接包 HO-003  开发→测试（复测）  已投递   21:07:24\n交接包 HO-003  开发→测试（复测）  已接受   21:07:24\n交接包 HO-003  开发→测试（复测）  已完成   21:07:24\n升级 ESC-001 待处理\n  原因：回流超上限：测试已派发 2 次仍未通过\n  节点：T-002 测试 · 第 2 轮\n  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "输出含「缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）」（期望包含 \"缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n会话 已升级\n交接包 HO-001  开发→测试  已构造   21:07:23\n交接包 HO-001  开发→测试  已投递   21:07:23\n交接包 HO-001  开发→测试  已接受   21:07:23\n交接包 HO-001  开发→测试  已完成   21:07:24\n交接包 HO-002  测试→开发（回流）  已构造   21:07:24\n交接包 HO-002  测试→开发（回流）  已投递   21:07:24\n交接包 HO-002  测试→开发（回流）  已接受   21:07:24\n交接包 HO-002  测试→开发（回流）  已完成   21:07:24\n交接包 HO-003  开发→测试（复测）  已构造   21:07:24\n交接包 HO-003  开发→测试（复测）  已投递   21:07:24\n交接包 HO-003  开发→测试（复测）  已接受   21:07:24\n交接包 HO-003  开发→测试（复测）  已完成   21:07:24\n升级 ESC-001 待处理\n  原因：回流超上限：测试已派发 2 次仍未通过\n  节点：T-002 测试 · 第 2 轮\n  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "机检：escalations.length=1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "机检：escalations[0].nodeId=T-002（期望 \"T-002\"）",
+      "ok": true,
+      "actual": "\"T-002\""
+    },
+    {
+      "text": "机检：escalations[0].round=2（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "机检：escalations[0].state=pending（期望 \"pending\"）",
+      "ok": true,
+      "actual": "\"pending\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario retest-fail",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac08",
+        "--scenario",
+        "retest-fail"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1913,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac08\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac08\\\\demo-code-pass\",\"scenario\":\"retest-fail\",\"resolvedScenario\":\"rounds-exceeded\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"escalated\"}],\"handoffs\":3,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"rounds_exceeded\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1537,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"nodes[1]=escalated round=2\",\"ok\":true},{\"name\":\"escalation reason=rounds_exceeded\",\"ok\":true,\"detail\":\"rounds_exceeded\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-17272-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 retest-fail 已跑完"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac08",
+      "exitCode": 0,
+      "durationMs": 198,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条\n会话 已升级\n交接包 HO-001  开发→测试  已构造   21:07:23\n交接包 HO-001  开发→测试  已投递   21:07:23\n交接包 HO-001  开发→测试  已接受   21:07:23\n交接包 HO-001  开发→测试  已完成   21:07:24\n交接包 HO-002  测试→开发（回流）  已构造   21:07:24\n交接包 HO-002  测试→开发（回流）  已投递   21:07:24\n交接包 HO-002  测试→开发（回流）  已接受   21:07:24\n交接包 HO-002  测试→开发（回流）  已完成   21:07:24\n交接包 HO-003  开发→测试（复测）  已构造   21:07:24\n交接包 HO-003  开发→测试（复测）  已投递   21:07:24\n交接包 HO-003  开发→测试（复测）  已接受   21:07:24\n交接包 HO-003  开发→测试（复测）  已完成   21:07:24\n升级 ESC-001 待处理\n  原因：回流超上限：测试已派发 2 次仍未通过\n  节点：T-002 测试 · 第 2 轮\n  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

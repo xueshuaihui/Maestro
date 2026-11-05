@@ -1,0 +1,68 @@
+{
+  "ac": "AC-26",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "停在「开发已完成第 2 轮，没有待唤醒的回流包」，且核心在跑",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "机检：events.jsonl 新增一条 reason='wake.rejected' 且 detail.code='NO_PENDING_BACKFLOW'",
+      "ok": true,
+      "actual": "seam={\"ok\":false,\"code\":\"WAKE_REJECTED\",\"detail\":{\"code\":\"NO_PENDING_BACKFLOW\"}}\n added=[{\"object\":\"node\",\"objectId\":\"T-001\",\"from\":null,\"to\":null,\"result\":\"rejected\",\"reason\":\"wake.rejected\",\"detail\":{\"code\":\"NO_PENDING_BACKFLOW\"},\"gen\":\"gen-6e13d4f72f380583\",\"seq\":36,\"ts\":\"2026-11-05T14:00:41.893Z\"}]"
+    },
+    {
+      "text": "机检：nodes[0].state 没有变化（期望 \"done\"）",
+      "ok": true,
+      "actual": "\"done\""
+    },
+    {
+      "text": "机检：nodes[0].round 没有变化（期望 2）",
+      "ok": true,
+      "actual": "2"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario backflow-once --keep --stop-after 3（长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac26",
+        "--scenario",
+        "backflow-once",
+        "--keep",
+        "--stop-after",
+        "3"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test, MAESTRO_TEST_STOP_AFTER=3)",
+      "stderr": ""
+    },
+    {
+      "label": "seam dispatchToNode T-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\call-seam.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac26",
+        "--instance",
+        "INST-001",
+        "--call",
+        "dispatchToNode",
+        "--node",
+        "T-001"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 1,
+      "durationMs": 94,
+      "stdout": "{\"ok\":false,\"code\":\"WAKE_REJECTED\",\"detail\":{\"code\":\"NO_PENDING_BACKFLOW\"}}\n",
+      "stderr": "",
+      "note": "call-seam.mjs --call dispatchToNode --node T-001"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "ac": "AC-35",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "backflow-hold --keep 推进到「开发第 2 轮执行中」，核心在跑（.orch/core.json 存在）",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "取到 .orch/core.json 的进程号",
+      "ok": true,
+      "actual": "14392"
+    },
+    {
+      "text": "第一行含「已中断」（期望包含 \"已中断\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已中断 ｜ 停在节点 执行中 / 会话 空闲"
+    },
+    {
+      "text": "输出含「第 2 轮」，没有被重置为第 1 轮（期望包含 \"第 2 轮\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已中断 ｜ 停在节点 执行中 / 会话 空闲\n节点 T-001 开发 执行中 · 第 2 轮\n节点 T-002 测试 失败（等待复测） · 第 1 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   22:01:04\n交接包 HO-001  开发→测试  已投递   22:01:04\n交接包 HO-001  开发→测试  已接受   22:01:04\n交接包 HO-001  开发→测试  已完成   22:01:04\n交接包 HO-002  测试→开发（回流）  已构造   22:01:04\n升级 —\n"
+    },
+    {
+      "text": "机检：不存在「实例状态为 interrupted 但有节点被重新派发」的记录（events 无新 node.dispatch）（期望 3）",
+      "ok": true,
+      "actual": "3"
+    },
+    {
+      "text": "taskkill 成功（退出码 0 或进程已消失）",
+      "ok": true,
+      "actual": "exit=0 out=�ɹ�: ����ֹ PID Ϊ 14392 �Ľ��̡�\r\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario backflow-hold --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac35",
+        "--scenario",
+        "backflow-hold",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test)",
+      "stderr": ""
+    },
+    {
+      "label": "taskkill /PID 14392 /F",
+      "argv": [
+        "taskkill",
+        "/PID",
+        "14392",
+        "/F"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac35",
+      "exitCode": 0,
+      "durationMs": 269,
+      "stdout": "�ɹ�: ����ֹ PID Ϊ 14392 �Ľ��̡�\r\n",
+      "stderr": "",
+      "note": "taskkill /PID 14392 /F"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac35",
+      "exitCode": 0,
+      "durationMs": 214,
+      "stdout": "实例 INST-001 · 已中断 ｜ 停在节点 执行中 / 会话 空闲\n节点 T-001 开发 执行中 · 第 2 轮\n节点 T-002 测试 失败（等待复测） · 第 1 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   22:01:04\n交接包 HO-001  开发→测试  已投递   22:01:04\n交接包 HO-001  开发→测试  已接受   22:01:04\n交接包 HO-001  开发→测试  已完成   22:01:04\n交接包 HO-002  测试→开发（回流）  已构造   22:01:04\n升级 —\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

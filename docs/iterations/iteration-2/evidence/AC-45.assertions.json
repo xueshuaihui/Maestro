@@ -1,0 +1,119 @@
+{
+  "exitCode": 0,
+  "state": "completed",
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 2,
+      "state": "done"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 2,
+      "state": "done"
+    }
+  ],
+  "roundsPresent": [
+    2
+  ],
+  "noRound3": true,
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "kind": "forward",
+      "state": "consumed",
+      "defects": 0
+    },
+    {
+      "handoffId": "HO-002",
+      "kind": "backflow",
+      "state": "consumed",
+      "defects": 1
+    },
+    {
+      "handoffId": "HO-003",
+      "kind": "retest",
+      "state": "consumed",
+      "defects": 0
+    }
+  ],
+  "verdictReadFail": [
+    {
+      "seq": 87,
+      "ts": "2026-11-05T13:40:19.875Z",
+      "detail": {
+        "source": "file",
+        "path": "out/verdict.json",
+        "verdict": "fail"
+      }
+    }
+  ],
+  "verdictReadPass": [
+    {
+      "seq": 157,
+      "ts": "2026-11-05T13:42:18.490Z"
+    }
+  ],
+  "allDispatches": [
+    {
+      "seq": 2,
+      "nodeId": "T-001",
+      "round": 1,
+      "ts": "2026-11-05T13:36:53.120Z"
+    },
+    {
+      "seq": 21,
+      "nodeId": "T-002",
+      "round": 1,
+      "ts": "2026-11-05T13:37:16.175Z"
+    },
+    {
+      "seq": 93,
+      "nodeId": "T-001",
+      "round": 2,
+      "ts": "2026-11-05T13:40:20.114Z"
+    },
+    {
+      "seq": 117,
+      "nodeId": "T-002",
+      "round": 2,
+      "ts": "2026-11-05T13:40:51.190Z"
+    }
+  ],
+  "t002Round1Dispatch": {
+    "seq": 21,
+    "nodeId": "T-002",
+    "round": 1,
+    "ts": "2026-11-05T13:37:16.175Z"
+  },
+  "t001Round2DispatchAfterBackflow": {
+    "seq": 93,
+    "nodeId": "T-001",
+    "round": 2,
+    "ts": "2026-11-05T13:40:20.114Z"
+  },
+  "seqAssertion": {
+    "failSeq": 87,
+    "t002Round1DispatchSeq": 21,
+    "t001Round2DispatchSeq": 93,
+    "rule": "failSeq > T-002 第1轮 dispatch.seq 且 failSeq < T-001 第2轮 dispatch.seq",
+    "pass": true
+  },
+  "sessionsT001": [
+    "5536c3db-13d0-4e6e-9efb-db869e15ebd8",
+    "0c91b0e5-02ca-4f4c-b620-f9ffcee71bbb"
+  ],
+  "sessionsT001Distinct": true,
+  "statusHasT002Round2Pass": true,
+  "statusHasUpgradeDash": true,
+  "finalOutputTail": [
+    "交接包 HO-003  开发→测试（复测）  已投递   21:40:53",
+    "交接包 HO-003  开发→测试（复测）  已接受   21:40:55",
+    "交接包 HO-003  开发→测试（复测）  已完成   21:42:18",
+    "升级 —"
+  ],
+  "spawnToThreeLinesMs": 2362.7335,
+  "spawnToTerminalMs": 325709.9948
+}

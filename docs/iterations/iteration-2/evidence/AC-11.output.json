@@ -1,0 +1,118 @@
+{
+  "ac": "AC-11",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "夹具推进到「测试第 2 轮执行中」（step4 delayMs=30000，HO-003 已接受）",
+      "ok": true,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "取消前输出含「交接包 HO-003  开发→测试（复测）  已接受」（期望包含 \"交接包 HO-003  开发→测试（复测）  已接受\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 执行中 · 第 2 轮 · 判定 不通过 · 缺陷 2 条\n会话 执行中 · 调用工具（write） · 已运行 1s\n交接包 HO-001  开发→测试  已构造   21:08:30\n交接包 HO-001  开发→测试  已投递   21:08:30\n交接包 HO-001  开发→测试  已接受   21:08:30\n交接包 HO-001  开发→测试  已完成   21:08:31\n交接包 HO-002  测试→开发（回流）  已构造   21:08:31\n交接包 HO-002  测试→开发（回流）  已投递   21:08:31\n交接包 HO-002  测试→开发（回流）  已接受   21:08:31\n交接包 HO-002  测试→开发（回流）  已完成   21:08:31\n交接包 HO-003  开发→测试（复测）  已构造   21:08:31\n交接包 HO-003  开发→测试（复测）  已投递   21:08:31\n交接包 HO-003  开发→测试（复测）  已接受   21:08:31\n升级 —\n"
+    },
+    {
+      "text": "orch cancel 在 5 秒内返回",
+      "ok": true,
+      "actual": "116ms"
+    },
+    {
+      "text": "第一行含「已取消」（期望包含 \"已取消\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已取消 · 模板 编码闭环"
+    },
+    {
+      "text": "输出含「节点 T-001 开发 已完成 · 第 2 轮」（已完成不倒推）（期望包含 \"节点 T-001 开发 已完成 · 第 2 轮\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已取消 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已取消 · 第 2 轮 · 耗时 1s · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:08:30\n交接包 HO-001  开发→测试  已投递   21:08:30\n交接包 HO-001  开发→测试  已接受   21:08:30\n交接包 HO-001  开发→测试  已完成   21:08:31\n交接包 HO-002  测试→开发（回流）  已构造   21:08:31\n交接包 HO-002  测试→开发（回流）  已投递   21:08:31\n交接包 HO-002  测试→开发（回流）  已接受   21:08:31\n交接包 HO-002  测试→开发（回流）  已完成   21:08:31\n交接包 HO-003  开发→测试（复测）  已构造   21:08:31\n交接包 HO-003  开发→测试（复测）  已投递   21:08:31\n交接包 HO-003  开发→测试（复测）  已接受   21:08:31\n交接包 HO-003  开发→测试（复测）  已拒绝   21:08:31  原因 已撤回\n升级 —\n"
+    },
+    {
+      "text": "机检：nodes[1].state='cancelled'（原 'running'）（期望 \"cancelled\"）",
+      "ok": true,
+      "actual": "\"cancelled\""
+    },
+    {
+      "text": "机检：HO-003 的 state='rejected'（期望 \"rejected\"）",
+      "ok": true,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检：HO-003 的 rejectReason='withdrawn'（期望 \"withdrawn\"）",
+      "ok": true,
+      "actual": "\"withdrawn\""
+    },
+    {
+      "text": "输出含「会话 空闲」（期望包含 \"会话 空闲\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已取消 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已取消 · 第 2 轮 · 耗时 1s · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:08:30\n交接包 HO-001  开发→测试  已投递   21:08:30\n交接包 HO-001  开发→测试  已接受   21:08:30\n交接包 HO-001  开发→测试  已完成   21:08:31\n交接包 HO-002  测试→开发（回流）  已构造   21:08:31\n交接包 HO-002  测试→开发（回流）  已投递   21:08:31\n交接包 HO-002  测试→开发（回流）  已接受   21:08:31\n交接包 HO-002  测试→开发（回流）  已完成   21:08:31\n交接包 HO-003  开发→测试（复测）  已构造   21:08:31\n交接包 HO-003  开发→测试（复测）  已投递   21:08:31\n交接包 HO-003  开发→测试（复测）  已接受   21:08:31\n交接包 HO-003  开发→测试（复测）  已拒绝   21:08:31  原因 已撤回\n升级 —\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario retest-slow --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac11",
+        "--scenario",
+        "retest-slow",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test)",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac11",
+      "exitCode": 0,
+      "durationMs": 102,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 执行中 · 第 2 轮 · 判定 不通过 · 缺陷 2 条\n会话 执行中 · 调用工具（write） · 已运行 1s\n交接包 HO-001  开发→测试  已构造   21:08:30\n交接包 HO-001  开发→测试  已投递   21:08:30\n交接包 HO-001  开发→测试  已接受   21:08:30\n交接包 HO-001  开发→测试  已完成   21:08:31\n交接包 HO-002  测试→开发（回流）  已构造   21:08:31\n交接包 HO-002  测试→开发（回流）  已投递   21:08:31\n交接包 HO-002  测试→开发（回流）  已接受   21:08:31\n交接包 HO-002  测试→开发（回流）  已完成   21:08:31\n交接包 HO-003  开发→测试（复测）  已构造   21:08:31\n交接包 HO-003  开发→测试（复测）  已投递   21:08:31\n交接包 HO-003  开发→测试（复测）  已接受   21:08:31\n升级 —\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001（取消前）"
+    },
+    {
+      "label": "orch cancel --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "cancel",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac11",
+      "exitCode": 0,
+      "durationMs": 116,
+      "stdout": "会话 空闲\n会话 空闲\n会话 空闲\n会话 空闲\n节点 T-001 开发 已完成\n节点 T-002 测试 已取消\n交接包 HO-001 已完成\n交接包 HO-002 已完成\n交接包 HO-003 已拒绝（已撤回）\n",
+      "stderr": "",
+      "note": "orch cancel --instance INST-001"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac11",
+      "exitCode": 0,
+      "durationMs": 92,
+      "stdout": "实例 INST-001 · 已取消 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已取消 · 第 2 轮 · 耗时 1s · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:08:30\n交接包 HO-001  开发→测试  已投递   21:08:30\n交接包 HO-001  开发→测试  已接受   21:08:30\n交接包 HO-001  开发→测试  已完成   21:08:31\n交接包 HO-002  测试→开发（回流）  已构造   21:08:31\n交接包 HO-002  测试→开发（回流）  已投递   21:08:31\n交接包 HO-002  测试→开发（回流）  已接受   21:08:31\n交接包 HO-002  测试→开发（回流）  已完成   21:08:31\n交接包 HO-003  开发→测试（复测）  已构造   21:08:31\n交接包 HO-003  开发→测试（复测）  已投递   21:08:31\n交接包 HO-003  开发→测试（复测）  已接受   21:08:31\n交接包 HO-003  开发→测试（复测）  已拒绝   21:08:31  原因 已撤回\n升级 —\n",
+      "stderr": "",
+      "note": "5 秒内执行 orch status --instance INST-001"
+    }
+  ]
+}

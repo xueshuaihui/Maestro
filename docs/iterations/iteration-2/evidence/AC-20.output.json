@@ -1,0 +1,252 @@
+{
+  "ac": "AC-20",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "夹具：OLD-001/state.json 的 sha256 与交付物 SHA256SUMS 一致（期望 \"95f4a7ba3de34ef57e3f9d07ebca54f32526d3229258164f3251efcccfb78d9a\"）",
+      "ok": true,
+      "actual": "\"95f4a7ba3de34ef57e3f9d07ebca54f32526d3229258164f3251efcccfb78d9a\""
+    },
+    {
+      "text": "夹具：OLD-001/events.jsonl 的 sha256 与交付物 SHA256SUMS 一致（期望 \"3ef710cc9a4f2f28601af66f43ee68907e4a3538467e94062056a58c38e5b2d9\"）",
+      "ok": true,
+      "actual": "\"3ef710cc9a4f2f28601af66f43ee68907e4a3538467e94062056a58c38e5b2d9\""
+    },
+    {
+      "text": "夹具：OLD-002/state.json 的 sha256 与交付物 SHA256SUMS 一致（期望 \"029e7b6a055cd276c1b53a5b7fd96957b534063459a27f66a875f1557b2fa742\"）",
+      "ok": true,
+      "actual": "\"029e7b6a055cd276c1b53a5b7fd96957b534063459a27f66a875f1557b2fa742\""
+    },
+    {
+      "text": "夹具：OLD-002/events.jsonl 的 sha256 与交付物 SHA256SUMS 一致（期望 \"f459831a5ead94abd7fc68f207d4d4a7e003fdef7e6228f8822255472fb88d1d\"）",
+      "ok": true,
+      "actual": "\"f459831a5ead94abd7fc68f207d4d4a7e003fdef7e6228f8822255472fb88d1d\""
+    },
+    {
+      "text": "OLD-001 能看到「节点」行（期望包含 \"节点 \"）",
+      "ok": true,
+      "actual": "实例 OLD-001 · 已完成\n节点 已完成 · 耗时 11m55s\n会话 空闲\n交接包 HO-001  已构造   17:00:04\n交接包 HO-001  已投递   17:00:04\n交接包 HO-001  已接受   17:00:05\n交接包 HO-001  已完成   17:00:05\n17:00:00  实例 OLD-001  已创建 → 运行中  原因 run.started\n17:12:00  节点 T-001  执行中 → 待校验  原因 output.submitted\n"
+    },
+    {
+      "text": "OLD-001 能看到事件记录（v1 事件行为 I1.1 版式，不带 [#seq]）",
+      "ok": true,
+      "actual": "17:00:00  实例 OLD-001  已创建 → 运行中  原因 run.started | 17:12:00  节点 T-001  执行中 → 待校验  原因 output.submitted"
+    },
+    {
+      "text": "OLD-002 能看到「节点」行（期望包含 \"节点 \"）",
+      "ok": true,
+      "actual": "实例 OLD-002 · 运行中\n节点 执行中\n会话 执行中 · 已运行 50638m34s · 无新事件\n交接包 HO-001  已构造   18:00:04\n交接包 HO-001  已投递   18:00:04\n交接包 HO-001  已接受   18:00:05\n18:00:00  实例 OLD-002  已创建 → 运行中  原因 run.started\n18:02:00  节点 T-001  执行中 → 待校验  原因 output.submitted\n"
+    },
+    {
+      "text": "OLD-002 能看到事件记录（v1 事件行为 I1.1 版式，不带 [#seq]）",
+      "ok": true,
+      "actual": "18:00:00  实例 OLD-002  已创建 → 运行中  原因 run.started | 18:02:00  节点 T-001  执行中 → 待校验  原因 output.submitted"
+    },
+    {
+      "text": "OLD-001 不显示「模板」（期望不含 \"模板\"）",
+      "ok": true,
+      "actual": "实例 OLD-001 · 已完成\n节点 已完成 · 耗时 11m55s\n会话 空闲\n交接包 HO-001  已构造   17:00:04\n交接包 HO-001  已投递   17:00:04\n交接包 HO-001  已接受   17:00:05\n交接包 HO-001  已完成   17:00:05\n17:00:00  实例 OLD-001  已创建 → 运行中  原因 run.started\n17:12:00  节点 T-001  执行中 → 待校验  原因 output.submitted\n"
+    },
+    {
+      "text": "OLD-001 不显示「第 n 轮」（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "OLD-002 不显示「模板」（期望不含 \"模板\"）",
+      "ok": true,
+      "actual": "实例 OLD-002 · 运行中\n节点 执行中\n会话 执行中 · 已运行 50638m34s · 无新事件\n交接包 HO-001  已构造   18:00:04\n交接包 HO-001  已投递   18:00:04\n交接包 HO-001  已接受   18:00:05\n18:00:00  实例 OLD-002  已创建 → 运行中  原因 run.started\n18:02:00  节点 T-001  执行中 → 待校验  原因 output.submitted\n"
+    },
+    {
+      "text": "OLD-002 不显示「第 n 轮」（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "OLD-002 仍显示「运行中」（期望包含 \"运行中\"）",
+      "ok": true,
+      "actual": "实例 OLD-002 · 运行中"
+    },
+    {
+      "text": "OLD-002 没有被对账改成「已中断」（期望不含 \"已中断\"）",
+      "ok": true,
+      "actual": "实例 OLD-002 · 运行中\n节点 执行中\n会话 执行中 · 已运行 50638m34s · 无新事件\n交接包 HO-001  已构造   18:00:04\n交接包 HO-001  已投递   18:00:04\n交接包 HO-001  已接受   18:00:05\n18:00:00  实例 OLD-002  已创建 → 运行中  原因 run.started\n18:02:00  节点 T-001  执行中 → 待校验  原因 output.submitted\n"
+    },
+    {
+      "text": "重启后 OLD-002 仍显示「运行中」（期望包含 \"运行中\"）",
+      "ok": true,
+      "actual": "实例 OLD-002 · 运行中"
+    },
+    {
+      "text": "重启后 OLD-002 仍未被改成「已中断」（期望不含 \"已中断\"）",
+      "ok": true,
+      "actual": "实例 OLD-002 · 运行中\n节点 执行中\n会话 执行中 · 已运行 50638m35s · 无新事件\n交接包 HO-001  已构造   18:00:04\n交接包 HO-001  已投递   18:00:04\n交接包 HO-001  已接受   18:00:05\n18:00:00  实例 OLD-002  已创建 → 运行中  原因 run.started\n18:02:00  节点 T-001  执行中 → 待校验  原因 output.submitted\n"
+    },
+    {
+      "text": "cancel OLD-001 看到「该实例为旧格式，本版本只支持查看」（期望包含 \"该实例为旧格式，本版本只支持查看\"）",
+      "ok": true,
+      "actual": "该实例为旧格式，本版本只支持查看\n"
+    },
+    {
+      "text": "cancel OLD-001 退出码 1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "run --instance OLD-002 看到同样提示（期望包含 \"该实例为旧格式，本版本只支持查看\"）",
+      "ok": true,
+      "actual": "该实例为旧格式，本版本只支持查看\n"
+    },
+    {
+      "text": "run --instance OLD-002 退出码 1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "夹具：OLD-001/state.json 四个文件 sha256 与拷贝时完全一致（期望 \"95f4a7ba3de34ef57e3f9d07ebca54f32526d3229258164f3251efcccfb78d9a\"）",
+      "ok": true,
+      "actual": "\"95f4a7ba3de34ef57e3f9d07ebca54f32526d3229258164f3251efcccfb78d9a\""
+    },
+    {
+      "text": "夹具：OLD-001/events.jsonl 四个文件 sha256 与拷贝时完全一致（期望 \"3ef710cc9a4f2f28601af66f43ee68907e4a3538467e94062056a58c38e5b2d9\"）",
+      "ok": true,
+      "actual": "\"3ef710cc9a4f2f28601af66f43ee68907e4a3538467e94062056a58c38e5b2d9\""
+    },
+    {
+      "text": "夹具：OLD-002/state.json 四个文件 sha256 与拷贝时完全一致（期望 \"029e7b6a055cd276c1b53a5b7fd96957b534063459a27f66a875f1557b2fa742\"）",
+      "ok": true,
+      "actual": "\"029e7b6a055cd276c1b53a5b7fd96957b534063459a27f66a875f1557b2fa742\""
+    },
+    {
+      "text": "夹具：OLD-002/events.jsonl 四个文件 sha256 与拷贝时完全一致（期望 \"f459831a5ead94abd7fc68f207d4d4a7e003fdef7e6228f8822255472fb88d1d\"）",
+      "ok": true,
+      "actual": "\"f459831a5ead94abd7fc68f207d4d4a7e003fdef7e6228f8822255472fb88d1d\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：mkdir -p .orch/instances/OLD-001 OLD-002 并拷入 legacy-v1 四个文件",
+      "argv": [
+        "(fixture) mkdir -p .orch/instances/OLD-001 OLD-002 并拷入 legacy-v1 四个文件"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "cp test/fixtures/legacy-v1/OLD-001/state.json -> C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20\\.orch\\instances\\OLD-001\\state.json\ncp test/fixtures/legacy-v1/OLD-001/events.jsonl -> C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20\\.orch\\instances\\OLD-001\\events.jsonl\ncp test/fixtures/legacy-v1/OLD-002/state.json -> C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20\\.orch\\instances\\OLD-002\\state.json\ncp test/fixtures/legacy-v1/OLD-002/events.jsonl -> C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20\\.orch\\instances\\OLD-002\\events.jsonl",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance OLD-001 --events",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "OLD-001",
+        "--events"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20",
+      "exitCode": 0,
+      "durationMs": 224,
+      "stdout": "实例 OLD-001 · 已完成\n节点 已完成 · 耗时 11m55s\n会话 空闲\n交接包 HO-001  已构造   17:00:04\n交接包 HO-001  已投递   17:00:04\n交接包 HO-001  已接受   17:00:05\n交接包 HO-001  已完成   17:00:05\n17:00:00  实例 OLD-001  已创建 → 运行中  原因 run.started\n17:12:00  节点 T-001  执行中 → 待校验  原因 output.submitted\n",
+      "stderr": "",
+      "note": "orch status --instance OLD-001 --events"
+    },
+    {
+      "label": "orch status --instance OLD-002 --events",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "OLD-002",
+        "--events"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20",
+      "exitCode": 0,
+      "durationMs": 94,
+      "stdout": "实例 OLD-002 · 运行中\n节点 执行中\n会话 执行中 · 已运行 50638m34s · 无新事件\n交接包 HO-001  已构造   18:00:04\n交接包 HO-001  已投递   18:00:04\n交接包 HO-001  已接受   18:00:05\n18:00:00  实例 OLD-002  已创建 → 运行中  原因 run.started\n18:02:00  节点 T-001  执行中 → 待校验  原因 output.submitted\n",
+      "stderr": "",
+      "note": "orch status --instance OLD-002 --events"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20",
+      "exitCode": 0,
+      "durationMs": 189,
+      "stdout": "核心已停止（pid 4032，运行 1s）\n",
+      "stderr": "",
+      "note": "orch core stop 后重查一次"
+    },
+    {
+      "label": "orch status --instance OLD-002 --events",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "OLD-002",
+        "--events"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20",
+      "exitCode": 0,
+      "durationMs": 204,
+      "stdout": "实例 OLD-002 · 运行中\n节点 执行中\n会话 执行中 · 已运行 50638m35s · 无新事件\n交接包 HO-001  已构造   18:00:04\n交接包 HO-001  已投递   18:00:04\n交接包 HO-001  已接受   18:00:05\n18:00:00  实例 OLD-002  已创建 → 运行中  原因 run.started\n18:02:00  节点 T-001  执行中 → 待校验  原因 output.submitted\n",
+      "stderr": "",
+      "note": "orch status --instance OLD-002 --events（重启后）"
+    },
+    {
+      "label": "orch cancel --instance OLD-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "cancel",
+        "--instance",
+        "OLD-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20",
+      "exitCode": 1,
+      "durationMs": 84,
+      "stdout": "该实例为旧格式，本版本只支持查看\n",
+      "stderr": "",
+      "note": "orch cancel --instance OLD-001"
+    },
+    {
+      "label": "夹具：mkdir -p ./demo（保证 run 的 cwd 可写，使检查能走到 LEGACY_READ_ONLY）",
+      "argv": [
+        "(fixture) mkdir -p ./demo（保证 run 的 cwd 可写，使检查能走到 LEGACY_READ_ONLY）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20\\demo",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --cwd ./demo --instance OLD-002 --task …",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--instance",
+        "OLD-002",
+        "--task",
+        "…"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20",
+      "exitCode": 1,
+      "durationMs": 89,
+      "stdout": "该实例为旧格式，本版本只支持查看\n",
+      "stderr": "",
+      "note": "orch run --cwd ./demo --instance OLD-002 --task \"…\""
+    }
+  ]
+}

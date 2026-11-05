@@ -1,0 +1,50 @@
+{
+  "ac": "NFR-08",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "核心常驻（after_output 暂停点模拟「命令窗口已不在」）",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "取到 .orch/core.json 的进程号",
+      "ok": true,
+      "actual": "12956"
+    },
+    {
+      "text": "30 秒内闭环自行推进到完成（事件仍有新增）",
+      "ok": true,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "核心进程号不变（期望 12956）",
+      "ok": true,
+      "actual": "12956"
+    },
+    {
+      "text": "events 行数有新增",
+      "ok": true,
+      "actual": "before=18 after=49"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario backflow-once --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr08",
+        "--scenario",
+        "backflow-once",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test, MAESTRO_TEST_PAUSE=after_output:T-002)",
+      "stderr": ""
+    }
+  ]
+}

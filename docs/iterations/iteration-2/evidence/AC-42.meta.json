@@ -1,0 +1,22 @@
+{
+  "ac": "AC-42",
+  "face": "夹具",
+  "startedAt": "2026-11-05T13:17:01.741Z",
+  "finishedAt": "2026-11-05T13:17:04.083Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac42",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac42"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "取消能把「失败」和「已升级」的节点也收掉",
+  "narrativeId": "INST-236"
+}

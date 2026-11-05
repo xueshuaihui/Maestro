@@ -1,0 +1,26 @@
+{
+  "ac": "AC-16",
+  "face": "夹具（2 个独立项目根）",
+  "startedAt": "2026-11-05T14:00:27.152Z",
+  "finishedAt": "2026-11-05T14:00:30.830Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac16-stale",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac16-stale"
+    },
+    {
+      "case": "ac16-stale-retest",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac16-stale-retest"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "判定文件不是本轮新写 → 单独的原因，不误报「未找到」",
+  "narrativeId": "INST-214"
+}

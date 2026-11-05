@@ -1,0 +1,71 @@
+{
+  "ac": "AC-32",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "hold-test --keep 让 T-002 处于执行中，核心在跑",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "stdout 含 \"ok\":false（期望包含 \"\\\"ok\\\":false\"）",
+      "ok": true,
+      "actual": "{\"ok\":false,\"code\":\"NODE_BUSY\",\"detail\":{}}\n"
+    },
+    {
+      "text": "stdout 含 \"code\":\"NODE_BUSY\"（期望包含 \"\\\"code\\\":\\\"NODE_BUSY\\\"\"）",
+      "ok": true,
+      "actual": "{\"ok\":false,\"code\":\"NODE_BUSY\",\"detail\":{}}\n"
+    },
+    {
+      "text": "机检：sessions.length 没有变化（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "机检：nodes[1].round 没有变化（期望 1）",
+      "ok": true,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario hold-test --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac32",
+        "--scenario",
+        "hold-test",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test)",
+      "stderr": ""
+    },
+    {
+      "label": "seam dispatchToNode T-002",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\call-seam.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac32",
+        "--instance",
+        "INST-001",
+        "--call",
+        "dispatchToNode",
+        "--node",
+        "T-002"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 1,
+      "durationMs": 112,
+      "stdout": "{\"ok\":false,\"code\":\"NODE_BUSY\",\"detail\":{}}\n",
+      "stderr": "",
+      "note": "call-seam.mjs --call dispatchToNode --node T-002"
+    }
+  ]
+}

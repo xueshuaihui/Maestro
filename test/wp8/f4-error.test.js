@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { ERROR_TEMPLATE } from '../../src/cli/labels.js';
 import { classifyPromptError } from '../../src/core/error-map.js';
-import { diskState, setup } from './helpers.js';
+import { currentSession, diskState, firstNode, lastHandoff, setup } from './helpers.js';
 
 const INSTANCE = 'INST-001';
 
@@ -16,8 +16,8 @@ test('F-4 --host-error：失败收尾后会话必须是 idle（不得停在 thin
 
     const state = await diskState(env.store, INSTANCE);
     assert.equal(state.state, 'failed');
-    assert.equal(state.node.state, 'failed');
-    assert.equal(state.session.state, 'idle', '会话必须收敛到 idle');
+    assert.equal(firstNode(state).state, 'failed');
+    assert.equal(currentSession(state).state, 'idle', '会话必须收敛到 idle');
 
     const events = (await env.store.readEvents(INSTANCE)).events;
     const sessionEvents = events.filter((ev) => ev.object === 'session' && ev.result === 'applied');
@@ -44,10 +44,10 @@ test('F-4 --permission=deny：params.step 非空且渲染文案不含 null', asy
     assert.equal(rendered, '审批被拒绝，任务中止于 write');
 
     const state = await diskState(env.store, INSTANCE);
-    assert.equal(state.session.state, 'idle');
-    assert.equal(state.node.state, 'failed');
-    assert.equal(state.handoff.state, 'rejected');
-    assert.equal(state.handoff.rejectReason, 'permission_denied');
+    assert.equal(currentSession(state).state, 'idle');
+    assert.equal(firstNode(state).state, 'failed');
+    assert.equal(lastHandoff(state).state, 'rejected');
+    assert.equal(lastHandoff(state).rejectReason, 'permission_denied');
   } finally {
     await env.teardown();
   }
@@ -61,11 +61,11 @@ test('F-4 VERIFY_FAILED：节点/实例 failed、会话 idle、交接包停在 a
     assert.equal(result.code, 'VERIFY_FAILED');
 
     const state = await diskState(env.store, INSTANCE);
-    assert.equal(state.node.state, 'failed');
+    assert.equal(firstNode(state).state, 'failed');
     assert.equal(state.state, 'failed');
-    assert.equal(state.session.state, 'idle');
-    assert.equal(state.handoff.state, 'accepted');
-    assert.notEqual(state.handoff.state, 'consumed');
+    assert.equal(currentSession(state).state, 'idle');
+    assert.equal(lastHandoff(state).state, 'accepted');
+    assert.notEqual(lastHandoff(state).state, 'consumed');
   } finally {
     await env.teardown();
   }
@@ -83,7 +83,7 @@ test('F-6 --session-missing：SESSION_INVALID，且与 NODE_BUSY 不是同一条
     assert.notEqual(ERROR_TEMPLATE.SESSION_INVALID, ERROR_TEMPLATE.NODE_BUSY);
 
     const state = await diskState(env.store, INSTANCE);
-    assert.equal(state.session.state, 'idle');
+    assert.equal(currentSession(state).state, 'idle');
     assert.equal(state.state, 'failed');
   } finally {
     await env.teardown();

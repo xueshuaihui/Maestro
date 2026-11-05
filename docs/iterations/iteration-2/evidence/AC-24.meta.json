@@ -1,0 +1,22 @@
+{
+  "ac": "AC-24",
+  "face": "夹具",
+  "startedAt": "2026-11-05T14:00:35.338Z",
+  "finishedAt": "2026-11-05T14:00:37.512Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac24",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac24"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "事件记录里有轮次与升级",
+  "narrativeId": "INST-219"
+}

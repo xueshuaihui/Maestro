@@ -1,0 +1,85 @@
+{
+  "ac": "AC-43",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "驱动停在「开发第 1 轮已完成、测试第 1 轮已派发并已接受」（.mock/paused 存在）",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "夹具：.mock/prompts/2.json 存在",
+      "ok": true,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac43\\.mock\\prompts\\2.json"
+    },
+    {
+      "text": "夹具：prompts/2.json 的 task 含「给 calc.js 补一个 div 函数」（期望包含 \"给 calc.js 补一个 div 函数\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。"
+    },
+    {
+      "text": "夹具：prompts/2.json 的 task 含「产物：calc.js」（期望包含 \"产物：calc.js\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。"
+    },
+    {
+      "text": "夹具：prompts/2.json 的 task 含「out/verdict.json」（期望包含 \"out/verdict.json\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。"
+    },
+    {
+      "text": "夹具：prompts/2.json 的 task 含「判定」（期望包含 \"判定\"）",
+      "ok": true,
+      "actual": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。"
+    },
+    {
+      "text": "机检：HO-001 的 edge.kind='forward'（期望 \"forward\"）",
+      "ok": true,
+      "actual": "\"forward\""
+    },
+    {
+      "text": "机检：HO-001 的 state='accepted' 或 'consumed'",
+      "ok": true,
+      "actual": "accepted"
+    },
+    {
+      "text": "机检：sessions 里 nodeId='T-001' 与 'T-002' 的 sessionId 不同",
+      "ok": true,
+      "actual": "[\"mock-sess-5728-1\",\"mock-sess-16904-1\"]"
+    },
+    {
+      "text": "夹具：.mock/history/1.txt 存在",
+      "ok": true,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac43\\.mock\\history\\1.txt"
+    },
+    {
+      "text": "夹具：.mock/history/1.txt 含 \"DEV-ROUND1\"（期望包含 \"DEV-ROUND1\"）",
+      "ok": true,
+      "actual": "DEV-ROUND1"
+    },
+    {
+      "text": "夹具：.mock/history-leak 不存在（第 2 步没有夹带上一轮对话标记）",
+      "ok": true,
+      "actual": "history-leak"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario code-pass --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac43",
+        "--scenario",
+        "code-pass",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test, MAESTRO_TEST_PAUSE=after_accepted:T-002)",
+      "stderr": ""
+    }
+  ]
+}

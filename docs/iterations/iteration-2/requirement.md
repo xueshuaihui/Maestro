@@ -1,7 +1,23 @@
 # I1.2 — 编码闭环（开发 → 测试 → 缺陷回流 → 升级）
 
 > 迭代：阶段一 · I1.2 ｜ 依据：`docs/index.md`（§3.1 节点状态 / §3.2 会话状态 / §3.4 交接包状态 / §3.5 一次回流时序 / §3.6 崩溃恢复、能力域 1 / 2 / 4 / 6、I1.2 条目）｜ 模板：`docs/templates/requirement-template.md`
-> 状态：**v13 待终审** ｜ 上游：I1.1（**开发中**；契约见 `docs/iterations/iteration-1.md` §2 / §3，实现见 `src/`）
+> 状态：**v16 定稿（第九轮矫正：AC-15 观测点可构造性修正）** ｜ 上游：I1.1（**开发中**；契约见 `docs/iterations/iteration-1.md` §2 / §3，实现见 `src/`）
+> v16 相对 v15 的修改（第九轮：验收阶段发现的 AC 可构造性问题）：
+> ① **AC-15 的 `When` 改为中间态观测**：原「场景跑完」时 T-002 已第 2 轮通过，节点行只显示当前判定 `判定 通过`，第 1 轮的 `判定 不通过` 被覆盖 → 与 Then 互斥、不可构造。改为 `--scenario verdict-says-fail --stop-after 3 --keep` 停在「开发第 2 轮核对完成、复测派发前」，此时第 1 轮判定与回流交接包同时在场，**4 条 Then 一条未删、一条未放宽**，且更直接地验证「以文件为准」。实测见 `acceptance-fixture.md` AC-15 与 `evidence/AC-15.*`。
+> ② 其余 AC / BR / M / C / D 条款与文案**逐字不变**；仅附录 C 追加本行。
+> v15 相对 v14 的修改（第八轮：自洽性复核 16 处修复 + 拆分文档 X1~X3 字段回补）：
+> ① **阻断 6 条**：AC-45 的 `verdict.read` 序数断言改为「大于 T-002 第 1 轮派发、小于 T-001 第 2 轮派发」；AC-45 话术改为「初版只处理正常输入，回流按缺陷补除零边界」；M-12 限定「`code-loop` 加 `[#seq]`，`single` 保持 I1.1 版式，`rejected` 两种模板都不加 seq」；D-6 / M-3 补 `rev` 并改正「其余字段冻结」表述；D-2 补 `failed→escalated`；D-3 改为「发四条迁移事件（首派无会话时三条）」并补节点 `failed` 与 halted 独立写的 `expectedState` / `rev`。
+> ② **重要 6 条**：AC-03 补 `orch run` 的 Given；BR-20 / BR-21 限定 `code-loop`；`after_verdict` 明确「先落 `review→failed` 再构造回流包」；C-11 占位符补 `text`；M-2 检查顺序补「同目录其他未结束实例」；D-8 补 `HANDOFF_EDGES`。
+> ③ **次要 4 条**：基线 §3.2 显示词改为「等待下游」（已同步）；`docs/index.md` 引用去掉过期行号；D-5 把 `handoff.rejected` / `core.gone` 归回 I1.1 既有词表；C-01 引用 D-3 新形状；A-1 失败摘要正则补全。
+> ④ **X1~X3 回补**：`state.rev`（单调递增、CAS 依据）、`escalations[].defects[]`（供升级块缺陷行）、`counters.dispatchCount`（整实例累计派发次数）。
+> v14 相对 v13 的修改（第七轮：两份独立评审判定「需修订」，主 Agent 已裁决 D-1 ~ D-5）：
+> ① **两节点裁剪（D-1）**：`code-loop` = 开发 `T-001` → 测试 `T-002`。删除协调者节点 `T-003`、`out/summary.md`、第 4 张交接包与全部协调者专属 AC；协调者**只在 §2.1 角色表保留定义**，标注「本迭代不派发；I1.5 角色注册表启用」。AC-17 / AC-30 作废（保留标题 + 一行作废声明，编号不复用）。
+> ② **真实面补回流闭环（D-2）**：真实 DSH 验收面扩为 5 条 —— AC-01 / AC-03 / AC-21 / AC-22 / **AC-45**。AC-45 改为真实面「初版故意保留已知缺陷 → 第 1 轮判不通过 → 回流 → 开发修复 → 第 2 轮通过 → 闭环完成」，§3.3 给出可执行任务话术与目录；其余回流/升级/取消场景仍走夹具，新增 AC-46 保留夹具面的"复测通过"路径。
+> ③ **补契约 C-01 ~ C-14**（§1.4 末）：`store.save` CAS 形状、v2 对象寻址、多节点推进器、`run.start`/`run.wait` 生命周期、IPC/CLI 透传、会话集合化、`store.list()` 投影、会话状态守卫、目录唯一性原子化、事件行模板上下文、错误占位符、图数据落点、故障注入点、D-8 补全。
+> ④ **三处描述纠错**：M-5（`handoffToState` 白名单实为 10 个字段、`tracker.wake()` 根本不存在，是新增能力）、M-8（`hostId` 已通到 `factory.js` 与 `server.js`，真正缺 `main.js` 的解析/发送与 server 的 `template` 白名单）、M-13（I1.1 没有内置图，是 `ROLE_ID/NODE_ID/HANDOFF_ID` 单节点硬编码）。
+> ⑤ **D-6 / AC-15 / 空格口径**：回合结束且**无产出提交**才 `idle`（已提交产出保持 `waiting_dependency` 到核对完成）；`verdict-says-fail` 补至少 1 条缺陷与非空证据；统一为「节点行单空格不对齐；交接包行的号/方向/状态之间各 2 个空格」。
+> ⑥ **附录与一致性**：附录 D 编号说明改正；D-8 补 `wp1/instance-store`、`wp5/ipc-server`、`wp7/wp7` 三个测试文件，并把 `wp4/verify-artifact`、`wp3/launch-config`、`wp6/main` 改标「新增用例」；BR-01 ~ BR-31 连续；清理指向已作废 AC 的悬空引用。
+> ⑦ **口径登记**：`waiting_dependency` 显示词**保留 I1.1 已实现的「等待下游」**（`src/cli/labels.js:29`），基线同步口径为「显示词：等待下游；语义：已产出、等待证据核对或下游接受」；`--template` 登记为「I1.2 先占最小形态，I1.4 补全并保持向后兼容」。
 > v13 相对 v12 的修正（第六轮两份独立评审：均 FAIL）：
 > ① **会话工具行补齐时长**：A-1 第 4 段、§2.2、§2.3、M-12 统一为 `执行中 · 调用工具（write） · 已运行 Ns`，正则允许可选时长后缀；新增 A-1 第 10 段"失败摘要"。
 > ② **第二部分去内部状态**：§2.3 只保留显示词，内部 6 态映射与迁移移入 D-6，并补 `waiting_input→thinking`（审批放行）。
@@ -59,7 +75,7 @@
 > ⑧ **会话只显示当前一条、交接包行带方向、节点行不做列对齐**——三处显示契约各只保留一种写法，否则 AC 的精确子串必然与样例打架。
 > ⑨ **`halted` 有了收尾**——新增 `EXIT_HALTED = 5` 与三行提示，否则"升级写不进去"会让 `orch run` 卡 30 分钟后报"未知错误"。
 > ⑩ **可执行性补齐**——`npm link`、Git Bash 声明、`call-seam.mjs` 接缝脚本、夹具 step 的 `utimes` / `hold.when` / `message`、`--keep` 语义、step↔节点轮次对照表、`TEMPLATE_LABEL` / `INSTANCE_RUNNING` / `DIR_BUSY` 等错误码与文案逐字表。
-> 契约变更 **M-1 ~ M-14**；AC **45 条**；附录 D 增 D-5 文案与错误码逐字表。详见附录 C。
+> 契约变更 **M-1 ~ M-14** 与补充契约 **C-01 ~ C-14**；AC **46 条**（有效 44 条 + 2 条作废占位）；附录 D 增 D-5 文案与错误码逐字表、D-8 测试同步清单。详见附录 C。
 
 ---
 
@@ -89,11 +105,11 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 
 **范围内**
 
-1. **一条命令发起编码闭环**：`orch run --template code-loop`，三节点（开发 → 测试 → 协调者）由核心自动建好、按序推进，不写工作流文件（模板名是代码常量，不是资产文件）。
-2. **三个内置角色**（开发 / 测试 / 协调者）：有职责、有"必须交什么"、有内置提示词（代码内置，不是 `roles/*.yaml`）。
+1. **一条命令发起编码闭环**：`orch run --template code-loop`，两节点（开发 → 测试）由核心自动建好、按序推进，不写工作流文件（模板名是代码常量，不是资产文件）。
+2. **三个内置角色**（开发 / 测试 / 协调者）：有职责、有"必须交什么"、有内置提示词（代码内置，不是 `roles/*.yaml`）。**本迭代 `code-loop` 图只派发开发与测试**；协调者只保留定义，不派发（I1.5 角色注册表启用，D-1）。
 3. **节点表**：`orch status` 从"一个节点"变成节点表，带角色名、轮次、状态、耗时；**当前会话另起一行**，不塞进节点行。
 4. **测试判定**：测试必须交结构化判定（通过 / 不通过 + 缺陷清单，每条带摘要与证据位置），核心**只认文件**。
-5. **交接包带上下文**：判定不通过 → 核心把缺陷摘要 + 证据位置 + 复测要求打包成回流交接包，交给开发的下一次派发；**正向交接包同样带任务原文、上游产物路径与本轮要求**（测试要写判定、协调者要写汇总）。
+5. **交接包带上下文**：判定不通过 → 核心把缺陷摘要 + 证据位置 + 复测要求打包成回流交接包，交给开发的下一次派发；**正向交接包同样带任务原文、上游产物路径与本轮要求**（测试要写判定）。
 6. **轮次上限与升级**：测试最多派发 2 次；第 2 次仍不通过 → 停止回流、生成升级、实例挂起，重启也不推进。
 7. **闭环引擎可复用**：交付"顺序 + 回流 + 轮次上限 + 升级"引擎（接受注入的图定义），编码闭环是它驱动的第一个图；I1.3 只加图定义与判定适配。
 8. **兼容与可追溯**：I1.1 的单节点实例只读可查（**读时不改写、看也不改写**）；多节点实例按节点记录状态，重启后轮次与升级不丢。
@@ -124,16 +140,17 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 
 ### 1.3.1 与 I1.2 规划的逐项对应
 
-本迭代的每条规划要求都能在第二部分找到用户视角的描述、在第三部分找到验收条目；第二部分没有超出规划的能力域。需要显式登记的细化/边界有四处：**R-1 协调者节点**（见下）、**R-2 同目录唯一闭环**（I1.1 行为的延伸，B-14）、**R-3 旧格式只读**（B-09 / B-21）、**R-4 会话「等待下游」显示词**（BR-28；基线 §3.2 把 `waiting_dependency` 写作「等待校验」，本文按"节点已出料、等核对"的语义改为「等待下游」，需同步基线）。后三项是升级兼容、防误操作与文案口径的边界约束，不是新能力。
+本迭代的每条规划要求都能在第二部分找到用户视角的描述、在第三部分找到验收条目；第二部分没有超出规划的能力域。需要显式登记的细化/边界有三处：**R-2 同目录唯一闭环**（I1.1 行为的延伸，B-14）、**R-3 旧格式只读**（B-09 / B-21）、**R-4 `waiting_dependency` 的显示词与语义**（BR-28；显示词保留 I1.1 已实现的「等待下游」，基线 §3.2 已同步为「等待下游」，统一口径为「显示词：等待下游；语义：已产出、等待证据核对或下游接受」）。三者是升级兼容、防误操作与文案口径的边界约束，不是新能力。**R-1 协调者节点本迭代不派发**（见下，D-1）。
 
-| 规划原文（`docs/index.md` I1.2 条目） | 落到本文哪里 | 验收 |
+| 规划依据（I1.2 条目 + 相关能力域） | 落到本文哪里 | 验收 |
 |---|---|---|
-| 内置角色：开发、测试、协调者 | §2.1 角色职责表 | AC-01（三节点建好）、AC-04（角色名可见）、AC-08 / AC-39（升级挂到具体角色） |
-| 编码闭环模板：开发 → 测试 | §2.2 A、§2.8 走查第 1~3 步 | AC-01、AC-02（顺序）、AC-03（通过后继续） |
+| 内置角色：开发、测试、协调者 | §2.1 角色职责表（协调者只定义、不派发） | AC-01（两节点建好、首个执行是开发）、AC-04（角色名可见）、AC-08 / AC-39（升级挂到具体角色） |
+| 编码闭环模板：开发 → 测试 | §2.2 A、§2.8 走查第 1~3 步 | AC-01、AC-02（顺序）、AC-03（通过后闭环完成） |
 | 缺陷回流 | §2.4 C、BR-03 / BR-09 / BR-26 | AC-05、AC-15~AC-19、AC-24（回流内容） |
 | 轮次上限 | §2.5 轮次口径表、BR-05 | AC-07（没有第 3 轮）、AC-24（事件里的轮次） |
 | 升级生成 | §2.6 E、BR-08 / BR-17 | AC-08、AC-12、AC-27、AC-39 |
-| 交接包构造 + ACP 投递 | §2.4、§2.8、BR-22 / BR-26 | AC-34（已接受→已完成）、AC-41（每边每轮一张）、AC-43（正向内容）、AC-45（复测通过走完） |
+| 交接包构造 + ACP 投递 | §2.4、§2.8、BR-22 / BR-26 | AC-34（已接受→已完成）、AC-41（每边每轮一张）、AC-43（正向内容）、AC-46（夹具面复测通过走完） |
+| **真实回流闭环（D-2）** | §2.4 C、§3.3 真实面任务话术 | **AC-45**（真实 DSH：第 1 轮不通过 → 回流 → 开发修复 → 第 2 轮通过 → 闭环完成） |
 | 轮次计数 | §2.5 口径表、BR-04 / BR-11 | AC-05、AC-06、AC-35（重启不重置） |
 | 交接包 `accepted → consumed` 流程验证 | §2.3 / §2.4、BR-19 | AC-34、AC-41 |
 | 验收：第 2 轮仍失败 → 停止回流、生成升级、实例挂起等人工 | §2.5 D、BR-05 / BR-06 / BR-23 | AC-07、AC-09、AC-12 |
@@ -142,39 +159,61 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 | 能力域 4 会话唤醒与交接 | §2.3 / §2.4 / BR-10 / BR-19 | AC-05（新会话）、AC-34、AC-44（等待下游） |
 | 能力域 6 治理与可追溯 | §2.6 / §2.9、BR-16 / BR-17 | AC-24、AC-25、AC-27 |
 
-> **规划验收点落在哪个面**："测试第 2 轮失败 → 停止回流、生成升级、实例挂起"由 AC-07 / AC-08 / AC-09 / AC-12 在**夹具面**验证（可稳定复现，不依赖真实模型"肯不肯失败"）；真实宿主只验成功闭环与回归（AC-01 / AC-03 / AC-21 / AC-22），**取消只在夹具面验证**（AC-11 / AC-42）。这是本迭代对验收面的明确取舍，需使用者确认。
+> **规划验收点落在哪个面**：**第 2 轮失败 → 升级 → 挂起仍走夹具**（AC-07 / AC-08 / AC-09 / AC-12，可稳定复现，不依赖真实模型"肯不肯失败"）；**回流路径由真实面 AC-45 覆盖"第 1 轮不通过 → 第 2 轮通过"**（任务目录 `demo-code-fail`，失败由测试命令的真实输出决定，不由模型"选择失败"）；**取消只在夹具面验证**（AC-11 / AC-42）。真实宿主面共 5 条：AC-01 / AC-03 / AC-21 / AC-22 / AC-45。
 
-**规划细化 R-1：协调者作为"测试通过后的汇总节点"**
 
-规划把协调者列为**内置角色**，但模板序列只写了"开发 → 测试 → 缺陷回流 → 轮次上限 → 升级"，没有明说协调者站在哪。本迭代把它落成第 3 个节点，理由与边界：
+**规划细化 R-1：协调者本迭代不派发（已裁决，D-1）**
 
-- **理由**：一个内置角色如果没有执行面，就只剩一个名字，I1.5 做角色注册表时无法验证"角色能被派发、能交产物"；"测试通过后把这一轮做了什么汇总成可读说明"是闭环里唯一还没有归属的动作。
-- **不越权**：协调者**只汇总，不裁决、不回流、不触发升级**。它报错或产物不合格时，直接升级（BR-14），不会把开发再叫起来。
-- **可裁剪**：如果使用者要求严格按两节点执行，删除 T-003 不影响本迭代"回流、上限、升级"三条核心语义；但 AC 集不能只删 3 条：需删 AC-03 / AC-17 / AC-30 / AC-45，并改写 AC-01 / AC-02 / AC-04 / AC-06 / AC-11 / AC-42 与 A-2 / A-3 中的三节点与四张交接包断言。因此它是对规划的最小落地提案，不是可以直接忽略的装饰节点。
-- **基线同步**：`docs/index.md` 的 I1.2 条目应补一句"模板含协调者汇总节点（R-1）"，与本文一致后再进入实现（附录 B-06）。
-- **授权状态**：R-1 是本文对规划的细化提案，**待使用者确认**；未确认前 T-003 保持可裁剪——删掉它不影响回流、上限、升级三条核心语义，但 AC 集与输出基线需按 B-06 同步改写。
+规划把协调者列为**内置角色**，但模板序列只写了"开发 → 测试 → 缺陷回流 → 轮次上限 → 升级"，没有把协调者放进序列（`docs/index.md` 的 I1.2 条目）。本迭代的裁决是**严格两节点**：
+
+- **角色保留、节点不建**：`code-loop` 图是 `开发 T-001 → 测试 T-002`，加一条 `测试 → 开发` 回流边。协调者只在 §2.1 角色表保留职责定义，标注「本迭代不派发；I1.5 角色注册表启用」。
+- **不产生协调者专属产物**：没有 `out/summary.md`、没有第 4 张交接包、没有"测试通过后汇总"这一步。测试通过即闭环完成（实例 `已完成`）。
+- **AC 处置**：作废 AC-17（协调者报错）与 AC-30（协调者产出缺失），标题保留、正文替换为作废声明（编号不复用）；AC-01 / AC-02 / AC-03 / AC-04 / AC-06 / AC-11 / AC-25 / AC-42 / AC-45 改写为两节点口径。
+- **I1.5 的衔接**：协调者的职责与产物模板留作 I1.5 的资产；I1.5 的角色注册表验收不依赖 I1.2 先派发协调者。
+
 
 ### 1.4 对 I1.1 契约的修改（授权变更，实施时必须同步改 I1.1 代码与文档）
 
 | # | I1.1 原契约 | 本迭代改成 | 为什么必须改 | 影响 |
 |---|---|---|---|---|
-| **M-1** | 节点迁移表（`src/core/state-machine.js` 的 `TABLES.node`）：`pending→{running,cancelled}`、`running→{review,failed,cancelled}`、`review→{done,failed}`、`done/failed/cancelled=[]`；`DEFINED_ONLY.node = ['escalated']` | 见附录 D-1。**新增 10 条边**：`pending→escalated`、`running→escalated`、`review→escalated`、`review→cancelled`、`done→running`、`done→escalated`、`failed→running`、`failed→escalated`、`failed→cancelled`、`escalated→cancelled`，并**新建 `escalated: ['cancelled']` 这一行**。**`running→failed` 必须保留**。**`done` 不加 `cancelled`**（已完成不倒推）。**`DEFINED_ONLY.node` 置空** | 基线 §3.5 要求 `done→running`（回流唤醒）与 `failed→running`（复测）；取消要能收掉 `待校验/失败/已升级`；所有"不能继续"要一个统一终态 | **不能删 `running→failed`**：I1.1 的 `finishPromptError` 与 `failRunUnexpected` 靠它落 `失败`，`single` 与 I1.1 AC-18/AC-21 依赖它（走哪条由模板门控决定，见 D-2）。**`review→failed` 在 `single` 下也必须保留**（核对不通过落 `失败`），`code-loop` 下只用于第 1 轮判定不通过。**还必须同步重写 `test/wp2/state-machine.test.js` 的 `NODE_EDGES` 与终态集合**（`done` 不再是终态），否则 I1.1 单测先红 |
-| **M-2** | 实例无"挂起"；`interruptAll` / `TERMINAL_INSTANCE` 只排除 `completed/failed/cancelled/interrupted`；`ACTIVE_NODE={pending,running,review}` | 实例新增 `suspended`：`created→running`（保持不变）、`running→suspended`、`suspended→cancelled`。**拆成五组常量**（附录 D-4）：`TERMINAL_INSTANCE` **保持四态**、`CORE_IMMUTABLE_INSTANCE=TERMINAL ∪ {suspended}`（只给对账/`interruptAll`）、`RUN_DONE_INSTANCE=TERMINAL ∪ {suspended}`（给 `waitForRun` 与"拒绝复用"判断）、`CANCELABLE_NODE={pending,running,review,failed,escalated}`、`CANCELABLE_HANDOFF={created,delivered,accepted}`。**发起前的检查顺序固定为**：给了 `--instance` → 旧格式 → `single` 节点占用（`NODE_BUSY`）→ 正在执行 → 已挂起 → 已结束；没给 `--instance` → 同目录未结束实例（附录 D-4） | 挂起是"等人工"的持久状态，`core stop` 不得把它转成已中断；但 `suspended` 又**必须可取消**，塞进 `TERMINAL_INSTANCE` 会让 `orch cancel` 报"实例已结束" | **禁止**把 `suspended` 加进 `TERMINAL_INSTANCE`；`src/cli/render.js` 里那份**复制的** `TERMINAL_INSTANCE` 也要同步处理（它决定是否打"等待目标响应"） |
-| **M-3** | `state.json` 单个 `node` / `session` / `handoff`，`schemaVersion: 1` | `schemaVersion: 2`：`template`、`cwd`、`task`、`nodes[]`、`sessions[]`、`handoffs[]`、`escalations[]`、`halted`、`counters`、`hostRaw`。字段见 §3.3 D-6。**v1 只读四规则**：① `load` 只读，不得规范化并回写；② `reconcileOnBoot` / `interruptAll` / `cancel` 对 `schemaVersion < 2` 一律跳过、返回 `LEGACY_READ_ONLY`、不写任何文件；③ `startRun`（含 `--instance` 复用）对 v1 同样返回 `LEGACY_READ_ONLY`；④ `store.list()` 的摘要投影读数组并补 `cwd` / `template`。**读端四处**：`instance-store.list()` 投影、`renderInstanceListRow`、`renderNodeLine`/`renderHandoffLines`、`main.js` 的 status/run 输出。**实例落盘顺序**：`code-loop` 必须**先落盘实例**（`state='created'` + `nodes[]` 三行 + `template`）→ 置 `running`（发 `run.started`）→ 再派发 T-001；`single` 沿用 I1.1 "preflight 失败不落盘" | 三节点闭环必须有数组；升级需要落点；取消要按节点/交接包写回；v1 只读必须停在写入点，否则启动对账会把旧实例改成"已中断" | **v1 实例只读**：任何写入（含 cancel 与 `run --instance`）都拒绝并提示 `该实例为旧格式，本版本只支持查看` |
+| **M-1** | 节点迁移表（`src/core/state-machine.js` 的 `TABLES.node`）：`pending→{running,cancelled}`、`running→{review,failed,cancelled}`、`review→{done,failed}`、`done/failed/cancelled=[]`；`DEFINED_ONLY.node = ['escalated']` | 见附录 D-1。**新增 10 条边（这是相对 I1.1 的 7 态表的增量；基线 9 态对应 7 条，见 §1.4 末②，两套编号不得混用）**：`pending→escalated`、`running→escalated`、`review→escalated`、`review→cancelled`、`done→running`、`done→escalated`、`failed→running`、`failed→escalated`、`failed→cancelled`、`escalated→cancelled`，并**新建 `escalated: ['cancelled']` 这一行**。**`running→failed` 必须保留**。**`done` 不加 `cancelled`**（已完成不倒推）。**`DEFINED_ONLY.node` 置空** | 基线 §3.5 要求 `done→running`（回流唤醒）与 `failed→running`（复测）；取消要能收掉 `待校验/失败/已升级`；所有"不能继续"要一个统一终态 | **不能删 `running→failed`**：I1.1 的 `finishPromptError` 与 `failRunUnexpected` 靠它落 `失败`，`single` 与 I1.1 AC-18/AC-21 依赖它（走哪条由模板门控决定，见 D-2）。**`review→failed` 在 `single` 下也必须保留**（核对不通过落 `失败`），`code-loop` 下只用于第 1 轮判定不通过。**注意**：`escalated: ['cancelled']` 只改 `src/core/state-machine.js` 的 I1.2 运行表；`docs/index.md` §3.1 仍保留 I1.4 的三条裁决路径（`done / failed / 重新分配`）。**还必须同步重写 `test/wp2/state-machine.test.js` 的 `NODE_EDGES` 与终态集合**（`done` 不再是终态），否则 I1.1 单测先红 |
+| **M-2** | 实例无"挂起"；`interruptAll` / `TERMINAL_INSTANCE` 只排除 `completed/failed/cancelled/interrupted`；`ACTIVE_NODE={pending,running,review}` | 实例新增 `suspended`：`created→running`（保持不变）、`running→suspended`、`suspended→cancelled`。**拆成五组常量**（附录 D-4）：`TERMINAL_INSTANCE` **保持四态**、`CORE_IMMUTABLE_INSTANCE=TERMINAL ∪ {suspended}`（只给对账/`interruptAll`）、`RUN_DONE_INSTANCE=TERMINAL ∪ {suspended}`（给 `waitForRun` 与"拒绝复用"判断）、`CANCELABLE_NODE={pending,running,review,failed,escalated}`、`CANCELABLE_HANDOFF={created,delivered,accepted}`。**发起前的检查顺序固定为**：给了 `--instance` → 旧格式 → `single` 节点占用（`NODE_BUSY`）→ 正在执行 → 已挂起 → 已结束 → 同目录其他未结束实例；没给 `--instance` → 同目录未结束实例（附录 D-4） | 挂起是"等人工"的持久状态，`core stop` 不得把它转成已中断；但 `suspended` 又**必须可取消**，塞进 `TERMINAL_INSTANCE` 会让 `orch cancel` 报"实例已结束" | **禁止**把 `suspended` 加进 `TERMINAL_INSTANCE`；`src/cli/render.js` 里那份**复制的** `TERMINAL_INSTANCE` 也要同步处理（它决定是否打"等待目标响应"） |
+| **M-3** | `state.json` 单个 `node` / `session` / `handoff`，`schemaVersion: 1` | `schemaVersion: 2`：`template`、`cwd`、`task`、`rev`、`nodes[]`、`sessions[]`、`handoffs[]`、`escalations[]`、`halted`、`counters`、`hostRaw`。字段见 §3.3 D-6。**v1 只读四规则**：① `load` 只读，不得规范化并回写；② `reconcileOnBoot` / `interruptAll` / `cancel` 对 `schemaVersion < 2` 一律跳过、返回 `LEGACY_READ_ONLY`、不写任何文件；③ `startRun`（含 `--instance` 复用）对 v1 同样返回 `LEGACY_READ_ONLY`；④ `store.list()` 的摘要投影读数组并补 `cwd` / `template`。**读端四处**：`instance-store.list()` 投影、`renderInstanceListRow`、`renderNodeLine`/`renderHandoffLines`、`main.js` 的 status/run 输出。**实例落盘顺序**：`code-loop` 必须**先落盘实例**（`state='created'` + `nodes[]` 两行 + `template`）→ 置 `running`（发 `run.started`）→ 再派发 T-001；`single` 沿用 I1.1 "preflight 失败不落盘" | 多节点闭环必须有数组；升级需要落点；取消要按节点/交接包写回；v1 只读必须停在写入点，否则启动对账会把旧实例改成"已中断" | **v1 实例只读**：任何写入（含 cancel 与 `run --instance`）都拒绝并提示 `该实例为旧格式，本版本只支持查看` |
 | **M-4** | `events.jsonl` 的 `object ∈ {instance,node,session,handoff}`；`reason` 为固定值集 | 新增 `object: "escalation"`。新增 `reason`：`node.dispatch`、`verdict.read`、`verdict.invalid`、`backflow.constructed`、`rounds.exceeded`、`handoff.rejected`、`escalation.created`、`escalation.voided`、`core.suspend`、`wake.rejected`、`run.halted`。`detail` 契约：`node.dispatch → {round, nodeId, roleId}`；`verdict.read → {source:'file', path, verdict}`（`path` 为**任务目录相对路径**，本迭代固定为 `out/verdict.json`，不写绝对路径）；`backflow.constructed → {defects[], retestRequirement}`；`wake.rejected → {code:'NO_PENDING_BACKFLOW'｜'ROUNDS_EXCEEDED'｜'TARGET_NOT_ELIGIBLE'}`；`handoff.rejected → {reason:'withdrawn'}` | 派发次数、判定读取、升级生成与作废、门控拒绝、停止推进都必须可审计（基线能力域 6） | 老读端遇到未知 `object`/`reason` 只显示、不报错 |
-| **M-5** | 交接包表 `created → delivered`（无其他出边）；`handoffToState` 是固定字段白名单 | ① 新增 `created → rejected`，**必须同时改两张表**（`state-machine.js` 的 `TABLES.handoff` 与 `handoff-tracker.js` 的 `LEGAL`）；② 交接包新增持久字段 `wakeConsumedAt`（`null`｜时间戳）、`edge{from,to,kind}`、`defects[]`、`note`，**必须同时穿透三处**：`tracker.wake()`（写入）、`tracker.snapshot()`（输出）、`orchestrator.handoffToState()` 白名单（投影）（现有白名单只有 timestamps 与 acceptedSignal，`edge`/`defects`/`note` 会被任意一次 `session/update` 重投影抹掉） | 取消可能发生在"已构造未投递"；`wakeConsumedAt` 若不穿透投影，任意一条 `session/update` 都会把它抹掉，同一张 `accepted` 包可被二次唤醒；`edge.kind` 被抹掉则 AC-04/05/41/45 的机检全部失效 | 7 态语义不变，只补一条边；`applyCancel` 的交接包条件要含 `created` |
+| **M-5** | 交接包表 `created → delivered`（无其他出边）；`handoffToState` 是固定字段白名单；`handoff-tracker` 的 `LEGAL.created` 只有 `['delivered']`，返回对象**没有 `wake()`** | ① 新增 `created → rejected`，**必须同时改两张表**（`state-machine.js` 的 `TABLES.handoff` 与 `handoff-tracker.js` 的 `LEGAL`）；② 交接包新增持久字段 `wakeConsumedAt`（`null`｜时间戳）、`edge{from,to,kind}`、`defects[]`、`note`，**按实际三处补齐**：`tracker.wake()`（**新增方法**，现状返回对象只有 `created/delivered/observeTurnEvent/consumed/rejected/state/snapshot/can`，不存在"待穿透"的 `wake`）、`tracker.snapshot()`（**扩展输出**，现状不含 `wakeConsumedAt/edge/defects/note`）、`orchestrator.handoffToState()` 白名单（**扩展投影**，现状 10 个字段 `handoffId,state,createdAt,deliveredAt,acceptedAt,consumedAt,rejectedAt,rejectReason,acceptedSignal,ambiguityWindowMs`，`orchestrator.js:55-68`；`edge/defects/note/wakeConsumedAt` 会被任意一次 `session/update` 的重投影抹掉） | 取消可能发生在"已构造未投递"；`wakeConsumedAt` 若不穿透投影，任意一条 `session/update` 都会把它抹掉，同一张 `accepted` 包可被二次唤醒；`edge.kind` 被抹掉则 AC-04/05/41/46 的机检全部失效 | 7 态语义不变，只补一条边；`applyCancel` 的交接包条件要含 `created`。**注意**：这不是"给既有字段加穿透"，而是 `wake()` 与四个字段三处都要**新建/扩展** |
 | **M-6** | `labels.js`：`INSTANCE_LABEL` 6 项、`NODE_LABEL` 无 `escalated`、无 `ROLE_LABEL` / `TEMPLATE_LABEL` / `ESCALATION_LABEL` / `REASON_LABEL`；`render.js` 的 `LAYER` 只有四层 | 补 `INSTANCE_LABEL.suspended`、`NODE_LABEL.escalated`、`ROLE_LABEL`、`TEMPLATE_LABEL={single:'单节点','code-loop':'编码闭环'}`、`ESCALATION_LABEL`、`HANDOFF_DIRECTION`、`REASON_LABEL`（**完整词表见 D-5，含 I1.1 既有原因，缺一条事件行就会打英文**）、`LAYER.escalation='升级'`；新增错误码与文案见**附录 D-5 逐字表**。标点沿用 I1.1 冒号式（`核对失败：` / `执行失败：`），`ERROR_TEMPLATE` 现有 11 条原文不改 | 每条 AC 都断言中文原文；缺 `REASON_LABEL` 事件行会打 `原因 verdict.read`；缺 `TEMPLATE_LABEL` 会打 `模板 code-loop` 与 AC 正则不符 | 会话 `escalated` 在升级时置位（与 `escalation.created` 同一事务） |
-| **M-7** | 无升级实体 | 新增 `escalations[]` 元素：`{escalationId, nodeId, round, reasonCode, reasonDetail, state:'pending'\|'voided', createdAt, voidedAt}`；状态机只有一条边 `pending→voided`，并补 `DEFINED_ONLY.escalation = []`。**创建幂等键 = `(nodeId, round)`**：已存在同键 `pending` 时直接复用（返回 `reused:true`），不新增记录、不写迁移事件 | 取消要有终态；没有幂等键则 AC-27 无法成立 | 新增第 4 张状态表，与前三张同形 |
-| **M-8** | CLI 只有 `run/status/cancel/core stop`；`VALUE_FLAGS` 无 `template`/`host`；`run.start` 无 `template` 参数 | 新增 `--template <name>`、`--host <id>`（仅 `run`，加入 `VALUE_FLAGS` 与 usage 行）；`template` 从 CLI → `run.start` → `orchestrator` 全链路透传；`hostId` 透传到 `host-config` 与 `adapterFactory`。**`--host` 仅用于验收夹具**：不在第二部分作为产品能力承诺，也不写进用户任务样例（附录 B-20）。新增错误码与文案（附录 D-5）：`TASK_EMPTY`、`TEMPLATE_UNKNOWN`、`PRODUCT_LINE_MISSING`、`DIR_BUSY`、`INSTANCE_RUNNING`、`INSTANCE_SUSPENDED`、`LEGACY_READ_ONLY`、`ESCALATION_WRITE_FAILED`、`CANCEL_NOT_NEEDED`；`INSTANCE_TERMINAL` 沿用 I1.1 既有文案（`src/cli/labels.js:67`），不重写。**未知模板 / 空任务 / 缺产物行都在业务层（不是 `parseArgs`）返回，退出码 1** | 模板选择与夹具注入都需要入口；空白任务现在会落到 `未知错误：任务描述为空`；`--template` 现在会被 `parseArgs` 当未知参数以退出码 2 拦下 | I1.4 补全参数族时保持兼容；`host-config` 已支持 `hostId`，缺的是 CLI 解析 |
+| **M-7** | 无升级实体 | 新增 `escalations[]` 元素：`{escalationId, nodeId, round, reasonCode, reasonDetail, defects[], state:'pending'\|'voided', createdAt, voidedAt}`；`defects[]` 类型同回流交接包（每条 `{summary, evidence}`），仅 `rounds_exceeded` 写入、其余为空数组，供升级块打印缺陷行（AC-08）；状态机只有一条边 `pending→voided`，并补 `DEFINED_ONLY.escalation = []`。**创建幂等键 = `(nodeId, round)`**：已存在同键 `pending` 时直接复用（返回 `reused:true`），不新增记录、不写迁移事件 | 取消要有终态；没有幂等键则 AC-27 无法成立 | 新增第 4 张状态表，与前三张同形 |
+| **M-8** | CLI 只有 `run/status/cancel/core stop`；`VALUE_FLAGS = ['cwd','task','instance','project','generation']`（`main.js:43`）无 `template`/`host`；`run.start` 请求体只送 `cwd/task/instanceId`（`main.js:220-227`）。**`hostId` 已经通到 `src/adapter/factory.js:43` 与 `src/daemon/server.js:139`**，缺的不是 host-config | 新增 `--template <name>`、`--host <id>`（仅 `run`，加入 `VALUE_FLAGS` 与 usage 行）；`template` 从 CLI → `run.start` → `orchestrator` 全链路透传。**真正要改的是三处**：① `main.js:43,90-92` 的解析（现状未知参数在 `parseArgs` 直接 usage → 退出码 2）；② `main.js:220-227` 的请求体补 `hostId/template`；③ `server.js:123-140` 的 `run.start` 参数白名单（现状重建参数对象时**静默丢弃 `template`**）。**`--host` 仅用于验收夹具**：不在第二部分作为产品能力承诺，也不写进用户任务样例（附录 B-20）。新增错误码与文案（附录 D-5）：`TASK_EMPTY`、`TEMPLATE_UNKNOWN`、`PRODUCT_LINE_MISSING`、`DIR_BUSY`、`INSTANCE_RUNNING`、`INSTANCE_SUSPENDED`、`LEGACY_READ_ONLY`、`ESCALATION_WRITE_FAILED`、`CANCEL_NOT_NEEDED`；`INSTANCE_TERMINAL` 沿用 I1.1 既有文案（`src/cli/labels.js:67`），不重写。**未知模板 / 空任务 / 缺产物行都在业务层（不是 `parseArgs`）返回，退出码 1** | 模板选择与夹具注入都需要入口；空白任务现在会落到 `未知错误：任务描述为空`；`--template` 现在会被 `parseArgs` 当未知参数以退出码 2 拦下 | I1.4 补全参数族时保持兼容（`--template` 先占最小形态，I1.4 补全并保持向后兼容，B-13）；附录 B-20 的 `--host` 边界不变 |
 | **M-9** | `waitForRun` 只认 `completed/failed/cancelled/interrupted`；退出码 0/1/2/3 | `waitForRun` 完成态改为 `RUN_DONE_INSTANCE`（含 `suspended`）**并额外在 `halted === true` 时立即返回**；新增 `EXIT_SUSPENDED = 4`、`EXIT_HALTED = 5`。两个分支都**不打印交接包行/等待行**：挂起只打三行收尾（不含节点行）；停止推进先打一行 `无法记录升级：…`，再打三行收尾，其中一行是**唯一**的节点状态行（原文见附录 A-4）。**`run.wait` 是 I1.1 已实现但契约表漏登的 IPC 方法，本迭代补登**（入参 `{instanceId, timeoutMs}`，返回终态快照或超时） | 否则 `orch run` 会等到 30 分钟超时后落 `renderNodeFailure` 报"未知错误"，与"挂起不是失败"直接矛盾；`halted` 分支不处理则"升级写不进去"也会卡半小时 | 影响 `main.js` 的 `run` 收尾与 `exitCodeFor`；I1.1 的成功/失败路径不变 |
 | **M-10** | `applyCancel` 只处理**单个** `state.node`/`session`/`handoff`；`ACTIVE_NODE` 只有三态；交接包条件只有 `delivered\|accepted`；`review → failed` 特判 + `cancelled_in_review` note | `applyCancel` 改为遍历 `nodes[]`/`sessions[]`/`handoffs[]`/`escalations[]`；用 `CANCELABLE_NODE` 与 `CANCELABLE_HANDOFF={created,delivered,accepted}`；升级 `pending→voided`；**删除 `review → failed` 特判与 `cancelled_in_review` note**；`instance.cancel` 返回值改为 `{nodes,sessions,handoffs,escalations}`，`renderCancelLines` 按数组逐行输出 | 不收敛 `失败`/`已升级` 节点 AC-11/AC-42 失败；不收敛 `created` 交接包 AC-37 失败；保留 `review→failed` 特判会让待校验节点取消后变"失败" | 见附录 D-4 |
 | **M-11** | `verify-artifact` 用启发式路径提取，只查存在与 `bytes>0`；空文件文案是 `声明的产出为空 <路径>` | **固定格式只对 `code-loop` 生效**：任务里 `产物：<路径>`（全角冒号；半角 `产物:` 视为未声明并在报错里指出；行内可多个；相对路径按任务 `--cwd` 解析，`./calc.js` 与 `calc.js` 等价，`\` 先规范化）；新增 mtime 晚于 `nodes[].roundStartedAt` 检查（**不是**首次 `startedAt`；`startedAt` 只供"耗时"，不得用于"本轮新写"判定）；**空文件文案统一为 `产出为空 <路径>`**（去掉"声明的"）。**`single` 保留 I1.1 的启发式**（未声明就跳过，不做陈旧检查） | 启发式提取会把任务里任意路径当产物；"本轮新写"没检查会让旧产物冒充本轮成果；文案不统一则 AC-29 断言对不上；**若把固定格式强加给 `single`，I1.1 的 AC-01/AC-21 会因任务里没有 `产物：` 行而失败** | 需同步改 `test/wp4/verify-artifact.test.js`（补 `roundStartedAt` 用例）与 `test/wp6/render.test.js`（若新增空文件用例）；现有断言都是缺失场景的 `未找到声明的产出`，本迭代不改该文案，**不会因文案变更先红**；`single` 路径不得引入 `PRODUCT_LINE_MISSING` |
-| **M-12** | `render` 只渲染单节点/单会话/单交接包/无模板/无升级块；`renderEventLine` 不打印 `seq` | 渲染层支持：`nodes[]` 逐行（**状态后按需追加限定词**：`失败（等待复测）` / `待校验（升级未记录）` / `已升级`；**已完成/已取消的节点在 `第 <n> 轮` 后追加 `· 耗时 <时长>`（已取消但从未派发、无 `startedAt` 的不追加）**；有判定时追加 `· 判定 通过` / `· 判定 不通过 · 缺陷 <n> 条`）、**只显示当前会话 1 行**（含 `空闲` / `执行中 · 已运行 Ns` / `执行中 · 调用工具（…） · 已运行 Ns` / `等待审批：…` / `等待下游` / `已升级` 六种分支）、`handoffs[]` 逐包多状态行**并带方向**（无 `edge` 的 `single` 不带方向）、升级块、`code-loop` 实例行带 `· 模板 <名>` 与 `已停止推进` 后缀（`single` 不带模板）；**节点行一律单空格，不做列对齐**；事件行改为 `[#<seq>] <时间>  <层> <id>  <中段>  原因 <中文原因>`，其中 **`reason==='node.dispatch'` 时中段固定为 `派发 → 执行中`、原因固定为 `派发 · 第 <n> 轮`**，`object==='escalation'` 且 `to==='pending'` 时中段为 `待处理`，其余中段仍是 `from → to`；**`reason==='backflow.constructed'` 时在事件行下方按 `detail.defects[]` 追加缩进明细**（每条 `缺陷 <i>：<summary>（证据 <evidence>）`，再追加一行 `复测要求：<text>`，模板见 D-5）；**`result==='rejected'` 的事件行保持 I1.1 版式**（`<时间>  <层> <id>  拒绝的迁移：<from> → <to>`，不带 `[#seq]` 与 `原因`，以保 I1.1 AC-26） | 不改造则 `status` 仍是 I1.1 版式；事件序号与"派发"不可见则 AC-02/07/10/24 无法判定；六种会话分支缺一则 AC-44 或 I1.1 的 AC 断言对不上；BR-09 承诺"事件记录里能看到缺陷与证据"，不落明细行则该承诺无实现 | 输出基线以附录 A-1/A-2/A-3/A-4 为准 |
-| **M-13** | `createOrchestrator` 固定使用内置图 | 接受注入图 `createOrchestrator({ graph })`；`code-loop` 是内置图的一个实例（含 R-1 的协调者汇总节点）。**不做模板注册表、不做声明式定义、不做校验器**（I1.6） | 范围第 7 条承诺"引擎可复用"，需要一条能证明"换图不改核心"的检查；协调者节点必须由图数据描述，不能写死进引擎 | AC-28 只验"核心目录无编码模板字面量"+"注入假图能跑顺序/回流/上限" |
+| **M-12** | `render` 只渲染单节点/单会话/单交接包/无模板/无升级块；`renderEventLine` 不打印 `seq` | 渲染层支持：`nodes[]` 逐行（**状态后按需追加限定词**：`失败（等待复测）` / `待校验（升级未记录）` / `已升级`；**已完成/已取消的节点在 `第 <n> 轮` 后追加 `· 耗时 <时长>`（已取消但从未派发、无 `startedAt` 的不追加）**；有判定时追加 `· 判定 通过` / `· 判定 不通过 · 缺陷 <n> 条`）、**只显示当前会话 1 行**（含 `空闲` / `执行中 · 已运行 Ns` / `执行中 · 调用工具（…） · 已运行 Ns` / `等待审批：…` / `等待下游` / `已升级` 六种分支）、`handoffs[]` 逐包多状态行**并带方向**（无 `edge` 的 `single` 不带方向）、升级块、`code-loop` 实例行带 `· 模板 <名>` 与 `已停止推进` 后缀（`single` 不带模板）；**节点行与实例行一律单空格，不做列对齐**（交接包行的号/方向/状态之间按 A-2 固定 2 个空格）；**`code-loop` 的事件行改为 `[#<seq>] <时间>  <层> <id>  <中段>  原因 <中文原因>`；`single` 保持 I1.1 版式（由 C-10 的 `renderEventLine(event,{template})` 分流）**，其中 **`reason==='node.dispatch'` 时中段固定为 `派发 → 执行中`、原因固定为 `派发 · 第 <n> 轮`**，`object==='escalation'` 且 `to==='pending'` 时中段为 `待处理`，其余中段仍是 `from → to`；**`reason==='backflow.constructed'` 时在事件行下方按 `detail.defects[]` 追加缩进明细**（每条 `缺陷 <i>：<summary>（证据 <evidence>）`，再追加一行 `复测要求：<text>`，模板见 D-5）；**`result==='rejected'` 的事件行两种模板都保持 I1.1 版式**（`<时间>  <层> <id>  拒绝的迁移：<from> → <to>`，不带 `[#seq]` 与 `原因`，以保 I1.1 AC-26） | 不改造则 `status` 仍是 I1.1 版式；事件序号与"派发"不可见则 AC-02/07/10/24 无法判定；六种会话分支缺一则 AC-44 或 I1.1 的 AC 断言对不上；BR-09 承诺"事件记录里能看到缺陷与证据"，不落明细行则该承诺无实现 | 输出基线以附录 A-1/A-2/A-3/A-4 为准 |
+| **M-13** | `createOrchestrator` **没有"图"这个对象**：单节点流程写死在引擎内，`ROLE_ID='worker'`、`NODE_ID='T-001'`、`HANDOFF_ID='HO-001'` 是模块常量（`orchestrator.js:23-27`），构造参数无 `graph`；`finishRun` 在首个节点核对通过后直接把实例置 `completed`（`:916`） | **新增图数据 + `createOrchestrator({ graph })`，默认图是 `single`**（把 `ROLE_ID/NODE_ID/HANDOFF_ID` 搬进 `src/templates/single.js`，`single` 的行为与输出逐字不变）；`code-loop` 是 `src/templates/**` 里的另一张两节点图。**不做模板注册表、不做声明式定义、不做校验器**（I1.6） | 范围第 7 条承诺"引擎可复用"，需要一条能证明"换图不改核心"的检查；引擎里不能有模板名或角色名 | AC-28 只验"核心目录无编码模板字面量"+"注入假图能跑顺序/回流/上限"；图数据落点见 C-12，多节点推进见 C-03 |
 | **M-14** | 无测试接缝；`createOrchestrator` 只导出 8 个方法 | 新增**仅 `NODE_ENV=test` 时导出**的接缝：`dispatchToNode(instanceId, nodeId)`、`escalateOnce(instanceId, nodeId)`（**必须带实例号**，一个根下可以有多份实例）；仅 test 生效的暂停点 `MAESTRO_TEST_PAUSE=after_accepted[:<nodeId>]｜after_output[:<nodeId>]｜after_verdict`（写 `.mock/paused`、轮询 `.mock/release`）、定点停止 `MAESTRO_TEST_STOP_AFTER=<n>`（第 n 步核对完后、派发第 n+1 步前停下）、故障注入 `MAESTRO_FAULT=state_write:escalation`（只让升级那一次 CAS 失败；`halted` 的独立写入仍成功，见 D-3）。**接缝统一返回** `{ok:true, …}` 或 `{ok:false, code, detail}`（`code` 至少含 `NODE_BUSY` / `WAKE_REJECTED` / `ESCALATION_WRITE_FAILED`；`WAKE_REJECTED.detail.code` ∈ `NO_PENDING_BACKFLOW` / `ROUNDS_EXCEEDED` / `TARGET_NOT_ELIGIBLE`；`escalateOnce` 返回 `{ok:true, escalationId, reused}`，其中 `escalationId` 为命中的升级号，供 AC-27 从 stdout 断言） | AC-26/27/32/37/38/43/44 需要确定的注入点；只有 `after_verdict` 无法复现"出料后、未核对"与"核对完后、未派发"；接缝无实例号则多实例下不可复现 | 生产构建不挂载接缝；除 `MAESTRO_FAULT` 外不得有其他故障开关；配套交付 `test/fixtures/call-seam.mjs` |
 
-> **M-1 / M-3 与基线的关系（口径裁定）**：基线 §3.1 把 `done` 写作终态，§3.5 的 t2 又写 `节点 T-003: done → running`；§3.1 的 `failed` 定义是"执行失败/崩溃/证据缺失"，§3.5 又用它表示"测试不通过（等待复测）"。**本需求取 §3.5**（仅节点时序；交接包 `accepted` 的置位时刻按 D-2，晚于目标节点进入 `running`），并明确三处语义扩展：`done` 可被下游驳回打开；`failed` 在 `code-loop` 下承担"本轮未成功但流程继续（仅测试判定不通过）"，在 `single` 下仍是"执行失败"；"不能继续"一律用 `escalated`。
-> **基线必须同步修订八处**（否则 I1.3 起每次读基线都要重新怀疑，附录 B-02）：① §3.1 的 `done` 行（加注"下游驳回可回流唤醒"）、`failed` 行（加注"含测试判定不通过"）、`escalated` 行（出边改为"人工裁决 → cancelled；裁决回退在 I1.4"）；② §3.1 的节点迁移图补 10 条边；③ §3.4 交接包图补 `created → rejected`；④ §3.6 崩溃恢复表新增 `suspended` 行（"保持挂起，不判已中断"）；⑤ §3.4 的 `consumed` 语义补一句"本迭代只在目标节点本轮产出核对通过后置位，不等同于测试判定通过"；⑥ `docs/index.md` 的 I1.2 条目补"模板含协调者汇总节点（R-1）"（§1.3.1）；⑦ §3.5 的 t2 写明"目标节点先 `running`、交接包后 `accepted`"，与 D-2 一致；⑧ §3.2 的 `waiting_dependency` 显示词由「等待校验」改为「等待下游」（R-4 / BR-28），并加注"节点出料、等待核对"的语义。
+> **M-1 / M-3 与基线的关系（口径裁定）**：基线 §3.1 把 `done` 写作终态，§3.5 的 t2 又写 `done → running`（回流唤醒）；§3.1 的 `failed` 定义是"执行失败/崩溃/证据缺失"，§3.5 又用它表示"测试不通过（等待复测）"。**本需求取 §3.5**（仅节点时序；交接包 `accepted` 的置位时刻按 D-2，晚于目标节点进入 `running`），并明确三处语义扩展：`done` 可被下游驳回打开；`failed` 在 `code-loop` 下承担"本轮未成功但流程继续（仅测试判定不通过）"，在 `single` 下仍是"执行失败"；"不能继续"一律用 `escalated`。
+> **基线必须同步修订七处**（否则 I1.3 起每次读基线都要重新怀疑，附录 B-02）：① §3.1 的三行 —— `done` 改为"本轮验收通过（可被下游驳回重新打开）"、进入条件注明"I1.2 不等待下游接受，I1.3 起加 `review_reason: downstream` 门控"、离开条件"下游驳回 → running（仅开发）；否则终态"；`failed` 改为"本轮执行/判定未通过（含测试判定不通过）"并补 `failed_reason: verdict_fail`；`escalated` **保留**"人工裁决后 → done / failed / 重新分配"，补"取消 → cancelled（I1.2 仅实现取消，裁决入口在 I1.4）"；② §3.1 的节点迁移图按**基线 9 态补 7 条边**（`ready→escalated`、`running→escalated`、`done→running`、`done→escalated`、`review→cancelled`、`failed→cancelled`、`escalated→cancelled`；`review→escalated` / `failed→running` / `failed→escalated` 已存在，`pending` 不是基线状态）；③ §3.4 交接包图补 `created → rejected`，并把 `rejected` 行改为"目标会话拒绝；或取消时撤回（`rejectReason: withdrawn`）"，取消撤回不触发回流/升级；④ §3.6 崩溃恢复表新增 `suspended` / 节点 `escalated` / 节点 `failed` 三行与"I1.2 不实现 `session/resume` 与自动重校"阶段注；⑤ §3.4 的 `consumed` 语义改为"目标节点本轮产出核对通过（不等于测试判定通过）"，并同步 `docs/index.md` §3.4 的关键句"`consumed` 不等于节点 `done`"；⑥ §3.5 的 t2/t3 写明"目标节点先 `running`、交接包后 `accepted`（目标会话首个事件后置位）"，t4 写明 `consumed` 在核对通过后置位；⑦ §3.2 的 `waiting_dependency` 显示词**保留 I1.1 已实现的「等待下游」**并注明语义「已产出、等待证据核对或下游接受」（R-4 / BR-28，基线 §3.2 已同步为「等待下游」）。
+
+#### 补充契约条目（第二轮评审，C-01 ~ C-14）
+
+> 来源：`review-contract.md` §7。这 14 条是"实施第一道墙"：M-1~M-14 只说了改什么，C-01~C-14 说的是**改哪个文件、什么形状、为什么必须、不改会怎样**。实施时必须与 M 表一并落地。
+
+| # | 改哪个文件 | 什么形状 | 为什么必须 | 不改会怎样 |
+|---|---|---|---|---|
+| **C-01** | `src/persistence/instance-store.js:126-159` | `store.save(id, state, {expectedState})` 的 `expectedState` **同时接受** `string`（v1 旧语义，仍与 `disk.state.state` 比较）与 `{state, halted, rev}`（v2 新语义）；`rev` 每次写递增；CAS 检测**整快照版本**，不只比 `state.state`；冲突返回 `STORE_CONFLICT` 且不写。D-3 的 `expectedState` 使用该对象形状（`{state:'running', halted:false, rev}`） | 现状 `:138-147` 只取 `disk.state.state ?? null` 与字符串比较，传对象永远冲突；只比实例状态时，cancel 与 escalate 两个并发写都看到 `running`，都能成功 → 丢失更新，BR-18"取消优先"没有实现基础 | D-3 的"一次 CAS 落盘"不可实现；升级与取消并发时可能双写成功，留下"实例已取消、升级仍 pending" |
+| **C-02** | `src/core/orchestrator.js:184-194,205-282` | `transit(instanceId, object, to, {nodeId\|sessionId\|handoffId\|escalationId})`；v2 必须**按 id 定位数组元素**；`smFor` 显式映射 `instance/node/session/handoff/escalation`（不再"其余一律 instance"）；未知 `object` 报 `UNKNOWN_OBJECT`（**新增错误码**），**禁止回退到 instance SM**；`objectIdOf` 未知 object 不得返回 instanceId | 现状 `smFor` 只认 node/handoff，其余一律当 instance；`objectIdOf` 对未知 object 返回 instanceId；`transit` 只支持单对象 `state[object]`。v2 下 `transit('node')` 会拿到 `undefined` → `UNKNOWN_STATE`；M-7 的 `escalation` 会被静默当成 instance SM | 升级、取消、推进全部会误改实例状态；`escalations[]` 永远进不了状态机 |
+| **C-03** | `src/core/orchestrator.js:819-959`（`finishRun`，尤其 `:916`）；新增 `advance()` | **多节点推进器** `advance(instanceId)`：图驱动找当前节点的出边 → 建下一张交接包 → `dispatchToNode` 下一节点；实例只在图**终节点**完成时 `completed`；`round` 的 +1 只发生在 `advance` 的实际派发 | 现状一个 `finishRun` 只处理一个节点，核对通过后直接 `transition('instance','completed')`（`:916`），`driveRun` 随之 resolve。T-001 一完成实例就 `completed`，T-002 永远不会被派发 | 编码闭环在第一个节点结束就"成功收工"，AC-01/02/03 全部不可满足；这是第一道功能墙，比字段改名严重 |
+| **C-04** | `src/core/orchestrator.js:1086-1095,1106-1146,1154-1181` | `run.start` 的**早返回点固定为 T-001 的 HO-001 `delivered`**；`run.wait` 的完成条件是**实例 `RUN_DONE_INSTANCE ∪ suspended ∪ halted`**，与单节点 run 解耦；`driveRun` 改为 `driveGraph` 长生命周期；`earlyReturn` 对 `single` 语义不变 | 多节点下 run.start 返回时 T-002 还没发生；`driveRun` 只包住第一个节点，`waitForRun` 的 waiter 在第一个节点结束就被删除 | `orch run` 会在 T-001 完成时打印成功收尾，实际闭环还在跑；AC-01 的"结束段"不成立 |
+| **C-05** | `src/daemon/server.js:123-140,215-223`；`src/cli/main.js:43,220-228` | `run.start` params 白名单加 `template`；`instance.cancel` **原样透传** `{nodes,sessions,handoffs,escalations}`；`main.run` 发送 `hostId/template`；`VALUE_FLAGS` 加 `template/host`；IPC 只做字段校验，不重建业务对象 | server 重建参数对象时静默丢弃 `template`；cancel 结果形状硬编码为 `{session,node,handoff}` | CLI 传的 `--template` 到不了 orchestrator（永远走 `single`）；AC-11/42 的 `nodes[]` 断言在 IPC 层被截断 |
+| **C-06** | `src/core/orchestrator.js:158-187,716-816,1308-1333` | v2 所有会话读写统一走 `findSession(state, sessionId)`；`snapshotOf` 的 `session` 取**最新一条**（`sessions[]` 持久化按创建顺序，取 `createdAt` 最大者）；`renderSessionLine` 只渲染该条；取消遍历 `sessions[]` | 现状 `renderSessionLine`/`handleUpdate`/`quiesceSession`/`snapshotOf`/`applyCancel` 全部直接读写 `state.session` 单对象；v2 下它是 `undefined` | 会话状态行全丢、`sessionIdleMs/sessionStalled` 失效、取消只收最后一个会话 |
+| **C-07** | `src/persistence/instance-store.js:219-280`；`src/cli/render.js:108-119` | `store.list()` 投影增加 `schemaVersion/template/cwd/pendingEscalations`（只读摘要，不读数组全量）；`renderInstanceListRow` 按 `template` 决定是否打模板后缀与 `待处理升级 N` 后缀；v1 项不带模板 | 现状 `list()` 只输出 `nodeState/sessionState/handoffState` 三个标量，`renderInstanceListRow` 只读 `snapshot.node/session` | AC-09 的"待处理升级 1"、AC-40 的目录冲突提示、AC-20 的 v1 列表行都不可满足 |
+| **C-08** | `src/adapter/session-state.js:69-163,229-234` | `normalizer` 增加 `escalated` 终态守卫：进入 `escalated` 后，除 `onCancelled` 外任何 `reduce` / `onPermission*` / `onPromptSettled` 都保持 `escalated`；升级事务必须同时置 `ctx.quiescing=true` 与会话 `quarantined=true` | 现状 `reduce()` 不校验迁移，`onEscalated()` 只改自身记录；升级后若宿主迟到 `agent_message_chunk`，会话会被翻回 `thinking` | 出现"实例已挂起、会话执行中"的自相矛盾快照，AC-39 失败 |
+| **C-09** | `src/core/orchestrator.js:373-432`；`src/persistence/paths.js:77-87` | 在 `claimRun` 前用 `withLock('@dir:' + realpath(cwd))` 串行化"列目录 → 判未结束 → 分配 id → 首次落盘"；锁范围只覆盖这一段，不覆盖整个 turn | `withLock` 只按 instanceId/`@allocate` 加锁，路径哈希不提供目录锁；两个并发 `run.start` 会在 `store.list()` 的 await 窗口内都看到空列表，各建一个实例 | BR-21 / AC-40 的"同目录唯一闭环"在并发下失效，两个闭环互相覆盖产物 |
+| **C-10** | `src/cli/render.js:346-376`；`src/cli/main.js:443-456` | `renderEventLine(event, {template})`：`code-loop` 加 `[#seq]` 与 `REASON_LABEL`；`single` 保持 I1.1 版式；`result==='rejected'` 两种模板都不加 seq（保留 I1.1 AC-26）；`rejected` 行是否带原因同理由 `renderRejectedTransition` 决定 | 现状 `renderEventLine` 只收 event，没有模板上下文；`code-loop` 要加 `[#seq]` 与中文原因，BR-29 要求 `single` 保持 I1.1 版式 —— 只能按模板分流，不能全局套用 | 要么 `single` 的 I1.1 事件行回归红（AC-21/22），要么 `code-loop` 的 AC-02/15/24 断言不成立 |
+| **C-11** | `src/cli/render.js:391,411-415`；`src/cli/labels.js:54-68` | `ERROR_TEMPLATE` 的占位符白名单 `PLACEHOLDERS` 增加 `name/instanceId/i/summary/evidence/text`（`text` 供 `BACKFLOW_RETEST_LINE`；若该行不走 `renderError`，在 D-5 注明独立渲染）；所有新增文案逐字进 `labels.js`；`renderError` 只做机械替换；`TEMPLATE_UNKNOWN` / `DIR_BUSY` / `BACKFLOW_DEFECT_LINE` 必须走该机制 | 现状白名单只有 `cause/path/step/raw/reason/state`，`{name}` / `{instanceId}` / `{i}` 不在其中，会原样打出占位符 | AC-23（`未知模板：<名字>`）、AC-40（`…实例 INST-001…`）、AC-24（`缺陷 1：…`）全部匹配不上 |
+| **C-12** | `src/core/orchestrator.js:23-27`；新增 `src/templates/**` | 内置图与角色常量放 `src/templates/**`（`single.js`、`code-loop.js`）；`src/core` 与 `src/daemon` 不含 `code-loop/developer/tester/coordinator`；AC-28 白名单含 `src/templates/**`；`createOrchestrator({graph})` 的**默认图是 `single`** | AC-28 扫 `src/core,src/daemon` 禁止四个字面量；若把图数据塞进 core 必挂；若保留 `worker/T-001/HO-001` 常量，"换图不改核心"就只是口号 | 架构检查 AC-28 直接失败；I1.3 只能复制一份引擎而不是共享 |
+| **C-13** | `src/persistence/instance-store.js:126-159`（**不改它**）；新增 `orchestrator.commitEscalation()` | `MAESTRO_FAULT=state_write:escalation` **只作用于 `commitEscalation()` 的唯一一次 `saveState`**；`halted:true` 走另一条独立 `saveState` 且必须成功；`store.save` 不感知 `MAESTRO_FAULT` | 现状 store 没有注入点，orchestrator 也没有 `commitEscalation`；若在 `save` 全局注入，`halted` 也写不进 | AC-38 不可复现：要么升级写成功（无 halted 分支），要么整份快照都写不进（无法观测 `halted=true` 与节点保持 `review`） |
+| **C-14** | 附录 D-8 | 加入 `test/wp1/instance-store.test.js`、`test/wp5/ipc-server.test.js`、`test/wp7/wp7.test.js`；把 `wp4` 的"形状断言"（`state.node/handoff/session` 全量）与 `wp2` 的 `explicit out-of-table samples` / `escalated accepts no transition` 写进改法；把 `wp4/verify-artifact`、`wp3/launch-config`、`wp6/main` 标为**「新增用例」而非「会先红」** | 这三个文件在 M-3（数组化）与 M-10（cancel 返回数组）落地时会立刻红；三处"会先红"是误判，照做会白改测试 | 实施第 1 天分不清"回归红"与"契约变更红"，30+ 处同时失败；把不会红的用例改了反而丢掉 `single` 回归保护 |
 
 ---
 
@@ -184,8 +223,8 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 
 | 功能点 | 谁在用 | 解决什么问题 | 本次交付程度 |
 |---|---|---|---|
-| **A 发起编码闭环** | 编排者 | 不用手工串"先开发、再测试" | 一条命令，三节点自动建好 |
-| **B 看三个角色各自到哪** | 编排者 | 不知道卡在开发、测试还是汇总 | 节点表：角色 + 轮次 + 状态 + 耗时；**当前会话另起一行**，不塞进节点行 |
+| **A 发起编码闭环** | 编排者 | 不用手工串"先开发、再测试" | 一条命令，两节点自动建好 |
+| **B 看各节点到哪** | 编排者 | 不知道卡在开发还是测试 | 节点表：角色 + 轮次 + 状态 + 耗时；**当前会话另起一行**，不塞进节点行 |
 | **C 测试不过自动回流** | 编排者 | 缺陷原因得我手工搬回给开发 | 判定不通过 → 自动回流 → 开发再派发一次 |
 | **D 到上限就停** | 编排者 | 改几轮没边界，无限耗 | 测试最多派发 2 次；仍不过 → 停止、升级、挂起 |
 | **E 升级了看得懂** | 编排者 | 只有"失败"两字，不知道该干什么 | 升级条目：节点、轮次、原因原文、缺陷、能做什么 |
@@ -198,11 +237,11 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 |---|---|---|---|
 | **开发** | 按任务改代码，改完就交 | 任务里 `产物：<路径>` 声明的文件（存在、非空、本轮新写） | 节点行 `已完成`；产物的核对结果在事件记录里 |
 | **测试** | **自己**在自己的会话里跑验证命令，把结论写成文件 | 判定文件 `out/verdict.json`：通过 / 不通过；不通过时每条缺陷带摘要 + 证据位置（证据文件必须存在） | 节点行 `判定 通过` / `判定 不通过 · 缺陷 2 条` |
-| **协调者** | 测试通过后，把这一轮做了什么、验成了什么汇总成可读说明；**只汇总，不裁决、不回流** | 汇总说明 `out/summary.md`（存在、非空、本轮新写） | 节点行 `已完成`；汇总路径在事件记录里 |
+| **协调者**（本迭代不派发） | 角色定义保留：测试通过后把这一轮做了什么汇总成可读说明；**只汇总，不裁决、不回流** | 汇总说明模板 `out/summary.md`（留作 I1.5 的资产，本迭代不产出） | **看不到**（不进 `code-loop` 图；I1.5 角色注册表启用） |
 
-> **协调者为什么是第 3 个节点**：规划把它列为内置角色，但模板序列没写它站在哪；本迭代把它落成"测试通过后的汇总节点"，是 R-1 细化，不是对验收条件的改写（理由与可裁剪性见 §1.3.1）。
+> **协调者为什么保留但不派发**：规划把它列为内置角色，但模板序列只写到"开发 → 测试 → 缺陷回流 → 轮次上限 → 升级"，没有把它放进序列（`docs/index.md` 的 I1.2 条目）。本迭代按 D-1 严格两节点，协调者只留角色定义（理由与 AC 处置见 §1.3.1 R-1）。
 > **谁跑测试命令**：测试角色在自己的会话里跑（例如 `node --test`），**Maestro 不执行测试命令、也不校验命令是否真的跑过**；Maestro 只读 `out/verdict.json` 并做最小核对。这不是漏洞，是有意的职责切分（"测试造假"的防线在 I1.3 的证据模型，附录 B-10）。
-> 三个角色的提示词由 `code-loop` 图**内置**，用户不必在任务里写"要交判定""要写汇总"。任务只需写清"改什么"和一行 `产物：<路径>`。
+> 两个派发节点（开发 / 测试）的提示词由 `code-loop` 图**内置**，用户不必在任务里写"要交判定"。任务只需写清"改什么"和一行 `产物：<路径>`。
 
 ### 2.2 A 发起一个编码闭环
 
@@ -220,7 +259,7 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 - **预期效果**：命令**只流式打印实例行与会话行**；节点表不随 `run` 逐行刷新（否则一次闭环会刷成几十行），要看节点推进用 `orch status`。顺序是——
   1. 开头三行：`实例 INST-001 · 运行中 · 模板 编码闭环` → `会话已创建 sess-xxxx` → `任务已投递`
   2. 运行期间只有会话行：`会话 执行中 · 已运行 3s` → `会话 执行中 · 调用工具（write） · 已运行 3s` → `会话 等待下游`
-  3. 成功结束时补一次终态：三行节点（按 T-001/002/003）+ 该实例的交接包行 + `升级 —`
+  3. 成功结束时补一次终态：两行节点（按 T-001/002）+ 该实例的交接包行 + `升级 —`
   4. 失败/挂起/停止推进的收尾按附录 A-4（挂起打三行；停止推进打"一行错误 + 三行收尾"共四行；两者都不补交接包行）
   5. 想看中途的节点表，随时另开一个窗口执行 `orch status --instance INST-001`
 - **异常情况**：
@@ -237,23 +276,22 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
   - ⑧**第一个节点派发时会话建不起来** → 已建实例后失败，实例保留并 `已挂起`，**接收派发的目标节点**（这里是开发）`已升级`，原因 `派遣失败：目标会话不可用`，**退出码 4**
   - ⑨环境类失败（工作目录不可写 / DSH 起不来 / 核心起不来）→ 沿用 I1.1 三条原文，**退出码 3**：`工作目录不可写：<路径>` / `无法启动 DSH：<原因>` / `核心进程启动失败：<原因>`
 - **边界说明**：
-  - 只有一张内置图：`开发 → 测试 → 协调者`，串行，加一条 `测试 → 开发` 回流边。无并行、条件、子工作流、超时、自动重试（I1.6）。同一实例同一时刻只有一个节点在执行
+  - 只有一张内置图：`开发 → 测试`，串行，加一条 `测试 → 开发` 回流边（协调者不进图，D-1）。无并行、条件、子工作流、超时、自动重试（I1.6）。同一实例同一时刻只有一个节点在执行
   - **同一目录同时只允许一个未结束的闭环**（不同目录可并行；`已挂起` 也算未结束；`single` 不设此限制）
   - **`产物：` 后的路径按 `--cwd` 解析**，`./calc.js` 与 `calc.js` 等价；绝对路径只接受任务目录之内的。路径写错**不会重试**，会直接升级并挂起（本版本没有"改完再试"的入口）
   - **换目录重跑**：用 `--cwd <新目录>` 在**同一个项目根**下执行，会新建第二个实例，两个闭环互不干扰。**不要 `cd` 到新目录再敲命令**——`cd` 会命中另一个 `.orch`，`orch status` 看不到之前的实例
 
-### 2.3 B 看三个角色各自到哪
+### 2.3 B 看各节点到哪
 
 - **使用角色**：编排者
 - **使用场景**：闭环跑起来了，想知道现在卡在谁身上、第几次了
 - **用户操作**：`orch status --instance INST-001`（`orch run` 只流式打印会话行，**节点表以 `status` 为准**；`run` 只在结束时补一次终态节点行）
-- **预期效果**（与附录 A-2 完全一致，行序固定、**字段间一律单空格，不做列对齐**）：
+- **预期效果**（与附录 A-2 完全一致，行序固定、**节点行与实例行字段间一律单空格，不做列对齐；交接包行的号/方向/状态之间按 A-2 固定为 2 个空格**）：
 
   ```
   实例 INST-001 · 运行中 · 模板 编码闭环
   节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1m02s
   节点 T-002 测试 执行中 · 第 1 轮
-  节点 T-003 协调者 待执行
   会话 执行中 · 已运行 12s
   交接包 HO-001  开发→测试  已构造   10:30:02
   交接包 HO-001  开发→测试  已投递   10:30:03
@@ -267,7 +305,7 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
     1. 这一轮判定不通过、**后面还有复测机会** → `失败（等待复测）`
     2. **最后一次测试判定仍不通过** → 节点先到 `待校验`，随后直接变 `已升级`（屏幕上不会出现 `失败`）
     3. **升级没能记下来** → 节点保持升级前的状态并加限定词：`待校验（升级未记录）`（不会假装成 `失败` 或 `已挂起`）。升级前的状态也可能是 `待执行` / `执行中` / `已完成`，因此同样可能出现 `待执行（升级未记录）` 等行
-  - **会话行六种样子**：`会话 空闲` / `会话 执行中 · 已运行 Ns` / `会话 执行中 · 调用工具（write） · 已运行 Ns` / `会话 等待审批：write` / `会话 等待下游` / `会话 已升级`。**`等待下游` 表示节点已出料、正在被核对**（节点此时是 `待校验`），与 `执行中` 不是一回事（AC-44）。内部状态到显示词的映射与迁移只在附录 D-6 定义，用户按屏幕上的词理解即可
+  - **会话行六种样子**：`会话 空闲` / `会话 执行中 · 已运行 Ns` / `会话 执行中 · 调用工具（write） · 已运行 Ns` / `会话 等待审批：write` / `会话 等待下游` / `会话 已升级`。**`等待下游` 表示节点已出料、等待证据核对或下游接受**（核对时节点是 `待校验`），与 `执行中` 不是一回事（AC-44）。内部状态到显示词的映射与迁移只在附录 D-6 定义，用户按屏幕上的词理解即可
 - **异常情况**：某节点长时间无新动静 → 仍显示 `执行中`，会话行附 `已运行 8m · 无新事件`，并提示 `本版本不能判定超时；要终止请用 orch cancel`。**不擅自判失败、不判超时**（阶段零实测：取消要 4.3 秒才生效）
 - **边界说明**：**不显示角色状态**（可用/忙碌/冷却那套 6 个状态），不做角色流程图（I1.5 / I1.10a）。会话状态只影响会话行，**不改变节点走到哪一步**（延续 I1.1 BR-03）。
 
@@ -277,7 +315,7 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 - **使用场景**：第 1 轮开发做完了，测试说不通过。希望它自己回到开发那里
 - **用户操作**：什么都不用做
 - **交接包里带什么**（用户能核对"上下文有没有搬丢"）：
-  - **正向包**（开发 → 测试、测试 → 协调者）：任务原文、上游产物路径、本轮要求（测试必须写 `out/verdict.json`；协调者必须写 `out/summary.md`）
+  - **正向包**（开发 → 测试）：任务原文、上游产物路径、本轮要求（测试必须写 `out/verdict.json`）
   - **回流包**（测试 → 开发）：每条缺陷的摘要 + 证据位置，加上"修完后重跑什么、要确认哪几条不再出现"的复测要求
   - **复测包**（开发 → 测试）：任务原文、修改后的产物路径、上一轮的缺陷条数（写法固定为 `上一轮缺陷：<n> 条`）
   - 这些内容进的是**下游会话收到的任务**，不是装饰性字段；AC-43 直接检查下游拿到的任务里有没有这些内容
@@ -332,8 +370,7 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
   2. **不再出现** 开发"第 3 轮"
   3. `实例 INST-001 · 已挂起 · 模板 编码闭环`
   4. `升级 ESC-001 待处理`
-  5. 节点 T-003 协调者仍 `待执行`
-  6. `orch run` **自己结束**（不再等），最后三行长这样，退出码 `4`（不是 1），**不打印"未知错误"或"失败"**：
+  5. `orch run` **自己结束**（不再等），最后三行长这样，退出码 `4`（不是 1），**不打印"未知错误"或"失败"**：
      ```
      实例 INST-001 · 已挂起 · 模板 编码闭环
      升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
@@ -357,23 +394,23 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 
 **轮次口径（唯一：轮次 = 这个节点被派发任务的次数，派发即 +1，不论目标会话是否建成）**
 
-| 时刻 | 开发 | 测试 | 协调者 |
-|---|---|---|---|
-| 闭环开始 | 第 1 轮 | 待执行（不带轮次） | 待执行（不带轮次） |
-| 第 1 次判定不通过（有效 fail） | 第 1 轮 · `已完成`（尚未唤醒） | 第 1 轮 · `失败（等待复测）` | 待执行 |
-| 回流派发尝试 | 第 2 轮 · `执行中` | 第 1 轮 · `失败（等待复测）` | 待执行 |
-| 复测派发尝试 | 第 2 轮 | 第 2 轮 | 待执行 |
-| 第 2 次仍不通过 | 第 2 轮 | 第 2 轮 · `已升级`（经 `待校验`，不经过 `失败`） | 待执行 |
-| 第 2 次通过 | 第 2 轮 | 第 2 轮 · `已完成` | 第 1 轮 |
+| 时刻 | 开发 | 测试 |
+|---|---|---|
+| 闭环开始 | 第 1 轮 | 待执行（不带轮次） |
+| 第 1 次判定不通过（有效 fail） | 第 1 轮 · `已完成`（尚未唤醒） | 第 1 轮 · `失败（等待复测）` |
+| 回流派发尝试 | 第 2 轮 · `执行中` | 第 1 轮 · `失败（等待复测）` |
+| 复测派发尝试 | 第 2 轮 | 第 2 轮 |
+| 第 2 次仍不通过 | 第 2 轮 | 第 2 轮 · `已升级`（经 `待校验`，不经过 `失败`） |
+| 第 2 次通过（或第 1 次通过） | 第 2 轮（或第 1 轮） | 第 2 轮 · `已完成`（或第 1 轮 · `已完成`），实例 `已完成` |
 
 **实例状态**
 
 | 我看到 | 含义 | 能从这里走到 |
 |---|---|---|
-| `已创建` | 已登记（三节点已建好），还没开始派发 | `运行中`、`已取消` |
+| `已创建` | 已登记（两节点已建好），还没开始派发 | `运行中`、`已取消` |
 | `运行中` | 正在推进（可带 `已停止推进` 后缀） | `已完成`、`已取消`、`已中断`、`已挂起`；`失败`（**仅 `single`**） |
 | `已挂起` | 有升级等我处理，核心不再推进 | `已取消`（唯一出路） |
-| `已完成` | 协调者完成 | 终态 |
+| `已完成` | 测试判定通过、闭环完成（两节点图没有后续节点） | 终态 |
 | `已取消` | 我取消了 | 终态 |
 | `已中断` | 运行中核心消失，重启后判定 | 终态 |
 | `失败` | **`code-loop` 不产生**（`single` 的执行失败仍是这条；"放弃升级"在 I1.4 也走这条） | 终态 |
@@ -401,7 +438,6 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
   实例 INST-001 · 已挂起 · 模板 编码闭环
   节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1m40s
   节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条
-  节点 T-003 协调者 待执行
   会话 已升级
   交接包 HO-001  开发→测试  已构造   10:30:02
   交接包 HO-001  开发→测试  已投递   10:30:03
@@ -437,7 +473,7 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 | `原因：核对失败：判定为不通过，但没有缺陷清单` | `fail` 但 `defects` 为空或缺摘要/证据 |
 | `原因：核对失败：判定为通过，但缺陷清单非空` | `pass` 却有缺陷（自相矛盾） |
 | `原因：核对失败：缺陷证据不可解析` | 证据指向的文件不存在 |
-| `原因：核对失败：未找到声明的产出 <路径>` / `核对失败：产出为空 <路径>` / `核对失败：产出不是本轮新写 <路径>` | 开发或协调者的产物不合格 |
+| `原因：核对失败：未找到声明的产出 <路径>` / `核对失败：产出为空 <路径>` / `核对失败：产出不是本轮新写 <路径>` | 开发节点的产物不合格 |
 | `原因：派遣失败：目标会话不可用` | 首次 / 回流 / 复测派发时，**接收派发的目标节点**建不起会话 |
 | `原因：执行失败：<宿主原文>` | 宿主报错或会话中途失效（任一节点，`code-loop` 下） |
 
@@ -465,23 +501,25 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 
 （A 发起 → B 看 → C 回流 → D 到上限 → E 看升级 → G 取消 → F 查老实例）
 
-1. **A**：在项目根敲命令。开头出现 `实例 INST-001 · 运行中 · 模板 编码闭环`、`会话已创建 …`、`任务已投递`；另开窗口 `orch status` 能看到三行节点 `待执行`。
+1. **A**：在项目根敲命令。开头出现 `实例 INST-001 · 运行中 · 模板 编码闭环`、`会话已创建 …`、`任务已投递`；另开窗口 `orch status` 能看到两行节点 `待执行`。
 2. **B**：`orch status` 里 `节点 T-001 开发 执行中 · 第 1 轮` → `待校验` → `已完成 · 第 1 轮`；`HO-001 开发→测试` 投递后 `节点 T-002 测试 执行中 · 第 1 轮`，随后 `HO-001` 才到 `已接受`（**此时还不能是"已完成"**）。**我没做任何搬运**。`orch run` 自己只流式打印会话行，不逐行刷节点。
 3. **C**：测试 `失败（等待复测） · 第 1 轮 · 判定 不通过 · 缺陷 2 条`；此时 `HO-001` 才变 `已完成`；`HO-002 测试→开发（回流）` 构造→投递后 `节点 T-001 开发 执行中 · 第 2 轮`，随后 `HO-002` 才到 `已接受`；开发 `待校验` → `已完成 · 第 2 轮`，此时 `HO-002` 才变 `已完成`；`HO-003 开发→测试（复测）` 投递；测试 `第 2 轮`。
 4. **D**：第 2 轮判定仍不通过 → 节点先到 `待校验`、随即 `已升级`。**没有第 3 轮**：`实例 已挂起`，`orch run` 自己结束并打印三行收尾（退出码 4）。
 5. **E**：`orch status --instance INST-001` 看到 `升级 ESC-001 待处理` 与原因、节点、缺陷、下一步。会话 `已升级`。
 6. **G**：取消。实例 `已取消`、未完成节点 `已取消`、升级 `已作废`。本路径下 HO-001/002/003 都已 `已完成`，所以**不会**看到"已拒绝（已撤回）"；只有在"取消发生在投递前/接受前"时才会看到（AC-37）。
 7. **F**：另一条路径——打开 `OLD-001`（I1.1 的老实例）：能看节点与事件，没有"模板"、没有"第 n 轮"；`cancel` 被拒；`state.json` 与 `events.jsonl` 的 sha256 与打开前一致。
-8. **成功路径**：第 2 次测试**通过** → `HO-004 测试→协调者` → 协调者 `执行中` → `已完成` → 实例 `已完成`。
+8. **成功路径**：第 2 次测试**通过** → `节点 T-002 测试 待校验` → `已完成 · 第 2 轮 · 判定 通过` → `实例 INST-001 · 已完成`（两节点图，测试完成即闭环完成，不再派发后续节点）。
 
 ### 2.9 用户可见的业务规则
 
+> 规则编号 **BR-01 ~ BR-31**，共 31 条，连续、无跳号、无重号。
+
 | 编号 | 规则 | 用户怎么感知 |
 |---|---|---|
-| **BR-01** | 闭环按"开发 → 测试 → 协调者"顺序推进，前一个没完成，后一个不会开始 | 开发还在跑时，测试一直是"待执行" |
+| **BR-01** | 闭环按"开发 → 测试"顺序推进，前一个没完成，后一个不会开始 | 开发还在跑时，测试一直是"待执行" |
 | **BR-02** | 测试结论只认它交的判定，对话里说的不算 | 对话说"全绿"、判定写"不通过"时，看到"判定 不通过" |
 | **BR-03** | 判定有效且"不通过"才回流；判定缺失/过期/读不懂/结论非法/无缺陷/证据打不开，都不回流，直接升级 | 看到 `已升级 · 核对失败：…`，而不是开发又跑一轮 |
-| **BR-04** | 回流不新建节点，只让相关节点轮次增加；轮次是"派发了几次" | 节点表始终三行；开发从第 1 轮变第 2 轮 |
+| **BR-04** | 回流不新建节点，只让相关节点轮次增加；轮次是"派发了几次" | 节点表始终两行；开发从第 1 轮变第 2 轮 |
 | **BR-05** | 测试最多派发 2 次，第 2 次仍不通过就停止回流 | 第 2 次失败后没有"第 3 轮"，实例变"已挂起" |
 | **BR-06** | 挂起后核心不再自动推进，重启也不推进 | 挂起后等一会儿、重启后，还是"已挂起" |
 | **BR-07** | "已挂起 / 已升级 / 失败"是三个不同的词，不能混用 | 实例写"已挂起"、问题节点写"已升级"、测试本轮未通过且还会复测写"失败（等待复测）" |
@@ -491,14 +529,14 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 | **BR-11** | 轮次与升级会落盘，重启不重置 | 重启后仍显示"第 2 轮"与同一条升级 |
 | **BR-12** | 旧格式单节点实例只读可查，不报错、不清空、不可修改——**连"打开看看"都不会改它** | 老实例不显示"模板"；cancel 与 run 都被拒绝；打开前后文件哈希一致 |
 | **BR-13** | 会话说做完了不算做完，核心核对通过才算 | 节点先到"待校验"，核对通过才"已完成" |
-| **BR-14** | 协调者只在测试通过后执行；它报错不回流，直接升级 | 协调者报错时看到升级，不是开发又被叫起来 |
+| **BR-14** | 测试通过即闭环完成，不再派发汇总节点（协调者本迭代不派发）；任一节点宿主报错都不回流，直接升级 | 测试 `已完成` 时实例直接 `已完成`；报错时看到升级，不是开发又被叫起来 |
 | **BR-15** | 同一实例的同一节点，同一时刻只能有一次执行；同一实例也不能被重复发起 | 二次投递/重复发起被拒，原来那次不受影响 |
-| **BR-16** | 每次状态变化都可追溯，含序号、轮次与升级 | `--events` 每条都有 `[#序号]`、对象、时间、前后状态、中文原因 |
+| **BR-16** | 每次状态变化都可追溯，含序号、轮次与升级（`code-loop`；`single` 保持 I1.1 版式） | `--events` 里 `code-loop` 每条都有 `[#序号]`、对象、时间、前后状态、中文原因；`single` 与 I1.1 一致 |
 | **BR-17** | 一次挂起只产生一条升级，不重复刷屏 | 只看到 `ESC-001` 一条 |
 | **BR-18** | 取消优先：取消之后不再投递任何任务，未完成的对象收敛到终态 | 取消后不会突然冒出"开发第 3 轮"或"已接受" |
 | **BR-19** | 交接包"已接受"只表示对方开始干了；"已完成"才表示这一轮产出被核对通过 | 节点还在"待校验"时，交接包最多到"已接受" |
-| **BR-20** | 发起前拦掉注定跑不通的请求（未知模板、空任务、没写 `产物：` 行） | 命令直接失败退出（码 1），不留半截实例 |
-| **BR-21** | 同一目录同时只允许一个未结束的闭环 | 同目录再发起时看到"该目录已有未结束的实例…" |
+| **BR-20** | 发起前拦掉注定跑不通的请求（未知模板、空任务、`code-loop` 没写 `产物：` 行；`single` 不要求产物行） | 命令直接失败退出（码 1），不留半截实例 |
+| **BR-21** | 同一目录同时只允许一个未结束的 `code-loop` 闭环（`single` 不设此限制） | 同目录再发起时看到"该目录已有未结束的实例…" |
 | **BR-22** | 除首个节点外，每条边每次派发一张交接包，编号连续 | `--events` 里各轮次交接包都能找到，编号不跳 |
 | **BR-23** | 挂起时命令会自己结束并告诉我下一步，而不是一直挂着或报错 | `orch run` 打出三行收尾，退出码 4 |
 | **BR-24** | 派发时目标会话建不起来，不重试：接收派发的节点记 `已升级`、实例 `已挂起` | 看到 `派遣失败：目标会话不可用`，实例 `已挂起`，没有第二次派发 |
@@ -515,13 +553,13 @@ I1.1 之后，我可以一条命令把一个任务交给一个角色，并且在
 ## 三、验收标准（用户视角）
 
 > **验证面**：`产品命令` = 真实 DSH + 真实模型，通过 `orch` 操作；`夹具` = mock 宿主或核心侧接缝驱动（真实宿主无法稳定复现的分支）；`混合` = 夹具把实例推进到某状态，再用产品命令验证读取与呈现。
-> **真实面**只要求"一次成功闭环 + 回归"；取消、失败、回流、升级分支全部走夹具（真实模型不肯稳定失败，硬造会污染样例，见附录 B-11）。
+> **真实面**共 5 条：一次成功闭环（AC-01 / AC-03）、I1.1 回归（AC-21 / AC-22）与**一次真实回流闭环（AC-45：第 1 轮不通过 → 回流 → 开发修复 → 第 2 轮通过）**；其余失败、升级、取消分支仍走夹具（真实模型不肯稳定失败，硬造会污染样例，见附录 B-11）。
 > **观测口径（对模板"用户可见"约束的显式例外）**：本迭代的 `Then` 允许四类观测——① **命令输出**（用户可见，默认写法）；② **机检**：`.orch/instances/<id>/state.json` 与 `events.jsonl` 的字段；③ **夹具产物**：`.mock/` 下的 `prompts/<n>.json`、`cursor.json`、`paused` / `stopped-after-<n>` 标记、夹具 stdout，以及 `sha256sum` 得到的文件哈希。②③类断言一律以 **`机检：`** 或 **`夹具：`** 开头标出，理由是"轮次/序号/条数/提示词内容"这类量在终端上不可靠，必须落到可复算的字段或文件。③只允许出现在 `验证面：夹具` 或 `验证面：混合` 的条目里。④ **架构检查（非用户面）**：仅 AC-28 使用（源码字面量扫描 + 注入图单测），用于守住"引擎可复用"的架构约束，不冒充用户可见验收。除这四类外不引入其他观测面。**输出归属约定**：`验证面：夹具` 的条目里，`When` 未显式写命令却要求"输出含 / 第一行 / 最后一行"的，一律指随后执行的 `orch status --instance INST-001` 的输出；要求事件行时以同一命令加 `--events` 的输出为准（如 AC-07 / AC-13 / AC-14 / AC-33）。
 > **shell**：§3.3 声明在 Git Bash 中执行；PowerShell 等价命令见 §3.3 末。
 
 ### 3.1 功能验收标准（AC）
 
-#### AC-01 发起闭环，三节点建好且首个执行的是开发
+#### AC-01 发起闭环，两节点建好且首个执行的是开发
 - **验证面**：产品命令 ｜ **类型**：主流程 ｜ **风险**：高 ｜ **规则**：BR-01、BR-20
 ```gherkin
 Given 本机 DSH 可用，任务里写了"产物：calc.js"
@@ -529,10 +567,10 @@ When 我在项目根执行 orch run --cwd ./demo-code-pass --template code-loop 
 Then 第 1 行等于 "实例 INST-001 · 运行中 · 模板 编码闭环"
 And 第 2、3 行依次匹配 ^会话已创建 \S+$、^任务已投递$
 And 在命令结束段之前，只出现以"会话 "开头的状态行，不出现以"节点 T-"开头的行
-And 命令结束段依次为：三行 `^节点 T-00[123] .+$` → 至少一行 `^交接包 HO-\d+ .+$` → 最后一行等于 "升级 —"
-And 机检：state.json 的 template='code-loop'，nodes.length=3，nodeId 依次为 T-001/T-002/T-003
+And 命令结束段依次为：两行 `^节点 T-00[12] .+$` → 至少一行 `^交接包 HO-\d+ .+$` → 最后一行等于 "升级 —"
+And 机检：state.json 的 template='code-loop'，nodes.length=2，nodeId 依次为 T-001/T-002
 And 机检：events.jsonl 中第一条 object='node' 且 to='running' 的记录，objectId 是 T-001
-And 机检：不存在 seq 更小且 objectId 为 T-002/T-003 的 to='running' 记录
+And 机检：不存在 seq 更小且 objectId 为 T-002 的 to='running' 记录
 And 执行前后 `ls .orch/workflows` 均为"不存在"或空（不得新增工作流定义文件）
 ```
 
@@ -541,34 +579,35 @@ And 执行前后 `ls .orch/workflows` 均为"不存在"或空（不得新增工�
 ```gherkin
 Given 一个编码闭环在 demo-code-pass 上跑完（成功路径）
 When 我执行 orch status --instance INST-001 --events 并保存输出
-Then 输出里有三行匹配 ^\[#\d+\] \d{2}:\d{2}:\d{2}  节点 T-00n  派发 → 执行中  原因 派发 · 第 \d+ 轮$，n 依次为 1、2、3
-And 三行的 [#序号] 严格递增
+Then 输出里有两行匹配 ^\[#\d+\] \d{2}:\d{2}:\d{2}  节点 T-00n  派发 → 执行中  原因 派发 · 第 \d+ 轮$，n 依次为 1、2
+And 两行的 [#序号] 严格递增
 And 不存在 [#序号] 更小、含"节点 T-002"且含"执行中"的行出现在"节点 T-001"的"待校验 → 已完成"那一行之前
 ```
 
-#### AC-03 测试通过后走到协调者并完成
-- **验证面**：产品命令 ｜ **类型**：主流程 ｜ **风险**：高 ｜ **规则**：BR-14、BR-13
+#### AC-03 测试通过后闭环完成
+- **验证面**：产品命令 ｜ **类型**：主流程 ｜ **风险**：高 ｜ **规则**：BR-14、BR-13、BR-19
 ```gherkin
-Given 第 1 次测试判定为"通过"
+Given 我在全新项目根执行 orch run --cwd ./demo-code-pass --template code-loop --task "…产物：calc.js"（第 1 次测试判定为"通过"）
 When 我执行 orch status --instance INST-001
 Then 第 1 行等于 "实例 INST-001 · 已完成 · 模板 编码闭环"
 And 有一行匹配 ^节点 T-002 测试 已完成 · 第 1 轮 · 耗时 \S+ · 判定 通过$
-And 输出含 "节点 T-003 协调者 已完成 · 第 1 轮"
-And 机检：state.json 的 nodes[2].artifactRefs 含 {ref:'out/summary.md', exists:true, bytes > 0}
+And 机检：state.json 的 state='completed'，nodes.length=2，nodes[1].state='done'
+And 机检：handoffs 恰好 1 条（HO-001 开发→测试），edge.kind='forward'，state='consumed'
 And 最后一行是 "升级 —"
 ```
 
-#### AC-04 节点表能看全三行、轮次与两条方向的交接包
+#### AC-04 节点表能看全两行、轮次与两条方向的交接包
 - **验证面**：混合 ｜ **类型**：主流程 ｜ **风险**：高 ｜ **规则**：BR-04、BR-16
 ```gherkin
 Given 我执行 node test/fixtures/code-loop-driver.mjs --root <项目根绝对路径> --scenario retest-hold --keep，夹具把实例推进到"测试第 2 轮执行中"
 When 我执行 orch status --instance INST-001
-Then `grep -c '^节点 T-'` 等于 3
-And 开发行含"第 2 轮"，测试行含"第 2 轮"，协调者行含"待执行"且不含"第"、不含"耗时"
+Then `grep -c '^节点 T-'` 等于 2
+And 开发行含"第 2 轮"，测试行含"第 2 轮"
 And `grep '^交接包 HO-'` 的结果里同时能找到"开发→测试"与"测试→开发（回流）"
 And 只有交接包行匹配 \d{2}:\d{2}:\d{2}，节点行与实例行都不匹配
-And 输出段序符合附录 A-2（实例 → 节点 ×3 → 会话 → 交接包 → 升级）
+And 输出段序符合附录 A-2（实例 → 节点 ×2 → 会话 → 交接包 → 升级）
 And 节点行里"节点/编号/角色名/状态"之间都是单空格（`grep -c '节点 T-001 开发 已完成'` 等于 1）
+And 交接包行里号与方向、方向与状态之间都是 2 个空格（`grep -c '交接包 HO-001  开发→测试  已'` 大于 0）
 ```
 
 #### AC-05 测试不通过时自动回流，开发确实收到缺陷
@@ -588,11 +627,11 @@ And orch status --instance INST-001 输出含 "节点 T-001 开发 已完成 · 
 #### AC-06 回流不新建节点卡片
 - **验证面**：夹具 ｜ **类型**：边界 ｜ **风险**：中 ｜ **规则**：BR-04
 ```gherkin
-Given 我用 code-loop-driver 以 --scenario backflow-once --stop-after 3 --keep 停在"开发 done/round2、测试 failed/round1、协调者 pending"
+Given 我用 code-loop-driver 以 --scenario backflow-once --stop-after 3 --keep 停在"开发 done/round2、测试 failed/round1"
 When 我执行 orch status --instance INST-001
-Then `grep -c '^节点 T-'` 仍是 3
+Then `grep -c '^节点 T-'` 仍是 2
 And 开发行含"第 2 轮"
-And 机检：state.json 的 nodes.length 仍是 3
+And 机检：state.json 的 nodes.length 仍是 2
 ```
 
 #### AC-07 第 2 次仍不通过就停止回流
@@ -650,7 +689,6 @@ Given 我执行 node test/fixtures/code-loop-driver.mjs --root <项目根绝对�
 And 我先执行 orch status --instance INST-001，确认输出含"交接包 HO-003  开发→测试（复测）  已接受"（`delayMs` 先发出一帧再等待，因此接受先于等待）
 When 我执行 orch cancel --instance INST-001
 Then 5 秒内执行 orch status --instance INST-001，第一行含"已取消"
-And 输出含"节点 T-003 协调者 已取消"（原为待执行）
 And 输出含"节点 T-001 开发 已完成 · 第 2 轮"（已完成不倒推）
 And 机检：nodes[1].state='cancelled'（原 'running'）
 And 机检：HO-003 的 state='rejected' 且 rejectReason='withdrawn'
@@ -694,13 +732,14 @@ And 机检：四次 escalations[0].reasonCode 都是 'verdict_invalid'
 #### AC-15 判定以文件为准，不以对话为准
 - **验证面**：夹具 ｜ **类型**：边界 ｜ **风险**：高 ｜ **规则**：BR-02
 ```gherkin
-Given 夹具场景 verdict-says-fail（该步 message 字段写"全部通过"，verdict 写 fail）
-When 场景跑完
+Given 夹具场景 verdict-says-fail（该步 message 字段写"全部通过"，verdict 写 fail），以 `--scenario verdict-says-fail --stop-after 3 --keep` 运行
+When 核心停在「开发第 2 轮核对完成、复测派发前」的中间态（`.mock/stopped-after-3` 出现）后查询
 Then orch status --instance INST-001 输出含"判定 不通过"
 And 机检：存在 edge.kind='backflow' 的交接包（说明触发了回流）
 And 机检：events.jsonl 有一条 reason='verdict.read' 且 detail={source:'file', path:'out/verdict.json', verdict:'fail'}
 And orch status --instance INST-001 --events 输出含"原因 读取判定"
 ```
+> **v16 口径说明**：终态（场景跑完）时 T-002 第 2 轮通过，节点行只显示当前判定 `判定 通过`，第 1 轮的 `判定 不通过` 已被覆盖 —— 原 `When 场景跑完` 与 Then 不可同时构造。`--stop-after 3` 停在开发第 2 轮完成后、复测派发前，此时第 1 轮判定（`失败（等待复测）` 节点行，A-2 定义的中间态版式）与回流包同时在场，4 条 Then 全部可观测且断言一条未放宽。
 
 #### AC-16 判定文件不是本轮新写 → 单独的原因，不误报"未找到"
 - **验证面**：夹具 ｜ **类型**：异常 ｜ **风险**：中 ｜ **规则**：BR-03
@@ -719,15 +758,7 @@ And 输出含"核对失败：判定文件不是本轮新写 out/verdict.json"
 ```
 
 #### AC-17 协调者报错不回流，直接升级
-- **验证面**：夹具 ｜ **类型**：异常 ｜ **风险**：中 ｜ **规则**：BR-14
-```gherkin
-Given 夹具场景 coordinator-host-error（第 1、2 步正常，第 3 步 hostError="mock-host: boom"）
-When 场景跑完
-Then 机检：nodes[2].state='escalated'，escalations[0].reasonCode='execution_failed'
-And 输出含"执行失败：mock-host: boom"
-And 机检：nodes[0].round=1 且 nodes[1].round=1（都没有被重新派发）
-And 机检：state.json 的 state='suspended'
-```
+> **已作废（v14）**：R-1 协调者节点裁剪，D-1；替代条目：AC-08（节点报错直接升级，不回流）、AC-39。
 
 #### AC-18 不通过但没有缺陷清单，不回流
 - **验证面**：夹具 ｜ **类型**：异常 ｜ **风险**：中 ｜ **规则**：BR-03、BR-09
@@ -822,11 +853,11 @@ And 所有状态迁移行都匹配 ^\[#\d+\] \d{2}:\d{2}:\d{2}  \S+ \S+  .+  原
 #### AC-25 非法迁移被拒绝
 - **验证面**：夹具 ｜ **类型**：边界 ｜ **风险**：中 ｜ **规则**：BR-16
 ```gherkin
-Given 夹具场景 retest-fail 已跑完，我执行 orch cancel --instance INST-001 使 nodes[2]（T-003）变 cancelled
+Given 夹具场景 retest-fail 已跑完，我执行 orch cancel --instance INST-001 使 nodes[1]（T-002）变 cancelled
 And 我执行 orch core stop（夹具直接调状态机，不得与核心并发写 events.jsonl）
-When 我执行 node test/fixtures/attempt-transition.mjs --root <项目根绝对路径> --instance INST-001 --object node --node T-003 --from cancelled --to running
+When 我执行 node test/fixtures/attempt-transition.mjs --root <项目根绝对路径> --instance INST-001 --object node --node T-002 --from cancelled --to running
 Then 机检：events.jsonl 新增一条 result='rejected'、reason='illegal_transition' 的记录（`detail.message` 含 "not in the transition table"）
-And 机检：T-003 的 state 仍为 'cancelled'
+And 机检：T-002 的 state 仍为 'cancelled'
 ```
 
 #### AC-26 编排层按门控拒绝越权的唤醒
@@ -873,14 +904,7 @@ And 三个实例都不存在 edge.kind='backflow' 的交接包
 > `artifact-stale` 靠该步 `write` 的 `utimes` 制造旧 mtime；`artifact-empty` 靠 `content:""`。
 
 #### AC-30 协调者产出缺失时升级
-- **验证面**：夹具 ｜ **类型**：异常 ｜ **风险**：中 ｜ **规则**：BR-14、BR-13
-```gherkin
-Given 夹具场景 coordinator-no-summary
-When 场景跑完
-Then 机检：nodes[2].state='escalated'，escalations[0].reasonCode='artifact_missing'
-And 输出含"核对失败：未找到声明的产出 out/summary.md"
-And 机检：state.json 的 state='suspended'
-```
+> **已作废（v14）**：R-1 协调者节点裁剪，D-1；替代条目：AC-29（产物缺失/为空/陈旧时升级）。
 
 #### AC-31 同一实例重复发起被拒
 - **验证面**：混合 ｜ **类型**：异常 ｜ **风险**：中 ｜ **规则**：BR-15
@@ -1048,12 +1072,11 @@ And orch status --instance INST-001 --events 里 [#序号] 严格递增、不跳
 #### AC-42 取消能把"失败"和"已升级"的节点也收掉
 - **验证面**：夹具 ｜ **类型**：异常 ｜ **风险**：高 ｜ **规则**：BR-18
 ```gherkin
-Given 夹具场景 retest-fail 已跑完（测试节点为"已升级"，协调者为"待执行"）
+Given 夹具场景 retest-fail 已跑完（测试节点为"已升级"，开发节点为"已完成"）
 When 我执行 orch cancel --instance INST-001
 Then 5 秒内命令返回，退出码 0，输出含"会话 空闲"
 And 我执行 orch status --instance INST-001 时第一行含"已取消"
 And 机检：nodes[1].state='cancelled'（原 'escalated'）
-And 机检：nodes[2].state='cancelled'（原 'pending'）
 And 机检：nodes[0].state 仍是 'done'（已完成不倒推）
 And 机检：handoffs 三条的 state 仍是 'consumed'（已完成交接包不动）
 And 机检：escalations[0].state='voided'
@@ -1088,19 +1111,38 @@ When 我写 .mock/release 放行，场景继续
 Then 机检：nodes[1].state 不再停在 'review'（进入 'failed' 或 'done'）
 ```
 
-#### AC-45 回流后复测通过，闭环走到协调者并完成
-- **验证面**：夹具 ｜ **类型**：主流程 ｜ **风险**：高 ｜ **规则**：BR-01、BR-03、BR-19、BR-22
+#### AC-45 真实宿主上的"第 1 轮不通过 → 回流 → 第 2 轮通过"闭环（真实面）
+- **验证面**：产品命令（真实 DSH + 真实模型） ｜ **类型**：主流程 ｜ **风险**：高 ｜ **规则**：BR-01、BR-03、BR-10、BR-19、BR-22、BR-26
+```gherkin
+Given 任务目录 demo-code-fail：calc.js 缺 div，calc.test.js 除基础断言外**额外断言 div(1,0) 应抛错**
+And 任务话术按 §3.3「AC-45 真实回流话术」：初版只要求基本 div，**不要求 div(1,0) 边界**，并明确禁止修改 calc.test.js；第 1 轮测试因 `div(1,0)` 断言失败并给出缺陷，回流要求写明「补除零边界」，第 2 轮开发按回流包补齐后通过
+When 我在项目根执行 orch run --cwd ./demo-code-fail --template code-loop --task "给 calc.js 补一个 div 函数：返回 a 除以 b 的商，只覆盖 calc.test.js 里的基础断言。不要修改 calc.test.js；第 1 轮按「只处理正常输入」实现，不写除数为 0 的边界；若收到回流缺陷（要求补除零边界），以回流交接包中的缺陷与复测要求为准。产物：calc.js"
+Then 命令最终自行返回，退出码 0（不挂在 30 分钟超时，不出现"未知错误"）
+And 机检：state.json 的 state='completed'，nodes.length=2
+And 机检：nodes[0].round=2 且 state='done'，nodes[1].round=2 且 state='done'
+And 机检：handoffs 恰好 3 条，edge.kind 依次是 forward、backflow、retest，state 都是 'consumed'
+And 机检：存在 reason='verdict.read' 且 detail.verdict='fail' 的事件；其 seq 大于 T-002 第 1 轮 reason='node.dispatch' 的 seq、小于 T-001 第 2 轮（回流后，整轮第 3 次 node.dispatch）reason='node.dispatch' 的 seq（证明回流出真实判定失败，不是夹具造假）
+And 机检：不存在 round=3 的节点记录
+And orch status --instance INST-001 有一行匹配 ^节点 T-002 测试 已完成 · 第 2 轮 · 耗时 \S+ · 判定 通过$
+And orch status --instance INST-001 输出含"升级 —"
+And 机检：sessions 里 nodeId='T-001' 的两条记录 sessionId 不同（第 2 轮是新会话）
+```
+> **为什么这条能真实失败**：`div(1,0)` 的边界不在初版话术里，开发第 1 轮按「只处理正常输入」写 `return a / b`，测试命令 `node --test` 的真实输出就会红；测试角色只需如实写 `out/verdict.json` 的 `fail` 与缺陷（含「补除零边界」），核心据此回流，第 2 轮开发以回流交接包为准补齐边界。**失败由命令输出决定，不是让模型"选择失败"**；**话术与缺陷要求一致**：初版禁令只约束第 1 轮，回流缺陷明确要求补边界，不存在"任务原文禁止、缺陷要求补齐"的冲突。已知风险：模型仍可能在第 1 轮主动补边界，此时本条判为不成立（不得改断言，也不得以夹具替代）；夹具面的等价路径由 AC-46 覆盖。
+> 覆盖范围：这条只覆盖"第 1 轮不通过 → 回流 → 第 2 轮通过 → 闭环完成"；**第 2 轮仍失败 → 升级 → 挂起仍走夹具**（AC-07 / AC-08 / AC-09 / AC-12），取消走夹具（AC-11 / AC-42）。
+
+#### AC-46 夹具面：回流后复测通过，两节点闭环完成
+- **验证面**：夹具 ｜ **类型**：主流程 ｜ **风险**：高 ｜ **规则**：BR-01、BR-03、BR-19、BR-22、BR-26
 ```gherkin
 Given 我用 node test/fixtures/code-loop-driver.mjs --root <项目根绝对路径> --scenario backflow-once 跑完整场景
 When 场景结束
 Then 机检：state.json 的 state='completed'
-And 机检：nodes[0].round=2 且 state='done'，nodes[1].round=2 且 state='done'，nodes[2].round=1 且 state='done'
-And 机检：handoffs 恰好 4 条，edge.kind 依次是 forward、backflow、retest、forward，state 都是 'consumed'
-And 夹具：.mock/prompts/4.json 的 task 含"上一轮缺陷：2 条"
+And 机检：nodes[0].round=2 且 state='done'，nodes[1].round=2 且 state='done'
+And 机检：handoffs 恰好 3 条，edge.kind 依次是 forward、backflow、retest，state 都是 'consumed'
+And 夹具：.mock/prompts/3.json 的 task 含 2 条缺陷摘要与各自证据路径；.mock/prompts/4.json 的 task 含"上一轮缺陷：2 条"
 And orch status --instance INST-001 有一行匹配 ^节点 T-002 测试 已完成 · 第 2 轮 · 耗时 \S+ · 判定 通过$
 And orch status --instance INST-001 输出含"升级 —"
 ```
-> 这条覆盖"复测 → 通过 → 汇总"这一段；失败路径与轮次上限由 AC-07 / AC-08 / AC-41 覆盖，两者合起来才完整覆盖规划要求的交接包状态流转。
+> 这条是 AC-45 的**夹具镜像**：同样的"复测 → 通过 → 完成"路径，用 `backflow-once` 稳定复现，不依赖真实模型的第 1 轮行为。失败路径与轮次上限由 AC-07 / AC-08 / AC-41 覆盖，两者合起来才完整覆盖规划要求的交接包状态流转。
 
 ### 3.2 非功能验收标准
 
@@ -1141,15 +1183,23 @@ And orch status --instance INST-001 输出含"升级 —"
   | 目录 | 初始内容 | 用途 |
   |---|---|---|
   | `demo-code-pass/` | `calc.js`（缺 `div`）、`calc.test.js`（只断言 `div(6,3)===2`）、`package.json`、`out/` | 第 1 次开发补完 `div` 后测试可通过 → AC-01 / AC-02 / AC-03 |
-  | `demo-code-fail/` | 同上，但 `calc.test.js` 额外断言 `div(1,0)` 应抛错 | 第 1 次开发不会处理该边界（真实面不跑它，仅供人工演示） |
+  | `demo-code-fail/` | 同上，但 `calc.test.js` 额外断言 `div(1,0)` 应抛错 | **AC-45 的真实回流闭环**：第 1 轮开发只做基本 `div` → 测试真实失败 → 回流 → 第 2 轮通过 |
   | `demo/` | 任意单文件任务 | AC-21 的 `single` 回归 |
 
-- **任务话术模板**（真实面照抄；图内置提示词会追加"写判定""写汇总"的要求）
+- **任务话术模板**（AC-01 / AC-03 / AC-21 照抄；图内置提示词会追加"写判定"的要求）
   ```
   给 calc.js 补一个 div 函数，让 node --test 全绿。
   改动写在 calc.js
   产物：calc.js
   ```
+- **AC-45 真实回流话术**（真实面专用，目录 `demo-code-fail`；**不要**用于 `demo-code-pass`）
+  ```
+  给 calc.js 补一个 div 函数：返回 a 除以 b 的商，只覆盖 calc.test.js 里的基础断言。
+  不要修改 calc.test.js；第 1 轮按「只处理正常输入」实现，不写除数为 0 的边界；若收到回流缺陷（要求补除零边界），以回流交接包中的缺陷与复测要求为准。
+  改动写在 calc.js
+  产物：calc.js
+  ```
+  > 这条话术的设计意图：第 1 轮开发按「只处理正常输入」写 `return a / b`，`div(1,0)` 的额外断言真实失败 → 测试如实写 `fail` 与「补除零边界」缺陷 → 核心回流 → 第 2 轮开发按回流交接包补齐边界 → 测试通过。失败来自测试命令的真实输出，不是让模型"选择失败"。**话术与缺陷要求一致**：初版禁令只在第 1 轮生效，回流包的缺陷与复测要求明确覆盖它。
 - 产出落盘用 `write`（`file_path` + `content`），**禁止硬编码 `bash`**（Windows 上由 `pwsh` 顶替，见 `iteration-0/report.md` 附录 C）
 - **旧格式快照**（本迭代交付物）：`test/fixtures/legacy-v1/OLD-001/`（`state='completed'`）与 `test/fixtures/legacy-v1/OLD-002/`（`state='running'`），各含 `state.json` + `events.jsonl`，均 `schemaVersion: 1`、单个 `node`/`session`/`handoff`。同目录 `SHA256SUMS` 记录四个文件的哈希，交付时生成、验收时比对。
 
@@ -1169,14 +1219,16 @@ And orch status --instance INST-001 输出含"升级 —"
 | `pass` 时 `defects` 为空数组 | `verdict_invalid` | `核对失败：判定为通过，但缺陷清单非空` |
 | 每条 `evidence` 指向的文件存在 | `verdict_invalid` | `核对失败：缺陷证据不可解析` |
 
+> **夹具要求**：场景文件里 `verdict='fail'` 的 step **必须显式给 `defects`**（缺省不是空数组），每条至少含 `summary` 与指向真实存在文件的 `evidence`；只有 `verdict-no-defects` 与 `verdict-pass-with-defects` 可以给空/非空的反例。`verdict-says-fail` 也必须给缺陷与证据，否则会被判 `verdict_invalid` 而不是触发回流（AC-15）。
+
 **D-6 状态结构（v2，AC 的 `机检：` 断言直接引用这些字段）**
 
 ```
 state.json
 ├─ schemaVersion: 2
-├─ instanceId, state, template, cwd, task, coreGeneration, halted
+├─ instanceId, state, template, cwd, task, coreGeneration, halted, rev
 ├─ createdAt, updatedAt
-├─ counters{ eventSeq, runCount }
+├─ counters{ eventSeq, runCount, dispatchCount }
 ├─ hostRaw{ stopReason, lastError, agentInfo }
 ├─ nodes[]   { nodeId, roleId, round, state, stateSince, startedAt, roundStartedAt, endedAt,
 │              failure{code, ref, message}|null, note,
@@ -1189,11 +1241,14 @@ state.json
 │              createdAt, deliveredAt, acceptedAt, consumedAt, rejectedAt, rejectReason,
 │              wakeConsumedAt|null, acceptedSignal, ambiguityWindowMs, defects[], note }
 └─ escalations[]{ escalationId, nodeId, round, reasonCode, reasonDetail,
-                 state:'pending'|'voided', createdAt, voidedAt }
+                 defects[], state:'pending'|'voided', createdAt, voidedAt }
 ```
-> 除 `template` / `wakeConsumedAt` / `escalations[]` / `halted` / `roundStartedAt` 与数组化本身，**其余字段都是 I1.1 已冻结字段**，v2 只是把宿主从单对象换成数组元素。`task` 被产物核对直接读取；`pendingPermission` 的形状是 `{toolCallId, action}`，**不得改名**（`renderSessionLine` 依赖 `.action` 打"等待审批：write"）。**`startedAt` = 首次派发时刻（不重置，供"耗时"取总区间）；`roundStartedAt` = 本轮派发时刻（每次派发重置，供"本轮新写"判定）**。
+> **`rev`**：单调递增整数，每次成功写入 `+1`，是 C-01 的 CAS 依据（`{state, halted, rev}` 与整快照版本比较）；v1 无此字段（只读）。
+> **`counters.dispatchCount`**：整实例累计派发次数（每次派发 `+1`，含派发失败），AC-24 的事件序号与"整轮第 n 次派发"断言用它；`eventSeq` 仍是事件行序号。
+> **`escalations[].defects[]`**：类型同回流交接包（每条 `{summary, evidence}`），仅 `rounds_exceeded` 写入，其余原因写空数组 `[]`；供升级块打印"缺陷：…"行（AC-08），无缺陷时为空数组。
+> 除 `template` / `rev` / `wakeConsumedAt` / `edge` / `defects` / `escalations[]` / `halted` / `roundStartedAt` / `verdict` / `note` 与数组化本身，其余字段沿用 I1.1 语义（`edge` / `defects` / `verdict` / `note` 为本迭代新增字段），v2 只是把宿主从单对象换成数组元素。`task` 被产物核对直接读取；`pendingPermission` 的形状是 `{toolCallId, action}`，**不得改名**（`renderSessionLine` 依赖 `.action` 打"等待审批：write"）。**`startedAt` = 首次派发时刻（不重置，供"耗时"取总区间）；`roundStartedAt` = 本轮派发时刻（每次派发重置，供"本轮新写"判定）**。
 > **`nodes[].verdict` 与 `nodes[].note` 的用途**：`verdict` 在核心读完判定时写入（`defectCount` 直接供节点行渲染 `判定 不通过 · 缺陷 n 条`）；`note` 只保存显示限定词（`等待复测` / `升级未记录`），由核心写、CLI 不猜。没有判定时 `verdict=null`，节点行不出现"判定"字样。
-> **会话显示词与内部状态的映射（实现用，不进第二部分）**：`idle`→空闲、`thinking`→执行中、`tool_running`→执行中 · 调用工具、`waiting_input`→等待审批、`waiting_dependency`→等待下游、`escalated`→已升级。迁移：`idle→thinking`（派发）、`waiting_input→thinking`（审批放行）、`thinking↔tool_running`、`thinking/tool_running→waiting_dependency`（出料）、`thinking/tool_running/idle/waiting_dependency/waiting_input→escalated`（升级事务；会话可能已空闲、已出料或正等审批时核对失败）、任意→`idle`（回合结束、审批拒绝或取消）；`escalated` 无出边。
+> **会话显示词与内部状态的映射（实现用，不进第二部分）**：`idle`→空闲、`thinking`→执行中、`tool_running`→执行中 · 调用工具、`waiting_input`→等待审批、`waiting_dependency`→等待下游、`escalated`→已升级。迁移：`idle→thinking`（派发）、`waiting_input→thinking`（审批放行）、`thinking↔tool_running`、`thinking/tool_running→waiting_dependency`（出料）、`thinking/tool_running/idle/waiting_dependency/waiting_input→escalated`（升级事务；会话可能已空闲、已出料或正等审批时核对失败）、**回合结束且无产出提交 → `idle`；已提交产出 → 保持 `waiting_dependency` 到核对完成 / 升级 / 取消**、审批拒绝 / 取消 → `idle`、`escalated→idle`（仅取消，保证取消后不残留在"已升级"）；除取消外 `escalated` 无出边。**"回合结束"不等于 `idle`**：出料后的回合结束仍然显示 `等待下游`，直到核对给出结论（AC-44）。
 
 **D-7 图级产物声明**
 
@@ -1201,9 +1256,8 @@ state.json
 |---|---|---|
 | 开发 | 任务里 `产物：<路径>` 声明的路径 | 用户任务 |
 | 测试 | `out/verdict.json` | 图声明 |
-| 协调者 | `out/summary.md` | 图声明 |
 
-> 核对时按"节点自己的产物清单"逐个查存在、非空、mtime 晚于 `nodes[].roundStartedAt`（本轮派发时刻，不是节点首次 `startedAt`）。`single` 图不适用本表，仍用 I1.1 的"未声明就跳过"规则。**测试节点的 `out/verdict.json` 只走 §3.3 判定契约，不参与本表的存在性/非空检查**（否则 `verdict_missing` 会先被报成 `artifact_missing`）；本表的产物核对只约束开发与协调者。**测试节点只以 `out/verdict.json` 为必交产物**：`out/test-log.txt` 只是缺陷证据，不是测试节点的产物，缺失它不进 `artifact_missing`；判定内容不合规则走 `verdict_*` 原因码（§3.3 判定契约）。
+> 核对时按"节点自己的产物清单"逐个查存在、非空、mtime 晚于 `nodes[].roundStartedAt`（本轮派发时刻，不是节点首次 `startedAt`）。`single` 图不适用本表，仍用 I1.1 的"未声明就跳过"规则。**测试节点的 `out/verdict.json` 只走 §3.3 判定契约，不参与本表的存在性/非空检查**（否则 `verdict_missing` 会先被报成 `artifact_missing`）；本表的产物核对只约束开发节点。**测试节点只以 `out/verdict.json` 为必交产物**：`out/test-log.txt` 只是缺陷证据，不是测试节点的产物，缺失它不进 `artifact_missing`；判定内容不合规则走 `verdict_*` 原因码（§3.3 判定契约）。**协调者不派发，本表没有它的产物**（`out/summary.md` 留作 I1.5 资产）。
 
 **夹具契约（本迭代必须交付，AC 直接引用这些命令与文件名）**
 
@@ -1211,8 +1265,9 @@ state.json
 
 **driver**
 ```
-node test/fixtures/code-loop-driver.mjs --root <项目根绝对路径> --scenario <场景名> [--stop-after <n>] [--keep] [--reset] [--prepare-only]
+node test/fixtures/code-loop-driver.mjs --root <项目根绝对路径> --scenario <场景名> [--cwd <任务目录>] [--task <任务文本>] [--stop-after <n>] [--keep] [--reset] [--prepare-only]
 ```
+- `--cwd`：任务目录，缺省 `<root>/demo-code-pass`；`--task`：任务文本，缺省为 §3.3 的任务话术模板（必含 `产物：calc.js`）。两者都原样传给 `run.start`，否则 `code-loop` 会被 `PRODUCT_LINE_MISSING` 拦下
 - `--reset`：删掉 `<root>/.mock/` 下全部文件后从头跑
 - `--prepare-only`：只准备现场——写 `<root>/.mock/cursor.json`（`{"next":1}`）与 `<root>/.orch/hosts/mock.json`（按 `--scenario` 指向 mock agent 的绝对路径），**不启动核心、不发起实例**，准备完退出（退出码 0）。用于 AC-12 / AC-38 这类"由 `orch run` 自己启动实例、但需要夹具现场先行就位"的条目
 - `--stop-after <n>`：核心在第 n 步产出核对完成后、派发第 n+1 步之前停下，写 `.mock/stopped-after-<n>` 并轮询 `.mock/release`。**带 `--keep` 时一直等到 Ctrl-C**；不带 `--keep` 时最多等 60 秒后继续。用于"开发第 2 轮已完成、复测未派发"这类中间态
@@ -1254,7 +1309,7 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 | `hold.when='start'` | mock 进程消费完步、建会话前 | mock agent |
 | `after_accepted[:<nodeId>]` | 核心把该节点会话置 `accepted` 后（只在首次 `created/delivered→accepted` 迁移时触发，重复上报 `accepted` 不再暂停） | 核心（`MAESTRO_TEST_PAUSE=after_accepted[:T-xxx]`） |
 | `after_output[:<nodeId>]` | 会话回合结束、核心开始核对前（此时节点已是 `review`、会话是 `waiting_dependency`，尚未核对） | 核心（`MAESTRO_TEST_PAUSE=after_output[:T-xxx]`） |
-| `after_verdict` | 核心读完判定、构造回流包后、投递前 | 核心（`MAESTRO_TEST_PAUSE=after_verdict`） |
+| `after_verdict` | 核心读完判定、已将节点 `review→failed`、构造回流包后、投递前 | 核心（`MAESTRO_TEST_PAUSE=after_verdict`） |
 | `MAESTRO_TEST_STOP_AFTER=<n>` | 第 n 步核对完成后、派发第 n+1 步前 | 核心（写 `.mock/stopped-after-<n>`，不是 `.mock/paused`） |
 
 所有暂停点都轮询 `.mock/release`；只有 `NODE_ENV=test` 生效。**暂停期间核心仍响应 IPC**（`orch status` / `orch cancel` 可用），等待用异步轮询实现，不阻塞事件循环。**`after_verdict` 只在回流交接包已落盘为 `created` 之后才写 `.mock/paused`**，因此暂停中 `orch status` 能看到该包为 `已构造`（AC-37 依赖这一点）。**`NODE_ENV` / `MAESTRO_TEST_PAUSE` / `MAESTRO_TEST_STOP_AFTER` / `MAESTRO_FAULT` 都在核心进程启动时读取一次；热核心不会重新加载，使用前先 `orch core stop`。** 带 `--keep` 时暂停不设上限（一直等到 Ctrl-C），不带 `--keep` 时最多 60 秒后继续。**若进入暂停点时 `.mock/release` 已存在，视为已放行、不重复停**（因此 AC-34 / AC-36 / AC-37 / AC-44 在第一次写 `release` 之后不会再被同一个暂停点拦住）。
@@ -1267,16 +1322,15 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 | 2 | T-002 测试 | 1 | 正向交接后首次派发 |
 | 3 | T-001 开发 | 2 | 回流派发（任务里带缺陷） |
 | 4 | T-002 测试 | 2 | 复测派发 |
-| 5 | T-003 协调者 | 1 | 测试通过后派发 |
 
-> 本表按"一次回流"路径编号。`code-pass` / `hold-forever` / `hold-test` 等无回流场景只有 1~3 步：step 1 开发、step 2 测试、step 3 协调者。**轮次由派发次数决定，不由步号决定**。
+> 本表按"一次回流"路径编号。`code-pass` / `hold-forever` / `hold-test` 等无回流场景只有 1~2 步：step 1 开发、step 2 测试。**两节点图在 step 4（测试通过）后直接完成，没有 step 5**。**轮次由派发次数决定，不由步号决定**。
 
 **场景清单（AC 引用的每个场景都必须交付；`steps[i]` 按上表填）**
 
 | 场景 | 步骤构成 | 用途 / 引用 |
 |---|---|---|
-| `code-pass` | 1 开发通过并写产物（step 1 `historyMarker="DEV-ROUND1"`）→ 2 测试通过 → 3 协调者写 summary | 全绿闭环；AC-34（配合核心暂停）、AC-43 |
-| `backflow-once` | 1 开发通过 → 2 测试不通过 → 3 开发修复 → 4 测试通过 → 5 协调者 | 一次回流；AC-05 / AC-15 / AC-37 / AC-44 / AC-45 |
+| `code-pass` | 1 开发通过并写产物（step 1 `historyMarker="DEV-ROUND1"`）→ 2 测试通过 | 全绿闭环；AC-34（配合核心暂停）、AC-43 |
+| `backflow-once` | 1 开发通过 → 2 测试不通过 → 3 开发修复 → 4 测试通过 | 一次回流；AC-05 / AC-15 / AC-37 / AC-44 / AC-46 |
 | `backflow-hold` | 同 `backflow-once`，step 3 `hold.when='start'` | 开发第 2 轮执行中；AC-35 |
 | `retest-hold` | 同 `backflow-once`，step 4 `hold.when='start'` | 测试第 2 轮执行中（会话未建）；AC-04 |
 | `retest-slow` | 同 `backflow-once`，step 4 `delayMs=30000` | 测试第 2 轮执行中（会话已建、可取消）；AC-11 |
@@ -1286,17 +1340,16 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 | `hold-test` | 1 开发通过 → 2 测试 `hold.when='start'` | T-002 执行中，用于二次投递；AC-32 |
 | `verdict-missing` | step 2 `verdict=null` | 判定缺失；AC-13 |
 | `verdict-bad-json` / `verdict-no-field` / `verdict-maybe` / `verdict-pass-with-defects` | step 2 判定分别为非法 JSON / 缺字段 / 非布尔 / 通过但带缺陷 | 非法判定；AC-14 |
-| `verdict-says-fail` | step 2 `message="全部通过"`、`verdict=fail` | 说通过但判定不通过；AC-15 |
+| `verdict-says-fail` | step 2 `message="全部通过"`、`verdict=fail`、`defects` 至少 1 条（含 `summary`）且 `evidence` 指向同一步 `write` 写出的非空 `out/test-log.txt` | 说通过但判定不通过；AC-15 |
 | `verdict-stale` | step 2 判定文件 `utimes="2020-01-01T00:00:00Z"` | 判定过期；AC-16 |
 | `verdict-stale-retest` | 前 3 步正常，step 4 判定文件 `utimes="2020-01-01T00:00:00Z"` | 第 2 轮判定过期；AC-16 |
 | `verdict-no-defects` | step 2 `verdict='fail'`、`defects=[]` | 失败但无缺陷；AC-18 |
 | `verdict-missing-evidence` | step 2 缺陷证据指向不存在文件 | 证据缺失；AC-19 |
 | `artifact-missing` / `artifact-empty` / `artifact-stale` | 开发步产物分别缺失 / 空文件 / 旧 mtime | 产物核对；AC-29 |
-| `coordinator-host-error` | 1、2 步正常，step 3 `hostError="mock-host: boom"` | 协调者宿主错误；AC-17 |
-| `coordinator-no-summary` | step 3 不写 `out/summary.md` | 协调者产物缺失；AC-30 |
 | `dispatch-fail-first` / `dispatch-fail-backflow` / `dispatch-fail-retest` | 对应步 `sessionNew='fail'`（第 1 / 3 / 4 步） | 派发失败；AC-33 |
 
-> **缺陷证据就位**：所有 `verdict='fail'` **且会走到证据检查**的步骤，必须在同一步的 `write` 里写出非空的 `out/test-log.txt`（缺陷证据指向它），否则场景会被判 `verdict_invalid`（`核对失败：缺陷证据不可解析`），AC-08/24 的断言也会失败。例外：`verdict-missing-evidence` 故意指向不存在的文件；`verdict-no-defects`（无缺陷）与 `verdict-pass-with-defects`（通过但带缺陷）在证据规则之前就已失败，无需证据文件。
+> **AC-45 不用夹具**：它在真实宿主上跑 `demo-code-fail`，场景清单里没有对应文件；夹具面的等价路径是 `backflow-once`（AC-46）。
+> **缺陷与证据必须写进场景**：所有 `verdict='fail'` 且会走到证据检查的步骤，必须显式给 `defects`（**缺省不是空数组**），并在同一步的 `write` 里写出非空的 `out/test-log.txt`；`backflow-once` / `verdict-says-fail` 的 fail 步给 2 条缺陷 + 2 条证据（AC-05 断言 2 条），`backflow-twice` / `retest-fail` 的第 2 次 fail 步给 1 条缺陷 + 1 条证据（AC-08 断言 1 条）。否则场景会被判 `verdict_invalid`（`核对失败：缺陷证据不可解析` 或 `核对失败：判定为不通过，但没有缺陷清单`），AC-08/24 的断言也会失败。例外：`verdict-missing-evidence` 故意指向不存在的文件；`verdict-no-defects`（无缺陷）与 `verdict-pass-with-defects`（通过但带缺陷）在证据规则之前就已失败，无需证据文件。
 
 运行契约（**这些是验收能复现的前提，不能改**）：
 
@@ -1305,7 +1358,7 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 3. `cursor.json` 不存在时按 `{"next":1}` 处理。
 4. `hold.when`：只支持 `start`（mock 侧：进程启动消费完即停）。`after_accepted` / `after_output` / `after_verdict` 是**核心侧**暂停点，用 `MAESTRO_TEST_PAUSE` 指定，可加 `:<nodeId>` 限定只在该节点暂停（见上表）。
 5. `MAESTRO_TEST_PAUSE=after_output[:<nodeId>]`：核心在会话回合结束、开始核对产物**之前**写 `<root>/.mock/paused`，每 100ms 检查 `<root>/.mock/release`；等待上限按 `--keep` 规则（有 `--keep` 不限时，否则 60 秒）。
-6. `MAESTRO_TEST_PAUSE=after_verdict`：核心读完判定、构造回流包**之后、投递之前**写 `<root>/.mock/paused`，同样轮询 `.mock/release`。`MAESTRO_TEST_PAUSE=after_accepted[:<nodeId>]` 同理，触发点是核心把该节点会话置 `accepted` 后。
+6. `MAESTRO_TEST_PAUSE=after_verdict`：核心读完判定、**已将节点 `review→failed`**、构造回流包**之后、投递之前**写 `<root>/.mock/paused`，同样轮询 `.mock/release`。`MAESTRO_TEST_PAUSE=after_accepted[:<nodeId>]` 同理，触发点是核心把该节点会话置 `accepted` 后。
 7. `MAESTRO_TEST_STOP_AFTER=<n>`：核心在第 n 步核对完成后写 `<root>/.mock/stopped-after-<n>`，在派发第 n+1 步前轮询 `.mock/release`。仅 `NODE_ENV=test` 生效。
 8. `.orch/hosts/mock.json` 的 `launch.command` 用 node 的**绝对路径**，`args` 里的脚本、`--root`、`--scenario` 都用**绝对路径**（mock 进程的 cwd 是任务目录，相对路径找不到）；`--host mock` 由 CLI 透传到 `host-config`，**只用于夹具**。
 9. 运行夹具前清空 `MAESTRO_DSH_EXE` / `MAESTRO_DSH_BIN` / `MAESTRO_DSH_ARGS`（它们优先级高于 host 配置，残留会让 mock 静默变回真实 DSH）。
@@ -1340,7 +1393,7 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 | 7 | 交接包行（`single` 无方向） | 1..5 | `^交接包 HO-\d+  (已构造\|已投递\|已接受\|已完成\|已拒绝)   \d{2}:\d{2}:\d{2}(  原因 .+)?$` |
 | 8 | 交接包等待行（`已投递` 且未终态时） | 0..1 | `^交接包 HO-\d+  已投递   等待目标响应 · 已等待 \S+$` |
 | 9 | 已中断提示（仅 `run` 收尾） | 0..1 | `^实例 INST-\d+ · 已中断 ｜ 停在节点 .+ / 会话 .+$` |
-| 10 | 失败摘要（仅 `run` 以失败结束） | 0..1 | `^(核对失败：.+\|会话已失效，需要重新创建)$` |
+| 10 | 失败摘要（仅 `run` 以失败结束） | 0..1 | `^(核对失败：.+\|执行失败：.+\|审批被拒绝，任务中止于 .+\|会话已失效，需要重新创建\|未知错误：.+)$` |
 
 > 允许变化：实例号、会话号、耗时、时间戳、状态值、第 4 段的重复次数与具体状态、第 7 段的行数。不允许变化：段序、每段行数区间、每行字段种类、**全文不出现"模板"**。第 9 段与第 10 段互斥（中断 / 失败二选一），成功路径两段都没有。
 > **注**：v5 写的"正好 6 行 + 首行可以是终态"与实现不符——实例行只在 `runCommand` 开头打印一次（此时必为 `运行中`），`run.wait` 返回后还会打节点行与最多 5 行交接包行，会话行有 `空闲` / `执行中 · 已运行 Ns` / `执行中 · 调用工具（…） · 已运行 Ns` / `等待审批：…` / `等待下游` / `已升级` 六种分支。本表按实测重写。
@@ -1351,13 +1404,13 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 |---|---|---|---|
 | 1 | `实例 <号> · <状态>[ · 已停止推进][ · 模板 <名>]` | 1 行，无模板字段 | 1 行，有模板字段 |
 | 2 | 已中断提示（仅 `state='interrupted'`） | 0..1 | `实例 <号> · 已中断 ｜ 停在节点 <状态> / 会话 <状态>` |
-| 3 | `节点 [<号> <角色名>] <状态>[（等待复测）\|（升级未记录）][ · 第 <n> 轮][ · 耗时 <时长>][ · 判定 通过\|判定 不通过 · 缺陷 <n> 条]` | 1 行，无节点号/角色名/轮次 | 3 行，按 T-001/002/003 |
+| 3 | `节点 [<号> <角色名>] <状态>[（等待复测）\|（升级未记录）][ · 第 <n> 轮][ · 耗时 <时长>][ · 判定 通过\|判定 不通过 · 缺陷 <n> 条]` | 1 行，无节点号/角色名/轮次 | 2 行，按 T-001/002 |
 | 4 | `会话 <状态>[ · 已运行 <时长>][ · 无新事件]` | 1 行 | **当前会话 1 行**（无则不打印）；六种分支见 §2.3 |
-| 5 | `交接包 <号>[ <方向>]  <状态>   <时间戳>[  原因 <原因词>]`；`已投递` 且等待中另 1 行 `交接包 <号>[ <方向>]  已投递   等待目标响应 · 已等待 <时长>` | 1..5 行，**无方向** | 每包最多 5 行，按包号、按时间正序，**带方向** |
+| 5 | `交接包 <号>  [<方向>  ]<状态>   <时间戳>[  原因 <原因词>]`；`已投递` 且等待中另 1 行 `交接包 <号>  [<方向>  ]已投递   等待目标响应 · 已等待 <时长>` | 1..5 行，**无方向** | 每包最多 5 行，按包号、按时间正序，**带方向** |
 | 6 | `升级 <号> <状态>`；有升级时 +3 行明细（`rounds_exceeded` 另 +1 行缺陷） | **不打印** | 无升级时打印 `升级 —` |
 
-- **不做列对齐**：字段间一律单空格（`节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1m02s`）
-- **方向只在 `code-loop` 出现**：`交接包 <号> <方向>` 的方括号段在 `single` 里整段消失（写作 `交接包 HO-001  已构造   …`），不打印空括号；方向文本按 D-5：`<fromRole>→<toRole>`，仅回流/复测追加 `（回流）` / `（复测）`，正向不加后缀（`开发→测试`）
+- **不做列对齐**：节点行与实例行字段间一律单空格（`节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1m02s`）
+- **方向只在 `code-loop` 出现**：号与方向之间、方向与状态之间各 **2 个空格**（`交接包 HO-001  开发→测试  已构造   10:30:02`）；`single` 里方向段整段消失（写作 `交接包 HO-001  已构造   …`），不打印空括号；方向文本按 D-5：`<fromRole>→<toRole>`，仅回流/复测追加 `（回流）` / `（复测）`，正向不加后缀（`开发→测试`）
 - 从未派发的节点行**不出现**"第 n 轮"与"耗时"（已取消但无 `startedAt` 的同样不出现耗时）
 - **`single` 的 `失败` 节点行内联原因**：`节点 失败 · <失败原因>`（沿用 I1.1 `renderNodeLine`）；`code-loop` 的节点行既不内联失败原因、也不内联会话状态，原因只出现在事件行与升级块
 - `失败` 与 `待校验` 的限定词按 §2.3 的三档规则；`已升级` 不带限定词
@@ -1371,7 +1424,7 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 
 1. 开头三行：`实例 <号> · 运行中 · 模板 编码闭环` → `会话已创建 <会话号>` → `任务已投递`
 2. 运行期间：**只打印会话状态行**（A-2 第 4 段的六种分支），**不打印节点行**
-3. 结束时：三行节点（A-2 第 3 段）→ 该实例全部交接包行（带方向）→ `升级 —`（无升级时）
+3. 结束时：两行节点（A-2 第 3 段）→ 该实例全部交接包行（带方向）→ `升级 —`（无升级时）
 4. 不打印列表行；全文不出现"未知错误"与"核对失败"
 
 **A-4 `orch run --template code-loop`（挂起 / 停止推进收尾）**
@@ -1397,7 +1450,7 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 
 | 术语 | 含义 |
 |---|---|
-| **编码闭环** | 开发 → 测试 →（不通过则回流开发）→ 协调者的固定流程 |
+| **编码闭环** | 开发 → 测试（不通过则回流开发）的固定流程；测试通过即闭环完成（协调者本迭代不进图） |
 | **图** | "有哪些节点、什么顺序、回流到哪、上限多少"的定义。内置 `single`（I1.1 单节点）与 `code-loop`；名字是代码常量，不是资产文件 |
 | **轮次** | 这个节点被**派发**任务的次数；派发即 +1，不论目标会话是否建成 |
 | **回流** | 测试判定不通过时，把缺陷交回开发重做。只允许 `测试 → 开发`，最多 1 次 |
@@ -1411,19 +1464,19 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 
 | # | 问题 / 假设 | 影响 | 谁来定 |
 |---|---|---|---|
-| B-01 | **假设**：三角色与那张图是代码内置常量，不是 YAML 资产 | I1.5 / I1.6 需提取，可能有返工 | 已按迭代归属确定，需确认 |
-| B-02 | **已裁定**：`done→running`（仅开发，门控=待唤醒回流包 + `wakeConsumedAt` 幂等）与 `failed→running`（仅测试）必须开放；基线 §3.1 的 `done` 终态与 §3.5 的 t2 矛盾，取 §3.5；`failed` 在 `code-loop` 下承担"判定不通过（等待复测）"、在 `single` 下仍是"执行失败"；"不能继续"一律用 `escalated` | 对基线的口径裁定，也是 M-1；**基线须同步修订八处**（见 §1.4 末） | 已决定，**需使用者确认后同步修订基线** |
+| B-01 | **已裁定（D-4）**：三角色与那张图是代码内置常量，不是 YAML 资产；角色 ID 直接用 I1.5 的最终 ID `developer` / `tester` / `coordinator`，图数据放 `src/templates/**` | I1.5 提取注册表时不需要改名，返工只限代码位置；I1.6 再做声明式 | 已定（B-01） |
+| B-02 | **已裁定**：`done→running`（仅开发，门控=待唤醒回流包 + `wakeConsumedAt` 幂等）与 `failed→running`（仅测试）必须开放；基线 §3.1 的 `done` 终态与 §3.5 的 t2 矛盾，取 §3.5；`failed` 在 `code-loop` 下承担"判定不通过（等待复测）"、在 `single` 下仍是"执行失败"；"不能继续"一律用 `escalated` | 对基线的口径裁定，也是 M-1；**基线须同步修订七处**（见 §1.4 末；节点迁移图按基线 9 态补 7 条边，不是 I1.1 的 10 条） | 已决定（D-4），同步基线由并行修订负责 |
 | B-03 | **假设**：判定与汇总由图内置提示词保证，用户任务只写"改什么 + 产物：<路径>" | 若提示词没生效，判定缺失 → 全部升级 | 待评审（最脆的一环） |
 | B-04 | **已定**：判定缺失/过期/不可解析/无缺陷/通过但有缺陷/证据打不开，一律"核对失败 → 升级"，不回流 | 避免拿坏数据打回开发；代价是"模型忘了写判定"全部变人工介入 | 已定 |
 | B-05 | **已定**：每次派发新建会话（复用是 I1.8）；基线 §3.5 的 `cooldown → thinking` 本迭代不实现 | 开发第 2 轮没有上一轮对话记忆 | 已定，I1.8 复核 |
-| B-06 | **待确认（规划细化 R-1）**：协调者进图，测试通过后汇总，产出 `out/summary.md`；它只汇总、不裁决、不回流，删掉它不影响回流/上限/升级三条核心语义（§1.3.1） | 若使用者要求严格两节点，需删 AC-03/17/30/45 并改写 AC-01/02/04/06/11/42 与 A-2/A-3 的三节点断言，不能只删 4 条 AC；`docs/index.md` 的 I1.2 条目需补一句 | 待使用者确认；确认后同步基线 |
+| B-06 | **已裁定（D-1）**：**严格两节点**（开发 → 测试）。协调者只保留 §2.1 角色定义，不进图、不派发、不产出 `out/summary.md`；AC-17 / AC-30 作废，AC-01/02/03/04/06/11/25/42/45 改写为两节点口径（§1.3.1 R-1） | AC 集与输出基线冻结为两节点；`docs/index.md` 的 I1.2 条目**不需要**补协调者节点 | 已由主 Agent 裁决 |
 | B-07 | **已定**：因轮次上限而停止回流时，交接包不改成"已拒绝"，仍走完到"已完成"；停止的语义由**节点 `已升级` + 实例 `已挂起`**承载 | 交接包 7 态语义不被污染；连接线（I1.10a）看不到"因上限而红"，靠节点升级角标 | 已定，I1.10a 复核 |
 | B-08 | **已定**：实例新增"已挂起"，只进不出；节点"已升级"唯一出口是"已取消"；取消时升级作废 | 挂起后只能取消，是能力缺口，必须写在提示里 | 已定，I1.4 补 |
 | B-09 | **已定**：`state.json` 升 `schemaVersion: 2`，读取兼容 v1，**v1 实例只读且读时不回写** | 老实例可查不可改；迁移在 I1.12 | 已定（M-3） |
 | B-10 | **假设**：测试在自己会话里跑命令，核心不校验命令是否真跑过 | 真实性下沉；"测试造假"拦不住，靠 I1.3 证据模型 | 待评审 |
-| B-11 | **已定（待确认）**：真实面只验收"一次成功闭环 + 回归"（AC-01 / AC-03 / AC-21 / AC-22）；取消只在夹具面（AC-11 / AC-42），规划要求的"第 2 轮失败 → 升级 → 挂起"由夹具面的 AC-07 / AC-08 / AC-09 / AC-12 覆盖 | 真实模型不肯稳定失败，硬造会污染样例；代价是回流、升级与取消在真实宿主上无证据 | 待使用者确认（§1.3.1） |
+| B-11 | **已裁定（D-2）**：真实面共 5 条 —— AC-01 / AC-03 / AC-21 / AC-22 / **AC-45**（真实回流闭环：第 1 轮不通过 → 回流 → 第 2 轮通过，目录 `demo-code-fail`）；「第 2 轮仍失败 → 升级 → 挂起」仍由夹具 AC-07 / AC-08 / AC-09 / AC-12 覆盖，取消由 AC-11 / AC-42 覆盖 | 回流在真实宿主上有证据；升级/挂起不依赖真实模型"肯不肯失败" | 已由主 Agent 裁决 |
 | B-12 | **已定**：`--template` 缺省不启用（保持 I1.1 单节点） | 若默认改闭环，I1.1 的调用与 AC 全部失效 | 已定，需确认 |
-| B-13 | **已定**：`--template` 是对基线的最小形态细化（基线把命令参数排在 I1.4）；**`--host` 只作验收夹具注入，不是产品承诺** | `--template` I1.2 先占、I1.4 补全并保持兼容；`--host` 不写进用户任务样例，I1.4 若要产品化再单独立项 | 需确认（同 I1.1 的 B-5） |
+| B-13 | **已登记（D-4）**：`--template` 是对基线的最小形态细化（基线把命令参数排在 I1.4）。**登记口径：I1.2 先占最小形态（仅 `code-loop`，缺省 `single`），I1.4 补全参数族并保持向后兼容**；**`--host` 只作验收夹具注入，不是产品承诺** | I1.4 不得重定义 `--template` 的调用方式、退出码与输出段序；`--host` 不写进用户任务样例 | 已登记（B-13） |
 | B-14 | **已定**：同一目录同时只允许一个未结束实例；"未结束"含 `已挂起`，且只判 `code-loop` | 避免两个闭环互相覆盖产物；`single` 不设此限制（保持 I1.1） | 已定（基线未写，本迭代自定），I1.7 复核 |
 | B-15 | **已定**：`MAESTRO_FAULT` / `MAESTRO_TEST_PAUSE` / `MAESTRO_TEST_STOP_AFTER` 只在 `NODE_ENV=test` 生效 | 生产误设会导致写入失败或卡住 | 已定（M-14） |
 | B-16 | **已定**：文案标点统一为全角冒号式（`核对失败：/执行失败：/派遣失败：/回流超上限：`），沿用 I1.1 `ERROR_TEMPLATE` | 若改用括号式，I1.1 的 AC-21（断言"执行失败："）会红 | 已定（M-6 / D-5） |
@@ -1450,12 +1503,15 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 | v11 | 2026-11-04 | 第四轮两份独立评审后修复（均 FAIL）：AC-33 删除无落点的"会话已失效…"并改断言升级块原因（删 `SESSION_INVALID_SUSPEND`）；M-11/D-8 统一 `roundStartedAt` 并补 mock agent 兼容行；AC-32 松开整串 JSON；AC-11 明确 `delayMs` 先出一帧并补 `nodes[1]='cancelled'`；AC-36 补 `failed→cancelled`；AC-09 补 `--keep` 与事件种类；AC-38 补全局无交接包行；M-12/D-5/AC-24 落地缺陷明细与复测要求；D-5 补 `core.gone` 与 `HANDOFF_REJECT_REASON`；D-4 `pending` 可复用；A-1 节点行覆盖中断态；§2.3 补会话迁移；NFR-09 统一 10 秒；§3.3 补每 AC 新根；R-1/B-06 补 AC-45；AC-43 放宽提示词断言；§2.5 停止推进样例补错误行 |
 | v12 | 2026-11-04 | 第五轮两份独立评审后修复（均 FAIL）：登记 R-4（`等待下游` 对基线的口径变更）并同步基线修订清单；`HANDOFF_DIRECTION.forward=''` 与方向格式；driver 新增 `--prepare-only` 供 AC-12/38 构造现场；D-8 补 `wp2/labels.test.js`、`wp9/render-fixes.test.js`；§2.3 补齐 `idle/waiting_dependency/waiting_input→escalated`；暂停期间 IPC 可用、`after_accepted` 仅首次触发、`after_verdict` 在回流包落盘后暂停；§2.4 声明升级简写的实际落点；D-5 补退出码归属；A-2 补 `single` 失败原因内联；M-12 取消未派发不显示耗时；AC-20 改混合并加夹具前缀；M-4 `verdict.read.path` 固定相对路径；AC-28 明确扫描范围；场景清单补失败步的证据文件要求 |
 | v13 | 2026-11-04 | 第六轮两份独立评审后修复（均 FAIL）：工具会话行补 ` · 已运行 Ns`（A-1/§2.2/§2.3/M-12）并新增 A-1 失败摘要段；§2.3 内部状态映射移入 D-6 且补 `waiting_input→thinking`；AC-01 补 `run` 成功收尾、AC-40 改用已挂起实例、AC-05/24 补 BR-26、AC-22 改混合、AC-42 改断言；`escalateOnce` 返回 `escalationId`；`attempt-transition.mjs` 补 `--node`；`DISPATCH_FAILED` 移出 CLI 错误码；mock 开关数改 12；§1.3.1 回流内容改指 AC-24；§2.5 样例补模板；B-02 统一八处；D-8 文案断言按实际测试更正 |
+| v14 | 2026-11-05 | **第七轮矫正（两份独立评审判定「需修订」，主 Agent 裁决 D-1~D-5）**：① **两节点裁剪**：`code-loop` = 开发 T-001 → 测试 T-002，删除 T-003 / `out/summary.md` / 第 4 张交接包；协调者只在 §2.1 角色表保留并标注"本迭代不派发，I1.5 启用"；§1.3/§1.3.1/§2.1/§2.2/§2.3/§2.5/§2.6/§2.8/§2.9/附录 A/B/§3.3 同步。② **AC 集**：AC-17 / AC-30 作废（保留标题 + 作废声明，编号不复用）；AC-01/02/03/04/06/11/25/42 改写为两节点；**AC-45 改真实面**（`demo-code-fail`，第 1 轮故意失败 → 回流 → 第 2 轮通过）；新增 **AC-46** 保留夹具面复测通过（3 张交接包）；AC 46 条（有效 44 + 作废 2）。③ **补契约 C-01~C-14**：CAS 形状、v2 对象寻址、`advance()`、`run.start`/`run.wait` 生命周期、IPC/CLI 透传、会话集合化、`store.list()` 投影、会话守卫、目录锁、事件行模板上下文、错误占位符、图数据落点、故障注入点、D-8 补全。④ **描述纠错**：M-5（白名单 10 字段、`wake()` 不存在）、M-8（`hostId` 已通到 factory/server）、M-13（无内置图，是单节点硬编码，默认图 `single`）。⑤ **口径**：D-6 回合结束→`idle` 改为"无产出提交才 `idle`，已提交产出保持 `waiting_dependency`"；AC-15 补缺陷与证据；统一"节点行单空格 / 交接包行 2 空格"；`waiting_dependency` 显示词保留「等待下游」并写明语义。⑥ **一致性**：附录 D 编号说明改正（D-1~D-5、D-8 在本附录，D-6/D-7 在 §3.3）；§2.9 标明 BR-01~BR-31（补 BR-29/30/31 引入记录）；D-8 增 `wp1/instance-store`、`wp5/ipc-server`、`wp7/wp7`，并把三处"会先红"改为"新增用例"；`--template` 登记为 I1.2 先占、I1.4 补全并保持兼容 |
+| v15 | 2026-11-05 | **第八轮矫正（自洽性复核 16 处 + 拆分文档 X1~X3 回补）**：① 阻断 6 条：AC-45 `verdict.read` 序数改为「大于 T-002 第 1 轮派发、小于 T-001 第 2 轮派发」；AC-45 话术统一为「初版只处理正常输入，回流按缺陷补除零边界」；M-12 限定 `code-loop` 加 `[#seq]`、`single` 保持 I1.1、`rejected` 两种模板都不加 seq；D-6 补 `rev` 并改正冻结字段表述；D-2 补 `failed→escalated`；D-3 补会话事件、无会话首派与节点 `failed`，并给 halted 独立写的 `expectedState` / `rev`。② 重要 6 条：AC-03 补 `orch run` Given；BR-20/21 限定 `code-loop`；`after_verdict` 钉死 `review→failed` 先于回流包；C-11 补 `text`；M-2 补同目录检查；D-8 补 `HANDOFF_EDGES`。③ 次要 4 条：基线改「等待下游」、`index.md` 引用去行号、D-5 原因词表归类、C-01 引用新形状、A-1 失败摘要正则补全。④ X1~X3：`state.rev` / `escalations[].defects[]` / `counters.dispatchCount`。 |
+| v16 | 2026-11-05 | **第九轮矫正（验收阶段 AC 可构造性修正）**：仅改 **AC-15 的 Given/When** —— 原「场景跑完」终态里 T-002 第 2 轮通过，节点行只显示当前判定，第 1 轮 `判定 不通过` 已被覆盖，与 Then 互斥。改为 `--scenario verdict-says-fail --stop-after 3 --keep` 停在「开发第 2 轮核对完成、复测派发前」的中间态，4 条 Then 逐字保留（一条未删、一条未放宽），更直接验证「以文件为准」。附 v16 口径说明。其余 AC / BR / M / C / D / 附录 A 文案不变；AC 仍 46 条（有效 44 + 作废 2）。触发原因：夹具面首轮验收 AC-15 判不通过（6/7），根因在观测点而非产品行为；`--stop-after 3` 实测 4 条 Then 全部成立。 |
 
 ---
 
 ## 附录 D 实现约束（非用户可见，供实现与任务拆分使用）
 
-> 编号说明：**D-6（状态结构）与 D-7（图级产物）位于 §3.3**，原地定义以免与用户面章节割裂；本附录从 D-8 继续。
+> 编号说明：**D-1 ~ D-5 在本附录**；**D-6（状态结构）与 D-7（图级产物）位于 §3.3**，原地定义以免与用户面章节割裂；**D-8 在本附录末尾**。
 
 ### D-1 节点迁移表（不在表内的一律拒绝）
 
@@ -1477,9 +1533,9 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 | `failed→running` | `code-loop`（目标必须是测试） | 存在 `edge.to === nodeId`、`edge.kind==='retest'`、`state ∈ {created, delivered}`、`wakeConsumedAt===null` 的交接包，且该节点 `round < 2` | `wake.rejected` + `NO_PENDING_BACKFLOW` / `ROUNDS_EXCEEDED` |
 | `running→failed` | 仅 `single` | 宿主报错、审批被拒 | — |
 | `running→escalated` | 仅 `code-loop` | 同上 | 原因码 `execution_failed` |
-| `review→failed` | `single`：核对不通过；`code-loop` 且 `round < 2`：有效判定 = `fail` | `single` 沿用 I1.1 的核对失败落 `失败`；`code-loop` 下这是"等待复测"，不是升级 | `code-loop` 的 `round === 2` 不走此边，改走 `review→escalated`（原因码见 §2.6） |
+| `review→failed` | `single`：核对不通过；`code-loop` 且 `round < 2`：有效判定 = `fail` | `single` 沿用 I1.1 的核对失败落 `失败`；`code-loop` 下这是"等待复测"，不是升级；**先落节点 `review→failed`，再构造回流包** | `code-loop` 的 `round === 2` 不走此边，改走 `review→escalated`（原因码见 §2.6） |
 | `review→escalated` | `code-loop` | 核对失败，**或** `round === 2` 的判定不通过 | 原因码见 §2.6 |
-| `pending→escalated` / `done→escalated` | 仅 `code-loop` | 目标节点派发时会话建不起来 | 原因码 `dispatch_failed` |
+| `pending→escalated` / `done→escalated` / `failed→escalated` | 仅 `code-loop` | 目标节点派发时会话建不起来（首派 / 回流 / 复测） | 原因码 `dispatch_failed` |
 
 > **顺序固定**：先校验门控（用派发前的 `round`），通过后真正派发时才 +1；**不得先 +1 再校验**，否则第 2 轮复测会被 `round < 2` 永远挡住。
 
@@ -1489,10 +1545,10 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 
 ### D-3 升级写入（一次 CAS 落盘，不逐步回滚）
 
-1. 在内存里同时改好四件事：`escalations[]` 追加一条 `pending`（幂等键 `(nodeId, round)`）、节点 → `escalated`、会话 → `escalated`、实例 → `suspended`。
-2. 以 `expectedState: { instance: 'running', halted: false }` **一次 CAS 落盘**。
-3. 成功 → 发三条迁移事件（`escalation.created` / 节点 / 实例）并返回。
-4. 失败 → **整体丢弃升级相关内存改动**，随后用**一次独立 CAS 只写 `halted: true`**（`MAESTRO_FAULT=state_write:escalation` 只让第 2 步的升级写入失败，不影响这次只改 `halted` 的写入），实例保持 `running`，节点保持升级前的状态（`review` / `running` / `done` / `pending` 之一），**不写 `failed`**；显示时在节点状态后加 `（升级未记录）`，报 `无法记录升级：<原因>；已停止推进`（`ESCALATION_WRITE_FAILED`）。AC-38 的 `halted=true` 就来自这次独立落盘。
+1. 在内存里同时改好下列事项（会话按是否存在计）：`escalations[]` 追加一条 `pending`（幂等键 `(nodeId, round)`）、节点 → `escalated`、会话存在时 → `escalated`（首派建会话失败时没有会话，跳过）、实例 → `suspended`。
+2. 以 `expectedState: { state: 'running', halted: false, rev: <当前快照 rev> }` **一次 CAS 落盘**（形状见 C-01：`rev` 每次写递增，CAS 比整快照版本，不只比 `state.state`）。
+3. 成功 → 发四条迁移事件（`escalation.created` / 节点 / 会话 / 实例）并返回；**首派失败没有会话时只发三条**（`escalation.created` / 节点 / 实例）。
+4. 失败 → **整体丢弃升级相关内存改动**，随后用**一次独立 CAS 只写 `halted: true`**，其 `expectedState` 为 `{ state: 'running', halted: false, rev: <升级写入失败后重新读取的当前快照 rev> }`（`rev` 必须取失败后重读的快照，不得沿用第 2 步的旧值；`MAESTRO_FAULT=state_write:escalation` 只让第 2 步的升级写入失败，不影响这次只改 `halted` 的写入），实例保持 `running`，节点保持升级前的状态（`review` / `running` / `done` / `pending` / `failed` 之一），**不写 `failed`**；显示时在节点状态后加 `（升级未记录）`，报 `无法记录升级：<原因>；已停止推进`（`ESCALATION_WRITE_FAILED`）。AC-38 的 `halted=true` 就来自这次独立落盘。
 
 > 不允许"先写升级、再置节点、再置会话、再置实例"的四次独立落盘——第 2~4 步失败会留下"节点已升级、实例仍 running"且 `escalated` 没有回边（D-1）的不可自愈状态。
 > 故障注入的语义必须是"升级那一次 CAS 失败"，不能是"所有 state 写入失败"，否则 `halted` 也无法落盘，AC-38 不可复现。
@@ -1544,14 +1600,14 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 | `BACKFLOW_DEFECT_LINE` | `缺陷 {i}：{summary}（证据 {evidence}）`（事件行下的缩进明细，前缀 6 空格） | AC-24 |
 | `BACKFLOW_RETEST_LINE` | `复测要求：{text}`（事件行下的缩进明细，前缀 6 空格） | AC-24 |
 | `INSTANCE_STOPPED_SUFFIX` | `已停止推进` | AC-38 |
-| `REASON_LABEL`（I1.2 新增） | `node.dispatch='派发'`、`verdict.read='读取判定'`、`verdict.invalid='判定无效'`、`backflow.constructed='构造回流'`、`rounds.exceeded='超上限'`、`handoff.rejected='交接被拒'`、`escalation.created='创建升级'`、`escalation.voided='作废升级'`、`core.suspend='挂起'`、`wake.rejected='唤醒被拒'`、`run.halted='停止推进'`、`core.gone='核心消失'` | AC-02 / AC-15 / AC-24（`core.gone` 供已中断事件行） |
-| `REASON_LABEL`（I1.1 既有，沿用不改写） | `state.change='状态变化'`、`illegal_transition='非法迁移'`、`store.write_failed='写入失败'`、`store.conflict='写入冲突'`、`run.started='开始运行'`、`permission.requested='请求审批'`、`permission.allowed='审批放行'`、`permission.denied='审批拒绝'`、`session.state='会话状态'`、`output.submitted='产出已提交'`、`verification.skipped='跳过核对'`、`verification.passed='核对通过'`、`verification.failed='核对失败'`、`run.cancelled='取消运行'`、`run.completed='运行完成'`、`run.failed='运行失败'`、`handoff.created='构造交接'`、`handoff.delivered='交接已投递'`、`handoff.consumed='产出核对通过'`、`turn.first_event='首个事件'`、`core.stop='核心停止'` | AC-21 / AC-22（I1.1 回归） |
+| `REASON_LABEL`（I1.2 新增） | `node.dispatch='派发'`、`verdict.read='读取判定'`、`verdict.invalid='判定无效'`、`backflow.constructed='构造回流'`、`rounds.exceeded='超上限'`、`escalation.created='创建升级'`、`escalation.voided='作废升级'`、`core.suspend='挂起'`、`wake.rejected='唤醒被拒'`、`run.halted='停止推进'` | AC-02 / AC-15 / AC-24 |
+| `REASON_LABEL`（I1.1 既有，沿用不改写） | `state.change='状态变化'`、`illegal_transition='非法迁移'`、`store.write_failed='写入失败'`、`store.conflict='写入冲突'`、`run.started='开始运行'`、`permission.requested='请求审批'`、`permission.allowed='审批放行'`、`permission.denied='审批拒绝'`、`session.state='会话状态'`、`output.submitted='产出已提交'`、`verification.skipped='跳过核对'`、`verification.passed='核对通过'`、`verification.failed='核对失败'`、`run.cancelled='取消运行'`、`run.completed='运行完成'`、`run.failed='运行失败'`、`handoff.created='构造交接'`、`handoff.delivered='交接已投递'`、`handoff.rejected='交接被拒'`、`handoff.consumed='产出核对通过'`、`turn.first_event='首个事件'`、`core.stop='核心停止'`、`core.gone='核心消失'` | AC-21 / AC-22（I1.1 回归；`core.gone` 供已中断事件行） |
 | `TEMPLATE_LABEL` | `single='单节点'`、`code-loop='编码闭环'`（`single` 项保留不用：`single` 实例行不打印模板） | AC-01 / AC-12 |
 | `ROLE_LABEL` | `developer='开发'`、`tester='测试'`、`coordinator='协调者'` | AC-04 / AC-08 / AC-39 |
 | `INSTANCE_LABEL.suspended` | `已挂起` | AC-07 / AC-12 |
 | `NODE_LABEL.escalated` | `已升级` | AC-08 / AC-39 |
 | `ESCALATION_LABEL` | `pending='待处理'`、`voided='已作废'` | AC-08 / AC-36 |
-| `HANDOFF_DIRECTION` | `forward=''`（空串）、`backflow='回流'`、`retest='复测'`；方向文本固定为 `<fromRole>→<toRole>`，仅当后缀非空时追加 `（<后缀>）`（即 `开发→测试` / `测试→开发（回流）` / `开发→测试（复测）`） | AC-04 / AC-41 / AC-45 |
+| `HANDOFF_DIRECTION` | `forward=''`（空串）、`backflow='回流'`、`retest='复测'`；方向文本固定为 `<fromRole>→<toRole>`，仅当后缀非空时追加 `（<后缀>）`（即 `开发→测试` / `测试→开发（回流）` / `开发→测试（复测）`） | AC-04 / AC-41 / AC-46 |
 | `HANDOFF_REJECT_REASON`（沿用 I1.1 `render.js` 既有映射） | `withdrawn='已撤回'`、`permission_denied='审批被拒'`、`target_rejected='目标拒绝'` | AC-11 / AC-37（取消写 `rejectReason='withdrawn'`，屏幕上显示 `原因 已撤回`） |
 
 > **退出码归属**：业务错误（`TASK_EMPTY` / `TEMPLATE_UNKNOWN` / `PRODUCT_LINE_MISSING` / `DIR_BUSY` / `INSTANCE_RUNNING` / `NODE_BUSY` / `INSTANCE_SUSPENDED` / `INSTANCE_TERMINAL` / `LEGACY_READ_ONLY` / `ESCALATION_WRITE_FAILED` / `CANCEL_NOT_NEEDED`）一律退出码 1；`parseArgs` 用法错误 2；连接/内部错误 3；`suspended` 收尾 4；`halted` 收尾 5。`CANCEL_NOT_NEEDED` 不是故障，但命令未完成请求，同样记 1，靠提示语说明"无需取消"。**`DISPATCH_FAILED` 不是 CLI 错误码**，它是升级原因码，派发失败时实例 `已挂起`、`orch run` 收尾退出码 4（BR-24 / AC-33）。
@@ -1574,17 +1630,22 @@ node test/fixtures/mock-acp-agent.js --root <项目根绝对路径> --scenario <
 
 ### D-8 必须同步重写的 I1.1 测试（否则实现先红）
 
+> 列的是"按 M/C 契约落地后**现有断言必然红**"的文件；标「新增用例」的是**现在不会红**、只需要补断言的文件。**两者必须分开改**，否则第 1 天会同时红 30+ 处，分不清回归红与契约变更红。
+
 | 文件 | 触发的契约 | 改法 |
 |---|---|---|
-| `test/wp2/state-machine.test.js` | M-1 / M-5 | `NODE_EDGES` 补 10 条边；终态集合去掉 `done`；`TABLES.handoff` 补 `created→rejected` |
-| `test/wp2/labels.test.js` | M-6 | 按 D-5 补全逐字断言：`INSTANCE_LABEL.suspended`、`NODE_LABEL.escalated`、`ROLE_LABEL`、`TEMPLATE_LABEL`、`ESCALATION_LABEL`、`HANDOFF_DIRECTION`（`forward=''`）、新增 `REASON_LABEL`，以及 §2 新增错误码文案 |
-| `test/wp3/handoff-tracker.test.js` | M-5 | `LEGAL` 补 `created→rejected`；补 `wake()` 与 `snapshot().wakeConsumedAt` 用例 |
-| `test/wp3/launch-config.test.js` | M-8 | `hostId` 透传到 `adapterFactory` 的断言 |
-| `test/wp4/orchestrator.test.js` | M-2 / M-9 / M-10 | 精确事件序列按新增 `node.dispatch` / `verdict.*` / `escalation.*` 更新；退出码 4/5；`applyCancel` 的数组返回值 |
-| `test/wp4/verify-artifact.test.js` | M-11 | 补 mtime 晚于 `roundStartedAt` 的用例（第 2 轮不得用首次 `startedAt` 放行旧产物）；现有 `未找到声明的产出` 断言不变，新增空文件用例断言 `产出为空 <路径>` |
-| `test/fixtures/mock-acp-agent.js` + `test/wp7/wp7.test.js` / `test/wp8/helpers.js` / `test/wp9/cli-e2e.test.js` | 夹具契约 | **兼容约束**：不带 `--root/--scenario` 时，I1.1 的 12 个开关与缺省行为完全不变（AC-22 用旧开关重跑 15~25）；新增的 `--root/--scenario` 只是另一条入口，不得改写旧开关的语义 |
-| `test/wp6/render.test.js` | M-6 / M-12 | 事件行加 `[#seq]` 与中文原因；节点行多节点/轮次/判定；交接包方向（现有 `未找到声明的产出` 断言不变；空文件新用例断言 `产出为空 <路径>`） |
-| `test/wp6/main.test.js` | M-8 / M-9 | `VALUE_FLAGS` 加 `template` / `host`；usage；退出码 4/5 |
-| `test/wp8/*.test.js` | M-10 | `applyCancel` 改遍历 `nodes[]` / `sessions[]` / `handoffs[]` / `escalations[]`，返回值形状同步 |
-| `test/fixtures/attempt-transition.mjs` | §3.3 夹具契约 / D-6 | v2 下从 `snapshot.node` 改读 `nodes[]`；新增 `--node <nodeId>` 定位（缺省 `nodes[0]`），否则 AC-25 无法指定 T-003 |
+| `test/wp2/state-machine.test.js` | M-1 / M-5 / C-03 | `NODE_EDGES` 补 10 条边（相对 I1.1 的 7 态表）；终态集合去掉 `done`；`TABLES.handoff` 与测试里的 `HANDOFF_EDGES` 都补 `created→rejected`。**必须同时改两处易漏断言**：`explicit out-of-table samples`（`done→running`、`done→escalated` 变合法）与 `escalated accepts no transition at all`（`DEFINED_ONLY.node` 清空 + 新增 `escalated→cancelled`） |
+| `test/wp2/labels.test.js` | M-6 | 按 D-5 补全逐字断言：`INSTANCE_LABEL.suspended`、`NODE_LABEL.escalated`、`ROLE_LABEL`（`developer/tester/coordinator`）、`TEMPLATE_LABEL`、`ESCALATION_LABEL`、`HANDOFF_DIRECTION`（`forward=''`）、新增 `REASON_LABEL`，以及 §2 新增错误码文案 |
+| `test/wp1/instance-store.test.js` | M-3 / C-01 / C-07 | **列表投影 deepEqual 必红**：把 `list()` 的完整/半截实例断言改为 v2 形状（增 `schemaVersion/template/cwd/pendingEscalations`）；补 `load` 对 `schemaVersion:1` 仍可读的用例；CAS 旧用例保持字符串 `expectedState` 绿，另加 `{state,halted,rev}` 对象形状与 `rev` 递增用例 |
+| `test/wp3/handoff-tracker.test.js` | M-5 | `LEGAL` 补 `created→rejected`；补 `wake()` 与 `snapshot().wakeConsumedAt` 用例（这条是**新增能力**，不是给既有字段加穿透） |
+| `test/wp3/launch-config.test.js` | M-8 | **新增用例**：`hostId` 透传到 `adapterFactory`（现有用例完全不涉及 `hostId`，不会先红） |
+| `test/wp4/orchestrator.test.js` | M-2 / M-3 / M-9 / M-10 / C-03 / C-04 | **形状断言必红**：`happy path` 与 `VERIFY_FAILED` 里的 `state.node.state` / `state.handoff.state` / `state.session.state` / `state.node.roleId` 全部改为 `nodes[0]/sessions.at(-1)/handoffs.at(-1)`；`cancel：立即落三对象终态` 改数组返回值；精确事件序列按新增 `node.dispatch` / `verdict.*` / `escalation.*` 更新；退出码 4/5；新增 `advance()` 的"终节点才 completed"用例 |
+| `test/wp4/verify-artifact.test.js` | M-11 | **新增用例**（不是必红）：补 `产物：` 行、`roundStartedAt`（第 2 轮不得用首次 `startedAt` 放行旧产物）、空文件断言 `产出为空 <路径>`；现有 `未找到声明的产出` 断言**不改**，空文件用例只 `includes`，都不会先红 |
+| `test/wp5/ipc-server.test.js` | M-10 / C-05 | **`instance.cancel` 结果形状必红**：`cancelled.result.node.state` 改为 `cancelled.result.nodes[0].state`，并补 `sessions/handoffs/escalations` 三个数组存在性；新增 `run.start` 透传 `template` 的用例 |
+| `test/wp6/render.test.js` | M-6 / M-12 / C-10 | 事件行加 `[#seq]` 与中文原因（`code-loop`）；节点行多节点/轮次/判定；交接包方向；**保留 `single` 旧版式用例**作为回归 |
+| `test/wp6/main.test.js` | M-8 / M-9 / C-05 | **新增用例**（不是必红）：`VALUE_FLAGS` 加 `template` / `host`、usage 行、退出码 4/5；现有 `exitCodeFor` 只测 0/1/3，不会先红 |
+| `test/wp7/wp7.test.js` | M-3 / C-04 | **断言层必红**：`早返回` 与 `run.wait` 用例里的 `waited.snapshot.node.state` 改为 `snapshot.nodes[0].state`；`run.wait` 的完成条件改为 `RUN_DONE_INSTANCE ∪ suspended ∪ halted`；早返回点固定为 T-001 的 HO-001 `delivered` |
+| `test/wp8/*.test.js` | M-3 / M-10 / C-06 | `f1` / `f4` 的断言改用 `test/wp8/helpers.js` 的 `firstNode(state)/lastSession(state)/lastHandoff(state)`；`f2` 的 **v1 seed 保持不变**，断言改为"对账后未被改写"；`f3` 的字符串 CAS 用例保持不变，新增对象形状用例 |
+| `test/fixtures/mock-acp-agent.js` + `test/wp8/helpers.js` + `test/wp9/cli-e2e.test.js` | 夹具契约 | **兼容约束**：不带 `--root/--scenario` 时，I1.1 的 12 个开关与缺省行为完全不变（AC-22 用旧开关重跑 15~25）；新增的 `--root/--scenario` 只是另一条入口；`cli-e2e` 保留 `single` 用例，另加 `code-loop` 前三行/退出码 4/5 |
+| `test/fixtures/attempt-transition.mjs` | §3.3 夹具契约 / D-6 | v2 下从 `snapshot.node` 改读 `nodes[]`；新增 `--node <nodeId>` 定位（缺省 `nodes[0]`），否则 AC-25 无法指定 `T-002` |
 | `test/wp9/render-fixes.test.js` | M-12 | 事件行 `[#seq]` 与中文原因、节点行轮次/判定、交接包方向、升级块、`run` 收尾块按 A-2 / A-4 更新；`rejected` 事件行保持 I1.1 版式 |

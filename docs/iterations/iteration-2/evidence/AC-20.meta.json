@@ -1,0 +1,22 @@
+{
+  "ac": "AC-20",
+  "face": "混合（夹具造 v1 现场 + 产品命令查询）",
+  "startedAt": "2026-11-05T14:00:33.825Z",
+  "finishedAt": "2026-11-05T14:00:34.739Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac20",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac20"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "旧格式实例只读可查（含「看也不改」）",
+  "narrativeId": "INST-217"
+}

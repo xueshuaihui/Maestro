@@ -1,0 +1,22 @@
+{
+  "ac": "AC-46",
+  "face": "夹具",
+  "startedAt": "2026-11-05T13:17:07.961Z",
+  "finishedAt": "2026-11-05T13:17:10.107Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac46",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac46"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "夹具面：回流后复测通过，两节点闭环完成",
+  "narrativeId": "INST-239"
+}

@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-9c8fe47e42694ec6",
+  "createdAt": "2026-11-05T13:08:33.119Z",
+  "updatedAt": "2026-11-05T13:08:34.303Z",
+  "state": "suspended",
+  "stateSince": "2026-11-05T13:08:34.302Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac12\\demo-code-pass",
+  "task": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 43,
+  "counters": {
+    "eventSeq": 47,
+    "runCount": 1,
+    "dispatchCount": 4
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 2,
+      "state": "done",
+      "stateSince": "2026-11-05T13:08:34.020Z",
+      "startedAt": "2026-11-05T13:08:33.134Z",
+      "roundStartedAt": "2026-11-05T13:08:33.738Z",
+      "endedAt": "2026-11-05T13:08:34.025Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-13328-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac12\\demo-code-pass\\calc.js",
+          "exists": true,
+          "bytes": 291,
+          "mtime": "2026-11-05T13:08:33.970Z",
+          "verifiedAt": "2026-11-05T13:08:34.020Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 2,
+      "state": "escalated",
+      "stateSince": "2026-11-05T13:08:34.302Z",
+      "startedAt": "2026-11-05T13:08:33.423Z",
+      "roundStartedAt": "2026-11-05T13:08:34.050Z",
+      "endedAt": "2026-11-05T13:08:34.302Z",
+      "failure": null,
+      "note": null,
+      "verdict": {
+        "value": "fail",
+        "defectCount": 1,
+        "verdictPath": "out/verdict.json",
+        "readAt": "2026-11-05T13:08:34.294Z"
+      },
+      "sessionId": "mock-sess-26200-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-24556-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-05T13:08:33.406Z",
+      "createdAt": "2026-11-05T13:08:33.354Z",
+      "lastEventAt": "2026-11-05T13:08:33.360Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac12\\demo-code-pass\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-14540-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-05T13:08:33.715Z",
+      "createdAt": "2026-11-05T13:08:33.635Z",
+      "lastEventAt": "2026-11-05T13:08:33.653Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac12\\demo-code-pass\\out\\test-log.txt",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-13328-1",
+      "nodeId": "T-001",
+      "round": 2,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-05T13:08:34.033Z",
+      "createdAt": "2026-11-05T13:08:33.961Z",
+      "lastEventAt": "2026-11-05T13:08:33.974Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac12\\demo-code-pass\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-26200-1",
+      "nodeId": "T-002",
+      "round": 2,
+      "hostId": "mock",
+      "state": "escalated",
+      "stateSince": "2026-11-05T13:08:34.302Z",
+      "createdAt": "2026-11-05T13:08:34.257Z",
+      "lastEventAt": "2026-11-05T13:08:34.263Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac12\\demo-code-pass\\out\\test-log.txt",
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-05T13:08:33.418Z",
+      "deliveredAt": "2026-11-05T13:08:33.635Z",
+      "acceptedAt": "2026-11-05T13:08:33.644Z",
+      "consumedAt": "2026-11-05T13:08:33.697Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 9,
+      "defects": [],
+      "note": null
+    },
+    {
+      "handoffId": "HO-002",
+      "edge": {
+        "from": "T-002",
+        "to": "T-001",
+        "kind": "backflow"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-05T13:08:33.729Z",
+      "deliveredAt": "2026-11-05T13:08:33.962Z",
+      "acceptedAt": "2026-11-05T13:08:33.967Z",
+      "consumedAt": "2026-11-05T13:08:34.025Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": "2026-11-05T13:08:33.729Z",
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 5,
+      "defects": [
+        {
+          "summary": "div 在除数为 0 时返回 Infinity，未抛错",
+          "evidence": "out/test-log.txt"
+        },
+        {
+          "summary": "div 在整除场景存在浮点误差",
+          "evidence": "out/test-log-2.txt"
+        }
+      ],
+      "note": null
+    },
+    {
+      "handoffId": "HO-003",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "retest"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-05T13:08:34.045Z",
+      "deliveredAt": "2026-11-05T13:08:34.257Z",
+      "acceptedAt": "2026-11-05T13:08:34.261Z",
+      "consumedAt": "2026-11-05T13:08:34.295Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 4,
+      "defects": [],
+      "note": null
+    }
+  ],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-002",
+      "round": 2,
+      "reasonCode": "rounds_exceeded",
+      "reasonDetail": "回流超上限：测试已派发 2 次仍未通过",
+      "defects": [
+        {
+          "summary": "div 在除数为 0 时返回 Infinity，未抛错",
+          "evidence": "out/test-log.txt"
+        }
+      ],
+      "state": "pending",
+      "createdAt": "2026-11-05T13:08:34.302Z",
+      "voidedAt": null
+    }
+  ]
+}

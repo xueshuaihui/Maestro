@@ -1,0 +1,38 @@
+{
+  "ac": "NFR-03",
+  "face": "夹具（5 个独立项目根）",
+  "startedAt": "2026-11-05T13:17:17.199Z",
+  "finishedAt": "2026-11-05T13:17:24.487Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "nfr03-code-pass",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-code-pass"
+    },
+    {
+      "case": "nfr03-backflow-once",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-backflow-once"
+    },
+    {
+      "case": "nfr03-retest-fail",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-retest-fail"
+    },
+    {
+      "case": "nfr03-artifact-missing",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-artifact-missing"
+    },
+    {
+      "case": "nfr03-verdict-missing",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr03-verdict-missing"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "NFR-03 连跑 5 个闭环 0 次乱序",
+  "narrativeId": "NFR-03"
+}

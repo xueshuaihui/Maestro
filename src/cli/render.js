@@ -1,45 +1,59 @@
 /**
- * 渲染层：把结构化快照 / 事件变成**给用户看的那一行**（拆分文档 §2.14）。
+ * 渲染层：把结构化快照 / 事件变成**给用户看的那一行**（拆分文档 §2.13）。
  *
  * 纪律：
  * 1. 状态名一律取自 `labels.js`，本文件不复制状态名表；这里只保留层名前缀
- *    （实例 / 节点 / 会话 / 交接包，需求附录 A 的“避免混读”）与格式模板。
+ *    （实例 / 节点 / 会话 / 交接包 / 升级，需求附录 A 的“避免混读”）与格式模板。
  * 2. 时间戳一律本地时区 `HH:mm:ss`；时长一律走 `labels.formatDuration`。
  * 3. 失败原因里的宿主原文（`params.raw`）原样拼入，不截断、不改写（BR-12 / AC-22）。
  * 4. 任何函数都不读文件、不发 IPC，纯函数，便于单测。
+ * 5. `single` 是 I1.1 红线：同一函数按 `template` 分流时，`single` 分支逐字保持
+ *    I1.1 版式；`code-loop` 才加模板、轮次、判定、方向、序号与升级块。
  */
 import {
   CLI_NOTE,
   ERROR_TEMPLATE,
+  ESCALATION_BLOCK,
+  ESCALATION_LABEL,
+  ESCALATION_SUMMARY_LINE,
   HANDOFF_LABEL,
+  HANDOFF_REJECT_REASON,
   INSTANCE_LABEL,
+  INSTANCE_STOPPED_SUFFIX,
+  LAYER,
+  NEXT_STEP_HALTED,
+  NEXT_STEP_SUSPENDED,
   NODE_LABEL,
+  NODE_QUALIFIER,
+  REASON_LABEL,
+  ROLE_LABEL,
   SESSION_LABEL,
+  TEMPLATE_LABEL,
+  BACKFLOW_DEFECT_LINE,
+  BACKFLOW_RETEST_LINE,
   formatDuration,
+  formatHandoffDirection,
 } from './labels.js';
-
-/** 层名前缀（需求附录 A）。中文只此一处，其余状态名全部来自 labels.js。 */
-const LAYER = Object.freeze({ instance: '实例', node: '节点', session: '会话', handoff: '交接包' });
 
 const STATE_LABEL = Object.freeze({
   instance: INSTANCE_LABEL,
   node: NODE_LABEL,
   session: SESSION_LABEL,
   handoff: HANDOFF_LABEL,
+  escalation: ESCALATION_LABEL,
 });
 
-/** 交接包拒绝原因的人话（是原因词，不是状态名；labels.js 里没有原因词）。 */
-const REJECT_REASON = Object.freeze({
-  withdrawn: '已撤回',
-  permission_denied: '审批被拒',
-  target_rejected: '目标拒绝',
-});
+/** 交接包拒绝原因的人话（labels.js 的 `HANDOFF_REJECT_REASON`，D-5）。 */
+const REJECT_REASON = HANDOFF_REJECT_REASON;
 
+/** D-4：`suspended` 不在这里——它决定是否打“等待目标响应”，挂起仍然可以等。 */
 const TERMINAL_INSTANCE = new Set(['completed', 'failed', 'cancelled', 'interrupted']);
+
+const BACKFLOW_DETAIL_INDENT = '      ';
 
 const USAGE_LINES = Object.freeze([
   '用法：orch run|status|cancel|core',
-  '  orch run --cwd <目录> --task <说明> [--instance <实例号>]',
+  '  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]',
   '  orch status [--instance <实例号>] [--events]',
   '  orch cancel --instance <实例号>',
   '  orch core stop',
@@ -69,6 +83,16 @@ function layerName(object) {
   return LAYER[object] ?? String(object ?? '?');
 }
 
+function roleLabel(roleId) {
+  if (typeof roleId !== 'string' || roleId.length === 0) return null;
+  return ROLE_LABEL[roleId] ?? roleId;
+}
+
+function templateLabel(name) {
+  if (typeof name !== 'string' || name.length === 0) return null;
+  return TEMPLATE_LABEL[name] ?? name;
+}
+
 function durationBetween(fromIso, toIso) {
   const from = Date.parse(fromIso ?? '');
   const to = Date.parse(toIso ?? '');
@@ -76,46 +100,144 @@ function durationBetween(fromIso, toIso) {
   return Math.max(0, to - from);
 }
 
-/** “已运行 Ns”：优先用快照里的 elapsedMs，缺失时按 stateSince 回算（不自己记时间）。 */
-function sessionElapsed(snapshot, nowMs) {
-  if (Number.isFinite(snapshot?.elapsedMs)) return formatDuration(snapshot.elapsedMs);
-  const since = Date.parse(snapshot?.session?.stateSince ?? snapshot?.stateSince ?? '');
-  if (Number.isFinite(since) && Number.isFinite(nowMs)) return formatDuration(nowMs - since);
-  return formatDuration(0);
+function replaceAll(template, vars) {
+  return String(template).replace(/\{(\w+)\}/g, (match, key) => {
+    const value = vars[key];
+    return value === undefined || value === null ? '' : String(value);
+  });
 }
 
+// ---------------------------------------------------------------- 快照适配（v2 数组 / v1 单对象）
+
 /**
- * 同上，但“取不到时长”时返回 null 而不是 `0s`。
- * 用于工具调用行：没有时长信息时不硬造 `已运行 0s`（AC-03 的时长必须来自快照）。
+ * v2 快照读数组，v1 快照读单对象。所有渲染函数都经过这里，
+ * 因此 WP-4 尚未落地 `nodes[]` 时 `single` 的旧路径照常工作（契约兼容缺省）。
  */
-function sessionElapsedOrNull(snapshot, nowMs) {
+export function snapshotView(snapshot) {
+  const nodes = Array.isArray(snapshot?.nodes)
+    ? snapshot.nodes
+    : snapshot?.node
+      ? [snapshot.node]
+      : [];
+  const sessions = Array.isArray(snapshot?.sessions)
+    ? snapshot.sessions
+    : snapshot?.session
+      ? [snapshot.session]
+      : [];
+  const handoffs = Array.isArray(snapshot?.handoffs)
+    ? snapshot.handoffs
+    : snapshot?.handoff
+      ? [snapshot.handoff]
+      : [];
+  const escalations = Array.isArray(snapshot?.escalations) ? snapshot.escalations : [];
+  const template =
+    typeof snapshot?.template === 'string' && snapshot.template.length > 0 ? snapshot.template : 'single';
+  return {
+    nodes,
+    sessions,
+    handoffs,
+    escalations,
+    template,
+    node: nodes[0] ?? null,
+    // 会话只渲染“当前（或最后一个）”一条。
+    session: sessions.length > 0 ? sessions[sessions.length - 1] : null,
+    handoff: handoffs.length > 0 ? handoffs[handoffs.length - 1] : null,
+  };
+}
+
+function templateOf(snapshot, explicit) {
+  if (typeof explicit === 'string' && explicit.length > 0) return explicit;
+  return snapshotView(snapshot).template;
+}
+
+function nodeIdOf(node) {
+  const id = node?.nodeId ?? node?.id ?? null;
+  return typeof id === 'string' && id.length > 0 ? id : null;
+}
+
+/** 会话行 / 会话收尾行的时长来源：优先 `elapsedMs`，其次 `stateSince` 回算。 */
+function sessionElapsed(snapshot, nowMs, session, { nullable = false } = {}) {
   if (Number.isFinite(snapshot?.elapsedMs)) return formatDuration(snapshot.elapsedMs);
-  const since = Date.parse(snapshot?.session?.stateSince ?? snapshot?.stateSince ?? '');
+  const since = Date.parse(session?.stateSince ?? snapshot?.session?.stateSince ?? snapshot?.stateSince ?? '');
   if (Number.isFinite(since) && Number.isFinite(nowMs)) return formatDuration(nowMs - since);
-  return null;
+  return nullable ? null : formatDuration(0);
 }
 
 // ---------------------------------------------------------------- 实例
 
-/** '实例 INST-001 · 运行中' */
+/** '实例 INST-001 · 运行中'；`code-loop` 追加 '· 已停止推进' 与 '· 模板 编码闭环'。 */
 export function renderInstanceLine(snapshot) {
   const id = snapshot?.instanceId ?? '?';
   const label = stateLabel('instance', snapshot?.state) ?? '?';
-  return `${LAYER.instance} ${id} · ${label}`;
+  const template = templateOf(snapshot);
+
+  const parts = [`${LAYER.instance} ${id} · ${label}`];
+  if (template !== 'single') {
+    if (snapshot?.halted === true) parts.push(INSTANCE_STOPPED_SUFFIX);
+    const name = templateLabel(template);
+    if (name) parts.push(`模板 ${name}`);
+  }
+  return parts.join(' · ');
 }
 
-/** `orch status` 无参数时的一行摘要：实例号、状态、节点、会话、耗时、更新时间。 */
+/** 列表行耗时：节点真实执行区间的并集起点→终点；运行中退回 `elapsedMs`。 */
+function listElapsed(item, snapshot) {
+  const { nodes } = snapshotView(snapshot);
+  let from = null;
+  let to = null;
+  for (const node of nodes) {
+    const start = Date.parse(node?.startedAt ?? '');
+    if (!Number.isFinite(start)) continue;
+    if (from === null || start < from) from = start;
+    const end = Date.parse(node?.endedAt ?? '');
+    if (Number.isFinite(end) && (to === null || end > to)) to = end;
+  }
+  if (from !== null && to !== null) return formatDuration(Math.max(0, to - from));
+  if (Number.isFinite(snapshot?.elapsedMs)) return formatDuration(snapshot.elapsedMs);
+  if (item?.elapsedMs !== undefined && Number.isFinite(item.elapsedMs)) return formatDuration(item.elapsedMs);
+  return '-';
+}
+
+/**
+ * `orch status` 无参数时的一行摘要：
+ * `实例 <号> · <状态>[ · 模板 <名>][ · 待处理升级 N] · 节点 <状态> · 会话 <状态> · 耗时 <d> · 更新 <时间>`
+ * `single` / v1 实例不打印模板与待处理升级（A-2）。
+ */
 export function renderInstanceListRow(item, snapshot) {
+  const view = snapshotView(snapshot);
   const id = item?.instanceId ?? snapshot?.instanceId ?? '?';
   const instanceState = stateLabel('instance', snapshot?.state ?? item?.state) ?? '?';
-  const nodeState = stateLabel('node', snapshot?.node?.state ?? item?.nodeState) ?? '-';
-  const sessionState = stateLabel('session', snapshot?.session?.state ?? item?.sessionState) ?? '-';
-  // 耗时优先取节点真实执行区间；运行中的实例退回快照的 elapsedMs。
-  const nodeMs = durationBetween(snapshot?.node?.startedAt, snapshot?.node?.endedAt);
-  const rawMs = nodeMs ?? (Number.isFinite(snapshot?.elapsedMs) ? snapshot.elapsedMs : null);
-  const elapsed = rawMs === null ? '-' : formatDuration(rawMs);
+  const template =
+    typeof snapshot?.template === 'string' && snapshot.template.length > 0
+      ? snapshot.template
+      : typeof item?.template === 'string' && item.template.length > 0
+        ? item.template
+        : 'single';
+  const showTemplate = template !== 'single' && !(Number.isInteger(item?.schemaVersion) && item.schemaVersion < 2);
+
+  const nodeState = stateLabel('node', view.node?.state ?? item?.nodeState) ?? '-';
+  const sessionState = stateLabel('session', view.session?.state ?? item?.sessionState) ?? '-';
+  const elapsed = listElapsed(item, snapshot);
   const updated = formatClock(snapshot?.updatedAt ?? item?.updatedAt) ?? '-';
-  return `${LAYER.instance} ${id} · ${instanceState} · ${LAYER.node} ${nodeState} · ${LAYER.session} ${sessionState} · 耗时 ${elapsed} · 更新 ${updated}`;
+
+  const parts = [`${LAYER.instance} ${id} · ${instanceState}`];
+  if (showTemplate) {
+    const name = templateLabel(template);
+    if (name) parts.push(`模板 ${name}`);
+    const pending = pendingEscalationCount(item, snapshot);
+    if (pending > 0) parts.push(`待处理升级 ${pending}`);
+  }
+  parts.push(`${LAYER.node} ${nodeState}`);
+  parts.push(`${LAYER.session} ${sessionState}`);
+  parts.push(`耗时 ${elapsed}`);
+  parts.push(`更新 ${updated}`);
+  return parts.join(' · ');
+}
+
+function pendingEscalationCount(item, snapshot) {
+  if (Number.isInteger(item?.pendingEscalations)) return item.pendingEscalations;
+  const { escalations } = snapshotView(snapshot);
+  return escalations.filter((entry) => entry?.state === 'pending').length;
 }
 
 /** 快照损坏的实例仍然出现在列表里，不能假装“没有这个实例”（AC-13 的反面）。 */
@@ -134,9 +256,10 @@ export function renderNoInstances() {
 
 /** '实例 INST-001 · 已中断 ｜ 停在节点 执行中 / 会话 执行中'（AC-12） */
 export function renderInterruptedNote(snapshot) {
+  const view = snapshotView(snapshot);
   const id = snapshot?.instanceId ?? '?';
-  const nodeState = stateLabel('node', snapshot?.node?.state) ?? '-';
-  const sessionState = stateLabel('session', snapshot?.session?.state) ?? '-';
+  const nodeState = stateLabel('node', view.node?.state) ?? '-';
+  const sessionState = stateLabel('session', view.session?.state) ?? '-';
   return `${LAYER.instance} ${id} · ${INSTANCE_LABEL.interrupted} ｜ 停在节点 ${nodeState} / ${LAYER.session} ${sessionState}`;
 }
 
@@ -151,30 +274,31 @@ export function renderCoreGoneNote(instanceId) {
 // ---------------------------------------------------------------- 会话
 
 /**
- * '会话 执行中 · 已运行 3s' | '会话 执行中 · 调用工具（write）· 已运行 3s'
- * | '会话 等待审批：write' | '会话 等待下游' | '会话 空闲'
- * 没有会话时返回 null（由调用方决定是否跳过这一行）。
+ * 六种分支（需求 A-2 第 4 段 / M-12）：
+ *   '会话 空闲' | '会话 执行中 · 已运行 3s' | '会话 执行中 · 调用工具（write） · 已运行 3s'
+ *   '会话 等待审批：write' | '会话 等待下游' | '会话 已升级'
+ * 只渲染当前（最后一个）会话；没有会话时返回 null。
  */
-export function renderSessionLine(snapshot, nowMs) {
-  const session = snapshot?.session;
+export function renderSessionLine(snapshot, nowMs, { template } = {}) {
+  void template; // 六种分支两模板一致；参数保留是为 §2.13 的签名契约。
+  const view = snapshotView(snapshot);
+  const session = view.session;
   if (!session) return null;
   const label = stateLabel('session', session.state);
   if (!label) return null;
 
   if (session.state === 'thinking') {
-    return `${LAYER.session} ${label} · 已运行 ${sessionElapsed(snapshot, nowMs)}`;
+    return `${LAYER.session} ${label} · 已运行 ${sessionElapsed(snapshot, nowMs, session)}`;
   }
   if (session.state === 'tool_running') {
     const tool = typeof session.toolName === 'string' && session.toolName.trim() ? session.toolName.trim() : null;
-    if (!tool) return `${LAYER.session} ${label} · 已运行 ${sessionElapsed(snapshot, nowMs)}`;
-    // 工具名段保持 AC-16 的 `执行中 · 调用工具（<工具名>）`，再补时长满足 AC-03。
-    const elapsed = sessionElapsedOrNull(snapshot, nowMs);
+    if (!tool) return `${LAYER.session} ${label} · 已运行 ${sessionElapsed(snapshot, nowMs, session)}`;
+    const elapsed = sessionElapsed(snapshot, nowMs, session, { nullable: true });
     return elapsed
       ? `${LAYER.session} ${label} · 调用工具（${tool}） · 已运行 ${elapsed}`
       : `${LAYER.session} ${label} · 调用工具（${tool}）`;
   }
   if (session.state === 'waiting_input') {
-    // 契约里 `pendingPermission` 允许是动作名，也可能是 `{action}` 结构（核心两种都出现过）
     const pending = session.pendingPermission;
     const action =
       (typeof pending === 'string' && pending.length > 0 ? pending : null) ??
@@ -192,11 +316,11 @@ export function renderSessionLine(snapshot, nowMs) {
  */
 export function renderSessionStall(snapshot, nowMs) {
   if (snapshot?.sessionStalled !== true) return null;
-  const state = snapshot?.session?.state;
-  // “无新事件”只对执行中的会话有意义；空闲/等待下游不该被说成卡住。
+  const session = snapshotView(snapshot).session;
+  const state = session?.state;
   if (state !== 'thinking' && state !== 'tool_running') return null;
   const label = stateLabel('session', state) ?? '?';
-  return `${LAYER.session} ${label} · 已运行 ${sessionElapsed(snapshot, nowMs)} · 无新事件`;
+  return `${LAYER.session} ${label} · 已运行 ${sessionElapsed(snapshot, nowMs, session)} · 无新事件`;
 }
 
 /** '会话已创建 sess-xxxx'（需求 2.2 第 2 行，原文不带间隔号） */
@@ -216,9 +340,94 @@ export function renderSessionSubmitted(snapshot, nowMs) {
 
 // ---------------------------------------------------------------- 节点
 
-/** '节点 已完成 · 耗时 1m12s' | '节点 待校验' | '节点 失败 · 核对失败：…' */
+/** 升级未记录时“升级前的那个节点”：优先快照点名，其次最后一条待处理升级。 */
+function haltTargetId(snapshot) {
+  if (typeof snapshot?.haltedNodeId === 'string' && snapshot.haltedNodeId.length > 0) return snapshot.haltedNodeId;
+  if (typeof snapshot?.haltNodeId === 'string' && snapshot.haltNodeId.length > 0) return snapshot.haltNodeId;
+  const { nodes, escalations } = snapshotView(snapshot);
+  const last = escalations[escalations.length - 1];
+  if (last && typeof last.nodeId === 'string') return last.nodeId;
+  for (const state of ['review', 'running', 'pending', 'failed', 'done']) {
+    for (let i = nodes.length - 1; i >= 0; i -= 1) {
+      if (nodes[i]?.state === state) return nodeIdOf(nodes[i]);
+    }
+  }
+  return null;
+}
+
+/**
+ * 节点限定词（需求 2.3 三档 / D-5）：
+ * - `code-loop` 下 `失败` 表示“本轮判定未通过、等复测” → `（等待复测）`；
+ * - 升级写入失败（`halted`）→ 升级前节点 `（升级未记录）`；`已升级` 不带限定词。
+ * 显式 `node.qualifier` / `node.note` 优先（WP-4 可直接点名）。
+ */
+function nodeQualifier(node, snapshot, template) {
+  if (template === 'single') return null;
+  if (node?.state === 'escalated') return null;
+
+  const hint = typeof node?.qualifier === 'string' ? node.qualifier : typeof node?.note === 'string' ? node.note : null;
+  if (hint && Object.prototype.hasOwnProperty.call(NODE_QUALIFIER, hint)) return NODE_QUALIFIER[hint];
+
+  if (snapshot?.halted === true && nodeIdOf(node) !== null && nodeIdOf(node) === haltTargetId(snapshot)) {
+    return NODE_QUALIFIER.escalation_unrecorded;
+  }
+  if (node?.state === 'failed') return NODE_QUALIFIER.waiting_retest;
+  return null;
+}
+
+function verdictSuffix(node) {
+  const verdict = node?.verdict;
+  if (!verdict || typeof verdict !== 'object') return null;
+  const value = verdict.value ?? verdict.result ?? verdict.verdict ?? null;
+  if (value === 'pass') return '判定 通过';
+  if (value === 'fail') {
+    const count = Number.isInteger(verdict.defectCount)
+      ? verdict.defectCount
+      : Array.isArray(verdict.defects)
+        ? verdict.defects.length
+        : 0;
+    return `判定 不通过 · 缺陷 ${count} 条`;
+  }
+  return null;
+}
+
+/**
+ * `code-loop` 的节点行：
+ * `节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1m12s · 判定 通过`
+ * 字段间单空格、不对齐；未派发节点不带轮次与耗时（A-2）。
+ */
+function renderNodeRow(node, snapshot, template, { forceQualifier = null, noDuration = false } = {}) {
+  if (!node) return null;
+  const label = stateLabel('node', node.state);
+  if (!label) return null;
+
+  const id = nodeIdOf(node);
+  const role = roleLabel(node.roleId);
+  const qualifier = forceQualifier ?? nodeQualifier(node, snapshot, template);
+  const state = qualifier ? `${label}（${qualifier}）` : label;
+
+  const head = [LAYER.node, id, role, state].filter((part) => typeof part === 'string' && part.length > 0).join(' ');
+
+  const parts = [head];
+  const round = Number.isInteger(node.round) ? node.round : 0;
+  const dispatched = round > 0;
+  if (dispatched) parts.push(`第 ${round} 轮`);
+
+  const ended = node.state === 'done' || node.state === 'cancelled';
+  if (!noDuration && ended && dispatched && typeof node.startedAt === 'string') {
+    const ms = durationBetween(node.startedAt, node.endedAt ?? snapshot?.updatedAt);
+    if (ms !== null) parts.push(`耗时 ${formatDuration(ms)}`);
+  }
+
+  const verdict = verdictSuffix(node);
+  if (verdict) parts.push(verdict);
+
+  return parts.join(' · ');
+}
+
+/** `single` 的 I1.1 节点行（红线，逐字保留）。 */
 export function renderNodeLine(snapshot) {
-  const node = snapshot?.node;
+  const node = snapshot?.node ?? snapshotView(snapshot).node;
   if (!node) return null;
   const label = stateLabel('node', node.state);
   if (!label) return null;
@@ -236,12 +445,28 @@ export function renderNodeLine(snapshot) {
   return `${LAYER.node} ${label}`;
 }
 
+/** 节点表：`single` 1 行（I1.1）、`code-loop` 按节点逐行（A-2 第 3 段）。 */
+export function renderNodeLines(snapshot, { template } = {}) {
+  const tpl = templateOf(snapshot, template);
+  const view = snapshotView(snapshot);
+  if (view.nodes.length === 0) return [];
+  if (tpl === 'single') {
+    const line = renderNodeLine(snapshot);
+    return line ? [line] : [];
+  }
+  const rows = view.nodes
+    .map((node) => renderNodeRow(node, snapshot, tpl))
+    .filter((line) => typeof line === 'string' && line.length > 0);
+  return rows;
+}
+
 /**
  * 节点失败原因（不含层名前缀）：核对失败 / 会话失效 / 执行失败 / 审批被拒 / 未知错误。
  * 只做归类与文案拼接，判定仍是核心的责任。
  */
 export function renderNodeFailure(snapshot) {
-  const failure = snapshot?.node?.failure;
+  const view = snapshotView(snapshot);
+  const failure = snapshot?.node?.failure ?? view.node?.failure;
   if (!failure || typeof failure !== 'object') return null;
   const message = typeof failure.message === 'string' ? failure.message : null;
   const code = failure.code;
@@ -249,17 +474,15 @@ export function renderNodeFailure(snapshot) {
   if (code === 'MISSING' || code === 'EMPTY' || code === 'VERIFY_FAILED') {
     return renderErrorBody('VERIFY_FAILED', { reason: message });
   }
-  // 会话失效是"跑起来之后"的独立原因，不能落进未知错误（AC-20 / BR-13）。
   if (code === 'SESSION_INVALID') {
     return renderErrorBody('SESSION_INVALID', {});
   }
-  // 主路径在 run.start 就拦住 NODE_BUSY 并直接返回；这里只是防御（AC-07）。
   if (code === 'NODE_BUSY') {
     return renderErrorBody('NODE_BUSY', {});
   }
   if (code === 'PERMISSION_DENIED') {
     return renderErrorBody('PERMISSION_DENIED', {
-      step: failure.step ?? snapshot?.session?.toolName ?? message,
+      step: failure.step ?? view.session?.toolName ?? message,
     });
   }
   if (code === 'HOST_ERROR' || code === 'UNKNOWN_ERROR') {
@@ -270,42 +493,77 @@ export function renderNodeFailure(snapshot) {
 
 // ---------------------------------------------------------------- 交接包
 
-/**
- * 四行（或更少），按 created → delivered → accepted → consumed → rejected 的时间戳依次输出：
- *   '交接包 HO-001  已构造   10:30:02'
- */
-export function renderHandoffLines(snapshot) {
-  const handoff = snapshot?.handoff;
-  if (!handoff) return [];
-  const order = [
-    ['createdAt', 'created'],
-    ['deliveredAt', 'delivered'],
-    ['acceptedAt', 'accepted'],
-    ['consumedAt', 'consumed'],
-    ['rejectedAt', 'rejected'],
-  ];
+const HANDOFF_ORDER = Object.freeze([
+  ['createdAt', 'created'],
+  ['deliveredAt', 'delivered'],
+  ['acceptedAt', 'accepted'],
+  ['consumedAt', 'consumed'],
+  ['rejectedAt', 'rejected'],
+]);
 
+/** 交接包方向段：`开发→测试` / `测试→开发（回流）` / `开发→测试（复测）`。 */
+function handoffDirection(handoff, snapshot) {
+  const edge = handoff?.edge;
+  if (!edge || typeof edge !== 'object') return null;
+  const { nodes } = snapshotView(snapshot);
+  const roleOfNodeId = (nodeId) => {
+    const node = nodes.find((item) => nodeIdOf(item) === nodeId);
+    return roleLabel(node?.roleId) ?? null;
+  };
+  const from = roleLabel(edge.fromRole) ?? roleOfNodeId(edge.from);
+  const to = roleLabel(edge.toRole) ?? roleOfNodeId(edge.to);
+  if (!from || !to) return null;
+  const kind = typeof edge.kind === 'string' ? edge.kind : 'forward';
+  return formatHandoffDirection(from, to, kind);
+}
+
+function handoffStateLines(handoff, snapshot, template) {
+  const direction = template === 'single' ? null : handoffDirection(handoff, snapshot);
   const lines = [];
-  for (const [field, state] of order) {
-    const time = formatClock(handoff[field]);
+  for (const [field, state] of HANDOFF_ORDER) {
+    const time = formatClock(handoff?.[field]);
     if (!time) continue;
     const label = HANDOFF_LABEL[state] ?? state;
     let suffix = '';
     if (state === 'rejected') {
-      const reason = REJECT_REASON[handoff.rejectReason] ?? handoff.rejectReason ?? null;
+      const reason = REJECT_REASON[handoff?.rejectReason] ?? handoff?.rejectReason ?? null;
       if (reason) suffix = `  原因 ${reason}`;
     }
-    lines.push(`${LAYER.handoff} ${handoff.handoffId}  ${label}   ${time}${suffix}`);
+    const segments = [`${LAYER.handoff} ${handoff?.handoffId ?? '?'}`];
+    if (direction) segments.push(direction);
+    segments.push(label);
+    lines.push(`${segments.join('  ')}   ${time}${suffix}`);
+  }
+  return lines;
+}
+
+/**
+ * 逐包多状态行（A-2 第 5 段）：
+ *   `single`       `交接包 HO-001  已构造   10:30:02`
+ *   `code-loop`    `交接包 HO-001  开发→测试  已构造   10:30:02`
+ * 按包号、按时间正序；方向只在 `code-loop` 出现（号/方向/状态之间各 2 个空格）。
+ */
+export function renderHandoffLines(snapshot, { template } = {}) {
+  const tpl = templateOf(snapshot, template);
+  const handoffs = [...snapshotView(snapshot).handoffs].sort((a, b) => {
+    const ka = String(a?.handoffId ?? '');
+    const kb = String(b?.handoffId ?? '');
+    return ka < kb ? -1 : ka > kb ? 1 : 0;
+  });
+  const lines = [];
+  for (const handoff of handoffs) {
+    for (const line of handoffStateLines(handoff, snapshot, tpl)) lines.push(line);
   }
   return lines;
 }
 
 /**
  * '交接包 HO-001  已投递   等待目标响应 · 已等待 2m'
- * 仅在 `handoff.state === 'delivered'` 且实例未终态时出现（AC-24：绝不显示“已过期”）。
+ * 仅在最后一张交接包 `state === 'delivered'` 且实例未终态时出现（AC-24：绝不显示“已过期”）。
  */
 export function renderHandoffWait(snapshot, nowMs) {
-  const handoff = snapshot?.handoff;
+  const view = snapshotView(snapshot);
+  const handoff = view.handoff;
   if (!handoff || handoff.state !== 'delivered') return null;
   if (TERMINAL_INSTANCE.has(snapshot?.state)) return null;
 
@@ -314,65 +572,246 @@ export function renderHandoffWait(snapshot, nowMs) {
     const deliveredAt = Date.parse(handoff.deliveredAt ?? '');
     waitMs = Number.isFinite(deliveredAt) && Number.isFinite(nowMs) ? nowMs - deliveredAt : 0;
   }
-  const label = HANDOFF_LABEL.delivered;
-  return `${LAYER.handoff} ${handoff.handoffId}  ${label}   等待目标响应 · 已等待 ${formatDuration(waitMs)}`;
+  const direction = view.template === 'single' ? null : handoffDirection(handoff, snapshot);
+  const segments = [`${LAYER.handoff} ${handoff.handoffId ?? '?'}`];
+  if (direction) segments.push(direction);
+  segments.push(HANDOFF_LABEL.delivered);
+  return `${segments.join('  ')}   等待目标响应 · 已等待 ${formatDuration(waitMs)}`;
 }
 
-/** `orch cancel` 的三行：会话空闲 / 节点已取消 / 交接包已拒绝（已撤回）。 */
-export function renderCancelLines({ session, node, handoff } = {}) {
+/**
+ * `orch cancel` 的结果行：会话 → 节点 → 交接包 → 升级。
+ * 接受 v2 数组 `{sessions,nodes,handoffs,escalations}` 与 I1.1 的单对象（兼容保留）。
+ */
+export function renderCancelLines(result = {}) {
   const lines = [];
 
-  if (session) {
-    const label = stateLabel('session', session.state) ?? '?';
+  const sessions = Array.isArray(result?.sessions) ? result.sessions : result?.session ? [result.session] : [];
+  for (const session of sessions) {
+    const label = stateLabel('session', session?.state) ?? '?';
     lines.push(`${LAYER.session} ${label}`);
   }
-  if (node) {
-    const label = stateLabel('node', node.state) ?? '?';
-    lines.push(`${LAYER.node} ${label}`);
+
+  const nodes = Array.isArray(result?.nodes) ? result.nodes : result?.node ? [result.node] : [];
+  const multi = Array.isArray(result?.nodes);
+  for (const node of nodes) {
+    const label = stateLabel('node', node?.state) ?? '?';
+    if (multi && nodeIdOf(node) !== null) {
+      const role = roleLabel(node?.roleId);
+      lines.push([LAYER.node, nodeIdOf(node), role, label].filter(Boolean).join(' '));
+    } else {
+      lines.push(`${LAYER.node} ${label}`);
+    }
   }
-  if (handoff) {
-    const label = HANDOFF_LABEL[handoff.state] ?? handoff.state ?? '?';
-    let line = `${LAYER.handoff} ${handoff.handoffId ?? '?'} ${label}`;
-    const reason = REJECT_REASON[handoff.rejectReason];
-    if (handoff.state === 'rejected' && reason) line += `（${reason}）`;
+
+  const handoffs = Array.isArray(result?.handoffs) ? result.handoffs : result?.handoff ? [result.handoff] : [];
+  for (const handoff of handoffs) {
+    const label = HANDOFF_LABEL[handoff?.state] ?? handoff?.state ?? '?';
+    let line = `${LAYER.handoff} ${handoff?.handoffId ?? '?'} ${label}`;
+    const reason = REJECT_REASON[handoff?.rejectReason];
+    if (handoff?.state === 'rejected' && reason) line += `（${reason}）`;
     lines.push(line);
+  }
+
+  const escalations = Array.isArray(result?.escalations) ? result.escalations : [];
+  for (const escalation of escalations) {
+    const label = ESCALATION_LABEL[escalation?.state] ?? escalation?.state ?? '?';
+    lines.push(`${LAYER.escalation} ${escalation?.escalationId ?? '?'} ${label}`);
+  }
+
+  return lines;
+}
+
+// ---------------------------------------------------------------- 升级
+
+function roleOfNode(snapshot, nodeId) {
+  const node = snapshotView(snapshot).nodes.find((item) => nodeIdOf(item) === nodeId);
+  return roleLabel(node?.roleId) ?? null;
+}
+
+/**
+ * 升级块（A-2 第 6 段）：
+ *   `升级 ESC-001 待处理` + `  原因：…` / `  节点：…` /（缺陷行）/ `  下一步：…`
+ * `single` 不打印（连 `升级 —` 也不打）；`code-loop` 无升级时打印 `升级 —`。
+ */
+export function renderEscalationBlock(snapshot, { template } = {}) {
+  const tpl = templateOf(snapshot, template);
+  if (tpl === 'single') return [];
+  const { escalations } = snapshotView(snapshot);
+  if (escalations.length === 0) return [ESCALATION_BLOCK.none];
+
+  const instanceId = snapshot?.instanceId ?? '?';
+  const lines = [];
+  for (const escalation of escalations) {
+    const state = ESCALATION_LABEL[escalation?.state] ?? escalation?.state ?? '?';
+    lines.push(replaceAll(ESCALATION_BLOCK.header, { id: escalation?.escalationId ?? '?', state }));
+    lines.push(replaceAll(ESCALATION_BLOCK.reason, { detail: escalation?.reasonDetail ?? '?' }));
+    lines.push(
+      replaceAll(ESCALATION_BLOCK.node, {
+        nodeId: escalation?.nodeId ?? '?',
+        role: roleOfNode(snapshot, escalation?.nodeId) ?? '?',
+        round: Number.isInteger(escalation?.round) ? escalation.round : 0,
+      }),
+    );
+    for (const defect of Array.isArray(escalation?.defects) ? escalation.defects : []) {
+      lines.push(replaceAll(ESCALATION_BLOCK.defect, { summary: defect?.summary ?? '', evidence: defect?.evidence ?? '' }));
+    }
+    lines.push(replaceAll(ESCALATION_BLOCK.next, { id: instanceId }));
   }
   return lines;
 }
 
+function lastPendingEscalation(snapshot) {
+  const { escalations } = snapshotView(snapshot);
+  for (let i = escalations.length - 1; i >= 0; i -= 1) {
+    if (escalations[i]?.state === 'pending') return escalations[i];
+  }
+  return escalations.length > 0 ? escalations[escalations.length - 1] : null;
+}
+
+/**
+ * `orch run` 的挂起 / 停止推进收尾（附录 A-4，逐字）：
+ * - 挂起（退出码 4）：实例行 + 升级摘要 + 下一步，正好三行；
+ * - 停止推进（退出码 5）：`无法记录升级：…；已停止推进` + 实例行 + 唯一节点行 + 下一步。
+ * 两者都不打印交接包行与等待行。
+ */
+export function renderRunTail(snapshot, { template } = {}) {
+  const tpl = templateOf(snapshot, template);
+  const id = snapshot?.instanceId ?? '?';
+
+  if (snapshot?.state === 'suspended') {
+    const lines = [renderInstanceLine({ ...snapshot, template: tpl })];
+    const escalation = lastPendingEscalation(snapshot);
+    if (escalation) {
+      lines.push(
+        replaceAll(ESCALATION_SUMMARY_LINE, {
+          id: escalation.escalationId ?? '?',
+          state: ESCALATION_LABEL[escalation.state] ?? escalation.state ?? '?',
+          nodeId: escalation.nodeId ?? '?',
+          role: roleOfNode(snapshot, escalation.nodeId) ?? '?',
+          round: Number.isInteger(escalation.round) ? escalation.round : 0,
+        }),
+      );
+    }
+    lines.push(replaceAll(NEXT_STEP_SUSPENDED, { id }));
+    return lines;
+  }
+
+  if (snapshot?.halted === true) {
+    const cause =
+      snapshot?.haltCause ??
+      snapshot?.haltReason ??
+      snapshot?.halt?.cause ??
+      snapshot?.escalationWriteCause ??
+      null;
+    const lines = [renderError({ code: 'ESCALATION_WRITE_FAILED', params: { cause } })];
+    lines.push(renderInstanceLine({ ...snapshot, template: tpl }));
+    const { nodes } = snapshotView(snapshot);
+    const targetId = haltTargetId(snapshot);
+    const node = nodes.find((item) => nodeIdOf(item) === targetId) ?? null;
+    if (node) {
+      lines.push(
+        renderNodeRow(node, snapshot, tpl, {
+          forceQualifier: NODE_QUALIFIER.escalation_unrecorded,
+          noDuration: true,
+        }),
+      );
+    }
+    lines.push(replaceAll(NEXT_STEP_HALTED, { id }));
+    return lines;
+  }
+
+  return [];
+}
+
 // ---------------------------------------------------------------- 事件
 
-/** '10:30:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event' */
-export function renderEventLine(event) {
-  if (!event || typeof event !== 'object') return null;
-  const ts = formatClock(event.ts) ?? '--:--:--';
-  const layer = layerName(event.object);
-  const id = event.objectId ?? '?';
-
+/** `single`（I1.1 版式）：'10:30:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event' */
+function legacyMiddle(event) {
   const from = stateLabel(event.object, event.from);
   const to = stateLabel(event.object, event.to);
 
-  let middle;
   if (from && to) {
-    if (from !== to) {
-      middle = `${from} → ${to}`;
-    } else {
-      // thinking 与 tool_running 都显示“执行中”：原样打会变成“执行中 → 执行中”，
-      // 补上触发事件名才看得出这一条发生了什么（AC-14 / BR-10）。
-      const trigger = event.detail?.event;
-      middle = typeof trigger === 'string' && trigger.length > 0 ? `${from} → ${to}（${trigger}）` : from;
-    }
-  } else if (to) {
-    middle = to;
-  } else if (from) {
-    middle = from;
-  } else {
-    const note = event.detail?.note;
-    middle = typeof note === 'string' && note.length > 0 ? note : String(event.reason ?? '');
+    if (from !== to) return `${from} → ${to}`;
+    // thinking 与 tool_running 都显示“执行中”：补上触发事件名才看得出发生了什么（AC-14 / BR-10）。
+    const trigger = event.detail?.event;
+    return typeof trigger === 'string' && trigger.length > 0 ? `${from} → ${to}（${trigger}）` : from;
+  }
+  if (to) return to;
+  if (from) return from;
+  const note = event.detail?.note;
+  return typeof note === 'string' && note.length > 0 ? note : String(event.reason ?? '');
+}
+
+function eventMiddle(event) {
+  if (event.reason === 'node.dispatch') return '派发 → 执行中';
+  if (event.object === 'escalation' && event.to === 'pending') {
+    return ESCALATION_LABEL.pending;
+  }
+  return legacyMiddle(event);
+}
+
+function eventReasonText(event) {
+  if (event.reason === 'node.dispatch') {
+    const round = Number.isInteger(event.detail?.round) ? event.detail.round : 0;
+    return `${REASON_LABEL['node.dispatch']} · 第 ${round} 轮`;
+  }
+  const label = REASON_LABEL[event.reason];
+  return typeof label === 'string' && label.length > 0 ? label : String(event.reason ?? '');
+}
+
+/**
+ * 事件行（C-10）：
+ *   `single`    `10:30:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event`（I1.1 逐字）
+ *   `code-loop` `[#18] 10:30:05  交接包 HO-001  已投递 → 已接受  原因 首个事件`
+ * `result === 'rejected'` 两种模板都走 I1.1 版式（不带 seq、不带原因）。
+ */
+export function renderEventLine(event, { template } = {}) {
+  if (!event || typeof event !== 'object') return null;
+  if (event.result === 'rejected') return renderRejectedTransition(event);
+
+  const ts = formatClock(event.ts) ?? '--:--:--';
+  const layer = layerName(event.object);
+  const id = event.objectId ?? '?';
+  const tpl = typeof template === 'string' && template.length > 0 ? template : 'single';
+
+  if (tpl === 'single') {
+    const reason = typeof event.reason === 'string' && event.reason.length > 0 ? `  原因 ${event.reason}` : '';
+    return `${ts}  ${layer} ${id}  ${legacyMiddle(event)}${reason}`;
   }
 
-  const reason = typeof event.reason === 'string' && event.reason.length > 0 ? `  原因 ${event.reason}` : '';
-  return `${ts}  ${layer} ${id}  ${middle}${reason}`;
+  const seq = Number.isInteger(event.seq) ? `[#${event.seq}] ` : '';
+  const reason = typeof event.reason === 'string' && event.reason.length > 0 ? `  原因 ${eventReasonText(event)}` : '';
+  return `${seq}${ts}  ${layer} ${id}  ${eventMiddle(event)}${reason}`;
+}
+
+/** 回流事件行下的缩进明细（6 空格）：缺陷逐条 + 复测要求（AC-24）。 */
+export function renderBackflowDetail(event) {
+  if (!event || event.reason !== 'backflow.constructed') return [];
+  const detail = event.detail ?? {};
+  const lines = [];
+  const defects = Array.isArray(detail.defects) ? detail.defects : [];
+  for (let i = 0; i < defects.length; i += 1) {
+    lines.push(
+      `${BACKFLOW_DETAIL_INDENT}${replaceAll(BACKFLOW_DEFECT_LINE, {
+        i: i + 1,
+        summary: defects[i]?.summary ?? '',
+        evidence: defects[i]?.evidence ?? '',
+      })}`,
+    );
+  }
+  const text = typeof detail.retestRequirement === 'string' ? detail.retestRequirement : '';
+  lines.push(`${BACKFLOW_DETAIL_INDENT}${replaceAll(BACKFLOW_RETEST_LINE, { text })}`);
+  return lines;
+}
+
+/** 一行事件 + 可选的缩进明细；`main.js` 的 `--events` 走这里。 */
+export function renderEventLines(event, { template } = {}) {
+  const line = renderEventLine(event, { template });
+  if (!line) return [];
+  const tpl = typeof template === 'string' && template.length > 0 ? template : 'single';
+  if (tpl === 'single') return [line]; // I1.1 版式不追加任何行（AC-21/22）
+  return [line, ...renderBackflowDetail(event)];
 }
 
 /** '10:31:20  节点 T-001  拒绝的迁移：已完成 → 执行中' */
@@ -388,7 +827,8 @@ export function renderRejectedTransition(event) {
 
 // ---------------------------------------------------------------- 错误
 
-const PLACEHOLDERS = ['cause', 'path', 'step', 'raw', 'reason', 'state'];
+/** C-11：`name / instanceId / i / summary / evidence / text` 必须能替换，否则会原样打出占位符。 */
+const PLACEHOLDERS = ['cause', 'path', 'step', 'raw', 'reason', 'state', 'name', 'instanceId', 'i', 'summary', 'evidence', 'text'];
 
 function placeholderValue(name, params) {
   const value = params?.[name];
@@ -416,7 +856,7 @@ function renderErrorBody(code, params = {}) {
 }
 
 /**
- * 9 条失败文案 + `STATE_CORRUPT` + `INSTANCE_TERMINAL`。
+ * 9 条失败文案 + I1.2 业务码（D-5）。
  * `params.raw` 原样拼入（含换行与长文本），不截断、不改写。
  * `STATE_CORRUPT` 若带 `backupPath`，追加实际备份路径（AC-13）。
  */

@@ -1,0 +1,35 @@
+{
+  "ac": "NFR-01b",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "events 里能取到 run.started 与首个 node.dispatch",
+      "ok": true,
+      "actual": "[{\"object\":\"instance\",\"objectId\":\"INST-001\",\"from\":\"created\",\"to\":\"running\",\"result\":\"applied\",\"reason\":\"run.started\",\"detail\":null,\"gen\":\"gen-a0df6680224f6251\",\"seq\":1,\"ts\":\"2026-11-05T13:17:14.381Z\"},{\"object\":\"node\",\"objectId\":\"T-001\",\"from\":\"pending\",\"to\":\"running\",\"result\":\"applied\",\"reason\":\"node.dispatch\",\"detail\":{\"round\":1,\"nodeId\":\"T-001\",\"roleId\":\"developer\"},\"gen\":\"gen-a0df6680224f6251\",\"seq\":2,\"ts\":\"2026-11-05T13:17:14.389Z\"}]"
+    },
+    {
+      "text": "热启动首次派发 < 5000ms（run.started → node.dispatch 的 ts 差）",
+      "ok": true,
+      "actual": "8ms"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario code-pass",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr01b",
+        "--scenario",
+        "code-pass"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1244,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr01b\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr01b\\\\demo-code-pass\",\"scenario\":\"code-pass\",\"resolvedScenario\":\"pass\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":0,\"instanceId\":\"INST-001\",\"state\":\"completed\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"done\"}],\"handoffs\":1,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":875,\"checks\":[{\"name\":\"state=completed\",\"ok\":true,\"detail\":\"completed\"},{\"name\":\"两节点 done\",\"ok\":true},{\"name\":\"handoffs=1 forward\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-1488-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过\n交接包 HO-001  开发→测试  已构造   21:17:14\n交接包 HO-001  开发→测试  已投递   21:17:14\n交接包 HO-001  开发→测试  已接受   21:17:14\n交接包 HO-001  开发→测试  已完成   21:17:14\n升级 —\n",
+      "note": "code-pass 场景（热启动样本）"
+    }
+  ]
+}

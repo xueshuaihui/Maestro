@@ -45,7 +45,7 @@ const SM_FACTORY = {
 function usage() {
   console.error(
     '用法：node test/fixtures/attempt-transition.mjs --root <项目根> --instance <实例号> ' +
-      '--object <instance|node|handoff> --from <状态> --to <状态>'
+      '--object <instance|node|handoff> --from <状态> --to <状态> [--node <节点号>] [--handoff <交接包号>]'
   );
 }
 
@@ -84,21 +84,31 @@ async function loadDependency(key) {
   }
 }
 
-/** The state the snapshot carries for the addressed object. */
-function readObjectState(snapshot, object, instanceId) {
+/**
+ * The state the snapshot carries for the addressed object.
+ * v1 has single `node` / `handoff` objects; v2 has `nodes[]` / `handoffs[]`.
+ * `--node` / `--handoff` select one element by id (AC-25 targets T-002).
+ */
+function readObjectState(snapshot, object, instanceId, selector = {}) {
   if (object === 'instance') {
     return { state: snapshot.state, objectId: snapshot.instanceId || instanceId };
   }
   if (object === 'node') {
-    return {
-      state: snapshot.node ? snapshot.node.state : undefined,
-      objectId: snapshot.node ? snapshot.node.nodeId : undefined
-    };
+    const list = Array.isArray(snapshot.nodes)
+      ? snapshot.nodes
+      : snapshot.node ? [snapshot.node] : [];
+    const found = selector.nodeId
+      ? list.find((item) => item.nodeId === selector.nodeId)
+      : list[0];
+    return { state: found ? found.state : undefined, objectId: found ? found.nodeId : undefined };
   }
-  return {
-    state: snapshot.handoff ? snapshot.handoff.state : undefined,
-    objectId: snapshot.handoff ? snapshot.handoff.handoffId : undefined
-  };
+  const list = Array.isArray(snapshot.handoffs)
+    ? snapshot.handoffs
+    : snapshot.handoff ? [snapshot.handoff] : [];
+  const found = selector.handoffId
+    ? list.find((item) => item.handoffId === selector.handoffId)
+    : list[0];
+  return { state: found ? found.state : undefined, objectId: found ? found.handoffId : undefined };
 }
 
 async function main() {
@@ -151,7 +161,10 @@ async function main() {
     return;
   }
 
-  const current = readObjectState(loaded.state, object, instanceId);
+  const current = readObjectState(loaded.state, object, instanceId, {
+    nodeId: typeof args.node === 'string' ? args.node : null,
+    handoffId: typeof args.handoff === 'string' ? args.handoff : null
+  });
   if (!current.state) {
     fail(2, `实例快照里没有 ${object} 的状态：${instanceId}`);
     return;

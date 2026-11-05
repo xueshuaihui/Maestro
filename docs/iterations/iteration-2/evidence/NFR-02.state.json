@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-af1e5cdcf4fc7af2",
+  "createdAt": "2026-11-05T13:17:15.637Z",
+  "updatedAt": "2026-11-05T13:17:16.874Z",
+  "state": "completed",
+  "stateSince": "2026-11-05T13:17:16.874Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr02\\demo-code-pass",
+  "task": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 45,
+  "counters": {
+    "eventSeq": 48,
+    "runCount": 1,
+    "dispatchCount": 4
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 2,
+      "state": "done",
+      "stateSince": "2026-11-05T13:17:16.547Z",
+      "startedAt": "2026-11-05T13:17:15.647Z",
+      "roundStartedAt": "2026-11-05T13:17:16.283Z",
+      "endedAt": "2026-11-05T13:17:16.552Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-33604-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr02\\demo-code-pass\\calc.js",
+          "exists": true,
+          "bytes": 291,
+          "mtime": "2026-11-05T13:17:16.508Z",
+          "verifiedAt": "2026-11-05T13:17:16.547Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 2,
+      "state": "done",
+      "stateSince": "2026-11-05T13:17:16.843Z",
+      "startedAt": "2026-11-05T13:17:15.968Z",
+      "roundStartedAt": "2026-11-05T13:17:16.582Z",
+      "endedAt": "2026-11-05T13:17:16.848Z",
+      "failure": null,
+      "note": null,
+      "verdict": {
+        "value": "pass",
+        "defectCount": 0,
+        "verdictPath": "out/verdict.json",
+        "readAt": "2026-11-05T13:17:16.841Z"
+      },
+      "sessionId": "mock-sess-10748-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-34628-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-05T13:17:15.948Z",
+      "createdAt": "2026-11-05T13:17:15.882Z",
+      "lastEventAt": "2026-11-05T13:17:15.894Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr02\\demo-code-pass\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-18072-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-05T13:17:16.260Z",
+      "createdAt": "2026-11-05T13:17:16.191Z",
+      "lastEventAt": "2026-11-05T13:17:16.203Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr02\\demo-code-pass\\out\\test-log.txt",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-33604-1",
+      "nodeId": "T-001",
+      "round": 2,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-05T13:17:16.562Z",
+      "createdAt": "2026-11-05T13:17:16.504Z",
+      "lastEventAt": "2026-11-05T13:17:16.511Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr02\\demo-code-pass\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-10748-1",
+      "nodeId": "T-002",
+      "round": 2,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-05T13:17:16.863Z",
+      "createdAt": "2026-11-05T13:17:16.801Z",
+      "lastEventAt": "2026-11-05T13:17:16.807Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr02\\demo-code-pass\\out\\verdict.json",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-05T13:17:15.961Z",
+      "deliveredAt": "2026-11-05T13:17:16.191Z",
+      "acceptedAt": "2026-11-05T13:17:16.195Z",
+      "consumedAt": "2026-11-05T13:17:16.246Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 4,
+      "defects": [],
+      "note": null
+    },
+    {
+      "handoffId": "HO-002",
+      "edge": {
+        "from": "T-002",
+        "to": "T-001",
+        "kind": "backflow"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-05T13:17:16.274Z",
+      "deliveredAt": "2026-11-05T13:17:16.504Z",
+      "acceptedAt": "2026-11-05T13:17:16.507Z",
+      "consumedAt": "2026-11-05T13:17:16.552Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": "2026-11-05T13:17:16.274Z",
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 3,
+      "defects": [
+        {
+          "summary": "div 在除数为 0 时返回 Infinity，未抛错",
+          "evidence": "out/test-log.txt"
+        },
+        {
+          "summary": "div 在整除场景存在浮点误差",
+          "evidence": "out/test-log-2.txt"
+        }
+      ],
+      "note": null
+    },
+    {
+      "handoffId": "HO-003",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "retest"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-05T13:17:16.574Z",
+      "deliveredAt": "2026-11-05T13:17:16.801Z",
+      "acceptedAt": "2026-11-05T13:17:16.804Z",
+      "consumedAt": "2026-11-05T13:17:16.848Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 3,
+      "defects": [],
+      "note": null
+    }
+  ],
+  "escalations": []
+}

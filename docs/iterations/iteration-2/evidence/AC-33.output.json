@@ -1,0 +1,217 @@
+{
+  "ac": "AC-33",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "[first] nodes[0].state=escalated（期望 \"escalated\"）",
+      "ok": true,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "[first] nodes[0].round=1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[first] escalations[0].reasonCode=dispatch_failed（期望 \"dispatch_failed\"）",
+      "ok": true,
+      "actual": "\"dispatch_failed\""
+    },
+    {
+      "text": "[first] state=suspended（期望 \"suspended\"）",
+      "ok": true,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "[first] 输出含「节点 T-001 开发 已升级 · 第 1 轮」（期望包含 \"节点 T-001 开发 已升级 · 第 1 轮\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[first] 输出含「原因：派遣失败：目标会话不可用」（期望包含 \"原因：派遣失败：目标会话不可用\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[first] 输出含「节点：T-001 开发 · 第 1 轮」（期望包含 \"节点：T-001 开发 · 第 1 轮\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[first] nodes[0] 在 round=1 只有 1 条 reason=node.dispatch（不重试）（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[backflow] nodes[0].state=escalated（期望 \"escalated\"）",
+      "ok": true,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "[backflow] nodes[0].round=2（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "[backflow] nodes[1].state=failed（期望 \"failed\"）",
+      "ok": true,
+      "actual": "\"failed\""
+    },
+    {
+      "text": "[backflow] nodes[1].round=1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[backflow] 输出含「节点 T-001 开发 已升级 · 第 2 轮」（期望包含 \"节点 T-001 开发 已升级 · 第 2 轮\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 2 轮\n节点 T-002 测试 失败（等待复测） · 第 1 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   22:00:58\n交接包 HO-001  开发→测试  已投递   22:00:58\n交接包 HO-001  开发→测试  已接受   22:00:58\n交接包 HO-001  开发→测试  已完成   22:00:58\n交接包 HO-002  测试→开发（回流）  已构造   22:00:58\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-001 开发 · 第 2 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[backflow] 输出含「原因：派遣失败：目标会话不可用」（期望包含 \"原因：派遣失败：目标会话不可用\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 2 轮\n节点 T-002 测试 失败（等待复测） · 第 1 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   22:00:58\n交接包 HO-001  开发→测试  已投递   22:00:58\n交接包 HO-001  开发→测试  已接受   22:00:58\n交接包 HO-001  开发→测试  已完成   22:00:58\n交接包 HO-002  测试→开发（回流）  已构造   22:00:58\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-001 开发 · 第 2 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[backflow] nodes[0] 在 round=2 只有 1 条 reason=node.dispatch（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[retest] nodes[1].state=escalated（期望 \"escalated\"）",
+      "ok": true,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "[retest] nodes[1].round=2（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "[retest] nodes[0].state=done（期望 \"done\"）",
+      "ok": true,
+      "actual": "\"done\""
+    },
+    {
+      "text": "[retest] nodes[0].round=2（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "[retest] 输出含「节点 T-002 测试 已升级 · 第 2 轮」（期望包含 \"节点 T-002 测试 已升级 · 第 2 轮\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   22:01:00\n交接包 HO-001  开发→测试  已投递   22:01:00\n交接包 HO-001  开发→测试  已接受   22:01:00\n交接包 HO-001  开发→测试  已完成   22:01:00\n交接包 HO-002  测试→开发（回流）  已构造   22:01:00\n交接包 HO-002  测试→开发（回流）  已投递   22:01:00\n交接包 HO-002  测试→开发（回流）  已接受   22:01:00\n交接包 HO-002  测试→开发（回流）  已完成   22:01:00\n交接包 HO-003  开发→测试（复测）  已构造   22:01:00\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-002 测试 · 第 2 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[retest] 输出含「原因：派遣失败：目标会话不可用」（期望包含 \"原因：派遣失败：目标会话不可用\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   22:01:00\n交接包 HO-001  开发→测试  已投递   22:01:00\n交接包 HO-001  开发→测试  已接受   22:01:00\n交接包 HO-001  开发→测试  已完成   22:01:00\n交接包 HO-002  测试→开发（回流）  已构造   22:01:00\n交接包 HO-002  测试→开发（回流）  已投递   22:01:00\n交接包 HO-002  测试→开发（回流）  已接受   22:01:00\n交接包 HO-002  测试→开发（回流）  已完成   22:01:00\n交接包 HO-003  开发→测试（复测）  已构造   22:01:00\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-002 测试 · 第 2 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[retest] nodes[1] 在 round=2 只有 1 条 reason=node.dispatch（期望 1）",
+      "ok": true,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario dispatch-fail-first",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac33-first",
+        "--scenario",
+        "dispatch-fail-first"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 810,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac33-first\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac33-first\\\\demo-code-pass\",\"scenario\":\"dispatch-fail-first\",\"resolvedScenario\":\"dispatch-fail\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":1,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"escalated\"},{\"nodeId\":\"T-002\",\"round\":0,\"state\":\"pending\"}],\"handoffs\":0,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"dispatch_failed\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":445,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"escalation reason=dispatch_failed\",\"ok\":true,\"detail\":\"dispatch_failed\"}]}\n",
+      "stderr": "实例 ? · 运行中 · 模板 编码闭环\n会话已创建 ?\n任务已投递\n未知错误：subscribe: instanceId 必填\n",
+      "note": "夹具场景 dispatch-fail-first（第 1 步 sessionNew=fail）"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac33-first",
+      "exitCode": 0,
+      "durationMs": 224,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    },
+    {
+      "label": "driver --scenario dispatch-fail-backflow",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac33-backflow",
+        "--scenario",
+        "dispatch-fail-backflow"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1486,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac33-backflow\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac33-backflow\\\\demo-code-pass\",\"scenario\":\"dispatch-fail-backflow\",\"resolvedScenario\":\"dispatch-fail-backflow\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"escalated\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"failed\"}],\"handoffs\":2,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"dispatch_failed\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1096,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"escalation reason=dispatch_failed\",\"ok\":true,\"detail\":\"dispatch_failed\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-6384-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 2 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 dispatch-fail-backflow（第 3 步 sessionNew=fail，独立根）"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac33-backflow",
+      "exitCode": 0,
+      "durationMs": 274,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 2 轮\n节点 T-002 测试 失败（等待复测） · 第 1 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   22:00:58\n交接包 HO-001  开发→测试  已投递   22:00:58\n交接包 HO-001  开发→测试  已接受   22:00:58\n交接包 HO-001  开发→测试  已完成   22:00:58\n交接包 HO-002  测试→开发（回流）  已构造   22:00:58\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-001 开发 · 第 2 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    },
+    {
+      "label": "driver --scenario dispatch-fail-retest",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac33-retest",
+        "--scenario",
+        "dispatch-fail-retest"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1798,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac33-retest\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac33-retest\\\\demo-code-pass\",\"scenario\":\"dispatch-fail-retest\",\"resolvedScenario\":\"dispatch-fail-retest\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"escalated\"}],\"handoffs\":3,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"dispatch_failed\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1431,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"escalation reason=dispatch_failed\",\"ok\":true,\"detail\":\"dispatch_failed\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-20596-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 dispatch-fail-retest（第 4 步 sessionNew=fail，独立根）"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac33-retest",
+      "exitCode": 0,
+      "durationMs": 219,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   22:01:00\n交接包 HO-001  开发→测试  已投递   22:01:00\n交接包 HO-001  开发→测试  已接受   22:01:00\n交接包 HO-001  开发→测试  已完成   22:01:00\n交接包 HO-002  测试→开发（回流）  已构造   22:01:00\n交接包 HO-002  测试→开发（回流）  已投递   22:01:00\n交接包 HO-002  测试→开发（回流）  已接受   22:01:00\n交接包 HO-002  测试→开发（回流）  已完成   22:01:00\n交接包 HO-003  开发→测试（复测）  已构造   22:01:00\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-002 测试 · 第 2 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

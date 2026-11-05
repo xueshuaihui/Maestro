@@ -1,0 +1,167 @@
+{
+  "ac": "AC-29",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "[artifact-missing] T-001 事件先 running→review 再 review→escalated",
+      "ok": true,
+      "actual": "rr=1 re=2 seq=[[\"pending\",\"running\"],[\"running\",\"review\"],[\"review\",\"escalated\"]]"
+    },
+    {
+      "text": "[artifact-missing] state.json 的 state=suspended（期望 \"suspended\"）",
+      "ok": true,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "[artifact-missing] 输出含「核对失败：未找到声明的产出 」（期望包含 \"核对失败：未找到声明的产出 \"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n升级 ESC-001 待处理\n  原因：核对失败：未找到声明的产出 calc.js\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[artifact-missing] 不存在 edge.kind=backflow 的交接包（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "[artifact-empty] T-001 事件先 running→review 再 review→escalated",
+      "ok": true,
+      "actual": "rr=1 re=2 seq=[[\"pending\",\"running\"],[\"running\",\"review\"],[\"review\",\"escalated\"]]"
+    },
+    {
+      "text": "[artifact-empty] state.json 的 state=suspended（期望 \"suspended\"）",
+      "ok": true,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "[artifact-empty] 输出含「核对失败：产出为空 」（期望包含 \"核对失败：产出为空 \"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n升级 ESC-001 待处理\n  原因：核对失败：产出为空 calc.js\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[artifact-empty] 不存在 edge.kind=backflow 的交接包（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "[artifact-stale] T-001 事件先 running→review 再 review→escalated",
+      "ok": true,
+      "actual": "rr=1 re=2 seq=[[\"pending\",\"running\"],[\"running\",\"review\"],[\"review\",\"escalated\"]]"
+    },
+    {
+      "text": "[artifact-stale] state.json 的 state=suspended（期望 \"suspended\"）",
+      "ok": true,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "[artifact-stale] 输出含「核对失败：产出不是本轮新写 」（期望包含 \"核对失败：产出不是本轮新写 \"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n升级 ESC-001 待处理\n  原因：核对失败：产出不是本轮新写 calc.js\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[artifact-stale] 不存在 edge.kind=backflow 的交接包（期望 0）",
+      "ok": true,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario artifact-missing",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac29-artifact-missing",
+        "--scenario",
+        "artifact-missing"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 939,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac29-artifact-missing\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac29-artifact-missing\\\\demo-code-pass\",\"scenario\":\"artifact-missing\",\"resolvedScenario\":\"product-missing\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"escalated\"},{\"nodeId\":\"T-002\",\"round\":0,\"state\":\"pending\"}],\"handoffs\":0,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"artifact_missing\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":550,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"存在升级\",\"ok\":true},{\"name\":\"reason 属于产物核对\",\"ok\":true,\"detail\":\"artifact_missing\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-29616-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 artifact-missing（独立项目根）"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac29-artifact-missing",
+      "exitCode": 0,
+      "durationMs": 222,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n升级 ESC-001 待处理\n  原因：核对失败：未找到声明的产出 calc.js\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001（artifact-missing）"
+    },
+    {
+      "label": "driver --scenario artifact-empty",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac29-artifact-empty",
+        "--scenario",
+        "artifact-empty"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 933,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac29-artifact-empty\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac29-artifact-empty\\\\demo-code-pass\",\"scenario\":\"artifact-empty\",\"resolvedScenario\":\"product-empty\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"escalated\"},{\"nodeId\":\"T-002\",\"round\":0,\"state\":\"pending\"}],\"handoffs\":0,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"artifact_empty\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":556,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"存在升级\",\"ok\":true},{\"name\":\"reason 属于产物核对\",\"ok\":true,\"detail\":\"artifact_empty\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-13628-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 artifact-empty（独立项目根）"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac29-artifact-empty",
+      "exitCode": 0,
+      "durationMs": 209,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n升级 ESC-001 待处理\n  原因：核对失败：产出为空 calc.js\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001（artifact-empty）"
+    },
+    {
+      "label": "driver --scenario artifact-stale",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac29-artifact-stale",
+        "--scenario",
+        "artifact-stale"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1044,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac29-artifact-stale\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac29-artifact-stale\\\\demo-code-pass\",\"scenario\":\"artifact-stale\",\"resolvedScenario\":\"product-stale\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"escalated\"},{\"nodeId\":\"T-002\",\"round\":0,\"state\":\"pending\"}],\"handoffs\":0,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"artifact_stale\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":656,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"存在升级\",\"ok\":true},{\"name\":\"reason 属于产物核对\",\"ok\":true,\"detail\":\"artifact_stale\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-3448-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 artifact-stale（独立项目根）"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac29-artifact-stale",
+      "exitCode": 0,
+      "durationMs": 203,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n升级 ESC-001 待处理\n  原因：核对失败：产出不是本轮新写 calc.js\n  节点：T-001 开发 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001（artifact-stale）"
+    }
+  ]
+}

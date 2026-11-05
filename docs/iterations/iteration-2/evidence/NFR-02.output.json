@@ -1,0 +1,35 @@
+{
+  "ac": "NFR-02",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "能定位 verdict.read 与紧随其后的 node.dispatch",
+      "ok": true,
+      "actual": "vi=18 ni=24"
+    },
+    {
+      "text": "判定落地后 1 秒内看到回流开始（ts 差 < 1000ms）",
+      "ok": true,
+      "actual": "45ms"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario backflow-once",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\nfr02",
+        "--scenario",
+        "backflow-once"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1899,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr02\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\nfr02\\\\demo-code-pass\",\"scenario\":\"backflow-once\",\"resolvedScenario\":\"backflow\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":0,\"instanceId\":\"INST-001\",\"state\":\"completed\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"done\"}],\"handoffs\":3,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1529,\"checks\":[{\"name\":\"state=completed\",\"ok\":true,\"detail\":\"completed\"},{\"name\":\"两节点 round=2 done\",\"ok\":true},{\"name\":\"handoffs=3 forward/backflow/retest\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-34628-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 1s · 判定 通过\n交接包 HO-001  开发→测试  已构造   21:17:15\n交接包 HO-001  开发→测试  已投递   21:17:16\n交接包 HO-001  开发→测试  已接受   21:17:16\n交接包 HO-001  开发→测试  已完成   21:17:16\n交接包 HO-002  测试→开发（回流）  已构造   21:17:16\n交接包 HO-002  测试→开发（回流）  已投递   21:17:16\n交接包 HO-002  测试→开发（回流）  已接受   21:17:16\n交接包 HO-002  测试→开发（回流）  已完成   21:17:16\n交接包 HO-003  开发→测试（复测）  已构造   21:17:16\n交接包 HO-003  开发→测试（复测）  已投递   21:17:16\n交接包 HO-003  开发→测试（复测）  已接受   21:17:16\n交接包 HO-003  开发→测试（复测）  已完成   21:17:16\n升级 —\n",
+      "note": "backflow-once 场景（判定不通过 → 回流）"
+    }
+  ]
+}

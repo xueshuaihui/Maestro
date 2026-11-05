@@ -1,0 +1,26 @@
+{
+  "ac": "AC-36",
+  "face": "夹具（核心侧 after_verdict + 2 个独立根）",
+  "startedAt": "2026-11-05T14:01:06.207Z",
+  "finishedAt": "2026-11-05T14:01:10.950Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac36-a",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac36-a"
+    },
+    {
+      "case": "ac36-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac36-b"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "已挂起、已升级、失败三者在同一实例的三个时刻",
+  "narrativeId": "INST-230"
+}

@@ -1,0 +1,22 @@
+{
+  "ac": "AC-10",
+  "face": "混合",
+  "startedAt": "2026-11-05T13:08:27.789Z",
+  "finishedAt": "2026-11-05T13:08:30.008Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac10",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac10"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "重启后仍挂起，轮次与升级都在",
+  "narrativeId": "INST-208"
+}

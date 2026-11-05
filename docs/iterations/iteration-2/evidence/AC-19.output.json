@@ -1,0 +1,66 @@
+{
+  "ac": "AC-19",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "[AC-19] 机检：escalations[0].reasonCode=verdict_invalid（期望 \"verdict_invalid\"）",
+      "ok": true,
+      "actual": "\"verdict_invalid\""
+    },
+    {
+      "text": "[AC-19] 输出含「核对失败：缺陷证据不可解析」（期望包含 \"核对失败：缺陷证据不可解析\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 1 轮\n会话 已升级\n交接包 HO-001  开发→测试  已构造   22:00:33\n交接包 HO-001  开发→测试  已投递   22:00:33\n交接包 HO-001  开发→测试  已接受   22:00:33\n升级 ESC-001 待处理\n  原因：核对失败：缺陷证据不可解析\n  节点：T-002 测试 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[AC-19] 机检：nodes[0].state=done（期望 \"done\"）",
+      "ok": true,
+      "actual": "\"done\""
+    },
+    {
+      "text": "[AC-19] 机检：nodes[0].round=1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[AC-19] 机检：不存在 edge.kind=backflow 的交接包（期望 0）",
+      "ok": true,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario verdict-missing-evidence",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac19",
+        "--scenario",
+        "verdict-missing-evidence"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1249,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac19\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac19\\\\demo-code-pass\",\"scenario\":\"verdict-missing-evidence\",\"resolvedScenario\":\"verdict-evidence-unreadable\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"escalated\"}],\"handoffs\":1,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"verdict_invalid\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":879,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"escalation reason=verdict_invalid\",\"ok\":true,\"detail\":\"verdict_invalid\"},{\"name\":\"无 backflow 交接包\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-28784-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 verdict-missing-evidence（证据指向不存在文件）"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac19",
+      "exitCode": 0,
+      "durationMs": 217,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 1 轮\n会话 已升级\n交接包 HO-001  开发→测试  已构造   22:00:33\n交接包 HO-001  开发→测试  已投递   22:00:33\n交接包 HO-001  开发→测试  已接受   22:00:33\n升级 ESC-001 待处理\n  原因：核对失败：缺陷证据不可解析\n  节点：T-002 测试 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

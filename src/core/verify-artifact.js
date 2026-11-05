@@ -193,3 +193,158 @@ export async function verifyArtifacts({ cwd, declared = [], observedRefs = [] } 
   }
   return { ok: true, refs };
 }
+
+/* ------------------------------------------------------------------------- *
+ * Fixed-format branch (I1.2). Only used by templates that declare products in
+ * the task text (`产物：<path>`, full-width colon). The two functions above stay
+ * untouched so the single-node template keeps its I1.1 heuristic behaviour.
+ * ------------------------------------------------------------------------- */
+
+/** Full-width marker only; the half-width form counts as "not declared" (M-11). */
+export const PRODUCT_LINE = /产物：/;
+
+const PRODUCT_MARKER = '产物：';
+
+/** Separators inside a product line: whitespace, Chinese/ASCII commas, semicolons. */
+const PRODUCT_SEPARATOR = /[\s、,，;；]+/;
+
+const PRODUCT_CONJUNCTIONS = new Set(['和', '及', '与']);
+
+/**
+ * Normalize one declared product to a POSIX relative reference.
+ * `./calc.js` and `calc.js` are the same; backslashes are normalized.
+ * Absolute paths and `..` escapes return null.
+ */
+export function normalizeProductRef(raw, cwd = null) {
+  void cwd;
+  if (typeof raw !== 'string') return null;
+  const token = raw
+    .trim()
+    .replace(/^["'“”‘’（(【\[]+/, '')
+    .replace(/["'“”‘’）)】\]]+$/, '')
+    .replace(/[。，,；;]+$/, '')
+    .replace(/\\/g, '/');
+  if (token.length === 0) return null;
+  if (isAbsoluteLike(token)) return null;
+
+  const segments = token.split('/').filter((segment) => segment.length > 0 && segment !== '.');
+  if (segments.length === 0) return null;
+  if (segments.some((segment) => segment === '..')) return null;
+
+  const normalized = segments.join('/');
+  const hasSeparator = segments.length > 1;
+  const hasExtension = EXTENSION.test(normalized) && normalized.lastIndexOf('.') > 0;
+  if (!hasSeparator && !hasExtension) return null;
+  return normalized;
+}
+
+/**
+ * Extract the declared products from a task text.
+ *
+ * One line may carry several products (`产物：calc.js out/util.js`); several lines
+ * are allowed. Only the full-width `产物：` marker is recognised — a half-width
+ * `产物:` means "not declared" and returns PRODUCT_LINE_MISSING, so the caller can
+ * print the readable D-5 message.
+ *
+ * @param {string} taskText
+ * @returns {{ok:true, refs:string[]}|{ok:false, code:'PRODUCT_LINE_MISSING'}}
+ */
+export function extractProductLines(taskText) {
+  if (typeof taskText !== 'string' || taskText.length === 0) {
+    return { ok: false, code: 'PRODUCT_LINE_MISSING' };
+  }
+
+  const refs = [];
+  const seen = new Set();
+
+  for (const line of taskText.split(/\r?\n/)) {
+    let cursor = 0;
+    while (cursor < line.length) {
+      const marker = line.indexOf(PRODUCT_MARKER, cursor);
+      if (marker < 0) break;
+      const tail = line.slice(marker + PRODUCT_MARKER.length);
+      for (const token of tail.split(PRODUCT_SEPARATOR)) {
+        if (token.length === 0 || PRODUCT_CONJUNCTIONS.has(token)) continue;
+        const ref = normalizeProductRef(token);
+        if (!ref || seen.has(ref)) continue;
+        seen.add(ref);
+        refs.push(ref);
+      }
+      cursor = marker + PRODUCT_MARKER.length;
+    }
+  }
+
+  if (refs.length === 0) return { ok: false, code: 'PRODUCT_LINE_MISSING' };
+  return { ok: true, refs };
+}
+
+/** Singular spelling kept as an alias (task sheet uses this name). */
+export const extractProductsLine = extractProductLines;
+
+function startedAtMsOf(roundStartedAt) {
+  if (roundStartedAt === null || roundStartedAt === undefined) return null;
+  if (typeof roundStartedAt === 'number' && Number.isFinite(roundStartedAt)) return roundStartedAt;
+  const parsed = Date.parse(String(roundStartedAt));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+/**
+ * Verify declared products (D-7): each must exist, be non-empty and be newer than
+ * the current round's dispatch time. Messages are verbatim D-5.
+ *
+ * @param {{cwd?:string, products?:string[], roundStartedAt?:string|number|null,
+ *          fs?:object, now?:Function}} options
+ * @returns {Promise<{ok:true, refs:Array<object>}
+ *   |{ok:false, code:'MISSING'|'EMPTY'|'STALE', ref:string, message:string}>}
+ */
+export async function verifyProducts({
+  cwd = null,
+  products = [],
+  roundStartedAt = null,
+  fs: io = fs,
+  now = () => Date.now()
+} = {}) {
+  const baseDir = path.resolve(cwd ?? '.');
+  const startedMs = startedAtMsOf(roundStartedAt);
+  const list = Array.isArray(products) ? products : [];
+  const refs = [];
+
+  const toRef = (value) => normalizeProductRef(value) ?? (typeof value === 'string' ? value : null);
+
+  for (const raw of list) {
+    const ref = toRef(raw);
+    if (ref === null) continue;
+
+    const absPath = path.resolve(baseDir, ref);
+    let stat = null;
+    try {
+      stat = await io.stat(absPath);
+    } catch {
+      stat = null;
+    }
+
+    if (stat === null) {
+      return { ok: false, code: 'MISSING', ref, message: `未找到声明的产出 ${ref}` };
+    }
+    if (!(stat.size > 0)) {
+      return { ok: false, code: 'EMPTY', ref, message: `产出为空 ${ref}` };
+    }
+    if (startedMs !== null && stat.mtimeMs < startedMs) {
+      return { ok: false, code: 'STALE', ref, message: `产出不是本轮新写 ${ref}` };
+    }
+
+    refs.push({
+      ref,
+      absPath,
+      exists: true,
+      bytes: stat.size,
+      mtime: stat.mtime instanceof Date ? stat.mtime.toISOString() : new Date(stat.mtimeMs).toISOString(),
+      verifiedAt: new Date(now()).toISOString()
+    });
+  }
+
+  return { ok: true, refs };
+}
+
+/** Split-doc spelling kept as an alias so either import name wires up. */
+export const verifyDeclaredArtifacts = verifyProducts;

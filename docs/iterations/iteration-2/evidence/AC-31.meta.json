@@ -1,0 +1,30 @@
+{
+  "ac": "AC-31",
+  "face": "混合（3 个独立项目根）",
+  "startedAt": "2026-11-05T14:00:49.200Z",
+  "finishedAt": "2026-11-05T14:00:54.878Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac31-running",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac31-running"
+    },
+    {
+      "case": "ac31-suspended",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac31-suspended"
+    },
+    {
+      "case": "ac31-completed",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac31-completed"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "同一实例重复发起被拒",
+  "narrativeId": "INST-225"
+}

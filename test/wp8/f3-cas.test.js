@@ -27,8 +27,11 @@ test('F-3 存储层：expectedState 不符 → STORE_CONFLICT 且不写', async 
       hostRaw: {},
       counters: { eventSeq: 0, runCount: 1 },
     };
-    assert.equal((await env.store.save(INSTANCE, state)).ok, true);
+    const first = await env.store.save(INSTANCE, state);
+    assert.equal(first.ok, true);
+    assert.equal(first.rev, 1);
 
+    // ① string（v1 旧语义）：只比 disk.state.state
     const conflict = await env.store.save(
       INSTANCE,
       { ...state, state: 'completed' },
@@ -39,8 +42,29 @@ test('F-3 存储层：expectedState 不符 → STORE_CONFLICT 且不写', async 
     assert.deepEqual(conflict.params.expected, 'created');
     assert.equal(conflict.params.actual, 'running');
 
+    // ② 对象形状：rev 是整快照版本，state 相同但 rev 不符同样冲突
+    const staleRev = await env.store.save(
+      INSTANCE,
+      { ...state, state: 'completed' },
+      { expectedState: { state: 'running', halted: false, rev: 0 } },
+    );
+    assert.equal(staleRev.ok, false);
+    assert.equal(staleRev.code, 'STORE_CONFLICT');
+    assert.deepEqual(staleRev.params.actual, { state: 'running', halted: false, rev: 1 });
+
     const after = await diskState(env.store, INSTANCE);
     assert.equal(after.state, 'running', '冲突时不得写入');
+    assert.equal(after.rev, 1, '冲突不推进版本');
+
+    // ③ 三字段全对才放行，rev 单调 +1
+    const passed = await env.store.save(
+      INSTANCE,
+      { ...state, state: 'completed' },
+      { expectedState: { state: 'running', halted: false, rev: 1 } },
+    );
+    assert.equal(passed.ok, true);
+    assert.equal(passed.rev, 2);
+    assert.equal((await diskState(env.store, INSTANCE)).rev, 2);
   } finally {
     await env.teardown();
   }
@@ -57,8 +81,8 @@ test('F-3 编排层：磁盘被外部改成 interrupted 后，→completed 被�
       return (
         loaded.ok &&
         loaded.state.state === 'running' &&
-        loaded.state.node.state === 'running' &&
-        loaded.state.session?.state === 'tool_running'
+        loaded.state.nodes?.[0]?.state === 'running' &&
+        loaded.state.sessions?.at(-1)?.state === 'tool_running'
       );
     });
     await new Promise((resolve) => setTimeout(resolve, 100));

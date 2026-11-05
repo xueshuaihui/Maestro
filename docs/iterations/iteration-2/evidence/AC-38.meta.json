@@ -1,0 +1,22 @@
+{
+  "ac": "AC-38",
+  "face": "夹具（--prepare-only + MAESTRO_FAULT 冷启动）",
+  "startedAt": "2026-11-05T13:16:52.776Z",
+  "finishedAt": "2026-11-05T13:16:54.752Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac38",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac38"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "状态写不进去时不假装挂起",
+  "narrativeId": "INST-232"
+}

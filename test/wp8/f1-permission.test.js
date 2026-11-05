@@ -3,7 +3,16 @@ import fs from 'node:fs';
 import test from 'node:test';
 
 import { resolvePermissionPolicy } from '../../src/adapter/host-config.js';
-import { diskState, setup, tmpDir, waitFor, writeHostConfig } from './helpers.js';
+import {
+  currentSession,
+  diskState,
+  firstNode,
+  lastHandoff,
+  setup,
+  tmpDir,
+  waitFor,
+  writeHostConfig,
+} from './helpers.js';
 
 const INSTANCE = 'INST-001';
 
@@ -60,8 +69,8 @@ test('F-1 hold：--permission=ask → 会话 waiting_input 且节点仍 running�
     assert.equal(cancelled.ok, true, JSON.stringify(cancelled));
     const after = await diskState(env.store, INSTANCE);
     assert.equal(after.state, 'cancelled');
-    assert.equal(after.session.state, 'idle');
-    assert.equal(after.node.state, 'cancelled');
+    assert.equal(currentSession(after).state, 'idle');
+    assert.equal(firstNode(after).state, 'cancelled');
   } finally {
     await env.teardown();
   }
@@ -77,10 +86,10 @@ test('F-1 reject：--permission=ask → PERMISSION_DENIED，params.step=write', 
 
     const state = await diskState(env.store, INSTANCE);
     assert.equal(state.state, 'failed');
-    assert.equal(state.node.state, 'failed');
-    assert.equal(state.session.state, 'idle');
-    assert.equal(state.handoff.state, 'rejected');
-    assert.equal(state.handoff.rejectReason, 'permission_denied');
+    assert.equal(firstNode(state).state, 'failed');
+    assert.equal(currentSession(state).state, 'idle');
+    assert.equal(lastHandoff(state).state, 'rejected');
+    assert.equal(lastHandoff(state).rejectReason, 'permission_denied');
 
     const events = await env.store.readEvents(INSTANCE);
     const asked = events.events.some((ev) => ev.object === 'session' && ev.to === 'waiting_input');
@@ -101,8 +110,8 @@ test('F-1 allow：--permission=ask 跑完，事件里 waiting_input 有进有出
 
     const state = await diskState(env.store, INSTANCE);
     assert.equal(state.state, 'completed');
-    assert.equal(state.node.state, 'done');
-    assert.equal(state.session.state, 'idle');
+    assert.equal(firstNode(state).state, 'done');
+    assert.equal(currentSession(state).state, 'idle');
 
     const events = (await env.store.readEvents(INSTANCE)).events;
     const inIdx = events.findIndex((ev) => ev.object === 'session' && ev.to === 'waiting_input');

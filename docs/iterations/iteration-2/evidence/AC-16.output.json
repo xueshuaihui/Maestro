@@ -1,0 +1,124 @@
+{
+  "ac": "AC-16",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "[stale] 机检：escalations[0].reasonCode='verdict_stale'（期望 \"verdict_stale\"）",
+      "ok": true,
+      "actual": "\"verdict_stale\""
+    },
+    {
+      "text": "[stale] 输出含「核对失败：判定文件不是本轮新写 out/verdict.json」（期望包含 \"核对失败：判定文件不是本轮新写 out/verdict.json\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 1 轮\n会话 已升级\n交接包 HO-001  开发→测试  已构造   22:00:27\n交接包 HO-001  开发→测试  已投递   22:00:28\n交接包 HO-001  开发→测试  已接受   22:00:28\n升级 ESC-001 待处理\n  原因：核对失败：判定文件不是本轮新写 out/verdict.json\n  节点：T-002 测试 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[stale] 输出不含「未找到判定文件」（期望不含 \"未找到判定文件\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 1 轮\n会话 已升级\n交接包 HO-001  开发→测试  已构造   22:00:27\n交接包 HO-001  开发→测试  已投递   22:00:28\n交接包 HO-001  开发→测试  已接受   22:00:28\n升级 ESC-001 待处理\n  原因：核对失败：判定文件不是本轮新写 out/verdict.json\n  节点：T-002 测试 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "[stale] 机检：nodes[0].state=done（期望 \"done\"）",
+      "ok": true,
+      "actual": "\"done\""
+    },
+    {
+      "text": "[stale] 机检：nodes[0].round=1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[stale] 机检：无回流交接包（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "[stale-retest] 机检：escalations[0].reasonCode='verdict_stale'（期望 \"verdict_stale\"）",
+      "ok": true,
+      "actual": "\"verdict_stale\""
+    },
+    {
+      "text": "[stale-retest] 机检：nodes[1].round=2（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "[stale-retest] 机检：nodes[1].state='escalated'（期望 \"escalated\"）",
+      "ok": true,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "[stale-retest] 输出含「核对失败：判定文件不是本轮新写 out/verdict.json」（期望包含 \"核对失败：判定文件不是本轮新写 out/verdict.json\"）",
+      "ok": true,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 2 条\n会话 已升级\n交接包 HO-001  开发→测试  已构造   22:00:29\n交接包 HO-001  开发→测试  已投递   22:00:29\n交接包 HO-001  开发→测试  已接受   22:00:29\n交接包 HO-001  开发→测试  已完成   22:00:29\n交接包 HO-002  测试→开发（回流）  已构造   22:00:29\n交接包 HO-002  测试→开发（回流）  已投递   22:00:29\n交接包 HO-002  测试→开发（回流）  已接受   22:00:29\n交接包 HO-002  测试→开发（回流）  已完成   22:00:29\n交接包 HO-003  开发→测试（复测）  已构造   22:00:30\n交接包 HO-003  开发→测试（复测）  已投递   22:00:30\n交接包 HO-003  开发→测试（复测）  已接受   22:00:30\n升级 ESC-001 待处理\n  原因：核对失败：判定文件不是本轮新写 out/verdict.json\n  节点：T-002 测试 · 第 2 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario verdict-stale",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac16-stale",
+        "--scenario",
+        "verdict-stale"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 1273,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac16-stale\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac16-stale\\\\demo-code-pass\",\"scenario\":\"verdict-stale\",\"resolvedScenario\":\"verdict-stale\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"escalated\"}],\"handoffs\":1,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"verdict_stale\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":879,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"escalation reason=verdict_stale\",\"ok\":true,\"detail\":\"verdict_stale\"},{\"name\":\"无 backflow 交接包\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-14020-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 verdict-stale"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac16-stale",
+      "exitCode": 0,
+      "durationMs": 232,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 1 轮\n会话 已升级\n交接包 HO-001  开发→测试  已构造   22:00:27\n交接包 HO-001  开发→测试  已投递   22:00:28\n交接包 HO-001  开发→测试  已接受   22:00:28\n升级 ESC-001 待处理\n  原因：核对失败：判定文件不是本轮新写 out/verdict.json\n  节点：T-002 测试 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    },
+    {
+      "label": "driver --scenario verdict-stale-retest",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac16-stale-retest",
+        "--scenario",
+        "verdict-stale-retest"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 1,
+      "durationMs": 1906,
+      "stdout": "{\"ok\":false,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac16-stale-retest\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-f2\\\\proj\\\\ac16-stale-retest\\\\demo-code-pass\",\"scenario\":\"verdict-stale-retest\",\"resolvedScenario\":\"verdict-stale-retest\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"escalated\"}],\"handoffs\":3,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"verdict_stale\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1541,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"escalation reason=verdict_stale\",\"ok\":true,\"detail\":\"verdict_stale\"},{\"name\":\"无 backflow 交接包\",\"ok\":false}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-34052-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "note": "夹具场景 verdict-stale-retest（前 3 步正常，step4 旧 mtime）"
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac16-stale-retest",
+      "exitCode": 0,
+      "durationMs": 219,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 2 条\n会话 已升级\n交接包 HO-001  开发→测试  已构造   22:00:29\n交接包 HO-001  开发→测试  已投递   22:00:29\n交接包 HO-001  开发→测试  已接受   22:00:29\n交接包 HO-001  开发→测试  已完成   22:00:29\n交接包 HO-002  测试→开发（回流）  已构造   22:00:29\n交接包 HO-002  测试→开发（回流）  已投递   22:00:29\n交接包 HO-002  测试→开发（回流）  已接受   22:00:29\n交接包 HO-002  测试→开发（回流）  已完成   22:00:29\n交接包 HO-003  开发→测试（复测）  已构造   22:00:30\n交接包 HO-003  开发→测试（复测）  已投递   22:00:30\n交接包 HO-003  开发→测试（复测）  已接受   22:00:30\n升级 ESC-001 待处理\n  原因：核对失败：判定文件不是本轮新写 out/verdict.json\n  节点：T-002 测试 · 第 2 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

@@ -100,6 +100,24 @@ export async function setup({ switches = [], permissionPolicy = null, configPoli
   };
 }
 
+/**
+ * v2 数组投影（D-6）：`state.json` 的 `node` / `session` / `handoff` 是数组。
+ * 测试断言统一用这三个辅助取"第一个节点 / 当前会话 / 最后一张交接包"。
+ */
+export function firstNode(state) {
+  return Array.isArray(state?.nodes) ? (state.nodes[0] ?? null) : null;
+}
+
+export function currentSession(state) {
+  const list = Array.isArray(state?.sessions) ? state.sessions : [];
+  return list.length > 0 ? list[list.length - 1] : null;
+}
+
+export function lastHandoff(state) {
+  const list = Array.isArray(state?.handoffs) ? state.handoffs : [];
+  return list.length > 0 ? list[list.length - 1] : null;
+}
+
 /** 读磁盘快照（不带任何内存副本）。 */
 export async function diskState(store, instanceId) {
   const loaded = await store.load(instanceId);

@@ -1,0 +1,91 @@
+{
+  "ac": "AC-04",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "夹具停在「测试第 2 轮执行中」（.mock/paused 存在）",
+      "ok": true,
+      "actual": "true"
+    },
+    {
+      "text": "grep -c '^节点 T-'（期望 2）",
+      "ok": true,
+      "actual": "2"
+    },
+    {
+      "text": "开发行含「第 2 轮」（期望包含 \"第 2 轮\"）",
+      "ok": true,
+      "actual": "节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s"
+    },
+    {
+      "text": "测试行含「第 2 轮」（期望包含 \"第 2 轮\"）",
+      "ok": true,
+      "actual": "节点 T-002 测试 执行中 · 第 2 轮 · 判定 不通过 · 缺陷 2 条"
+    },
+    {
+      "text": "grep '^交接包 HO-' 同时能找到「开发→测试」与「测试→开发（回流）」",
+      "ok": true,
+      "actual": "交接包 HO-001  开发→测试  已构造   21:06:14 | 交接包 HO-001  开发→测试  已投递   21:06:14 | 交接包 HO-001  开发→测试  已接受   21:06:14 | 交接包 HO-001  开发→测试  已完成   21:06:14 | 交接包 HO-002  测试→开发（回流）  已构造   21:06:14 | 交接包 HO-002  测试→开发（回流）  已投递   21:06:15 | 交接包 HO-002  测试→开发（回流）  已接受   21:06:15 | 交接包 HO-002  测试→开发（回流）  已完成   21:06:15 | 交接包 HO-003  开发→测试（复测）  已构造   21:06:15"
+    },
+    {
+      "text": "节点行与实例行都不匹配 \\d{2}:\\d{2}:\\d{2}（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "交接包行匹配时间戳",
+      "ok": true,
+      "actual": "交接包 HO-001  开发→测试  已构造   21:06:14 | 交接包 HO-001  开发→测试  已投递   21:06:14 | 交接包 HO-001  开发→测试  已接受   21:06:14 | 交接包 HO-001  开发→测试  已完成   21:06:14 | 交接包 HO-002  测试→开发（回流）  已构造   21:06:14 | 交接包 HO-002  测试→开发（回流）  已投递   21:06:15 | 交接包 HO-002  测试→开发（回流）  已接受   21:06:15 | 交接包 HO-002  测试→开发（回流）  已完成   21:06:15 | 交接包 HO-003  开发→测试（复测）  已构造   21:06:15"
+    },
+    {
+      "text": "输出段序符合附录 A-2（实例 → 节点 ×2 → 会话 → 交接包 → 升级）（期望 \"实例>节点>会话>交接包>升级\"）",
+      "ok": true,
+      "actual": "\"实例>节点>会话>交接包>升级\""
+    },
+    {
+      "text": "grep -c '节点 T-001 开发 已完成'（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "grep -c '交接包 HO-001  开发→测试  已' 大于 0",
+      "ok": true,
+      "actual": "交接包 HO-001  开发→测试  已构造   21:06:14"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario retest-hold --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac04",
+        "--scenario",
+        "retest-hold",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test)",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac04",
+      "exitCode": 0,
+      "durationMs": 95,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 1s\n节点 T-002 测试 执行中 · 第 2 轮 · 判定 不通过 · 缺陷 2 条\n会话 空闲\n交接包 HO-001  开发→测试  已构造   21:06:14\n交接包 HO-001  开发→测试  已投递   21:06:14\n交接包 HO-001  开发→测试  已接受   21:06:14\n交接包 HO-001  开发→测试  已完成   21:06:14\n交接包 HO-002  测试→开发（回流）  已构造   21:06:14\n交接包 HO-002  测试→开发（回流）  已投递   21:06:15\n交接包 HO-002  测试→开发（回流）  已接受   21:06:15\n交接包 HO-002  测试→开发（回流）  已完成   21:06:15\n交接包 HO-003  开发→测试（复测）  已构造   21:06:15\n升级 —\n",
+      "stderr": "",
+      "note": "orch status --instance INST-001"
+    }
+  ]
+}

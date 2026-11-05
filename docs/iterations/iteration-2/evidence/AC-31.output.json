@@ -1,0 +1,195 @@
+{
+  "ac": "AC-31",
+  "face": "夹具",
+  "assertions": [
+    {
+      "text": "[Given1] hold-forever 让 INST-001 正在执行，核心在跑",
+      "ok": true,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "[Given1] 输出含「该实例正在执行，本次未发起」（期望包含 \"该实例正在执行，本次未发起\"）",
+      "ok": true,
+      "actual": "该实例正在执行，本次未发起\n"
+    },
+    {
+      "text": "[Given1] 退出码 1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[Given1] 机检：sessions.length 没有增加（期望 0）",
+      "ok": true,
+      "actual": "0"
+    },
+    {
+      "text": "[Given1] 机检：原实例 nodes[0].round 没有变化（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[Given2] retest-fail --keep 让 INST-001 已挂起，核心在跑",
+      "ok": true,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "[Given2] 输出含「该实例已挂起，不能再次发起；如要重来请新建实例」（期望包含 \"该实例已挂起，不能再次发起；如要重来请新建实例\"）",
+      "ok": true,
+      "actual": "该实例已挂起，不能再次发起；如要重来请新建实例\n"
+    },
+    {
+      "text": "[Given2] 退出码 1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[Given2] 机检：sessions.length 没有增加（期望 4）",
+      "ok": true,
+      "actual": "4"
+    },
+    {
+      "text": "[Given2] 机检：state 仍是 'suspended'（期望 \"suspended\"）",
+      "ok": true,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "[Given3] code-pass --keep 让 INST-001 已完成，核心在跑",
+      "ok": true,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "[Given3] 输出含「实例已结束（已完成），本迭代不支持重跑」（期望包含 \"实例已结束（已完成），本迭代不支持重跑\"）",
+      "ok": true,
+      "actual": "实例已结束（已完成），本迭代不支持重跑\n"
+    },
+    {
+      "text": "[Given3] 退出码 1（期望 1）",
+      "ok": true,
+      "actual": "1"
+    },
+    {
+      "text": "[Given3] 机检：sessions.length 没有增加（期望 2）",
+      "ok": true,
+      "actual": "2"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario hold-forever --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac31-running",
+        "--scenario",
+        "hold-forever",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test)",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --cwd ./demo-code-pass --instance INST-001 --template code-loop --task 给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-code-pass",
+        "--instance",
+        "INST-001",
+        "--template",
+        "code-loop",
+        "--task",
+        "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac31-running",
+      "exitCode": 1,
+      "durationMs": 97,
+      "stdout": "该实例正在执行，本次未发起\n",
+      "stderr": "",
+      "note": "orch run --cwd ./demo-code-pass --instance INST-001 --template code-loop --task \"…产物：calc.js\""
+    },
+    {
+      "label": "driver --scenario retest-fail --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac31-suspended",
+        "--scenario",
+        "retest-fail",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test)",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --cwd ./demo-code-pass --instance INST-001 --template code-loop --task 给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-code-pass",
+        "--instance",
+        "INST-001",
+        "--template",
+        "code-loop",
+        "--task",
+        "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac31-suspended",
+      "exitCode": 1,
+      "durationMs": 86,
+      "stdout": "该实例已挂起，不能再次发起；如要重来请新建实例\n",
+      "stderr": "",
+      "note": "orch run --cwd ./demo-code-pass --instance INST-001 --template code-loop --task \"…产物：calc.js\""
+    },
+    {
+      "label": "driver --scenario code-pass --keep （长驻，startDriver 管理）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac31-completed",
+        "--scenario",
+        "code-pass",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": null,
+      "durationMs": 0,
+      "stdout": "(长驻进程，由 startDriver 管理；env 关键键：NODE_ENV=test)",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --cwd ./demo-code-pass --instance INST-001 --template code-loop --task 给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-code-pass",
+        "--instance",
+        "INST-001",
+        "--template",
+        "code-loop",
+        "--task",
+        "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac31-completed",
+      "exitCode": 1,
+      "durationMs": 95,
+      "stdout": "实例已结束（已完成），本迭代不支持重跑\n",
+      "stderr": "",
+      "note": "orch run --cwd ./demo-code-pass --instance INST-001 --template code-loop --task \"…产物：calc.js\""
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "ac": "AC-43",
+  "face": "夹具（核心侧 after_accepted:T-002）",
+  "startedAt": "2026-11-05T13:17:04.094Z",
+  "finishedAt": "2026-11-05T13:17:05.882Z",
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "roots": [
+    {
+      "case": "ac43",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-f2\\proj\\ac43"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "notes": [],
+  "verdict": "通过",
+  "title": "正向交接包把任务与产物上下文带到下游",
+  "narrativeId": "INST-237"
+}

@@ -83,6 +83,13 @@ export function createNormalizer({ clock = () => Date.now() } = {}) {
 
     if (rec) rec.lastUpdateAt = clock();
 
+    // 升级后的终态守卫（C-08）：进入 escalated 后除取消外任何帧都不得改状态，
+    // 否则宿主迟到的 agent_message_chunk 会把会话翻回 thinking（AC-39）。
+    if (rec?.state === 'escalated') {
+      counters.dropped += 1;
+      return { state: 'escalated', noise: false, progress: false, dropped: true, reason: 'escalated_guard' };
+    }
+
     // 取消后的迟到帧隔离：cancel 实测 13~56ms 才生效，期间仍会有 turn 内帧到达。
     // quarantined 期间一律丢弃（含同 turn 的收尾帧），否则会话会被翻回“执行中”。
     if (rec?.quarantined) {
@@ -164,6 +171,7 @@ export function createNormalizer({ clock = () => Date.now() } = {}) {
 
   function onPromptSent(sessionId, turnId) {
     const rec = record(sessionId);
+    if (rec.state === 'escalated') return { state: 'escalated', guarded: true };
     rec.state = 'thinking';
     rec.toolName = null;
     rec.turnId = turnId ?? rec.turnId;
@@ -173,6 +181,8 @@ export function createNormalizer({ clock = () => Date.now() } = {}) {
 
   function onPromptSettled(sessionId, { stopReason } = {}) {
     const rec = record(sessionId);
+    // 升级是终态：回合结算不得把它拉回 idle（取消走 onCancelled）。
+    if (rec.state === 'escalated') return { state: 'escalated', stopReason: stopReason ?? null, guarded: true };
     rec.state = 'idle';
     rec.toolName = null;
     return { state: 'idle', stopReason: stopReason ?? null };
@@ -180,12 +190,14 @@ export function createNormalizer({ clock = () => Date.now() } = {}) {
 
   function onOutputSubmitted(sessionId) {
     const rec = record(sessionId);
+    if (rec.state === 'escalated') return { state: 'escalated', guarded: true };
     rec.state = 'waiting_dependency';
     return { state: 'waiting_dependency' };
   }
 
   function onWaitingInput(sessionId, permissionAction) {
     const rec = record(sessionId);
+    if (rec.state === 'escalated') return { state: 'escalated', guarded: true };
     rec.state = 'waiting_input';
     return { state: 'waiting_input', permissionAction: permissionAction ?? null };
   }
@@ -197,6 +209,7 @@ export function createNormalizer({ clock = () => Date.now() } = {}) {
    */
   function onPermissionRequested({ sessionId, toolCallId, action } = {}) {
     const rec = record(sessionId);
+    if (rec.state === 'escalated') return { state: 'escalated', guarded: true };
     rec.state = 'waiting_input';
     lastPermissionSession = rec.sessionId;
     return {
@@ -212,6 +225,7 @@ export function createNormalizer({ clock = () => Date.now() } = {}) {
    */
   function onPermissionSettled({ sessionId, decision } = {}) {
     const rec = record(sessionId ?? lastPermissionSession ?? undefined);
+    if (rec.state === 'escalated') return { state: 'escalated', decision: decision ?? null, guarded: true };
     const allowed = decision === 'allow' || decision === 'allowed' || decision === 'allow-once';
     rec.state = allowed ? 'thinking' : 'idle';
     if (!allowed) rec.toolName = null;
@@ -227,10 +241,11 @@ export function createNormalizer({ clock = () => Date.now() } = {}) {
   }
 
   function onEscalated(sessionId) {
-    // 定义态：I1.1 无调用点（I1.2 才产生）
+    // 升级事务同时置 quarantined：宿主迟到的帧一律丢弃（C-08 / AC-39）。
     const rec = record(sessionId);
     rec.state = 'escalated';
-    return { state: 'escalated' };
+    rec.quarantined = true;
+    return { state: 'escalated', quarantined: true };
   }
 
   function getSession(sessionId) {
