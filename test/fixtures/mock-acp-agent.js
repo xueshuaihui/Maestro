@@ -29,12 +29,20 @@
 //     按场景步执行 write / verdict / message / sessionNew / hostError / hold /
 //     historyMarker / delayMs。步骤耗尽 → 写 .mock/exhausted 并非 0 退出。
 //   --consume-only   只消费一步并打印 n（并发自测用）
+//
+// 场景套件（I1.3）：
+//   --suite task-loop  走 `test/fixtures/scenarios/task-loop/*.json`，步语义换成
+//     artifact / artifactSkip / artifactUtimes / content / review / reviewSkip /
+//     reviewDecoy / reviewUtimes / mutatePrevious / remove / delayMs /
+//     hold.when='prompt' / hostError / sessionNew / message。
+//     `--suite` 缺省（或 `code-loop`）时上面 I1.2 的分支逐字不变。
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 
 import { getScenario } from './code-loop-driver.mjs';
+import { getTaskScenario } from './task-loop-driver.mjs';
 
 const MOCK_AGENT_NAME = 'mock-acp-agent';
 const MOCK_AGENT_VERSION = '1.0.0';
@@ -58,6 +66,7 @@ function parseArgv(argv) {
     writeRef: null,
     root: null,
     scenario: null,
+    suite: null,
     consumeOnly: false,
     help: false,
   };
@@ -114,6 +123,12 @@ function parseArgv(argv) {
         opts.scenario = value ?? null;
         break;
       }
+      case '--suite': {
+        const value = nextValue(i, inline);
+        if (inline === undefined) i += 1;
+        opts.suite = value ?? null;
+        break;
+      }
       case '--consume-only':
         opts.consumeOnly = true;
         break;
@@ -151,6 +166,7 @@ const MOCK_USAGE = [
   '用法（I1.1 旧开关，行为不变）：node mock-acp-agent.js [--permission=ask|deny|auto] ...',
   '用法（I1.2 场景）：node mock-acp-agent.js --root <项目根绝对路径> --scenario <场景名>',
   '      并发自测：node mock-acp-agent.js --root <根> --scenario <场景名> --consume-only',
+  '用法（I1.3 场景）：node mock-acp-agent.js --root <根> --suite task-loop --scenario <场景名>',
 ].join('\n');
 
 if (opts.help) {
@@ -158,13 +174,23 @@ if (opts.help) {
   process.exit(0);
 }
 
+const SUITE_TASK_LOOP = 'task-loop';
+const SUITE = opts.suite === SUITE_TASK_LOOP ? SUITE_TASK_LOOP : null;
+
+if (opts.suite !== null && opts.suite !== SUITE_TASK_LOOP && opts.suite !== 'code-loop') {
+  process.stderr.write(`未知 --suite：${opts.suite}\n${MOCK_USAGE}\n`);
+  process.exit(2);
+}
+
 const scenarioMode = typeof opts.root === 'string' && opts.root.length > 0
   && typeof opts.scenario === 'string' && opts.scenario.length > 0;
 
-if (!scenarioMode && (opts.root || opts.scenario || opts.consumeOnly)) {
+if (!scenarioMode && (opts.root || opts.scenario || opts.suite || opts.consumeOnly)) {
   process.stderr.write(`--root 与 --scenario 必须同时给出\n${MOCK_USAGE}\n`);
   process.exit(2);
 }
+
+const taskLoopMode = scenarioMode && SUITE === SUITE_TASK_LOOP;
 
 const SCENARIO_ROOT = scenarioMode ? path.resolve(opts.root) : null;
 const MOCK_DIR = scenarioMode ? path.join(SCENARIO_ROOT, '.mock') : null;
@@ -172,7 +198,8 @@ const MOCK_DIR = scenarioMode ? path.join(SCENARIO_ROOT, '.mock') : null;
 let scenario = null;
 if (scenarioMode) {
   try {
-    scenario = getScenario(opts.scenario);
+    // 两套场景表互不回落：task-loop 缺文件直接报错，不会退到 code-loop 的内置表。
+    scenario = taskLoopMode ? getTaskScenario(opts.scenario) : getScenario(opts.scenario);
   } catch (err) {
     process.stderr.write(`mock-acp-agent: ${err.message}\n`);
     process.exit(2);
@@ -408,14 +435,19 @@ function readHistoryMarkers(beforeN) {
   return markers;
 }
 
-/** mock 侧暂停：消费完步、建会话前写 .mock/paused，轮询 .mock/release。 */
-async function holdAtStart() {
+/** mock 侧挂起：写 `.mock/paused`，轮询 `.mock/release`；已放行则不重复停。 */
+async function holdUntilRelease() {
   const releasePath = mockPath('release');
   if (fs.existsSync(releasePath)) return; // 已放行：不重复停
   fs.writeFileSync(mockPath('paused'), String(process.pid), 'utf8');
   while (!fs.existsSync(releasePath)) {
     await delay(100);
   }
+}
+
+/** mock 侧暂停：消费完步、建会话前写 .mock/paused，轮询 .mock/release。 */
+async function holdAtStart() {
+  await holdUntilRelease();
 }
 
 function applyWrites(cwd, list) {
@@ -545,6 +577,302 @@ async function runScenarioStep(id, params, session, claim) {
   }
 }
 
+// ---------------------------------------------------------------- task-loop 场景步
+//
+// 与 code-loop 的区别：本轮产物不是 cwd 下的相对路径，而是提示词里
+// `写入路径：<workspace 绝对路径>/...` 给出的位置（模板已把 `\` 归一成 `/`）。
+// 因此 mock 不拼路径、只按提示词原文写入；拼错路径立刻落 `.mock/bad-write-path`，
+// 让 AC 失败在夹具一侧，而不是被产品侧误判成 artifact_missing。
+
+function toPosix(value) {
+  return String(value).replaceAll('\\', '/');
+}
+
+/** 取提示词里以 `label` 开头的整行，返回 label 之后 trim 的原文；没有该行返回 null。 */
+function promptLineOf(text, label) {
+  const lines = String(text).split(/\r?\n/);
+  for (const line of lines) {
+    if (line.startsWith(label)) return line.slice(label.length).trim();
+  }
+  return null;
+}
+
+function writeMockMarker(name, payload) {
+  try {
+    fs.mkdirSync(MOCK_DIR, { recursive: true });
+    fs.writeFileSync(mockPath(name), JSON.stringify(payload, null, 2) + '\n', 'utf8');
+  } catch {
+    // 标记写不出来时不要影响会话本身
+  }
+}
+
+function absWritePathInfo(taskText) {
+  const raw = promptLineOf(taskText, '写入路径：');
+  if (!raw) return null;
+  return { raw, posix: toPosix(raw), absolute: path.isAbsolute(raw) };
+}
+
+/** 绝对路径是否以场景声明的相对产物结尾（分隔符已归一）。 */
+function endsWithRef(absPosix, refPosix) {
+  const ref = refPosix.replace(/^\.\//, '');
+  if (ref.length === 0) return false;
+  return absPosix === ref || absPosix.endsWith(`/${ref}`);
+}
+
+function defaultTaskLoopContent(artifactRef) {
+  return `# ${path.posix.basename(artifactRef)}\n\n（夹具默认正文）\n`;
+}
+
+function applyOffsetMtime(absPath, utimes) {
+  const offsetMs = Number(utimes?.offsetMs);
+  if (!Number.isFinite(offsetMs)) return;
+  const stamp = new Date(Date.now() + offsetMs);
+  try {
+    fs.utimesSync(absPath, stamp, stamp);
+  } catch {
+    // 文件不在（比如被 reviewSkip 跳过）时静默
+  }
+}
+
+/** 写本轮产物：路径只在提示词里取，写不进去就留 bad-write-path。 */
+function writeTaskLoopArtifact(step, taskText) {
+  const ref = toPosix(step.artifact ?? '');
+  if (ref.length === 0) return { wrote: false, path: null };
+  // artifactSkip：故意不写，用于 artifact_missing
+  if (step.artifactSkip === true) return { wrote: false, path: null };
+
+  const info = absWritePathInfo(taskText);
+  if (!info || !info.absolute || !endsWithRef(info.posix, ref)) {
+    writeMockMarker('bad-write-path', {
+      nodeId: step.nodeId ?? null,
+      round: step.round ?? null,
+      expected: ref,
+      found: info?.posix ?? null,
+      reason: !info ? '提示词里没有「写入路径：」' : '「写入路径：」不是绝对路径',
+    });
+    return { wrote: false, path: null };
+  }
+
+  const content = step.content === undefined
+    ? defaultTaskLoopContent(ref)
+    : String(step.content);
+  fs.mkdirSync(path.dirname(info.posix), { recursive: true });
+  fs.writeFileSync(info.posix, content, 'utf8');
+  if (step.artifactUtimes) applyOffsetMtime(info.posix, step.artifactUtimes);
+  return { wrote: true, path: info.posix };
+}
+
+/** 本轮产物（v<n>）所在的实例工作区：由「写入路径」与相对引用反推，不靠猜。 */
+function workspaceForWrite(taskText, step) {
+  const info = absWritePathInfo(taskText);
+  if (!info || !info.absolute) return null;
+  const abs = info.posix;
+  const refs = [
+    promptLineOf(taskText, '本轮文档引用：'),
+    step.artifact ?? null,
+  ].filter((item) => typeof item === 'string' && item.length > 0).map(toPosix);
+  for (const ref of refs) {
+    if (endsWithRef(abs, ref)) {
+      return { workspace: abs.slice(0, abs.length - ref.length - 1), docRef: ref };
+    }
+  }
+  return null;
+}
+
+/** 上一版路径：优先用提示词的「上一版文档引用：」，否则按本轮 v<n> 推 v<n-1>。 */
+function previousVersionPath(taskText, step) {
+  const located = workspaceForWrite(taskText, step);
+  if (!located) return null;
+  const previousRef = promptLineOf(taskText, '上一版文档引用：');
+  if (previousRef) return path.join(located.workspace, toPosix(previousRef));
+  const matched = /\.v(\d+)\.md$/.exec(located.docRef);
+  if (!matched) return null;
+  const previousRound = Number(matched[1]) - 1;
+  if (!Number.isInteger(previousRound) || previousRound < 1) return null;
+  return path.join(located.workspace, located.docRef.replace(/\.v\d+\.md$/, `.v${previousRound}.md`));
+}
+
+/**
+ * 动上一版：**必须在写本轮 v<n> 之后**调用，否则本轮核对先失败，
+ * 得到 artifact_missing 而不是 artifact_previous_*（D-9）。
+ */
+function applyMutatePrevious(step, taskText) {
+  if (!step.mutatePrevious) return;
+  const target = previousVersionPath(taskText, step);
+  if (!target) {
+    writeMockMarker('bad-previous-path', {
+      nodeId: step.nodeId ?? null,
+      round: step.round ?? null,
+      mode: step.mutatePrevious,
+      reason: '无法从提示词推出上一版路径',
+    });
+    return;
+  }
+  if (step.mutatePrevious === 'remove') {
+    try {
+      fs.rmSync(target, { force: true });
+    } catch {
+      writeMockMarker('bad-previous-path', { mode: 'remove', target, reason: '删除失败' });
+    }
+    return;
+  }
+  try {
+    const text = fs.readFileSync(target, 'utf8');
+    const separator = text.endsWith('\n') ? '' : '\n';
+    fs.writeFileSync(target, `${text}${separator}- 改动（夹具注入）\n`, 'utf8');
+  } catch (err) {
+    writeMockMarker('bad-previous-path', {
+      mode: step.mutatePrevious,
+      target,
+      reason: String(err?.code ?? err?.message ?? err),
+    });
+  }
+}
+
+function reviewFileContent(review) {
+  if (typeof review === 'string') {
+    return review.startsWith('raw:') ? review.slice(4) : review;
+  }
+  return JSON.stringify(review, null, 2) + '\n';
+}
+
+function legalPassReview(taskText) {
+  return {
+    decision: 'pass',
+    artifact: promptLineOf(taskText, '本轮文档引用：') ?? '',
+    defects: [],
+    revisionRequirement: '',
+  };
+}
+
+/**
+ * 审核文件写到 **任务目录** `<cwd>/out/review.json`（不是工作区）。
+ * `reviewDecoy:'workspace'` 只在 `reviewSkip` 为真时生效：往
+ * `<提示词的 工作区：>/out/review.json` 放一份合法 pass，用来证明读取根是任务目录。
+ */
+function writeTaskLoopReview(session, step, taskText) {
+  const target = path.join(session.cwd, 'out', 'review.json');
+
+  if (step.reviewSkip === true) {
+    // 先把任务目录里的旧文件清掉，保证「缺失」可复现
+    try {
+      fs.rmSync(target, { force: true });
+    } catch {
+      // ignore
+    }
+    if (step.reviewDecoy === 'workspace') writeWorkspaceDecoy(step, taskText);
+    return;
+  }
+
+  if (step.review === undefined || step.review === null) return;
+
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.writeFileSync(target, reviewFileContent(step.review), 'utf8');
+  if (step.reviewUtimes) applyOffsetMtime(target, step.reviewUtimes);
+}
+
+function writeWorkspaceDecoy(step, taskText) {
+  const raw = promptLineOf(taskText, '工作区：');
+  const posix = raw ? toPosix(raw) : null;
+  if (!posix || !path.isAbsolute(raw)) {
+    writeMockMarker('bad-decoy-path', {
+      nodeId: step.nodeId ?? null,
+      round: step.round ?? null,
+      found: posix,
+      reason: !raw ? '审核提示词里没有「工作区：」' : '「工作区：」不是绝对路径',
+    });
+    return;
+  }
+  const decoy = path.join(posix, 'out', 'review.json');
+  try {
+    fs.mkdirSync(path.dirname(decoy), { recursive: true });
+    fs.writeFileSync(decoy, reviewFileContent(legalPassReview(taskText)), 'utf8');
+  } catch (err) {
+    writeMockMarker('bad-decoy-path', {
+      nodeId: step.nodeId ?? null,
+      round: step.round ?? null,
+      found: posix,
+      reason: String(err?.code ?? err?.message ?? err),
+    });
+  }
+}
+
+async function runTaskLoopStep(id, params, session, claim) {
+  const { n, step } = claim;
+  const taskText = promptText(params);
+  writePromptRecord(n, step, taskText);
+
+  // D-9：hold.when='prompt' 在收到 prompt 后、产生任何输出前挂起（不能挂在 session/new）。
+  if (step.hold && step.hold.when === 'prompt') await holdUntilRelease();
+
+  if (step.hostError) {
+    replyError(id, -32603, String(step.hostError));
+    return;
+  }
+
+  const token = session.tokens;
+  session.cancelled = false;
+
+  notifyUpdate(session.sessionId, {
+    sessionUpdate: 'agent_thought_chunk',
+    content: { type: 'text', text: 'mock: thinking about the request' },
+  });
+
+  const toolCallId = `call_mock_${process.pid}_${n}`;
+  const rawTarget = step.artifact && step.artifactSkip !== true
+    ? absWritePathInfo(taskText)?.posix ?? null
+    : (step.review !== undefined ? path.join(session.cwd, 'out', 'review.json') : null);
+  const toolCall = {
+    sessionUpdate: 'tool_call',
+    toolCallId,
+    title: 'write',
+    kind: 'other',
+    status: 'in_progress',
+  };
+  if (rawTarget) toolCall.rawInput = { file_path: rawTarget, content: step.content ?? '' };
+  notifyUpdate(session.sessionId, toolCall);
+
+  // delayMs：先发 tool_call 再等，保证交接包先进入 accepted；取消可提前结束。
+  if (step.delayMs > 0) {
+    const ok = await pause(step.delayMs, session, token);
+    if (!ok) {
+      reply(id, { stopReason: 'cancelled' });
+      return;
+    }
+  }
+
+  for (const rel of step.remove ?? []) {
+    try {
+      fs.rmSync(path.resolve(session.cwd, rel), { force: true });
+    } catch {
+      // ignore
+    }
+  }
+
+  // 顺序固定：先本轮 v<n>，再动上一版（D-9）。
+  writeTaskLoopArtifact(step, taskText);
+  applyMutatePrevious(step, taskText);
+  writeTaskLoopReview(session, step, taskText);
+
+  notifyUpdate(session.sessionId, {
+    sessionUpdate: 'tool_call_update',
+    toolCallId,
+    status: 'completed',
+    content: [{ type: 'content', content: { type: 'text', text: 'Created file' } }],
+  });
+  notifyUpdate(session.sessionId, {
+    sessionUpdate: 'agent_message_chunk',
+    content: { type: 'text', text: step.message ?? 'mock: done' },
+  });
+
+  reply(id, { stopReason: 'end_turn' });
+
+  if (step.historyMarker) {
+    fs.mkdirSync(mockPath('history'), { recursive: true });
+    fs.writeFileSync(mockPath('history', `${n}.txt`), step.historyMarker, 'utf8');
+  }
+}
+
 async function handlePrompt(id, params) {
   const sessionId = params?.sessionId;
   const session = sessions.get(sessionId);
@@ -562,7 +890,8 @@ async function handlePrompt(id, params) {
   // I1.2 场景入口：一次派发 = 一个进程 = 一步
   if (scenarioMode) {
     const claim = await ready;
-    await runScenarioStep(id, params, session, claim);
+    if (taskLoopMode) await runTaskLoopStep(id, params, session, claim);
+    else await runScenarioStep(id, params, session, claim);
     return;
   }
 

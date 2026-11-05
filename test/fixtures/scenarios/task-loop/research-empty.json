@@ -1,0 +1,11 @@
+{
+  "name": "research-empty",
+  "steps": [
+    {
+      "nodeId": "T-001",
+      "round": 1,
+      "artifact": "artifacts/reports/research-notes.v1.md",
+      "content": ""
+    }
+  ]
+}

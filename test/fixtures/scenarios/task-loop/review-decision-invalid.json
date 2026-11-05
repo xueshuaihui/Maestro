@@ -1,0 +1,27 @@
+{
+  "name": "review-decision-invalid",
+  "steps": [
+    {
+      "nodeId": "T-001",
+      "round": 1,
+      "artifact": "artifacts/reports/research-notes.v1.md",
+      "content": "# 研究笔记\n\n## 背景\n本次发布整理会话回收与启动耗时的三处修复。\n\n## 事实\n- 会话回收在 24 小时后释放\n- 启动耗时从 1.2s 降到 0.8s\n\n## 约束\n- 不改变对外 API\n- 升级不要求停机窗口\n\n## 大纲建议\n背景 / 变更 / 升级步骤 / 回滚方案\n"
+    },
+    {
+      "nodeId": "T-002",
+      "round": 1,
+      "artifact": "artifacts/docs/release-notes.v1.md",
+      "content": "# 发布说明 v1\n\n## 背景\n本次发布整理会话回收与启动耗时的三处修复。\n\n## 变更\n- 修复会话回收\n- 优化启动耗时\n\n## 升级步骤\n1. 停止服务\n2. 替换二进制\n3. 启动并检查健康探针\n"
+    },
+    {
+      "nodeId": "T-003",
+      "round": 1,
+      "review": {
+        "decision": "maybe",
+        "artifact": "artifacts/docs/release-notes.v1.md",
+        "defects": [],
+        "revisionRequirement": ""
+      }
+    }
+  ]
+}

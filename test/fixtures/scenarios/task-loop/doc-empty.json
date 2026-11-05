@@ -1,0 +1,17 @@
+{
+  "name": "doc-empty",
+  "steps": [
+    {
+      "nodeId": "T-001",
+      "round": 1,
+      "artifact": "artifacts/reports/research-notes.v1.md",
+      "content": "# 研究笔记\n\n## 背景\n本次发布整理会话回收与启动耗时的三处修复。\n\n## 事实\n- 会话回收在 24 小时后释放\n- 启动耗时从 1.2s 降到 0.8s\n\n## 约束\n- 不改变对外 API\n- 升级不要求停机窗口\n\n## 大纲建议\n背景 / 变更 / 升级步骤 / 回滚方案\n"
+    },
+    {
+      "nodeId": "T-002",
+      "round": 1,
+      "artifact": "artifacts/docs/release-notes.v1.md",
+      "content": ""
+    }
+  ]
+}
