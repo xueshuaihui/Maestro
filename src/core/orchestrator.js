@@ -2678,7 +2678,20 @@ export function createOrchestrator({
     });
     if (!dispatched.ok) {
       if (activeRuns.get(instanceId) === handle) activeRuns.delete(instanceId);
-      return { ok: false, handle, result: { ok: true, snapshot: await currentSnapshot(instanceId) }, stopped: true };
+      // 首派失败已经是「升级 + 挂起」的终局（AC-42），CLI 仍要能按实例号继续收尾，
+      // 所以这里把 instanceId 一并回给调用方；会话没建起来，`sessionId` 为 null。
+      return {
+        ok: false,
+        handle,
+        stopped: true,
+        result: {
+          ok: true,
+          instanceId,
+          nodeId: entry.id ?? entry.nodeId,
+          sessionId: null,
+          snapshot: await currentSnapshot(instanceId),
+        },
+      };
     }
     handle.currentCtx = dispatched.ctx;
     dispatched.ctx.hostId = hostId ?? null;

@@ -17,6 +17,9 @@ import { readReview } from '../../src/core/review.js';
 import { verifyProducts } from '../../src/core/verify-artifact.js';
 
 const RUNS = 20;
+// 预热轮不计入样本：全量并发跑时首几轮要付 JIT 与文件系统冷缓存的钱，
+// 那是启动成本不是稳态成本。预算仍是 50ms（NFR-02 未放宽）。
+const WARMUP = 3;
 const P95_INDEX = 18; // 0-based 19th sample
 const BUDGET_MS = 50;
 
@@ -61,6 +64,15 @@ test(`NFR-02: readReview p95 <= ${BUDGET_MS}ms（1MB / 5MB 文档）`, async () 
         'utf8'
       );
 
+      for (let i = 0; i < WARMUP; i += 1) {
+        await readReview({
+          cwd: root,
+          workspaceDir: workspace,
+          expectedArtifact: doc,
+          roundStartedAt: new Date(Date.now() - 60_000).toISOString()
+        });
+      }
+
       const samples = [];
       for (let i = 0; i < RUNS; i += 1) {
         const started = performance.now();
@@ -91,6 +103,16 @@ test(`NFR-02: verifyProducts({sha256:true}) p95 <= ${BUDGET_MS}ms（1MB / 5MB �
       fs.mkdirSync(docsDir, { recursive: true });
       const ref = 'artifacts/docs/big.v1.md';
       fs.writeFileSync(path.join(workspace, ref), bodyOf(megabytes * 1024 * 1024), 'utf8');
+
+      for (let i = 0; i < WARMUP; i += 1) {
+        await verifyProducts({
+          cwd: root,
+          baseDir: workspace,
+          products: [ref],
+          roundStartedAt: new Date(Date.now() - 60_000).toISOString(),
+          sha256: true
+        });
+      }
 
       const samples = [];
       for (let i = 0; i < RUNS; i += 1) {

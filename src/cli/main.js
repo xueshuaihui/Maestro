@@ -251,6 +251,22 @@ async function runCommand(flags, ctx) {
     const instanceId = started.result?.instanceId ?? flags.instance ?? null;
     const sessionId = started.result?.sessionId ?? null;
 
+    // 首派就失败时（AC-42）核心已经把实例收成挂起/停止推进，`run.start` 直接带回终局快照。
+    // 这时再打「发起后先看到什么」那三行只会打出与事实相反的状态，按 A-3 直接收尾。
+    const stoppedSnapshot = started.result?.snapshot ?? null;
+    if (stoppedSnapshot && (stoppedSnapshot.state === 'suspended' || stoppedSnapshot.halted === true)) {
+      const stoppedTemplate = typeof stoppedSnapshot.template === 'string'
+        ? stoppedSnapshot.template
+        : templateHint;
+      for (const line of render.renderRunTail(
+        { ...stoppedSnapshot, template: stoppedTemplate },
+        { template: stoppedTemplate },
+      )) {
+        out(line);
+      }
+      return stoppedSnapshot.state === 'suspended' ? EXIT_SUSPENDED : EXIT_HALTED;
+    }
+
     // ③ 立刻打前三行（不能等 turn 结束，AC-01 要求热启动 5s 内看到）
     const first = await client.request('instance.get', { instanceId }, { timeoutMs: 5000 });
     const snapshot0 = first.ok
@@ -262,7 +278,10 @@ async function runCommand(flags, ctx) {
         template: typeof snapshot0?.template === 'string' ? snapshot0.template : templateHint,
       }),
     );
-    out(render.renderSessionCreated(sessionId));
+    // 首派就失败时没有会话（AC-42：sessions 为空），这一行不该打成「会话已创建 ?」
+    if (typeof sessionId === 'string' && sessionId.length > 0) {
+      out(render.renderSessionCreated(sessionId));
+    }
     out(render.renderTaskSubmitted());
 
     const printSnapshot = (snapshot) => {

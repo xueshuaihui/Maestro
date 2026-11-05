@@ -160,6 +160,9 @@ export function createServer({
           instanceId,
           nodeId: started.nodeId ?? null,
           sessionId: started.sessionId ?? null,
+          // 首派就失败时（I1.3 / AC-42）核心已经把实例收成挂起，终局快照随早返回一起给，
+          // CLI 才能按 A-3 直接收尾而不是打出一条与事实相反的「运行中」。
+          ...(started.snapshot ? { snapshot: started.snapshot } : {}),
         },
       };
     },
