@@ -25,6 +25,7 @@ import {
   NEXT_STEP_SUSPENDED,
   NODE_LABEL,
   NODE_QUALIFIER,
+  NODE_SUFFIX,
   REASON_LABEL,
   ROLE_LABEL,
   SESSION_LABEL,
@@ -150,6 +151,17 @@ function templateOf(snapshot, explicit) {
   return snapshotView(snapshot).template;
 }
 
+/**
+ * 产物策略（需求 D-6）：核心把图级 `productPolicy` 放进只读快照；本迭代新增的
+ * 限定词、后缀与耗时支只对 `doc-single` 生效，`single` / `code-loop` 逐字不变。
+ * 快照没带该字段时按模板兜底，保证裸快照的既有用例（`single` / `code-loop`）走 `declared`。
+ */
+function productPolicyOf(snapshot, template) {
+  const declared = snapshot?.productPolicy;
+  if (typeof declared === 'string' && declared.length > 0) return declared;
+  return template === 'task-loop' ? 'doc-single' : 'declared';
+}
+
 function nodeIdOf(node) {
   const id = node?.nodeId ?? node?.id ?? null;
   return typeof id === 'string' && id.length > 0 ? id : null;
@@ -254,11 +266,20 @@ export function renderNoInstances() {
   return `${LAYER.instance} 无`;
 }
 
-/** '实例 INST-001 · 已中断 ｜ 停在节点 执行中 / 会话 执行中'（AC-12） */
+/**
+ * '实例 INST-001 · 已中断 ｜ 停在节点 执行中 / 会话 执行中'（AC-12 / AC-45）
+ *
+ * 停点必须是真正卡住的那一条：核心在只读快照里点名 `interruptedNodeId`
+ * （选取规则与 `markInterrupted` 相同）。旧模板的快照不带该字段，回落 `nodes[0]`。
+ */
 export function renderInterruptedNote(snapshot) {
   const view = snapshotView(snapshot);
   const id = snapshot?.instanceId ?? '?';
-  const nodeState = stateLabel('node', view.node?.state) ?? '-';
+  const nominated = typeof snapshot?.interruptedNodeId === 'string' ? snapshot.interruptedNodeId : null;
+  const stuck = nominated === null
+    ? view.node
+    : view.nodes.find((item) => nodeIdOf(item) === nominated) ?? view.node;
+  const nodeState = stateLabel('node', stuck?.state) ?? '-';
   const sessionState = stateLabel('session', view.session?.state) ?? '-';
   return `${LAYER.instance} ${id} · ${INSTANCE_LABEL.interrupted} ｜ 停在节点 ${nodeState} / ${LAYER.session} ${sessionState}`;
 }
@@ -356,22 +377,59 @@ function haltTargetId(snapshot) {
 }
 
 /**
- * 节点限定词（需求 2.3 三档 / D-5）：
- * - `code-loop` 下 `失败` 表示“本轮判定未通过、等复测” → `（等待复测）`；
- * - 升级写入失败（`halted`）→ 升级前节点 `（升级未记录）`；`已升级` 不带限定词。
- * 显式 `node.qualifier` / `node.note` 优先（WP-4 可直接点名）。
+ * 节点限定词（需求 A-2 第 3 段；判定顺序固定，不得重排）。
+ *
+ *   `single` / `escalated` 短路 → `halted` → `review`（按 `reviewReason`，仅 `doc-single`）
+ *   → `failed` + `note === '等待复审'` → 其余 `failed` 兜底 `（等待复测）`
+ *
+ * `halted` 必须排在 `note` 查表**之前**：带 `note` 的停止推进实例否则会丢掉 `（升级未记录）`。
+ * `node.note` 存的是中文原文，不是 `NODE_QUALIFIER` 的键，所以 `等待复审` 走显式分支。
  */
-function nodeQualifier(node, snapshot, template) {
+function nodeQualifier(node, snapshot, template, productPolicy) {
   if (template === 'single') return null;
   if (node?.state === 'escalated') return null;
-
-  const hint = typeof node?.qualifier === 'string' ? node.qualifier : typeof node?.note === 'string' ? node.note : null;
-  if (hint && Object.prototype.hasOwnProperty.call(NODE_QUALIFIER, hint)) return NODE_QUALIFIER[hint];
 
   if (snapshot?.halted === true && nodeIdOf(node) !== null && nodeIdOf(node) === haltTargetId(snapshot)) {
     return NODE_QUALIFIER.escalation_unrecorded;
   }
-  if (node?.state === 'failed') return NODE_QUALIFIER.waiting_retest;
+
+  if (node?.state === 'review') {
+    // 无门控的图该字段恒为 `null`，`review` 渲染为裸「待校验」（B-10，I1.2 逐字不变）
+    if (productPolicy !== 'doc-single') return null;
+    const reason = node?.reviewReason ?? null;
+    if (reason === 'evidence') return NODE_QUALIFIER.evidence_check;
+    if (reason === 'downstream') return NODE_QUALIFIER.waiting_downstream;
+    return null;
+  }
+
+  if (node?.state === 'failed') {
+    if (node?.note === '等待复审') return NODE_QUALIFIER.waiting_review;
+    // `doc-single` 的 `failed` 只有一个来源且必定带 `等待复审`；兜底在它下面不可达
+    if (productPolicy === 'doc-single') return null;
+    return NODE_QUALIFIER.waiting_retest;
+  }
+
+  return null;
+}
+
+/** 节点行后缀（互斥，最多一个；只对 `doc-single` 渲染）。 */
+function docSuffix(node, productPolicy) {
+  if (productPolicy !== 'doc-single') return null;
+  const ref = node?.artifactRefs?.[0]?.ref;
+  if (node?.state === 'done' && typeof ref === 'string' && ref.length > 0) {
+    return NODE_SUFFIX.artifact.replace('{ref}', ref);
+  }
+  const decision = node?.review?.decision ?? null;
+  if (node?.state === 'done' && decision === 'pass') return NODE_SUFFIX.reviewPassed;
+  if (node?.state === 'failed' && decision === 'reject') {
+    const review = node.review;
+    const count = Number.isInteger(review?.defectCount)
+      ? review.defectCount
+      : Array.isArray(review?.defects)
+        ? review.defects.length
+        : 0;
+    return NODE_SUFFIX.reviewRejected.replace('{n}', String(count));
+  }
   return null;
 }
 
@@ -401,9 +459,10 @@ function renderNodeRow(node, snapshot, template, { forceQualifier = null, noDura
   const label = stateLabel('node', node.state);
   if (!label) return null;
 
+  const productPolicy = productPolicyOf(snapshot, template);
   const id = nodeIdOf(node);
   const role = roleLabel(node.roleId);
-  const qualifier = forceQualifier ?? nodeQualifier(node, snapshot, template);
+  const qualifier = forceQualifier ?? nodeQualifier(node, snapshot, template, productPolicy);
   const state = qualifier ? `${label}（${qualifier}）` : label;
 
   const head = [LAYER.node, id, role, state].filter((part) => typeof part === 'string' && part.length > 0).join(' ');
@@ -413,16 +472,37 @@ function renderNodeRow(node, snapshot, template, { forceQualifier = null, noDura
   const dispatched = round > 0;
   if (dispatched) parts.push(`第 ${round} 轮`);
 
-  const ended = node.state === 'done' || node.state === 'cancelled';
-  if (!noDuration && ended && dispatched && typeof node.startedAt === 'string') {
+  if (!noDuration && dispatched && typeof node.startedAt === 'string' && showsDuration(node, productPolicy)) {
     const ms = durationBetween(node.startedAt, node.endedAt ?? snapshot?.updatedAt);
-    if (ms !== null) parts.push(`耗时 ${formatDuration(ms)}`);
+    if (ms !== null) parts.push(`耗时 ${formatDuration(clampDuration(ms))}`);
   }
 
-  const verdict = verdictSuffix(node);
-  if (verdict) parts.push(verdict);
+  // `declared` 图沿用 I1.2 的判定后缀；`doc-single` 用产物/审核后缀（互斥）
+  const suffix = productPolicy === 'doc-single' ? docSuffix(node, productPolicy) : verdictSuffix(node);
+  if (suffix) parts.push(suffix.replace(/^·\s*/, ''));
 
   return parts.join(' · ');
+}
+
+/**
+ * 是否显示耗时（A-2 第 3 段）。区间来源仍是「首次派发 → endedAt」的累计值。
+ * - 基线：`done` / `cancelled`；
+ * - `doc-single` 追加：`review(downstream)`（核对通过即写 `endedAt`，等下游那段不计入）
+ *   与 `failed` + `等待复审`；
+ * - `escalated` 一律抑制（即使 `endedAt` 有值），`review(evidence)` 不显示。
+ */
+function showsDuration(node, productPolicy) {
+  if (node?.state === 'escalated') return false;
+  if (node?.state === 'done' || node?.state === 'cancelled') return true;
+  if (productPolicy !== 'doc-single') return false;
+  if (node?.state === 'review' && node?.reviewReason === 'downstream') return true;
+  if (node?.state === 'failed' && node?.note === '等待复审') return true;
+  return false;
+}
+
+/** 已派发节点的区间接上 `startedAt` 与 `endedAt` 同毫秒时钳到 1s（钳在渲染层）。 */
+function clampDuration(ms) {
+  return ms === 0 ? 1000 : ms;
 }
 
 /** `single` 的 I1.1 节点行（红线，逐字保留）。 */

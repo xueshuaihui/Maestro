@@ -53,6 +53,11 @@ test('exitCodeFor：三类开始前失败是 3，其余是 1', () => {
   assert.equal(exitCodeFor('DSH_SPAWN_FAILED'), 3);
   assert.equal(exitCodeFor('CWD_NOT_WRITABLE'), 3);
   assert.equal(exitCodeFor('CORE_START_FAILED'), 3);
+  // I1.3（M-9 / C-01）：工作区建不起来也属于「开始前失败」
+  assert.equal(exitCodeFor('WORKSPACE_INIT_FAILED'), 3);
+  // I1.3（D-4）：产物声明的两码是这次发起的参数不合法
+  assert.equal(exitCodeFor('PRODUCT_LINE_MISSING_TASK_LOOP'), 1);
+  assert.equal(exitCodeFor('PRODUCT_INVALID_TASK_LOOP'), 1);
   assert.equal(exitCodeFor('NODE_BUSY'), 1);
   assert.equal(exitCodeFor('SESSION_INVALID'), 1);
   assert.equal(exitCodeFor('PERMISSION_DENIED'), 1);

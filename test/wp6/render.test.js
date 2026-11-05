@@ -792,3 +792,245 @@ test('C-11 renderError：新占位符 name/instanceId/i/summary/evidence/text �
     assert.ok(!/\{\w+\}/.test(text), text);
   }
 });
+
+// ---------------------------------------------------------------- task-loop（I1.3 / WP-4）
+
+/** `task-loop` 三节点快照；`productPolicy` 由核心下发，测试里显式给。 */
+function docSnapshot(over = {}) {
+  return {
+    instanceId: 'INST-001',
+    state: 'running',
+    template: 'task-loop',
+    productPolicy: 'doc-single',
+    nodes: [
+      {
+        nodeId: 'T-001',
+        roleId: 'researcher',
+        state: 'done',
+        round: 1,
+        startedAt: at(10, 0, 1),
+        endedAt: at(10, 0, 5),
+        artifactRefs: [{ ref: 'artifacts/reports/research-notes.v1.md' }],
+      },
+      {
+        nodeId: 'T-002',
+        roleId: 'writer',
+        state: 'review',
+        round: 1,
+        reviewReason: 'downstream',
+        startedAt: at(10, 0, 10),
+        endedAt: at(10, 0, 16),
+        artifactRefs: [{ ref: 'artifacts/docs/release-notes.v1.md' }],
+      },
+      { nodeId: 'T-003', roleId: 'reviewer', state: 'pending', round: 0 },
+    ],
+    session: { state: 'waiting_dependency' },
+    handoffs: [],
+    escalations: [],
+    ...over,
+  };
+}
+
+test('task-loop 节点行：三种后缀与「等待下游」限定词逐字', () => {
+  const lines = render.renderNodeLines(docSnapshot(), { template: 'task-loop' });
+  assert.deepEqual(lines, [
+    '节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 4s · 产物 artifacts/reports/research-notes.v1.md',
+    '节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 6s',
+    '节点 T-003 审核者 待执行',
+  ]);
+});
+
+test('task-loop 节点行：审核通过与驳回的后缀', () => {
+  const passed = docSnapshot({
+    nodes: [
+      { nodeId: 'T-003', roleId: 'reviewer', state: 'done', round: 1, review: { decision: 'pass', defectCount: 0 } },
+    ],
+  });
+  assert.equal(
+    render.renderNodeLines(passed, { template: 'task-loop' })[0],
+    '节点 T-003 审核者 已完成 · 第 1 轮 · 审核 通过',
+  );
+
+  const rejected = docSnapshot({
+    nodes: [
+      {
+        nodeId: 'T-003',
+        roleId: 'reviewer',
+        state: 'failed',
+        round: 1,
+        note: '等待复审',
+        startedAt: at(10, 0, 20),
+        endedAt: at(10, 0, 23),
+        review: { decision: 'reject', defectCount: 2 },
+      },
+    ],
+  });
+  assert.equal(
+    render.renderNodeLines(rejected, { template: 'task-loop' })[0],
+    '节点 T-003 审核者 失败（等待复审） · 第 1 轮 · 耗时 3s · 审核 驳回 · 缺陷 2 条',
+  );
+});
+
+test('task-loop 限定词：核对证据与裸「待校验」按 reviewReason 区分', () => {
+  const evidence = docSnapshot({
+    nodes: [{ nodeId: 'T-002', roleId: 'writer', state: 'review', round: 1, reviewReason: 'evidence' }],
+  });
+  assert.equal(
+    render.renderNodeLines(evidence, { template: 'task-loop' })[0],
+    '节点 T-002 撰写者 待校验（核对证据） · 第 1 轮',
+  );
+
+  // 无门控：`review` 不带限定词（B-10 / code-loop 逐字不变）
+  const plain = { nodes: [{ nodeId: 'T-0', roleId: 'worker', state: 'review', round: 1 }], template: 'code-loop' };
+  assert.equal(render.renderNodeLines(plain, { template: 'code-loop' })[0].includes('（'), false);
+});
+
+test('task-loop 限定词：halted 优先于 note，节点行不带耗时（A-3）', () => {
+  const halted = docSnapshot({
+    halted: true,
+    nodes: [
+      {
+        nodeId: 'T-003',
+        roleId: 'reviewer',
+        state: 'review',
+        round: 1,
+        note: 'stopped at node review / session s-1',
+        startedAt: at(10, 0, 1),
+        endedAt: at(10, 0, 2),
+      },
+    ],
+    escalations: [{ escalationId: 'ESC-001', state: 'pending', nodeId: 'T-003', round: 1 }],
+  });
+  assert.equal(
+    render.renderNodeLines(halted, { template: 'task-loop' })[0],
+    '节点 T-003 审核者 待校验（升级未记录） · 第 1 轮',
+  );
+});
+
+test('task-loop 耗时：review(evidence) 与 escalated 不显示，同毫秒钳到 1s', () => {
+  const evidence = docSnapshot({
+    nodes: [
+      {
+        nodeId: 'T-002',
+        roleId: 'writer',
+        state: 'review',
+        round: 1,
+        reviewReason: 'evidence',
+        startedAt: at(10, 0, 10),
+        endedAt: at(10, 0, 16),
+      },
+    ],
+  });
+  assert.equal(
+    render.renderNodeLines(evidence, { template: 'task-loop' })[0].includes('耗时'),
+    false,
+  );
+
+  const escalated = docSnapshot({
+    nodes: [
+      {
+        nodeId: 'T-003',
+        roleId: 'reviewer',
+        state: 'escalated',
+        round: 2,
+        startedAt: at(10, 0, 10),
+        endedAt: at(10, 0, 16),
+      },
+    ],
+  });
+  assert.equal(
+    render.renderNodeLines(escalated, { template: 'task-loop' })[0],
+    '节点 T-003 审核者 已升级 · 第 2 轮',
+  );
+
+  const sameMs = docSnapshot({
+    nodes: [
+      {
+        nodeId: 'T-001',
+        roleId: 'researcher',
+        state: 'done',
+        round: 1,
+        startedAt: at(10, 0, 1),
+        endedAt: at(10, 0, 1),
+        artifactRefs: [{ ref: 'artifacts/reports/research-notes.v1.md' }],
+      },
+    ],
+  });
+  assert.match(
+    render.renderNodeLines(sameMs, { template: 'task-loop' })[0],
+    /耗时 1s · 产物 artifacts\/reports\/research-notes\.v1\.md$/,
+  );
+});
+
+test('task-loop 会话行：status 不带后缀，run 流式补「产出已提交」', () => {
+  const snapshot = docSnapshot();
+  assert.equal(render.renderSessionLine(snapshot, Date.now()), '会话 等待下游');
+  assert.equal(
+    render.renderSessionSubmitted({ ...snapshot, elapsedMs: 1000 }, Date.now()),
+    '会话 等待下游 · 产出已提交',
+  );
+});
+
+test('renderInterruptedNote：优先点位停点节点，缺字段时回落 nodes[0]（AC-45）', () => {
+  const snapshot = docSnapshot({
+    state: 'interrupted',
+    interruptedNodeId: 'T-002',
+    session: { state: 'waiting_dependency' },
+  });
+  assert.equal(
+    render.renderInterruptedNote(snapshot),
+    '实例 INST-001 · 已中断 ｜ 停在节点 待校验 / 会话 等待下游',
+  );
+
+  // 旧模板快照不带该字段 → 仍按 nodes[0]（I1.2 零回归）
+  const legacy = { instanceId: 'INST-001', state: 'interrupted', node: { state: 'done' }, session: { state: 'idle' } };
+  assert.equal(
+    render.renderInterruptedNote(legacy),
+    '实例 INST-001 · 已中断 ｜ 停在节点 已完成 / 会话 空闲',
+  );
+});
+
+test('task-loop A-3 收尾：挂起三行逐字', () => {
+  const snapshot = docSnapshot({
+    state: 'suspended',
+    nodes: [{ nodeId: 'T-003', roleId: 'reviewer', state: 'escalated', round: 2 }],
+    escalations: [{ escalationId: 'ESC-001', state: 'pending', nodeId: 'T-003', round: 2 }],
+  });
+  assert.deepEqual(render.renderRunTail(snapshot, { template: 'task-loop' }), [
+    '实例 INST-001 · 已挂起 · 模板 通用任务闭环',
+    '升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 2 轮',
+    '下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001',
+  ]);
+});
+
+test('task-loop A-3 收尾：停止推进四行逐字（含节点行不带耗时）', () => {
+  const snapshot = docSnapshot({
+    halted: true,
+    haltCause: 'disk full',
+    nodes: [
+      {
+        nodeId: 'T-001',
+        roleId: 'researcher',
+        state: 'done',
+        round: 1,
+        startedAt: at(10, 0, 1),
+        endedAt: at(10, 0, 5),
+        artifactRefs: [{ ref: 'artifacts/reports/research-notes.v1.md' }],
+      },
+      {
+        nodeId: 'T-003',
+        roleId: 'reviewer',
+        state: 'review',
+        round: 1,
+        startedAt: at(10, 0, 10),
+      },
+    ],
+    escalations: [{ escalationId: 'ESC-001', state: 'pending', nodeId: 'T-003', round: 1 }],
+  });
+  assert.deepEqual(render.renderRunTail(snapshot, { template: 'task-loop' }), [
+    '无法记录升级：disk full；已停止推进',
+    '实例 INST-001 · 运行中 · 已停止推进 · 模板 通用任务闭环',
+    '节点 T-003 审核者 待校验（升级未记录） · 第 1 轮',
+    '下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消',
+  ]);
+});

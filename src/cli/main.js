@@ -34,7 +34,13 @@ const EXIT_SUSPENDED = 4;
 /** 升级写入失败、实例已停止推进，也不是失败（需求 M-9 / AC-38）。 */
 const EXIT_HALTED = 5;
 
-const PREFLIGHT_CODES = new Set(['DSH_SPAWN_FAILED', 'CWD_NOT_WRITABLE', 'CORE_START_FAILED']);
+const PREFLIGHT_CODES = new Set([
+  'DSH_SPAWN_FAILED',
+  'CWD_NOT_WRITABLE',
+  'CORE_START_FAILED',
+  // 需求 M-9 / C-01：工作区建不起来属于「开始前失败」，与 DSH 起不来同类（退出码 3）
+  'WORKSPACE_INIT_FAILED',
+]);
 
 /**
  * 连接层失败：核心断开 / 帧坏 / 连接超时。这些不是宿主错误，不能渲染成"未知错误"。
