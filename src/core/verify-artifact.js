@@ -6,7 +6,8 @@
  * 2. **未声明** → `ok:true` + `note:'NO_DECLARATION'`，由调用方补一条
  *    `verification.skipped` 事件（需求 2.4 边界说明）。
  *
- * `sha256` 恒为 null：产物指纹校验属 I1.12，本迭代不计算，也不写空串。
+ * `verifyArtifacts` 的 `sha256` 恒为 null（I1.1 启发式路径不计算指纹）；固定格式分支
+ * `verifyProducts` 自 I1.3 起在调用方显式传 `sha256:true` 时才追加该键，缺省不出现该键。
  * `observedRefs` 只用于日志，不参与判定。
  *
  * 路径提取规则刻意保持“可解释、可测试”：
@@ -17,6 +18,8 @@
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
+
+import { artifactMessage, sha256Of } from './doc-artifact.js';
 
 /** 中文引导词：把“保存到 out/intro.md”这类短语里的路径抓出来。 */
 const LEAD_WORDS = /(?:保存到|保存为|另存为|输出到|生成到|写入|存到|写到)/g;
@@ -292,8 +295,15 @@ function startedAtMsOf(roundStartedAt) {
  * Verify declared products (D-7): each must exist, be non-empty and be newer than
  * the current round's dispatch time. Messages are verbatim D-5.
  *
+ * I1.3 additions (requirement D-8) are **append-only**:
+ * - `baseDir` (default `cwd`) lets a document node resolve products inside the instance
+ *   workspace while the review file stays relative to the task directory;
+ * - `sha256` (default off) adds a `sha256` key to each ref and nothing else. When it is
+ *   off the key is **absent**, not `null`, so the two older graphs' state files keep the
+ *   exact I1.2 shape.
+ *
  * @param {{cwd?:string, products?:string[], roundStartedAt?:string|number|null,
- *          fs?:object, now?:Function}} options
+ *          baseDir?:string|null, sha256?:boolean, fs?:object, now?:Function}} options
  * @returns {Promise<{ok:true, refs:Array<object>}
  *   |{ok:false, code:'MISSING'|'EMPTY'|'STALE', ref:string, message:string}>}
  */
@@ -301,10 +311,12 @@ export async function verifyProducts({
   cwd = null,
   products = [],
   roundStartedAt = null,
+  baseDir: baseDirOption = null,
+  sha256 = false,
   fs: io = fs,
   now = () => Date.now()
 } = {}) {
-  const baseDir = path.resolve(cwd ?? '.');
+  const baseDir = path.resolve(baseDirOption ?? cwd ?? '.');
   const startedMs = startedAtMsOf(roundStartedAt);
   const list = Array.isArray(products) ? products : [];
   const refs = [];
@@ -324,23 +336,35 @@ export async function verifyProducts({
     }
 
     if (stat === null) {
-      return { ok: false, code: 'MISSING', ref, message: `未找到声明的产出 ${ref}` };
+      return { ok: false, code: 'MISSING', ref, message: artifactMessage('missing', ref) };
     }
     if (!(stat.size > 0)) {
-      return { ok: false, code: 'EMPTY', ref, message: `产出为空 ${ref}` };
+      return { ok: false, code: 'EMPTY', ref, message: artifactMessage('empty', ref) };
     }
     if (startedMs !== null && stat.mtimeMs < startedMs) {
-      return { ok: false, code: 'STALE', ref, message: `产出不是本轮新写 ${ref}` };
+      return { ok: false, code: 'STALE', ref, message: artifactMessage('stale', ref) };
     }
 
-    refs.push({
+    const entry = {
       ref,
       absPath,
       exists: true,
       bytes: stat.size,
       mtime: stat.mtime instanceof Date ? stat.mtime.toISOString() : new Date(stat.mtimeMs).toISOString(),
       verifiedAt: new Date(now()).toISOString()
-    });
+    };
+
+    if (sha256) {
+      const digest = await sha256Of(absPath, { fs: io });
+      if (!digest.ok) {
+        // The file vanished (or became unreadable) between stat and hash: as a product
+        // it is simply not there, which is what `artifact_missing` reports.
+        return { ok: false, code: 'MISSING', ref, message: artifactMessage('missing', ref) };
+      }
+      entry.sha256 = digest.sha256;
+    }
+
+    refs.push(entry);
   }
 
   return { ok: true, refs };

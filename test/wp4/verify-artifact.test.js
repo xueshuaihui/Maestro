@@ -345,3 +345,90 @@ test('readVerdict：fail + 缺陷 + 可读证据 → ok 并带证据绝对路径
     fs.rmSync(cwd, { recursive: true, force: true });
   }
 });
+
+// --- I1.3 additions (requirement D-8): `baseDir` / `sha256` axe only  --------------
+
+test('verifyProducts：baseDir 决定解析根，cwd 不变', async () => {
+  const cwd = tmpDir();
+  const workspace = tmpDir('maestro-wp4-verify-ws-');
+  try {
+    fs.mkdirSync(path.join(workspace, 'artifacts', 'docs'), { recursive: true });
+    fs.writeFileSync(path.join(workspace, 'artifacts', 'docs', 'n.v1.md'), '# v1\n', 'utf8');
+    const result = await verifyProducts({
+      cwd,
+      baseDir: workspace,
+      products: ['artifacts/docs/n.v1.md']
+    });
+    assert.equal(result.ok, true);
+    assert.equal(result.refs[0].ref, 'artifacts/docs/n.v1.md');
+    assert.equal(result.refs[0].absPath, path.join(workspace, 'artifacts', 'docs', 'n.v1.md'));
+    // 缺省仍按 cwd 解析：同一相对引用在 cwd 下找不到
+    const withoutBase = await verifyProducts({ cwd, products: ['artifacts/docs/n.v1.md'] });
+    assert.equal(withoutBase.ok, false);
+    assert.equal(withoutBase.code, 'MISSING');
+  } finally {
+    fs.rmSync(cwd, { recursive: true, force: true });
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test('verifyProducts：sha256 开关关闭时不生成该键', async () => {
+  const cwd = tmpDir();
+  try {
+    write(cwd, 'out/a.md', '# a\n');
+    const off = await verifyProducts({ cwd, products: ['out/a.md'] });
+    assert.equal(off.ok, true);
+    assert.equal('sha256' in off.refs[0], false);
+    // I1.2 的六个字段一个不少、不改名
+    assert.deepEqual(Object.keys(off.refs[0]).sort(), [
+      'absPath',
+      'bytes',
+      'exists',
+      'mtime',
+      'ref',
+      'verifiedAt'
+    ]);
+
+    const on = await verifyProducts({ cwd, products: ['out/a.md'], sha256: true });
+    assert.equal(on.ok, true);
+    assert.match(on.refs[0].sha256, /^[0-9a-f]{64}$/);
+    assert.deepEqual(Object.keys(on.refs[0]).sort(), [
+      'absPath',
+      'bytes',
+      'exists',
+      'mtime',
+      'ref',
+      'sha256',
+      'verifiedAt'
+    ]);
+  } finally {
+    fs.rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test('verifyProducts：缺失 / 空 / 陈旧三条文案与 ARTIFACT_TEXT 逐字一致', async () => {
+  const cwd = tmpDir();
+  try {
+    const missing = await verifyProducts({ cwd, products: ['out/none.md'] });
+    assert.equal(missing.code, 'MISSING');
+    assert.equal(missing.message, '未找到声明的产出 out/none.md');
+
+    write(cwd, 'out/empty.md', '');
+    const empty = await verifyProducts({ cwd, products: ['out/empty.md'] });
+    assert.equal(empty.code, 'EMPTY');
+    assert.equal(empty.message, '产出为空 out/empty.md');
+
+    write(cwd, 'out/old.md', '# old\n');
+    const stamp = new Date(Date.now() - 120_000);
+    fs.utimesSync(path.join(cwd, 'out', 'old.md'), stamp, stamp);
+    const stale = await verifyProducts({
+      cwd,
+      products: ['out/old.md'],
+      roundStartedAt: new Date().toISOString()
+    });
+    assert.equal(stale.code, 'STALE');
+    assert.equal(stale.message, '产出不是本轮新写 out/old.md');
+  } finally {
+    fs.rmSync(cwd, { recursive: true, force: true });
+  }
+});
