@@ -64,3 +64,17 @@
 - 真实 DSH 面 AC-45 一次跑通（`21<87<93`，5m26s）；隔离环境 `%TEMP%/maestro-acc-p2/`。
 - **一次派 3 个大 Agent 会触发平台 429**；分批（1~2 个）更稳，且要求 Agent 分批落盘证据防中断丢成果。
 
+## 阶段一 I1.3 实现完成（2026-11-06：6 个 commit，414/414 用例）
+需求 v5 / 拆分 `iteration-3.md`；提交 `fbc7e62` WP-1 → `05d14b0` WP-5 → `2e2f506` WP-2 →
+`9e9482c` WP-3 → `f4d4a76` WP-4 → `baba11f` WP-6。**尚未做 45 条 AC 验收**。
+- **I1.4+ 必守**：
+  1. `reviewReason='evidence'` 必须在 `transit()` **之前**赋值，否则首帧看不到「核对证据」。
+  2. 门控 `review(downstream)→done` 必须与 `handoff accepted` **同一次 `saveState`**（rev 只 +1），
+     且**不得走 `transit()`**，手工 emit `result='applied'`。
+  3. `delivered` 是短暂态、不保证单独落盘；断言不能要求它出现在中间态。
+  4. 首派失败时 `run.start` 早返回须带 `instanceId` + 终局快照，CLI 才能按 A-3 收尾（退出码 4）。
+  5. `src/core`/`src/daemon` 的 7 词扫描（`task-loop,researcher,writer,reviewer,研究员,撰写者,审核者`）
+     用 `purity-check.mjs --forbid` 传全表；**英文注释也会命中**。
+  6. 串行连跑夹具场景 >10 个会累计资源耗尽（`session/new` 全失败），分批跑。
+  7. 脚本化测试工厂禁止在 `prompt()` 里同步触发首个 update 帧。
+
