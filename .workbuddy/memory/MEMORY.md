@@ -51,3 +51,16 @@
 - **夹具与产品同一条链路**：`.orch/hosts/dsh.json` 的 `launch.command/args` 指向 `mock-acp-agent.js` 即接管宿主。
 - `npm test` 不可用（Node 22 `node --test test/` 报 MODULE_NOT_FOUND）；用 `node --test "test/**/*.test.js"`。
 
+## 阶段一 I1.2 已收口（2026-11-05：44/44 AC、337/337 用例）
+- 需求 `docs/iterations/iteration-2/requirement.md` **v16**；成果在 `iteration-2/{report,acceptance-product,acceptance-fixture,review-round2}.md` + `evidence/`（233 个文件）。7 个工作包见 `iteration-2.md` §4。
+- **I1.3+ 必守的新增约束**：
+  1. CAS 形状 `{state,halted,rev}`；**`rev` 无条件基于磁盘现值递增**（进程重启不回 1），否则 CAS 误判。
+  2. 图/角色字面量只能在 `src/templates/**`；`src/core,src/daemon` 四词零命中（AC-28，用 `test/fixtures/purity-check.mjs` 扫，注释也算）。
+  3. `halted` 必须**独立一次 `saveState`**，不与升级条目合并。
+  4. **忙检查放在写锁之前**：mock 在 `session/new` 前 hold 会让 `advance`/`startRun` 长期持锁 → 写类 IPC 排队超时、读类 `status` 正常。`single` 保持 I1.1 `NODE_BUSY`，`code-loop` 用 `INSTANCE_RUNNING`。
+  5. 判定体只认 `verdict` 字段（严格 `pass`/`fail`），**不认 `result` 别名**；六类失败见 `src/core/verdict.js`。
+- **默认图 `single` 是红线**：任何改动后输出必须逐字保持 I1.1（AC-21 真实面实测）。
+- 验收可重跑：`probe/acc2-f-{b1..b4,final}.mjs` 分 4 批落 `evidence/`，`final` 从 `results.jsonl`+`parts/` 重建报告；修完只重跑受影响批次。
+- 真实 DSH 面 AC-45 一次跑通（`21<87<93`，5m26s）；隔离环境 `%TEMP%/maestro-acc-p2/`。
+- **一次派 3 个大 Agent 会触发平台 429**；分批（1~2 个）更稳，且要求 Agent 分批落盘证据防中断丢成果。
+
