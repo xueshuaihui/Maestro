@@ -109,6 +109,10 @@ function applyInMemory(state, entry, nowIso) {
     node.note = null;
     node.endedAt = nowIso;
     node.stateSince = nowIso;
+    // D-6 invariant: `reviewReason` may only exist while the node is in `review`.
+    // Cleared in the same single CAS as the escalation itself; graphs without the field
+    // keep their exact I1.2 shape.
+    if (Object.prototype.hasOwnProperty.call(node, 'reviewReason')) node.reviewReason = null;
   }
 
   const sessions = Array.isArray(state.sessions) ? state.sessions : [];

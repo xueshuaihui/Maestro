@@ -4,6 +4,7 @@
  * engine directory must not carry built-in template/role literals.
  */
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
@@ -30,6 +31,7 @@ import {
 } from '../../src/core/advance.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(HERE, '../..');
 const CORE_DIR = path.resolve(HERE, '../../src/core');
 const NOW = () => 1_760_000_000_000;
 
@@ -211,10 +213,13 @@ test('buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据',
     now: NOW
   });
   assert.equal(handoff.handoffId, 'HO-005');
+  // M-4 授权变更（D-9）：I1.3 追加 `artifactRefs` 与 `revisionRequirement` 两个字段，
+  // 其余 14 键与顺序逐字不变。
   assert.deepEqual(Object.keys(handoff).sort(), [
     'acceptedAt',
     'acceptedSignal',
     'ambiguityWindowMs',
+    'artifactRefs',
     'consumedAt',
     'createdAt',
     'defects',
@@ -224,6 +229,7 @@ test('buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据',
     'note',
     'rejectReason',
     'rejectedAt',
+    'revisionRequirement',
     'state',
     'wakeConsumedAt'
   ]);
@@ -290,6 +296,22 @@ test('src/core 不含编码模板 / 角色字面量（注释也算）', () => {
   // AC-28: no file in src/core may carry template/role literals, comments included.
   // purity-check.mjs applies the same rule to src/daemon. No per-file whitelist.
   assert.deepEqual(hits, [], `src/core 出现模板/角色字面量: ${hits.join(', ')}`);
+});
+
+test('AC-38：src/core + src/daemon 全目录 7 词扫描零命中', () => {
+  const forbid = ['task-loop', 'researcher', 'writer', 'reviewer', '研究员', '撰写者', '审核者'];
+  const script = path.join(REPO_ROOT, 'test', 'fixtures', 'purity-check.mjs');
+  const result = spawnSync(process.execPath, [
+    script,
+    '--dirs', 'src/core,src/daemon',
+    '--forbid', forbid.join(','),
+  ], { encoding: 'utf8' });
+  assert.equal(
+    result.status,
+    0,
+    `7 词扫描未通过：\n${result.stdout || ''}${result.stderr || ''}`,
+  );
+  assert.match(result.stdout, /零命中/);
 });
 
 test('图查询与推进规划不读文件、不写状态', () => {

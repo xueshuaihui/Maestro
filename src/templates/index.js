@@ -301,21 +301,29 @@ export function defaultGraph() {
  */
 export function initialNodes(graph, { stateAt = null } = {}) {
   const nodes = Array.isArray(graph?.nodes) ? graph.nodes : [];
-  return nodes.map((node) => ({
-    nodeId: node.id ?? node.nodeId,
-    roleId: node.roleId,
-    round: 0,
-    state: 'pending',
-    stateSince: stateAt,
-    startedAt: null,
-    roundStartedAt: null,
-    endedAt: null,
-    failure: null,
-    note: null,
-    verdict: null,
-    sessionId: null,
-    artifactRefs: []
-  }));
+  // The document loop needs three extra fields (D-6). They are only created for graphs
+  // that declare `productPolicy: 'doc-single'`, so I1.1 / I1.2 node shapes stay byte for
+  // byte what they were.
+  const docSingle = graph?.productPolicy === 'doc-single';
+  return nodes.map((node) => {
+    const base = {
+      nodeId: node.id ?? node.nodeId,
+      roleId: node.roleId,
+      round: 0,
+      state: 'pending',
+      stateSince: stateAt,
+      startedAt: null,
+      roundStartedAt: null,
+      endedAt: null,
+      failure: null,
+      note: null,
+      verdict: null,
+      sessionId: null,
+      artifactRefs: []
+    };
+    if (!docSingle) return base;
+    return { ...base, reviewReason: null, review: null, artifactHistory: [] };
+  });
 }
 
 function fill(template, vars) {

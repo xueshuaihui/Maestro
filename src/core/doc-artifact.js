@@ -105,6 +105,19 @@ export function docRef({ artifactDir = DOCS_DIR, artifactExt = '.md', stem, roun
 /** Alias kept for the wording in requirement D-8 (`doc-artifact.nodeProducts(...)`). */
 export const nodeProducts = docRef;
 
+/** Normalize separators so a prompt reads the same on Windows and POSIX (D-8). */
+export function toPosix(value) {
+  return String(value ?? '').replace(/\\/g, '/');
+}
+
+/** Absolute write path handed to the agent: `<workspaceDir>/<ref>` with `/` separators. */
+export function writePathOf(workspaceDir, ref) {
+  if (typeof workspaceDir !== 'string' || workspaceDir.length === 0) return null;
+  if (typeof ref !== 'string' || ref.length === 0) return null;
+  const base = toPosix(workspaceDir).replace(/\/+$/, '');
+  return `${base}/${toPosix(ref)}`;
+}
+
 function fail(code, detail = null) {
   return { ok: false, code, detail };
 }

@@ -80,7 +80,7 @@ function makeMockFactory({ switches = [], command = process.execPath, args = nul
  * 多节点夹具：每次派发一个“会话”，按脚本顺序执行（写产物 / 写判定 / 报错 / 挂住）。
  * 走的是产品侧的 adapterFactory 注入点，不碰磁盘上的 state.json。
  */
-function makeScriptedFactory(script) {
+function makeScriptedFactory(script, { deferFirstUpdateMs = 0 } = {}) {
   let index = 0;
   const prompts = [];
   return {
@@ -118,11 +118,27 @@ function makeScriptedFactory(script) {
           if (step.error) {
             return { ok: false, error: { code: -32603, message: '宿主错误：boom' } };
           }
+          // 真实宿主不会在 `prompt()` 里同步吐帧：`handoff.delivered` 必须在首个帧之前
+          // 落盘，否则 `delivered → accepted` 的顺序会被测试自己打乱（task-loop 需要它）。
+          if (deferFirstUpdateMs > 0) await sleep(deferFirstUpdateMs);
           updateCb({ sessionId, update: { sessionUpdate: 'agent_thought_chunk' } });
           if (step.write) {
-            const target = path.join(cwd, step.write);
+            // 绝对路径原样使用：`doc-single` 的产落在实例工作区（不在会话 cwd），
+            // 提示词里给的就是绝对 `写入路径：`（D-8）。
+            const target = path.isAbsolute(step.write) ? step.write : path.join(cwd, step.write);
             fs.mkdirSync(path.dirname(target), { recursive: true });
             fs.writeFileSync(target, step.content ?? 'module.exports = {};\n', 'utf8');
+          }
+          if (step.review) {
+            // 审核文件固定落在会话 cwd 的 `out/review.json`（D-7 / `REVIEW_PATH`）。
+            // 传字符串时原样写入，用来造「不可解析」；不传 review 即「文件缺失」。
+            const target = path.join(cwd, 'out', 'review.json');
+            fs.mkdirSync(path.dirname(target), { recursive: true });
+            fs.writeFileSync(
+              target,
+              typeof step.review === 'string' ? step.review : JSON.stringify(step.review),
+              'utf8',
+            );
           }
           if (step.verdict) {
             const target = path.join(cwd, 'out', 'verdict.json');
@@ -1030,6 +1046,340 @@ test('handoffToState 白名单：edge / defects / note / wakeConsumedAt 不被 u
     assert.equal(backflow.defects.length, 1);
     assert.equal(typeof backflow.wakeConsumedAt, 'string');
     assert.equal('note' in backflow, true);
+  } finally {
+    await env.teardown();
+  }
+});
+
+// ---------------------------------------------------------------- task-loop（I1.3 / WP-3）
+
+const DOC_TASK = '写一篇发布说明，覆盖背景、变更与回滚方案。\n产物：release-notes.md';
+
+const RESEARCH_TEXT = '# 研究笔记\n\n## 背景\n本次发布整理三处修复。\n';
+
+function docText(round) {
+  return `# 发布说明 v${round}\n\n## 背景\n本次发布整理三处修复。\n`;
+}
+
+/** 实例工作区里的三个固定位置（D-8）：研究笔记固定 v1，文档按轮次带版本号。 */
+function docPaths(root) {
+  const workspace = path.join(root, '.orch', 'instances', 'INST-001', 'workspace');
+  return {
+    workspace,
+    research: path.join(workspace, 'artifacts', 'reports', 'research-notes.v1.md'),
+    doc: (round) => path.join(workspace, 'artifacts', 'docs', `release-notes.v${round}.md`),
+  };
+}
+
+function researchStep(root) {
+  return { write: docPaths(root).research, content: RESEARCH_TEXT };
+}
+
+function writeStep(root, round) {
+  return { write: docPaths(root).doc(round), content: docText(round) };
+}
+
+function passReview(round = 1) {
+  return {
+    review: {
+      decision: 'pass',
+      artifact: `artifacts/docs/release-notes.v${round}.md`,
+      defects: [],
+      revisionRequirement: '',
+    },
+  };
+}
+
+function rejectReview(round = 1) {
+  return {
+    review: {
+      decision: 'reject',
+      artifact: `artifacts/docs/release-notes.v${round}.md`,
+      defects: [
+        { summary: '缺少回滚方案', evidence: `artifacts/docs/release-notes.v${round}.md#L1` },
+        { summary: '升级步骤缺少验证', evidence: `artifacts/docs/release-notes.v${round}.md#L2` },
+      ],
+      revisionRequirement: '补写「回滚方案」一节',
+    },
+  };
+}
+
+/**
+ * 逐次 `saveState` 的快照账本。用来证明「门控一次 CAS」：不可观察的中间态不许出现，
+ * 且 `review(downstream) → done` 与 `handoff accepted` 必须落在同一次写入里。
+ */
+function trackSaves(store) {
+  const log = [];
+  const original = store.save.bind(store);
+  store.save = async (instanceId, state, options) => {
+    const result = await original(instanceId, state, options);
+    if (result?.ok) {
+      const nodes = state.nodes ?? [];
+      log.push({
+        rev: result.rev,
+        instance: state.state,
+        nodes: Object.fromEntries(nodes.map((node) => [node.nodeId, node.state])),
+        handoffs: Object.fromEntries((state.handoffs ?? []).map((h) => [h.handoffId, h.state])),
+        reviewReason: Object.fromEntries(nodes.map((node) => [node.nodeId, node.reviewReason ?? null])),
+        artifactCounts: Object.fromEntries(nodes.map((node) => [node.nodeId, (node.artifactRefs ?? []).length])),
+        notes: Object.fromEntries(nodes.map((node) => [node.nodeId, node.note ?? null])),
+      });
+    }
+    return result;
+  };
+  return log;
+}
+
+/** `script` 收到 root 后再生成步骤：产物必须写到实例工作区，那是 claimGraph 才知道的路径。 */
+async function setupDoc(script, { env = {} } = {}) {
+  const root = tmpDir('maestro-wp4-doc-root-');
+  const cwd = tmpDir('maestro-wp4-doc-cwd-');
+  const factory = makeScriptedFactory(script(root), { deferFirstUpdateMs: 5 });
+  const result = buildOrch({ root, cwd, factory, env });
+  const saves = trackSaves(result.store);
+  return {
+    ...result,
+    factory,
+    saves,
+    async teardown() {
+      try {
+        await result.orch.dispose();
+      } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+        fs.rmSync(cwd, { recursive: true, force: true });
+      }
+    },
+  };
+}
+
+test('task-loop 门控：下游接受时才 done，且与 handoff accepted 同一次 CAS（rev 只 +1）', async () => {
+  const env = await setupDoc((root) => [researchStep(root), writeStep(root, 1), passReview(1)]);
+  try {
+    const result = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+    assert.equal(result.ok, true, JSON.stringify(result));
+    assert.equal(result.snapshot.state, 'completed');
+
+    // 核准：accepted 与 done 只能在同一次写入里一起出现
+    const acceptIndex = env.saves.findIndex((entry) => entry.handoffs['HO-001'] === 'accepted');
+    assert.notEqual(acceptIndex, -1, 'HO-001 从未被接受');
+    const before = env.saves[acceptIndex - 1];
+    // `delivered` 是短暂态：宿主够快时它会在内存里被 accepted 覆盖后一起落盘，
+    // 因此这里只要求「接受之前还没接受」，节点仍停在 review。
+    assert.notEqual(before.handoffs['HO-001'], 'accepted');
+    assert.equal(before.nodes['T-001'], 'review');
+    assert.equal(env.saves[acceptIndex].nodes['T-001'], 'done');
+    assert.equal(env.saves[acceptIndex].rev, before.rev + 1, '门控必须一次落盘（C-09）');
+
+    // 反向：不存在「已接受但节点还没完成」的落盘
+    assert.equal(
+      env.saves.some((entry) => entry.handoffs['HO-001'] === 'accepted' && entry.nodes['T-001'] !== 'done'),
+      false,
+    );
+
+    const state = (await env.store.load('INST-001')).state;
+    assert.equal(state.template, 'task-loop');
+    assert.equal(state.artifactStem, 'release-notes');
+    assert.deepEqual(state.nodes.map((n) => n.nodeId), ['T-001', 'T-002', 'T-003']);
+    assert.deepEqual(state.nodes.map((n) => n.roleId), ['researcher', 'writer', 'reviewer']);
+    assert.equal(state.nodes.every((n) => n.state === 'done'), true);
+    assert.equal(state.escalations.length, 0);
+    // doc-single 投影：没有 absPath，也没有正文（NFR-08）
+    for (const node of state.nodes.slice(0, 2)) {
+      assert.deepEqual(Object.keys(node.artifactRefs[0]).sort(), ['bytes', 'ref', 'sha256', 'verifiedAt']);
+      assert.equal(node.artifactRefs[0].ref.startsWith('artifacts/'), true);
+    }
+    assert.equal(state.nodes[2].review.decision, 'pass');
+    assert.equal(state.nodes[2].review.artifact, 'artifacts/docs/release-notes.v1.md');
+
+    const dispatched = env.events.filter((e) => e.reason === 'node.dispatch');
+    assert.deepEqual(
+      dispatched.map((e) => [e.objectId, e.detail.round, e.detail.roleId]),
+      [
+        ['T-001', 1, 'researcher'],
+        ['T-002', 1, 'writer'],
+        ['T-003', 1, 'reviewer'],
+      ],
+    );
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('task-loop 子原因两段可见：running→review 写 evidence，核对通过后改 downstream', async () => {
+  const env = await setupDoc((root) => [researchStep(root), writeStep(root, 1), passReview(1)]);
+  try {
+    await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+
+    const reviewWrites = env.saves.filter((entry) => entry.nodes['T-002'] === 'review');
+    assert.ok(reviewWrites.length >= 2, '应当至少有「待核对」与「待下游」两次落盘');
+    // 第一次进 review 时还没核对：证据未落，子原因是 evidence（after_output 暂停点可见）
+    assert.equal(reviewWrites[0].reviewReason['T-002'], 'evidence');
+    assert.equal(reviewWrites[0].artifactCounts['T-002'], 0);
+    // 核对通过后仍停在 review，子原因换成 downstream
+    const downstream = reviewWrites.find((entry) => entry.reviewReason['T-002'] === 'downstream');
+    assert.ok(downstream, '核对通过后子原因应改成 downstream');
+    assert.equal(downstream.artifactCounts['T-002'], 1);
+    assert.equal(downstream.nodes['T-002'], 'review');
+
+    // 终态 releaseReason 归零：只在 review 态存活
+    const state = (await env.store.load('INST-001')).state;
+    assert.equal(state.nodes[1].reviewReason, null);
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('task-loop 驳回未超限：审核 failed（等待复审）→ 回流带缺陷 → 第 2 轮通过', async () => {
+  const env = await setupDoc((root) => [
+    researchStep(root),
+    writeStep(root, 1),
+    rejectReview(1),
+    writeStep(root, 2),
+    passReview(2),
+  ]);
+  try {
+    const result = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+    assert.equal(result.ok, true, JSON.stringify(result));
+    assert.equal(result.snapshot.state, 'completed');
+
+    // 驳回后审核者是「失败 + 等待复审」，不是完成、不是升级
+    const failed = env.saves.find((entry) => entry.nodes['T-003'] === 'failed');
+    assert.ok(failed, '驳回未超限时审核节点应落 failed');
+    assert.equal(failed.notes['T-003'], '等待复审');
+
+    const state = (await env.store.load('INST-001')).state;
+    assert.deepEqual(
+      state.handoffs.map((h) => h.edge.kind),
+      ['forward', 'forward', 'backflow', 'retest'],
+    );
+    assert.equal(state.handoffs.every((h) => h.state === 'consumed'), true);
+    assert.equal(state.nodes[1].round, 2);
+    assert.equal(state.nodes[2].round, 2);
+    assert.equal(state.nodes[1].artifactHistory.length, 2);
+    assert.deepEqual(
+      state.nodes[1].artifactHistory.map((h) => h.ref),
+      ['artifacts/docs/release-notes.v1.md', 'artifacts/docs/release-notes.v2.md'],
+    );
+    assert.equal(state.escalations.length, 0);
+    assert.equal(state.halted, false);
+
+    // 回流包保留缺陷、修改要求与上一版指纹；复测包指向新版
+    const backflow = state.handoffs[2];
+    assert.equal(backflow.defects.length, 2);
+    assert.equal(backflow.revisionRequirement, '补写「回滚方案」一节');
+    assert.equal(backflow.artifactRefs.previous.ref, 'artifacts/docs/release-notes.v1.md');
+    assert.match(backflow.artifactRefs.previous.sha256, /^[0-9a-f]{64}$/);
+    assert.equal(state.handoffs[3].artifactRefs.input[0], 'artifacts/docs/release-notes.v2.md');
+    // 提示词真的把修改要求交给了撰写者
+    assert.ok(env.factory.prompts[3].text.includes('补写「回滚方案」一节'));
+    assert.ok(fs.existsSync(docPaths(env.root).doc(1)), '旧版本不得被删除');
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('task-loop 第 2 轮仍驳回：停止回流 → 升级挂起，不再派发第 3 次', async () => {
+  const env = await setupDoc((root) => [
+    researchStep(root),
+    writeStep(root, 1),
+    rejectReview(1),
+    writeStep(root, 2),
+    rejectReview(2),
+  ]);
+  try {
+    const result = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+    assert.equal(result.ok, true, JSON.stringify(result));
+    assert.equal(result.snapshot.state, 'suspended');
+
+    const state = (await env.store.load('INST-001')).state;
+    assert.equal(state.state, 'suspended');
+    assert.equal(state.nodes[2].state, 'escalated');
+    assert.equal(state.nodes[2].round, 2);
+    assert.equal(state.nodes[1].state, 'done');
+    assert.equal(state.nodes[1].round, 2);
+    assert.equal(state.escalations.length, 1);
+    assert.equal(state.escalations[0].reasonCode, 'rounds_exceeded');
+    assert.equal(state.escalations[0].defects.length, 2);
+    assert.equal(state.counters.dispatchCount, 5);
+    assert.equal(state.handoffs.length, 4);
+    const dispatches = env.events.filter((e) => e.reason === 'node.dispatch' && e.objectId === 'T-003');
+    assert.equal(dispatches.length, 2);
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('task-loop 审核文件无效：一律升级，不回流、不写第 2 轮', async () => {
+  const env = await setupDoc((root) => [researchStep(root), writeStep(root, 1), { reviewMissing: true }]);
+  try {
+    const result = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+    assert.equal(result.snapshot.state, 'suspended');
+
+    const state = (await env.store.load('INST-001')).state;
+    assert.equal(state.nodes[2].state, 'escalated');
+    assert.equal(state.nodes[1].state, 'done');
+    assert.equal(state.nodes[1].round, 1);
+    assert.equal(state.escalations[0].reasonCode, 'review_missing');
+    assert.equal(state.counters.dispatchCount, 3);
+    assert.equal(state.handoffs.length, 2);
+    // `halted` 只用于「升级写不进去」（BR-37）；正常升级是 suspended + halted=false
+    assert.equal(state.halted, false);
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('task-loop 审核文件不可解析：同样升级挂起（不回流）', async () => {
+  const env = await setupDoc((root) => [researchStep(root), writeStep(root, 1), { review: '{' }]);
+  try {
+    await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+    const state = (await env.store.load('INST-001')).state;
+    assert.equal(state.state, 'suspended');
+    assert.equal(state.nodes[2].state, 'escalated');
+    assert.equal(state.escalations[0].reasonCode, 'review_invalid');
+    assert.equal(state.handoffs.length, 2);
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('task-loop 工作区建不起来：WORKSPACE_INIT_FAILED，且不留半个实例目录（AC-44）', async () => {
+  const env = await setupDoc((root) => [researchStep(root)], {
+    env: { MAESTRO_FAULT: 'workspace_init:fail' },
+  });
+  try {
+    const result = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+    assert.equal(result.ok, false);
+    assert.equal(result.code, 'WORKSPACE_INIT_FAILED');
+    assert.match(String(result.params?.cause ?? ''), /workspace_init:fail/);
+    assert.equal(fs.existsSync(path.join(env.root, '.orch', 'instances', 'INST-001')), false);
+    assert.equal(env.events.length, 0);
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('task-loop 产物行不合规：缺行 / 非 md / 多行一律在发起时拒绝', async () => {
+  const env = await setupDoc(() => []);
+  try {
+    const missing = await env.orch.startRun({ cwd: env.cwd, task: '写一篇发布说明', template: 'task-loop' });
+    assert.equal(missing.ok, false);
+    assert.equal(missing.code, 'PRODUCT_LINE_MISSING_TASK_LOOP');
+
+    const badExt = await env.orch.startRun({ cwd: env.cwd, task: '写一篇发布说明\n产物：notes.txt', template: 'task-loop' });
+    assert.equal(badExt.ok, false);
+    assert.equal(badExt.code, 'PRODUCT_INVALID_TASK_LOOP');
+
+    const twoLines = await env.orch.startRun({
+      cwd: env.cwd,
+      task: '写两篇\n产物：a.md\n产物：b.md',
+      template: 'task-loop',
+    });
+    // C-02 第 1 条是「恰好一行」：0 行与 2 行以上都归 MISSING，只有名字违规才是 INVALID
+    assert.equal(twoLines.ok, false);
+    assert.equal(twoLines.code, 'PRODUCT_LINE_MISSING_TASK_LOOP');
+
+    assert.equal(fs.existsSync(path.join(env.root, '.orch', 'instances', 'INST-001')), false);
   } finally {
     await env.teardown();
   }

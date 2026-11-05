@@ -15,8 +15,10 @@ import {
   edgeFor,
   isTerminalNode,
   maxRoundsOf,
-  nodeById
+  nodeById,
+  nodesOf
 } from './graph.js';
+import { docRef, writePathOf } from './doc-artifact.js';
 import { extractProductLines } from './verify-artifact.js';
 import { promptFor } from '../templates/index.js';
 
@@ -54,12 +56,23 @@ function verdictValue(verdict, node) {
   return stored === 'pass' || stored === 'fail' ? stored : null;
 }
 
+/**
+ * A node has "left the execution state" when it is done / failed / escalated, or when it
+ * sits in `review` waiting for the downstream node to take over (downstream gate, D-3).
+ * The latter still counts as ended here, otherwise the planner would never dispatch the
+ * next node after a gated node verified its own output.
+ */
+function hasEnded(node) {
+  if (['done', 'failed', 'escalated'].includes(node?.state)) return true;
+  return node?.state === 'review' && node?.reviewReason === 'downstream';
+}
+
 /** The most recently ended node, used when the caller does not name one. */
 function latestNodeId(nodes) {
   let bestId = null;
   let bestAt = null;
   for (const node of Array.isArray(nodes) ? nodes : []) {
-    if (!['done', 'failed', 'escalated'].includes(node?.state)) continue;
+    if (!hasEnded(node)) continue;
     const endedAt = typeof node.endedAt === 'string' ? node.endedAt : null;
     if (endedAt === null) continue;
     if (bestAt === null || endedAt > bestAt) {
@@ -83,7 +96,12 @@ export function classifyNodeOutcome(state, nodeId, verdict = null) {
   if (!node) return 'error';
   if (node.state === 'escalated') return 'escalated';
   if (node.state === 'done') return 'passed';
+  if (node.state === 'review' && node.reviewReason === 'downstream') return 'passed';
   if (node.state === 'failed') {
+    // A review node that rejected this round: the defect list feeds the backflow.
+    const decided = node.review?.decision ?? null;
+    if (decided === 'reject') return 'verdict-fail';
+    if (decided === 'pass') return 'passed';
     return verdictValue(verdict, node) === 'fail' ? 'verdict-fail' : 'error';
   }
   return 'error';
@@ -113,6 +131,8 @@ export function buildHandoff({
   products = [],
   defects = [],
   retestRequirement = null,
+  artifactRefs = null,
+  revisionRequirement = null,
   handoffs = [],
   handoffId = null,
   now = defaultNow
@@ -135,7 +155,10 @@ export function buildHandoff({
     acceptedSignal: null,
     ambiguityWindowMs: null,
     defects: normalizeDefects(defects),
-    note: null
+    note: null,
+    // I1.3 (D-6): which document this handoff carries in / out / replaces.
+    artifactRefs: artifactRefs === null ? null : artifactRefs,
+    revisionRequirement: revisionRequirement ?? null
   };
 }
 
@@ -154,6 +177,8 @@ export function buildBackflowHandoff({
   products = [],
   defects = [],
   retestRequirement = null,
+  revisionRequirement = null,
+  artifactRefs = null,
   handoffs = [],
   handoffId = null,
   now = defaultNow
@@ -169,6 +194,8 @@ export function buildBackflowHandoff({
     products,
     defects: normalized,
     retestRequirement,
+    artifactRefs,
+    revisionRequirement,
     handoffs,
     handoffId,
     now
@@ -180,9 +207,19 @@ export function buildBackflowHandoff({
     products,
     defects: normalized,
     retestRequirement,
-    defectCount: normalized.length
+    revisionRequirement,
+    defectCount: normalized.length,
+    round,
+    docRef: artifactRefs?.output ?? null,
+    previousRef: artifactRefs?.previous?.ref ?? null
   });
-  return { handoff, defects: normalized, retestRequirement: retestRequirement ?? null, promptText };
+  return {
+    handoff,
+    defects: normalized,
+    retestRequirement: retestRequirement ?? null,
+    revisionRequirement: revisionRequirement ?? null,
+    promptText
+  };
 }
 
 /**
@@ -258,6 +295,7 @@ export function planAdvance({
   verdict = null,
   fromNodeId = null,
   outcome = null,
+  workspaceDir = null,
   now = defaultNow
 } = {}) {
   const snap = snapshot ?? state ?? {};
@@ -291,11 +329,90 @@ export function planAdvance({
     ? (nodes.find((item) => idOf(item) === idOf(target)) ?? null)
     : null;
 
-  const productsOf = (node) => {
-    const declared = Array.isArray(node?.products) ? node.products : [];
+  const productPolicy = graph?.productPolicy ?? 'declared';
+
+  const productsOf = (def) => {
+    const declared = Array.isArray(def?.products) ? def.products : [];
     if (declared.length > 0) return declared;
+    // A single-document graph must never fall back to the task's `产物：` line here: it
+    // would hand back a bare `<name>.md` and make an empty node look submitted (R3).
+    if (productPolicy === 'doc-single') return [];
     const parsed = extractProductLines(snap.task ?? '');
     return parsed.ok ? parsed.refs : [];
+  };
+
+  /** The fixed research note declared by the report node, if the graph has one. */
+  const researchRefOf = () => {
+    const def = nodesOf(graph).find(
+      (item) =>
+        item?.artifactPolicy === 'fixed-workspace' &&
+        Array.isArray(item.products) &&
+        item.products.length > 0
+    );
+    return def?.products?.[0] ?? null;
+  };
+
+  /**
+   * Per-edge artifact references — the single source of truth (D-6 table).
+   * Only a `versioned-doc` target produces an output document; everything else passes
+   * the source node's first reference through as `input`.
+   */
+  const refsForEdge = (targetEdge, round) => {
+    const fromSnapshot = nodes.find((item) => idOf(item) === targetEdge.from) ?? null;
+    const toSnapshot = nodes.find((item) => idOf(item) === targetEdge.to) ?? null;
+    const toDef = nodeById(graph, targetEdge.to);
+    const stem = snap.artifactStem ?? null;
+    const input =
+      Array.isArray(fromSnapshot?.artifactRefs) && fromSnapshot.artifactRefs.length > 0
+        ? [fromSnapshot.artifactRefs[0].ref]
+        : [];
+
+    if (toDef?.artifactPolicy !== 'versioned-doc') {
+      return {
+        artifactRefs: { input, output: null, previous: null },
+        current: input[0] ?? null,
+        previous: null
+      };
+    }
+
+    const naming = {
+      artifactDir: toDef.artifactDir,
+      artifactExt: toDef.artifactExt,
+      stem
+    };
+    const current = docRef({ ...naming, round });
+    const previous = round > 1 ? docRef({ ...naming, round: round - 1 }) : null;
+
+    if (targetEdge.kind === 'backflow') {
+      const history = Array.isArray(toSnapshot?.artifactHistory) ? toSnapshot.artifactHistory : [];
+      const entry = previous === null ? null : (history.find((item) => item?.ref === previous) ?? null);
+      return {
+        artifactRefs: {
+          input: previous === null ? [] : [previous],
+          output: current,
+          previous: previous === null ? null : { ref: previous, sha256: entry?.sha256 ?? null }
+        },
+        current,
+        previous
+      };
+    }
+
+    return { artifactRefs: { input, output: current, previous: null }, current, previous: null };
+  };
+
+  /** Prompt variables for the target node (refs + the absolute write path). */
+  const promptVarsOf = (targetEdge, round) => {
+    const { artifactRefs, current, previous } = refsForEdge(targetEdge, round);
+    const toDef = nodeById(graph, targetEdge.to);
+    const writeRef = toDef?.prompt === 'research' ? (toDef.products?.[0] ?? null) : current;
+    return {
+      artifactRefs,
+      revisionRequirement: null,
+      researchRef: researchRefOf(),
+      docRef: current,
+      previousRef: previous,
+      writePath: writeRef === null ? null : writePathOf(workspaceDir, writeRef)
+    };
   };
 
   if (classified === 'verdict-fail') {
@@ -305,9 +422,18 @@ export function planAdvance({
       return escalate(currentId, currentRound, 'rounds_exceeded');
     }
     const round = roundOf(targetSnapshot) + 1;
-    const defects = normalizeDefects(verdict?.defects ?? []);
+    // Verdict files feed the coding loop; a review file feeds the document loop. Prefer
+    // the explicit argument, then whatever the finished node stored on itself.
+    const defects = normalizeDefects(
+      Array.isArray(verdict?.defects) && verdict.defects.length > 0
+        ? verdict.defects
+        : (currentNode?.review?.defects ?? [])
+    );
     const retestRequirement = verdict?.retestRequirement ?? null;
+    const revisionRequirement =
+      verdict?.revisionRequirement ?? currentNode?.review?.revisionRequirement ?? null;
     const products = productsOf(target);
+    const vars = promptVarsOf(edge, round);
     const handoffDraft = buildHandoff({
       instanceId: snap.instanceId ?? null,
       edge,
@@ -318,6 +444,8 @@ export function planAdvance({
       products,
       defects,
       retestRequirement,
+      artifactRefs: vars.artifactRefs,
+      revisionRequirement,
       handoffs: snap.handoffs ?? [],
       now
     });
@@ -329,7 +457,14 @@ export function planAdvance({
       products,
       defects,
       retestRequirement,
-      defectCount: defects.length
+      revisionRequirement,
+      defectCount: defects.length,
+      round,
+      researchRef: vars.researchRef,
+      docRef: vars.docRef,
+      previousRef: vars.previousRef,
+      writePath: vars.writePath,
+      workspaceDir
     });
     return {
       action: 'backflow',
@@ -356,6 +491,7 @@ export function planAdvance({
 
   const round = roundOf(targetSnapshot) + 1;
   const products = productsOf(target);
+  const vars = promptVarsOf(edge, round);
   const handoffDraft = buildHandoff({
     instanceId: snap.instanceId ?? null,
     edge,
@@ -365,6 +501,7 @@ export function planAdvance({
     task: snap.task ?? '',
     products,
     defects: [],
+    artifactRefs: vars.artifactRefs,
     handoffs: snap.handoffs ?? [],
     now
   });
@@ -375,7 +512,13 @@ export function planAdvance({
     task: snap.task ?? '',
     products,
     defects: [],
-    defectCount: 0
+    defectCount: 0,
+    round,
+    researchRef: vars.researchRef,
+    docRef: vars.docRef,
+    previousRef: vars.previousRef,
+    writePath: vars.writePath,
+    workspaceDir
   });
 
   return {

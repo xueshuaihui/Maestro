@@ -39,11 +39,27 @@ import {
   verifyProducts,
 } from './verify-artifact.js';
 import { readVerdict } from './verdict.js';
+import { readReview } from './review.js';
+import {
+  artifactMessage,
+  docRef,
+  parseProductDeclaration,
+  resolveNodeProducts,
+  verifyPrevious,
+  writePathOf,
+} from './doc-artifact.js';
 import { buildEscalation, commitEscalation, findPending, markHalted } from './escalation.js';
 import { checkWakeGate, classifyNodeOutcome, planAdvance } from './advance.js';
+import {
+  instanceDir as dirOfInstance,
+  instanceDocsDir,
+  instanceReportsDir,
+  instanceWorkspaceDir,
+} from '../persistence/paths.js';
 import { firstNode, getGraph as graphByName, maxRoundsOf, nodeById as graphNode } from './graph.js';
 import {
   DEFAULT_RETEST_REQUIREMENT,
+  DEFAULT_REVISION_REQUIREMENT,
   GRAPHS,
   defaultGraph,
   initialNodes,
@@ -145,11 +161,22 @@ function latestHandoff(state) {
   return list.length === 0 ? null : list[list.length - 1];
 }
 
+/**
+ * Same rule as `advance.hasEnded`: a node waiting for its downstream neighbour
+ * (`review` + `reviewReason === 'downstream'`) has already left the execution state.
+ * Both copies must stay in sync (risk R1): `advance` picks the planning target from the
+ * disk snapshot with the identical predicate.
+ */
+function hasEndedNode(node) {
+  if (['done', 'failed', 'escalated'].includes(node?.state)) return true;
+  return node?.state === 'review' && node?.reviewReason === 'downstream';
+}
+
 function latestEndedNodeId(state) {
   let bestId = null;
   let bestAt = null;
   for (const node of state?.nodes ?? []) {
-    if (!['done', 'failed', 'escalated'].includes(node?.state)) continue;
+    if (!hasEndedNode(node)) continue;
     const endedAt = typeof node.endedAt === 'string' ? node.endedAt : null;
     if (endedAt === null) continue;
     if (bestAt === null || endedAt > bestAt) {
@@ -195,6 +222,14 @@ function handoffToState(snapshot) {
   if (Object.prototype.hasOwnProperty.call(snapshot, 'note')) out.note = snapshot.note;
   if (Object.prototype.hasOwnProperty.call(snapshot, 'wakeConsumedAt')) {
     out.wakeConsumedAt = snapshot.wakeConsumedAt;
+  }
+  // I1.3 (D-6): only projected when the source object carries them, so a plain
+  // `session/update` never wipes the artifact refs of an accepted handoff.
+  if (Object.prototype.hasOwnProperty.call(snapshot, 'artifactRefs')) {
+    out.artifactRefs = snapshot.artifactRefs;
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshot, 'revisionRequirement')) {
+    out.revisionRequirement = snapshot.revisionRequirement;
   }
   return out;
 }
@@ -257,6 +292,9 @@ export function createOrchestrator({
   const stopAfterStep = Number.isInteger(stopAfter) && stopAfter > 0 ? stopAfter : null;
   const fault =
     runtimeEnv?.MAESTRO_FAULT === 'state_write:escalation' ? 'state_write:escalation' : null;
+  /** AC-44 fault injection: the workspace cannot be created. */
+  const workspaceFault =
+    runtimeEnv?.MAESTRO_FAULT === 'workspace_init:fail' ? 'workspace_init:fail' : null;
 
   /** 审批策略：显式参数 > env > 宿主配置 > 默认 allow（宿主细节不进入核心分支）。 */
   const explicitPermissionPolicy = normalizePermissionPolicy(permissionPolicy);
@@ -608,6 +646,55 @@ export function createOrchestrator({
     return graph;
   }
 
+  /** `productPolicy` of the graph this instance runs (`declared` when absent). */
+  function productPolicyOf(state) {
+    return graphForState(state)?.productPolicy ?? 'declared';
+  }
+
+  /** `<root>/.orch/instances/<id>/workspace` — the only base for versioned documents. */
+  function workspaceDirOf(state) {
+    if (!state || typeof state.instanceId !== 'string' || state.instanceId.length === 0) return null;
+    return instanceWorkspaceDir(store.root, state.instanceId);
+  }
+
+  /**
+   * Create the instance workspace (D-8). Called *before* the first `state.json` write so a
+   * failure leaves no half-built instance behind (AC-44).
+   */
+  /** Remove a half-built instance directory (only used before its first write). */
+  async function discardInstance(instanceId) {
+    try {
+      await fs.rm(dirOfInstance(store.root, instanceId), { recursive: true, force: true });
+    } catch {
+      // The caller already reports WORKSPACE_INIT_FAILED; a leftover empty dir is harmless.
+    }
+  }
+
+  async function prepareWorkspace(instanceId) {
+    if (workspaceFault) return { ok: false, cause: `注入故障（${workspaceFault}）` };
+    try {
+      await fs.mkdir(instanceWorkspaceDir(store.root, instanceId), { recursive: true });
+      await fs.mkdir(instanceDocsDir(store.root, instanceId), { recursive: true });
+      await fs.mkdir(instanceReportsDir(store.root, instanceId), { recursive: true });
+      return { ok: true };
+    } catch (error) {
+      const message = String(error?.message ?? error ?? '').split('\n')[0];
+      return { ok: false, cause: message.length > 0 ? message : 'workspace_init_failed' };
+    }
+  }
+
+  /**
+   * Which document the review must point at (D-8): the input reference of the handoff that
+   * dispatched the review node, falling back to the upstream node's first artifact.
+   */
+  function expectedArtifactOf(ctx) {
+    const input = ctx.handoff?.artifactRefs?.input;
+    if (Array.isArray(input) && typeof input[0] === 'string' && input[0].length > 0) return input[0];
+    const fromId = ctx.handoff?.edge?.from ?? null;
+    const fromNode = fromId === null ? null : nodeOf(ctx.state, fromId);
+    return fromNode?.artifactRefs?.[0]?.ref ?? null;
+  }
+
   async function createAdapter(hostId, cwd) {
     const args = typeof hostId === 'string' && hostId.length > 0 ? { hostId, cwd } : { cwd };
     const created = await adapterFactory.create(args);
@@ -816,6 +903,40 @@ export function createOrchestrator({
   }
 
   /** 单条 session/update：归并会话状态（节流）、判定 accepted、抓 artifactRef。 */
+  /**
+   * Downstream gate (D-3): the upstream node leaves `review(downstream)` only when the
+   * downstream node's first turn event has been accepted. Returns the event to emit, or
+   * null when nothing is gated. The caller persists both the mutation and the event in a
+   * single `saveLive` — this function never writes.
+   */
+  function openDownstreamGate(ctx) {
+    const state = ctx.state;
+    const handoff = ctx.handoff;
+    if (!state || !handoff || handoff.state !== 'accepted') return null;
+    const fromId = handoff.edge?.from ?? null;
+    const upstream = fromId === null ? null : nodeOf(state, fromId);
+    if (!upstream) return null;
+    if (upstream.state !== 'review' || upstream.reviewReason !== 'downstream') return null;
+
+    upstream.state = 'done';
+    upstream.stateSince = iso();
+    upstream.reviewReason = null;
+    const upstreamSession = upstream.sessionId ? sessionOf(state, upstream.sessionId) : null;
+    if (upstreamSession && upstreamSession.state === 'waiting_dependency') {
+      upstreamSession.state = 'idle';
+      upstreamSession.stateSince = iso();
+    }
+    return {
+      object: 'node',
+      objectId: upstream.nodeId,
+      from: 'review',
+      to: 'done',
+      result: 'note',
+      reason: 'review.downstream_accepted',
+      detail: { handoffId: handoff.handoffId, fromNodeId: fromId, round: upstream.round },
+    };
+  }
+
   function handleUpdate(ctx, update) {
     const normalizer = ctx.normalizer;
     const tracker = ctx.tracker;
@@ -869,15 +990,30 @@ export function createOrchestrator({
     if (tracker && ctx.handoff) {
       const beforeHandoff = tracker.state();
       tracker.observeTurnEvent({ name, atMs: now() });
-      applyHandoff(ctx.handoff, { ...tracker.snapshot(), edge: ctx.handoff.edge, defects: ctx.handoff.defects });
+      applyHandoff(ctx.handoff, {
+        ...tracker.snapshot(),
+        edge: ctx.handoff.edge,
+        defects: ctx.handoff.defects,
+        note: ctx.handoff.note,
+        wakeConsumedAt: ctx.handoff.wakeConsumedAt,
+        artifactRefs: ctx.handoff.artifactRefs,
+        revisionRequirement: ctx.handoff.revisionRequirement,
+      });
       if (beforeHandoff !== 'accepted' && tracker.state() === 'accepted') accepted = true;
     }
     session.quarantined = Boolean(normalizer.getSession(ctx.sessionId)?.quarantined);
 
-    if (accepted) ctx.pauses.push(pauseFor('after_accepted', ctx.nodeId));
+    let gateEvent = null;
+    if (accepted) {
+      ctx.pauses.push(pauseFor('after_accepted', ctx.nodeId));
+      // D-3: the upstream node becomes `done` exactly here — the first turn event of the
+      // downstream node is the idempotency key. The state change and its event are saved
+      // by the single `saveLive` below (C-09: one CAS, never a second `transit`).
+      gateEvent = openDownstreamGate(ctx);
+    }
 
     const handoffEvents = ctx.handoffEmits.splice(0);
-    if (pendingEvents.length === 0 && handoffEvents.length === 0) return;
+    if (pendingEvents.length === 0 && handoffEvents.length === 0 && gateEvent === null) return;
     enqueue(ctx, async () => {
       for (const ev of pendingEvents) await ctx.emit(ev);
       for (const ev of handoffEvents) {
@@ -891,6 +1027,7 @@ export function createOrchestrator({
           detail: ev.detail ?? null,
         });
       }
+      if (gateEvent) await ctx.emit(gateEvent);
       await saveLive(ctx);
     });
   }
@@ -1045,17 +1182,41 @@ export function createOrchestrator({
     session.turnId = TURN_ID;
     ctx.permissionPolicy = await policyFor(hostId);
 
-    const text =
-      promptText ??
-      promptFor({
+    let text = promptText;
+    if (text === null || text === undefined) {
+      // Entry-node dispatch (and the test seam) has no plan to borrow a prompt from, so
+      // the wording is assembled here. `doc-single` resolves its own product path so the
+      // research prompt gets an absolute `写入路径：` (D-8); older graphs keep using the
+      // task's `产物：` line exactly as in I1.2.
+      const productPolicy = productPolicyOf(state);
+      const workspaceDir = workspaceDirOf(state);
+      const resolution = resolveNodeProducts(def, {
+        node,
+        state,
+        workspaceDir,
+        cwd: state.cwd,
+        productPolicy,
+      });
+      const docSingleProducts = resolution.ok ? resolution.products : [];
+      const promptProducts = productPolicy === 'doc-single' ? docSingleProducts : productsOfTask(state);
+      const writeRef = promptProducts[0] ?? def?.products?.[0] ?? null;
+      text = promptFor({
         graph: runGraph,
         node: def,
         handoff: ctx.handoff,
         task: state.task ?? '',
-        products: productsOfTask(state),
+        products: promptProducts,
         defects: ctx.handoff?.defects ?? [],
         defectCount: ctx.handoff?.defects?.length ?? 0,
+        round: node.round,
+        researchRef: def?.products?.[0] ?? null,
+        docRef: promptProducts[0] ?? null,
+        previousRef: null,
+        writePath: writeRef === null ? null : writePathOf(workspaceDir, writeRef),
+        workspaceDir,
+        revisionRequirement: ctx.handoff?.revisionRequirement ?? null,
       });
+    }
 
     const promptPromise = Promise.resolve().then(() =>
       adapter.prompt(ctx.sessionId, [{ type: 'text', text }]),
@@ -1072,6 +1233,8 @@ export function createOrchestrator({
           defects: ctx.handoff.defects,
           note: ctx.handoff.note,
           wakeConsumedAt: ctx.handoff.wakeConsumedAt,
+          artifactRefs: ctx.handoff.artifactRefs,
+          revisionRequirement: ctx.handoff.revisionRequirement,
         });
         await flushHandoff(ctx);
       }
@@ -1332,6 +1495,8 @@ export function createOrchestrator({
           defects: ctx.handoff.defects,
           note: ctx.handoff.note,
           wakeConsumedAt: ctx.handoff.wakeConsumedAt,
+          artifactRefs: ctx.handoff.artifactRefs,
+          revisionRequirement: ctx.handoff.revisionRequirement,
         });
         await flushHandoff(ctx);
       }
@@ -1355,12 +1520,34 @@ export function createOrchestrator({
       const read = await readVerdict({ cwd: state.cwd, roundStartedAt: node.roundStartedAt, now: clock });
       return read.ok === true;
     }
-    const products =
-      Array.isArray(def?.products) && def.products.length > 0 ? def.products : productsOfTask(state);
-    if (products.length === 0) return true;
+    if (def?.judge === 'review') {
+      // The review node only hands in `out/review.json`; the task's `产物：` line is a
+      // different file and must never be mistaken for "submitted" (risk R3).
+      const read = await readReview({
+        cwd: state.cwd,
+        workspaceDir: workspaceDirOf(state),
+        expectedArtifact: expectedArtifactOf(ctx),
+        roundStartedAt: node.roundStartedAt,
+        now: clock,
+      });
+      return read.ok === true;
+    }
+
+    const productPolicy = productPolicyOf(state);
+    const resolution = resolveNodeProducts(def, {
+      node,
+      state,
+      workspaceDir: workspaceDirOf(state),
+      cwd: state.cwd,
+      productPolicy,
+    });
+    if (!resolution.ok) return false;
+    if (resolution.products.length === 0) return true;
+
     const verified = await verifyProducts({
       cwd: state.cwd,
-      products,
+      baseDir: resolution.baseDir,
+      products: resolution.products,
       roundStartedAt: node.roundStartedAt,
       now: clock,
     });
@@ -1427,7 +1614,14 @@ export function createOrchestrator({
         detail: null,
       });
     }
+    // D-3 / M-8: a gated node enters `review` **because its own output is being checked**,
+    // and the reason has to be in the *same* write as `running → review` — otherwise the
+    // first frame of the pause still reads a bare `待校验`. So it is set before the
+    // transition (`transit()` persists on its own), not after it.
     if (node.state === 'running') {
+      if (def.downstreamGate === true && Object.prototype.hasOwnProperty.call(node, 'reviewReason')) {
+        node.reviewReason = 'evidence';
+      }
       await makeTransitioner(ctx)('node', 'review', 'output.submitted');
     }
     await saveLive(ctx);
@@ -1481,6 +1675,9 @@ export function createOrchestrator({
     if (def.judge === 'verdict') {
       return finishVerdictNode(ctx, def);
     }
+    if (def.judge === 'review') {
+      return finishReviewNode(ctx, def);
+    }
     return finishArtifactNode(ctx, def);
   }
 
@@ -1494,13 +1691,85 @@ export function createOrchestrator({
     }
   }
 
+  /** One escalation shape for every artifact failure (D-4 reason codes). */
+  async function escalateArtifact(ctx, reasonCode, message, defects = []) {
+    guardEscalation(ctx);
+    const escalation = await escalateState({
+      instanceId: ctx.state.instanceId,
+      state: ctx.state,
+      node: ctx.node,
+      reasonCode,
+      reasonDetail: `核对失败：${message}`,
+      defects,
+      emit: ctx.emit,
+    });
+    await markEscalatedSession(ctx);
+    return { kind: escalation.ok ? 'escalated' : 'halted' };
+  }
+
+  /**
+   * Artifact node finishing (D-8).
+   *
+   * 1. resolve this round's products through `doc-artifact` (the only entry point);
+   * 2. rounds > 1: the previous version must still be there and byte-identical;
+   * 3. verify the current version (exists / non-empty / newer than the dispatch);
+   * 4. project the refs (the versioned-doc policy keeps only ref/bytes/sha256/verifiedAt) and append
+   *    `artifactHistory`;
+   * 5. a gated node does **not** become `done` yet: it waits in `review(downstream)`
+   *    until the downstream node accepts (D-3); everything else keeps I1.2 behaviour.
+   */
   async function finishArtifactNode(ctx, def) {
     const { state, node } = ctx;
-    const products = Array.isArray(def.products) && def.products.length > 0 ? def.products : productsOfTask(state);
+    const productPolicy = productPolicyOf(state);
+    const resolution = resolveNodeProducts(def, {
+      node,
+      state,
+      workspaceDir: workspaceDirOf(state),
+      cwd: state.cwd,
+      productPolicy,
+    });
+
+    if (!resolution.ok) {
+      // The engine could not even name a product for this round: report it as missing
+      // rather than inventing a path (never fall back to the task line, risk R3).
+      return escalateArtifact(ctx, 'artifact_missing', artifactMessage('missing', null));
+    }
+
+    const baseDir = resolution.baseDir;
+    const withSha = productPolicy === 'doc-single';
+
+    // 2. previous version integrity, before looking at the new one.
+    if (def.artifactPolicy === 'versioned-doc' && node.round > 1) {
+      const previousRef = docRef({
+        artifactDir: def.artifactDir,
+        artifactExt: def.artifactExt,
+        stem: state.artifactStem,
+        round: node.round - 1,
+      });
+      const history = Array.isArray(node.artifactHistory) ? node.artifactHistory : [];
+      const record = history.find((item) => item?.ref === previousRef) ?? null;
+      const previous = await verifyPrevious({
+        baseDir,
+        ref: previousRef,
+        sha256: record?.sha256 ?? null,
+        fs,
+      });
+      if (!previous.ok) {
+        const message =
+          previous.code === 'artifact_previous_modified'
+            ? artifactMessage('previousModified', previous.ref)
+            : artifactMessage('previousMissing', previous.ref);
+        return escalateArtifact(ctx, previous.code, message);
+      }
+    }
+
+    // 3. this round's version.
     const verified = await verifyProducts({
       cwd: state.cwd,
-      products,
+      baseDir,
+      products: resolution.products,
       roundStartedAt: node.roundStartedAt,
+      sha256: withSha,
       now: clock,
     });
 
@@ -1511,13 +1780,92 @@ export function createOrchestrator({
           : verified.code === 'STALE'
             ? 'artifact_stale'
             : 'artifact_missing';
+      return escalateArtifact(ctx, reasonCode, verified.message);
+    }
+
+    // 4. projection: the versioned-doc policy never stores absolute paths (NFR-08).
+    const verifiedAt = iso();
+    node.artifactRefs = (verified.refs ?? []).map((ref) =>
+      withSha
+        ? { ref: ref.ref, bytes: ref.bytes, sha256: ref.sha256 ?? null, verifiedAt }
+        : { ...ref, verifiedAt }
+    );
+    if (withSha && node.artifactRefs.length > 0) {
+      node.artifactHistory = Array.isArray(node.artifactHistory) ? node.artifactHistory : [];
+      for (const ref of node.artifactRefs) {
+        node.artifactHistory.push({
+          round: node.round,
+          ref: ref.ref,
+          sha256: ref.sha256 ?? null,
+          bytes: ref.bytes,
+          verifiedAt,
+        });
+      }
+    }
+
+    // 5. downstream gate: stay in `review`, hand the move to the accepted frame.
+    if (def.downstreamGate === true) {
+      node.reviewReason = 'downstream';
+      node.endedAt = verifiedAt;
+      const first = node.artifactRefs[0] ?? null;
+      await ctx.emit({
+        object: 'node',
+        objectId: node.nodeId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'review.evidence_verified',
+        detail: { ref: first?.ref ?? null, sha256: first?.sha256 ?? null },
+      });
+      await consumeHandoff(ctx, 'handoff.consumed');
+      await saveLive(ctx);
+      await cleanup(ctx);
+      return { kind: 'passed' };
+    }
+
+    await makeTransitioner(ctx)('node', 'done', 'verification.passed');
+    node.endedAt = iso();
+    await consumeHandoff(ctx, 'handoff.consumed');
+    await idleSession(ctx, 'run.completed');
+    await saveLive(ctx);
+    await cleanup(ctx);
+    return { kind: 'passed' };
+  }
+
+  /**
+   * Review node finishing (D-7 / D-3). The review file decides:
+   *   pass                      -> done (I1.2 transition reason kept)
+   *   reject, under the cap     -> failed + note `等待复审`, the planner backflows next
+   *   reject at the cap         -> escalate `rounds_exceeded`
+   *   invalid file              -> escalate with the reader's reason code
+   */
+  async function finishReviewNode(ctx, def) {
+    const { state, node } = ctx;
+    const read = await readReview({
+      cwd: state.cwd,
+      workspaceDir: workspaceDirOf(state),
+      expectedArtifact: expectedArtifactOf(ctx),
+      roundStartedAt: node.roundStartedAt,
+      now: clock,
+    });
+
+    if (!read.ok) {
+      await ctx.emit({
+        object: 'node',
+        objectId: node.nodeId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'review.invalid',
+        detail: { reasonCode: read.reasonCode, stage: read.stage, message: read.reasonDetail },
+      });
       guardEscalation(ctx);
       const escalation = await escalateState({
         instanceId: state.instanceId,
         state,
         node,
-        reasonCode,
-        reasonDetail: `核对失败：${verified.message}`,
+        reasonCode: read.reasonCode,
+        reasonDetail: read.reasonDetail,
         defects: [],
         emit: ctx.emit,
       });
@@ -1525,7 +1873,90 @@ export function createOrchestrator({
       return { kind: escalation.ok ? 'escalated' : 'halted' };
     }
 
-    node.artifactRefs = (verified.refs ?? []).map((ref) => ({ ...ref, verifiedAt: iso() }));
+    const review = read.review;
+    node.review = {
+      decision: review.decision,
+      defectCount: review.defectCount,
+      reviewPath: review.reviewPath,
+      artifact: review.artifact,
+      readAt: review.readAt,
+      defects: review.defects,
+      revisionRequirement: review.revisionRequirement,
+    };
+    await ctx.emit({
+      object: 'node',
+      objectId: node.nodeId,
+      from: null,
+      to: null,
+      result: 'note',
+      reason: 'review.read',
+      detail: {
+        source: 'file',
+        path: review.reviewPath,
+        decision: review.decision,
+        results: review.defectCount,
+      },
+    });
+
+    if (review.decision === 'reject') {
+      const limit = maxRoundsOf(graphForState(state), node.nodeId);
+      const exhausted = Number.isFinite(limit) && node.round >= limit;
+      await consumeHandoff(ctx, 'handoff.consumed');
+      await ctx.emit({
+        object: 'node',
+        objectId: node.nodeId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'review.rejected',
+        detail: { defectCount: review.defectCount },
+      });
+
+      if (!exhausted) {
+        node.note = '等待复审';
+        node.endedAt = iso();
+        await makeTransitioner(ctx)('node', 'failed', 'review.rejected', {
+          decision: 'reject',
+          defectCount: review.defectCount,
+        });
+        await idleSession(ctx, 'verification.failed');
+        await saveLive(ctx);
+        await cleanup(ctx);
+        return { kind: 'verdict-fail' };
+      }
+
+      await ctx.emit({
+        object: 'node',
+        objectId: node.nodeId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'rounds.exceeded',
+        detail: { round: node.round, maxRounds: limit },
+      });
+      guardEscalation(ctx);
+      const escalation = await escalateState({
+        instanceId: state.instanceId,
+        state,
+        node,
+        reasonCode: 'rounds_exceeded',
+        reasonDetail: roundsDetail(def.title, node.round),
+        defects: review.defects,
+        emit: ctx.emit,
+      });
+      await markEscalatedSession(ctx);
+      return { kind: escalation.ok ? 'escalated' : 'halted' };
+    }
+
+    await ctx.emit({
+      object: 'node',
+      objectId: node.nodeId,
+      from: null,
+      to: null,
+      result: 'note',
+      reason: 'review.passed',
+      detail: { defectCount: 0 },
+    });
     await makeTransitioner(ctx)('node', 'done', 'verification.passed');
     node.endedAt = iso();
     await consumeHandoff(ctx, 'handoff.consumed');
@@ -1649,12 +2080,16 @@ export function createOrchestrator({
     if (ctx.handoff.state === 'consumed') return;
     if (ctx.tracker && ctx.tracker.can('consumed') && ctx.handoff.state === 'accepted') {
       ctx.tracker.consumed({ atMs: now() });
+      // M-4: the explicit rebuild must carry the I1.3 fields, otherwise `accepted ->
+      // consumed` would silently drop the artifact refs of the handoff.
       applyHandoff(ctx.handoff, {
         ...ctx.tracker.snapshot(),
         edge: ctx.handoff.edge,
         defects: ctx.handoff.defects,
         note: ctx.handoff.note,
         wakeConsumedAt: ctx.handoff.wakeConsumedAt,
+        artifactRefs: ctx.handoff.artifactRefs,
+        revisionRequirement: ctx.handoff.revisionRequirement,
       });
       await flushHandoff(ctx);
       await saveLive(ctx);
@@ -1718,6 +2153,7 @@ export function createOrchestrator({
       fromNodeId,
       outcome,
       verdict,
+      workspaceDir: workspaceDirOf(state),
       now: clock,
     });
 
@@ -1788,10 +2224,18 @@ export function createOrchestrator({
         to: null,
         result: 'note',
         reason: 'backflow.constructed',
-        detail: {
-          defects: handoff.defects ?? [],
-          retestRequirement: verdict?.retestRequirement ?? DEFAULT_RETEST_REQUIREMENT,
-        },
+        // The document loop asks for a revision, the coding loop asks for a retest: the
+        // detail key tells the renderer which indent line to print (D-5).
+        detail:
+          productPolicyOf(state) === 'doc-single'
+            ? {
+                defects: handoff.defects ?? [],
+                revisionRequirement: handoff.revisionRequirement ?? DEFAULT_REVISION_REQUIREMENT,
+              }
+            : {
+                defects: handoff.defects ?? [],
+                retestRequirement: verdict?.retestRequirement ?? DEFAULT_RETEST_REQUIREMENT,
+              },
       });
       await pauseFor('after_verdict', plan.nodeId);
       const fresh = await store.load(instanceId);
@@ -1802,7 +2246,10 @@ export function createOrchestrator({
     }
 
     let promptText = plan.promptText;
-    if (handoff.edge?.kind === 'retest') {
+    // I1.2 re-assembles the retest prompt here. A `doc-single` graph keeps the planner's
+    // text instead: it already carries the versioned references, which this block has no
+    // way to reproduce (D-8).
+    if (handoff.edge?.kind === 'retest' && productPolicyOf(state) !== 'doc-single') {
       const target = nodeOf(state, plan.nodeId);
       promptText = promptFor({
         graph: runGraph,
@@ -2172,6 +2619,19 @@ export function createOrchestrator({
 
     const emit = makeEmitter(instanceId, onProgress);
 
+    if (fresh && runGraph.productPolicy === 'doc-single') {
+      // D-8: the stem is computed once from the task's `产物：` line and only read later.
+      const declared = parseProductDeclaration(task);
+      state.artifactStem = declared.ok ? declared.stem : null;
+      // AC-44: the workspace is built **before** `state.json` exists, so a failure leaves
+      // no half-created instance behind.
+      const workspace = await prepareWorkspace(instanceId);
+      if (!workspace.ok) {
+        await discardInstance(instanceId);
+        return { ok: false, result: fail('WORKSPACE_INIT_FAILED', { cause: workspace.cause }) };
+      }
+    }
+
     if (fresh) {
       // M-3：先落盘“已创建 + 两节点 + 模板 + rev”。
       const saved = await saveState(instanceId, state);
@@ -2257,7 +2717,13 @@ export function createOrchestrator({
       if (multi) return fail('TASK_EMPTY', {});
       return fail(CODES.UNKNOWN_ERROR, { raw: '任务描述为空' });
     }
-    if (multi && !extractProductLines(task).ok) {
+    if (runGraph.productPolicy === 'doc-single') {
+      // D-8: exactly one full-width `产物：<name>.md` line; the token is echoed verbatim.
+      const declared = parseProductDeclaration(task);
+      if (!declared.ok) {
+        return declared.name === null ? fail(declared.code, {}) : fail(declared.code, { name: declared.name });
+      }
+    } else if (multi && !extractProductLines(task).ok) {
       return fail('PRODUCT_LINE_MISSING', {});
     }
     if (typeof cwd !== 'string' || cwd.length === 0) {
@@ -2500,6 +2966,8 @@ export function createOrchestrator({
           node.state = 'cancelled';
           node.stateSince = at;
           if (node.startedAt) node.endedAt = at;
+          // D-6: `reviewReason` only lives while the node is in `review`.
+          if (Object.prototype.hasOwnProperty.call(node, 'reviewReason')) node.reviewReason = null;
           events.push({
             object: 'node',
             objectId: node.nodeId,
@@ -2629,6 +3097,12 @@ export function createOrchestrator({
 
     const nodes = Array.isArray(state?.nodes) ? state.nodes : [];
     snapshot.node = nodes[0] ?? state?.node ?? null;
+    // A-2: the "interrupted at" line must name the node that is actually stuck. Derived
+    // read-only field (never written to state.json); older snapshots lack it and fall back
+    // to `snapshot.node` in the renderer.
+    const stuck = nodes.find((item) => item?.state === 'running' || item?.state === 'review') ?? null;
+    snapshot.interruptedNodeId = stuck?.nodeId ?? null;
+    snapshot.productPolicy = graphForState(state)?.productPolicy ?? 'declared';
     snapshot.handoff = handoff;
     snapshot.template = state?.template ?? null;
     snapshot.cwd = state?.cwd ?? null;
