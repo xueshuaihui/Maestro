@@ -47,17 +47,22 @@ export const ESCALATION_LABEL = Object.freeze({
   voided: '已作废'
 });
 
-/** Role names (requirement D-5). `coordinator` is defined but not dispatched this iteration. */
+/** Role names (requirement D-5). `coordinator` is defined but not dispatched. */
 export const ROLE_LABEL = Object.freeze({
   developer: '开发',
   tester: '测试',
-  coordinator: '协调者'
+  coordinator: '协调者',
+  // I1.3 `task-loop` roles (requirement D-4).
+  researcher: '研究员',
+  writer: '撰写者',
+  reviewer: '审核者'
 });
 
 /** Template names. The `single` entry is kept but unused: a `single` instance line prints no template. */
 export const TEMPLATE_LABEL = Object.freeze({
   single: '单节点',
-  'code-loop': '编码闭环'
+  'code-loop': '编码闭环',
+  'task-loop': '通用任务闭环'
 });
 
 /** Layer prefixes for status lines (requirement appendix A). */
@@ -86,10 +91,30 @@ export function formatHandoffDirection(fromRole, toRole, kind = 'forward') {
   return suffix ? `${base}（${suffix}）` : base;
 }
 
-/** Node-row qualifiers (requirement 2.3 / D-5). Rendered inside full-width parentheses. */
+/**
+ * Node-row qualifiers (requirement 2.3 / D-5). Rendered inside full-width parentheses.
+ *
+ * Keys are machine codes, never the Chinese text: `node.note` stores the Chinese
+ * wording, so a `hasOwnProperty(NODE_QUALIFIER, note)` lookup cannot match it. The
+ * `waiting_review` / `evidence_check` / `waiting_downstream` entries are read by the
+ * explicit branches in `render.js` only (I1.3, requirement A-2).
+ */
 export const NODE_QUALIFIER = Object.freeze({
   waiting_retest: '等待复测',
-  escalation_unrecorded: '升级未记录'
+  escalation_unrecorded: '升级未记录',
+  evidence_check: '核对证据',
+  waiting_downstream: '等待下游',
+  waiting_review: '等待复审'
+});
+
+/**
+ * Mutually exclusive suffixes on a node row (requirement D-4 / A-2). Only rendered for
+ * `productPolicy === 'doc-single'` instances.
+ */
+export const NODE_SUFFIX = Object.freeze({
+  artifact: '· 产物 {ref}',
+  reviewPassed: '· 审核 通过',
+  reviewRejected: '· 审核 驳回 · 缺陷 {n} 条'
 });
 
 /** Handoff reject reasons (requirement D-5; same mapping as the I1.1 renderer). */
@@ -133,7 +158,14 @@ export const ERROR_TEMPLATE = Object.freeze({
   INSTANCE_SUSPENDED: '该实例已挂起，不能再次发起；如要重来请新建实例',
   LEGACY_READ_ONLY: '该实例为旧格式，本版本只支持查看',
   ESCALATION_WRITE_FAILED: '无法记录升级：{cause}；已停止推进',
-  CANCEL_NOT_NEEDED: '实例已结束（{state}），无需取消'
+  CANCEL_NOT_NEEDED: '实例已结束（{state}），无需取消',
+  // I1.3 business codes (requirement D-5, verbatim). All three use existing placeholder
+  // names only — the `applyPlaceholders()` whitelist is NOT extended (AC-36).
+  PRODUCT_LINE_MISSING_TASK_LOOP:
+    '通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）',
+  PRODUCT_INVALID_TASK_LOOP:
+    '通用任务闭环的产物名不合法：{name}（只写文件名，.md 结尾，不带目录与版本号）',
+  WORKSPACE_INIT_FAILED: '无法创建工作区：{cause}'
 });
 
 /**
@@ -175,7 +207,14 @@ export const REASON_LABEL = Object.freeze({
   'escalation.voided': '作废升级',
   'core.suspend': '挂起',
   'wake.rejected': '唤醒被拒',
-  'run.halted': '停止推进'
+  'run.halted': '停止推进',
+  // I1.3 additions (review node + downstream gate).
+  'review.read': '读取审核',
+  'review.passed': '审核通过',
+  'review.rejected': '审核驳回',
+  'review.invalid': '审核无效',
+  'review.downstream_accepted': '下游已接受',
+  'review.evidence_verified': '证据核对通过'
 });
 
 /** `已停止推进` suffix on the instance line when the escalation write failed. */
@@ -198,9 +237,41 @@ export const VERDICT_TEXT = Object.freeze({
   evidenceUnreadable: '缺陷证据不可解析'
 });
 
+/**
+ * Review-file wording (requirement D-5, I1.3). Same shape as `VERDICT_TEXT`: the entry
+ * itself carries no placeholder; the core appends the variable segment as a JS template
+ * literal (`{artifact}` / `{evidence}` here only mark "a value follows on this line").
+ */
+export const REVIEW_TEXT = Object.freeze({
+  prefix: '核对失败：',
+  missing: '未找到审核文件 out/review.json',
+  stale: '审核文件不是本轮新写 out/review.json',
+  unparsable: '审核文件不可解析',
+  decisionInvalid: '审核结论只能是 pass 或 reject',
+  artifactMissing: '审核未引用本轮文档',
+  artifactMismatch: '审核引用的不是本轮文档 {artifact}',
+  passWithDefects: '审核为通过，但缺陷清单非空',
+  rejectNoDefects: '审核为驳回，但没有缺陷清单',
+  defectShape: '审核缺陷缺少摘要或证据',
+  evidenceUnreadable: '缺陷证据不可解析 {evidence}'
+});
+
+/** Product-file wording (requirement D-5, I1.3). `{ref}` is appended by the core. */
+export const ARTIFACT_TEXT = Object.freeze({
+  missing: '未找到声明的产出 {ref}',
+  empty: '产出为空 {ref}',
+  stale: '产出不是本轮新写 {ref}',
+  previousMissing: '上一版文档缺失 {ref}',
+  previousModified: '上一版文档被改写 {ref}'
+});
+
+/** Used when the review file carries no `revisionRequirement` (requirement D-5). */
+export const DEFAULT_REVISION_REQUIREMENT = '请按缺陷清单逐条修改后交出新版本';
+
 /** Indented details under a `backflow.constructed` event line (6-space prefix at render time). */
 export const BACKFLOW_DEFECT_LINE = '缺陷 {i}：{summary}（证据 {evidence}）';
 export const BACKFLOW_RETEST_LINE = '复测要求：{text}';
+export const BACKFLOW_REVISION_LINE = '修改要求：{text}';
 
 /** Waiting line for a session that has already produced output (requirement appendix A-1 #5). */
 export const SESSION_WAITING_DOWNSTREAM = '会话 等待下游';

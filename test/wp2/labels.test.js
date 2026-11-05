@@ -23,6 +23,11 @@ import {
   NEXT_STEP_SUSPENDED,
   NEXT_STEP_HALTED,
   ERROR_TEMPLATE,
+  REVIEW_TEXT,
+  ARTIFACT_TEXT,
+  DEFAULT_REVISION_REQUIREMENT,
+  NODE_SUFFIX,
+  BACKFLOW_REVISION_LINE,
   formatHandoffDirection,
   formatDuration
 } from '../../src/cli/labels.js';
@@ -132,12 +137,20 @@ test('role labels keep coordinator defined', () => {
   assert.deepEqual({ ...ROLE_LABEL }, {
     developer: '开发',
     tester: '测试',
-    coordinator: '协调者'
+    coordinator: '协调者',
+    // I1.3 `task-loop` roles (requirement D-4).
+    researcher: '研究员',
+    writer: '撰写者',
+    reviewer: '审核者'
   });
 });
 
 test('template labels match D-5 (single kept but unused)', () => {
-  assert.deepEqual({ ...TEMPLATE_LABEL }, { single: '单节点', 'code-loop': '编码闭环' });
+  assert.deepEqual({ ...TEMPLATE_LABEL }, {
+    single: '单节点',
+    'code-loop': '编码闭环',
+    'task-loop': '通用任务闭环'
+  });
 });
 
 test('handoff direction: forward has no suffix, backflow / retest append full-width parens', () => {
@@ -150,7 +163,13 @@ test('handoff direction: forward has no suffix, backflow / retest append full-wi
 });
 
 test('node qualifiers and handoff reject reasons match the display table', () => {
-  assert.deepEqual({ ...NODE_QUALIFIER }, { waiting_retest: '等待复测', escalation_unrecorded: '升级未记录' });
+  assert.deepEqual({ ...NODE_QUALIFIER }, {
+    waiting_retest: '等待复测',
+    escalation_unrecorded: '升级未记录',
+    evidence_check: '核对证据',
+    waiting_downstream: '等待下游',
+    waiting_review: '等待复审'
+  });
   assert.deepEqual({ ...HANDOFF_REJECT_REASON }, {
     withdrawn: '已撤回',
     permission_denied: '审批被拒',
@@ -203,9 +222,16 @@ test('reason vocabulary is complete (I1.1 baseline + I1.2 additions)', () => {
     'escalation.voided': '作废升级',
     'core.suspend': '挂起',
     'wake.rejected': '唤醒被拒',
-    'run.halted': '停止推进'
+    'run.halted': '停止推进',
+    // I1.3 additions (review node + downstream gate).
+    'review.read': '读取审核',
+    'review.passed': '审核通过',
+    'review.rejected': '审核驳回',
+    'review.invalid': '审核无效',
+    'review.downstream_accepted': '下游已接受',
+    'review.evidence_verified': '证据核对通过'
   });
-  assert.equal(Object.keys(REASON_LABEL).length, 33);
+  assert.equal(Object.keys(REASON_LABEL).length, 39);
 });
 
 test('event-line fragments match D-5 verbatim', () => {
@@ -236,4 +262,56 @@ test('orch run closing lines match appendix A-4', () => {
     NEXT_STEP_HALTED,
     '下一步：查看 orch status --instance {id} --events；本版本不能继续，只能取消'
   );
+});
+
+// --- I1.3 (requirement D-4 / D-5) ---------------------------------------------------
+
+test('I1.3 business error texts match D-5 verbatim', () => {
+  assert.equal(
+    ERROR_TEMPLATE.PRODUCT_LINE_MISSING_TASK_LOOP,
+    '通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）'
+  );
+  assert.equal(
+    ERROR_TEMPLATE.PRODUCT_INVALID_TASK_LOOP,
+    '通用任务闭环的产物名不合法：{name}（只写文件名，.md 结尾，不带目录与版本号）'
+  );
+  assert.equal(ERROR_TEMPLATE.WORKSPACE_INIT_FAILED, '无法创建工作区：{cause}');
+});
+
+test('review file wording matches D-5 verbatim (11 entries)', () => {
+  assert.deepEqual({ ...REVIEW_TEXT }, {
+    prefix: '核对失败：',
+    missing: '未找到审核文件 out/review.json',
+    stale: '审核文件不是本轮新写 out/review.json',
+    unparsable: '审核文件不可解析',
+    decisionInvalid: '审核结论只能是 pass 或 reject',
+    artifactMissing: '审核未引用本轮文档',
+    artifactMismatch: '审核引用的不是本轮文档 {artifact}',
+    passWithDefects: '审核为通过，但缺陷清单非空',
+    rejectNoDefects: '审核为驳回，但没有缺陷清单',
+    defectShape: '审核缺陷缺少摘要或证据',
+    evidenceUnreadable: '缺陷证据不可解析 {evidence}'
+  });
+  assert.equal(Object.keys(REVIEW_TEXT).length, 11);
+});
+
+test('product-file wording matches D-5 verbatim (5 entries)', () => {
+  assert.deepEqual({ ...ARTIFACT_TEXT }, {
+    missing: '未找到声明的产出 {ref}',
+    empty: '产出为空 {ref}',
+    stale: '产出不是本轮新写 {ref}',
+    previousMissing: '上一版文档缺失 {ref}',
+    previousModified: '上一版文档被改写 {ref}'
+  });
+  assert.equal(Object.keys(ARTIFACT_TEXT).length, 5);
+});
+
+test('node suffixes are mutually exclusive and only used by doc-single', () => {
+  assert.deepEqual({ ...NODE_SUFFIX }, {
+    artifact: '· 产物 {ref}',
+    reviewPassed: '· 审核 通过',
+    reviewRejected: '· 审核 驳回 · 缺陷 {n} 条'
+  });
+  assert.equal(DEFAULT_REVISION_REQUIREMENT, '请按缺陷清单逐条修改后交出新版本');
+  assert.equal(BACKFLOW_REVISION_LINE, '修改要求：{text}');
 });

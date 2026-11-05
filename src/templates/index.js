@@ -7,6 +7,11 @@
  *
  * Node shape:
  *   { id, nodeId, roleId, order, title, artifactPolicy, judge, products, wakeFrom, prompt }
+ * I1.3 optional node fields (only `task-loop` sets them):
+ *   artifactDir / artifactExt / reviewPath / downstreamGate
+ *
+ * Graph shape: `productPolicy` is `'declared'` when absent (I1.1 / I1.2 behaviour) and
+ * `'doc-single'` for the single-document loop.
  * `id` is the iteration-2 spelling; `nodeId` is kept as the same value so the
  * snapshot/D-6 field name needs no translation inside the engine.
  *
@@ -15,7 +20,10 @@
  * readers that project D-6 snapshots.
  */
 
-/** Built-in roles. The coordinator is defined but not dispatched this iteration (D-1). */
+/**
+ * Built-in roles. The coordinator is defined but not dispatched (D-1).
+ * `researcher` / `writer` / `reviewer` carry the `task-loop` wording (requirement D-4).
+ */
 export const ROLES = Object.freeze({
   developer: Object.freeze({
     roleId: 'developer',
@@ -40,21 +48,75 @@ export const ROLES = Object.freeze({
     duty: '汇总两节点的结论并给出下一步（本迭代只定义，不派发）',
     mustDeliver: [],
     prompt: null
+  }),
+  /** T-001: background / facts / constraints / outline suggestions. Never the final document. */
+  researcher: Object.freeze({
+    roleId: 'researcher',
+    labelKey: 'researcher',
+    dispatchable: true,
+    duty: '调研任务背景，交出固定路径的研究笔记',
+    mustDeliver: ['artifacts/reports/research-notes.v1.md'],
+    prompt: 'research'
+  }),
+  /** T-002: full document every round, one new versioned file per round. */
+  writer: Object.freeze({
+    roleId: 'writer',
+    labelKey: 'writer',
+    dispatchable: true,
+    duty: '按研究笔记与缺陷清单撰写完整文档，每轮交一个新版本',
+    mustDeliver: ['artifacts/docs/<名>.v<轮次>.md'],
+    prompt: 'write'
+  }),
+  /** T-003: only the review file counts; the conversation is ignored. */
+  reviewer: Object.freeze({
+    roleId: 'reviewer',
+    labelKey: 'reviewer',
+    dispatchable: true,
+    duty: '审阅本轮文档，只以 out/review.json 交出结论',
+    mustDeliver: ['out/review.json'],
+    prompt: 'review'
   })
 });
 
 /**
- * Three built-in prompts (forward / backflow / retest) plus the unchanged
- * single-node prompt. Wording lives here so the engine never assembles Chinese.
+ * The review-file schema block appended to a reviewer's prompt (requirement D-8).
  *
- * `single` is byte-for-byte the I1.1 text.
+ * `{docRef}` is filled by `promptFor()` with this round's document reference; every
+ * other brace pair below is literal JSON notation and is never substituted (the
+ * placeholder regex only matches `{` + word chars + `}`).
+ */
+export const REVIEW_REQUIREMENT =
+  '只认审核文件：{"decision":"pass"|"reject","artifact":"{docRef}",' +
+  '"defects":[{"summary":"一句话缺陷","evidence":"{docRef}#L1"}],"revisionRequirement":"..."}\n' +
+  '判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。';
+
+/** Revision requirement used when the review file carries none (requirement D-5). */
+export const DEFAULT_REVISION_REQUIREMENT = '请按缺陷清单逐条修改后交出新版本';
+
+/**
+ * Built-in prompts. Wording lives here so the engine never assembles Chinese.
+ *
+ * `single` is byte-for-byte the I1.1 text; `forward` / `backflow` / `retest` are the
+ * I1.2 coding-loop wording and are unchanged. `research` / `write` / `writeRevision` /
+ * `review` are the I1.3 additions (requirement D-8).
  */
 export const PROMPT_TEMPLATES = Object.freeze({
   single: '{task}\n\n完成后直接结束，不需要额外说明。',
   forward: '{task}',
   backflow:
     '{task}\n\n上一轮判定不通过，请按下列缺陷修正：\n{defectLines}\n复测要求：{retestRequirement}',
-  retest: '{task}\n\n上一轮缺陷：{defectCount} 条\n产物：{products}\n请复测并把结构化判定写到 out/verdict.json。'
+  retest: '{task}\n\n上一轮缺陷：{defectCount} 条\n产物：{products}\n请复测并把结构化判定写到 out/verdict.json。',
+  research:
+    '{task}\n\n研究笔记：{researchRef}\n写入路径：{writePath}\n只交研究笔记，不写最终文档。',
+  write:
+    '{task}\n\n研究笔记：{researchRef}\n本轮文档引用：{docRef}\n写入路径：{writePath}\n每一轮交完整文档，不要改写上一版。',
+  writeRevision:
+    '{task}\n\n上一轮审核不通过，请按下列缺陷修改：\n{defectLines}\n修改要求：{revisionRequirement}\n' +
+    '研究笔记：{researchRef}\n上一版文档引用：{previousRef}\n本轮文档引用：{docRef}\n' +
+    '写入路径：{writePath}\n不得改写上一版文件。',
+  review:
+    '{task}\n\n本轮文档引用：{docRef}\n工作区：{workspaceDir}\n审核文件写入路径：{reviewPath}\n' +
+    REVIEW_REQUIREMENT
 });
 
 /** Verdict requirement appended to a judging node's prompt (never to a worker's). */
@@ -144,7 +206,82 @@ const codeLoop = Object.freeze({
   ])
 });
 
-export const GRAPHS = Object.freeze({ single, 'code-loop': codeLoop });
+/**
+ * Three-node document loop: research, write, review, then backflow or retest.
+ *
+ * `productPolicy: 'doc-single'` tells the engine that this graph declares exactly one
+ * `产物：<文件名>.md` line and keeps every artifact inside the instance workspace
+ * (requirement D-8). Graphs without the field behave as `declared` (I1.1 / I1.2).
+ */
+const taskLoop = Object.freeze({
+  id: 'task-loop',
+  showTemplate: true,
+  entry: 'T-001',
+  terminal: 'T-003',
+  terminals: Object.freeze(['T-003']),
+  maxRounds: Object.freeze({ 'T-001': 1, 'T-002': 2, 'T-003': 2 }),
+  productPolicy: 'doc-single',
+  nodes: Object.freeze([
+    Object.freeze({
+      id: 'T-001',
+      nodeId: 'T-001',
+      roleId: 'researcher',
+      order: 1,
+      title: '研究员',
+      artifactPolicy: 'fixed-workspace',
+      artifactDir: 'artifacts/reports',
+      artifactExt: '.md',
+      judge: 'none',
+      products: Object.freeze(['artifacts/reports/research-notes.v1.md']),
+      downstreamGate: true,
+      wakeFrom: Object.freeze([]),
+      prompt: 'research'
+    }),
+    Object.freeze({
+      id: 'T-002',
+      nodeId: 'T-002',
+      roleId: 'writer',
+      order: 2,
+      title: '撰写者',
+      artifactPolicy: 'versioned-doc',
+      artifactDir: 'artifacts/docs',
+      artifactExt: '.md',
+      judge: 'none',
+      products: Object.freeze([]),
+      downstreamGate: true,
+      wakeFrom: Object.freeze(['backflow']),
+      prompt: 'write'
+    }),
+    Object.freeze({
+      id: 'T-003',
+      nodeId: 'T-003',
+      roleId: 'reviewer',
+      order: 3,
+      title: '审核者',
+      artifactPolicy: 'review',
+      reviewPath: 'out/review.json',
+      judge: 'review',
+      products: Object.freeze([]),
+      downstreamGate: false,
+      wakeFrom: Object.freeze(['retest']),
+      prompt: 'review'
+    })
+  ]),
+  edges: Object.freeze([
+    Object.freeze({ from: 'T-001', to: 'T-002', kind: 'forward', condition: null }),
+    Object.freeze({ from: 'T-002', to: 'T-003', kind: 'forward', condition: null }),
+    Object.freeze({
+      from: 'T-003',
+      to: 'T-002',
+      kind: 'backflow',
+      condition: 'review-reject',
+      requiresHandoff: true
+    }),
+    Object.freeze({ from: 'T-002', to: 'T-003', kind: 'retest', condition: 'reopen-failed-target' })
+  ])
+});
+
+export const GRAPHS = Object.freeze({ single, 'code-loop': codeLoop, 'task-loop': taskLoop });
 
 export const DEFAULT_GRAPH = 'single';
 
@@ -203,9 +340,19 @@ function defectLines(defects) {
 /**
  * Assemble the dispatch prompt.
  *
+ * I1.3 adds four `node.prompt` keys (`research` / `write` / `review`) which are checked
+ * **before** the edge-kind branches: a `task-loop` backflow targets the writer, so the
+ * revision prompt must win over the coding-loop `backflow` wording. `single` / `forward`
+ * / `verify` are not new keys and fall through to the I1.2 branches byte for byte.
+ *
+ * Version references are computed by the caller (`src/core/doc-artifact.js#docRef`) and
+ * passed in, so this module never joins a `v<n>` filename itself.
+ *
  * @param {{graph?:object, node?:object, handoff?:object, task?:string,
  *          products?:string[], defects?:object[], retestRequirement?:string,
- *          defectCount?:number}} options
+ *          defectCount?:number, revisionRequirement?:string, round?:number,
+ *          researchRef?:string, docRef?:string, previousRef?:string,
+ *          writePath?:string, workspaceDir?:string, reviewPath?:string}} options
  * @returns {string}
  */
 export function promptFor({
@@ -216,11 +363,52 @@ export function promptFor({
   products = [],
   defects = [],
   retestRequirement = null,
-  defectCount = null
+  defectCount = null,
+  revisionRequirement = null,
+  round = null,
+  researchRef = null,
+  docRef = null,
+  previousRef = null,
+  writePath = null,
+  workspaceDir = null,
+  reviewPath = null
 } = {}) {
   const kind = handoff?.edge?.kind ?? null;
   const target = node ?? (graph ? nodeOf(graph, handoff?.edge?.to) : null);
 
+  // I1.3 keys first; the fallbacks read the declaring node so the wording stays single-sourced.
+  if (target?.prompt === 'research') {
+    return fill(PROMPT_TEMPLATES.research, {
+      task,
+      researchRef: researchRef ?? target.products?.[0] ?? null,
+      writePath
+    });
+  }
+  if (target?.prompt === 'write') {
+    const isRevision = kind === 'backflow' || Number(round) > 1;
+    if (!isRevision) {
+      return fill(PROMPT_TEMPLATES.write, { task, researchRef, docRef, writePath });
+    }
+    return fill(PROMPT_TEMPLATES.writeRevision, {
+      task,
+      defectLines: defectLines(defects),
+      revisionRequirement: revisionRequirement || DEFAULT_REVISION_REQUIREMENT,
+      researchRef,
+      previousRef,
+      docRef,
+      writePath
+    });
+  }
+  if (target?.prompt === 'review') {
+    return fill(PROMPT_TEMPLATES.review, {
+      task,
+      docRef,
+      workspaceDir,
+      reviewPath: reviewPath ?? target.reviewPath ?? null
+    });
+  }
+
+  // I1.2 branches, unchanged.
   if (kind === 'backflow') {
     return fill(PROMPT_TEMPLATES.backflow, {
       task,
