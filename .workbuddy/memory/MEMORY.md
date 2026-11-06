@@ -12,7 +12,7 @@
 - 迭代开始前先确认需求模板（用户会提供统一模板），不要自行发明结构。
 
 ## 本机环境硬事实（Windows）
-- DSH：`%LOCALAPPDATA%\Programs\DeepSeek Harness`（`0.2.1-rc.5`）。**没有 `dsh.cmd`**；CLI 入口是
+- DSH：`%LOCALAPPDATA%\Programs\DeepSeek Harness`（`0.2.1-rc.5`；**2026-11-06 实测已升到 `0.2.2-rc.1`**）。**没有 `dsh.cmd`**；CLI 入口是
   `ELECTRON_RUN_AS_NODE=1 "<安装目录>/DeepSeek Harness.exe" "<安装目录>/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh/lib/bin.js"`，
   支持 `--profile acp --dump-config` / `headless "<task>"`。
 - **工具行是平台条件挂载**：`tool-bash` 带 `disabled: process.platform === 'win32'`（Windows 上不存在 `bash`，由另一个 shell 工具顶替）；
@@ -64,9 +64,9 @@
 - 真实 DSH 面 AC-45 一次跑通（`21<87<93`，5m26s）；隔离环境 `%TEMP%/maestro-acc-p2/`。
 - **一次派 3 个大 Agent 会触发平台 429**；分批（1~2 个）更稳，且要求 Agent 分批落盘证据防中断丢成果。
 
-## 阶段一 I1.3 实现完成（2026-11-06：6 个 commit，414/414 用例）
+## 阶段一 I1.3 已收口（2026-11-06：45/45 AC、651 条核对项、418/418 用例）
 需求 v5 / 拆分 `iteration-3.md`；提交 `fbc7e62` WP-1 → `05d14b0` WP-5 → `2e2f506` WP-2 →
-`9e9482c` WP-3 → `f4d4a76` WP-4 → `baba11f` WP-6。**尚未做 45 条 AC 验收**。
+`9e9482c` WP-3 → `f4d4a76` WP-4 → `baba11f` WP-6。验收已完成，见下节。
 - **I1.4+ 必守**：
   1. `reviewReason='evidence'` 必须在 `transit()` **之前**赋值，否则首帧看不到「核对证据」。
   2. 门控 `review(downstream)→done` 必须与 `handoff accepted` **同一次 `saveState`**（rev 只 +1），
@@ -78,3 +78,21 @@
   6. 串行连跑夹具场景 >10 个会累计资源耗尽（`session/new` 全失败），分批跑。
   7. 脚本化测试工厂禁止在 `prompt()` 里同步触发首个 update 帧。
 
+
+## 阶段一 I1.3 验收结论（2026-11-06 收口）
+- **45 条 AC 全通过 / 651 条核对项 / 284 份证据**；真实面 1 条（AC-40）+ 夹具面 44 条。
+  产物 `iteration-3/{report,acceptance-fixture,acceptance-product}.md` + `probe/acc3-*`。
+- **验收脚手架（I1.4 直接复用）**：`node probe/acc3-f-run.mjs AC-xx | --batch a~e`（e=AC-40 证据机检），
+  `node probe/acc3-f-final.mjs` 重建报告。新增用例 `cp probe/acc3-cases/_template.mjs acNN.mjs`。
+- **验收期 6 个缺陷（I1.4 别重犯）**：
+  1. **提示词真正产出点是 `advance.js` 的 `planAdvance`**（经 `plan.promptText`），不是 orchestrator 兜底分支。
+  2. **事件 `ts` 必须复用状态变更同一时刻**（`startedAt`/`endedAt` 各自 `iso()` 会差 4~8ms）；
+     `event-bus.emit()` 已支持可选 `ts`。
+  3. **`task-loop` 事件行渲染必须与 `code-loop` 分流**（note 行用中文原因词、不追加「原因」段），
+     改公共分支会踩 AC-36 逐字红线。
+  4. **同目录并发要在 `@dir` 锁之前做占用快检**（复用 `findDirBusy` 口径），否则等 60s 报「未知错误：IPC_TIMEOUT」。
+  5. 验收脚本禁止硬编码测试条数（用 `fail=0 && pass===tests && tests>=基线`）。
+  6. `driver --keep` 被强杀进程码可能是 13（非产品码）；`core stop` 会把非终态实例对账成 `interrupted`，
+     中间态要 `state.live` 抢落盘。
+- **真实面关键前提**：审核提示词必须给**绝对路径**（相对 `out/review.json` + 「工作区」绝对路径会让
+  真实模型写进实例工作区，3 次里 2 次挂起）。修复后 313.6s 一次跑通、零人工干预。
