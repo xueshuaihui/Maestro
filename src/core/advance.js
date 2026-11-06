@@ -11,6 +11,8 @@
  * (`done` for a backflow, `failed` for a retest). The round check uses the round
  * *before* dispatch, so the second (and last) dispatch is not blocked.
  */
+import path from 'node:path';
+
 import {
   edgeFor,
   isTerminalNode,
@@ -19,6 +21,7 @@ import {
   nodesOf
 } from './graph.js';
 import { docRef, writePathOf } from './doc-artifact.js';
+import { REVIEW_PATH } from './review.js';
 import { extractProductLines } from './verify-artifact.js';
 import { promptFor } from '../templates/index.js';
 
@@ -411,7 +414,11 @@ export function planAdvance({
       researchRef: researchRefOf(),
       docRef: current,
       previousRef: previous,
-      writePath: writeRef === null ? null : writePathOf(workspaceDir, writeRef)
+      writePath: writeRef === null ? null : writePathOf(workspaceDir, writeRef),
+      // Absolute on purpose: a bare `out/review.json` next to an absolute
+      // `工作区：` line reads as "inside the workspace" to the host. Same base as
+      // `readReview({cwd})`, which joins `REVIEW_PATH` against `state.cwd`.
+      reviewPath: path.join(path.resolve(snap.cwd ?? process.cwd()), REVIEW_PATH)
     };
   };
 
@@ -464,7 +471,8 @@ export function planAdvance({
       docRef: vars.docRef,
       previousRef: vars.previousRef,
       writePath: vars.writePath,
-      workspaceDir
+      workspaceDir,
+      reviewPath: vars.reviewPath
     });
     return {
       action: 'backflow',
@@ -518,7 +526,8 @@ export function planAdvance({
     docRef: vars.docRef,
     previousRef: vars.previousRef,
     writePath: vars.writePath,
-    workspaceDir
+    workspaceDir,
+    reviewPath: vars.reviewPath
   });
 
   return {

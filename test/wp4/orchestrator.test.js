@@ -1384,3 +1384,31 @@ test('task-loop 产物行不合规：缺行 / 非 md / 多行一律在发起时�
     await env.teardown();
   }
 });
+
+test('task-loop 审核提示词给绝对路径：基址与 readReview 同源，避免宿主写进实例工作区', async () => {
+  const env = await setupDoc((root) => [researchStep(root), writeStep(root, 1), passReview(1)]);
+  try {
+    const result = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+    assert.equal(result.ok, true, JSON.stringify(result));
+
+    // 第 3 次派发是审核节点（研究 → 撰写 → 审核）
+    const reviewPrompt = env.factory.prompts[2].text;
+    const matched = reviewPrompt.match(/审核文件写入路径：(.+)/);
+    assert.ok(matched, '审核提示词必须带「审核文件写入路径：」一行');
+    const given = matched[1].trim();
+
+    // 相对路径会让宿主以为该写进「工作区：<绝对路径>」；必须是绝对路径，且解析结果
+    // 等于 path.join(state.cwd, REVIEW_PATH) —— 与 readReview({cwd}) 的基址同一个值。
+    assert.equal(path.isAbsolute(given), true, `审核路径必须是绝对路径，实际：${given}`);
+    assert.equal(path.resolve(env.cwd, given), path.join(path.resolve(env.cwd), 'out', 'review.json'));
+
+    // 其它变量没被改动：文档引用仍是版本化相对引用（不落绝对路径，NFR-08）
+    assert.equal(reviewPrompt.includes('本轮文档引用：artifacts/docs/release-notes.v1.md'), true);
+
+    // 回读侧不受影响：review.reviewPath 仍是相对值，会进事件 detail
+    const state = (await env.store.load('INST-001')).state;
+    assert.equal(state.nodes[2].review.reviewPath, 'out/review.json');
+  } finally {
+    await env.teardown();
+  }
+});

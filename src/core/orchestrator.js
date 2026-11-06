@@ -39,7 +39,7 @@ import {
   verifyProducts,
 } from './verify-artifact.js';
 import { readVerdict } from './verdict.js';
-import { readReview } from './review.js';
+import { REVIEW_PATH, readReview } from './review.js';
 import {
   artifactMessage,
   docRef,
@@ -658,6 +658,15 @@ export function createOrchestrator({
   }
 
   /**
+   * Absolute `out/review.json` handed to the review prompt. Resolved from `state.cwd` —
+   * the same base `readReview({cwd})` joins `REVIEW_PATH` against — so the host cannot
+   * mistake a relative path for "inside the instance workspace".
+   */
+  function reviewPathOf(state) {
+    return path.join(path.resolve(state?.cwd ?? process.cwd()), REVIEW_PATH);
+  }
+
+  /**
    * Create the instance workspace (D-8). Called *before* the first `state.json` write so a
    * failure leaves no half-built instance behind (AC-44).
    */
@@ -1214,6 +1223,7 @@ export function createOrchestrator({
         previousRef: null,
         writePath: writeRef === null ? null : writePathOf(workspaceDir, writeRef),
         workspaceDir,
+        reviewPath: reviewPathOf(state),
         revisionRequirement: ctx.handoff?.revisionRequirement ?? null,
       });
     }
@@ -2258,6 +2268,7 @@ export function createOrchestrator({
         task: state.task ?? '',
         products: productsOfTask(state),
         defectCount: target?.verdict?.defectCount ?? 0,
+        reviewPath: reviewPathOf(state),
       });
     }
 
@@ -2589,7 +2600,13 @@ export function createOrchestrator({
     await subscribe(ctx);
     activeRuns.set(instanceId, handle);
 
-    const text = promptFor({ graph, node: graphNode(graph, node.nodeId), task, products: [] });
+    const text = promptFor({
+      graph,
+      node: graphNode(graph, node.nodeId),
+      task,
+      products: [],
+      reviewPath: reviewPathOf(state),
+    });
     const promptPromise = Promise.resolve().then(() =>
       adapter.prompt(ctx.sessionId, [{ type: 'text', text }]),
     );
