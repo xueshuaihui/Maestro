@@ -1831,6 +1831,9 @@ export function createOrchestrator({
         result: 'note',
         reason: 'review.evidence_verified',
         detail: { ref: first?.ref ?? null, sha256: first?.sha256 ?? null },
+        // 事件的 ts 复用 `endedAt` 的同一时刻：否则总线现取时间会把两者拉开 1ms，
+        // AC-35 的 `endedAt = 第 2 轮 review.evidence_verified ts` 就无法逐字成立。
+        ts: node.endedAt,
       });
       await consumeHandoff(ctx, 'handoff.consumed');
       await saveLive(ctx);

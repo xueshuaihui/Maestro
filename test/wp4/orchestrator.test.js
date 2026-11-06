@@ -1314,6 +1314,40 @@ test('task-loop 派发时刻锁进事件 ts：startedAt / roundStartedAt 与 nod
   }
 });
 
+test('task-loop 核对通过时刻锁进事件 ts：review.evidence_verified 的 ts 与 node.endedAt 严格相等（AC-35）', async () => {
+  const env = await setupDoc((root) => [
+    researchStep(root),
+    writeStep(root, 1),
+    rejectReview(1),
+    writeStep(root, 2),
+    passReview(2),
+  ]);
+  try {
+    const result = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+    assert.equal(result.ok, true, JSON.stringify(result));
+
+    const state = (await env.store.load('INST-001')).state;
+    const evidence = env.events.filter((e) => e.reason === 'review.evidence_verified');
+    assert.ok(evidence.length >= 3, `evidence_verified 事件数不足：${evidence.length}`);
+
+    for (const nodeId of ['T-001', 'T-002']) {
+      const last = evidence.filter((e) => e.objectId === nodeId).at(-1);
+      assert.ok(last, `${nodeId} 没有 review.evidence_verified 事件`);
+      const node = state.nodes.find((n) => n.nodeId === nodeId);
+      // 逐字等式：总线不得在 emit 时重新取时间（否则磁盘 IO 会把两者拉开 1ms）
+      assert.equal(node.endedAt, last.ts);
+    }
+
+    // 不变量：seq 严格递增、ts 不早于同实例上一条事件
+    for (let i = 1; i < env.events.length; i += 1) {
+      assert.equal(env.events[i].seq > env.events[i - 1].seq, true, `seq 断层：${env.events[i].seq}`);
+      assert.equal(env.events[i].ts >= env.events[i - 1].ts, true, `ts 倒退：${env.events[i].ts} < ${env.events[i - 1].ts}`);
+    }
+  } finally {
+    await env.teardown();
+  }
+});
+
 test('task-loop 第 2 轮仍驳回：停止回流 → 升级挂起，不再派发第 3 次', async () => {
   const env = await setupDoc((root) => [
     researchStep(root),
