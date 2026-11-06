@@ -1,0 +1,33 @@
+{
+  "ac": "AC-03",
+  "title": "撰写完成后，审核者收到本轮文档引用",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:25:49.299Z",
+  "finishedAt": "2026-11-06T13:25:51.720Z",
+  "durationMs": 2421,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-03",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-03"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-03",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 11,
+  "notes": [
+    "「out/review.json」在 prompt 里是宿主绝对路径（150c7c6 修法）：实测 `C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-03\\demo-doc\\out\\review.json`；逐字前斜杠形态只出现在 state 的 review.reviewPath。"
+  ]
+}

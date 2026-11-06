@@ -1,0 +1,119 @@
+{
+  "ac": "AC-05",
+  "title": "下游接受之后，上游才变已完成",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：四张交接包的方向/种类（HO-001/HO-002 正向，HO-003 回流，HO-004 复测）（期望 \"HO-001=T-001→T-002/forward,HO-002=T-002→T-003/forward,HO-003=T-003→T-002/backflow,HO-004=T-002→T-003/retest\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"HO-001=T-001→T-002/forward,HO-002=T-002→T-003/forward,HO-003=T-003→T-002/backflow,HO-004=T-002→T-003/retest\""
+    },
+    {
+      "text": "机检：(T-001, HO-001) 存在 T-001 的 review.downstream_accepted done 事件",
+      "ok": true,
+      "blocked": false,
+      "actual": "#14 round=1"
+    },
+    {
+      "text": "机检：T-001 done 的 seq 大于 HO-001 accepted 的 seq",
+      "ok": true,
+      "blocked": false,
+      "actual": "done=14 accepted=13"
+    },
+    {
+      "text": "机检：objectId=T-002、to=done、reason=review.downstream_accepted 的事件恰好 2 条（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：两条 T-002 done 事件按 detail.round 配对（1/2）（期望 \"1,2\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"1,2\""
+    },
+    {
+      "text": "机检：(T-002 第 1 轮, HO-002) 的 done seq 大于 HO-002 accepted seq",
+      "ok": true,
+      "blocked": false,
+      "actual": "done=26 handoff=HO-002 accepted=25"
+    },
+    {
+      "text": "机检：(T-002 第 2 轮, HO-004) 的 done seq 大于 HO-004 accepted seq",
+      "ok": true,
+      "blocked": false,
+      "actual": "done=53 handoff=HO-004 accepted=52"
+    },
+    {
+      "text": "机检：T-003 的迁移事件是 applied / done / verification.passed",
+      "ok": true,
+      "blocked": false,
+      "actual": "#60 applied/done/verification.passed"
+    },
+    {
+      "text": "机检：T-003 的审核结论是同节点另一条 note / review.passed 事件（不是同一条记录）",
+      "ok": true,
+      "blocked": false,
+      "actual": "#59 note/review.passed vs #60"
+    },
+    {
+      "text": "机检：T-003 没有 review.downstream_accepted 的 done 事件（terminal 节点 downstreamGate:false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "检查全部 T-003 done 事件"
+    },
+    {
+      "text": "机检：不存在 T-001 / T-002 的任何 to=done 事件早于它自己那一张交接包的 accepted（逐对比较）",
+      "ok": true,
+      "blocked": false,
+      "actual": "三对全部满足 done.seq > 对应 accepted.seq"
+    },
+    {
+      "text": "机检：T-001 最终 state/reviewReason = done/空（期望 \"done/\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done/\""
+    },
+    {
+      "text": "机检：T-002 最终 state/reviewReason = done/空（期望 \"done/\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done/\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario doc-backflow-once（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-05",
+        "--scenario",
+        "doc-backflow-once"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 2226,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-21880-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   22:16:39\n交接包 HO-001  研究员→撰写者  已投递   22:16:40\n交接包 HO-001  研究员→撰写者  已接受   22:16:40\n交接包 HO-001  研究员→撰写者  已完成   22:16:40\n交接包 HO-002  撰写者→审核者  已构造   22:16:40\n交接包 HO-002  撰写者→审核者  已投递   22:16:40\n交接包 HO-002  撰写者→审核者  已接受   22:16:40\n交接包 HO-002  撰写者→审核者  已完成   22:16:40\n交接包 HO-003  审核者→撰写者（回流）  已构造   22:16:40\n交接包 HO-003  审核者→撰写者（回流）  已投递   22:16:40\n交接包 HO-003  审核者→撰写者（回流）  已接受   22:16:40\n交接包 HO-003  审核者→撰写者（回流）  已完成   22:16:40\n交接包 HO-004  撰写者→审核者（复测）  已构造   22:16:40\n交接包 HO-004  撰写者→审核者（复测）  已投递   22:16:40\n交接包 HO-004  撰写者→审核者（复测）  已接受   22:16:40\n交接包 HO-004  撰写者→审核者（复测）  已完成   22:16:41\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

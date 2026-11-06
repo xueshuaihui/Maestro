@@ -1,0 +1,178 @@
+{
+  "ac": "AC-22",
+  "title": "发起前拦截空任务与缺产物行",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 输出含「任务描述不能为空」（期望含 \"任务描述不能为空\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "任务描述不能为空"
+    },
+    {
+      "text": "Then 退出码 1（空任务）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 输出含「通用任务闭环需要在任务里写…」（期望含 \"通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）"
+    },
+    {
+      "text": "Then 退出码 1（缺产物行）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 半角冒号同样输出上面的提示（期望含 \"通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）"
+    },
+    {
+      "text": "Then 退出码 1（半角冒号）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And 机检：三次之后 .orch/instances 仍为空（期望 \"（空）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（空）\""
+    },
+    {
+      "text": "And 机检：没有创建工作区目录 .orch/instances/INST-001",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-22/.orch/instances/INST-001"
+    },
+    {
+      "text": "And 输出含「--task 需要一个值」（期望含 \"--task 需要一个值\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  （--task 需要一个值）"
+    },
+    {
+      "text": "And 退出码 2（用法错误）（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "And 机检：--task \"\" 之后 .orch/instances 仍为空（期望 \"（空）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（空）\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"   \"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "   ",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-22",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 240,
+      "stdout": "任务描述不能为空\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"写一篇发布说明，但没有产物行\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写一篇发布说明，但没有产物行",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-22",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 153,
+      "stdout": "通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"写一篇发布说明。产物: release-notes.md\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写一篇发布说明。产物: release-notes.md",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-22",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 126,
+      "stdout": "通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-22",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  （--task 需要一个值）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-22",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 234,
+      "stdout": "核心已停止（pid 6344，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

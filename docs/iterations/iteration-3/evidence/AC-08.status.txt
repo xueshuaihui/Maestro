@@ -1,0 +1,26 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-08 exit=0 95ms
+核心未在运行
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-08 --scenario doc-backflow-once --keep --stop-after 4
+# label=driver --scenario doc-backflow-once --stop-after 4 --keep 最终输出（长驻进程由脚手架终止） cwd=D:\WWW\Maestro exit=13 2445ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-14552-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+实例 INST-001 · 已中断 ｜ 核心已停止
+
+--- stderr ---
+task-loop-driver: 已停在 stop，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^

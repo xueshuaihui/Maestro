@@ -1,0 +1,30 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance OLD-001
+# label=orch status --instance OLD-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-37 exit=0 216ms
+实例 OLD-001 · 已完成
+节点 已完成 · 耗时 11m55s
+会话 空闲
+交接包 HO-001  已构造   17:00:04
+交接包 HO-001  已投递   17:00:04
+交接包 HO-001  已接受   17:00:05
+交接包 HO-001  已完成   17:00:05
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status
+# label=orch status（列表，旧格式投影） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-37 exit=0 90ms
+实例 OLD-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 11m55s · 更新 17:12:00
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js cancel --instance OLD-001
+# label=orch cancel --instance OLD-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-37 exit=1 88ms
+该实例为旧格式，本版本只支持查看
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./work --instance OLD-001 --task "写一段说明，保存到 out/intro.md"
+# label=orch run --cwd ./work --instance OLD-001 --task "写一段说明，保存到 out/intro.md" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-37 exit=1 91ms
+该实例为旧格式，本版本只支持查看
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-37 exit=0 184ms
+核心已停止（pid 31604，运行 1s）
+

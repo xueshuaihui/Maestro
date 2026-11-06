@@ -1,0 +1,25 @@
+{
+  "ac": "AC-23",
+  "title": "发起前拦截非法产物名",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:24:41.409Z",
+  "finishedAt": "2026-11-06T13:24:42.551Z",
+  "durationMs": 1142,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-23",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-23"
+    }
+  ],
+  "instances": [],
+  "checks": 16,
+  "notes": []
+}

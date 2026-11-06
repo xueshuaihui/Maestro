@@ -1,0 +1,33 @@
+{
+  "ac": "AC-11",
+  "title": "挂起后不再自动推进",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:26:34.368Z",
+  "finishedAt": "2026-11-06T13:27:37.421Z",
+  "durationMs": 63053,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-11",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-11"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-11",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 9,
+  "notes": [
+    "等待时长 60000ms（需求原文 60 秒）；等待前后各落一份 state 快照，便于逐字段对照。"
+  ]
+}

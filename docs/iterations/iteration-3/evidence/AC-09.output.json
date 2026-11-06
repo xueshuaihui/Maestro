@@ -1,0 +1,135 @@
+{
+  "ac": "AC-09",
+  "title": "第 2 轮通过 → 闭环完成，两版共存",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "命令退出码是 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "输出含「节点 T-002 撰写者 已完成 · 第 2 轮」（期望含 \"节点 T-002 撰写者 已完成 · 第 2 轮\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-31208-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:26:09\n交接包 HO-001  研究员→撰写者  已投递   21:26:09\n交接包 HO-001  研究员→撰写者  已接受   21:26:09\n交接包 HO-001  研究员→撰写者  已完成   21:26:09\n交接包 HO-002  撰写者→审核者  已构造   21:26:09\n交接包 HO-002  撰写者→审核者  已投递   21:26:10\n交接包 HO-002  撰写者→审核者  已接受   21:26:10\n交接包 HO-002  撰写者→审核者  已完成   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已构造   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已投递   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已接受   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已完成   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已构造   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已投递   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已接受   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已完成   21:26:10\n升级 —\n"
+    },
+    {
+      "text": "输出含「节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 <d> · 审核 通过」（期望匹配 /节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 (?:\\d+(?:\\.\\d+)?(?:ms|s|m|h))+ · 审核 通过/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-31208-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:26:09\n交接包 HO-001  研究员→撰写者  已投递   21:26:09\n交接包 HO-001  研究员→撰写者  已接受   21:26:09\n交接包 HO-001  研究员→撰写者  已完成   21:26:09\n交接包 HO-002  撰写者→审核者  已构造   21:26:09\n交接包 HO-002  撰写者→审核者  已投递   21:26:10\n交接包 HO-002  撰写者→审核者  已接受   21:26:10\n交接包 HO-002  撰写者→审核者  已完成   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已构造   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已投递   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已接受   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已完成   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已构造   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已投递   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已接受   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已完成   21:26:10\n升级 —\n"
+    },
+    {
+      "text": "输出含「实例 INST-001 · 已完成 · 模板 通用任务闭环」（期望含 \"实例 INST-001 · 已完成 · 模板 通用任务闭环\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已完成 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 1s · 审核 通过\n会话 空闲\n交接包 HO-001  研究员→撰写者  已构造   21:26:09\n交接包 HO-001  研究员→撰写者  已投递   21:26:09\n交接包 HO-001  研究员→撰写者  已接受   21:26:09\n交接包 HO-001  研究员→撰写者  已完成   21:26:09\n交接包 HO-002  撰写者→审核者  已构造   21:26:09\n交接包 HO-002  撰写者→审核者  已投递   21:26:10\n交接包 HO-002  撰写者→审核者  已接受   21:26:10\n交接包 HO-002  撰写者→审核者  已完成   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已构造   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已投递   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已接受   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已完成   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已构造   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已投递   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已接受   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已完成   21:26:10\n升级 —\n"
+    },
+    {
+      "text": "status 的 T-002 行是「节点 T-002 撰写者 已完成 · 第 2 轮」（期望含 \"节点 T-002 撰写者 已完成 · 第 2 轮\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md"
+    },
+    {
+      "text": "status 的 T-002 行产物仍是 v2（本轮引用）（期望含 \"产物 artifacts/docs/release-notes.v2.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md"
+    },
+    {
+      "text": "机检：v1 与 v2 同时存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "v1=true/229B v2=true/302B"
+    },
+    {
+      "text": "机检：v1 的 sha256 与第 1 轮记录一致",
+      "ok": true,
+      "blocked": false,
+      "actual": "now=2cc51bd424dde5b1fa59e11508deb7a09840d9382b074be4ceee6c7a3a92e727 recorded=2cc51bd424dde5b1fa59e11508deb7a09840d9382b074be4ceee6c7a3a92e727"
+    },
+    {
+      "text": "机检：artifactHistory 恰好两条（v1 第 1 轮 + v2 第 2 轮）（期望 \"1:artifacts/docs/release-notes.v1.md,2:artifacts/docs/release-notes.v2.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"1:artifacts/docs/release-notes.v1.md,2:artifacts/docs/release-notes.v2.md\""
+    },
+    {
+      "text": "机检：T-003 review.decision = pass（期望 \"pass\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pass\""
+    },
+    {
+      "text": "机检：T-003 review.artifact = artifacts/docs/release-notes.v2.md（期望 \"artifacts/docs/release-notes.v2.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"artifacts/docs/release-notes.v2.md\""
+    },
+    {
+      "text": "机检：实例 state = completed（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "机检：无 pending 升级（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario doc-backflow-once（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-09",
+        "--scenario",
+        "doc-backflow-once"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 2354,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-31208-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:26:09\n交接包 HO-001  研究员→撰写者  已投递   21:26:09\n交接包 HO-001  研究员→撰写者  已接受   21:26:09\n交接包 HO-001  研究员→撰写者  已完成   21:26:09\n交接包 HO-002  撰写者→审核者  已构造   21:26:09\n交接包 HO-002  撰写者→审核者  已投递   21:26:10\n交接包 HO-002  撰写者→审核者  已接受   21:26:10\n交接包 HO-002  撰写者→审核者  已完成   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已构造   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已投递   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已接受   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已完成   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已构造   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已投递   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已接受   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已完成   21:26:10\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-09",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 212,
+      "stdout": "实例 INST-001 · 已完成 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 1s · 审核 通过\n会话 空闲\n交接包 HO-001  研究员→撰写者  已构造   21:26:09\n交接包 HO-001  研究员→撰写者  已投递   21:26:09\n交接包 HO-001  研究员→撰写者  已接受   21:26:09\n交接包 HO-001  研究员→撰写者  已完成   21:26:09\n交接包 HO-002  撰写者→审核者  已构造   21:26:09\n交接包 HO-002  撰写者→审核者  已投递   21:26:10\n交接包 HO-002  撰写者→审核者  已接受   21:26:10\n交接包 HO-002  撰写者→审核者  已完成   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已构造   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已投递   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已接受   21:26:10\n交接包 HO-003  审核者→撰写者（回流）  已完成   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已构造   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已投递   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已接受   21:26:10\n交接包 HO-004  撰写者→审核者（复测）  已完成   21:26:10\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-09",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 201,
+      "stdout": "核心已停止（pid 15752，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+# AC-40b probe start 2026-11-06T13:30:45.592Z
+# taskDir   = C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3-ac40b\proj\demo-doc-real
+# workspace = C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3-ac40b\proj\.orch\instances\INST-001\workspace
+# poll=1000ms
+2026-11-06T13:30:46.597Z taskDir/out/review.json=absent workspace/out/review.json=absent
+# AC-40b probe start 2026-11-06T13:31:20.817Z
+# taskDir   = C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3-ac40b\proj\demo-doc-real
+# workspace = C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3-ac40b\proj\.orch\instances\INST-001\workspace
+# poll=1000ms
+2026-11-06T13:31:21.832Z taskDir/out/review.json=absent workspace/out/review.json=absent
+2026-11-06T13:33:46.114Z taskDir/out/review.json=PRESENT workspace/out/review.json=absent
+
+# ---------------------------------------------------------------------------
+# 终态复核（orch run 结束后实测，2026-11-06T13:36:1xZ）
+# 说明：上方原始日志来自 1000ms 轮询进程；后台进程被终止时未执行 SIGTERM 收尾，
+#       故在此附上运行结束后的独立复核结果（同一台机、同一路径，逐条实测）。
+# ---------------------------------------------------------------------------
+PRESENT  C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3-ac40b\proj\demo-doc-real\out\review.json
+ABSENT   C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3-ac40b\proj\.orch\instances\INST-001\workspace\out\review.json
+
+# 实例工作区顶层目录（没有 out/）：
+#   artifacts/   <- 唯一子目录
+# 任务目录文件清单：
+#   demo-doc-real/out/review.json   <- 唯一文件

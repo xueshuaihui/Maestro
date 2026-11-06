@@ -1,0 +1,31 @@
+{
+  "ac": "AC-44",
+  "title": "任务目录不可写 / 工作区建不出来 → 发起前停住，退出码 3",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:54:29.394Z",
+  "finishedAt": "2026-11-06T13:54:30.813Z",
+  "durationMs": 1419,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-44-a",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-a"
+    },
+    {
+      "case": "AC-44-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-b"
+    }
+  ],
+  "instances": [],
+  "checks": 15,
+  "notes": [
+    "分支 B 的 MAESTRO_FAULT 只在核心冷启动时读一次：根 B 为全新根，core stop 明确回「核心未在运行」（无热核心），因此注入必然生效；跑前没有旧核心残留。"
+  ]
+}

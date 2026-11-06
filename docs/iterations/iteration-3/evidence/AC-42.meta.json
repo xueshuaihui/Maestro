@@ -1,0 +1,31 @@
+{
+  "ac": "AC-42",
+  "title": "派发失败 → 升级挂起，不假装执行中",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:53:08.693Z",
+  "finishedAt": "2026-11-06T13:53:10.143Z",
+  "durationMs": 1450,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-42",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-42"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-42",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 15,
+  "notes": []
+}

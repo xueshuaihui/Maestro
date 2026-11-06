@@ -1,0 +1,31 @@
+{
+  "ac": "AC-34",
+  "title": "交接包 accepted 与 consumed 的时机",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:05:18.871Z",
+  "finishedAt": "2026-11-06T14:05:21.595Z",
+  "durationMs": 2724,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-34",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-34"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-34",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 8,
+  "notes": []
+}

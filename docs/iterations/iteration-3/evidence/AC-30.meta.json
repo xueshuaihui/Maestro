@@ -1,0 +1,35 @@
+{
+  "ac": "AC-30",
+  "title": "升级写不进去时不假装挂起",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:25:00.256Z",
+  "finishedAt": "2026-11-06T13:25:02.812Z",
+  "durationMs": 2556,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-30",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-30",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 15,
+  "notes": [
+    "halt 落盘距启动 1335ms；driver 进程总耗时 1606ms",
+    "终态 state.json 的实例状态是 `interrupted`：driver 退出前会执行 `orch core stop`，核心停止会把非终态实例对账成 interrupted（src/daemon/server.js:369 → orchestrator.interruptAll），因此 requirement 要求的 running+halted 只能从 halt 落盘瞬间取证（见 evidence 的 state.halted.json）。",
+    "halt 时 state.handoffs=HO-001:consumed,HO-002:accepted；审核节点在 consume 之前就升级失败，故 HO-002 停在 accepted；`renderRunTail` 的停止推进分支不打印交接包行，所以输出里没有「交接包 HO-」行。"
+  ]
+}

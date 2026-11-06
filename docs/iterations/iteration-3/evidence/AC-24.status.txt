@@ -1,0 +1,9 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写发布说明。产物：release-notes.md --template taskloop --host dsh
+# label=orch run --template taskloop --cwd ./demo-doc --task "写发布说明。产物：release-notes.md" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-24 exit=1 226ms
+未知模板：taskloop
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-24 exit=0 216ms
+核心已停止（pid 29216，运行 1s）
+

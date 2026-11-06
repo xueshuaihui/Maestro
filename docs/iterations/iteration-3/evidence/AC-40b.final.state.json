@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-934eb53b284140d9",
+  "createdAt": "2026-11-06T13:30:50.243Z",
+  "updatedAt": "2026-11-06T13:36:03.422Z",
+  "state": "completed",
+  "stateSince": "2026-11-06T13:36:03.421Z",
+  "template": "task-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real",
+  "task": "写一篇发布说明，面向使用 v1.2 的开发者，必须包含「新功能」「升级步骤」「回滚方案」三节。\n第 1 轮先只写「新功能」与「升级步骤」，故意不要写「回滚方案」；审核会驳回，第 2 轮再补上「回滚方案」。\n产物：release-notes.md",
+  "halted": false,
+  "rev": 122,
+  "counters": {
+    "eventSeq": 131,
+    "runCount": 1,
+    "dispatchCount": 5
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "researcher",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-06T13:32:20.967Z",
+      "startedAt": "2026-11-06T13:30:50.269Z",
+      "roundStartedAt": "2026-11-06T13:30:50.269Z",
+      "endedAt": "2026-11-06T13:32:16.273Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "5816889f-6c80-4820-a283-fb63f2243931",
+      "artifactRefs": [
+        {
+          "ref": "artifacts/reports/research-notes.v1.md",
+          "bytes": 17351,
+          "sha256": "9f080f577218ec7d2d45022ddc7307a790f85bc71642e586093a181faa37c908",
+          "verifiedAt": "2026-11-06T13:32:16.273Z"
+        }
+      ],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": [
+        {
+          "round": 1,
+          "ref": "artifacts/reports/research-notes.v1.md",
+          "sha256": "9f080f577218ec7d2d45022ddc7307a790f85bc71642e586093a181faa37c908",
+          "bytes": 17351,
+          "verifiedAt": "2026-11-06T13:32:16.273Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "writer",
+      "round": 2,
+      "state": "done",
+      "stateSince": "2026-11-06T13:34:51.739Z",
+      "startedAt": "2026-11-06T13:32:16.335Z",
+      "roundStartedAt": "2026-11-06T13:34:02.681Z",
+      "endedAt": "2026-11-06T13:34:44.891Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "c2986649-b574-4f60-8f95-8cbe8cc0ae57",
+      "artifactRefs": [
+        {
+          "ref": "artifacts/docs/release-notes.v2.md",
+          "bytes": 9852,
+          "sha256": "b9a37fac48b0f504d3c2b3204a469293fe285dbd8001a9f329e5587c3d0070fd",
+          "verifiedAt": "2026-11-06T13:34:44.891Z"
+        }
+      ],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": [
+        {
+          "round": 1,
+          "ref": "artifacts/docs/release-notes.v1.md",
+          "sha256": "dbedc0b14322a395f33396d5a7845ffdd436a9999fdee4a15f80558f1bd9a163",
+          "bytes": 6167,
+          "verifiedAt": "2026-11-06T13:33:25.002Z"
+        },
+        {
+          "round": 2,
+          "ref": "artifacts/docs/release-notes.v2.md",
+          "sha256": "b9a37fac48b0f504d3c2b3204a469293fe285dbd8001a9f329e5587c3d0070fd",
+          "bytes": 9852,
+          "verifiedAt": "2026-11-06T13:34:44.891Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-003",
+      "roleId": "reviewer",
+      "round": 2,
+      "state": "done",
+      "stateSince": "2026-11-06T13:36:03.328Z",
+      "startedAt": "2026-11-06T13:33:25.099Z",
+      "roundStartedAt": "2026-11-06T13:34:44.959Z",
+      "endedAt": "2026-11-06T13:36:03.336Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "d73cdbe0-37af-45c2-b9fe-1dae806ba0c2",
+      "artifactRefs": [],
+      "reviewReason": null,
+      "review": {
+        "decision": "pass",
+        "defectCount": 0,
+        "reviewPath": "out/review.json",
+        "artifact": "artifacts/docs/release-notes.v2.md",
+        "readAt": "2026-11-06T13:36:03.324Z",
+        "defects": [],
+        "revisionRequirement": "请按缺陷清单逐条修改后交出新版本"
+      },
+      "artifactHistory": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "5816889f-6c80-4820-a283-fb63f2243931",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-06T13:32:20.967Z",
+      "createdAt": "2026-11-06T13:30:52.500Z",
+      "lastEventAt": "2026-11-06T13:32:16.237Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\.orch\\instances\\INST-001\\workspace\\artifacts\\reports\\research-notes.v1.md",
+      "pendingPermission": {
+        "toolCallId": "call_00_aqdMQwVwk3Qfw68Aqom91745",
+        "action": "write"
+      },
+      "quarantined": false
+    },
+    {
+      "sessionId": "9cf234b1-2243-4ad4-aaab-1633585c1ca1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-06T13:33:31.234Z",
+      "createdAt": "2026-11-06T13:32:18.320Z",
+      "lastEventAt": "2026-11-06T13:33:24.955Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\.orch\\instances\\INST-001\\workspace\\artifacts\\docs\\release-notes.v1.md",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "c816ab24-c94b-474e-8386-c5ad6da1fdc5",
+      "nodeId": "T-003",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-06T13:34:02.581Z",
+      "createdAt": "2026-11-06T13:33:27.098Z",
+      "lastEventAt": "2026-11-06T13:34:02.535Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real\\out\\review.json",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "c2986649-b574-4f60-8f95-8cbe8cc0ae57",
+      "nodeId": "T-002",
+      "round": 2,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-06T13:34:51.739Z",
+      "createdAt": "2026-11-06T13:34:04.819Z",
+      "lastEventAt": "2026-11-06T13:34:44.856Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\.orch\\instances\\INST-001\\workspace\\artifacts\\docs\\release-notes.v2.md",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "d73cdbe0-37af-45c2-b9fe-1dae806ba0c2",
+      "nodeId": "T-003",
+      "round": 2,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-06T13:36:03.342Z",
+      "createdAt": "2026-11-06T13:34:47.052Z",
+      "lastEventAt": "2026-11-06T13:36:03.300Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real\\out\\review.json",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-06T13:32:16.327Z",
+      "deliveredAt": "2026-11-06T13:32:18.321Z",
+      "acceptedAt": "2026-11-06T13:32:20.967Z",
+      "consumedAt": "2026-11-06T13:33:25.005Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 2646,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "artifacts/reports/research-notes.v1.md"
+        ],
+        "output": "artifacts/docs/release-notes.v1.md",
+        "previous": null
+      },
+      "revisionRequirement": null
+    },
+    {
+      "handoffId": "HO-002",
+      "edge": {
+        "from": "T-002",
+        "to": "T-003",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-06T13:33:25.089Z",
+      "deliveredAt": "2026-11-06T13:33:27.099Z",
+      "acceptedAt": "2026-11-06T13:33:31.234Z",
+      "consumedAt": "2026-11-06T13:34:02.565Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 4135,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "artifacts/docs/release-notes.v1.md"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null
+    },
+    {
+      "handoffId": "HO-003",
+      "edge": {
+        "from": "T-003",
+        "to": "T-002",
+        "kind": "backflow"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-06T13:34:02.666Z",
+      "deliveredAt": "2026-11-06T13:34:04.820Z",
+      "acceptedAt": "2026-11-06T13:34:06.442Z",
+      "consumedAt": "2026-11-06T13:34:44.894Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": "2026-11-06T13:34:02.666Z",
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 1622,
+      "defects": [
+        {
+          "summary": "缺少任务要求的「回滚方案」章节，未说明回滚触发条件、操作步骤与验证方式。",
+          "evidence": "artifacts/docs/release-notes.v1.md#L166"
+        }
+      ],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "artifacts/docs/release-notes.v1.md"
+        ],
+        "output": "artifacts/docs/release-notes.v2.md",
+        "previous": {
+          "ref": "artifacts/docs/release-notes.v1.md",
+          "sha256": "dbedc0b14322a395f33396d5a7845ffdd436a9999fdee4a15f80558f1bd9a163"
+        }
+      },
+      "revisionRequirement": "补充完整的「回滚方案」章节，至少包含回滚触发条件、具体操作步骤（含版本与命令）、回滚后的数据/服务验证及注意事项，同时保留现有「新功能」「升级步骤」内容。"
+    },
+    {
+      "handoffId": "HO-004",
+      "edge": {
+        "from": "T-002",
+        "to": "T-003",
+        "kind": "retest"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-06T13:34:44.953Z",
+      "deliveredAt": "2026-11-06T13:34:47.053Z",
+      "acceptedAt": "2026-11-06T13:34:51.739Z",
+      "consumedAt": "2026-11-06T13:36:03.336Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 4686,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "artifacts/docs/release-notes.v2.md"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null
+    }
+  ],
+  "escalations": [],
+  "artifactStem": "release-notes"
+}

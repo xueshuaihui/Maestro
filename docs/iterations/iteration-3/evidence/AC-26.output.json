@@ -1,0 +1,155 @@
+{
+  "ac": "AC-26",
+  "title": "编码闭环与通用任务闭环同目录互斥",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given（方向一）：task-loop 的 INST-001 已停在 T-001 prompt 前",
+      "ok": true,
+      "blocked": false,
+      "actual": "646ms"
+    },
+    {
+      "text": "Then（方向一）输出含「该目录已有未结束的实例 INST-001，本次未发起」（期望含 \"该目录已有未结束的实例 INST-001，本次未发起\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "该目录已有未结束的实例 INST-001，本次未发起"
+    },
+    {
+      "text": "Then（方向一）退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And（方向一）机检：没有生成第二个实例（期望 \"INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"INST-001\""
+    },
+    {
+      "text": "Given（方向二）：code-loop 的 INST-001 在 demo-doc 目录运行",
+      "ok": true,
+      "blocked": false,
+      "actual": "state=running cwd=C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26-b\\demo-doc 期望 C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26-b\\demo-doc"
+    },
+    {
+      "text": "Given（方向二）机检：实例号是 INST-001（期望 \"INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"INST-001\""
+    },
+    {
+      "text": "Then（方向二）输出含「该目录已有未结束的实例 INST-001，本次未发起」（期望含 \"该目录已有未结束的实例 INST-001，本次未发起\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "该目录已有未结束的实例 INST-001，本次未发起"
+    },
+    {
+      "text": "Then（方向二）退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And（方向二）机检：没有生成第二个实例（期望 \"INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"INST-001\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --template code-loop --cwd ./demo-doc --task \"…产物：calc.js\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写一个计算器。产物：calc.js",
+        "--template",
+        "code-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "该目录已有未结束的实例 INST-001，本次未发起\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario doc-hold-research --keep（方向一，长驻进程由脚手架终止）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26",
+        "--scenario",
+        "doc-hold-research",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 13,
+      "timedOut": false,
+      "durationMs": 1188,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-22856-1\n任务已投递\n会话 空闲\n会话 执行中 · 已运行 1s\n实例 INST-001 · 已中断 ｜ 核心已停止\n",
+      "stderr": "task-loop-driver: 已停在 paused，Ctrl-C 结束\nWarning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442\r\n  const code = await main(process.argv.slice(2));\r\n               ^\r\n\r\n\r\n\r\n"
+    },
+    {
+      "label": "orch core stop（方向一）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 91,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"…产物：release-notes.md\"（code-loop 占目录时）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写一篇发布说明。产物：release-notes.md",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26-b",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "该目录已有未结束的实例 INST-001，本次未发起\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop（方向二）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 177,
+      "stdout": "核心已停止（pid 6900，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

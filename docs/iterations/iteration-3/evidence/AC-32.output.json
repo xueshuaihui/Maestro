@@ -1,0 +1,142 @@
+{
+  "ac": "AC-32",
+  "title": "审核以文件为准，不以对话为准",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 机检：`.mock/stopped-after-4` 存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "1736ms"
+    },
+    {
+      "text": "Given 机检：停在 4 次派发之后（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "Given 机检：T-002 已进入第 2 轮（回流已投递）（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 机检：T-003 第 1 轮 review.decision='reject'（期望 \"reject\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"reject\""
+    },
+    {
+      "text": "Then 机检：存在 edge.kind='backflow' 的交接包",
+      "ok": true,
+      "blocked": false,
+      "actual": "HO-003:consumed"
+    },
+    {
+      "text": "Then 机检：events 里有 backflow.constructed（文件 reject 生效）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Given（B）前置：夹具跑完退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then（B）机检：T-003 review.decision='pass'（期望 \"pass\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pass\""
+    },
+    {
+      "text": "Then（B）机检：实例 state='completed'（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "And（B）机检：没有 edge.kind='backflow' 的交接包（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "佐证（B）：handoffs 只有 2 条（无回流）（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario review-says-pass --keep --stop-after 4",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-32",
+        "--scenario",
+        "review-says-pass",
+        "--keep",
+        "--stop-after",
+        "4"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 13,
+      "timedOut": false,
+      "durationMs": 2220,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-7224-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已中断 ｜ 核心已停止\n",
+      "stderr": "task-loop-driver: 已停在 stop，Ctrl-C 结束\nWarning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442\r\n  const code = await main(process.argv.slice(2));\r\n               ^\r\n\r\n\r\n\r\n"
+    },
+    {
+      "label": "orch core stop（A）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-32",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario review-says-reject（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-32-b",
+        "--scenario",
+        "review-says-reject"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1587,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-1088-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:25:09\n交接包 HO-001  研究员→撰写者  已投递   21:25:09\n交接包 HO-001  研究员→撰写者  已接受   21:25:09\n交接包 HO-001  研究员→撰写者  已完成   21:25:09\n交接包 HO-002  撰写者→审核者  已构造   21:25:09\n交接包 HO-002  撰写者→审核者  已投递   21:25:09\n交接包 HO-002  撰写者→审核者  已接受   21:25:09\n交接包 HO-002  撰写者→审核者  已完成   21:25:09\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop（B）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-32-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 85,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

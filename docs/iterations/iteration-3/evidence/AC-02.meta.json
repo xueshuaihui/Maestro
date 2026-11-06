@@ -1,0 +1,33 @@
+{
+  "ac": "AC-02",
+  "title": "研究完成后，撰写者收到研究笔记与写作路径",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:25:46.640Z",
+  "finishedAt": "2026-11-06T13:25:48.789Z",
+  "durationMs": 2149,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-02",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-02"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-02",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 13,
+  "notes": [
+    "`state.live.json` 是 --stop-after 2 定格时刻的快照（T-001 done / T-002 review(downstream) / T-003 pending、dispatchCount=2）；收尾 `state.json` 是 core stop 之后的快照。"
+  ]
+}

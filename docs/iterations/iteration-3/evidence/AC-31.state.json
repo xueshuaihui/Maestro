@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-17894583de7806e9",
+  "createdAt": "2026-11-06T13:25:03.654Z",
+  "updatedAt": "2026-11-06T13:25:04.576Z",
+  "state": "suspended",
+  "stateSince": "2026-11-06T13:25:04.575Z",
+  "template": "task-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-31\\demo-doc",
+  "task": "写一篇发布说明，覆盖背景、变更与回滚方案。\n产物：release-notes.md",
+  "halted": false,
+  "rev": 29,
+  "counters": {
+    "eventSeq": 31,
+    "runCount": 1,
+    "dispatchCount": 3
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "researcher",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-06T13:25:04.203Z",
+      "startedAt": "2026-11-06T13:25:03.672Z",
+      "roundStartedAt": "2026-11-06T13:25:03.672Z",
+      "endedAt": "2026-11-06T13:25:03.952Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-26172-1",
+      "artifactRefs": [
+        {
+          "ref": "artifacts/reports/research-notes.v1.md",
+          "bytes": 299,
+          "sha256": "020e2db1aa9dffb1654e5684484b034a1b56f2d57f41bc475932631b1dab757d",
+          "verifiedAt": "2026-11-06T13:25:03.952Z"
+        }
+      ],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": [
+        {
+          "round": 1,
+          "ref": "artifacts/reports/research-notes.v1.md",
+          "sha256": "020e2db1aa9dffb1654e5684484b034a1b56f2d57f41bc475932631b1dab757d",
+          "bytes": 299,
+          "verifiedAt": "2026-11-06T13:25:03.952Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "writer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-06T13:25:04.510Z",
+      "startedAt": "2026-11-06T13:25:03.980Z",
+      "roundStartedAt": "2026-11-06T13:25:03.980Z",
+      "endedAt": "2026-11-06T13:25:04.261Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-23484-1",
+      "artifactRefs": [
+        {
+          "ref": "artifacts/docs/release-notes.v1.md",
+          "bytes": 229,
+          "sha256": "2cc51bd424dde5b1fa59e11508deb7a09840d9382b074be4ceee6c7a3a92e727",
+          "verifiedAt": "2026-11-06T13:25:04.261Z"
+        }
+      ],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": [
+        {
+          "round": 1,
+          "ref": "artifacts/docs/release-notes.v1.md",
+          "sha256": "2cc51bd424dde5b1fa59e11508deb7a09840d9382b074be4ceee6c7a3a92e727",
+          "bytes": 229,
+          "verifiedAt": "2026-11-06T13:25:04.261Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-003",
+      "roleId": "reviewer",
+      "round": 1,
+      "state": "escalated",
+      "stateSince": "2026-11-06T13:25:04.575Z",
+      "startedAt": "2026-11-06T13:25:04.293Z",
+      "roundStartedAt": "2026-11-06T13:25:04.293Z",
+      "endedAt": "2026-11-06T13:25:04.575Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-29904-1",
+      "artifactRefs": [],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-26172-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-06T13:25:04.204Z",
+      "createdAt": "2026-11-06T13:25:03.900Z",
+      "lastEventAt": "2026-11-06T13:25:03.908Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p3/AC-31/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-23484-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": "dsh",
+      "state": "idle",
+      "stateSince": "2026-11-06T13:25:04.511Z",
+      "createdAt": "2026-11-06T13:25:04.196Z",
+      "lastEventAt": "2026-11-06T13:25:04.208Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p3/AC-31/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-29904-1",
+      "nodeId": "T-003",
+      "round": 1,
+      "hostId": "dsh",
+      "state": "escalated",
+      "stateSince": "2026-11-06T13:25:04.575Z",
+      "createdAt": "2026-11-06T13:25:04.506Z",
+      "lastEventAt": "2026-11-06T13:25:04.514Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-31\\demo-doc\\out\\review.json",
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-06T13:25:03.971Z",
+      "deliveredAt": "2026-11-06T13:25:04.196Z",
+      "acceptedAt": "2026-11-06T13:25:04.203Z",
+      "consumedAt": "2026-11-06T13:25:04.263Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 7,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "artifacts/reports/research-notes.v1.md"
+        ],
+        "output": "artifacts/docs/release-notes.v1.md",
+        "previous": null
+      },
+      "revisionRequirement": null
+    },
+    {
+      "handoffId": "HO-002",
+      "edge": {
+        "from": "T-002",
+        "to": "T-003",
+        "kind": "forward"
+      },
+      "state": "accepted",
+      "createdAt": "2026-11-06T13:25:04.286Z",
+      "deliveredAt": "2026-11-06T13:25:04.506Z",
+      "acceptedAt": "2026-11-06T13:25:04.510Z",
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 4,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "artifacts/docs/release-notes.v1.md"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null
+    }
+  ],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-003",
+      "round": 1,
+      "reasonCode": "review_missing",
+      "reasonDetail": "核对失败：未找到审核文件 out/review.json",
+      "defects": [],
+      "state": "pending",
+      "createdAt": "2026-11-06T13:25:04.574Z",
+      "voidedAt": null
+    }
+  ],
+  "artifactStem": "release-notes"
+}

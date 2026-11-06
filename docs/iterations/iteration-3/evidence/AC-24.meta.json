@@ -1,0 +1,25 @@
+{
+  "ac": "AC-24",
+  "title": "未知模板仍被拒绝",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:24:43.082Z",
+  "finishedAt": "2026-11-06T13:24:43.835Z",
+  "durationMs": 753,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-24",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-24"
+    }
+  ],
+  "instances": [],
+  "checks": 3,
+  "notes": []
+}

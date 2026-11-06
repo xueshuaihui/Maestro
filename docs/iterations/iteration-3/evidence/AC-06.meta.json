@@ -1,0 +1,31 @@
+{
+  "ac": "AC-06",
+  "title": "审核通过后闭环完成",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:25:59.777Z",
+  "finishedAt": "2026-11-06T13:26:02.132Z",
+  "durationMs": 2355,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-06",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-06"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-06",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 12,
+  "notes": []
+}

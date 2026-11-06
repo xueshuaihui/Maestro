@@ -1,0 +1,165 @@
+{
+  "ac": "AC-30",
+  "title": "升级写不进去时不假装挂起",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 前置：--prepare-only 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 命令在 10 秒内结束（实测 1606ms）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1606ms"
+    },
+    {
+      "text": "Then 退出码 5（期望 5）",
+      "ok": true,
+      "blocked": false,
+      "actual": "5"
+    },
+    {
+      "text": "Then 输出含「无法记录升级：」（期望含 \"无法记录升级：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "无法记录升级：state_write:escalation；已停止推进"
+    },
+    {
+      "text": "Then 输出含「；已停止推进」（期望含 \"；已停止推进\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "无法记录升级：state_write:escalation；已停止推进"
+    },
+    {
+      "text": "Then 输出含「运行中 · 已停止推进」（期望含 \"运行中 · 已停止推进\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 已停止推进 · 模板 通用任务闭环"
+    },
+    {
+      "text": "Then 输出不含「已挂起」（期望不含 \"已挂起\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-2400-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 空闲\n无法记录升级：state_write:escalation；已停止推进\n实例 INST-001 · 运行中 · 已停止推进 · 模板 通用任务闭环\n节点 T-003 审核者 待校验（升级未记录） · 第 1 轮\n下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消\n"
+    },
+    {
+      "text": "Then 输出含「节点 T-003 审核者 待校验（升级未记录） · 第 1 轮」（期望含 \"节点 T-003 审核者 待校验（升级未记录） · 第 1 轮\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-003 审核者 待校验（升级未记录） · 第 1 轮"
+    },
+    {
+      "text": "Then 输出不含以「交接包 HO-」开头的行（期望 \"（无）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（无）\""
+    },
+    {
+      "text": "And 机检：halt 瞬间 state='running'（期望 \"running\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"running\""
+    },
+    {
+      "text": "And 机检：halted=true（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "And 机检：escalations 为空（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "And 机检：T-003 state='review'（不是 failed，也不是 escalated）（期望 \"review\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"review\""
+    },
+    {
+      "text": "And 机检：haltCause=state_write:escalation（期望 \"state_write:escalation\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"state_write:escalation\""
+    },
+    {
+      "text": "佐证：工作区存在（场景确实推进过）",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30/.orch/instances/INST-001"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario review-missing --prepare-only（备现场）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30",
+        "--scenario",
+        "review-missing",
+        "--prepare-only"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 127,
+      "stdout": "{\"ok\":true,\"prepareOnly\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p3\\\\AC-30\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p3\\\\AC-30\\\\demo-doc\",\"scenario\":\"review-missing\",\"suite\":\"task-loop\",\"stopAfter\":null,\"cursorPath\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p3\\\\AC-30\\\\.mock\\\\cursor.json\",\"hostPath\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p3\\\\AC-30\\\\.orch\\\\hosts\\\\dsh.json\",\"cursor\":{\"next\":1},\"host\":{\"id\":\"dsh\",\"transport\":\"stdio\",\"launch\":{\"command\":\"C:\\\\Users\\\\xuesh\\\\.workbuddy\\\\binaries\\\\node\\\\versions\\\\22.22.2-6\\\\node.exe\",\"args\":[\"D:\\\\WWW\\\\Maestro\\\\test\\\\fixtures\\\\mock-acp-agent.js\",\"--root\",\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p3\\\\AC-30\",\"--suite\",\"task-loop\",\"--scenario\",\"review-missing\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop（确认核心已停）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario review-missing --keep（MAESTRO_FAULT=state_write:escalation）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30",
+        "--scenario",
+        "review-missing",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 5,
+      "timedOut": false,
+      "durationMs": 1946,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-2400-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 空闲\n无法记录升级：state_write:escalation；已停止推进\n实例 INST-001 · 运行中 · 已停止推进 · 模板 通用任务闭环\n节点 T-003 审核者 待校验（升级未记录） · 第 1 轮\n下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 91,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

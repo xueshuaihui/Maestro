@@ -1,0 +1,42 @@
+{
+  "ac": "AC-15",
+  "title": "审核文件不可解析或结论非法",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:07:47.383Z",
+  "finishedAt": "2026-11-06T13:07:52.291Z",
+  "durationMs": 4908,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-15",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-15"
+    },
+    {
+      "case": "AC-15-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-15-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-15",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    },
+    {
+      "__root": "AC-15-b",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 6,
+  "notes": [
+    "分支二（review-decision-invalid）的需求正文只对「结论非法」给了 Then 文案，未单列退出码；此处按同一异常路径一并核对退出码 4（实测 4），属加严观测，不构成放宽。"
+  ]
+}

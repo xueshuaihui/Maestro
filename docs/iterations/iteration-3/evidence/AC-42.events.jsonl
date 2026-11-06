@@ -1,0 +1,5 @@
+{"object":"instance","objectId":"INST-001","from":"created","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-7acbc2d789ab2200","seq":1,"ts":"2026-11-06T13:53:09.103Z"}
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"node.dispatch","detail":{"round":1,"nodeId":"T-001","roleId":"researcher"},"gen":"gen-7acbc2d789ab2200","seq":2,"ts":"2026-11-06T13:53:09.105Z"}
+{"object":"escalation","objectId":"ESC-001","from":null,"to":"pending","result":"applied","reason":"escalation.created","detail":{"nodeId":"T-001","round":1,"reasonCode":"dispatch_failed"},"gen":"gen-7acbc2d789ab2200","seq":3,"ts":"2026-11-06T13:53:09.298Z"}
+{"object":"node","objectId":"T-001","from":"running","to":"escalated","result":"applied","reason":"state.change","detail":null,"gen":"gen-7acbc2d789ab2200","seq":4,"ts":"2026-11-06T13:53:09.300Z"}
+{"object":"instance","objectId":"INST-001","from":"running","to":"suspended","result":"applied","reason":"core.suspend","detail":null,"gen":"gen-7acbc2d789ab2200","seq":5,"ts":"2026-11-06T13:53:09.303Z"}

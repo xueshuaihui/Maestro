@@ -1,0 +1,64 @@
+{
+  "ac": "AC-24",
+  "title": "未知模板仍被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 输出含「未知模板：taskloop」（期望含 \"未知模板：taskloop\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "未知模板：taskloop"
+    },
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And 机检：.orch/instances 为空（期望 \"（空）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（空）\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --template taskloop --cwd ./demo-doc --task \"写发布说明。产物：release-notes.md\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写发布说明。产物：release-notes.md",
+        "--template",
+        "taskloop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-24",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 226,
+      "stdout": "未知模板：taskloop\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-24",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 216,
+      "stdout": "核心已停止（pid 29216，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "ac": "AC-38",
+  "title": "通用任务闭环与编码闭环共用同一引擎",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 7 词扫描退出码 0（零命中）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 扫描覆盖 src/core 与 src/daemon 全目录（期望含 \"src/core, src/daemon\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "OK: 扫描 16 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者 零命中\n"
+    },
+    {
+      "text": "And orchestrator.js 有 driveGraph 定义",
+      "ok": true,
+      "blocked": false,
+      "actual": "2369 字符"
+    },
+    {
+      "text": "And driveGraph 内调用 finishGraphNode(",
+      "ok": true,
+      "blocked": false,
+      "actual": "driveGraph 函数体"
+    },
+    {
+      "text": "And driveGraph 内调用 advance(",
+      "ok": true,
+      "blocked": false,
+      "actual": "driveGraph 函数体"
+    },
+    {
+      "text": "And advance 定义存在且委托 advanceLocked（同一把锁）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  async function advance(instanceId, options = {}) {\r\n    const { onProgress = null, hostId = null, verdict = null } = options;\r\n    return withLock(instanceId, () => advanceLocked(instanceId, { onPro"
+    },
+    {
+      "text": "And advanceLocked 内调用 planAdvance(",
+      "ok": true,
+      "blocked": false,
+      "actual": "advanceLocked 函数体"
+    },
+    {
+      "text": "And planAdvance 由 src/core/advance.js 提供并被 orchestrator 导入",
+      "ok": true,
+      "blocked": false,
+      "actual": "import { checkWakeGate, classifyNodeOutcome, planAdvance }"
+    },
+    {
+      "text": "And core/daemon 全目录不含 task-loop / code-loop 字面量（期望 \"（零命中）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（零命中）\""
+    },
+    {
+      "text": "And 只有一处 advance 定义（两图共用同一推进入口）",
+      "ok": true,
+      "blocked": false,
+      "actual": "advance 定义 1 处"
+    },
+    {
+      "text": "And 只有一处 driveGraph 定义",
+      "ok": true,
+      "blocked": false,
+      "actual": "driveGraph 定义 1 处"
+    },
+    {
+      "text": "And NODE_STATES 恰为 7 个节点状态（期望 \"pending,running,review,done,failed,cancelled,escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending,running,review,done,failed,cancelled,escalated\""
+    },
+    {
+      "text": "And createNodeSM().states 与 NODE_STATES 逐字一致（期望 \"pending,running,review,done,failed,cancelled,escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending,running,review,done,failed,cancelled,escalated\""
+    },
+    {
+      "text": "And 迁移合法性由该表定义（回流唤醒 done→running、复测 failed→running、取消 escalated→cancelled 均合法）",
+      "ok": true,
+      "blocked": false,
+      "actual": "全部合法"
+    },
+    {
+      "text": "And 表外迁移被拒（done→cancelled 非法）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"ok\":false,\"code\":\"ILLEGAL_TRANSITION\",\"message\":\"node: done -> cancelled is not in the transition table\"}"
+    },
+    {
+      "text": "And 两图节点初始态取自 NODE_STATES（initialNodes 写 state='pending'，pending ∈ NODE_STATES）",
+      "ok": true,
+      "blocked": false,
+      "actual": "initialNodes: state: 'pending'"
+    },
+    {
+      "text": "And GRAPHS 在 src/templates/index.js 中登记 single / code-loop / task-loop",
+      "ok": true,
+      "blocked": false,
+      "actual": "GRAPHS = { single, code-loop, task-loop }"
+    },
+    {
+      "text": "And core/daemon 只从 ../templates/index.js 取图（不直接 import 单图文件）",
+      "ok": true,
+      "blocked": false,
+      "actual": "src/core/advance.js -> ../templates/index.js、src/core/orchestrator.js -> ../templates/index.js"
+    },
+    {
+      "text": "And 引擎按实例的 template 名解析图（graphForState → resolveTemplate），不按图写分支",
+      "ok": true,
+      "blocked": false,
+      "actual": "graphForState: resolveTemplate(state?.template)"
+    },
+    {
+      "text": "And src/core/review.js 不出现任何模板名或角色名（期望 \"（零命中）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（零命中）\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "purity-check --dirs src/core,src/daemon --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\purity-check.mjs",
+        "--dirs",
+        "src/core,src/daemon",
+        "--forbid",
+        "task-loop,researcher,writer,reviewer,研究员,撰写者,审核者"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 91,
+      "stdout": "OK: 扫描 16 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者 零命中\n",
+      "stderr": ""
+    }
+  ]
+}

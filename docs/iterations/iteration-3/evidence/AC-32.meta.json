@@ -1,0 +1,42 @@
+{
+  "ac": "AC-32",
+  "title": "审核以文件为准，不以对话为准",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:25:05.694Z",
+  "finishedAt": "2026-11-06T13:25:10.287Z",
+  "durationMs": 4593,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-32",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-32"
+    },
+    {
+      "case": "AC-32-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-32-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-32",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    },
+    {
+      "__root": "AC-32-b",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 11,
+  "notes": [
+    "对话消息是「全部通过」但核心按 out/review.json 的 reject 走；不放行到底（步骤耗尽会变 dispatch_failed）。"
+  ]
+}

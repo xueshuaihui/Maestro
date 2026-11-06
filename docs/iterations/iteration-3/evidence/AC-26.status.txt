@@ -1,0 +1,34 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写一个计算器。产物：calc.js --template code-loop --host dsh
+# label=orch run --template code-loop --cwd ./demo-doc --task "…产物：calc.js" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-26 exit=1 98ms
+该目录已有未结束的实例 INST-001，本次未发起
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-26 --scenario doc-hold-research --keep
+# label=driver --scenario doc-hold-research --keep（方向一，长驻进程由脚手架终止） cwd=D:\WWW\Maestro exit=13 1188ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-22856-1
+任务已投递
+会话 空闲
+会话 执行中 · 已运行 1s
+实例 INST-001 · 已中断 ｜ 核心已停止
+
+--- stderr ---
+task-loop-driver: 已停在 paused，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop（方向一） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-26 exit=0 91ms
+核心未在运行
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写一篇发布说明。产物：release-notes.md --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "…产物：release-notes.md"（code-loop 占目录时） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-26-b exit=1 102ms
+该目录已有未结束的实例 INST-001，本次未发起
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop（方向二） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-26-b exit=0 177ms
+核心已停止（pid 6900，运行 1s）
+

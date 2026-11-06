@@ -1,0 +1,83 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-18 --scenario review-evidence-unreadable
+# label=[分支一] driver --scenario review-evidence-unreadable（完整跑完） cwd=D:\WWW\Maestro exit=4 1560ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-2024-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=[分支一] orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-18 exit=0 216ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md
+节点 T-003 审核者 已升级 · 第 1 轮
+会话 已升级
+交接包 HO-001  研究员→撰写者  已构造   21:06:44
+交接包 HO-001  研究员→撰写者  已投递   21:06:45
+交接包 HO-001  研究员→撰写者  已接受   21:06:45
+交接包 HO-001  研究员→撰写者  已完成   21:06:45
+交接包 HO-002  撰写者→审核者  已构造   21:06:45
+交接包 HO-002  撰写者→审核者  已投递   21:06:45
+交接包 HO-002  撰写者→审核者  已接受   21:06:45
+升级 ESC-001 待处理
+  原因：核对失败：缺陷证据不可解析 artifacts/docs/missing.md#L3
+  节点：T-003 审核者 · 第 1 轮
+  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=[分支一] orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-18 exit=0 182ms
+核心已停止（pid 25712，运行 1s）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-18-b --scenario review-evidence-outside
+# label=[分支二（另起全新根）] driver --scenario review-evidence-outside（完整跑完） cwd=D:\WWW\Maestro exit=4 1558ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-25632-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=[分支二（另起全新根）] orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-18-b exit=0 211ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md
+节点 T-003 审核者 已升级 · 第 1 轮
+会话 已升级
+交接包 HO-001  研究员→撰写者  已构造   21:06:47
+交接包 HO-001  研究员→撰写者  已投递   21:06:47
+交接包 HO-001  研究员→撰写者  已接受   21:06:47
+交接包 HO-001  研究员→撰写者  已完成   21:06:47
+交接包 HO-002  撰写者→审核者  已构造   21:06:47
+交接包 HO-002  撰写者→审核者  已投递   21:06:47
+交接包 HO-002  撰写者→审核者  已接受   21:06:47
+升级 ESC-001 待处理
+  原因：核对失败：缺陷证据不可解析 ../outside.md#L1
+  节点：T-003 审核者 · 第 1 轮
+  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=[分支二（另起全新根）] orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-18-b exit=0 182ms
+核心已停止（pid 27964，运行 1s）
+

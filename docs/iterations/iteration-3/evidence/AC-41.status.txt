@@ -1,0 +1,26 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\call-seam.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-41 --instance INST-001 --call dispatch --node T-002
+# label=node test/fixtures/call-seam.mjs --root <根> --instance INST-001 --call dispatch --node T-002 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-41 exit=1 118ms
+{"ok":false,"code":"NODE_BUSY","detail":{}}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-41 --scenario doc-pass --keep --stop-after 2
+# label=driver --scenario doc-pass --stop-after 2 --keep（长驻进程由脚手架终止） cwd=D:\WWW\Maestro exit=13 1626ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-30700-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+实例 INST-001 · 已中断 ｜ 核心已停止
+
+--- stderr ---
+task-loop-driver: 已停在 stop，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-41 exit=0 110ms
+核心未在运行
+

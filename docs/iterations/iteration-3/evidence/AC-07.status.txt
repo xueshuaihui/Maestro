@@ -1,0 +1,48 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-07 exit=0 99ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 待校验（等待下游） · 第 2 轮 · 耗时 1s
+节点 T-003 审核者 失败（等待复审） · 第 1 轮 · 耗时 1s · 审核 驳回 · 缺陷 2 条
+会话 等待下游
+交接包 HO-001  研究员→撰写者  已构造   21:26:03
+交接包 HO-001  研究员→撰写者  已投递   21:26:03
+交接包 HO-001  研究员→撰写者  已接受   21:26:03
+交接包 HO-001  研究员→撰写者  已完成   21:26:03
+交接包 HO-002  撰写者→审核者  已构造   21:26:03
+交接包 HO-002  撰写者→审核者  已投递   21:26:03
+交接包 HO-002  撰写者→审核者  已接受   21:26:03
+交接包 HO-002  撰写者→审核者  已完成   21:26:03
+交接包 HO-003  审核者→撰写者（回流）  已构造   21:26:03
+交接包 HO-003  审核者→撰写者（回流）  已投递   21:26:04
+交接包 HO-003  审核者→撰写者（回流）  已接受   21:26:04
+交接包 HO-003  审核者→撰写者（回流）  已完成   21:26:04
+升级 —
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-07 exit=0 96ms
+核心未在运行
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-07 --scenario doc-backflow-once --keep --stop-after 4
+# label=driver --scenario doc-backflow-once --stop-after 4 --keep 最终输出（长驻进程由脚手架终止） cwd=D:\WWW\Maestro exit=13 2656ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-28396-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+实例 INST-001 · 已中断 ｜ 核心已停止
+
+--- stderr ---
+task-loop-driver: 已停在 stop，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^

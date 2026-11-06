@@ -1,0 +1,40 @@
+{
+  "ac": "AC-18",
+  "title": "缺陷证据不可解析",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:06:44.102Z",
+  "finishedAt": "2026-11-06T13:06:49.060Z",
+  "durationMs": 4958,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-18",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-18"
+    },
+    {
+      "case": "AC-18-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-18-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-18",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    },
+    {
+      "__root": "AC-18-b",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 4,
+  "notes": []
+}

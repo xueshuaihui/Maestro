@@ -1,0 +1,43 @@
+{
+  "ac": "AC-45",
+  "title": "停在\"待校验（等待下游）\"：核心活着能取消，重启后记成已中断且不重复派发",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:16:45.151Z",
+  "finishedAt": "2026-11-06T14:16:49.947Z",
+  "durationMs": 4796,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-45-a",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-a"
+    },
+    {
+      "case": "AC-45-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-45-a",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    },
+    {
+      "__root": "AC-45-b",
+      "instanceId": "INST-001",
+      "state": "cancelled"
+    }
+  ],
+  "checks": 44,
+  "notes": [
+    "根 B 的 orch cancel 实测耗时：114ms（硬指标 5000ms）",
+    "两支顺序固定：A 先在核心活着时 core stop（对账成终态 interrupted）→ status 看停点 → cancel 被拒；B 核心不停直接 cancel。停点提示点名的是真正卡住的 T-002（interruptedNodeId），不是节点表第一条 T-001。"
+  ]
+}

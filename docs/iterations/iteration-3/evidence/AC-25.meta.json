@@ -1,0 +1,31 @@
+{
+  "ac": "AC-25",
+  "title": "同一目录不能同时跑两个通用任务闭环",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:16:42.562Z",
+  "finishedAt": "2026-11-06T14:16:44.329Z",
+  "durationMs": 1767,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-25",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-25"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-25",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 7,
+  "notes": []
+}

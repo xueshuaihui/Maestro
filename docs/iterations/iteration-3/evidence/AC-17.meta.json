@@ -1,0 +1,49 @@
+{
+  "ac": "AC-17",
+  "title": "审核结论与缺陷清单自相矛盾",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:06:35.684Z",
+  "finishedAt": "2026-11-06T13:06:43.286Z",
+  "durationMs": 7602,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-17",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-17"
+    },
+    {
+      "case": "AC-17-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-17-b"
+    },
+    {
+      "case": "AC-17-c",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-17-c"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-17",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    },
+    {
+      "__root": "AC-17-b",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    },
+    {
+      "__root": "AC-17-c",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 5,
+  "notes": []
+}

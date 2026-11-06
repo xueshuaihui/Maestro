@@ -1,0 +1,147 @@
+{
+  "ac": "AC-42",
+  "title": "派发失败 → 升级挂起，不假装执行中",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 命令在 30 秒内结束（实测 801ms）",
+      "ok": true,
+      "blocked": false,
+      "actual": "801ms"
+    },
+    {
+      "text": "Then 退出码是 4（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "And 输出末尾是三行挂起收尾（不打印节点表其余行）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3 行：实例 INST-001 · 已挂起 · 模板 通用任务闭环 / 升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮 / 下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001"
+    },
+    {
+      "text": "And 第 1 行「实例 INST-001 · 已挂起 · 模板 通用任务闭环」（期望 \"实例 INST-001 · 已挂起 · 模板 通用任务闭环\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 · 已挂起 · 模板 通用任务闭环\""
+    },
+    {
+      "text": "And 第 2 行「升级 … 待处理 · 节点 T-001 研究员 · 第 1 轮」（期望匹配 /^升级 ESC-\\d+ 待处理 · 节点 T-001 研究员 · 第 1 轮$/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮"
+    },
+    {
+      "text": "And 第 3 行「下一步：…」（期望 \"下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\""
+    },
+    {
+      "text": "Then 输出含「原因：派遣失败：目标会话不可用」（期望含 \"原因：派遣失败：目标会话不可用\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  原因：派遣失败：目标会话不可用"
+    },
+    {
+      "text": "Then 输出含「节点 T-001 研究员 已升级」（期望含 \"节点 T-001 研究员 已升级\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-001 研究员 已升级 · 第 1 轮"
+    },
+    {
+      "text": "And 机检：实例 state='suspended'（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "And 机检：T-001 state='escalated'（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "And 机检：escalations[0].reasonCode='dispatch_failed'（期望 \"dispatch_failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"dispatch_failed\""
+    },
+    {
+      "text": "And 机检：counters.dispatchCount=1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And 机检：sessions 为空（首派会话没建起来）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "佐证：events 中没有 handoff.created（首派失败不建交接包）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "佐证：events 中 node.dispatch 只有 1 条（第 1 轮首派）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario dispatch-fail-first（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-42",
+        "--scenario",
+        "dispatch-fail-first"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 801,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-42",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 209,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n节点 T-001 研究员 已升级 · 第 1 轮\n节点 T-002 撰写者 待执行\n节点 T-003 审核者 待执行\n升级 ESC-001 待处理\n  原因：派遣失败：目标会话不可用\n  节点：T-001 研究员 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-42",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 187,
+      "stdout": "核心已停止（pid 1516，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

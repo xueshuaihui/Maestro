@@ -1,0 +1,261 @@
+{
+  "ac": "AC-40",
+  "title": "真实宿主上的\"审核驳回 → 改稿 → 通过\"（真实面）",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 真实 DSH 版本为 0.2.2-rc.1（期望 \"0.2.2-rc.1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"0.2.2-rc.1\""
+    },
+    {
+      "text": "Given 模型路由为 deepseek-account → deepseek-flash（期望 \"deepseek-account/deepseek-flash\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"deepseek-account/deepseek-flash\""
+    },
+    {
+      "text": "Given 真实宿主经 stdio 拉起（非 mock）",
+      "ok": true,
+      "blocked": false,
+      "actual": "stdio C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness/DeepSeek Harness.exe C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh/lib/bin.js --profile acp"
+    },
+    {
+      "text": "Given 任务文本逐字取需求 Given（三节 + 故意不写回滚方案 + 产物行）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写一篇发布说明，面向使用 v1.2 的开发者，必须包含「新功能」「升级步骤」「回滚方案」三节。⏎第 1 轮先只写「新功能」与「升级步骤」，故意不要写「回滚方案」；审核会驳回，第 2 轮再补上「回滚方案」。⏎产物：release-notes.md"
+    },
+    {
+      "text": "Then 命令在 10 分钟内结束（DURATION ≤ 600s）",
+      "ok": true,
+      "blocked": false,
+      "actual": "313.586s（上限 600s）"
+    },
+    {
+      "text": "Then 退出码 0（期望 \"0\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"0\""
+    },
+    {
+      "text": "Then 输出含「节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 <d> · 审核 通过」",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 2m38s · 审核 通过"
+    },
+    {
+      "text": "And 机检：v1 与 v2 同时存在且都非空",
+      "ok": true,
+      "blocked": false,
+      "actual": "v1 168 行 / v2 242 行"
+    },
+    {
+      "text": "And 机检：v1 的 sha256 与第 1 轮记录一致（期望 \"dbedc0b14322a395f33396d5a7845ffdd436a9999fdee4a15f80558f1bd9a163\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"dbedc0b14322a395f33396d5a7845ffdd436a9999fdee4a15f80558f1bd9a163\""
+    },
+    {
+      "text": "And 机检：v2 的 sha256 与第 2 轮记录一致（期望 \"b9a37fac48b0f504d3c2b3204a469293fe285dbd8001a9f329e5587c3d0070fd\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"b9a37fac48b0f504d3c2b3204a469293fe285dbd8001a9f329e5587c3d0070fd\""
+    },
+    {
+      "text": "And 机检：T-002 的 artifactHistory 恰好两条（第 1/2 轮）（期望 \"1,2\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"1,2\""
+    },
+    {
+      "text": "And 机检：v1 与 v2 内容不同，且第 2 轮确实补上了「回滚方案」",
+      "ok": true,
+      "blocked": false,
+      "actual": "sha 不同=true；v1 含回滚方案=false；v2 含回滚方案=true"
+    },
+    {
+      "text": "And 机检：edge.kind='backflow' 的交接包恰好 1 条（期望 \"HO-003:T-003→T-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"HO-003:T-003→T-002\""
+    },
+    {
+      "text": "And 机检：该回流交接包的 defects 至少 1 条",
+      "ok": true,
+      "blocked": false,
+      "actual": "1 条：缺少任务要求的「回滚方案」章节，未说明回滚触发条件、操作步骤与验证方式。"
+    },
+    {
+      "text": "And 机检：缺陷证据可解析（<ref>#L<n>，ref 指向 v1、行号在 v1 范围内）",
+      "ok": true,
+      "blocked": false,
+      "actual": "evidence=artifacts/docs/release-notes.v1.md#L166；ref 指向 v1=true；1 ≤ 166 ≤ 168=true"
+    },
+    {
+      "text": "And 机检：回流携带的 previous.sha256 等于 v1 的 sha256（期望 \"dbedc0b14322a395f33396d5a7845ffdd436a9999fdee4a15f80558f1bd9a163\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"dbedc0b14322a395f33396d5a7845ffdd436a9999fdee4a15f80558f1bd9a163\""
+    },
+    {
+      "text": "And 机检：回流携带非空 revisionRequirement（改稿要求可追溯）",
+      "ok": true,
+      "blocked": false,
+      "actual": "补充完整的「回滚方案」章节，至少包含回滚触发条件、具体操作步骤（含版本与命令）、回滚后的数据/服务验证及注意事项，同时保留现有「新功能」「升级步骤」内容。"
+    },
+    {
+      "text": "And 机检：没有升级（escalations 为空）（期望 \"0\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"0\""
+    },
+    {
+      "text": "Then 输出末段含「升级 —」且不含「升级 ESC-」",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 —"
+    },
+    {
+      "text": "机检：review.read 恰好 2 条（第 1/2 轮各一次）（期望 \"2\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"2\""
+    },
+    {
+      "text": "机检：第 1 轮 review.read 为 reject / results=1（期望 \"reject:1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"reject:1\""
+    },
+    {
+      "text": "机检：第 2 轮 review.read 为 pass / results=0（期望 \"pass:0\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pass:0\""
+    },
+    {
+      "text": "机检：两轮 review.read 的 detail.path 均为 out/review.json（期望 \"out/review.json,out/review.json\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"out/review.json,out/review.json\""
+    },
+    {
+      "text": "机检：seq 先后 review.rejected → 第 2 轮 node.dispatch(T-002 round=2) → review.passed",
+      "ok": true,
+      "blocked": false,
+      "actual": "70 < 75 < 128"
+    },
+    {
+      "text": "机检：review.passed 恰好 1 条（期望 \"1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"1\""
+    },
+    {
+      "text": "机检：零 review.invalid / 零 review_missing（本次修复的验证点）（期望 \"0/0\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"0/0\""
+    },
+    {
+      "text": "机检：review.round1.json 为 reject 且 defects=1（期望 \"reject:1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"reject:1\""
+    },
+    {
+      "text": "机检：review.round2.json 为 pass 且 defects=0（期望 \"pass:0\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pass:0\""
+    },
+    {
+      "text": "机检：实例 state=completed（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "机检：三节点全部 done（期望 \"T-001:done,T-002:done,T-003:done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"T-001:done,T-002:done,T-003:done\""
+    },
+    {
+      "text": "机检：T-002 / T-003 的 round=2（T-001 仍第 1 轮）（期望 \"T-001:1,T-002:2,T-003:2\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"T-001:1,T-002:2,T-003:2\""
+    },
+    {
+      "text": "机检：T-003 review.decision=pass / defectCount=0 / reviewPath=out/review.json（期望 \"pass:0:out/review.json\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pass:0:out/review.json\""
+    },
+    {
+      "text": "机检：state.counters.dispatchCount 与 events 的 node.dispatch 条数一致",
+      "ok": true,
+      "blocked": false,
+      "actual": "state=5 / events=5"
+    },
+    {
+      "text": "机检：末条事件为 instance run.completed → completed（期望 \"instance:run.completed:completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"instance:run.completed:completed\""
+    },
+    {
+      "text": "机检：审核提示词共 2 轮（每轮一条「审核文件写入路径」）（期望 \"2\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"2\""
+    },
+    {
+      "text": "机检：两轮审核文件路径均为绝对路径",
+      "ok": true,
+      "blocked": false,
+      "actual": "#1 C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real\\out\\review.json（绝对=true） / #2 C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real\\out\\review.json（绝对=true）"
+    },
+    {
+      "text": "机检：两轮路径解析后等于 <任务目录>/out/review.json（期望 \"c:\\\\users\\\\xuesh\\\\appdata\\\\local\\\\temp\\\\maestro-acc-p3-ac40b\\\\proj\\\\demo-doc-real\\\\out\\\\review.json,c:\\\\users\\\\xuesh\\\\appdata\\\\local\\\\temp\\\\maestro-acc-p3-ac40b\\\\proj\\\\demo-doc-real\\\\out\\\\review.json\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"c:\\\\users\\\\xuesh\\\\appdata\\\\local\\\\temp\\\\maestro-acc-p3-ac40b\\\\proj\\\\demo-doc-real\\\\out\\\\review.json,c:\\\\users\\\\xuesh\\\\appdata\\\\local\\\\temp\\\\maestro-acc-p3-ac40b\\\\proj\\\\demo-doc-real\\\\out\\\\review.json\""
+    },
+    {
+      "text": "机检：workspace-probe 终态——任务目录 out/review.json 存在（PRESENT）",
+      "ok": true,
+      "blocked": false,
+      "actual": "PRESENT  C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real\\out\\review.json"
+    },
+    {
+      "text": "机检：workspace-probe 终态——实例工作区 out/review.json 不存在（工作区没有 out/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "ABSENT 命中 1 条 / 工作区 PRESENT 误命中 0 条 / 顶层目录声明 true"
+    },
+    {
+      "text": "And 重试条款：本次 0 次重试（1 次即通过，条款未触发）",
+      "ok": true,
+      "blocked": false,
+      "actual": "attempts=1，exitCode=0（上限 3 次）"
+    }
+  ],
+  "commands": [
+    {
+      "label": "真实宿主复验（证据来源，本次未重跑）",
+      "argv": [
+        "cd <projectRoot> && node D:/WWW/Maestro/bin/orch.js run --cwd ./demo-doc-real --template task-loop --task \"<AC-40 Given 原文>\""
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 313586,
+      "stdout": "（本次为证据机检：不启动进程。原始 stdout 见 evidence/AC-40b.run.output.txt；耗时 313.586s 见 AC-40b.run.timing.txt）",
+      "stderr": ""
+    }
+  ]
+}

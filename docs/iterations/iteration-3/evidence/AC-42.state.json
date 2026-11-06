@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-7acbc2d789ab2200",
+  "createdAt": "2026-11-06T13:53:09.086Z",
+  "updatedAt": "2026-11-06T13:53:09.292Z",
+  "state": "suspended",
+  "stateSince": "2026-11-06T13:53:09.291Z",
+  "template": "task-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-42\\demo-doc",
+  "task": "写一篇发布说明，覆盖背景、变更与回滚方案。\n产物：release-notes.md",
+  "halted": false,
+  "rev": 4,
+  "counters": {
+    "eventSeq": 2,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "researcher",
+      "round": 1,
+      "state": "escalated",
+      "stateSince": "2026-11-06T13:53:09.291Z",
+      "startedAt": "2026-11-06T13:53:09.105Z",
+      "roundStartedAt": "2026-11-06T13:53:09.105Z",
+      "endedAt": "2026-11-06T13:53:09.291Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": []
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "writer",
+      "round": 0,
+      "state": "pending",
+      "stateSince": "2026-11-06T13:53:09.086Z",
+      "startedAt": null,
+      "roundStartedAt": null,
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": []
+    },
+    {
+      "nodeId": "T-003",
+      "roleId": "reviewer",
+      "round": 0,
+      "state": "pending",
+      "stateSince": "2026-11-06T13:53:09.086Z",
+      "startedAt": null,
+      "roundStartedAt": null,
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": []
+    }
+  ],
+  "sessions": [],
+  "handoffs": [],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-001",
+      "round": 1,
+      "reasonCode": "dispatch_failed",
+      "reasonDetail": "派遣失败：目标会话不可用",
+      "defects": [],
+      "state": "pending",
+      "createdAt": "2026-11-06T13:53:09.290Z",
+      "voidedAt": null
+    }
+  ],
+  "artifactStem": "release-notes"
+}

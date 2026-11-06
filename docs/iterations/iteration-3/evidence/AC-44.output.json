@@ -1,0 +1,184 @@
+{
+  "ac": "AC-44",
+  "title": "任务目录不可写 / 工作区建不出来 → 发起前停住，退出码 3",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then 输出单行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 那一行以「工作目录不可写：」开头",
+      "ok": true,
+      "blocked": false,
+      "actual": "工作目录不可写：C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-a\\no-such-dir"
+    },
+    {
+      "text": "Then 那一行以「no-such-dir」结尾（冒号后是绝对路径）",
+      "ok": true,
+      "blocked": false,
+      "actual": "工作目录不可写：C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-a\\no-such-dir"
+    },
+    {
+      "text": "And 机检：.orch/instances 不存在或为空目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "存在，0 项"
+    },
+    {
+      "text": "And 机检：.orch/instances/INST-001 不存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-a\\.orch\\instances\\INST-001"
+    },
+    {
+      "text": "Given 前置：根 B 下没有正在运行的核心（期望含 \"核心未在运行\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "核心未在运行\n"
+    },
+    {
+      "text": "Then 输出含「无法创建工作区：注入故障（workspace_init:fail）」（期望含 \"无法创建工作区：注入故障（workspace_init:fail）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "无法创建工作区：注入故障（workspace_init:fail）"
+    },
+    {
+      "text": "Then 退出码 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "And 机检：.orch/instances 为空（本次新建的 INST-001 已删除）",
+      "ok": true,
+      "blocked": false,
+      "actual": "存在，0 项"
+    },
+    {
+      "text": "And 机检：没有 INST-001 目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-b\\.orch\\instances\\INST-001"
+    },
+    {
+      "text": "And 机检：不留 workspace/ 空壳",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-b\\.orch\\instances\\INST-001\\workspace"
+    },
+    {
+      "text": "And 机检：没有写 state.json",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-b\\.orch\\instances\\INST-001\\state.json"
+    },
+    {
+      "text": "And 机检：.mock/prompts 不存在或为空（没有发起任何会话）",
+      "ok": true,
+      "blocked": false,
+      "actual": "不存在"
+    },
+    {
+      "text": "And 机检：根 B 实例列表为空（期望 \"（空）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（空）\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --template task-loop --cwd ./no-such-dir --task \"写发布说明。产物：release-notes.md\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--template",
+        "task-loop",
+        "--cwd",
+        "./no-such-dir",
+        "--task",
+        "写发布说明。产物：release-notes.md"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-a",
+      "exitCode": 3,
+      "timedOut": false,
+      "durationMs": 205,
+      "stdout": "工作目录不可写：C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-a\\no-such-dir\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop（根 B 冷启动前置：确认没有正在运行的核心）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "MAESTRO_FAULT=workspace_init:fail orch run --template task-loop --cwd ./demo-doc --task \"写发布说明。产物：release-notes.md\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--template",
+        "task-loop",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写发布说明。产物：release-notes.md"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-b",
+      "exitCode": 3,
+      "timedOut": false,
+      "durationMs": 213,
+      "stdout": "无法创建工作区：注入故障（workspace_init:fail）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-a",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 188,
+      "stdout": "核心已停止（pid 2864，运行 1s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-44-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 199,
+      "stdout": "核心已停止（pid 19020，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

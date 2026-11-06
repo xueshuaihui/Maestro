@@ -1,0 +1,33 @@
+{
+  "ac": "AC-01",
+  "title": "发起通用任务闭环，三节点按序建好",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:25:44.486Z",
+  "finishedAt": "2026-11-06T13:25:46.176Z",
+  "durationMs": 1690,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-01",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-01"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-01",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 15,
+  "notes": [
+    "`state.live.json` 是 status 断言时刻的原始快照（T-001 running）；收尾 `state.json` 是 orch core stop 之后的产品快照（非终态实例按既有口径记 interrupted），两者不是同一时刻。"
+  ]
+}

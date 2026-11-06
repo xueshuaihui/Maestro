@@ -1,0 +1,214 @@
+{
+  "instances": [
+    {
+      "__root": "AC-26",
+      "instanceId": "INST-001",
+      "state": {
+        "schemaVersion": 2,
+        "instanceId": "INST-001",
+        "coreGeneration": "gen-360c944a23a2f6bb",
+        "createdAt": "2026-11-06T14:08:42.284Z",
+        "updatedAt": "2026-11-06T14:08:42.796Z",
+        "state": "interrupted",
+        "stateSince": "2026-11-06T14:08:42.795Z",
+        "template": "task-loop",
+        "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26\\demo-doc",
+        "task": "写一篇发布说明，覆盖背景、变更与回滚方案。\n产物：release-notes.md",
+        "halted": false,
+        "rev": 6,
+        "counters": {
+          "eventSeq": 3,
+          "runCount": 1,
+          "dispatchCount": 1
+        },
+        "hostRaw": {
+          "stopReason": null,
+          "lastError": null,
+          "agentInfo": null
+        },
+        "nodes": [
+          {
+            "nodeId": "T-001",
+            "roleId": "researcher",
+            "round": 1,
+            "state": "running",
+            "stateSince": "2026-11-06T14:08:42.303Z",
+            "startedAt": "2026-11-06T14:08:42.303Z",
+            "roundStartedAt": "2026-11-06T14:08:42.303Z",
+            "endedAt": null,
+            "failure": null,
+            "note": null,
+            "verdict": null,
+            "sessionId": "mock-sess-22856-1",
+            "artifactRefs": [],
+            "reviewReason": null,
+            "review": null,
+            "artifactHistory": []
+          },
+          {
+            "nodeId": "T-002",
+            "roleId": "writer",
+            "round": 0,
+            "state": "pending",
+            "stateSince": "2026-11-06T14:08:42.284Z",
+            "startedAt": null,
+            "roundStartedAt": null,
+            "endedAt": null,
+            "failure": null,
+            "note": null,
+            "verdict": null,
+            "sessionId": null,
+            "artifactRefs": [],
+            "reviewReason": null,
+            "review": null,
+            "artifactHistory": []
+          },
+          {
+            "nodeId": "T-003",
+            "roleId": "reviewer",
+            "round": 0,
+            "state": "pending",
+            "stateSince": "2026-11-06T14:08:42.284Z",
+            "startedAt": null,
+            "roundStartedAt": null,
+            "endedAt": null,
+            "failure": null,
+            "note": null,
+            "verdict": null,
+            "sessionId": null,
+            "artifactRefs": [],
+            "reviewReason": null,
+            "review": null,
+            "artifactHistory": []
+          }
+        ],
+        "sessions": [
+          {
+            "sessionId": "mock-sess-22856-1",
+            "nodeId": "T-001",
+            "round": 1,
+            "hostId": "dsh",
+            "state": "idle",
+            "stateSince": "2026-11-06T14:08:42.543Z",
+            "createdAt": "2026-11-06T14:08:42.543Z",
+            "lastEventAt": "2026-11-06T14:08:42.543Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": null,
+            "pendingPermission": null,
+            "quarantined": false
+          }
+        ],
+        "handoffs": [],
+        "escalations": [],
+        "artifactStem": "release-notes"
+      }
+    },
+    {
+      "__root": "AC-26-b",
+      "instanceId": "INST-001",
+      "state": {
+        "schemaVersion": 2,
+        "instanceId": "INST-001",
+        "coreGeneration": "gen-d22ddb5aad944307",
+        "createdAt": "2026-11-06T14:08:43.800Z",
+        "updatedAt": "2026-11-06T14:08:44.633Z",
+        "state": "interrupted",
+        "stateSince": "2026-11-06T14:08:44.632Z",
+        "template": "code-loop",
+        "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26-b\\demo-doc",
+        "task": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+        "halted": false,
+        "rev": 14,
+        "counters": {
+          "eventSeq": 11,
+          "runCount": 1,
+          "dispatchCount": 2
+        },
+        "hostRaw": {
+          "stopReason": "end_turn",
+          "lastError": null,
+          "agentInfo": null
+        },
+        "nodes": [
+          {
+            "nodeId": "T-001",
+            "roleId": "developer",
+            "round": 1,
+            "state": "done",
+            "stateSince": "2026-11-06T14:08:44.124Z",
+            "startedAt": "2026-11-06T14:08:43.825Z",
+            "roundStartedAt": "2026-11-06T14:08:43.825Z",
+            "endedAt": "2026-11-06T14:08:44.130Z",
+            "failure": null,
+            "note": null,
+            "verdict": null,
+            "sessionId": "mock-sess-384-1",
+            "artifactRefs": []
+          },
+          {
+            "nodeId": "T-002",
+            "roleId": "tester",
+            "round": 1,
+            "state": "running",
+            "stateSince": "2026-11-06T14:08:44.158Z",
+            "startedAt": "2026-11-06T14:08:44.158Z",
+            "roundStartedAt": "2026-11-06T14:08:44.158Z",
+            "endedAt": null,
+            "failure": null,
+            "note": "stopped at node running / session idle",
+            "verdict": null,
+            "sessionId": null,
+            "artifactRefs": []
+          }
+        ],
+        "sessions": [
+          {
+            "sessionId": "mock-sess-384-1",
+            "nodeId": "T-001",
+            "round": 1,
+            "hostId": "mock",
+            "state": "idle",
+            "stateSince": "2026-11-06T14:08:44.132Z",
+            "createdAt": "2026-11-06T14:08:44.071Z",
+            "lastEventAt": "2026-11-06T14:08:44.086Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26-b\\demo-doc\\calc.js",
+            "pendingPermission": null,
+            "quarantined": false
+          }
+        ],
+        "handoffs": [
+          {
+            "handoffId": "HO-001",
+            "edge": {
+              "from": "T-001",
+              "to": "T-002",
+              "kind": "forward"
+            },
+            "state": "created",
+            "createdAt": "2026-11-06T14:08:44.151Z",
+            "deliveredAt": null,
+            "acceptedAt": null,
+            "consumedAt": null,
+            "rejectedAt": null,
+            "rejectReason": null,
+            "wakeConsumedAt": null,
+            "acceptedSignal": null,
+            "ambiguityWindowMs": null,
+            "defects": [],
+            "note": "stopped at handoff created",
+            "artifactRefs": {
+              "input": [],
+              "output": null,
+              "previous": null
+            },
+            "revisionRequirement": null
+          }
+        ],
+        "escalations": []
+      }
+    }
+  ]
+}

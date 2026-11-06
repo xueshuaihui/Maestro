@@ -1,0 +1,31 @@
+{
+  "ac": "AC-09",
+  "title": "第 2 轮通过 → 闭环完成，两版共存",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:26:08.786Z",
+  "finishedAt": "2026-11-06T13:26:11.858Z",
+  "durationMs": 3072,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-09",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-09"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-09",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 13,
+  "notes": []
+}

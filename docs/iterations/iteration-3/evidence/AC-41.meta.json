@@ -1,0 +1,31 @@
+{
+  "ac": "AC-41",
+  "title": "同一节点被重复投递时被拒",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:08:48.751Z",
+  "finishedAt": "2026-11-06T14:08:50.748Z",
+  "durationMs": 1997,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-41",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-41"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-41",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 13,
+  "notes": []
+}

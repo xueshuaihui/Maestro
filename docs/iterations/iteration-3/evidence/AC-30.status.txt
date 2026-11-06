@@ -1,0 +1,31 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-30 --scenario review-missing --prepare-only
+# label=driver --scenario review-missing --prepare-only（备现场） cwd=D:\WWW\Maestro exit=0 127ms
+{"ok":true,"prepareOnly":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30\\demo-doc","scenario":"review-missing","suite":"task-loop","stopAfter":null,"cursorPath":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30\\.mock\\cursor.json","hostPath":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30\\.orch\\hosts\\dsh.json","cursor":{"next":1},"host":{"id":"dsh","transport":"stdio","launch":{"command":"C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe","args":["D:\\WWW\\Maestro\\test\\fixtures\\mock-acp-agent.js","--root","C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-30","--suite","task-loop","--scenario","review-missing"]}}}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop（确认核心已停） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-30 exit=0 94ms
+核心未在运行
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-30 --scenario review-missing --keep
+# label=driver --scenario review-missing --keep（MAESTRO_FAULT=state_write:escalation） cwd=D:\WWW\Maestro exit=5 1946ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-2400-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 空闲
+无法记录升级：state_write:escalation；已停止推进
+实例 INST-001 · 运行中 · 已停止推进 · 模板 通用任务闭环
+节点 T-003 审核者 待校验（升级未记录） · 第 1 轮
+下一步：查看 orch status --instance INST-001 --events；本版本不能继续，只能取消
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-30 exit=0 91ms
+核心未在运行
+

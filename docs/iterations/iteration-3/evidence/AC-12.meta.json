@@ -1,0 +1,33 @@
+{
+  "ac": "AC-12",
+  "title": "重启后仍挂起，轮次与升级都在",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:27:37.887Z",
+  "finishedAt": "2026-11-06T13:27:41.250Z",
+  "durationMs": 3363,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-12",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-12"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-12",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 13,
+  "notes": [
+    "重启手法：`orch run` 挂起后先用 `orch status` 拉起核心（拿到 pid A）→ `orch core stop` → 再 `orch status` 由 CLI 的 `connect({ensure:true})` 自动拉起新核心（pid B≠A）→ 读盘。"
+  ]
+}

@@ -1,0 +1,422 @@
+{
+  "ac": "AC-45",
+  "title": "停在\"待校验（等待下游）\"：核心活着能取消，重启后记成已中断且不重复派发",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 机检：.mock/stopped-after-2 存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "1095ms"
+    },
+    {
+      "text": "Given 机检：T-001 state='done'（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "Given 机检：T-002 state='review'（期望 \"review\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"review\""
+    },
+    {
+      "text": "Given 机检：T-002 reviewReason='downstream'（期望 \"downstream\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"downstream\""
+    },
+    {
+      "text": "Given 机检：handoffs 只有 HO-001 且 state='consumed'（期望 \"HO-001:consumed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"HO-001:consumed\""
+    },
+    {
+      "text": "When core stop 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "When 输出含「核心已停止」（期望含 \"核心已停止\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "核心已停止（pid 28996，运行 1s）\n"
+    },
+    {
+      "text": "Then status 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 输出含「实例 INST-001 · 已中断 ｜ 停在节点 待校验 / 会话 等待下游」（期望含 \"实例 INST-001 · 已中断 ｜ 停在节点 待校验 / 会话 等待下游\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已中断 ｜ 停在节点 待校验 / 会话 等待下游"
+    },
+    {
+      "text": "Then「实例 INST-001 · 已中断」只出现 1 次（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 输出含「节点 T-001 研究员 已完成 · 第 1 轮」（期望含 \"节点 T-001 研究员 已完成 · 第 1 轮\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md"
+    },
+    {
+      "text": "Then 输出含「节点 T-002 撰写者 待校验（等待下游） · 第 1 轮」（期望含 \"节点 T-002 撰写者 待校验（等待下游） · 第 1 轮\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 1s"
+    },
+    {
+      "text": "Then 不含「节点 T-002 撰写者 已完成」（期望不含 \"节点 T-002 撰写者 已完成\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已中断 ｜ 停在节点 待校验 / 会话 等待下游\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 1s\n节点 T-003 审核者 待执行\n会话 等待下游\n交接包 HO-001  研究员→撰写者  已构造   22:16:45\n交接包 HO-001  研究员→撰写者  已投递   22:16:46\n交接包 HO-001  研究员→撰写者  已接受   22:16:46\n交接包 HO-001  研究员→撰写者  已完成   22:16:46\n升级 —\n"
+    },
+    {
+      "text": "Then 输出含「会话 等待下游」（期望含 \"会话 等待下游\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已中断 ｜ 停在节点 待校验 / 会话 等待下游"
+    },
+    {
+      "text": "Then 输出含「交接包 HO-001  研究员→撰写者  已完成」（期望含 \"交接包 HO-001  研究员→撰写者  已完成\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-001  研究员→撰写者  已完成   22:16:46"
+    },
+    {
+      "text": "And 机检：实例 state='interrupted'（期望 \"interrupted\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"interrupted\""
+    },
+    {
+      "text": "And 机检：T-002 仍是 'review'（期望 \"review\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"review\""
+    },
+    {
+      "text": "And 机检：T-002 reviewReason 仍为 'downstream'（期望 \"downstream\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"downstream\""
+    },
+    {
+      "text": "And 机检：T-001 仍是 'done'（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "And 机检：HO-001 仍是 'consumed'（期望 \"consumed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"consumed\""
+    },
+    {
+      "text": "And 机检：重启只多出 1 条事件（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And 机检：新增事件是 instance → interrupted（期望 \"instance:interrupted\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"instance:interrupted\""
+    },
+    {
+      "text": "And 机检：没有新增 node.dispatch（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "And 机检：没有新增 handoff.created（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "And 机检：没有新增 review.evidence_verified（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 输出含「实例已结束（已中断），无需取消」（期望含 \"实例已结束（已中断），无需取消\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例已结束（已中断），无需取消"
+    },
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And 机检：这次取消没有改写 state.json（字节不变）（期望 \"02bc84034e977862698daca71a294031a14f75565ab5fa2628be651ee5eea0f2\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"02bc84034e977862698daca71a294031a14f75565ab5fa2628be651ee5eea0f2\""
+    },
+    {
+      "text": "And 机检：节点/交接包未变（期望 \"T-001:done,T-002:review,T-003:pending|HO-001:consumed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"T-001:done,T-002:review,T-003:pending|HO-001:consumed\""
+    },
+    {
+      "text": "And 机检：会话状态未变（期望 \"idle,waiting_dependency\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"idle,waiting_dependency\""
+    },
+    {
+      "text": "Given 机检（根 B）：.mock/stopped-after-2 存在（核心不停）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1095ms"
+    },
+    {
+      "text": "Given 机检（根 B）：T-002 state='review' / reviewReason='downstream'（期望 \"review/downstream\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"review/downstream\""
+    },
+    {
+      "text": "Then 命令在 5 秒内结束（实测 114ms）",
+      "ok": true,
+      "blocked": false,
+      "actual": "114ms"
+    },
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "And 机检：实例 state='cancelled'（期望 \"cancelled\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"cancelled\""
+    },
+    {
+      "text": "And 机检：T-001 state='done'（已完成节点保持）（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "And 机检：T-002 state='cancelled'（期望 \"cancelled\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"cancelled\""
+    },
+    {
+      "text": "And 机检：T-002 reviewReason 取消落盘后为 null（期望 null）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    },
+    {
+      "text": "And 机检：HO-001 仍为 'consumed'（已消费的交接包不撤回）（期望 \"consumed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"consumed\""
+    },
+    {
+      "text": "And 机检：T-002 endedAt 非空（派发过的节点取消后有耗时）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2026-11-06T14:16:48.509Z"
+    },
+    {
+      "text": "And 机检：sessions 中没有 thinking/tool_running/waiting_input/waiting_dependency（期望 \"（无）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（无）\""
+    },
+    {
+      "text": "Then 输出含「实例 INST-001 · 已取消」（期望含 \"实例 INST-001 · 已取消\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已取消 · 模板 通用任务闭环"
+    },
+    {
+      "text": "Then 输出含「节点 T-002 撰写者 已取消」（期望含 \"节点 T-002 撰写者 已取消\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-002 撰写者 已取消 · 第 1 轮 · 耗时 1s"
+    },
+    {
+      "text": "Then 不再出现交接包等待行（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-a",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 224,
+      "stdout": "核心已停止（pid 28996，运行 1s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001（重启后）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-a",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 228,
+      "stdout": "实例 INST-001 · 已中断 ｜ 停在节点 待校验 / 会话 等待下游\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 1s\n节点 T-003 审核者 待执行\n会话 等待下游\n交接包 HO-001  研究员→撰写者  已构造   22:16:45\n交接包 HO-001  研究员→撰写者  已投递   22:16:46\n交接包 HO-001  研究员→撰写者  已接受   22:16:46\n交接包 HO-001  研究员→撰写者  已完成   22:16:46\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cancel --instance INST-001（已中断后）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "cancel",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-a",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 86,
+      "stdout": "实例已结束（已中断），无需取消\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario doc-pass --stop-after 2 --keep（根 A；已停核心回收）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-a",
+        "--scenario",
+        "doc-pass",
+        "--keep",
+        "--stop-after",
+        "2"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 13,
+      "timedOut": false,
+      "durationMs": 2103,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-10560-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已中断 ｜ 核心已停止\n",
+      "stderr": "task-loop-driver: 已停在 stop，Ctrl-C 结束\nWarning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442\r\n  const code = await main(process.argv.slice(2));\r\n               ^\r\n\r\n\r\n\r\n"
+    },
+    {
+      "label": "orch cancel --instance INST-001（核心活着）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "cancel",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 114,
+      "stdout": "会话 空闲\n会话 空闲\n节点 T-001 研究员 已完成\n节点 T-002 撰写者 已取消\n节点 T-003 审核者 已取消\n交接包 HO-001 已完成\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001（取消后）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 90,
+      "stdout": "实例 INST-001 · 已取消 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已取消 · 第 1 轮 · 耗时 1s\n节点 T-003 审核者 已取消\n会话 空闲\n交接包 HO-001  研究员→撰写者  已构造   22:16:48\n交接包 HO-001  研究员→撰写者  已投递   22:16:48\n交接包 HO-001  研究员→撰写者  已接受   22:16:48\n交接包 HO-001  研究员→撰写者  已完成   22:16:48\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario doc-pass --stop-after 2 --keep（根 B；长驻进程由脚手架终止）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-b",
+        "--scenario",
+        "doc-pass",
+        "--keep",
+        "--stop-after",
+        "2"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 13,
+      "timedOut": false,
+      "durationMs": 2021,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-26600-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已取消 · 第 1 轮 · 耗时 1s\n节点 T-003 审核者 已取消\n交接包 HO-001  研究员→撰写者  已构造   22:16:48\n交接包 HO-001  研究员→撰写者  已投递   22:16:48\n交接包 HO-001  研究员→撰写者  已接受   22:16:48\n交接包 HO-001  研究员→撰写者  已完成   22:16:48\n升级 —\n",
+      "stderr": "task-loop-driver: 已停在 stop，Ctrl-C 结束\nWarning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442\r\n  const code = await main(process.argv.slice(2));\r\n               ^\r\n\r\n\r\n\r\n"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-a",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 96,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-45-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 88,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

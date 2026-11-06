@@ -1,0 +1,31 @@
+{
+  "ac": "AC-37",
+  "title": "I1.1 旧格式实例只读可查",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:52:59.438Z",
+  "finishedAt": "2026-11-06T13:53:00.397Z",
+  "durationMs": 959,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-37",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-37"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-37",
+      "instanceId": "OLD-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 24,
+  "notes": []
+}

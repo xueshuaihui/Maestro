@@ -1,0 +1,34 @@
+{
+  "ac": "AC-28",
+  "title": "运行中取消 5 秒内收敛",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:08:53.438Z",
+  "finishedAt": "2026-11-06T14:08:55.710Z",
+  "durationMs": 2272,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-28",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-28"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-28",
+      "instanceId": "INST-001",
+      "state": "cancelled"
+    }
+  ],
+  "checks": 15,
+  "notes": [
+    "取消前处于 created/delivered/accepted 的交接包：HO-002:accepted",
+    "orch cancel 实测耗时：123ms（硬指标 5000ms）"
+  ]
+}

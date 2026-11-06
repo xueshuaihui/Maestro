@@ -1,0 +1,31 @@
+{
+  "ac": "AC-29",
+  "title": "已升级节点也能被取消",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:24:56.841Z",
+  "finishedAt": "2026-11-06T13:24:59.790Z",
+  "durationMs": 2949,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-29",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-29"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-29",
+      "instanceId": "INST-001",
+      "state": "cancelled"
+    }
+  ],
+  "checks": 10,
+  "notes": []
+}

@@ -1,0 +1,147 @@
+{
+  "ac": "AC-13",
+  "title": "审核文件缺失 → 升级，不回流",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码是 4（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "输出含「原因：核对失败：未找到审核文件 out/review.json」（期望含 \"原因：核对失败：未找到审核文件 out/review.json\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  原因：核对失败：未找到审核文件 out/review.json"
+    },
+    {
+      "text": "输出含「节点 T-003 审核者 已升级」（期望含 \"节点 T-003 审核者 已升级\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-003 审核者 已升级 · 第 1 轮"
+    },
+    {
+      "text": "输出含「节点 T-002 撰写者 已完成」（期望含 \"节点 T-002 撰写者 已完成\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md"
+    },
+    {
+      "text": "机检：T-003 state='escalated'（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "机检：T-002 state='done'（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "机检：counters.dispatchCount=3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：handoffs 恰好 2 条（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：handoffs 依次是 HO-001、HO-002（期望 \"HO-001,HO-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"HO-001,HO-002\""
+    },
+    {
+      "text": "机检：没有 HO-003",
+      "ok": true,
+      "blocked": false,
+      "actual": "HO-001,HO-002"
+    },
+    {
+      "text": "机检：events 中没有 backflow.constructed（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：夹具在工作区放了一份合法 pass 干扰文件（decision）（期望 \"pass\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pass\""
+    },
+    {
+      "text": "机检：核心仍报「未找到审核文件 out/review.json」（未被工作区同名文件带偏）（期望含 \"未找到审核文件 out/review.json\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  原因：核对失败：未找到审核文件 out/review.json"
+    },
+    {
+      "text": "机检：任务目录 demo-doc/out/review.json 不存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-13\\demo-doc/out/review.json"
+    },
+    {
+      "text": "机检：任务目录 demo-doc/out 目录不存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-13\\demo-doc/out"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario review-missing（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-13",
+        "--scenario",
+        "review-missing"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 1437,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-14412-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-13",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 200,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已升级 · 第 1 轮\n会话 已升级\n交接包 HO-001  研究员→撰写者  已构造   21:06:18\n交接包 HO-001  研究员→撰写者  已投递   21:06:18\n交接包 HO-001  研究员→撰写者  已接受   21:06:18\n交接包 HO-001  研究员→撰写者  已完成   21:06:18\n交接包 HO-002  撰写者→审核者  已构造   21:06:18\n交接包 HO-002  撰写者→审核者  已投递   21:06:19\n交接包 HO-002  撰写者→审核者  已接受   21:06:19\n升级 ESC-001 待处理\n  原因：核对失败：未找到审核文件 out/review.json\n  节点：T-003 审核者 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-13",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 197,
+      "stdout": "核心已停止（pid 13128，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

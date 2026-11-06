@@ -1,0 +1,23 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-42 --scenario dispatch-fail-first
+# label=driver --scenario dispatch-fail-first（完整跑完） cwd=D:\WWW\Maestro exit=4 801ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-42 exit=0 209ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+节点 T-001 研究员 已升级 · 第 1 轮
+节点 T-002 撰写者 待执行
+节点 T-003 审核者 待执行
+升级 ESC-001 待处理
+  原因：派遣失败：目标会话不可用
+  节点：T-001 研究员 · 第 1 轮
+  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-42 exit=0 187ms
+核心已停止（pid 1516，运行 1s）
+

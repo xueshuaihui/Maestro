@@ -1,0 +1,33 @@
+{
+  "ac": "AC-05",
+  "title": "下游接受之后，上游才变已完成",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:16:39.092Z",
+  "finishedAt": "2026-11-06T14:16:41.675Z",
+  "durationMs": 2583,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-05",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-05"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-05",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 13,
+  "notes": [
+    "事件按 seq 全序；`detail.round` 用于区分 T-002 的两轮配哪一张交接包（HO-002 / HO-004），seq 只作交叉验证。"
+  ]
+}

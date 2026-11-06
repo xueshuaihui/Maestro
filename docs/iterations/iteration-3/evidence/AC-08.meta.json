@@ -1,0 +1,33 @@
+{
+  "ac": "AC-08",
+  "title": "回流内容带齐缺陷、证据、修改要求与上一版引用",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:26:05.801Z",
+  "finishedAt": "2026-11-06T13:26:08.286Z",
+  "durationMs": 2485,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-08",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-08"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-08",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 15,
+  "notes": [
+    "`state.live.json` 是 --stop-after 4 定格时刻的快照；提示词原文见检查项实测值。"
+  ]
+}

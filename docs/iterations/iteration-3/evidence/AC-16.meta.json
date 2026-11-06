@@ -1,0 +1,40 @@
+{
+  "ac": "AC-16",
+  "title": "审核未引用或引用了别的文档",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:06:29.738Z",
+  "finishedAt": "2026-11-06T13:06:34.856Z",
+  "durationMs": 5118,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-16",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-16"
+    },
+    {
+      "case": "AC-16-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-16-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-16",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    },
+    {
+      "__root": "AC-16-b",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 5,
+  "notes": []
+}

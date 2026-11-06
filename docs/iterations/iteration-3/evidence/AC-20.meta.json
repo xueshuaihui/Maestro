@@ -1,0 +1,40 @@
+{
+  "ac": "AC-20",
+  "title": "上一版被改写或删除",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:06:57.161Z",
+  "finishedAt": "2026-11-06T13:07:02.563Z",
+  "durationMs": 5402,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-20",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-20"
+    },
+    {
+      "case": "AC-20-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-20-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-20",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    },
+    {
+      "__root": "AC-20-b",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 9,
+  "notes": []
+}

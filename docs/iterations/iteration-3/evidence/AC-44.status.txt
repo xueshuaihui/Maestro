@@ -1,0 +1,24 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --template task-loop --cwd ./no-such-dir --task 写发布说明。产物：release-notes.md
+# label=orch run --template task-loop --cwd ./no-such-dir --task "写发布说明。产物：release-notes.md" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-44-a exit=3 205ms
+工作目录不可写：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-44-a\no-such-dir
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop（根 B 冷启动前置：确认没有正在运行的核心） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-44-b exit=0 98ms
+核心未在运行
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --template task-loop --cwd ./demo-doc --task 写发布说明。产物：release-notes.md
+# label=MAESTRO_FAULT=workspace_init:fail orch run --template task-loop --cwd ./demo-doc --task "写发布说明。产物：release-notes.md" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-44-b exit=3 213ms
+无法创建工作区：注入故障（workspace_init:fail）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-44-a exit=0 188ms
+核心已停止（pid 2864，运行 1s）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-44-b exit=0 199ms
+核心已停止（pid 19020，运行 1s）
+

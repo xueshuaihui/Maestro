@@ -1,0 +1,135 @@
+{
+  "ac": "AC-16",
+  "title": "审核未引用或引用了别的文档",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "输出含「原因：核对失败：审核未引用本轮文档」（期望含 \"原因：核对失败：审核未引用本轮文档\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  原因：核对失败：审核未引用本轮文档"
+    },
+    {
+      "text": "输出含「原因：核对失败：审核引用的不是本轮文档 artifacts/docs/orphan.md」（期望含 \"原因：核对失败：审核引用的不是本轮文档 artifacts/docs/orphan.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  原因：核对失败：审核引用的不是本轮文档 artifacts/docs/orphan.md"
+    },
+    {
+      "text": "机检：两次的 T-003 state 都是 'escalated'",
+      "ok": true,
+      "blocked": false,
+      "actual": "分支一:T-003=escalated；分支二（另起全新根）:T-003=escalated"
+    },
+    {
+      "text": "机检：两次都没有 backflow.constructed",
+      "ok": true,
+      "blocked": false,
+      "actual": "分支一:backflow.constructed=0；分支二（另起全新根）:backflow.constructed=0"
+    },
+    {
+      "text": "机检：两次都没有 HO-003",
+      "ok": true,
+      "blocked": false,
+      "actual": "分支一:handoffs=HO-001|HO-002；分支二（另起全新根）:handoffs=HO-001|HO-002"
+    }
+  ],
+  "commands": [
+    {
+      "label": "[分支一] driver --scenario review-artifact-missing（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-16",
+        "--scenario",
+        "review-artifact-missing"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 1559,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-26844-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支一] orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-16",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 216,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已升级 · 第 1 轮\n会话 已升级\n交接包 HO-001  研究员→撰写者  已构造   21:06:30\n交接包 HO-001  研究员→撰写者  已投递   21:06:30\n交接包 HO-001  研究员→撰写者  已接受   21:06:30\n交接包 HO-001  研究员→撰写者  已完成   21:06:30\n交接包 HO-002  撰写者→审核者  已构造   21:06:30\n交接包 HO-002  撰写者→审核者  已投递   21:06:30\n交接包 HO-002  撰写者→审核者  已接受   21:06:31\n升级 ESC-001 待处理\n  原因：核对失败：审核未引用本轮文档\n  节点：T-003 审核者 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支一] orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-16",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 233,
+      "stdout": "核心已停止（pid 12812，运行 1s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支二（另起全新根）] driver --scenario review-artifact-mismatch（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-16-b",
+        "--scenario",
+        "review-artifact-mismatch"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 1581,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-22592-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支二（另起全新根）] orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-16-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 206,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已升级 · 第 1 轮\n会话 已升级\n交接包 HO-001  研究员→撰写者  已构造   21:06:32\n交接包 HO-001  研究员→撰写者  已投递   21:06:33\n交接包 HO-001  研究员→撰写者  已接受   21:06:33\n交接包 HO-001  研究员→撰写者  已完成   21:06:33\n交接包 HO-002  撰写者→审核者  已构造   21:06:33\n交接包 HO-002  撰写者→审核者  已投递   21:06:33\n交接包 HO-002  撰写者→审核者  已接受   21:06:33\n升级 ESC-001 待处理\n  原因：核对失败：审核引用的不是本轮文档 artifacts/docs/orphan.md\n  节点：T-003 审核者 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支二（另起全新根）] orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-16-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 185,
+      "stdout": "核心已停止（pid 30440，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

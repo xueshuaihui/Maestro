@@ -1,0 +1,92 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-21 --scenario research-missing
+# label=[分支一] driver --scenario research-missing（完整跑完） cwd=D:\WWW\Maestro exit=4 1019ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-27216-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=[分支一] orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-21 exit=0 227ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+节点 T-001 研究员 已升级 · 第 1 轮
+节点 T-002 撰写者 待执行
+节点 T-003 审核者 待执行
+会话 已升级
+升级 ESC-001 待处理
+  原因：核对失败：未找到声明的产出 artifacts/reports/research-notes.v1.md
+  节点：T-001 研究员 · 第 1 轮
+  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=[分支一] orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-21 exit=0 202ms
+核心已停止（pid 32108，运行 1s）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-21-b --scenario research-empty
+# label=[分支二（另起全新根）] driver --scenario research-empty（完整跑完） cwd=D:\WWW\Maestro exit=4 893ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-2572-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=[分支二（另起全新根）] orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-21-b exit=0 231ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+节点 T-001 研究员 已升级 · 第 1 轮
+节点 T-002 撰写者 待执行
+节点 T-003 审核者 待执行
+会话 已升级
+升级 ESC-001 待处理
+  原因：核对失败：产出为空 artifacts/reports/research-notes.v1.md
+  节点：T-001 研究员 · 第 1 轮
+  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=[分支二（另起全新根）] orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-21-b exit=0 185ms
+核心已停止（pid 15904，运行 1s）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-21-c --scenario research-stale
+# label=[分支三（另起全新根）] driver --scenario research-stale（完整跑完） cwd=D:\WWW\Maestro exit=4 911ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-11240-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=[分支三（另起全新根）] orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-21-c exit=0 227ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+节点 T-001 研究员 已升级 · 第 1 轮
+节点 T-002 撰写者 待执行
+节点 T-003 审核者 待执行
+会话 已升级
+升级 ESC-001 待处理
+  原因：核对失败：产出不是本轮新写 artifacts/reports/research-notes.v1.md
+  节点：T-001 研究员 · 第 1 轮
+  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=[分支三（另起全新根）] orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-21-c exit=0 190ms
+核心已停止（pid 34688，运行 1s）
+

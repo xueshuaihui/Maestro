@@ -1,0 +1,143 @@
+{
+  "ac": "AC-41",
+  "title": "同一节点被重复投递时被拒",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 机检：.mock/stopped-after-2 存在（停在撰写者待校验）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1073ms"
+    },
+    {
+      "text": "Given 机检：T-002 state='review'（期望 \"review\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"review\""
+    },
+    {
+      "text": "Given 机检：T-002 reviewReason='downstream'（期望 \"downstream\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"downstream\""
+    },
+    {
+      "text": "Given 机检：T-002 round=1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Given 机检：counters.dispatchCount=2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 输出是单行 JSON（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 输出是合法 JSON",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"ok\":false,\"code\":\"NODE_BUSY\",\"detail\":{}}"
+    },
+    {
+      "text": "Then 含 \"ok\":false（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "Then 含 \"code\":\"NODE_BUSY\"（期望 \"NODE_BUSY\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"NODE_BUSY\""
+    },
+    {
+      "text": "And 机检：T-002 仍是 'review'（期望 \"review\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"review\""
+    },
+    {
+      "text": "And 机检：T-002 round 仍为 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And 机检：T-002 reviewReason 仍为 'downstream'（期望 \"downstream\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"downstream\""
+    },
+    {
+      "text": "And 机检：counters.dispatchCount 仍为 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    }
+  ],
+  "commands": [
+    {
+      "label": "node test/fixtures/call-seam.mjs --root <根> --instance INST-001 --call dispatch --node T-002",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\call-seam.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-41",
+        "--instance",
+        "INST-001",
+        "--call",
+        "dispatch",
+        "--node",
+        "T-002"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-41",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 118,
+      "stdout": "{\"ok\":false,\"code\":\"NODE_BUSY\",\"detail\":{}}\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario doc-pass --stop-after 2 --keep（长驻进程由脚手架终止）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-41",
+        "--scenario",
+        "doc-pass",
+        "--keep",
+        "--stop-after",
+        "2"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 13,
+      "timedOut": false,
+      "durationMs": 1626,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-30700-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已中断 ｜ 核心已停止\n",
+      "stderr": "task-loop-driver: 已停在 stop，Ctrl-C 结束\nWarning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442\r\n  const code = await main(process.argv.slice(2));\r\n               ^\r\n\r\n\r\n\r\n"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-41",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 110,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

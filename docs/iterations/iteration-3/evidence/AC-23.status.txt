@@ -1,0 +1,29 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写发布说明。产物：docs/release-notes.md --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "写发布说明。产物：docs/release-notes.md" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-23 exit=1 225ms
+通用任务闭环的产物名不合法：docs/release-notes.md（只写文件名，.md 结尾，不带目录与版本号）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写发布说明。产物：../release-notes.md --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "写发布说明。产物：../release-notes.md" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-23 exit=1 102ms
+通用任务闭环的产物名不合法：../release-notes.md（只写文件名，.md 结尾，不带目录与版本号）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写发布说明。产物：C:\release-notes.md --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "写发布说明。产物：C:\release-notes.md" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-23 exit=1 99ms
+通用任务闭环的产物名不合法：C:\release-notes.md（只写文件名，.md 结尾，不带目录与版本号）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写发布说明。产物：release-notes.txt --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "写发布说明。产物：release-notes.txt" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-23 exit=1 105ms
+通用任务闭环的产物名不合法：release-notes.txt（只写文件名，.md 结尾，不带目录与版本号）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写发布说明。产物：release-notes.v1.md --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "写发布说明。产物：release-notes.v1.md" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-23 exit=1 107ms
+通用任务闭环的产物名不合法：release-notes.v1.md（只写文件名，.md 结尾，不带目录与版本号）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-23 exit=0 207ms
+核心已停止（pid 31680，运行 1s）
+

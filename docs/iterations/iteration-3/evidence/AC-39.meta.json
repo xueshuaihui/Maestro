@@ -1,0 +1,42 @@
+{
+  "ac": "AC-39",
+  "title": "事件记录覆盖审核与下游门控",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:05:22.449Z",
+  "finishedAt": "2026-11-06T14:05:27.649Z",
+  "durationMs": 5200,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-39-a",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-39-a"
+    },
+    {
+      "case": "AC-39-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-39-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-39-a",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-39-b",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 26,
+  "notes": [
+    "失败项同源于 probe/acc3-f-blockers.md 的 BLK-D1：task-loop 的 result='note' 事件行仍把英文 reason 当中段、并重复追加「原因 <中文>」；A-2 第 7 段 / D-5 要求中段直接用中文原因词且不再追加「原因」段。"
+  ]
+}

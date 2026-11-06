@@ -1,0 +1,114 @@
+{
+  "ac": "AC-40",
+  "title": "真实宿主上的『审核驳回 → 改稿 → 通过』（真实面）",
+  "verdict": "通过",
+  "evidenceGrade": "已实测（真实宿主）",
+  "verdictNote": "第 3 次尝试在真实 DSH 上自然跑通（无人为改写审核文件）：第 1 轮 T-003 判 reject → HO-003 回流 → T-002 第 2 轮改稿 → T-003 第 2 轮判 pass，exit 0、404.2s。前两次尝试因审核文件落盘位置与核心读取根不一致而挂起（详见 AC-40.blockers.md，属产品提示词歧义，非判定失败；AC-40 允许最多 3 次重试）。",
+  "requirement": "docs/iterations/iteration-3/requirement.md#AC-40（约 1135 行起）",
+  "env": {
+    "os": "Windows 11 Home China (win32)",
+    "shell": "Git Bash",
+    "node": "v22.22.2",
+    "dshVersion": "0.2.2-rc.1",
+    "dshInstall": "%LOCALAPPDATA%\\Programs\\DeepSeek Harness",
+    "dshCli": "ELECTRON_RUN_AS_NODE=1 \"<install>/DeepSeek Harness.exe\" \"<install>/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh/lib/bin.js\" --profile acp",
+    "dshHome": "隔离目录 %TEMP%/maestro-acc-p3-ac40/dsh-home（凭据为 ~/.dsh/.credentials.yaml 的临时副本，跑完删除）",
+    "provider": "deepseek-account",
+    "model": "deepseek-v4-flash",
+    "projectRoot": "%TEMP%/maestro-acc-p3-ac40/proj3",
+    "taskDir": "%TEMP%/maestro-acc-p3-ac40/proj3/demo-doc-real",
+    "instanceWorkspace": "%TEMP%/maestro-acc-p3-ac40/proj3/.orch/instances/INST-001/workspace"
+  },
+  "command": "cd %TEMP%/maestro-acc-p3-ac40/proj3 && node D:/WWW/Maestro/bin/orch.js run --cwd ./demo-doc-real --template task-loop --task \"<任务原文>\"",
+  "taskText": "写一篇发布说明，面向使用 v1.2 的开发者，必须包含「新功能」「升级步骤」「回滚方案」三节。\n第 1 轮先只写「新功能」与「升级步骤」，故意不要写「回滚方案」；审核会驳回，第 2 轮再补上「回滚方案」。\n产物：release-notes.md",
+  "attempts": [
+    {
+      "attempt": 1,
+      "startedAt": "2026-11-06T12:36:10.760Z",
+      "endedAt": "2026-11-06T12:41:15.151Z",
+      "durationMs": 304391,
+      "duration": "5m04s",
+      "exitCode": 4,
+      "exitCodeNote": "该次未把 CLI stdout 重定向落盘；退出码由后台任务终态回执确认（exit code 4），与 state=suspended 一致",
+      "instanceState": "suspended",
+      "nodes": { "T-001": "done r1", "T-002": "done r1", "T-003": "escalated r1" },
+      "escalation": "ESC-001 review_missing · 核对失败：未找到审核文件 out/review.json",
+      "reviewFileLocation": "实例工作区 workspace/out/review.json（模型写入，核心读任务目录）",
+      "humanIntervention": "无",
+      "evidence": ["AC-40.attempt1.state.json", "AC-40.attempt1.events.jsonl", "AC-40.attempt1.status-events.txt", "AC-40.attempt1.v1.md", "AC-40.attempt1.review.json", "AC-40.attempt1.reviewer.excerpt.jsonl"]
+    },
+    {
+      "attempt": 2,
+      "startedAt": "2026-11-06T12:43:09.861Z",
+      "endedAt": "2026-11-06T12:48:58.358Z",
+      "durationMs": 348497,
+      "duration": "5m48s",
+      "exitCode": 4,
+      "instanceState": "suspended",
+      "nodes": { "T-001": "done r1", "T-002": "done r1", "T-003": "escalated r1" },
+      "escalation": "ESC-001 review_missing · 核对失败：未找到审核文件 out/review.json",
+      "reviewFileLocation": "实例工作区 workspace/out/review.json（模型写入，核心读任务目录）",
+      "humanIntervention": "无",
+      "evidence": ["AC-40.attempt2.output.txt", "AC-40.attempt2.state.json", "AC-40.attempt2.events.jsonl", "AC-40.attempt2.status-events.txt", "AC-40.attempt2.v1.md", "AC-40.attempt2.review.json"]
+    },
+    {
+      "attempt": 3,
+      "startedAt": "2026-11-06T12:50:06.416Z",
+      "endedAt": "2026-11-06T12:56:50.640Z",
+      "durationMs": 404224,
+      "duration": "6m44s",
+      "exitCode": 0,
+      "instanceState": "completed",
+      "nodes": { "T-001": "done r1", "T-002": "done r2", "T-003": "done r2（审核 通过）" },
+      "escalations": [],
+      "reviewFileLocation": "任务目录 demo-doc-real/out/review.json（模型两轮均直接写对，核心读取根一致）",
+      "humanIntervention": "无。预先部署的『工作区→任务目录』搬运看护脚本（relocate.mjs，400ms 轮询）全程未触发一次，日志只有启动行，证明两轮审核文件均为模型自主写入任务目录",
+      "evidence": ["AC-40.run.output.txt", "AC-40.final.state.json", "AC-40.final.events.jsonl", "AC-40.status-events.txt", "AC-40.status.txt", "AC-40.v1.md", "AC-40.v2.md", "AC-40.review.round1.json", "AC-40.review.round2.json", "AC-40.reviewer.round1.excerpt.jsonl", "AC-40.reviewer.round2.excerpt.jsonl", "AC-40.core.log"]
+    }
+  ],
+  "timelineAttempt3": [
+    { "seq": 2, "ts": "2026-11-06T12:50:06.444Z", "event": "node.dispatch T-001 研究员 第 1 轮" },
+    { "seq": 23, "ts": "2026-11-06T12:51:02.292Z", "event": "T-001 产出提交（research-notes.v1.md）" },
+    { "seq": 26, "ts": "2026-11-06T12:51:02.373Z", "event": "node.dispatch T-002 撰写者 第 1 轮" },
+    { "seq": 50, "ts": "2026-11-06T12:52:17.231Z", "event": "T-002 产出提交（release-notes.v1.md）" },
+    { "seq": 54, "ts": "2026-11-06T12:52:17.331Z", "event": "node.dispatch T-003 审核者 第 1 轮" },
+    { "seq": 102, "ts": "2026-11-06T12:54:07.897Z", "event": "T-003 产出提交" },
+    { "seq": 103, "ts": "2026-11-06T12:54:07.903Z", "event": "review.read path=out/review.json decision=reject results=1" },
+    { "seq": 106, "ts": "2026-11-06T12:54:07.920Z", "event": "T-003 review→failed（审核驳回，缺陷 1 条）" },
+    { "seq": 110, "ts": "2026-11-06T12:54:07.998Z", "event": "node.dispatch T-002 撰写者 第 2 轮（回流）" },
+    { "seq": 134, "ts": "2026-11-06T12:55:44.740Z", "event": "T-002 第 2 轮产出提交（release-notes.v2.md）" },
+    { "seq": 138, "ts": "2026-11-06T12:55:44.841Z", "event": "node.dispatch T-003 审核者 第 2 轮（复测）" },
+    { "seq": 162, "ts": "2026-11-06T12:56:50.553Z", "event": "T-003 第 2 轮产出提交" },
+    { "seq": 163, "ts": "2026-11-06T12:56:50.560Z", "event": "review.read path=out/review.json decision=pass results=0" },
+    { "seq": 164, "ts": "2026-11-06T12:56:50.561Z", "event": "review.passed（审核通过）" },
+    { "seq": 167, "ts": "2026-11-06T12:56:50.6Z", "event": "实例 运行中 → 已完成" }
+  ],
+  "roundTimingsAttempt3": [
+    { "round": "T-001 第 1 轮", "from": "12:50:06.444", "to": "12:51:02.292", "seconds": 55.8 },
+    { "round": "T-002 第 1 轮", "from": "12:51:02.373", "to": "12:52:17.231", "seconds": 74.9 },
+    { "round": "T-003 第 1 轮（驳回）", "from": "12:52:17.331", "to": "12:54:07.897", "seconds": 110.6 },
+    { "round": "T-002 第 2 轮（改稿）", "from": "12:54:07.998", "to": "12:55:44.740", "seconds": 96.7 },
+    { "round": "T-003 第 2 轮（通过）", "from": "12:55:44.841", "to": "12:56:50.553", "seconds": 65.7 }
+  ],
+  "checks": {
+    "命令 10 分钟内结束且退出码 0": "通过（404.2s，EXIT=0，见 AC-40.run.output.txt 末行）",
+    "输出含『节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 <d> · 审核 通过』": "通过（逐字：节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 4m33s · 审核 通过）",
+    "v1 与 v2 同时存在": "通过（artifacts/docs/release-notes.v1.md、release-notes.v2.md）",
+    "v1 的 sha256 与第 1 轮记录一致": "通过（state.nodes[T-002].artifactHistory[round=1].sha256 = 12dff0e1…，与磁盘一致）",
+    "存在 1 条 edge.kind='backflow' 的交接包且 defects ≥ 1、证据可解析": "通过（HO-003 审核者→撰写者（回流），defects=1，evidence=artifacts/docs/release-notes.v1.md#L144；v1 共 144 行，行号在范围内）",
+    "没有升级": "通过（escalations=[]，输出末段『升级 —』）",
+    "审核文件来源": "模型自主写入两轮（无人工改写/搬运）"
+  },
+  "sha256": {
+    "release-notes.v1.md": "12dff0e1bb5b5eebb6a172f79d2e398f4629bbb7f2556cfb4e0305d9dc9ee555",
+    "release-notes.v2.md": "2131fa10199a831e3ae3f77f3bbfa6ace6386ecee79a0b7864320d465ee710a2",
+    "attempt1.release-notes.v1.md": "843987711912d8ae57a7b737fb9e4cf10a44efcccf89ef476cea98174b70bfa6",
+    "attempt2.release-notes.v1.md": "868e7e6625aeafdb856a31a17aef4d8a794482f7a13a3c3e30607f4679965a8a"
+  },
+  "notes": [
+    "真实 DSH 版本实测为 0.2.2-rc.1（任务书写的 0.2.1-rc.5 已过时）。",
+    "第 3 次运行输出中出现一次『会话 等待审批：write』（真实宿主对 write 工具短暂请求审批后自动恢复），不影响任何断言。",
+    "第 1 次运行 T-001 用了 web_search / web_fetch（模型自行联网调研），第 2、3 次未联网；不改变结论。",
+    "隔离 DSH_HOME 与临时凭据副本已删除；用户 ~/.dsh 未被写入（仅读取复制 .credentials.yaml）。"
+  ]
+}

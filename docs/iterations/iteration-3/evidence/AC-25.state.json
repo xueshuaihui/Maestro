@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-1cf59eee91f37ffd",
+  "createdAt": "2026-11-06T14:16:43.011Z",
+  "updatedAt": "2026-11-06T14:16:43.769Z",
+  "state": "interrupted",
+  "stateSince": "2026-11-06T14:16:43.724Z",
+  "template": "task-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-25\\demo-doc",
+  "task": "写一篇发布说明，覆盖背景、变更与回滚方案。\n产物：release-notes.md",
+  "halted": true,
+  "rev": 14,
+  "counters": {
+    "eventSeq": 11,
+    "runCount": 1,
+    "dispatchCount": 2
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "researcher",
+      "round": 1,
+      "state": "review",
+      "stateSince": "2026-11-06T14:16:43.629Z",
+      "startedAt": "2026-11-06T14:16:43.029Z",
+      "roundStartedAt": "2026-11-06T14:16:43.029Z",
+      "endedAt": "2026-11-06T14:16:43.646Z",
+      "failure": null,
+      "note": "stopped at node review / session waiting_dependency",
+      "verdict": null,
+      "sessionId": "mock-sess-6592-1",
+      "artifactRefs": [
+        {
+          "ref": "artifacts/reports/research-notes.v1.md",
+          "bytes": 299,
+          "sha256": "020e2db1aa9dffb1654e5684484b034a1b56f2d57f41bc475932631b1dab757d",
+          "verifiedAt": "2026-11-06T14:16:43.646Z"
+        }
+      ],
+      "reviewReason": "downstream",
+      "review": null,
+      "artifactHistory": [
+        {
+          "round": 1,
+          "ref": "artifacts/reports/research-notes.v1.md",
+          "sha256": "020e2db1aa9dffb1654e5684484b034a1b56f2d57f41bc475932631b1dab757d",
+          "bytes": 299,
+          "verifiedAt": "2026-11-06T14:16:43.646Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "writer",
+      "round": 1,
+      "state": "running",
+      "stateSince": "2026-11-06T14:16:43.669Z",
+      "startedAt": "2026-11-06T14:16:43.669Z",
+      "roundStartedAt": "2026-11-06T14:16:43.669Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": []
+    },
+    {
+      "nodeId": "T-003",
+      "roleId": "reviewer",
+      "round": 0,
+      "state": "pending",
+      "stateSince": "2026-11-06T14:16:43.011Z",
+      "startedAt": null,
+      "roundStartedAt": null,
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-6592-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "dsh",
+      "state": "waiting_dependency",
+      "stateSince": "2026-11-06T14:16:43.626Z",
+      "createdAt": "2026-11-06T14:16:43.253Z",
+      "lastEventAt": "2026-11-06T14:16:43.587Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p3/AC-25/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "created",
+      "createdAt": "2026-11-06T14:16:43.662Z",
+      "deliveredAt": null,
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": null,
+      "ambiguityWindowMs": null,
+      "defects": [],
+      "note": "stopped at handoff created",
+      "artifactRefs": {
+        "input": [
+          "artifacts/reports/research-notes.v1.md"
+        ],
+        "output": "artifacts/docs/release-notes.v1.md",
+        "previous": null
+      },
+      "revisionRequirement": null
+    }
+  ],
+  "escalations": [],
+  "artifactStem": "release-notes",
+  "haltCause": "state_write_failed"
+}

@@ -1,0 +1,42 @@
+{
+  "ac": "AC-04",
+  "title": "待校验的两种限定词与会话等待行",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:25:52.181Z",
+  "finishedAt": "2026-11-06T13:25:56.342Z",
+  "durationMs": 4161,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-04-a",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-04-a"
+    },
+    {
+      "case": "AC-04-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-04-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-04-a",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    },
+    {
+      "__root": "AC-04-b",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 12,
+  "notes": [
+    "根 A 的 `state.a-evidence.json` 与根 B 的 `state.b-downstream.json` 分别是两个定格时刻的原始快照；收尾 `state.json` 是 core stop 之后的多根快照。"
+  ]
+}

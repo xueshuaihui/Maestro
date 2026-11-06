@@ -1,0 +1,111 @@
+{
+  "ac": "AC-11",
+  "title": "挂起后不再自动推进",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "前置：实例已挂起（run 退出码 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=4"
+    },
+    {
+      "text": "前置：核心已拉起且实例显示「已挂起」（期望含 \"实例 INST-001 · 已挂起\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已升级 · 第 2 轮\n会话 已升级\n交接包 HO-001  研究员→撰写者  已构造   21:26:35\n交接包 HO-001  研究员→撰写者  已投递   21:26:35\n交接包 HO-001  研究员→撰写者  已接受   21:26:35\n交接包 HO-001  研究员→撰写者  已完成   21:26:35\n交接包 HO-002  撰写者→审核者  已构造   21:26:35\n交接包 HO-002  撰写者→审核者  已投递   21:26:35\n交接包 HO-002  撰写者→审核者  已接受   21:26:35\n交接包 HO-002  撰写者→审核者  已完成   21:26:35\n交接包 HO-003  审核者→撰写者（回流）  已构造   21:26:35\n交接包 HO-003  审核者→撰写者（回流）  已投递   21:26:36\n交接包 HO-003  审核者→撰写者（回流）  已接受   21:26:36\n交接包 HO-003  审核者→撰写者（回流）  已完成   21:26:36\n交接包 HO-004  撰写者→审核者（复测）  已构造   21:26:36\n交接包 HO-004  撰写者→审核者（复测）  已投递   21:26:36\n交接包 HO-004  撰写者→审核者（复测）  已接受   21:26:36\n交接包 HO-004  撰写者→审核者（复测）  已完成   21:26:36\n升级 ESC-001 待处理\n  原因：回流超上限：审核者已派发 2 次仍未通过\n  节点：T-003 审核者 · 第 2 轮\n  缺陷：缺少回滚方案（证据 artifacts/docs/release-notes.v2.md#L1）\n  缺陷：升级步骤缺少验证（证据 artifacts/docs/release-notes.v2.md#L18）\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "前置：核心进程活着（.orch/core.json 的 pid 非空）",
+      "ok": true,
+      "blocked": false,
+      "actual": "pid=32656"
+    },
+    {
+      "text": "机检：dispatchCount 仍为 5（等待 60 秒后）",
+      "ok": true,
+      "blocked": false,
+      "actual": "等待前 5 → 等待后 5"
+    },
+    {
+      "text": "机检：events.jsonl 行数与等待前相同",
+      "ok": true,
+      "blocked": false,
+      "actual": "等待前 65 行 → 等待后 65 行"
+    },
+    {
+      "text": "机检：sessions 数量不再增加",
+      "ok": true,
+      "blocked": false,
+      "actual": "等待前 5 → 等待后 5"
+    },
+    {
+      "text": "机检：T-003 仍为 escalated、实例仍为 suspended",
+      "ok": true,
+      "blocked": false,
+      "actual": "T-003=escalated/2 实例=suspended"
+    },
+    {
+      "text": "机检：handoffs 数量也不增加（4 条，无 HO-005）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4 → 4"
+    },
+    {
+      "text": "备注：等待期间核心 pid 未变（未重启、未换核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "pid 32656 → 32656"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario doc-reject-twice（跑到挂起）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-11",
+        "--scenario",
+        "doc-reject-twice"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 2249,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-8088-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 2 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001（拉起核心）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-11",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 241,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已升级 · 第 2 轮\n会话 已升级\n交接包 HO-001  研究员→撰写者  已构造   21:26:35\n交接包 HO-001  研究员→撰写者  已投递   21:26:35\n交接包 HO-001  研究员→撰写者  已接受   21:26:35\n交接包 HO-001  研究员→撰写者  已完成   21:26:35\n交接包 HO-002  撰写者→审核者  已构造   21:26:35\n交接包 HO-002  撰写者→审核者  已投递   21:26:35\n交接包 HO-002  撰写者→审核者  已接受   21:26:35\n交接包 HO-002  撰写者→审核者  已完成   21:26:35\n交接包 HO-003  审核者→撰写者（回流）  已构造   21:26:35\n交接包 HO-003  审核者→撰写者（回流）  已投递   21:26:36\n交接包 HO-003  审核者→撰写者（回流）  已接受   21:26:36\n交接包 HO-003  审核者→撰写者（回流）  已完成   21:26:36\n交接包 HO-004  撰写者→审核者（复测）  已构造   21:26:36\n交接包 HO-004  撰写者→审核者（复测）  已投递   21:26:36\n交接包 HO-004  撰写者→审核者（复测）  已接受   21:26:36\n交接包 HO-004  撰写者→审核者（复测）  已完成   21:26:36\n升级 ESC-001 待处理\n  原因：回流超上限：审核者已派发 2 次仍未通过\n  节点：T-003 审核者 · 第 2 轮\n  缺陷：缺少回滚方案（证据 artifacts/docs/release-notes.v2.md#L1）\n  缺陷：升级步骤缺少验证（证据 artifacts/docs/release-notes.v2.md#L18）\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-11",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 194,
+      "stdout": "核心已停止（pid 32656，运行 1m）\n",
+      "stderr": ""
+    }
+  ]
+}

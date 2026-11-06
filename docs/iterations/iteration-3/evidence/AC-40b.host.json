@@ -1,0 +1,20 @@
+{
+  "transport": "stdio",
+  "launch": {
+    "command": "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness/DeepSeek Harness.exe",
+    "args": [
+      "C:/Users/xuesh/AppData/Local/Programs/DeepSeek Harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh/lib/bin.js",
+      "--profile",
+      "acp"
+    ],
+    "env": {
+      "DSH_HOME": "C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p3-ac40b/dsh-home"
+    }
+  },
+  "dialect": { "recovery": "resume" },
+  "limits": {
+    "initializeTimeoutMs": 60000,
+    "promptTimeoutMs": 660000,
+    "promptIdleWarnMs": 60000
+  }
+}

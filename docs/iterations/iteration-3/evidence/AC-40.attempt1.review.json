@@ -1,0 +1,11 @@
+{
+  "decision": "reject",
+  "artifact": "artifacts/docs/release-notes.v1.md",
+  "defects": [
+    {
+      "summary": "文档缺少任务要求的「回滚方案」一节，升级失败后的回退路径未作任何说明。",
+      "evidence": "artifacts/docs/release-notes.v1.md#L245"
+    }
+  ],
+  "revisionRequirement": "新增独立的「回滚方案」一节，至少覆盖：回滚触发条件与决策人、依赖版本回退命令、配置文件与锁文件的恢复方式、构建缓存（.devkit/cache/v2）的清理或隔离、CI/镜像 tag 的回退、回滚后的验证清单与观察窗口，并说明 v1.2.0 不涉及持久化数据迁移因而无需数据回滚。"
+}

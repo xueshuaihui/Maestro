@@ -1,0 +1,35 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写第二篇发布说明。产物：second.md --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "…产物：second.md"（同目录第二次发起） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-25 exit=1 97ms
+该目录已有未结束的实例 INST-001，本次未发起
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-25 exit=0 94ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+节点 T-001 研究员 执行中 · 第 1 轮
+节点 T-002 撰写者 待执行
+节点 T-003 审核者 待执行
+会话 空闲
+升级 —
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-25 --scenario doc-hold-research --keep
+# label=driver --scenario doc-hold-research --keep 输出（长驻进程由脚手架终止） cwd=D:\WWW\Maestro exit=13 1414ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-6592-1
+任务已投递
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+实例 INST-001 · 已中断 ｜ 核心已停止
+
+--- stderr ---
+task-loop-driver: 已停在 paused，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-25 exit=0 88ms
+核心未在运行
+

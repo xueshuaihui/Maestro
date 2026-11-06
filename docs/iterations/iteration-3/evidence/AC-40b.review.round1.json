@@ -1,0 +1,11 @@
+{
+  "decision": "reject",
+  "artifact": "artifacts/docs/release-notes.v1.md",
+  "defects": [
+    {
+      "summary": "缺少任务要求的「回滚方案」章节，未说明回滚触发条件、操作步骤与验证方式。",
+      "evidence": "artifacts/docs/release-notes.v1.md#L166"
+    }
+  ],
+  "revisionRequirement": "补充完整的「回滚方案」章节，至少包含回滚触发条件、具体操作步骤（含版本与命令）、回滚后的数据/服务验证及注意事项，同时保留现有「新功能」「升级步骤」内容。"
+}

@@ -1,0 +1,21 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-31 --scenario review-missing
+# label=driver --scenario review-missing（完整跑完） cwd=D:\WWW\Maestro exit=4 1577ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-26172-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-31 exit=0 86ms
+核心未在运行
+

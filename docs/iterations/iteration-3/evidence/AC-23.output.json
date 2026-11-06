@@ -1,0 +1,230 @@
+{
+  "ac": "AC-23",
+  "title": "发起前拦截非法产物名",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 整行逐字等于「通用任务闭环的产物名不合法：docs/release-notes.md（只写文件名，.md 结尾，不带目录与版本号）」（期望 \"通用任务闭环的产物名不合法：docs/release-notes.md（只写文件名，.md 结尾，不带目录与版本号）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"通用任务闭环的产物名不合法：docs/release-notes.md（只写文件名，.md 结尾，不带目录与版本号）\""
+    },
+    {
+      "text": "Then 冒号与「（」之间的内容逐字等于 \"docs/release-notes.md\"（期望 \"docs/release-notes.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"docs/release-notes.md\""
+    },
+    {
+      "text": "Then 退出码 1（docs/release-notes.md）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 整行逐字等于「通用任务闭环的产物名不合法：../release-notes.md（只写文件名，.md 结尾，不带目录与版本号）」（期望 \"通用任务闭环的产物名不合法：../release-notes.md（只写文件名，.md 结尾，不带目录与版本号）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"通用任务闭环的产物名不合法：../release-notes.md（只写文件名，.md 结尾，不带目录与版本号）\""
+    },
+    {
+      "text": "Then 冒号与「（」之间的内容逐字等于 \"../release-notes.md\"（期望 \"../release-notes.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"../release-notes.md\""
+    },
+    {
+      "text": "Then 退出码 1（../release-notes.md）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 整行逐字等于「通用任务闭环的产物名不合法：C:\\release-notes.md（只写文件名，.md 结尾，不带目录与版本号）」（期望 \"通用任务闭环的产物名不合法：C:\\\\release-notes.md（只写文件名，.md 结尾，不带目录与版本号）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"通用任务闭环的产物名不合法：C:\\\\release-notes.md（只写文件名，.md 结尾，不带目录与版本号）\""
+    },
+    {
+      "text": "Then 冒号与「（」之间的内容逐字等于 \"C:\\\\release-notes.md\"（期望 \"C:\\\\release-notes.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"C:\\\\release-notes.md\""
+    },
+    {
+      "text": "Then 退出码 1（C:\\release-notes.md）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 整行逐字等于「通用任务闭环的产物名不合法：release-notes.txt（只写文件名，.md 结尾，不带目录与版本号）」（期望 \"通用任务闭环的产物名不合法：release-notes.txt（只写文件名，.md 结尾，不带目录与版本号）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"通用任务闭环的产物名不合法：release-notes.txt（只写文件名，.md 结尾，不带目录与版本号）\""
+    },
+    {
+      "text": "Then 冒号与「（」之间的内容逐字等于 \"release-notes.txt\"（期望 \"release-notes.txt\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"release-notes.txt\""
+    },
+    {
+      "text": "Then 退出码 1（release-notes.txt）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 整行逐字等于「通用任务闭环的产物名不合法：release-notes.v1.md（只写文件名，.md 结尾，不带目录与版本号）」（期望 \"通用任务闭环的产物名不合法：release-notes.v1.md（只写文件名，.md 结尾，不带目录与版本号）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"通用任务闭环的产物名不合法：release-notes.v1.md（只写文件名，.md 结尾，不带目录与版本号）\""
+    },
+    {
+      "text": "Then 冒号与「（」之间的内容逐字等于 \"release-notes.v1.md\"（期望 \"release-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"release-notes.v1.md\""
+    },
+    {
+      "text": "Then 退出码 1（release-notes.v1.md）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And 机检：五次之后 .orch/instances 仍为空（期望 \"（空）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（空）\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"写发布说明。产物：docs/release-notes.md\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写发布说明。产物：docs/release-notes.md",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-23",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 225,
+      "stdout": "通用任务闭环的产物名不合法：docs/release-notes.md（只写文件名，.md 结尾，不带目录与版本号）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"写发布说明。产物：../release-notes.md\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写发布说明。产物：../release-notes.md",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-23",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "通用任务闭环的产物名不合法：../release-notes.md（只写文件名，.md 结尾，不带目录与版本号）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"写发布说明。产物：C:\\release-notes.md\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写发布说明。产物：C:\\release-notes.md",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-23",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "通用任务闭环的产物名不合法：C:\\release-notes.md（只写文件名，.md 结尾，不带目录与版本号）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"写发布说明。产物：release-notes.txt\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写发布说明。产物：release-notes.txt",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-23",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 105,
+      "stdout": "通用任务闭环的产物名不合法：release-notes.txt（只写文件名，.md 结尾，不带目录与版本号）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"写发布说明。产物：release-notes.v1.md\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写发布说明。产物：release-notes.v1.md",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-23",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 107,
+      "stdout": "通用任务闭环的产物名不合法：release-notes.v1.md（只写文件名，.md 结尾，不带目录与版本号）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-23",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 207,
+      "stdout": "核心已停止（pid 31680，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

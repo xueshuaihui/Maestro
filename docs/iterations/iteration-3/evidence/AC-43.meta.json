@@ -1,0 +1,31 @@
+{
+  "ac": "AC-43",
+  "title": "回合执行失败 → 升级挂起，不回流",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:53:10.591Z",
+  "finishedAt": "2026-11-06T13:53:12.549Z",
+  "durationMs": 1958,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-43",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-43"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-43",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 17,
+  "notes": []
+}

@@ -1,0 +1,33 @@
+{
+  "ac": "AC-07",
+  "title": "审核第 1 轮驳回 → 自动回流，撰写者交出新版本",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:26:02.626Z",
+  "finishedAt": "2026-11-06T13:26:05.319Z",
+  "durationMs": 2693,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-07",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-07"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-07",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 11,
+  "notes": [
+    "`state.live.json` 是 --stop-after 4 定格时刻的快照（T-003 failed 第 1 轮、T-002 review(downstream) 第 2 轮、v1/v2 并存）。"
+  ]
+}

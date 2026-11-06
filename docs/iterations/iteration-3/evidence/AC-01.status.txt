@@ -1,0 +1,35 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-01 --scenario doc-hold-research --prepare-only
+# label=driver --scenario doc-hold-research --prepare-only（备现场） cwd=D:\WWW\Maestro exit=0 85ms
+{"ok":true,"prepareOnly":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-01","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-01\\demo-doc","scenario":"doc-hold-research","suite":"task-loop","stopAfter":null,"cursorPath":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-01\\.mock\\cursor.json","hostPath":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-01\\.orch\\hosts\\dsh.json","cursor":{"next":1},"host":{"id":"dsh","transport":"stdio","launch":{"command":"C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe","args":["D:\\WWW\\Maestro\\test\\fixtures\\mock-acp-agent.js","--root","C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-01","--suite","task-loop","--scenario","doc-hold-research"]}}}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-01 exit=0 98ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+节点 T-001 研究员 执行中 · 第 1 轮
+节点 T-002 撰写者 待执行
+节点 T-003 审核者 待执行
+会话 空闲
+升级 —
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-01 exit=0 113ms
+核心未在运行
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-01 --scenario doc-hold-research --keep
+# label=driver --scenario doc-hold-research --keep 最终输出（长驻进程由脚手架终止，exit 不作产品退出码） cwd=D:\WWW\Maestro exit=13 1571ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-22272-1
+任务已投递
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+实例 INST-001 · 已中断 ｜ 核心已停止
+
+--- stderr ---
+task-loop-driver: 已停在 paused，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^

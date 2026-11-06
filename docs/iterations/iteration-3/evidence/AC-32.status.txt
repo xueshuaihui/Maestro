@@ -1,0 +1,57 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-32 --scenario review-says-pass --keep --stop-after 4
+# label=driver --scenario review-says-pass --keep --stop-after 4 cwd=D:\WWW\Maestro exit=13 2220ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-7224-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+实例 INST-001 · 已中断 ｜ 核心已停止
+
+--- stderr ---
+task-loop-driver: 已停在 stop，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop（A） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-32 exit=0 98ms
+核心未在运行
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-32-b --scenario review-says-reject
+# label=driver --scenario review-says-reject（完整跑完） cwd=D:\WWW\Maestro exit=0 1587ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-1088-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md
+节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过
+交接包 HO-001  研究员→撰写者  已构造   21:25:09
+交接包 HO-001  研究员→撰写者  已投递   21:25:09
+交接包 HO-001  研究员→撰写者  已接受   21:25:09
+交接包 HO-001  研究员→撰写者  已完成   21:25:09
+交接包 HO-002  撰写者→审核者  已构造   21:25:09
+交接包 HO-002  撰写者→审核者  已投递   21:25:09
+交接包 HO-002  撰写者→审核者  已接受   21:25:09
+交接包 HO-002  撰写者→审核者  已完成   21:25:09
+升级 —
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop（B） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-32-b exit=0 85ms
+核心未在运行
+

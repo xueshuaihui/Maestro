@@ -1,0 +1,33 @@
+{
+  "ac": "AC-10",
+  "title": "审核第 2 轮驳回 → 停止回流、升级挂起",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:26:30.913Z",
+  "finishedAt": "2026-11-06T13:26:33.902Z",
+  "durationMs": 2989,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-10",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-10"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-10",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 18,
+  "notes": [
+    "`state.live.json` 是挂起时刻（run 结束后、core stop 之前）的快照；收尾 `state.json` 是 core stop 之后的快照（suspended 不在对账范围，字段不变）。"
+  ]
+}

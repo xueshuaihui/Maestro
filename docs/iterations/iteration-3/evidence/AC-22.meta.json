@@ -1,0 +1,25 @@
+{
+  "ac": "AC-22",
+  "title": "发起前拦截空任务与缺产物行",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:24:39.729Z",
+  "finishedAt": "2026-11-06T13:24:40.891Z",
+  "durationMs": 1162,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-22",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-22"
+    }
+  ],
+  "instances": [],
+  "checks": 11,
+  "notes": []
+}

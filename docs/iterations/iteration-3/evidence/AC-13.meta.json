@@ -1,0 +1,31 @@
+{
+  "ac": "AC-13",
+  "title": "审核文件缺失 → 升级，不回流",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:06:17.823Z",
+  "finishedAt": "2026-11-06T13:06:19.995Z",
+  "durationMs": 2172,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-13",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-13"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-13",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 15,
+  "notes": []
+}

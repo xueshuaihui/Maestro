@@ -1,0 +1,123 @@
+{
+  "ac": "AC-40b",
+  "acRef": "AC-40",
+  "title": "真实宿主复验：审核驳回 → 改稿 → 审核通过（修复 150c7c6 后）",
+  "verdict": "通过",
+  "evidenceGrade": "已实测（真实宿主）",
+  "verdictNote": "修复后首次真实宿主复验一次通过，无重试、无人工干预：第 1 轮 T-003 写 reject（绝对路径落盘）→ HO-003 回流 → T-002 第 2 轮改稿 → T-003 第 2 轮写 pass → 实例 completed，exit 0，313.6s。全流程 0 条 review.invalid / 0 条 review_missing；审核提示词两轮均为绝对路径，且等于 <任务目录>/out/review.json；实例工作区自始至终不存在 out/review.json。",
+  "fixUnderTest": {
+    "commit": "150c7c6",
+    "subject": "fix(I1.3): 审核提示词给绝对路径，真实宿主不再写错位置",
+    "baseline": "docs/iterations/iteration-3/evidence/AC-40.*（修复前 3 次尝试：2 次 review_missing 挂起，第 3 次通过）"
+  },
+  "requirement": "docs/iterations/iteration-3/requirement.md#AC-40（约 1135 行起）",
+  "env": {
+    "os": "Windows 11 Home China (win32)",
+    "shell": "Git Bash",
+    "node": "v22.22.2",
+    "dshVersion": "0.2.2-rc.1",
+    "dshInstall": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness",
+    "dshCli": "ELECTRON_RUN_AS_NODE=1 \"<install>/DeepSeek Harness.exe\" \"<install>/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh/lib/bin.js\" --profile acp",
+    "dshHome": "隔离目录 C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\dsh-home（.credentials.yaml 为 ~/.dsh 的临时副本，profiles/acp/cordis.patch.yml 将 agent-default-model 与 acp 路由到 deepseek-account；跑完删除，未写 ~/.dsh）",
+    "provider": "deepseek-account",
+    "model": "deepseek-flash",
+    "projectRoot": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj",
+    "taskDir": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real",
+    "instanceWorkspace": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\.orch\\instances\\INST-001\\workspace",
+    "hostConfig": "proj/.orch/hosts/dsh.json（已随证据保存为 AC-40b.host.json）"
+  },
+  "command": "cd <projectRoot> && node D:/WWW/Maestro/bin/orch.js run --cwd ./demo-doc-real --template task-loop --task \"<AC-40 Given 原文>\"",
+  "taskText": "写一篇发布说明，面向使用 v1.2 的开发者，必须包含「新功能」「升级步骤」「回滚方案」三节。\n第 1 轮先只写「新功能」与「升级步骤」，故意不要写「回滚方案」；审核会驳回，第 2 轮再补上「回滚方案」。\n产物：release-notes.md",
+  "taskTextNote": "按 AC-40 的 Given 逐字使用。任务书里的简写任务（“写一篇发布说明，覆盖背景、变更与回滚方案。/ 产物：release-notes.md”）不含分段写作指令，第 1 轮不会被驳回，无法构成 AC-40 要求的“驳回 → 改稿 → 通过”链路，故以需求 Given 为准。",
+  "attempts": [
+    {
+      "attempt": 1,
+      "startedAt": "2026-11-06T13:30:49.991Z",
+      "endedAt": "2026-11-06T13:36:03.577Z",
+      "durationMs": 313586,
+      "duration": "5m14s",
+      "exitCode": 0,
+      "instanceState": "completed",
+      "nodes": { "T-001": "done r1", "T-002": "done r2", "T-003": "done r2（审核 通过）" },
+      "escalations": [],
+      "humanIntervention": "无。未改写/搬运任何 review.json，未修改任何仓库源码。",
+      "evidence": [
+        "AC-40b.run.output.txt",
+        "AC-40b.run.timing.txt",
+        "AC-40b.final.state.json",
+        "AC-40b.final.events.jsonl",
+        "AC-40b.status-events.txt",
+        "AC-40b.v1.md",
+        "AC-40b.v2.md",
+        "AC-40b.prompt.review.txt",
+        "AC-40b.review.round1.json",
+        "AC-40b.review.round2.json",
+        "AC-40b.workspace-probe.txt",
+        "AC-40b.reviewer.round1.excerpt.jsonl",
+        "AC-40b.reviewer.round2.excerpt.jsonl",
+        "AC-40b.host.json"
+      ]
+    }
+  ],
+  "pathChecks": {
+    "promptReviewPathRound1": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real\\out\\review.json",
+    "promptReviewPathRound2": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real\\out\\review.json",
+    "resolvedEqualsTaskDirReviewJson": true,
+    "promptPathIsAbsolute": true,
+    "modelWritePathRound1": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real\\out\\review.json",
+    "modelWritePathRound2": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3-ac40b\\proj\\demo-doc-real\\out\\review.json",
+    "taskDirReviewExistsAtEnd": true,
+    "workspaceReviewExistsAtEnd": false,
+    "workspaceOutDirExistsAtEnd": false,
+    "probeObservation": "1000ms 轮询全程仅一次状态变化：13:33:46.114Z taskDir/out/review.json=PRESENT、workspace/out/review.json=absent；之后未再变过（第 2 轮覆盖同一绝对路径）",
+    "reviewInvalidCount": 0,
+    "reviewMissingCount": 0
+  },
+  "timeline": [
+    { "seq": 2, "ts": "2026-11-06T13:30:50.269Z", "event": "node.dispatch T-001 研究员 第 1 轮" },
+    { "seq": 23, "ts": "2026-11-06T13:32:16.273Z", "event": "T-001 产出核对通过（research-notes.v1.md）" },
+    { "seq": 25, "ts": "2026-11-06T13:32:16.335Z", "event": "node.dispatch T-002 撰写者 第 1 轮" },
+    { "seq": 46, "ts": "2026-11-06T13:33:25.003Z", "event": "T-002 产出核对通过（release-notes.v1.md）" },
+    { "seq": 49, "ts": "2026-11-06T13:33:25.099Z", "event": "node.dispatch T-003 审核者 第 1 轮" },
+    { "seq": 68, "ts": "2026-11-06T13:34:02.563Z", "event": "review.read path=out/review.json decision=reject results=1" },
+    { "seq": 70, "ts": "2026-11-06T13:34:02.571Z", "event": "review.rejected defectCount=1" },
+    { "seq": 73, "ts": "2026-11-06T13:34:02.675Z", "event": "handoff.created HO-003 审核者→撰写者（回流）" },
+    { "seq": 75, "ts": "2026-11-06T13:34:02.681Z", "event": "node.dispatch T-002 撰写者 第 2 轮（回流）" },
+    { "seq": 95, "ts": "2026-11-06T13:34:44.892Z", "event": "T-002 第 2 轮产出核对通过（release-notes.v2.md）" },
+    { "seq": 98, "ts": "2026-11-06T13:34:44.959Z", "event": "node.dispatch T-003 审核者 第 2 轮（复测）" },
+    { "seq": 127, "ts": "2026-11-06T13:36:03.325Z", "event": "review.read path=out/review.json decision=pass results=0" },
+    { "seq": 128, "ts": "2026-11-06T13:36:03.326Z", "event": "review.passed defectCount=0" },
+    { "seq": 132, "ts": "2026-11-06T13:36:03.577Z", "event": "实例 运行中 → 已完成" }
+  ],
+  "roundTimings": [
+    { "round": "T-001 第 1 轮", "from": "13:30:50.269", "to": "13:32:16.273", "seconds": 86.0, "cliShown": "耗时 1m26s" },
+    { "round": "T-002 第 1 轮", "from": "13:32:16.335", "to": "13:33:25.003", "seconds": 68.7, "cliShown": "节点耗时 2m29s（含等待下游）" },
+    { "round": "T-003 第 1 轮（驳回）", "from": "13:33:25.099", "to": "13:34:02.563", "seconds": 37.5, "cliShown": "节点耗时 2m38s（两轮合计）" },
+    { "round": "T-002 第 2 轮（改稿）", "from": "13:34:02.681", "to": "13:34:44.892", "seconds": 42.2, "cliShown": "见上" },
+    { "round": "T-003 第 2 轮（通过）", "from": "13:34:44.959", "to": "13:36:03.325", "seconds": 78.4, "cliShown": "见上" }
+  ],
+  "checks": {
+    "Given 真实 DSH 可用，全新项目根": "通过（隔离临时根 + 独立 DSH_HOME，DSH 0.2.2-rc.1，provider deepseek-account / model deepseek-flash）",
+    "Then 命令在 10 分钟内结束，退出码 0": "通过（313.6s，EXIT=0，AC-40b.run.output.txt 末行“升级 —”）",
+    "And 输出含『节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 <d> · 审核 通过』": "通过（逐字：节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 2m38s · 审核 通过）",
+    "And v1 与 v2 同时存在，v1 的 sha256 与第 1 轮记录一致": "通过（workspace/artifacts/docs/release-notes.v1.md 168 行、release-notes.v2.md 242 行；v1 sha256=dbedc0b1… 与 state.nodes[T-002].artifactHistory[round=1].sha256 一致）",
+    "And 存在 1 条 edge.kind='backflow' 的交接包，其 defects 至少 1 条、证据可解析": "通过（HO-003 T-003→T-002 kind=backflow，defects=1，evidence=artifacts/docs/release-notes.v1.md#L166；v1 共 168 行，行号在范围内）",
+    "And 没有升级": "通过（escalations=[]，输出末段“升级 —”）",
+    "And 第 1 轮 reject、第 2 轮 pass": "通过（review.read seq68 reject results=1；seq127 pass results=0；两轮审核文件均为模型自主写入，无人工改写）",
+    "复验专项：提示词给绝对路径": "通过（两轮均为 <任务目录>\\out\\review.json 绝对路径）",
+    "复验专项：任务目录有、工作区无 review.json": "通过（探针 1000ms 全程 + 终态双查）",
+    "复验专项：零 review.invalid / review_missing": "通过（events 132 条中 0 / 0）"
+  },
+  "sha256": {
+    "release-notes.v1.md": "dbedc0b14322a395f33396d5a7845ffdd436a9999fdee4a15f80558f1bd9a163",
+    "release-notes.v2.md": "b9a37fac48b0f504d3c2b3204a469293fe285dbd8001a9f329e5587c3d0070fd",
+    "research-notes.v1.md": "9f080f577218ec7d2d45022ddc7307a790f85bc71642e586093a181faa37c908"
+  },
+  "notes": [
+    "真实 DSH 版本实测 0.2.2-rc.1（任务书的 0.2.1-rc.5 已过时）；无 dsh.cmd，经 Electron 的 node 模式调 asar 内 bin.js。",
+    "第 1 轮撰写者会话出现一次“会话 等待审批：write”（run.output.txt:17），随后自动恢复，与修复前第 3 次尝试的宿主行为一致，不影响断言。",
+    "模型在调研/撰写阶段使用了 pwsh/glob/grep 等工具；项目根与任务目录均在 %TEMP% 下，未触发仓库路径的 pwsh 权限修复。",
+    "审核提示词证据来自隔离 DSH_HOME 内的会话转录（session.v4.jsonl.zstd，按 zstd 帧逐帧解压），非人工拼接。",
+    "隔离目录与凭据副本已删除；用户 ~/.dsh 全程只读（仅复制 .credentials.yaml）。"
+  ]
+}

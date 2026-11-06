@@ -1,0 +1,31 @@
+{
+  "ac": "AC-33",
+  "title": "每次派发对应一张交接包，编号连续",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:05:15.073Z",
+  "finishedAt": "2026-11-06T14:05:18.003Z",
+  "durationMs": 2930,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-33",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-33"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-33",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 11,
+  "notes": []
+}

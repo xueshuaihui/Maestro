@@ -1,0 +1,107 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-19 --scenario doc-missing
+# label=[分支一] driver --scenario doc-missing（完整跑完） cwd=D:\WWW\Maestro exit=4 1297ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-32232-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-002 撰写者 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=[分支一] orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-19 exit=0 204ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已升级 · 第 1 轮
+节点 T-003 审核者 待执行
+会话 已升级
+交接包 HO-001  研究员→撰写者  已构造   21:06:50
+交接包 HO-001  研究员→撰写者  已投递   21:06:50
+交接包 HO-001  研究员→撰写者  已接受   21:06:50
+升级 ESC-001 待处理
+  原因：核对失败：未找到声明的产出 artifacts/docs/release-notes.v1.md
+  节点：T-002 撰写者 · 第 1 轮
+  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=[分支一] orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-19 exit=0 199ms
+核心已停止（pid 15392，运行 1s）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-19-b --scenario doc-empty
+# label=[分支二（另起全新根）] driver --scenario doc-empty（完整跑完） cwd=D:\WWW\Maestro exit=4 1219ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-12460-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-002 撰写者 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=[分支二（另起全新根）] orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-19-b exit=0 201ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已升级 · 第 1 轮
+节点 T-003 审核者 待执行
+会话 已升级
+交接包 HO-001  研究员→撰写者  已构造   21:06:52
+交接包 HO-001  研究员→撰写者  已投递   21:06:52
+交接包 HO-001  研究员→撰写者  已接受   21:06:52
+升级 ESC-001 待处理
+  原因：核对失败：产出为空 artifacts/docs/release-notes.v1.md
+  节点：T-002 撰写者 · 第 1 轮
+  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=[分支二（另起全新根）] orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-19-b exit=0 183ms
+核心已停止（pid 28836，运行 1s）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-19-c --scenario doc-stale
+# label=[分支三（另起全新根）] driver --scenario doc-stale（完整跑完） cwd=D:\WWW\Maestro exit=4 1223ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-19288-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-002 撰写者 · 第 1 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=[分支三（另起全新根）] orch status --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-19-c exit=0 196ms
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已升级 · 第 1 轮
+节点 T-003 审核者 待执行
+会话 已升级
+交接包 HO-001  研究员→撰写者  已构造   21:06:54
+交接包 HO-001  研究员→撰写者  已投递   21:06:54
+交接包 HO-001  研究员→撰写者  已接受   21:06:54
+升级 ESC-001 待处理
+  原因：核对失败：产出不是本轮新写 artifacts/docs/release-notes.v1.md
+  节点：T-002 撰写者 · 第 1 轮
+  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=[分支三（另起全新根）] orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-19-c exit=0 186ms
+核心已停止（pid 24988，运行 1s）
+

@@ -1,0 +1,61 @@
+{
+  "ac": "AC-36",
+  "title": "编码闭环与单节点输出不回归",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:04:36.593Z",
+  "finishedAt": "2026-11-06T14:04:57.149Z",
+  "durationMs": 20556,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-36-a",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-36-a"
+    },
+    {
+      "case": "AC-36-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-36-b"
+    },
+    {
+      "case": "AC-36-c",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-36-c"
+    },
+    {
+      "case": "AC-36-d",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-36-d"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-36-a",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    },
+    {
+      "__root": "AC-36-b",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-36-c",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-36-d",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 66,
+  "notes": [
+    "回归对照口径：code-loop 定格用 I1.2 验收 AC-05 的实测样例（同一命令 backflow-once --stop-after 3 --keep）；single 用 I1.2 附录 A-1 / A-2 的 single 列（= I1.1 版式）；code-loop 成功/挂起用 A-3 / A-4。只允许 实例号/会话号/耗时/时间戳 变化（I1.2 附录对这些字段本身就是变量）。",
+    "条数下限断言：要求 pass = tests 且 tests ≥ 416（HEAD 基线），只禁止条数减少，不禁止后续迭代新增用例——新增测试全绿仍算通过。"
+  ]
+}

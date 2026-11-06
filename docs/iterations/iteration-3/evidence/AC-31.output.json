@@ -1,0 +1,101 @@
+{
+  "ac": "AC-31",
+  "title": "审核无效时不留下回流包、不再派发",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 前置：夹具跑完退出码 4（升级挂起）（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "机检：counters.dispatchCount=3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：events 中没有 reason='backflow.constructed'（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：handoffs 中没有 edge.kind='backflow'（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：handoffs 恰好 2 条（HO-001、HO-002）（期望 \"HO-001,HO-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"HO-001,HO-002\""
+    },
+    {
+      "text": "机检：T-002 state='done'（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "机检：T-003 state='escalated'（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "机检：T-003 对应的会话 state='escalated'（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "机检：T-003 升级后没有被再次派发（round 仍为 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：实例已挂起（不是 failed）（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario review-missing（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-31",
+        "--scenario",
+        "review-missing"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 1577,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-26172-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-31",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 86,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

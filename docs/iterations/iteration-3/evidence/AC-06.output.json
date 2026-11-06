@@ -1,0 +1,129 @@
+{
+  "ac": "AC-06",
+  "title": "审核通过后闭环完成",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "命令退出码是 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "输出含「节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 <d> · 产物 artifacts/reports/research-notes.v1.md」（期望匹配 /节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 (?:\\d+(?:\\.\\d+)?(?:ms|s|m|h))+ · 产物 artifacts\\/reports\\/research-notes\\.v1\\.md/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-31684-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:26:00\n交接包 HO-001  研究员→撰写者  已投递   21:26:00\n交接包 HO-001  研究员→撰写者  已接受   21:26:00\n交接包 HO-001  研究员→撰写者  已完成   21:26:00\n交接包 HO-002  撰写者→审核者  已构造   21:26:00\n交接包 HO-002  撰写者→审核者  已投递   21:26:01\n交接包 HO-002  撰写者→审核者  已接受   21:26:01\n交接包 HO-002  撰写者→审核者  已完成   21:26:01\n升级 —\n"
+    },
+    {
+      "text": "输出含「节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 <d> · 产物 artifacts/docs/release-notes.v1.md」（期望匹配 /节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 (?:\\d+(?:\\.\\d+)?(?:ms|s|m|h))+ · 产物 artifacts\\/docs\\/release-notes\\.v1\\.md/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-31684-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:26:00\n交接包 HO-001  研究员→撰写者  已投递   21:26:00\n交接包 HO-001  研究员→撰写者  已接受   21:26:00\n交接包 HO-001  研究员→撰写者  已完成   21:26:00\n交接包 HO-002  撰写者→审核者  已构造   21:26:00\n交接包 HO-002  撰写者→审核者  已投递   21:26:01\n交接包 HO-002  撰写者→审核者  已接受   21:26:01\n交接包 HO-002  撰写者→审核者  已完成   21:26:01\n升级 —\n"
+    },
+    {
+      "text": "输出含「节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 <d> · 审核 通过」（期望匹配 /节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 (?:\\d+(?:\\.\\d+)?(?:ms|s|m|h))+ · 审核 通过/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-31684-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:26:00\n交接包 HO-001  研究员→撰写者  已投递   21:26:00\n交接包 HO-001  研究员→撰写者  已接受   21:26:00\n交接包 HO-001  研究员→撰写者  已完成   21:26:00\n交接包 HO-002  撰写者→审核者  已构造   21:26:00\n交接包 HO-002  撰写者→审核者  已投递   21:26:01\n交接包 HO-002  撰写者→审核者  已接受   21:26:01\n交接包 HO-002  撰写者→审核者  已完成   21:26:01\n升级 —\n"
+    },
+    {
+      "text": "输出含「升级 —」（期望含 \"升级 —\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-31684-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:26:00\n交接包 HO-001  研究员→撰写者  已投递   21:26:00\n交接包 HO-001  研究员→撰写者  已接受   21:26:00\n交接包 HO-001  研究员→撰写者  已完成   21:26:00\n交接包 HO-002  撰写者→审核者  已构造   21:26:00\n交接包 HO-002  撰写者→审核者  已投递   21:26:01\n交接包 HO-002  撰写者→审核者  已接受   21:26:01\n交接包 HO-002  撰写者→审核者  已完成   21:26:01\n升级 —\n"
+    },
+    {
+      "text": "A-1：成功路径全文不出现「核对失败」/「执行失败」/「未知错误」",
+      "ok": true,
+      "blocked": false,
+      "actual": "三种词都不出现"
+    },
+    {
+      "text": "输出含「实例 INST-001 · 已完成 · 模板 通用任务闭环」（期望含 \"实例 INST-001 · 已完成 · 模板 通用任务闭环\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已完成 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n会话 空闲\n交接包 HO-001  研究员→撰写者  已构造   21:26:00\n交接包 HO-001  研究员→撰写者  已投递   21:26:00\n交接包 HO-001  研究员→撰写者  已接受   21:26:00\n交接包 HO-001  研究员→撰写者  已完成   21:26:00\n交接包 HO-002  撰写者→审核者  已构造   21:26:00\n交接包 HO-002  撰写者→审核者  已投递   21:26:01\n交接包 HO-002  撰写者→审核者  已接受   21:26:01\n交接包 HO-002  撰写者→审核者  已完成   21:26:01\n升级 —\n"
+    },
+    {
+      "text": "机检：实例 state = completed（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "机检：三个节点 state 都是 done（期望 \"T-001=done,T-002=done,T-003=done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"T-001=done,T-002=done,T-003=done\""
+    },
+    {
+      "text": "机检：sessions 中每一轮派发的会话 state 最终都是 idle",
+      "ok": true,
+      "blocked": false,
+      "actual": "3 个会话：T-001#1=idle,T-002#1=idle,T-003#1=idle"
+    },
+    {
+      "text": "机检：handoffs 全部 state=consumed 且 consumedAt 非空",
+      "ok": true,
+      "blocked": false,
+      "actual": "HO-001=consumed/2026-11-06T13:26:00.817Z,HO-002=consumed/2026-11-06T13:26:01.142Z"
+    },
+    {
+      "text": "机检：终态无升级",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario doc-pass（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-06",
+        "--scenario",
+        "doc-pass"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1689,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-31684-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:26:00\n交接包 HO-001  研究员→撰写者  已投递   21:26:00\n交接包 HO-001  研究员→撰写者  已接受   21:26:00\n交接包 HO-001  研究员→撰写者  已完成   21:26:00\n交接包 HO-002  撰写者→审核者  已构造   21:26:00\n交接包 HO-002  撰写者→审核者  已投递   21:26:01\n交接包 HO-002  撰写者→审核者  已接受   21:26:01\n交接包 HO-002  撰写者→审核者  已完成   21:26:01\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-06",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 214,
+      "stdout": "实例 INST-001 · 已完成 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n会话 空闲\n交接包 HO-001  研究员→撰写者  已构造   21:26:00\n交接包 HO-001  研究员→撰写者  已投递   21:26:00\n交接包 HO-001  研究员→撰写者  已接受   21:26:00\n交接包 HO-001  研究员→撰写者  已完成   21:26:00\n交接包 HO-002  撰写者→审核者  已构造   21:26:00\n交接包 HO-002  撰写者→审核者  已投递   21:26:01\n交接包 HO-002  撰写者→审核者  已接受   21:26:01\n交接包 HO-002  撰写者→审核者  已完成   21:26:01\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-06",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 179,
+      "stdout": "核心已停止（pid 30616，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

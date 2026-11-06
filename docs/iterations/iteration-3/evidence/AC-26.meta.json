@@ -1,0 +1,42 @@
+{
+  "ac": "AC-26",
+  "title": "编码闭环与通用任务闭环同目录互斥",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:08:41.876Z",
+  "finishedAt": "2026-11-06T14:08:44.937Z",
+  "durationMs": 3061,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-26",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26"
+    },
+    {
+      "case": "AC-26-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-26-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-26",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    },
+    {
+      "__root": "AC-26-b",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 9,
+  "notes": [
+    "补充观测（不计入本 AC 判据）：若占用方停在**第 1 次派发**（code-loop `hold-forever` 在 session/new 内暂停），同目录的第二次 `orch run` 会排在 `@dir` 锁上直到 60s 握手超时，输出「未知错误：IPC_TIMEOUT」而不是 DIR_BUSY。复现已写入 probe/acc3-f-blockers.md。"
+  ]
+}

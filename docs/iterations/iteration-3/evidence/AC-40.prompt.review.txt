@@ -1,0 +1,10 @@
+写一篇发布说明，面向使用 v1.2 的开发者，必须包含「新功能」「升级步骤」「回滚方案」三节。
+第 1 轮先只写「新功能」与「升级步骤」，故意不要写「回滚方案」；审核会驳回，第 2 轮再补上「回滚方案」。
+产物：release-notes.md
+
+本轮文档引用：artifacts/docs/release-notes.v1.md
+工作区：C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3-ac40\proj3\.orch\instances\INST-001\workspace
+审核文件写入路径：out/review.json
+只认审核文件：{"decision":"pass"|"reject","artifact":"artifacts/docs/release-notes.v1.md","defects":[{"summary":"一句话缺陷","evidence":"artifacts/docs/release-notes.v1.md#L1"}],"revisionRequirement":"..."}
+判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。
+不要修改文档。

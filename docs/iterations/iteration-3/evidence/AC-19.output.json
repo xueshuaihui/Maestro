@@ -1,0 +1,195 @@
+{
+  "ac": "AC-19",
+  "title": "撰写产物缺失、为空或不是本轮新写",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "输出含「原因：核对失败：未找到声明的产出 artifacts/docs/release-notes.v1.md」（期望含 \"原因：核对失败：未找到声明的产出 artifacts/docs/release-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  原因：核对失败：未找到声明的产出 artifacts/docs/release-notes.v1.md"
+    },
+    {
+      "text": "输出含「原因：核对失败：产出为空 artifacts/docs/release-notes.v1.md」（期望含 \"原因：核对失败：产出为空 artifacts/docs/release-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  原因：核对失败：产出为空 artifacts/docs/release-notes.v1.md"
+    },
+    {
+      "text": "输出含「原因：核对失败：产出不是本轮新写 artifacts/docs/release-notes.v1.md」（期望含 \"原因：核对失败：产出不是本轮新写 artifacts/docs/release-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  原因：核对失败：产出不是本轮新写 artifacts/docs/release-notes.v1.md"
+    },
+    {
+      "text": "机检：三次都是 T-002 state='escalated'",
+      "ok": true,
+      "blocked": false,
+      "actual": "分支一:T-002=escalated；分支二（另起全新根）:T-002=escalated；分支三（另起全新根）:T-002=escalated"
+    },
+    {
+      "text": "机检：三次都是 T-003 state='pending'",
+      "ok": true,
+      "blocked": false,
+      "actual": "分支一:T-003=pending；分支二（另起全新根）:T-003=pending；分支三（另起全新根）:T-003=pending"
+    },
+    {
+      "text": "机检：三次的 counters.dispatchCount 都是 2",
+      "ok": true,
+      "blocked": false,
+      "actual": "分支一:dispatchCount=2；分支二（另起全新根）:dispatchCount=2；分支三（另起全新根）:dispatchCount=2"
+    },
+    {
+      "text": "机检：三次都没有名为 HO-002 的交接包",
+      "ok": true,
+      "blocked": false,
+      "actual": "分支一:handoffs=HO-001；分支二（另起全新根）:handoffs=HO-001；分支三（另起全新根）:handoffs=HO-001"
+    }
+  ],
+  "commands": [
+    {
+      "label": "[分支一] driver --scenario doc-missing（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19",
+        "--scenario",
+        "doc-missing"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 1297,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-32232-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-002 撰写者 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支一] orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 204,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已升级 · 第 1 轮\n节点 T-003 审核者 待执行\n会话 已升级\n交接包 HO-001  研究员→撰写者  已构造   21:06:50\n交接包 HO-001  研究员→撰写者  已投递   21:06:50\n交接包 HO-001  研究员→撰写者  已接受   21:06:50\n升级 ESC-001 待处理\n  原因：核对失败：未找到声明的产出 artifacts/docs/release-notes.v1.md\n  节点：T-002 撰写者 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支一] orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 199,
+      "stdout": "核心已停止（pid 15392，运行 1s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支二（另起全新根）] driver --scenario doc-empty（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19-b",
+        "--scenario",
+        "doc-empty"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 1219,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-12460-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-002 撰写者 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支二（另起全新根）] orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 201,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已升级 · 第 1 轮\n节点 T-003 审核者 待执行\n会话 已升级\n交接包 HO-001  研究员→撰写者  已构造   21:06:52\n交接包 HO-001  研究员→撰写者  已投递   21:06:52\n交接包 HO-001  研究员→撰写者  已接受   21:06:52\n升级 ESC-001 待处理\n  原因：核对失败：产出为空 artifacts/docs/release-notes.v1.md\n  节点：T-002 撰写者 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支二（另起全新根）] orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 183,
+      "stdout": "核心已停止（pid 28836，运行 1s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支三（另起全新根）] driver --scenario doc-stale（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19-c",
+        "--scenario",
+        "doc-stale"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 1223,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-19288-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-002 撰写者 · 第 1 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支三（另起全新根）] orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19-c",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 196,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已升级 · 第 1 轮\n节点 T-003 审核者 待执行\n会话 已升级\n交接包 HO-001  研究员→撰写者  已构造   21:06:54\n交接包 HO-001  研究员→撰写者  已投递   21:06:54\n交接包 HO-001  研究员→撰写者  已接受   21:06:54\n升级 ESC-001 待处理\n  原因：核对失败：产出不是本轮新写 artifacts/docs/release-notes.v1.md\n  节点：T-002 撰写者 · 第 1 轮\n  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "[分支三（另起全新根）] orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19-c",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 186,
+      "stdout": "核心已停止（pid 24988，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

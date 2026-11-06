@@ -1,0 +1,122 @@
+{
+  "ac": "AC-25",
+  "title": "同一目录不能同时跑两个通用任务闭环",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：INST-001 已停在 T-001 的 prompt 前（.mock/paused 出现）",
+      "ok": true,
+      "blocked": false,
+      "actual": "758ms"
+    },
+    {
+      "text": "Given 机检：实例 state=running（期望 \"running\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"running\""
+    },
+    {
+      "text": "Given 机检：T-001 state=running（期望 \"running\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"running\""
+    },
+    {
+      "text": "Then 输出含「该目录已有未结束的实例 INST-001，本次未发起」（期望含 \"该目录已有未结束的实例 INST-001，本次未发起\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "该目录已有未结束的实例 INST-001，本次未发起"
+    },
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "And 机检：.orch/instances 仍只有 INST-001（期望 \"INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"INST-001\""
+    },
+    {
+      "text": "佐证：第一个实例仍在运行（期望含 \"实例 INST-001 · 运行中\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --template task-loop --cwd ./demo-doc --task \"…产物：second.md\"（同目录第二次发起）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo-doc",
+        "--task",
+        "写第二篇发布说明。产物：second.md",
+        "--template",
+        "task-loop",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-25",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "该目录已有未结束的实例 INST-001，本次未发起\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-25",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n节点 T-001 研究员 执行中 · 第 1 轮\n节点 T-002 撰写者 待执行\n节点 T-003 审核者 待执行\n会话 空闲\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario doc-hold-research --keep 输出（长驻进程由脚手架终止）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-25",
+        "--scenario",
+        "doc-hold-research",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 13,
+      "timedOut": false,
+      "durationMs": 1414,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-6592-1\n任务已投递\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已中断 ｜ 核心已停止\n",
+      "stderr": "task-loop-driver: 已停在 paused，Ctrl-C 结束\nWarning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442\r\n  const code = await main(process.argv.slice(2));\r\n               ^\r\n\r\n\r\n\r\n"
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-25",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 88,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "ac": "AC-02",
+  "title": "研究完成后，撰写者收到研究笔记与写作路径",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：`.mock/stopped-after-2` 存在（Given 定格点）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "输出含「节点 T-001 研究员 已完成 · 第 1 轮」（期望含 \"节点 T-001 研究员 已完成 · 第 1 轮\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 1s\n节点 T-003 审核者 待执行\n会话 等待下游\n交接包 HO-001  研究员→撰写者  已构造   21:25:47\n交接包 HO-001  研究员→撰写者  已投递   21:25:47\n交接包 HO-001  研究员→撰写者  已接受   21:25:47\n交接包 HO-001  研究员→撰写者  已完成   21:25:47\n升级 —\n"
+    },
+    {
+      "text": "输出含「产物 artifacts/reports/research-notes.v1.md」（期望含 \"产物 artifacts/reports/research-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 1s\n节点 T-003 审核者 待执行\n会话 等待下游\n交接包 HO-001  研究员→撰写者  已构造   21:25:47\n交接包 HO-001  研究员→撰写者  已投递   21:25:47\n交接包 HO-001  研究员→撰写者  已接受   21:25:47\n交接包 HO-001  研究员→撰写者  已完成   21:25:47\n升级 —\n"
+    },
+    {
+      "text": "输出含「节点 T-002 撰写者 待校验（等待下游） · 第 1 轮」（期望含 \"节点 T-002 撰写者 待校验（等待下游） · 第 1 轮\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 1s\n节点 T-003 审核者 待执行\n会话 等待下游\n交接包 HO-001  研究员→撰写者  已构造   21:25:47\n交接包 HO-001  研究员→撰写者  已投递   21:25:47\n交接包 HO-001  研究员→撰写者  已接受   21:25:47\n交接包 HO-001  研究员→撰写者  已完成   21:25:47\n升级 —\n"
+    },
+    {
+      "text": "输出含「交接包 HO-001  研究员→撰写者  已完成」（期望含 \"交接包 HO-001  研究员→撰写者  已完成\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 1s\n节点 T-003 审核者 待执行\n会话 等待下游\n交接包 HO-001  研究员→撰写者  已构造   21:25:47\n交接包 HO-001  研究员→撰写者  已投递   21:25:47\n交接包 HO-001  研究员→撰写者  已接受   21:25:47\n交接包 HO-001  研究员→撰写者  已完成   21:25:47\n升级 —\n"
+    },
+    {
+      "text": "机检：`.mock/prompts/2.json` 存在且是 T-002 第 1 轮",
+      "ok": true,
+      "blocked": false,
+      "actual": "nodeId=T-002 round=1"
+    },
+    {
+      "text": "提示词含「研究笔记：artifacts/reports/research-notes.v1.md」（期望含 \"研究笔记：artifacts/reports/research-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写一篇发布说明，覆盖背景、变更与回滚方案。\n产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p3/AC-02/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。"
+    },
+    {
+      "text": "提示词含「本轮文档引用：artifacts/docs/release-notes.v1.md」（期望含 \"本轮文档引用：artifacts/docs/release-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写一篇发布说明，覆盖背景、变更与回滚方案。\n产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p3/AC-02/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。"
+    },
+    {
+      "text": "提示词含写入路径「.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md」（期望含 \".orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写一篇发布说明，覆盖背景、变更与回滚方案。\n产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p3/AC-02/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。"
+    },
+    {
+      "text": "机检：研究笔记存在且非空",
+      "ok": true,
+      "blocked": false,
+      "actual": "true / 299 B"
+    },
+    {
+      "text": "机检：T-002 state/reviewReason/round = review/downstream/1（期望 \"review/downstream/1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"review/downstream/1\""
+    },
+    {
+      "text": "机检：T-001 state = done（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "机检：HO-001 state = consumed（期望 \"consumed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"consumed\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-02",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 110,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 1s\n节点 T-003 审核者 待执行\n会话 等待下游\n交接包 HO-001  研究员→撰写者  已构造   21:25:47\n交接包 HO-001  研究员→撰写者  已投递   21:25:47\n交接包 HO-001  研究员→撰写者  已接受   21:25:47\n交接包 HO-001  研究员→撰写者  已完成   21:25:47\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-02",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 117,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario doc-pass --stop-after 2 --keep 最终输出（长驻进程由脚手架终止，exit 不作产品退出码）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-02",
+        "--scenario",
+        "doc-pass",
+        "--keep",
+        "--stop-after",
+        "2"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 13,
+      "timedOut": false,
+      "durationMs": 2119,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-33000-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已中断 ｜ 核心已停止\n",
+      "stderr": "task-loop-driver: 已停在 stop，Ctrl-C 结束\nWarning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442\r\n  const code = await main(process.argv.slice(2));\r\n               ^\r\n\r\n\r\n\r\n"
+    }
+  ]
+}

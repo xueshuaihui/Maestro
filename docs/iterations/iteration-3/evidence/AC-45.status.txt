@@ -1,0 +1,99 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-45-a exit=0 224ms
+核心已停止（pid 28996，运行 1s）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=orch status --instance INST-001（重启后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-45-a exit=0 228ms
+实例 INST-001 · 已中断 ｜ 停在节点 待校验 / 会话 等待下游
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 待校验（等待下游） · 第 1 轮 · 耗时 1s
+节点 T-003 审核者 待执行
+会话 等待下游
+交接包 HO-001  研究员→撰写者  已构造   22:16:45
+交接包 HO-001  研究员→撰写者  已投递   22:16:46
+交接包 HO-001  研究员→撰写者  已接受   22:16:46
+交接包 HO-001  研究员→撰写者  已完成   22:16:46
+升级 —
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js cancel --instance INST-001
+# label=orch cancel --instance INST-001（已中断后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-45-a exit=1 86ms
+实例已结束（已中断），无需取消
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-45-a --scenario doc-pass --keep --stop-after 2
+# label=driver --scenario doc-pass --stop-after 2 --keep（根 A；已停核心回收） cwd=D:\WWW\Maestro exit=13 2103ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-10560-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+实例 INST-001 · 已中断 ｜ 核心已停止
+
+--- stderr ---
+task-loop-driver: 已停在 stop，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js cancel --instance INST-001
+# label=orch cancel --instance INST-001（核心活着） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-45-b exit=0 114ms
+会话 空闲
+会话 空闲
+节点 T-001 研究员 已完成
+节点 T-002 撰写者 已取消
+节点 T-003 审核者 已取消
+交接包 HO-001 已完成
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js status --instance INST-001
+# label=orch status --instance INST-001（取消后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-45-b exit=0 90ms
+实例 INST-001 · 已取消 · 模板 通用任务闭环
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已取消 · 第 1 轮 · 耗时 1s
+节点 T-003 审核者 已取消
+会话 空闲
+交接包 HO-001  研究员→撰写者  已构造   22:16:48
+交接包 HO-001  研究员→撰写者  已投递   22:16:48
+交接包 HO-001  研究员→撰写者  已接受   22:16:48
+交接包 HO-001  研究员→撰写者  已完成   22:16:48
+升级 —
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-45-b --scenario doc-pass --keep --stop-after 2
+# label=driver --scenario doc-pass --stop-after 2 --keep（根 B；长驻进程由脚手架终止） cwd=D:\WWW\Maestro exit=13 2021ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-26600-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已取消 · 第 1 轮 · 耗时 1s
+节点 T-003 审核者 已取消
+交接包 HO-001  研究员→撰写者  已构造   22:16:48
+交接包 HO-001  研究员→撰写者  已投递   22:16:48
+交接包 HO-001  研究员→撰写者  已接受   22:16:48
+交接包 HO-001  研究员→撰写者  已完成   22:16:48
+升级 —
+
+--- stderr ---
+task-loop-driver: 已停在 stop，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-45-a exit=0 96ms
+核心未在运行
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-45-b exit=0 88ms
+核心未在运行
+

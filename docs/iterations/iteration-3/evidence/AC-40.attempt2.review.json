@@ -1,0 +1,11 @@
+{
+  "decision": "reject",
+  "artifact": "artifacts/docs/release-notes.v1.md",
+  "defects": [
+    {
+      "summary": "缺少必备的「回滚方案」章节，全文只有「新功能」与「升级步骤」两节",
+      "evidence": "artifacts/docs/release-notes.v1.md#L260"
+    }
+  ],
+  "revisionRequirement": "补充独立的「回滚方案」章节，说明从 v1.2.0 回退到 v1.1.x 的触发条件、依赖与配置回退步骤、缓存处理及回滚后的验证方法，并保留现有「新功能」「升级步骤」内容。"
+}

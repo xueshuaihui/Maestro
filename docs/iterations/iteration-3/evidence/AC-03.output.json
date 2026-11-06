@@ -1,0 +1,123 @@
+{
+  "ac": "AC-03",
+  "title": "撰写完成后，审核者收到本轮文档引用",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：release-notes.v1.md 存在且 bytes > 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "true / 229 B"
+    },
+    {
+      "text": "机检：`.mock/prompts/3.json` 存在且是 T-003 第 1 轮",
+      "ok": true,
+      "blocked": false,
+      "actual": "nodeId=T-003 round=1"
+    },
+    {
+      "text": "prompt 的 task 含「本轮文档引用：artifacts/docs/release-notes.v1.md」（期望含 \"本轮文档引用：artifacts/docs/release-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写一篇发布说明，覆盖背景、变更与回滚方案。\n产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v1.md\n工作区：C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-03\\.orch\\instances\\INST-001\\workspace\n审核文件写入路径：C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-03\\demo-doc\\out\\review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v1.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v1.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。"
+    },
+    {
+      "text": "prompt 含审核文件路径 out/review.json（绝对路径、解析到 <任务目录>/out/review.json）",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-03\\demo-doc\\out\\review.json → C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-03\\demo-doc\\out\\review.json"
+    },
+    {
+      "text": "机检：审核文件的相对引用（T-003 review.reviewPath）仍是 out/review.json（期望 \"out/review.json\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"out/review.json\""
+    },
+    {
+      "text": "机检：HO-002 edge = T-002→T-003 forward（期望 \"T-002→T-003/forward\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"T-002→T-003/forward\""
+    },
+    {
+      "text": "机检：HO-002 state = consumed（期望 \"consumed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"consumed\""
+    },
+    {
+      "text": "机检：HO-002 artifactRefs.input 含 artifacts/docs/release-notes.v1.md（期望含 \"artifacts/docs/release-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"artifacts/docs/release-notes.v1.md\"]"
+    },
+    {
+      "text": "节点 T-002 的最终行含「产物 artifacts/docs/release-notes.v1.md」（期望含 \"产物 artifacts/docs/release-notes.v1.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md"
+    },
+    {
+      "text": "机检：T-002 state/round = done/1（期望 \"done/1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done/1\""
+    },
+    {
+      "text": "夹具完整跑完（退出码 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario doc-pass（完整跑完）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-03",
+        "--scenario",
+        "doc-pass"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1717,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-13920-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   21:25:50\n交接包 HO-001  研究员→撰写者  已投递   21:25:50\n交接包 HO-001  研究员→撰写者  已接受   21:25:50\n交接包 HO-001  研究员→撰写者  已完成   21:25:50\n交接包 HO-002  撰写者→审核者  已构造   21:25:50\n交接包 HO-002  撰写者→审核者  已投递   21:25:50\n交接包 HO-002  撰写者→审核者  已接受   21:25:50\n交接包 HO-002  撰写者→审核者  已完成   21:25:50\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-03",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 207,
+      "stdout": "实例 INST-001 · 已完成 · 模板 通用任务闭环\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n会话 空闲\n交接包 HO-001  研究员→撰写者  已构造   21:25:50\n交接包 HO-001  研究员→撰写者  已投递   21:25:50\n交接包 HO-001  研究员→撰写者  已接受   21:25:50\n交接包 HO-001  研究员→撰写者  已完成   21:25:50\n交接包 HO-002  撰写者→审核者  已构造   21:25:50\n交接包 HO-002  撰写者→审核者  已投递   21:25:50\n交接包 HO-002  撰写者→审核者  已接受   21:25:50\n交接包 HO-002  撰写者→审核者  已完成   21:25:50\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-03",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 199,
+      "stdout": "核心已停止（pid 28004，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

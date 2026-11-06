@@ -1,0 +1,29 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task "   " --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "   " cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-22 exit=1 240ms
+任务描述不能为空
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task 写一篇发布说明，但没有产物行 --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "写一篇发布说明，但没有产物行" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-22 exit=1 153ms
+通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task "写一篇发布说明。产物: release-notes.md" --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "写一篇发布说明。产物: release-notes.md" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-22 exit=1 126ms
+通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-doc --task  --template task-loop --host dsh
+# label=orch run --template task-loop --cwd ./demo-doc --task "" cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-22 exit=2 97ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  （--task 需要一个值）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p3\AC-22 exit=0 234ms
+核心已停止（pid 6344，运行 1s）
+

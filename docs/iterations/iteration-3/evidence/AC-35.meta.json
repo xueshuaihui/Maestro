@@ -1,0 +1,34 @@
+{
+  "ac": "AC-35",
+  "title": "阶段耗时区间不重叠，等待下游不计入上游耗时",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T14:04:29.891Z",
+  "finishedAt": "2026-11-06T14:04:32.726Z",
+  "durationMs": 2835,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-35",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-35"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-35",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 20,
+  "notes": [
+    "第 2 轮与第 3 条的「本轮起点」用 events.jsonl 的 node.dispatch ts（终态 roundStartedAt 已被第 2 轮重置，见 AC-35 需求原文说明）。",
+    "关于「T-002 的 startedAt = 第 1 轮 node.dispatch 事件 ts」：逐字等式不成立，稳定差 4~8ms（startedAt 在 dispatchInState 开头由 iso() 写死，事件 ts 由 bus 在 saveState 落盘之后生成，src/core/orchestrator.js:1121、:1134-1145）。语义口径（startedAt 取第 1 轮、第 2 轮不重置）成立。该等式是与实现因果顺序冲突的亚 10ms 判据，建议需求改为「startedAt ≤ 第 1 轮 node.dispatch ts」或让 node.dispatch 直接带 startedAt 的 ts。"
+  ]
+}

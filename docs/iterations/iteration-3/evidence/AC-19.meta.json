@@ -1,0 +1,49 @@
+{
+  "ac": "AC-19",
+  "title": "撰写产物缺失、为空或不是本轮新写",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-06T13:06:49.863Z",
+  "finishedAt": "2026-11-06T13:06:56.349Z",
+  "durationMs": 6486,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-19",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19"
+    },
+    {
+      "case": "AC-19-b",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19-b"
+    },
+    {
+      "case": "AC-19-c",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p3\\AC-19-c"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-19",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    },
+    {
+      "__root": "AC-19-b",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    },
+    {
+      "__root": "AC-19-c",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 7,
+  "notes": []
+}
