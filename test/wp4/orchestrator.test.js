@@ -1278,6 +1278,42 @@ test('task-loop 驳回未超限：审核 failed（等待复审）→ 回流带�
   }
 });
 
+test('task-loop 派发时刻锁进事件 ts：startedAt / roundStartedAt 与 node.dispatch 逐字相等（AC-35）', async () => {
+  const env = await setupDoc((root) => [
+    researchStep(root),
+    writeStep(root, 1),
+    rejectReview(1),
+    writeStep(root, 2),
+    passReview(2),
+  ]);
+  try {
+    const result = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, template: 'task-loop' });
+    assert.equal(result.ok, true, JSON.stringify(result));
+
+    const state = (await env.store.load('INST-001')).state;
+    const writer = state.nodes.find((n) => n.nodeId === 'T-002');
+    const dispatches = env.events.filter((e) => e.reason === 'node.dispatch' && e.objectId === 'T-002');
+    assert.equal(dispatches.length, 2, 'T-002 应当派发两轮');
+
+    // 第 1 轮：startedAt 与事件 ts 严格相等——saveState 的磁盘 IO 不许把两者拉开
+    assert.equal(dispatches[0].detail.round, 1);
+    assert.equal(dispatches[0].ts, writer.startedAt);
+
+    // 第 2 轮派发不重置 startedAt，但 roundStartedAt 换成第 2 轮的派发时刻
+    assert.equal(dispatches[1].detail.round, 2);
+    assert.equal(dispatches[1].ts, writer.roundStartedAt);
+    assert.notEqual(writer.startedAt, writer.roundStartedAt);
+
+    // 不变量：seq 严格单调、ts 不早于同实例上一条事件
+    for (let i = 1; i < env.events.length; i += 1) {
+      assert.equal(env.events[i].seq > env.events[i - 1].seq, true, `seq 断层：${env.events[i].seq}`);
+      assert.equal(env.events[i].ts >= env.events[i - 1].ts, true, `ts 倒退：${env.events[i].ts} < ${env.events[i - 1].ts}`);
+    }
+  } finally {
+    await env.teardown();
+  }
+});
+
 test('task-loop 第 2 轮仍驳回：停止回流 → 升级挂起，不再派发第 3 次', async () => {
   const env = await setupDoc((root) => [
     researchStep(root),

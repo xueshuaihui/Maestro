@@ -21,6 +21,17 @@ export function createEventBus({ store, clock } = {}) {
 
   const nowMs = () => (typeof clock === 'function' ? clock() : Date.now());
 
+  /**
+   * 调用方自带时间戳的归一化：只接受可解析的字符串，统一回写成总线口径
+   * （ISO-8601 UTC 毫秒）。不合法返回 null，交回 `clock()` 现取。
+   */
+  function normalizeTs(value) {
+    if (typeof value !== 'string' || value.length === 0) return null;
+    const ms = Date.parse(value);
+    if (!Number.isFinite(ms)) return null;
+    return new Date(ms).toISOString();
+  }
+
   function subscribe(handler, { instanceId } = {}) {
     if (typeof handler !== 'function') {
       throw new TypeError('subscribe: handler 必须是函数');
@@ -60,6 +71,10 @@ export function createEventBus({ store, clock } = {}) {
    * `event.instanceId` 只作路由键：用于定位实例目录与订阅者，**不落盘、不广播**
    * （落盘行的字段严格按 §3.2，避免多出一个不在契约里的字段）。
    *
+   * `event.ts`（可选）：调用方已持有"该事件真正发生的时刻"时传入，总线原样采用
+   * 并只做格式归一；缺省仍由 `clock()` 现取，既有调用方零感知。用于把
+   * `node.dispatch` 的 ts 锁死成派发时刻（AC-35 的逐字等式）。
+   *
    * @returns {Promise<{ok:true, seq:number, ts:string}
    *   | {ok:false, code:'STORE_WRITE_FAILED', params?:{errno:string|null, path:string}}>}
    */
@@ -67,7 +82,7 @@ export function createEventBus({ store, clock } = {}) {
     if (event === null || typeof event !== 'object' || Array.isArray(event)) {
       throw new TypeError('emit: event 必须是对象');
     }
-    const { instanceId, ...rest } = event;
+    const { instanceId, ts: tsHint, ...rest } = event;
     if (typeof instanceId !== 'string' || instanceId.length === 0) {
       throw new TypeError('emit: event.instanceId 必填');
     }
@@ -75,8 +90,8 @@ export function createEventBus({ store, clock } = {}) {
     return enqueue(instanceId, async () => {
       // 1) 序号从 events.jsonl 末行恢复，保证重启后不重号。
       const seq = await store.nextSeq(instanceId);
-      // 2) 时间戳统一 ISO-8601 UTC 毫秒，不自拼格式。
-      const ts = new Date(nowMs()).toISOString();
+      // 2) 时间戳统一 ISO-8601 UTC 毫秒，不自拼格式；调用方给了就用调用方的。
+      const ts = normalizeTs(tsHint) ?? new Date(nowMs()).toISOString();
       const record = { ...rest, seq, ts };
 
       // 3) 先落盘。

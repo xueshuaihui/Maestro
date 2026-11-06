@@ -352,6 +352,8 @@ export function createOrchestrator({
         detail: ev.detail ?? null,
         gen: generation,
       };
+      // 可选：调用方已持有事件发生时刻时透传给总线（只有 node.dispatch 会带）。
+      if (typeof ev.ts === 'string' && ev.ts.length > 0) payload.ts = ev.ts;
       const result = await bus.emit(payload);
       if (typeof onProgress === 'function') {
         try {
@@ -1142,6 +1144,9 @@ export function createOrchestrator({
       result: 'applied',
       reason: 'node.dispatch',
       detail: { round: node.round, nodeId, roleId: node.roleId },
+      // 事件的 ts 复用本条派发取到的 `at`：saveState 的磁盘 IO 不得把两者拉开，
+      // 否则 `startedAt` 与事件 ts 只是"近似相等"（AC-35 要求逐字等式）。
+      ts: at,
     });
 
     let adapter = null;
