@@ -83,8 +83,16 @@ function makeMockFactory({ switches = [], command = process.execPath, args = nul
 function makeScriptedFactory(script, { deferFirstUpdateMs = 0 } = {}) {
   let index = 0;
   const prompts = [];
-  return {
+  const sessionHolds = [];
+  const factory = {
     prompts,
+    /** 已进入 `newSession` 且尚未返回的会话数（BLK-C1：首派未返回的时刻）。 */
+    get sessionHeld() {
+      return sessionHolds.length;
+    },
+    releaseSessions() {
+      for (const release of sessionHolds.splice(0)) release();
+    },
     async create({ cwd }) {
       const step = script[index] ?? {};
       const ordinal = index + 1;
@@ -103,6 +111,10 @@ function makeScriptedFactory(script, { deferFirstUpdateMs = 0 } = {}) {
         async newSession() {
           if (step.sessionFail) {
             return { ok: false, error: { code: 'DSH_SPAWN_FAILED', message: '会话不可用' } };
+          }
+          if (step.holdSession) {
+            // 模拟「session/new 尚未返回」：目录锁仍被首个发起持有。
+            await new Promise((resolve) => sessionHolds.push(resolve));
           }
           return { ok: true, result: { sessionId } };
         },
@@ -163,6 +175,7 @@ function makeScriptedFactory(script, { deferFirstUpdateMs = 0 } = {}) {
       };
     },
   };
+  return factory;
 }
 
 function buildOrch({ root, cwd, factory, env = {}, generation = 'gen-wp4' }) {
@@ -197,10 +210,10 @@ async function setupMock(options = {}) {
   };
 }
 
-async function setupFake({ script, env = {} }) {
+async function setupFake({ script = [], env = {}, factory: injected = null } = {}) {
   const root = tmpDir('maestro-wp4-loop-root-');
   const cwd = tmpDir('maestro-wp4-loop-cwd-');
-  const factory = makeScriptedFactory(script);
+  const factory = injected ?? makeScriptedFactory(script);
   const result = buildOrch({ root, cwd, factory, env });
   return {
     ...result,
@@ -891,6 +904,47 @@ test('code-loop DIR_BUSY：同目录第二个闭环被拒', async () => {
 
     await env.orch.cancel({ instanceId: 'INST-001' });
   } finally {
+    await env.teardown();
+  }
+});
+
+test('code-loop DIR_BUSY：首个实例停在首派 session/new 未返回时，同目录并发发起 2s 内被拒（BLK-C1）', async () => {
+  const env = await setupFake({ factory: makeScriptedFactory([{ holdSession: true }]) });
+  const first = env.orch.startRun({
+    cwd: env.cwd,
+    task: CODE_TASK,
+    template: 'code-loop',
+  });
+  first.catch(() => {});
+  try {
+    const stateFile = path.join(env.root, '.orch', 'instances', 'INST-001', 'state.json');
+    await waitFor(() => env.factory.sessionHeld === 1 && exists(stateFile));
+
+    // Given 机检：首派已把实例落盘为 running，但 newSession 仍未返回（目录锁仍被持有）
+    const live = (await env.store.load('INST-001')).state;
+    assert.equal(live.state, 'running');
+    assert.equal(env.factory.sessionHeld, 1, '首派应仍未返回');
+
+    // When 同目录第二次发起
+    const at = Date.now();
+    const second = await env.orch.startRun({ cwd: env.cwd, task: CODE_TASK, template: 'code-loop' });
+    const elapsed = Date.now() - at;
+
+    // Then 2 秒内返回既有 DIR_BUSY 语义，且不新建实例
+    assert.ok(elapsed < 2000, `第二次发起耗时 ${elapsed}ms，应 < 2000ms`);
+    assert.equal(second.ok, false);
+    assert.equal(second.code, 'DIR_BUSY');
+    assert.equal(second.params.instanceId, 'INST-001');
+
+    const listed = await env.store.list();
+    assert.deepEqual(
+      listed.items.map((item) => item.instanceId),
+      ['INST-001'],
+    );
+    assert.equal(exists(path.join(env.root, '.orch', 'instances', 'INST-002')), false);
+  } finally {
+    env.factory.releaseSessions();
+    await env.orch.cancel({ instanceId: 'INST-001' });
     await env.teardown();
   }
 });

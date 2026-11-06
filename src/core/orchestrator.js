@@ -2780,12 +2780,16 @@ export function createOrchestrator({
       return fail(CODES.CWD_NOT_WRITABLE, { path: resolvedCwd });
     }
 
-    // AC-31: reject a live multi-node instance before taking the directory lock.
-    // The first dispatch can hold that lock while a host session is being created;
-    // queuing behind it would turn a clean business rejection into IPC_TIMEOUT.
+    // AC-31 / BLK-C1: reject a live multi-node instance before taking the directory lock.
+    // The first dispatch (even `session/new`) runs while that lock is still held; queuing
+    // behind it would turn a clean business rejection into a 60s IPC_TIMEOUT.
+    // The same scan is repeated inside the lock (see below) to close the race with a
+    // caller that registers its instance between this scan and the lock acquisition.
     // `single` keeps I1.1's node-level NODE_BUSY behaviour untouched.
-    if (multi && instanceId && activeRuns.has(instanceId)) {
-      return fail('INSTANCE_RUNNING', {});
+    if (multi) {
+      if (instanceId && activeRuns.has(instanceId)) return fail('INSTANCE_RUNNING', {});
+      const busyBefore = await findDirBusy(resolvedCwd, instanceId ?? null, multi);
+      if (busyBefore) return fail('DIR_BUSY', { instanceId: busyBefore });
     }
 
     const dirKey = `@dir:${resolvedCwd.toLowerCase()}`;
