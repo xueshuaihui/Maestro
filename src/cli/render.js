@@ -841,9 +841,21 @@ function eventReasonText(event) {
 }
 
 /**
+ * `task-loop` 的 note 行中段（A-2 第 7 段 / D-5）：直接用中文原因词，不再追加「原因」段。
+ * 例：`[#12] 10:00:10  节点 T-003  读取审核`。标签缺失时退回旧中段（`从 → 到` 或 `detail.note`），
+ * 不新造英文兜底。
+ */
+function noteMiddle(event) {
+  const label = REASON_LABEL[event.reason];
+  if (typeof label === 'string' && label.length > 0) return label;
+  return legacyMiddle(event);
+}
+
+/**
  * 事件行（C-10）：
  *   `single`    `10:30:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event`（I1.1 逐字）
  *   `code-loop` `[#18] 10:30:05  交接包 HO-001  已投递 → 已接受  原因 首个事件`
+ *   `task-loop` 同上；但 `result === 'note'` 的行中段只放中文原因词（不带「原因」段）。
  * `result === 'rejected'` 两种模板都走 I1.1 版式（不带 seq、不带原因）。
  */
 export function renderEventLine(event, { template } = {}) {
@@ -861,6 +873,10 @@ export function renderEventLine(event, { template } = {}) {
   }
 
   const seq = Number.isInteger(event.seq) ? `[#${event.seq}] ` : '';
+  // 只有 `task-loop` 的 note 行改版式；`code-loop` 逐字不变（AC-36）。
+  if (tpl === 'task-loop' && event.result === 'note') {
+    return `${seq}${ts}  ${layer} ${id}  ${noteMiddle(event)}`;
+  }
   const reason = typeof event.reason === 'string' && event.reason.length > 0 ? `  原因 ${eventReasonText(event)}` : '';
   return `${seq}${ts}  ${layer} ${id}  ${eventMiddle(event)}${reason}`;
 }

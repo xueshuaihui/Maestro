@@ -644,7 +644,7 @@ test('A-4 停止推进收尾：错误行 + 三行，节点行是唯一状态行�
 
 // ---------------------------------------------------------------- C-10 事件行
 
-test('C-10 事件行：code-loop 加 [#seq] 与中文原因；single 保持 I1.1 逐字', () => {
+test('C-10 事件行：code-loop 加 [#seq] 与中文原因、task-loop 的 note 行只放中文原因词；single 保持 I1.1 逐字', () => {
   const event = {
     seq: 18,
     ts: at(10, 30, 5),
@@ -658,6 +658,43 @@ test('C-10 事件行：code-loop 加 [#seq] 与中文原因；single 保持 I1.1
   assert.equal(render.renderEventLine(event, { template: 'code-loop' }), '[#18] 10:30:05  交接包 HO-001  已投递 → 已接受  原因 首个事件');
   assert.equal(render.renderEventLine(event), '10:30:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event');
   assert.equal(render.renderEventLine(event, { template: 'single' }), '10:30:05  交接包 HO-001  已投递 → 已接受  原因 turn.first_event');
+
+  // A-2 第 7 段（AC-39）：`task-loop` 的 note 行中段直接用中文原因词，不再追加「原因」段。
+  const note = {
+    seq: 68,
+    ts: at(13, 33, 46),
+    object: 'node',
+    objectId: 'T-003',
+    from: null,
+    to: null,
+    result: 'note',
+    reason: 'review.read',
+    detail: { source: 'file', path: 'out/review.json', decision: 'reject', results: 2 },
+  };
+  assert.equal(render.renderEventLine(note, { template: 'task-loop' }), '[#68] 13:33:46  节点 T-003  读取审核');
+  // 分流边界：同一事件在 code-loop 下仍是 I1.2 版式（英文 reason 作中段 + 中文原因段）。
+  assert.equal(render.renderEventLine(note, { template: 'code-loop' }), '[#68] 13:33:46  节点 T-003  review.read  原因 读取审核');
+  // 其余 note 原因词：无迁移信息的核对/回流、带 from/to 的下游接受，都只留中文词。
+  assert.deepEqual(
+    [
+      { seq: 8, ts: at(13, 33, 47), object: 'node', objectId: 'T-001', from: null, to: null, result: 'note', reason: 'review.evidence_verified' },
+      { seq: 14, ts: at(13, 33, 48), object: 'node', objectId: 'T-001', from: 'review', to: 'done', result: 'note', reason: 'review.downstream_accepted' },
+      { seq: 37, ts: at(13, 33, 49), object: 'handoff', objectId: 'HO-003', from: null, to: null, result: 'note', reason: 'backflow.constructed', detail: { defects: [], revisionRequirement: '请按缺陷清单逐条修改' } },
+    ].map((item) => render.renderEventLine(item, { template: 'task-loop' })),
+    [
+      '[#8] 13:33:47  节点 T-001  证据核对通过',
+      '[#14] 13:33:48  节点 T-001  下游已接受',
+      '[#37] 13:33:49  交接包 HO-003  构造回流',
+    ],
+  );
+  // 状态迁移行（result='applied'）在 task-loop 下保持「原因 <中文词>」。
+  assert.equal(
+    render.renderEventLine(
+      { seq: 11, ts: at(13, 33, 50), object: 'handoff', objectId: 'HO-001', from: 'created', to: 'delivered', result: 'applied', reason: 'handoff.delivered' },
+      { template: 'task-loop' },
+    ),
+    '[#11] 13:33:50  交接包 HO-001  已构造 → 已投递  原因 交接已投递',
+  );
 });
 
 test('C-10 事件行：node.dispatch 中段固定“派发 → 执行中”、原因带轮次', () => {
