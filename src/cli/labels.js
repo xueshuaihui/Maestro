@@ -149,8 +149,10 @@ export const YAML_DETAIL = Object.freeze({
 });
 
 /**
- * 用法块（附录 A-5，共 8 行）。前 5 行是 I1.1 原文，逐字不变——`test/wp6/main.test.js`
- * 断言了第 1 行的子串；`role` 只通过末尾 3 条子行体现。
+ * Usage block (A-12, 25 lines). The first 8 lines are the I1.5 original, byte-for-byte
+ * frozen — `test/wp11/cli-role.test.js:356` asserts `slice(0, 8)` against this array
+ * and `test/wp12/cli-assets.test.js` pins all 25 lines against the A-12 text.
+ * Lines 9-25 are the 17 new asset subcommands, one line each (BR-29).
  */
 export const USAGE_LINES = Object.freeze([
   '用法：orch run|status|cancel|core',
@@ -160,7 +162,24 @@ export const USAGE_LINES = Object.freeze([
   '  orch core stop',
   '  orch role list [--group <组>] [--instance <实例号>] [--format text|json]',
   '  orch role show <角色> [--instance <实例号>] [--format text|json]',
-  '  orch role validate [<角色>] [--format json]'
+  '  orch role validate [<角色>] [--format json]',
+  '  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]',
+  '  orch role edit <角色> [--set <键=值>]... [--unset <键>]...',
+  '  orch role export <角色> [--out <文件>]',
+  '  orch role import <文件> [--force]',
+  '  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]',
+  '  orch skill list [--group <组>] [--format text|json]',
+  '  orch skill show <技能> [--format text|json]',
+  '  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]',
+  '  orch skill validate [<技能>] [--format json]',
+  '  orch skill export <技能> [--out <文件>]',
+  '  orch skill import <文件|目录> [--force]',
+  '  orch workflow list [--format text|json]',
+  '  orch workflow show <工作流> [--format text|json]',
+  '  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]',
+  '  orch workflow validate [<工作流>] [--format json]',
+  '  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]',
+  '  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]'
 ]);
 
 /** Template names. The `single` entry is kept but unused: a `single` instance line prints no template. */
@@ -417,3 +436,240 @@ export function formatDuration(ms) {
   const seconds = totalSeconds % 60;
   return seconds === 0 ? `${minutes}m` : `${minutes}m${seconds}s`;
 }
+
+// ---------------------------------------------------------------- I1.6 新增（WP-5）
+//
+// 以下全部是本迭代新增的表；既有表（REGISTRY_ERROR / YAML_DETAIL / ROLE_CLI_TEXT 等）
+// 一个键都不加不改（M-6）。所有新增中文只出现在本文件（BR-31 / AC-51）。
+
+/** A-15 的 7 条角色原因码明细模板。CLI 层用 `{name}` 填充组装人话明细。 */
+export const ROLE_REASON_TEXT = Object.freeze({
+  ROLE_TOOL_UNKNOWN: '工具取值非法：{value}；合法取值：read / write / edit / bash',
+  ROLE_PERMISSION_MISMATCH: '{reason}',
+  ROLE_WAKE_UNKNOWN: '唤醒白名单里的角色不存在：{role}',
+  ROLE_WAKE_SELF: '唤醒白名单不能包含自己：{role}',
+  ROLE_DERIVE_MISSING: '派生来源不存在：{role}',
+  ROLE_DERIVE_CYCLE: '派生链成环：{chain}',
+  ROLE_CONTRACT_UNBOUND: '契约不连通：{field} 没有{side}'
+});
+
+/**
+ * `ROLE_PERMISSION_MISMATCH` 的三条固定句（A-15 逐字）。`contracts.js`（WP-2）选句并
+ * 把成句放进错误对象的 `params.reason`，CLI 层经 `ROLE_REASON_TEXT.ROLE_PERMISSION_MISMATCH`
+ * 原样透出，不再改写。
+ */
+export const ROLE_PERMISSION_TEXT = Object.freeze({
+  readWithWriteTool: '副作用等级为 read 的角色不能带写工具 {tool}',
+  execNeedsCommandTool: '副作用等级为 exec 的角色必须带能执行命令的工具 bash',
+  noneWithAnyTool: '副作用等级为 none 的角色不能带任何工具'
+});
+
+/** A-15 的 19 条工作流原因码明细模板（逐字）。 */
+export const WORKFLOW_REASON_TEXT = Object.freeze({
+  WORKFLOW_SCHEMA_MISSING: '缺少必填字段：{field}',
+  WORKFLOW_ID_MISMATCH: '工作流 id 与文件名不一致：文件 {fileId} / 声明 {declaredId}',
+  WORKFLOW_NODE_DUPLICATE: '节点 id 重复：{id}',
+  WORKFLOW_NODE_TYPE_INVALID: '节点类型取值非法：{value}；合法取值：role / human / escalate / subworkflow',
+  WORKFLOW_NODE_FIELD_MISSING: '节点 {node} 缺少必填字段：{field}',
+  WORKFLOW_ROLE_UNKNOWN: '引用的角色不存在：{role}',
+  WORKFLOW_SUB_UNKNOWN: '引用的子工作流不存在：{id}',
+  WORKFLOW_SUB_CYCLE: '子工作流成环：{chain}',
+  WORKFLOW_EDGE_INVALID: '边不合法：{detail}',
+  WORKFLOW_TIMEOUT_INVALID: '超时取值非法：{value}；合法范围：1~86400 的整数',
+  WORKFLOW_RETRY_INVALID: '重试取值非法：{value}；合法范围：0~5 的整数',
+  WORKFLOW_UNREACHABLE: '节点不可达：{node}',
+  WORKFLOW_BACKFLOW_NO_LIMIT: '回流目标缺少轮次上限：{node}',
+  WORKFLOW_SCOPE_OVERLAP: '并行组 {scope} 内的 {a} 与 {b} 使用了同一作用域 {name}',
+  WORKFLOW_SCOPE_INVALID: '并行组 {scope} 只有 1 个节点',
+  WORKFLOW_VAR_UNKNOWN: '变量引用无法解析：{ref}',
+  WORKFLOW_MAPPING_INCOMPLETE: '{node} 的输入 {field} 没有来源',
+  WORKFLOW_TRANSITION_ILLEGAL: '{detail}',
+  WORKFLOW_WAKE_DENIED: '唤醒不在白名单内：{from} → {to}'
+});
+
+/**
+ * `WORKFLOW_TRANSITION_ILLEGAL` 的四条固定句（A-15 逐字）。`workflow-schema.js`（WP-1）
+ * / `workflows.js`（WP-3）选句并放进 `params.detail`，CLI 经
+ * `WORKFLOW_REASON_TEXT.WORKFLOW_TRANSITION_ILLEGAL` 原样透出。
+ */
+export const WORKFLOW_TRANSITION_TEXT = Object.freeze({
+  entryBackflow: '入口节点 {node} 不能有回流入边',
+  escalateOutbound: '升级节点 {node} 不能有正向出边',
+  humanEdgeCondition: '人工节点 {node} 的出边必须写人工条件',
+  backflowTarget: '{node} 不能成为回流目标'
+});
+
+/** 边条件的中文名（A-10 逐字）。`always` 不进条件分支段，仅为查表完备而设。 */
+export const CONDITION_LABEL = Object.freeze({
+  always: '无条件',
+  passed: '判定通过',
+  failed: '判定不通过',
+  human_approved: '人工通过',
+  human_rejected: '人工驳回'
+});
+
+/** 四类 `node_type` 的类型文案（A-8）。`role`/`subworkflow` 的带参形态另见 WORKFLOW_CLI_TEXT。 */
+export const NODE_TYPE_LABEL = Object.freeze({
+  role: '角色节点',
+  human: '人工节点',
+  escalate: '升级节点',
+  subworkflow: '子工作流'
+});
+
+/** 派生角色的默认中文名（BR-05）：`<来源中文名>（派生）`。 */
+export const DERIVED_NAME_TEMPLATE = '{base}（派生）';
+
+/** 共用的 diff 行版式（A-5 / A-11 同一套前缀与计数；两族只差首句模板）。 */
+export const DIFF_TEXT = Object.freeze({
+  added: '+ {field}：{value}',
+  removed: '- {field}：{value}',
+  changed: '~ {field}：{base} → {target}',
+  count: '差异 {n} 项',
+  none: '无差异'
+});
+
+/**
+ * `role create` 的两档必填与取值校验文案（AC-02 / AC-54，检查在 `main.js` 的
+ * `parseArgs` 里）。`{values}` 由 `main.js` 用 `GROUP_LABEL` / `role-schema` 常量拼。
+ */
+export const ROLE_USAGE_TEXT = Object.freeze({
+  requiresFlag: 'role create 需要 --{key}',
+  badGroup: 'role create 的 --group 只接受 {values}',
+  badArtifactType: 'role create 的 --artifact-type 只接受 {values}',
+  badSideEffect: 'role create 的 --side-effect 只接受 {values}',
+  missingId: Object.freeze({
+    show: 'role show 需要角色 id',
+    create: 'role create 需要角色 id',
+    edit: 'role edit 需要角色 id',
+    export: 'role export 需要角色 id',
+    import: 'role import 需要文件',
+    diff: 'role diff 需要角色 id'
+  })
+});
+
+/**
+ * I1.6 新增 role 写命令与 diff 的成功/失败句式（A-2 ~ A-5 逐字；`roles.js` 取用）。
+ * 既有 `ROLE_CLI_TEXT` 不扩键（M-6），故新句式全部落在这里。
+ */
+export const ROLE_WRITE_TEXT = Object.freeze({
+  created: '已创建项目角色：{file}',
+  checkPassed: '校验：通过',
+  createRejected: '创建被拒：{detail}（{code}）',
+  exists: '已存在同名项目角色：{file}（加 --force 覆盖）',
+  updated: '已更新项目角色：{file}',
+  rewrittenNote: '（已按规范格式重写，注释不保留）',
+  editRejected: '编辑被拒：{detail}（{code}）',
+  builtinEditReadonly: '内置角色不可编辑：先 orch role create <新角色> --from {id}',
+  exported: '已导出角色 {id} 到 {file}',
+  installed: '已安装项目角色：{file}',
+  importRejected: '导入被拒：{detail}（{code}）',
+  importFileMissing: '导入被拒：文件不存在：{file}',
+  diffHeader: '对比角色 {id}（{source}）与基线 {base}（{baseSource}）',
+  missingBaseline: '缺少对比基线：{id}（用 --against 指定内置角色或文件）',
+  sourceBuiltin: '内置',
+  sourceProject: '项目'
+});
+
+/** `orch skill` 六条子命令的全部文案（A-6 / A-7 逐字；`skills.js` / `render.js` 取用）。 */
+export const SKILL_CLI_TEXT = Object.freeze({
+  listHeader: '技能 {total} 个（内置 {builtin} · 项目 {project}）',
+  listRow: '- {id} {name} · {appliesTo} · 命令 {commands}',
+  listInvalidTail: '{n} 个资产未通过校验，执行 orch skill validate 查看',
+  showSummary: '  摘要：{summary}',
+  showCommands: '  命令：{commands}',
+  showAppliesTo: '  适用：{appliesTo}',
+  showSourceBuiltin: '  来源：内置 {file}',
+  showSourceProject: '  来源：项目 {file}',
+  showBodyHeader: '  正文：',
+  validateOk: '校验技能 {assets} 个：全部通过',
+  validateFail: '校验技能 {assets} 个：{invalid} 个不合法',
+  validateRow: '- {file}：{detail}（{code}）',
+  created: '已创建项目技能：{file}',
+  checkPassed: '校验：通过',
+  createRejected: '创建被拒：{detail}（{code}）',
+  exists: '已存在同名项目技能：{file}（加 --force 覆盖）',
+  builtinReadonly: '内置技能只读：{id}',
+  exported: '已导出技能 {id} 到 {file}',
+  installed: '已安装项目技能：{file}',
+  importRejected: '导入被拒：{detail}（{code}）',
+  importFileMissing: '导入被拒：文件不存在：{file}',
+  notFoundSkill: '找不到技能：{id}',
+  notFoundSkillHint: '可用技能：执行 orch skill list 查看',
+  notImplemented: 'skill 命令尚未实现',
+  placeholder: '—',
+  usageReason: Object.freeze({
+    unknownSub: '未知的 skill 子命令：{sub}',
+    flagNotApplicable: '--{key} 不适用于 skill {sub}',
+    badFormat: '--format 只接受 text 或 json',
+    requiresName: 'skill create 需要 --name',
+    requiresSummary: 'skill create 需要 --summary',
+    missingId: Object.freeze({
+      show: 'skill show 需要技能 id',
+      create: 'skill create 需要技能 id',
+      export: 'skill export 需要技能 id',
+      import: 'skill import 需要文件'
+    })
+  })
+});
+
+/** `orch workflow` 六条子命令的全部文案（A-8 ~ A-11 逐字；`workflows.js` / `render.js` 取用）。 */
+export const WORKFLOW_CLI_TEXT = Object.freeze({
+  listHeader: '工作流 {total} 个（内置 {builtin} · 项目 {project}）',
+  listRow: '- {id} {name} · {nodes} 节点 · {edges} 边 · {source}',
+  sourceBuiltin: '内置',
+  sourceProject: '项目',
+  builtinFile: '内置 {id}',
+  listInvalidTail: '{n} 个工作流未通过校验，执行 orch workflow validate 查看',
+  showEntry: '  入口：{entry} · 终点：{terminal}',
+  nodesHeader: '  节点：',
+  edgesHeader: '  边：',
+  nodeRow: '    {id} {title} · {type} · 超时 {timeout} · 重试 {retry}',
+  nodeTypeRole: '角色节点 {role}',
+  nodeTypeSub: '子工作流 {id} · {nodes} 节点',
+  edgeRow: '    {from} → {to} {kind}',
+  edgeKind: Object.freeze({ forward: '正向', backflow: '回流', retest: '复测' }),
+  edgeRounds: ' · 轮次上限 {rounds}',
+  edgeCondition: ' · 条件 {when}',
+  edgeMappings: ' · 字段映射 {n} 条',
+  validateOk: '校验工作流 {assets} 个：全部通过',
+  validateFail: '校验工作流 {assets} 个：{invalid} 个不合法',
+  validateRow: '- {file}：{detail}（{code}）',
+  created: '已创建项目工作流：{file}',
+  checkPassed: '校验：通过',
+  createRejected: '创建被拒：{detail}（{code}）',
+  exists: '已存在同名项目工作流：{file}（加 --force 覆盖）',
+  notFoundWorkflow: '找不到工作流：{id}',
+  notFoundWorkflowHint: '可用工作流：执行 orch workflow list 查看',
+  diffHeader: '对比工作流 {id}（{source}）与基线 {base}（{baseSource}）',
+  missingBaseline: '缺少对比基线：{id}（用 --against 指定内置工作流或文件）',
+  notImplemented: 'workflow 命令尚未实现',
+  placeholder: '—',
+  plan: Object.freeze({
+    header: '编排计划 {id} · {nodes} 节点 · {edges} 边 · {groups} 个并行组 · {subs} 个子工作流',
+    layerNode: '{index}. {node}',
+    layerParallel: '{index}. 并行组 {name}：{nodes} · 汇合：{join}',
+    nodeDesc: '{id} {title}（{type}）',
+    branchesHeader: '条件分支：',
+    branchRow: '- {from} → {to} 当 {when}',
+    mappingsHeader: '字段映射：',
+    mappingRow: '- {from} → {to}',
+    policiesHeader: '超时与重试：',
+    policyRow: '- {node} 超时 {timeout}s · 重试 {retry}',
+    conclusion: '结论：编排可执行，未启动任何会话',
+    conclusionWarned: '结论：编排可执行，有 {n} 条提醒，未启动任何会话',
+    rejected: '预演被拒：{detail}（{code}）',
+    rejectedHint: '执行 orch workflow validate 查看全部问题'
+  }),
+  usageReason: Object.freeze({
+    unknownSub: '未知的 workflow 子命令：{sub}',
+    flagNotApplicable: '--{key} 不适用于 workflow {sub}',
+    badFormat: '--format 只接受 text 或 json',
+    requiresName: 'workflow create 需要 --name',
+    missingId: Object.freeze({
+      show: 'workflow show 需要工作流 id',
+      create: 'workflow create 需要工作流 id',
+      diff: 'workflow diff 需要工作流 id',
+      'dry-run': 'workflow dry-run 需要工作流 id'
+    })
+  })
+});

@@ -12,6 +12,8 @@
  */
 import {
   CLI_NOTE,
+  CONDITION_LABEL,
+  DIFF_TEXT,
   ERROR_TEMPLATE,
   ESCALATION_BLOCK,
   ESCALATION_LABEL,
@@ -26,13 +28,17 @@ import {
   NODE_LABEL,
   NODE_QUALIFIER,
   NODE_SUFFIX,
+  NODE_TYPE_LABEL,
   REASON_LABEL,
   ROLE_CLI_TEXT,
   ROLE_INSTANCE_STATUS_LABEL,
   ROLE_LABEL,
+  ROLE_WRITE_TEXT,
   SESSION_LABEL,
+  SKILL_CLI_TEXT,
   USAGE_LINES,
   TEMPLATE_LABEL,
+  WORKFLOW_CLI_TEXT,
   BACKFLOW_DEFECT_LINE,
   BACKFLOW_RETEST_LINE,
   formatDuration,
@@ -1127,4 +1133,397 @@ export function renderRoleInstanceLine({ instanceId, view }) {
 /** 该角色不属于本实例时的那一行（A-3）。 */
 export function renderRoleInstanceUnused(instanceId) {
   return replaceAll(ROLE_CLI_TEXT.instanceUnused, { instanceId });
+}
+
+// ---------------------------------------------------------------- I1.6 asset families (ruling 9)
+
+// This section holds the I1.6 renderers for the three asset families (WP-5, §2.7).
+// Discipline:
+// 1. Every pre-existing I1.5 function above is byte-frozen; this section only appends.
+// 2. Zero Chinese: all wording comes from the new `labels.js` tables (`SKILL_CLI_TEXT`,
+//    `WORKFLOW_CLI_TEXT`, `ROLE_WRITE_TEXT`, `DIFF_TEXT`, `CONDITION_LABEL`,
+//    `NODE_TYPE_LABEL`).
+// 3. No imports from other CLI modules; pure functions taking assembled data objects
+//    and returning `string[]`.
+
+/** The shared empty-state placeholder (`—`) for the family renderers. */
+function dashOf() {
+  return SKILL_CLI_TEXT.placeholder;
+}
+
+/** Text form of a diff value (A-5 / §3.5): arrays join with `, `, empty array and `null` print the dash. */
+function diffValue(value) {
+  if (value === null || value === undefined) return dashOf();
+  if (Array.isArray(value)) return value.length > 0 ? value.join(', ') : dashOf();
+  const text = String(value);
+  return text.length > 0 ? text : dashOf();
+}
+
+function diffChangeLines(changes) {
+  const lines = [];
+  for (const change of Array.isArray(changes) ? changes : []) {
+    if (change?.kind === 'added') {
+      lines.push(replaceAll(DIFF_TEXT.added, { field: change.field, value: diffValue(change.target) }));
+    } else if (change?.kind === 'removed') {
+      lines.push(replaceAll(DIFF_TEXT.removed, { field: change.field, value: diffValue(change.base) }));
+    } else {
+      lines.push(
+        replaceAll(DIFF_TEXT.changed, {
+          field: change?.field,
+          base: diffValue(change?.base),
+          target: diffValue(change?.target),
+        }),
+      );
+    }
+  }
+  return lines;
+}
+
+function diffTail(changes) {
+  return Array.isArray(changes) && changes.length > 0
+    ? replaceAll(DIFF_TEXT.count, { n: changes.length })
+    : DIFF_TEXT.none;
+}
+
+function sourceLabelOf(kind, text) {
+  return kind === 'project' ? text.sourceProject : text.sourceBuiltin;
+}
+
+/**
+ * `orch role diff` text (A-5):
+ *   header (A-5 verbatim, assembled from labels) with one `+`/`-`/`~` row per change,
+ *   tail: the change count, or the no-difference line (both from labels).
+ *
+ * @param {{id:string, idSource:'builtin'|'project', base:string,
+ *          baseSource:'builtin'|'project', changes:Array<{field:string,kind:string,base:object,target:object}>}} input
+ * @returns {string[]}
+ */
+export function renderRoleDiff({ id, idSource, base, baseSource, changes }) {
+  const header = replaceAll(ROLE_WRITE_TEXT.diffHeader, {
+    id,
+    source: sourceLabelOf(idSource, ROLE_WRITE_TEXT),
+    base,
+    baseSource: sourceLabelOf(baseSource, ROLE_WRITE_TEXT),
+  });
+  return [header, ...diffChangeLines(changes), diffTail(changes)];
+}
+
+/**
+ * `orch workflow diff` text (A-11). Shares the row layouts (`DIFF_TEXT`) with
+ * `renderRoleDiff`, but the header and the field-path convention stay separate
+ * (BR-37: the two diff semantics never share comparison logic).
+ *
+ * @param {{id:string, idSource:'builtin'|'project', base:string,
+ *          baseSource:'builtin'|'project', changes:Array<{field:string,kind:string,base:object,target:object}>}} input
+ * @returns {string[]}
+ */
+export function renderWorkflowDiff({ id, idSource, base, baseSource, changes }) {
+  const header = replaceAll(WORKFLOW_CLI_TEXT.diffHeader, {
+    id,
+    source: sourceLabelOf(idSource, WORKFLOW_CLI_TEXT),
+    base,
+    baseSource: sourceLabelOf(baseSource, WORKFLOW_CLI_TEXT),
+  });
+  return [header, ...diffChangeLines(changes), diffTail(changes)];
+}
+
+/**
+ * `orch skill list` text (A-6): counts header + one row per skill + (bad assets) tail.
+ * `counts` is the skill-level 4-key `{total, builtin, project, invalid}`; the
+ * display strings in `rows[]` (`appliesTo` etc.) are pre-assembled by `skills.js`
+ * (groups joined with `, `, empty state as the dash).
+ *
+ * @param {{counts:object, rows:Array<{id:string,name:string,appliesTo:string,commands:number|string}>}} input
+ * @returns {string[]}
+ */
+export function renderSkillList({ counts, rows }) {
+  const lines = [replaceAll(SKILL_CLI_TEXT.listHeader, counts)];
+  for (const row of Array.isArray(rows) ? rows : []) {
+    lines.push(replaceAll(SKILL_CLI_TEXT.listRow, row));
+  }
+  if (Number(counts?.invalid) > 0) {
+    lines.push(replaceAll(SKILL_CLI_TEXT.listInvalidTail, { n: counts.invalid }));
+  }
+  return lines;
+}
+
+/**
+ * `orch skill show` text (A-6): contract row + summary / commands / applies-to /
+ * source / body header, then the body with two leading spaces per line and leading
+ * blank lines skipped.
+ *
+ * `row` is the contract line rendered from `SKILL_CLI_TEXT.listRow` (byte-identical
+ * to the list row, A-6); `summary` / `commands` / `appliesTo` are pre-assembled
+ * display strings (empty state filled by the caller).
+ *
+ * @param {{row:string, summary:string, commands:string, appliesTo:string,
+ *          source:{kind:'builtin'|'project', file:string}, body:string|string[]}} input
+ * @returns {string[]}
+ */
+export function renderSkillShow({ row, summary, commands, appliesTo, source, body }) {
+  const sourceTemplate =
+    source?.kind === 'project' ? SKILL_CLI_TEXT.showSourceProject : SKILL_CLI_TEXT.showSourceBuiltin;
+  const lines = [
+    row,
+    replaceAll(SKILL_CLI_TEXT.showSummary, { summary: summary ?? dashOf() }),
+    replaceAll(SKILL_CLI_TEXT.showCommands, { commands: commands ?? dashOf() }),
+    replaceAll(SKILL_CLI_TEXT.showAppliesTo, { appliesTo: appliesTo ?? dashOf() }),
+    replaceAll(sourceTemplate, { file: source?.file ?? dashOf() }),
+    SKILL_CLI_TEXT.showBodyHeader,
+  ];
+  const raw = Array.isArray(body) ? body : String(body ?? '').split('\n');
+  let index = 0;
+  while (index < raw.length && String(raw[index]).length === 0) index += 1;
+  for (; index < raw.length; index += 1) lines.push(`  ${raw[index]}`);
+  return lines;
+}
+
+/**
+ * `orch skill validate` text (A-7): one line when all pass; header + one row per
+ * bad asset otherwise. `counts` is the 5-key skill validation counts
+ * `{assets, skills, builtin, project, invalid}` (A-14).
+ *
+ * @param {{counts:object, rows:Array<{file:string,detail:string,code:string}>}} input
+ * @returns {string[]}
+ */
+export function renderSkillValidate({ counts, rows }) {
+  if (!(Number(counts?.invalid) > 0)) {
+    return [replaceAll(SKILL_CLI_TEXT.validateOk, counts)];
+  }
+  const lines = [replaceAll(SKILL_CLI_TEXT.validateFail, counts)];
+  for (const row of Array.isArray(rows) ? rows : []) {
+    lines.push(replaceAll(SKILL_CLI_TEXT.validateRow, row));
+  }
+  return lines;
+}
+
+/** Workflow source segment (A-8): builtin vs project wording, from labels. */
+function workflowSourceLabel(source) {
+  return source === 'project' ? WORKFLOW_CLI_TEXT.sourceProject : WORKFLOW_CLI_TEXT.sourceBuiltin;
+}
+
+/** Node-type segment (A-8): role appends {role}; subworkflow appends {id} and {nodes}. */
+function workflowNodeTypeText(node) {
+  if (node?.nodeType === 'role') {
+    return replaceAll(WORKFLOW_CLI_TEXT.nodeTypeRole, { role: node.role ?? dashOf() });
+  }
+  if (node?.nodeType === 'subworkflow') {
+    return replaceAll(WORKFLOW_CLI_TEXT.nodeTypeSub, {
+      id: node.workflow ?? dashOf(),
+      nodes: node.subNodeCount ?? 0,
+    });
+  }
+  return NODE_TYPE_LABEL[node?.nodeType] ?? String(node?.nodeType ?? dashOf());
+}
+
+/**
+ * `orch workflow list` text (A-8): counts header + one row per workflow + (bad
+ * assets) tail. `rows[].source` is `builtin` / `project`; the in-row text is
+ * mapped here.
+ *
+ * @param {{counts:object, rows:Array<{id:string,name:string,nodeCount:number,edgeCount:number,source:string}>}} input
+ * @returns {string[]}
+ */
+export function renderWorkflowList({ counts, rows }) {
+  const lines = [replaceAll(WORKFLOW_CLI_TEXT.listHeader, counts)];
+  for (const row of Array.isArray(rows) ? rows : []) {
+    lines.push(
+      replaceAll(WORKFLOW_CLI_TEXT.listRow, {
+        id: row?.id,
+        name: row?.name,
+        nodes: row?.nodeCount ?? 0,
+        edges: row?.edgeCount ?? 0,
+        source: workflowSourceLabel(row?.source),
+      }),
+    );
+  }
+  if (Number(counts?.invalid) > 0) {
+    lines.push(replaceAll(WORKFLOW_CLI_TEXT.listInvalidTail, { n: counts.invalid }));
+  }
+  return lines;
+}
+
+/**
+ * `orch workflow show` text (A-8): summary row (byte-identical to the list row) +
+ * entry/terminal + one row per node + one row per edge.
+ *
+ * `nodes[]` elements: `{id, title, nodeType, role?, workflow?, subNodeCount?,
+ * timeout?, retry?}` (missing `timeout` prints the dash, missing `retry` prints 0);
+ * `edges[]` elements: `{from, to, kind, when?, rounds?, mapCount?}` (`rounds` is
+ * appended for `backflow` only, missing limit prints the dash; a non-`always`
+ * `when` appends the condition name; `mapCount` > 0 appends the mapping count).
+ *
+ * @param {{row:string, entry:string, terminal:string, nodes:Array<object>, edges:Array<object>}} input
+ * @returns {string[]}
+ */
+export function renderWorkflowShow({ row, entry, terminal, nodes, edges }) {
+  const lines = [
+    row,
+    replaceAll(WORKFLOW_CLI_TEXT.showEntry, { entry, terminal }),
+    WORKFLOW_CLI_TEXT.nodesHeader,
+  ];
+  for (const node of Array.isArray(nodes) ? nodes : []) {
+    const timeout =
+      node?.timeout === null || node?.timeout === undefined
+        ? dashOf()
+        : `${node.timeout}s`;
+    const retry = node?.retry === null || node?.retry === undefined ? 0 : node.retry;
+    lines.push(
+      replaceAll(WORKFLOW_CLI_TEXT.nodeRow, {
+        id: node?.id ?? dashOf(),
+        title: node?.title ?? dashOf(),
+        type: workflowNodeTypeText(node),
+        timeout,
+        retry,
+      }),
+    );
+  }
+  lines.push(WORKFLOW_CLI_TEXT.edgesHeader);
+  for (const edge of Array.isArray(edges) ? edges : []) {
+    let line = replaceAll(WORKFLOW_CLI_TEXT.edgeRow, {
+      from: edge?.from ?? dashOf(),
+      to: edge?.to ?? dashOf(),
+      kind: WORKFLOW_CLI_TEXT.edgeKind[edge?.kind] ?? String(edge?.kind ?? dashOf()),
+    });
+    if (edge?.kind === 'backflow') {
+      line += replaceAll(WORKFLOW_CLI_TEXT.edgeRounds, {
+        rounds: edge?.rounds === null || edge?.rounds === undefined ? dashOf() : String(edge.rounds),
+      });
+    }
+    if (typeof edge?.when === 'string' && edge.when !== 'always') {
+      line += replaceAll(WORKFLOW_CLI_TEXT.edgeCondition, {
+        when: CONDITION_LABEL[edge.when] ?? edge.when,
+      });
+    }
+    if (Number(edge?.mapCount) > 0) {
+      line += replaceAll(WORKFLOW_CLI_TEXT.edgeMappings, { n: edge.mapCount });
+    }
+    lines.push(line);
+  }
+  return lines;
+}
+
+/**
+ * `orch workflow validate` text (A-9): one line when all pass; header + one row per
+ * file otherwise. `counts` is the 4-key `{assets, builtin, project, invalid}`; the
+ * the builtin-file text in `rows[].file` is assembled by `workflows.js` via
+ * `WORKFLOW_CLI_TEXT.builtinFile`.
+ *
+ * @param {{counts:object, rows:Array<{file:string,detail:string,code:string}>}} input
+ * @returns {string[]}
+ */
+export function renderWorkflowValidate({ counts, rows }) {
+  if (!(Number(counts?.invalid) > 0)) {
+    return [replaceAll(WORKFLOW_CLI_TEXT.validateOk, counts)];
+  }
+  const lines = [replaceAll(WORKFLOW_CLI_TEXT.validateFail, counts)];
+  for (const row of Array.isArray(rows) ? rows : []) {
+    lines.push(replaceAll(WORKFLOW_CLI_TEXT.validateRow, row));
+  }
+  return lines;
+}
+
+/**
+ * `orch workflow dry-run` text (A-10).
+ *
+ * @param {{
+ *   plan: object,          // the 8-key `planWorkflow` plan (`layers[].nodes` hold node
+ *                          // ids, `mappings[]` is the 3-key `{from,to,edge}`, optional `warnings`)
+ *   nodes: Array<object>,  // workflow node objects (id/title/nodeType/role/workflow/
+ *                          // subNodeCount/parallelScope), turning ids into node descriptions
+ *   joins?: Array<string>, // fan-in condition per layer ('all'|'any'), defaults to 'all'
+ * }} input
+ * @returns {string[]}
+ */
+export function renderWorkflowDryRun({ plan, nodes, joins }) {
+  const text = WORKFLOW_CLI_TEXT.plan;
+  const nodeById = new Map((Array.isArray(nodes) ? nodes : []).map((node) => [node?.id, node]));
+  const nodeDesc = (id) => {
+    const node = nodeById.get(id) ?? {};
+    return replaceAll(text.nodeDesc, {
+      id,
+      title: node.title ?? dashOf(),
+      type: workflowNodeTypeText(node),
+    });
+  };
+
+  const layers = Array.isArray(plan?.layers) ? plan.layers : [];
+  const parallelCount = layers.filter((layer) => layer?.parallel === true).length;
+  const subCount = (Array.isArray(nodes) ? nodes : []).filter(
+    (node) => node?.nodeType === 'subworkflow',
+  ).length;
+
+  const lines = [
+    replaceAll(text.header, {
+      id: plan?.id,
+      nodes: plan?.nodeCount ?? 0,
+      edges: plan?.edgeCount ?? 0,
+      groups: parallelCount,
+      subs: subCount,
+    }),
+  ];
+  layers.forEach((layer, index) => {
+    if (layer?.parallel === true) {
+      const first = nodeById.get(layer.nodes?.[0]) ?? {};
+      lines.push(
+        replaceAll(text.layerParallel, {
+          index: index + 1,
+          name: first.parallelScope ?? dashOf(),
+          nodes: (Array.isArray(layer.nodes) ? layer.nodes : []).map(nodeDesc).join('｜ '),
+          join: Array.isArray(joins) ? joins[index] ?? 'all' : 'all',
+        }),
+      );
+    } else {
+      lines.push(replaceAll(text.layerNode, { index: index + 1, node: nodeDesc(layer?.nodes?.[0]) }));
+    }
+  });
+
+  const branches = Array.isArray(plan?.branches) ? plan.branches : [];
+  if (branches.length > 0) {
+    lines.push(text.branchesHeader);
+    for (const branch of branches) {
+      lines.push(
+        replaceAll(text.branchRow, {
+          from: branch?.from,
+          to: branch?.to,
+          when: CONDITION_LABEL[branch?.when] ?? String(branch?.when ?? dashOf()),
+        }),
+      );
+    }
+  }
+
+  const mappings = Array.isArray(plan?.mappings) ? plan.mappings : [];
+  if (mappings.length > 0) {
+    lines.push(text.mappingsHeader);
+    for (const mapping of mappings) {
+      // A-10 renders the target as `<edge target node>.<field>`; `edge` looks like `T-001→T-002`.
+      const edgeTo = String(mapping?.edge ?? '').split('→').pop() ?? '';
+      lines.push(
+        replaceAll(text.mappingRow, {
+          from: mapping?.from ?? dashOf(),
+          to: `${edgeTo}.${mapping?.to ?? ''}`,
+        }),
+      );
+    }
+  }
+
+  const policies = Array.isArray(plan?.policies) ? plan.policies : [];
+  if (policies.length > 0) {
+    lines.push(text.policiesHeader);
+    for (const policy of policies) {
+      lines.push(
+        replaceAll(text.policyRow, {
+          node: policy?.nodeId ?? dashOf(),
+          timeout: policy?.timeout ?? dashOf(),
+          retry: policy?.retry ?? 0,
+        }),
+      );
+    }
+  }
+
+  const warnings = Array.isArray(plan?.warnings) ? plan.warnings.length : 0;
+  lines.push(
+    warnings > 0 ? replaceAll(text.conclusionWarned, { n: warnings }) : text.conclusion,
+  );
+  return lines;
 }
