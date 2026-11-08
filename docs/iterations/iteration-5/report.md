@@ -66,18 +66,19 @@
   既有 6 个角色（`coordinator` / `researcher` / `writer` / `reviewer` / `developer` / `tester`）+ `worker` 全在表内。
 - `assets/skills/*/SKILL.md` **10 个**，每个至少被一个角色引用（AC-45 验证项目级可覆盖同名内置技能）。
 
-### 1.3 测试与夹具（+181 条用例，8 个文件）
+### 1.3 测试与夹具（+181 条用例；8 个测试文件 3081 行 + 1 个夹具改动）
 
-| 文件 | 内容 |
-|---|---|
-| `test/wp11/yaml-lite.test.js` | 190 行：注释净化、引号、嵌套、错误定位 |
-| `test/wp11/role-schema.test.js` | 324 行：9 键校验、取值域、14 个原因码逐条 |
-| `test/wp11/skill-file.test.js` | 112 行：前置元数据、目录名即 id、正文非空 |
-| `test/wp11/registry.test.js` | 两层合并、同 id 项目优先、counts 两表 |
-| `test/wp11/role-instances.test.js` | 572 行：六态优先级、`activeSessions` 含 quarantined、排序键、`roleToSessions` 只写非空 |
-| `test/wp11/cli-role.test.js` | CLI 参数矩阵、用法错误、退出码、文本/JSON 分流 |
-| `test/wp11/purity.test.js` | 三条纯净扫描 + `coordinator` 定点断言 |
-| `test/fixtures/purity-check.mjs` | **改**：新增 `--files` 入参（需求 D-7 第 3 条明文要求；`--dirs` 行为不变） |
+| 文件 | 行数 | 内容 |
+|---|---|---|
+| `test/wp11/yaml-lite.test.js` | 190 | 注释净化、引号、嵌套、错误定位 |
+| `test/wp11/skill-file.test.js` | 112 | 前置元数据、目录名即 id、正文非空 |
+| `test/wp11/purity.test.js` | 187 | 三条纯净扫描 + `coordinator` 定点断言（恰好 1 处且在 `GROUPS` 行） |
+| `test/wp11/assets.test.js` | 282 | 资产目录扫描：只认 `*.yaml`、跳过非角色文件、目录名即技能 id |
+| `test/wp11/role-schema.test.js` | 324 | 9 键校验、取值域、14 个原因码逐条 |
+| `test/wp11/role-instances.test.js` | 572 | 六态优先级、`activeSessions` 含 quarantined、排序键、`roleToSessions` 只写非空、纯函数性 |
+| `test/wp11/cli-role.test.js` | 690 | 三条子命令的参数矩阵、用法错误、退出码、文本/JSON 分流、`--instance` 口径 |
+| `test/wp11/registry.test.js` | 724 | 两层合并、同 id 项目优先、逐资产报错、counts 两表不混用 |
+| `test/fixtures/purity-check.mjs` | 改 | 新增 `--files` 入参（需求 D-7 第 3 条明文要求；`--dirs` 与默认值行为不变） |
 
 ### 1.4 验收产物
 
