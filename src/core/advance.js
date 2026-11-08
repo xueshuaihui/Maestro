@@ -62,8 +62,8 @@ function verdictValue(verdict, node) {
 /**
  * A node has "left the execution state" when it is done / failed / escalated, or when it
  * sits in `review` waiting for the downstream node to take over (downstream gate, D-3).
- * The latter still counts as ended here, otherwise the planner would never dispatch the
- * next node after a gated node verified its own output.
+ * The latter still counts as ended here, otherwise the dispatcher would never advance to
+ * the next node after a gated node verified its own output.
  */
 function hasEnded(node) {
   if (['done', 'failed', 'escalated'].includes(node?.state)) return true;

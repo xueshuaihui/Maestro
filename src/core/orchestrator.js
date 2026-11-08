@@ -1853,7 +1853,7 @@ export function createOrchestrator({
   /**
    * Review node finishing (D-7 / D-3). The review file decides:
    *   pass                      -> done (I1.2 transition reason kept)
-   *   reject, under the cap     -> failed + note `等待复审`, the planner backflows next
+   *   reject, under the cap     -> failed + note `等待复审`, the scheduler backflows next
    *   reject at the cap         -> escalate `rounds_exceeded`
    *   invalid file              -> escalate with the reader's reason code
    */
@@ -2264,7 +2264,7 @@ export function createOrchestrator({
     }
 
     let promptText = plan.promptText;
-    // I1.2 re-assembles the retest prompt here. A `doc-single` graph keeps the planner's
+    // I1.2 re-assembles the retest prompt here. A `doc-single` graph keeps the engine's
     // text instead: it already carries the versioned references, which this block has no
     // way to reproduce (D-8).
     if (handoff.edge?.kind === 'retest' && productPolicyOf(state) !== 'doc-single') {
