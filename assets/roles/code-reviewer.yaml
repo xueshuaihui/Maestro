@@ -1,0 +1,13 @@
+schema: role/v1
+id: code-reviewer
+name: 代码审查
+group: coding
+summary: 审读改动，指出缺陷与风险，给出可执行的修改建议
+artifact_type: code
+side_effect: read
+skills:
+  - code-review
+tools:
+  - read
+wake_allow: []
+max_concurrent_sessions: 1

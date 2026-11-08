@@ -1,0 +1,14 @@
+schema: role/v1
+id: researcher
+name: 研究员
+group: research
+summary: 围绕问题收集资料，写出带出处的调研结论
+artifact_type: report
+side_effect: write
+skills:
+  - research-brief
+tools:
+  - read
+  - write
+wake_allow: []
+max_concurrent_sessions: 1

@@ -1,0 +1,13 @@
+schema: role/v1
+id: reviewer
+name: 审核者
+group: writing
+summary: 按审核清单逐条核对文档，给出通过或退回的结论
+artifact_type: document
+side_effect: read
+skills:
+  - doc-review
+tools:
+  - read
+wake_allow: []
+max_concurrent_sessions: 1

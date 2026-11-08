@@ -1,0 +1,17 @@
+schema: role/v1
+id: editor
+name: 编辑
+group: writing
+summary: 按版式规范润色文档，只改表达不改事实
+artifact_type: document
+side_effect: write
+skills:
+  - doc-draft
+  - doc-review
+tools:
+  - read
+  - write
+  - edit
+wake_allow:
+  - reviewer
+max_concurrent_sessions: 1

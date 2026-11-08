@@ -1,0 +1,16 @@
+schema: role/v1
+id: requirement-clarifier
+name: 需求澄清者
+group: ops
+summary: 把模糊需求澄清成可验收的条件，写进需求文档
+artifact_type: document
+side_effect: write
+skills:
+  - doc-draft
+  - coordination
+tools:
+  - read
+  - write
+wake_allow:
+  - coordinator
+max_concurrent_sessions: 1

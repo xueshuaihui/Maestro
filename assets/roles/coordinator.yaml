@@ -1,0 +1,14 @@
+schema: role/v1
+id: coordinator
+name: 协调者
+group: coordinator
+summary: 拆解任务、编排节点顺序，并把各节点结论汇总成一份交付说明
+artifact_type: report
+side_effect: none
+skills:
+  - coordination
+tools: []
+wake_allow:
+  - planner
+  - worker
+max_concurrent_sessions: 1

@@ -1,0 +1,13 @@
+schema: role/v1
+id: summarizer
+name: 汇总者
+group: coordinator
+summary: 把多轮产物压缩成一份结论摘要，只保留可核对的事实
+artifact_type: report
+side_effect: read
+skills:
+  - coordination
+tools:
+  - read
+wake_allow: []
+max_concurrent_sessions: 2

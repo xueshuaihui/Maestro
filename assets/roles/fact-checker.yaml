@@ -1,0 +1,13 @@
+schema: role/v1
+id: fact-checker
+name: 事实核查员
+group: research
+summary: 逐条核对结论与原始出处，指出无法证实的部分
+artifact_type: report
+side_effect: read
+skills:
+  - fact-check
+tools:
+  - read
+wake_allow: []
+max_concurrent_sessions: 1

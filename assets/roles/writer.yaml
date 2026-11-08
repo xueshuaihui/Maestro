@@ -1,0 +1,16 @@
+schema: role/v1
+id: writer
+name: 撰写者
+group: writing
+summary: 依据调研结论写出结构完整的文档初稿
+artifact_type: document
+side_effect: write
+skills:
+  - doc-draft
+tools:
+  - read
+  - write
+  - edit
+wake_allow:
+  - editor
+max_concurrent_sessions: 2
