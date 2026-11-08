@@ -44,7 +44,7 @@ S0 需求定稿 ──► S1 拆分 ──► S2 实现 ──► S3 验收 ─�
 |---|---|
 | 运行时 | Node ≥ 22；Windows + Git Bash；零第三方运行时依赖（`dependencies` 恒为 `{}`） |
 | 测试命令 | `node --test "test/**/*.test.js"`（`npm test` / `node --test test/` 会报 `MODULE_NOT_FOUND`） |
-| 架构扫描 | `node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid <本迭代禁词表>` —— **脚本默认表只有 I1.2 四词，必须显式传全表**（当前 11 词并集：I1.2 的 `code-loop,developer,tester,coordinator` + I1.3 的 `task-loop,researcher,writer,reviewer,研究员,撰写者,审核者`）；英文注释也会命中 |
+| 架构扫描 | `node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator`（**11 词并集**：I1.3 七词 + I1.2 四词，顺序与 I1.4 v23 的 AC-56 一致）。脚本 `DEFAULT_FORBID` 只有 I1.2 四词，**必须显式 `--forbid` 传全表**；英文注释也会命中。新迭代若新增模板/角色字面量，把新词并入并同步改此处 |
 | 夹具现场 | 项目根一律放 `%TEMP%`，**不放仓库内**；`NODE_ENV=test` 必注入；同进程串行场景 ≤ 10 个 |
 | 提示词产物点 | `src/core/advance.js` 的 `planAdvance`（经 `plan.promptText`），不是 orchestrator 兜底分支 |
 | 中文唯一来源 | `src/cli/labels.js` |
@@ -82,7 +82,7 @@ S0 需求定稿 ──► S1 拆分 ──► S2 实现 ──► S3 验收 ─�
 
 ### 1.3 拆分文档的 8 节固定骨架
 
-I1.1、I1.2、I1.3 三次都用同一套，**顺序与标题不得改动**：
+I1.1、I1.2、I1.3 三次的**节号与顺序完全一致（0~8）**，但标题措辞略有差异（例如 §8 分别是「需求与阶段零约束之间的冲突」「与需求 / 代码现状的冲突」「与需求 v5 的对齐声明」；§1 只有 I1.3 带「结论 + 被否决项」）。**从本模板起统一按下表标题，节号与顺序不得改动**：
 
 | 节 | 标题 | 必须写什么 | 从哪里取值 | 常见错误 |
 |---|---|---|---|---|
@@ -101,7 +101,7 @@ I1.1、I1.2、I1.3 三次都用同一套，**顺序与标题不得改动**：
 1. **文件清单互不重叠**：同一文件只能属于一个 WP。大文件（如 `orchestrator.js`）指定**唯一负责人**，其它包通过契约调用，不许各自去改。
 2. **依赖成 DAG，每个包可独立验收**：包内自带契约测试，不依赖下游文件已写完；缺字段时按契约兼容缺省。
 3. **按能力切，不按文件类型切**：不要把"所有 `src/core` 放一个包"这种按目录的切法；每个 WP 应对应一组可独立验证的 AC。
-4. **AC → WP 满覆盖**：每条 AC 至少有一个主责 WP；跨包的标注主责与协作包。映射表放在 §4 末尾。
+4. **AC → WP 满覆盖**：每条 AC 至少有一个主责 WP；跨包的标注主责与协作包。**§4 末尾必须附「AC → WP 满覆盖映射」表**——这是本模板新增要求：I1.1~I1.3 的拆分文档没有这张表，只在「验收口径」里用文字描述；新迭代必须补，否则 §1.5 的覆盖自检无法判定。
 
 每个 WP 条目固定五个字段（照 I1.2 WP 格式）：
 
@@ -130,6 +130,8 @@ I1.1、I1.2、I1.3 三次都用同一套，**顺序与标题不得改动**：
 | 9 | §7 每条风险都有具体处置（点名文件/函数） | 人工 |
 | 10 | §8 声明「不新增需求条目，冲突以需求为准」 | 人工 |
 
+> **脚本适用口径（必读）**：「AC 满覆盖」一条只对**按本模板新产出**的拆分文档有效（§4 末尾必须有映射表）。直接拿它扫 I1.1~I1.3 会报大量「未覆盖」（实测 I1.3 报 38 条），原因是历史文档用文字描述验收口径、没有逐条列 AC 号——**这是格式差异造成的误报，不是缺陷，不要回填历史文档，更不要为了让脚本变绿去改写拆分格式**。脚本已内置映射表存在性检测：缺表时只告警、不给覆盖结论。
+
 机械自检示例（把 `N` 换成迭代号）：
 
 ```bash
@@ -138,8 +140,13 @@ const fs=require('fs');
 const r=fs.readFileSync('docs/iterations/iteration-N/requirement.md','utf8');
 const d=fs.readFileSync('docs/iterations/iteration-N.md','utf8');
 const ac=[...r.matchAll(/^#### (AC-\d+)/gm)].map(m=>m[1]);
-const cited=new Set([...d.matchAll(/AC-\d+/g)].map(m=>m[0]));
-console.log('拆分文档未覆盖的 AC:', ac.filter(a=>!cited.has(a)).join(',')||'无');
+const hasMap=/AC\s*→\s*WP\s*满覆盖映射/.test(d);
+if(!hasMap){
+  console.log('⚠ 缺 §4 映射表：覆盖结论无效，按 §1.4 规则 4 补表后再跑');
+} else {
+  const cited=new Set([...d.matchAll(/AC-\d+/g)].map(m=>m[0]));
+  console.log('拆分文档未覆盖的 AC:', ac.filter(a=>!cited.has(a)).join(',')||'无');
+}
 const wps=[...d.matchAll(/^### (WP-\d+)([\s\S]*?)(?=^### |^## )/gm)];
 const owner=new Map();
 for(const [_,id,b] of wps){
@@ -216,7 +223,7 @@ console.log('WP 数:',wps.length,'| 登记文件数:',owner.size);
 | # | 风险 | 影响 | 处置（点名文件/函数） |
 |---|---|---|---|
 
-## 8. 与需求 v<版本> 的对齐声明
+## 8. 与需求的对齐声明 / 冲突清单
 本文档不新增需求条目。所有逐字文案、状态名、错误码、AC 编号均以 `requirement.md` v<版本> 为准；两者冲突时**以需求为准**并在实现结论中指出。
 <列出需求与代码现状的冲突及裁决>
 ````
@@ -307,6 +314,7 @@ node test/fixtures/purity-check.mjs --dirs src/core,src/daemon \
 node -e "const p=require('./package.json');console.log(Object.keys(p.dependencies||{}).length)"
 
 # 4) 主链冒烟（%TEMP% 下独立根，绝不放仓库内）
+#    <driver> 只有两个实取值：task-loop-driver.mjs / code-loop-driver.mjs（按本迭代模板选）
 node test/fixtures/<driver>.mjs --root "$TEMP/i<N>-smoke/dp" --scenario <主链场景> \
   --cwd "$TEMP/i<N>-smoke/dp/demo" --task "<任务文本>"
 ```
@@ -350,6 +358,8 @@ AC 的 Then/And > 附录 A 输出基线 > 附录 D 实现约束 > M/C 契约清�
 
 配套目录：`probe/acc<N>-cases/`（每条 AC 一个文件 + `_template` + `README`）、`probe/acc<N>-f-parts/`（每条 AC 的核对表）、`probe/acc<N>-f-results.jsonl`、`probe/acc<N>-f-summary.json`、`probe/acc<N>-f-blockers.md`（缺陷台账）。
 
+> **命名约定（易错，照抄）**：脚手架文件带 `-f-`（`acc<N>-f-run.mjs`），**用例目录不带 `-f`**（`acc<N>-cases/`）。不要写成 `acc<N>-f-cases/`——I1.3 验收期就误建过这个空壳目录。路径常量统一导出为 `ACC<N>_PATHS`，不要沿用上一迭代的 `ACC3_PATHS` 这类硬编码名。
+
 ### 3.2 用例与批次规则
 
 - 一个 AC 一个用例文件，结构固定：`makeCase` → 构造 → 断言 → `finally` 清理 → `return finish(c)`。
@@ -387,14 +397,14 @@ AC 的 Then/And > 附录 A 输出基线 > 附录 D 实现约束 > M/C 契约清�
 
 ### 4.1 报告固定骨架（`docs/iterations/iteration-N/report.md`）
 
-I1.1、I1.2、I1.3 三份报告同一套结构：
+报告结构在三次迭代里逐步收敛：I1.1 / I1.2 是 **0~7 节 + 「附录：命令速查」**（§3 证据分级、§4 过程与缺陷收敛、§5 阶段零约束对齐、§7 下一步建议）；I1.3 是 **0~6 节**（§3 缺陷、§4 门禁与复现、§5 遗留、§6 与前序关系），不再单列附录。**从本模板起统一按 I1.3 的下表结构**，不写 §7：
 
 | 节 | 标题 | 必须写什么 |
 |---|---|---|
-| 抬头 | 依据 / 拆分 / 验收记录 / 环境 / 完成时间 | 需求版本、拆分文档路径、证据数、运行时版本、日期 |
+| 抬头 | 依据 / 拆分与契约 / 验收记录 / 评审记录 / 环境 / 完成时间 | 需求版本与 AC 数、拆分文档路径、各验收面文件与证据数、评审记录路径、运行时版本、日期 |
 | 0 | 总体结论 | 一句话「是否达成退出标准」+ 判定表（AC 数、测试条数、架构扫描、回归红线、阻断级缺陷）+ 一句话能力结论 + 最难一条的实测证据 |
 | 1 | 交付物 | 产品代码（文件数/行数/零依赖）、测试与夹具（用例数）、验收产物（证据文件数） |
-| 2 | AC 逐条判定 / 需求范围对照 | 45 条逐条表 或 §1.3 十条范围对照 |
+| 2 | AC 逐条判定 / 需求范围对照 | `<AC 总数>` 条逐条判定表（本模板起一律逐条），或需求 §1.3 范围内条目对照 |
 | 3 | 验收中发现并修复的缺陷 / 证据分级 | 每个缺陷：现象、根因、修法、commit、复验结果；证据三档分布 |
 | 4 | 门禁与复现 | **可直接复制执行的命令**（全量测试、扫描、验收批次、三条主链），每条带预期数字 |
 | 5 | 遗留问题与边界 | 不影响结论的观察项，逐条写明影响范围与为何不阻断 |
@@ -424,10 +434,11 @@ docs/iterations/iteration-N/
 ├── evidence/                 原始证据
 ├── report.md                 实现报告
 └── decisions.md              自主裁决台账
-docs/iterations/iteration-N.md             任务拆分与文件级契约
-probe/accN-f-*.mjs                          验收脚手架
-probe/accN-cases/                           逐 AC 用例
-probe/accN-f-{parts,results.jsonl,summary.json,blockers.md}
+docs/iterations/iteration-N.md                 任务拆分与文件级契约
+probe/acc<N>-f-*.mjs                           验收脚手架（lib / common / run / final）
+probe/acc<N>-cases/                            逐 AC 用例（不带 -f）
+probe/acc<N>-f-parts/                          每条 AC 的核对表
+probe/acc<N>-f-{results.jsonl,summary.json,blockers.md}
 ```
 
 ---
@@ -457,6 +468,7 @@ probe/accN-f-{parts,results.jsonl,summary.json,blockers.md}
 | 19 | 核心不得依赖宿主上报产物指纹；`artifactRef` 只从 `tool_call.rawInput.file_path` 按工具类型提取 | 阶段零 |
 | 20 | `load` 后必须 drain-quiet（idle 40ms / cap 400ms）；错误码 `-32602` 同码双义，禁止只按 code 判会话失效 | 阶段零 |
 | 21 | 验收项目根绝不放仓库目录；`ELECTRON_RUN_AS_NODE` 跑 Electron 前要删 | I1.3 / 阶段零 |
+| 22 | 全量测试偶发 1 条 fail 在 `test/wp10/perf.test.js`（NFR-02 的 p95 ≤ 50ms）：并发/负载下会 417/418，独占复跑稳定 418/418。**先独占复跑再归因，不许放宽预算或删用例**（I1.3 已加 3 轮预热，预算从未放宽） | I1.3 报告 §5 |
 
 ---
 
@@ -513,6 +525,7 @@ console.log('非通过:',Object.keys(last).filter(i=>last[i].verdict!=='通过')
 "
 
 # 主链冒烟（%TEMP% 下独立根）
+# <driver> = task-loop-driver.mjs / code-loop-driver.mjs
 node test/fixtures/<driver>.mjs --root "$TEMP/i<N>-smoke/<场景>" --scenario <场景> \
   --cwd "$TEMP/i<N>-smoke/<场景>/demo" --task "<任务文本>"
 ```
@@ -523,10 +536,10 @@ node test/fixtures/<driver>.mjs --root "$TEMP/i<N>-smoke/<场景>" --scenario <�
 
 | 规则 | 来自哪次实践 |
 |---|---|
-| 拆分文档 8 节骨架 | I1.1 / I1.2 / I1.3 三次完全一致（`iteration-1.md` ~ `iteration-3.md`） |
+| 拆分文档 0~8 节骨架 | I1.1 / I1.2 / I1.3 三次**节号与顺序**一致；标题措辞有差异，由本模板统一 |
 | 工作包文件互不重叠、DAG、契约先冻结 | I1.2 §4 / §6；I1.3 §4 / §6 |
 | AC → WP 满覆盖、退出标准可判定 | I1.3 §0（45 条 AC 分面退出标准） |
-| 报告 0~6 节 + 命令速查 | I1.1 / I1.2 / I1.3 三份 `report.md` |
+| 报告 0~6 节 + 命令速查 | 以 I1.3 `report.md` 为统一版；I1.1 / I1.2 是早期 0~7 + 附录形态 |
 | 验收脚手架四件套 + 分批取证 + final 重建 | I1.3 `probe/acc3-*`（45 AC / 651 核对项 / 284 证据） |
 | 实现与验收分离、主控独立复核 | I1.3 验收期 13 个 SubAgent 编排，主控复跑 AC-05/25/45 |
 | 缺陷单线修复 + 台账 | I1.3 收口 6 个缺陷（含 2 个 P1） |
@@ -534,5 +547,22 @@ node test/fixtures/<driver>.mjs --root "$TEMP/i<N>-smoke/<场景>" --scenario <�
 | 证据分级、不放宽断言、阻塞写法 | 阶段零约定 + I1.3 报告 §3 |
 | 全部硬约束（§5） | I1.1~I1.3 验收期缺陷与阶段零锁定约束 |
 | DoR 的 6/10/11/12 条、禁词表显式传全、六轮独立评审做法 | I1.4 需求 v23 的六轮评审修复（v17 → v23，AC 由 67 增至 70） |
+
+---
+
+## 10. 本模板的维护与复核
+
+模板里所有「前三次都这样做」「脚本能跑」「路径存在」都是**事实声称**。改动模板或换迭代时必须机械复核，不能凭印象——本模板第一版就因为凭印象写下「三次标题完全一致」「三份报告同一套结构」而返工。
+
+| 复核项 | 怎么做 |
+|---|---|
+| 骨架声称一致 | `for n in 1 2 3; do grep -n "^## " docs/iterations/iteration-$n.md; done`。**节号一致 ≠ 标题一致**，别混为一谈 |
+| 报告骨架声称一致 | 同样扫三份 `report.md`，注意早期版本可能有 §7 与附录 |
+| 引用路径存在 | 逐个 `test -e <路径>` |
+| 模板内脚本可执行 | 把占位符换成已完成迭代号实跑一遍；对历史文档报「未覆盖」时，先判断是不是格式差异造成的误报 |
+| 命令参数真实 | 对照 `purity-check.mjs` 的 `DEFAULT_FORBID` 与需求里 `--forbid` 的原文（当前 11 词并集） |
+| 代码块配对 | 三反引号 / 四反引号行数均应为偶数 |
+
+改模板时同步检查 `docs/templates/requirement-template.md` 的用途行，并在 commit message 里写清本次复核了哪些声称。
 
 > 本模板不新增需求条目，也不替代 `requirement-template.md`。两者冲突时以需求模板与需求原文为准；执行流程本身以本文件为准。
