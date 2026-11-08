@@ -70,6 +70,21 @@ function makeError(code, file, scope, field, line, params) {
 }
 
 /**
+ * D-3: one file may produce several errors, but the same reason code is reported
+ * only once per file. Call this after the stable `file` sort, so the first entry
+ * (the earliest D-3 step for that code) is the one kept.
+ */
+function dedupeErrors(errors) {
+  const seen = new Set();
+  return errors.filter((err) => {
+    const key = `${err.file}\u0000${err.code}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+/**
  * `file` is relative to the asset root of its own layer: built-in assets are
  * written as `assets/...` (root = repository root), project assets as `roles/...`
  * or `skills/...` (root = `<root>/.orch`). The `.orch/` prefix shown to users is
@@ -316,20 +331,21 @@ export function loadRegistry({ root, onlyRole = null, builtinRoot = null } = {})
     const errors = [];
     const def = candidate ? validateRole(candidate, skillIds, errors) : null;
     const roles = def ? [def] : [];
+    const uniqueErrors = dedupeErrors(errors);
     return {
-      ok: errors.length === 0,
+      ok: uniqueErrors.length === 0,
       roles,
       roleMap: new Map(roles.map((role) => [role.id, role])),
       skills,
       skillMap,
-      errors,
+      errors: uniqueErrors,
       counts: {
         assets: 1,
         roles: roles.length,
         skills: 0,
         builtin: def && def.source === BUILTIN ? 1 : 0,
         project: def && def.source === PROJECT ? 1 : 0,
-        invalid: errors.length > 0 ? 1 : 0
+        invalid: uniqueErrors.length > 0 ? 1 : 0
       },
       groups: groupCounts(roles)
     };
@@ -352,8 +368,9 @@ export function loadRegistry({ root, onlyRole = null, builtinRoot = null } = {})
   const allErrors = errors.concat(skillErrors);
   // Stable sort: inside one file the D-3 order is preserved.
   allErrors.sort((a, b) => compareText(a.file, b.file));
+  const uniqueErrors = dedupeErrors(allErrors);
 
-  const invalidFiles = new Set(allErrors.map((item) => item.file));
+  const invalidFiles = new Set(uniqueErrors.map((item) => item.file));
   const invalid = invalidFiles.size;
   const builtinCount =
     roles.filter((role) => role.source === BUILTIN).length +
@@ -363,12 +380,12 @@ export function loadRegistry({ root, onlyRole = null, builtinRoot = null } = {})
     skills.filter((skill) => skill.source === PROJECT).length;
 
   return {
-    ok: allErrors.length === 0,
+    ok: uniqueErrors.length === 0,
     roles,
     roleMap: new Map(roles.map((role) => [role.id, role])),
     skills,
     skillMap,
-    errors: allErrors,
+    errors: uniqueErrors,
     counts: {
       assets: roles.length + skills.length + invalid,
       roles: roles.length,

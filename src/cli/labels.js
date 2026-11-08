@@ -95,6 +95,9 @@ export const ROLE_CLI_TEXT = Object.freeze({
   instanceLine:
     '  实例 {instanceId}：{status} · 活跃会话 {active}/{max} · 服务节点 {nodes} · 宿主 {host} · {last}',
   lastAction: '最近 {nodeId} · 轮次 {round}/{maxRounds}',
+  // 图取不到时 maxRounds / round 可能缺省：不打印悬空的 `/`（A-3 的正常路径逐字不变）。
+  lastActionNoMax: '最近 {nodeId} · 轮次 {round}',
+  lastActionNodeOnly: '最近 {nodeId}',
   lastActionMissing: '最近 —',
   instanceUnused: '  实例 {instanceId}：本实例未使用该角色',
   unknownRoleNote: '（注册表中不存在该角色）',

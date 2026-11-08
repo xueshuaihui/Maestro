@@ -5,7 +5,7 @@
 | **依据** | `docs/iterations/iteration-5/requirement.md` **v6**（2026-11-08 定稿），45 条 AC、29 条 BR、7 条 NFR |
 | **拆分与契约** | `docs/iterations/iteration-5.md`（8 节骨架，6 个工作包，文件级契约互不重叠）；S1 经 8 轮评审 PASS（提交 `74e705f`） |
 | **验收记录** | `acceptance-fixture.md`（夹具面 45 条 / 311 份证据）、`acceptance-product.md`（本迭代无真实宿主面，已注明理由）、`probe/acc5-f-parts/AC-*.md`（逐条核对表）、`probe/acc5-f-summary.json` |
-| **缺陷台账** | `probe/acc5-f-blockers.md`（D-1 / D-2 / D-3）、`decisions.md`（13 条自主裁决） |
+| **缺陷台账** | `probe/acc5-f-blockers.md`（D-1 / D-2 / D-3）、`decisions.md`（20 条自主裁决：实现期 5 + 验收期 8 + 评审后 7） |
 | **环境** | Windows 11，Node **v22.22.2**，12 核；项目根一律在 `%TEMP%/maestro-acc-p5/<AC>`（绝不放仓库内） |
 | **完成时间** | 2026-11-08 |
 | **分支** | `feat/i1.5-role-registry`（自 `1490f6d`） |
@@ -20,7 +20,7 @@
 |---|---|---|---|
 | AC | 45/45 通过 | **45 通过 / 0 不通过 / 0 阻塞** | ✅ |
 | 逐条核对项 | 每条 AC 的 Then/And 全部机检 | **350 条，全绿** | ✅ |
-| 既有测试 | `fail === 0 && pass === tests >= 418`，断言零修改 | **599/599**（418 → 599，+181 条本轮新增） | ✅ |
+| 既有测试 | `fail === 0 && pass === tests >= 418`，断言零修改 | **599/599**（418 → 599，+181 条本轮新增）；评审后修复再复验 **611/611**（§7.2） | ✅ |
 | 回归红线 | 三条主链输出与 I1.3 基线逐字一致 | AC-19：**27/27**，同一项目根先后跑基线树与当前树，归一化后 diff 为空 | ✅ |
 | 架构扫描 | D-7 三条命令 exit 0 + `coordinator` 定点 1 处 | 16 文件零命中 / 6 文件零命中（30 词）/ 1 文件零命中；定点命中恰好 1 处且在 `GROUPS` 行 | ✅ |
 | 零依赖 | `dependencies` 键 0 个 | `package.json` 无 `dependencies` / `devDependencies` 键 | ✅ |
@@ -66,7 +66,7 @@
   既有 6 个角色（`coordinator` / `researcher` / `writer` / `reviewer` / `developer` / `tester`）+ `worker` 全在表内。
 - `assets/skills/*/SKILL.md` **10 个**，每个至少被一个角色引用（AC-45 验证项目级可覆盖同名内置技能）。
 
-### 1.3 测试与夹具（+181 条用例；8 个测试文件 3081 行 + 1 个夹具改动）
+### 1.3 测试与夹具（+193 条用例；9 个测试文件 3358 行 + 1 个夹具改动）
 
 | 文件 | 行数 | 内容 |
 |---|---|---|
@@ -78,6 +78,7 @@
 | `test/wp11/role-instances.test.js` | 572 | 六态优先级、`activeSessions` 含 quarantined、排序键、`roleToSessions` 只写非空、纯函数性 |
 | `test/wp11/cli-role.test.js` | 690 | 三条子命令的参数矩阵、用法错误、退出码、文本/JSON 分流、`--instance` 口径 |
 | `test/wp11/registry.test.js` | 724 | 两层合并、同 id 项目优先、逐资产报错、counts 两表不混用 |
+| `test/wp11/review-fixes.test.js` | 277 | **评审后新增**：F-1~F-7 的 12 条回归，含 F-6 被驳回的裁决记录（不修改任何既有断言） |
 | `test/fixtures/purity-check.mjs` | 改 | 新增 `--files` 入参（需求 D-7 第 3 条明文要求；`--dirs` 与默认值行为不变） |
 
 ### 1.4 验收产物
@@ -85,7 +86,8 @@
 - `probe/acc5-f-{lib,common,run,final}.mjs` 四件套 + `probe/acc5-cases/`（45 个用例 + 3 个共享库 + README）
 - `probe/acc5-f-parts/AC-*.md` 45 份核对表、`probe/acc5-f-results.jsonl`、`probe/acc5-f-summary.json`
 - `docs/iterations/iteration-5/evidence/` **311 份**原始帧
-- `probe/acc5-f-blockers.md`（3 条缺陷）、`decisions.md`（13 条裁决）、`acceptance-fixture.md`、`acceptance-product.md`
+- `probe/acc5-f-blockers.md`（3 条缺陷）、`decisions.md`（20 条裁决）、`acceptance-fixture.md`、`acceptance-product.md`
+- `review-recheck-summary.json`：评审后修复的 45 条 AC 复跑机读结果（§7.2）
 
 ---
 
@@ -235,6 +237,8 @@ node /d/WWW/Maestro/bin/orch.js role show worker --instance INST-001
 | **R-3** | `docs/index.md` §3.3 的 `role_instance` 示例仍是 snake_case（`role_id` / `last_action_summary` 字符串） | 文档与实现有一处已知不一致 | 需求 C-12 明确「本轮按 camelCase 实现、差异在 `decisions.md` 登记、不改 `docs/index.md`」 | 后续统一文档时一并改（决策 A-1） |
 | **R-4** | 本迭代无真实宿主面验收 | — | 需求 45 条 AC 没有一条要求真实 DSH 宿主；不改 ACP 适配层 | 想更安心可补「真实 DSH 跑 `code-loop` 停在 T-002」一条，`acceptance-product.md` 已写清步骤 |
 | **R-5** | `role show` 的「最近动作」只按 `stateSince` 排序，不解析跨轮次时间线 | 展示口径 | 需求 D-5 只要求「`stateSince` 最大者」 | 需要时间线时再扩展 |
+| **R-6** | 附录 D-1 表中 `src/registry/role-instances.js` 的「允许依赖：无」与 D-5 排序所需的 `GROUPS` 不自洽 | 仅需求文档表述 | 评审后已清除跨 `src/core` 的依赖；同层 `role-schema.js` 的 `GROUPS` 依赖保留——内联枚举会让 `coordinator` 在 `src/registry/**` 出现第 2 次，直接破坏 AC-40 定点断言 | 下一迭代把 D-1 该行的「允许依赖」改成「`role-schema.js`（仅分组枚举）」（决策 C-4） |
+| **R-7** | 附录 D-3 第 1069 行「缺一个报一条」与第 1073 行「同一文件的同一原因码只报第一条」不自洽 | 仅多缺字段时的报错条数 | 本轮按 1073 的总结性全局约束实现 `(file, code)` 去重；AC-14 的两条是不同原因码，不受影响；既有断言零修改 | 需求方明确 1069 的措辞（决策 C-5） |
 
 ---
 
@@ -264,6 +268,48 @@ mock ACP 夹具与三条主链驱动、`purity-check.mjs` 的扫描口径、验�
 
 ---
 
+## 7. 独立代码评审后的修复与复验（S4 报告之后）
+
+**触发**：用户先要求独立评审「I1.5 是否完全实现」（不引用 S3 的 45/45 结论），再要求「按照建议执行」。
+评审逐条读需求与代码，得到 7 项观察 F-1~F-7；按模板 §2.8 的裁决优先级处置：**6 项修、1 项驳回**，
+全部登记在 `decisions.md` 第三节（C-1~C-7）。修复只增断言、**不改任何既有断言**（D-8），
+也不改 45 条 AC 的需求原文。
+
+### 7.1 处置结果
+
+| 发现 | 结论 | 处置 |
+|---|---|---|
+| **F-1** `role validate <未知角色>` 报「全部通过」且 exit 0 | 修 | BR-25：识别「无候选文件」组合，复用 `找不到角色：<id>` + 提示两行，退出 1；已存在但不合法的角色仍走 A-4 失败版式 |
+| **F-2** `role list foo` / `--task` / `--events` / `show x --template y` 被静默忽略 | 修 | `parseArgs` 增 `ROLE_FLAGS` 白名单；位置参数只 `show`/`validate` 接受，超范围标志走 A-5 的「不适用于」文案。白名单检查放在解析之后以保留 AC-37 的 `未知参数：--nope` 原文 |
+| **F-3** `unknownRoleNote` 是死路径 | 修 | `role list --instance` 文本面在未分组时额外渲染未注册角色行，令 D-5 的「文本追加说明」真正可达；`--group` 时仍严格只列该组 |
+| **F-4** `role-instances.js` 依赖 `src/core/state-machine.js`，违反 D-1「允许依赖：无」 | 修 | 按 D-5 内联四个终态，清除跨层 import；同层 `GROUPS` 依赖保留（见 R-6） |
+| **F-5** 同一文件同一原因码可出多条，D-3 两处措辞冲突 | 修 | 按 D-3 第 1073 行的全局约束在 `loadRegistry` 输出层 `(file, code)` 去重；AC-14 的两条不同码不变（见 R-7） |
+| **F-6** `roleToSessions` 按 `createdAt` 重排，D-5 伪码是无序 filter | **驳回** | **AC-29 的 Then 明写「按创建顺序」**，优先级高于附录 D 伪码；且 `test/wp11/role-instances.test.js:455` 用故意打乱的 `sessions[]` 固定了 `createdAt` 排序，D-8 禁止改断言。首轮改动已撤销，并新增一条用例记录该裁决 |
+| **F-7** `maxRounds` 缺省时文本出现悬空 `轮次 1/` | 修 | 渲染层按轮次/上限是否缺省选三档模板，正常路径 A-3 基线 `轮次 1/2` 逐字不变；新中文只进 `labels.js` |
+
+两项**需求侧张力**已登记为 R-6 / R-7（§5），需需求方在下一迭代修表，不阻断本轮。
+
+### 7.2 复验
+
+| 门禁 | 结果 |
+|---|---|
+| 新增回归 `test/wp11/review-fixes.test.js` | **12/12** |
+| 全量套件稳定门禁 `node --test --test-concurrency=4 "test/**/*.test.js"` | **611/611**（S3 的 599 + 新增 12；首轮 F-6 误改曾掉到 610/611，撤销后恢复） |
+| D-7 三条纯净扫描 | `src/core,src/daemon` 16 文件 / `src/registry` 6 文件 / `src/cli/roles.js` 1 文件，全部零命中、exit 0 |
+| S3 脚手架 45 条 AC 全量复跑（3 批 + `acc5-f-final`） | **45/45 通过、350 条核对项、311 份证据、0 不通过 / 0 阻塞**；AC-19 逐字红线 27/27、AC-42 5/5 |
+| 既有断言修改数 | **0** |
+
+复跑会重写 `evidence/` 与 `acc5-f-parts/`，这些是 S3 的正式取证，已用 `git restore` 还原到收口提交的原始字节；
+本次复跑的机读结果另存 `review-recheck-summary.json`，不覆盖原证据。
+
+### 7.3 交付物增量
+
+- 产品代码 6 个文件：`src/cli/{main,roles,render,labels}.js`、`src/registry/{index,role-instances}.js`
+- 回归 1 个文件：`test/wp11/review-fixes.test.js`（277 行 / 12 条）
+- 文档 3 项：`decisions.md` 第三节、本报告 §5 / §7、`review-recheck-summary.json`
+
+---
+
 ## 附录：命令速查
 
 ```bash
@@ -271,7 +317,8 @@ node probe/acc5-f-run.mjs --list                          # 45 条登记情况�
 node probe/acc5-f-run.mjs AC-27                           # 单条复跑
 node probe/acc5-f-run.mjs --batch a|b|c                   # 按批取证
 node probe/acc5-f-final.mjs                               # 重建验收文档与 summary.json
-node --test --test-concurrency=4 "test/**/*.test.js"      # 稳定门禁（599/599）
+node --test --test-concurrency=4 "test/**/*.test.js"      # 稳定门禁（S3 599/599；评审后 611/611）
+node --test test/wp11/review-fixes.test.js                # 评审后修复回归（12/12）
 node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid <31 词>
 node probe/acc5-f-run.mjs AC-19                           # 三条主链逐字红线
 ```

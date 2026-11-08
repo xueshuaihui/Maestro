@@ -1074,6 +1074,22 @@ export function renderRegistryInvalid(detail) {
 }
 
 /**
+ * 最近动作段。A-3 的基线 `最近 T-002 · 轮次 1/2` 逐字不变；只在图取不到
+ * （`maxRounds` 缺省）或轮次缺省时降级，避免打出 `轮次 1/` 这种悬空斜杠。
+ */
+function renderLastAction(lastAction) {
+  if (!lastAction) return ROLE_CLI_TEXT.lastActionMissing;
+  const present = (value) => value !== null && value !== undefined && value !== '';
+  if (!present(lastAction.round)) {
+    return replaceAll(ROLE_CLI_TEXT.lastActionNodeOnly, lastAction);
+  }
+  const template = present(lastAction.maxRounds)
+    ? ROLE_CLI_TEXT.lastAction
+    : ROLE_CLI_TEXT.lastActionNoMax;
+  return replaceAll(template, lastAction);
+}
+
+/**
  * `role show|list --instance` 的那一行（A-3）。状态名取六态表；服务节点 / 宿主 /
  * 最近为空时写 `—`；未注册角色的并发上限为 `null`，该位置也写 `—` 并在行尾追加说明。
  *
@@ -1082,6 +1098,7 @@ export function renderRegistryInvalid(detail) {
  */
 export function renderRoleInstanceLine({ instanceId, view }) {
   const placeholder = ROLE_CLI_TEXT.placeholder;
+  const last = renderLastAction(view.lastAction);
   const status = ROLE_INSTANCE_STATUS_LABEL[view.status] ?? view.status;
   const nodes = Array.isArray(view.servingNodes) && view.servingNodes.length > 0
     ? view.servingNodes.join(', ')
@@ -1093,10 +1110,6 @@ export function renderRoleInstanceLine({ instanceId, view }) {
     view.maxConcurrentSessions === null || view.maxConcurrentSessions === undefined
       ? placeholder
       : String(view.maxConcurrentSessions);
-  const last = view.lastAction
-    ? replaceAll(ROLE_CLI_TEXT.lastAction, view.lastAction)
-    : ROLE_CLI_TEXT.lastActionMissing;
-
   const line = replaceAll(ROLE_CLI_TEXT.instanceLine, {
     instanceId,
     status,

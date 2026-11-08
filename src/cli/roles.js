@@ -242,7 +242,11 @@ async function listRoles({ registry, flags, format, ctx, out }) {
     if (instance !== null) {
       const visible = new Set(roleJsonList.map((role) => role.id));
       for (const view of instance.roles) {
-        if (!visible.has(view.roleId)) continue;
+        // D-5: a graph-declared role whose asset is missing must still be visible in
+        // the unfiltered text list, with its unknown-role note. Without this branch
+        // the note is unreachable: `show` refuses unregistered ids up front.
+        const extra = group === null && view.statusReason === 'unknown-role';
+        if (!visible.has(view.roleId) && !extra) continue;
         out(render.renderRoleInstanceLine({ instanceId: instance.instanceId, view }));
       }
     }
@@ -383,6 +387,15 @@ export async function roleCommand(parsed, ctx) {
   const onlyRole =
     sub === 'validate' && typeof parsed.positional === 'string' ? parsed.positional : null;
   const registry = loadRegistry({ root: ctx.cwd, onlyRole });
+
+  // BR-25: a positional id that matches no asset means "role not found" (exit 1),
+  // not "one asset validated successfully". An existing-but-invalid role always
+  // produces errors, so this combination only occurs when no candidate existed.
+  if (onlyRole !== null && registry.roles.length === 0 && registry.errors.length === 0) {
+    out(fill(ROLE_CLI_TEXT.notFoundRole, { id: onlyRole }));
+    out(ROLE_CLI_TEXT.notFoundRoleHint);
+    return EXIT_FAILED;
+  }
 
   if (sub === 'list') return listRoles({ registry, flags, format, ctx, out });
   if (sub === 'show') {

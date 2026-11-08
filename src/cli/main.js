@@ -70,6 +70,16 @@ const VALUE_FLAGS = new Set([
 /** `role` 的子命令；其余命令没有第二级。 */
 const ROLE_SUBS = new Set(['list', 'show', 'validate']);
 /**
+ * D-6：每个 `role` 子命令接受的标志白名单。全局 `VALUE_FLAGS` / `BOOLEAN_FLAGS`
+ * 只表示「解析阶段认识这个词」，不等于该命令接受它；白名单之外的标志一律用法错误，
+ * 不允许被解析后静默丢弃（M-9 的同一条纪律，方向反过来）。
+ */
+const ROLE_FLAGS = Object.freeze({
+  list: new Set(['group', 'instance', 'format']),
+  show: new Set(['instance', 'format']),
+  validate: new Set(['format'])
+});
+/**
  * 这两个标志只属于 `role`（M-9）。加进 `VALUE_FLAGS` 只是让解析阶段认识它们，
  * 别的命令照样按 `未知参数：--<key>` 拒绝 —— 不能因为共享词表就被静默忽略。
  */
@@ -169,15 +179,16 @@ export function parseArgs(argv) {
     if (sub === 'show' && positional === null) {
       return usage(ROLE_CLI_TEXT.usageReason.missingRoleId);
     }
-    if (sub !== 'list' && flags.group !== undefined) {
-      return usage(
-        fillTemplate(ROLE_CLI_TEXT.usageReason.flagNotApplicable, { key: 'group', sub })
-      );
+    // D-6：位置参数只有 show / validate 接受；list 收到就是「多余的参数」。
+    if (sub === 'list' && positional !== null) {
+      return usage(`多余的参数：${positional}`);
     }
-    if (sub !== 'list' && sub !== 'show' && flags.instance !== undefined) {
-      return usage(
-        fillTemplate(ROLE_CLI_TEXT.usageReason.flagNotApplicable, { key: 'instance', sub })
-      );
+    // 白名单放在解析之后判，保留 `--nope` 的「未知参数」原文（AC-37 逐字）。
+    // 已知但不属于该子命令的标志走 A-5 的「标志用错子命令」文案。
+    const allowed = ROLE_FLAGS[sub];
+    for (const key of Object.keys(flags)) {
+      if (allowed.has(key)) continue;
+      return usage(fillTemplate(ROLE_CLI_TEXT.usageReason.flagNotApplicable, { key, sub }));
     }
     if (flags.format !== undefined && flags.format !== 'text' && flags.format !== 'json') {
       return usage(ROLE_CLI_TEXT.usageReason.badFormat);

@@ -12,10 +12,13 @@
  */
 
 import { GROUPS } from './role-schema.js';
-import { TERMINAL_INSTANCE } from '../core/state-machine.js';
 
-/** Same four states the CLI treats as finished (`suspended` is not terminal). */
-const TERMINAL = new Set(TERMINAL_INSTANCE);
+/**
+ * D-5 lists the four terminal instance states verbatim; `suspended` is not one of
+ * them. Kept local because D-1 allows this module to import nothing outside the
+ * registry layer. The renderer has its own copy of the same closed set.
+ */
+const TERMINAL = new Set(['completed', 'failed', 'cancelled', 'interrupted']);
 
 const SERVING_NODE_STATES = new Set(['running', 'review']);
 const DONE_NODE_STATE = 'done';
@@ -153,6 +156,10 @@ export function buildRoleInstances({ state, graph, roles } = {}) {
     const serving = bound.filter((node) => SERVING_NODE_STATES.has(node.state));
     const boundNodeIds = new Set(bound.map((node) => node.nodeId));
 
+    // AC-29 takes precedence over the D-5 pseudo-code's plain filter: the mapping
+    // must be in creation order, and `state.sessions` is not guaranteed to be sorted
+    // by `createdAt` (see test/wp11/role-instances.test.js AC-29). Keep this stable
+    // sort; a real snapshot appends in creation order, so both readings agree there.
     const sess = sessions
       .filter((session) => boundNodeIds.has(session.nodeId))
       .slice()
