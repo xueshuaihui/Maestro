@@ -1,8 +1,8 @@
 # I1.4 — 共享工作区 + 交接包校验 + CLI 核心命令集
 
 > 迭代：阶段一 · I1.4 ｜ 依据：`docs/index.md`（§3.1 节点状态、§3.2 会话状态、§3.4 交接包状态、§5.2 数据布局、§5.4 共享工作区、§5.7 CLI 输出、能力域 1 / 2 / 4 / 5 / 6、I1.4 条目）｜ 模板：`docs/templates/requirement-template.md`
-> 状态：**v17（评审修复中）** ｜ 上游：I1.1 / I1.2 / I1.3（I1.3 实现中；契约见 `docs/iterations/iteration-3/requirement.md` v5，实现见 `src/`）
-> 契约变更 **M-1 ~ M-12**、补充契约 **C-01 ~ C-14**；业务规则 **BR-01 ~ BR-46**；AC **67 条**；附录 A 输出基线、附录 B 术语与未决问题、附录 C 变更记录、附录 D 实现约束。
+> 状态：**v23（六轮评审 PASS；第 6 轮的 6 条非阻塞建议已全部收口）** ｜ 上游：I1.1 / I1.2 / I1.3（I1.3 实现中；契约见 `docs/iterations/iteration-3/requirement.md` v5，实现见 `src/`）
+> 契约变更 **M-1 ~ M-12**、补充契约 **C-01 ~ C-14**；业务规则 **BR-01 ~ BR-46**；AC **70 条**；附录 A 输出基线、附录 B 术语与未决问题、附录 C 变更记录、附录 D 实现约束。
 >
 > **读法**：第二部分只写"我看得到、做得到"的事，不出现内部字段名与迁移表；第三部分每条 AC 都以用户可观察结果或明确的机检/夹具/架构检查开头；实现细节集中在附录 D。
 >
@@ -72,16 +72,17 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 | 规划条目（`docs/index.md` I1.4） | 本需求落点 | 验收 |
 |---|---|---|
 | 共享工作区：`shared/`、`stage/`、`status.md` | §2.2；附录 A-1、D-1 | AC-01 ~ AC-07、AC-59 |
-| 交接包 schema 校验：缺少必填字段或证据引用时拒绝投递 | §2.3；附录 D-3 | AC-08 ~ AC-14 |
+| 交接包 schema 校验：缺少必填字段或证据引用时拒绝投递 | §2.3；附录 D-3 | AC-08 ~ AC-14、AC-68、AC-69 |
 | 持久化信箱：唤醒消息先落盘再投递，失败重试 | §2.4；附录 D-4 | AC-15 ~ AC-20、AC-63、AC-65 |
 | `orch run` / `orch status` 补全参数与输出，保持向后兼容 | §2.5、§2.6；附录 A-2 | AC-36 ~ AC-38、AC-54 |
+| `--template` 完整参数族（`docs/index.md:722` 注记） | §2.5 命令表（`single\|code-loop\|task-loop`，缺省 `single`） | AC-01 ~ AC-03（三种模板各一） |
 | `orch instance status` / `log` / `graph --format json/text` | §2.7；附录 A-3 / A-4 | AC-38 ~ AC-43 |
 | `orch attach <session_id>` | §2.8；附录 A-3 | AC-44、AC-45 |
 | `orch escalate list / resolve` | §2.9；附录 A-3 | AC-21 ~ AC-30 |
 | `orch approve <approval_id> --decision allow\|deny` | §2.10；附录 A-3 | AC-31 ~ AC-35、AC-67 |
-| `orch handoff list / show <handoff_id>` | §2.11；附录 A-3 | AC-46 ~ AC-48 |
+| `orch handoff list / show <handoff_id>` | §2.11；附录 A-3 | AC-46 ~ AC-48、AC-70 |
 | `orch workflow pause / resume / abort <instance_id>` | §2.12；附录 A-3 | AC-49 ~ AC-53、AC-66 |
-| **验收**：CLI 完成启动、状态、附着、升级处理、审批、交接查看、暂停/恢复/终止 | §2.13 走完一遍；见右列 | AC-21 ~ AC-53、AC-60 ~ AC-64、AC-66、AC-67 |
+| **验收**：CLI 完成启动、状态、附着、升级处理、审批、交接查看、暂停/恢复/终止 | §2.13 走完一遍；见右列 | AC-21 ~ AC-53、AC-60 ~ AC-64、AC-66、AC-67、AC-70 |
 | **验收**：交接包缺证据时被拒绝并触发升级 | §2.3；AC-10 | AC-10、AC-14 |
 | **验收**：`escalated → done / failed / 重新分配` | §2.9；附录 D-6 | AC-23 ~ AC-30 |
 | **验收**：兼容、架构纯净与查看只读 | §3.1（AC-54 ~ AC-58）、§3.2 NFR-06；附录 D-11 | AC-54 ~ AC-58 |
@@ -99,6 +100,8 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 | R-7 | 能力域 4 的"宿主离线时唤醒保持 pending"在本迭代落为"最多 3 次尝试后 `pending → expired` 并升级"；不承诺宿主恢复后自动续投 | 自动续投依赖 I1.8 的崩溃恢复与会话恢复；本迭代先把"不丢、不假成功"做稳 |
 | R-8 | 能力域 2 的"目标角色 schema 校验"在本迭代只做交接包自身字段与证据校验；角色产物 schema 留给 I1.5 | I1.5 才引入角色与产物契约；I1.4 的校验对象是包，不是角色输入 |
 | R-9 | 能力域 5/6 中依赖角色契约或工作流原语的规则不在 I1.4：实例健康度/连接聚合视图、唤醒白名单路由拦截、人工终审节点、并行度与预算配额、会话崩溃与超时的原因细分、字段映射与产物版本锁定 | 这些规则需要角色注册表（I1.5）与工作流完整原语（I1.6）提供数据模型；I1.4 只交付"共享工作区 + 交接包校验 + CLI 入口"，不为占位造伪字段 |
+| R-10 | 取消一张**已尝试投递、尚未确认**的交接包，走 `pending → rejected`（`rejectReason='withdrawn'`），展示"已拒绝（已撤回）"，而不是 `expired` | `docs/index.md` §3.4 的 `rejected` 触发条件含"交接包已构造未投递时取消撤回"；`pending` 属于"尚未投递确认"，语义一致。该出边在 §3.4 状态图中未画出，登记为规划解释，不改 §3.4 的 7 个状态枚举 |
+| R-11 | `stage/<nodeId>/` 是**节点自己的阶段区**：本节点写、下游读；与 `docs/index.md` §5.4「阶段参与者可读，上游可写」同义——上游写自己的 stage，下游读它。不实现"上游写入下游目录" | 按节点拥有阶段区，才能在提示词里给出稳定路径；跨节点写同一目录会引入并发覆盖，留给 I1.7 的产物隔离 |
 
 ### 1.4 对 I1.1 / I1.2 / I1.3 契约的修改（授权变更）
 
@@ -109,7 +112,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 | **M-1** | `src/persistence/paths.js` 只有 `instanceWorkspaceDir` / `instanceDocsDir` / `instanceReportsDir`；`prepareWorkspace` 只在 `doc-single` 下建 `workspace/artifacts/{docs,reports}` | 新增 `sharedDir` / `stageDir` / `statusPath` / `inboxDir`；所有实例启动时建 `workspace/shared/` 与 `workspace/status.md`；多节点图额外建 `workspace/stage/<nodeId>/`；`artifacts/{docs,reports}` 仍仅文档闭环预建 | 规划要求共享工作区三层可见域 | 新目录只增不改；`single` 的 CLI 输出不变；工作区建不起来仍退出 3 |
 | **M-2** | 没有 `status.md`；模板图没有展示标题；状态中文只在 `labels.js` | 新增核心侧 `status.md` 生成器（原子写）；图对象新增 `title`（`单节点` / `编码闭环` / `通用任务闭环`）；状态中文由核心侧独立文案表提供，CLI 仍以 `labels.js` 为唯一来源 | `status.md` 是给人看的交接棒，不能只写机器字段 | `status.md` 每次状态落盘后刷新；人工修改会被下一次刷新覆盖；不改变 CLI 输出 |
 | **M-3** | 交接包只有 `handoffId/edge/state/时间/defects/artifactRefs/revisionRequirement`；没有落盘 `instanceId/round/fromNodeId/toNodeId`；没有 schema 校验 | 交接包追加 `instanceId`、`round`、`fromNodeId`、`toNodeId`、`deliveryAttempts`、`pendingAt`、`expiredAt`、`lastError`、`retestRequirement`；新增 `src/core/handoff-schema.js`，在投递前校验 | 规划要求缺字段/缺证据拒绝投递；没有落盘来源与轮次就无法定位坏包 | 追加字段；旧快照缺字段按"不参与校验"处理；`single` 的引导交接包不参与本校验 |
-| **M-4** | `REJECT_REASONS = ['target_rejected','permission_denied','withdrawn']`；`created → delivered`；`pending` 无产生路径；`expired` 无产生路径 | 拒绝原因追加 `invalid_payload` / `delivery_failed`；状态机允许 `delivered → pending`（收到任何 turn 内事件前投递失败，回落等待重试）、`pending → delivered`、`pending → expired`、`pending → rejected`（取消撤回）；`pending` 必须有 `pendingAt` 与 `deliveryAttempts` | 坏内容、投递不出去、重试耗尽必须可区分；规划要求持久化信箱与重试；`delivered` 是"提示词已交给宿主"的乐观态，失败后回落 `pending` | 首次投递即成功仍走 `created → delivered`（不额外落 `pending`）；不新增 `created → pending`（代码在调用 `adapter.prompt` 后立即置 `delivered`，失败只能发生在 `delivered` 之后）；旧成功路径事件数不变 |
+| **M-4** | `REJECT_REASONS = ['target_rejected','permission_denied','withdrawn']`；`created → delivered`；`pending` 无产生路径；`expired` 无产生路径 | 拒绝原因追加 `invalid_payload` / `delivery_failed`；状态机允许 `delivered → pending`（收到任何 turn 内事件前投递失败，回落等待重试）、`pending → delivered`、`pending → expired`、`pending → rejected`（取消撤回，见 R-10）；`pending` 必须有 `pendingAt` 与 `deliveryAttempts` | 坏内容、投递不出去、重试耗尽必须可区分；规划要求持久化信箱与重试；`delivered` 是"提示词已交给宿主"的乐观态，失败后回落 `pending` | 首次投递即成功仍走 `created → delivered`（不额外落 `pending`）；不新增 `created → pending`（代码在调用 `adapter.prompt` 后立即置 `delivered`，失败只能发生在 `delivered` 之后）；旧成功路径事件数不变 |
 | **M-5** | 投递只有一次 `adapter.prompt`；失败走会话创建/执行失败路径；没有信箱 | 新增 `.orch/inbox/<instanceId>/<handoffId>.json` 原子写；先落盘再投递；投递失败重试最多 2 次（共 3 次尝试，间隔 200ms、500ms）；耗尽后 `pending → expired` 并升级；**只作用于图驱动交接包（`edge !== null`）** | 规划要求持久化信箱与失败重试 | 会话创建失败仍按 I1.2 一次尝试后 `dispatch_failed`，不进入重试；`single` 的 `HO-001` 与图入口无包派发不写信箱、不重试，分别沿用 I1.2 / I1.3 失败路径；重试不新增 `node.dispatch`、不新增会话、不增加轮次 |
 | **M-6** | 升级状态只有 `pending → voided`；`escalated` 节点只能取消；实例 `suspended` 只能取消 | 升级追加 `resolved` 状态与 `resolution/resolvedAt`；节点允许 `escalated → running / done / failed`；实例允许 `suspended → running / completed / failed`；新增 `escalation.resolve` | 规划要求 `escalated → done / failed / 重新分配` | 取消路径不变；已处理升级不可再次处理；旧 `voided` 保持 |
 | **M-7** | 审批只存在内存 `ctx.permission`；`hold` 策略只能等取消；没有审批编号 | 新增实例级 `approvals[]`（`APR-nnn`，`pending/approved/denied/withdrawn`）；`run --approval hold` 生成待处理审批；`approve` 允许/拒绝；取消作废待审批 | 规划要求 `orch approve` 与人工干预入口 | 默认策略仍为 `allow`；不出现审批时 `status` 输出不变；I1.1 hold 测试的"唯一外部决定是取消"改为"取消或审批" |
@@ -167,7 +170,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
   - `shared/` 是公共区：所有人可读，核心与人工可写；角色的提示词明确写"共享区只读"。
   - `stage/<节点号>/` 是该节点的阶段区：本节点可写，下游只读；提示词给出本节点阶段区与上游阶段区的绝对路径。
   - `status.md` 是一页纸的交接棒：实例、模板、状态、是否暂停、任务、当前节点、所有节点进度、最近交接包、待处理升级、待处理审批。
-  - 每次节点/会话/交接包/升级/审批状态变化后，`status.md` 自动刷新；我不会看到半截文件。
+  - 每次节点/交接包/升级/审批状态变化或暂停/恢复后，`status.md` 自动刷新（会话状态只更新卡片指示器，不写入 `status.md`）；我不会看到半截文件。
 - **异常情况**：
   - 工作区建不出来（目录不可写、磁盘满）→ 发起前停住，提示"无法创建工作区：…"，退出码 3；不会建会话、不会派发。
   - `status.md` 后续刷新失败 → 核心继续推进，但终端在 `--events` 里能看到一次"工作区状态写入失败"；不会把已落盘的状态回滚。
@@ -273,7 +276,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 
 - **使用角色**：人工排障者。
 - **使用场景**：某个会话长时间"执行中"或"等待审批"，想看看最近发生了什么。
-- **用户操作**：`orch attach SES-001`；按 Ctrl-C 脱离。
+- **用户操作**：`orch attach <会话号>`；按 Ctrl-C 脱离。（下文 `SES-001` 均为示例；实际会话号由宿主 `session/new` 返回，形如 `mock-sess-…`，可从 `orch run` 的「会话已创建」行或 `instance log --format json` 的会话事件取得。）
 - **预期效果**：
   - 第一行："已附着会话 SES-001（实例 INST-001 · 节点 T-001 开发）"。
   - 随后打印该会话最近 20 条事件，并持续跟随新事件。
@@ -290,7 +293,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
   - `orch escalate list [--instance INST-001] [--all]`
   - `orch escalate resolve ESC-001 --decision pass|fail|retry [--instance INST-001]`
 - **预期效果**：
-  - `list` 默认列出所有实例的**待处理**升级；带 `--instance` 只看一个实例；`--all` 连已处理/已作废一起列。
+  - `list` 默认列出所有实例的**待处理**升级；带 `--instance` 只看一个实例；`--all` 连已处理/已作废一起列。两个参数同时给出时**先按实例过滤、再由 `--all` 放开状态范围**（即"只看该实例的全部升级"），不是二选一、也不报错。
   - 每行包含：升级号、实例号、节点与角色、轮次、状态、原因摘要。
   - `pass`：人工认定该节点本轮通过。若它是终节点 → 实例已完成；若它有下游 → 节点变已完成并立即推进下游。
   - `fail`：节点失败、实例失败，不再推进；下游不启动。
@@ -320,7 +323,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
   - 取消实例时，所有待处理审批变为已作废，不会留下永远"待处理"的幽灵。
   - 审批号在多个实例中重复时，`approve` 要么找到唯一匹配，要么要求 `--instance`；不会猜。
 - **异常情况**：会话已不在运行（核心重启等）→ 提示"审批已失效"，不假装已放行。
-- **边界说明**：默认策略仍是自动放行；`--approval reject` 可让所有请求直接拒绝（沿用既有策略）；只有 `hold` 会产生待处理审批。
+- **边界说明**：默认策略仍是自动放行；`--approval reject` 可让所有请求直接拒绝（沿用既有策略）；只有 `hold` 会产生待处理审批。**两个词不要混**：`--approval reject` 是**发起时的策略**（宿主的每次请求直接拒绝，不产生待处理项、不需要人工介入）；`--decision deny` 是**对某一条已存在的待处理审批的单次裁决**（`--decision allow|deny` 是 `approve` 的参数）。
 
 ### 2.11 J 交接包查看：每一包都能单独查
 
@@ -364,7 +367,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 6. 测试第 1 轮失败：回流包带缺陷与复测要求，校验通过后回到开发；第 2 轮仍失败 → 升级。
 7. 我也可以先 `orch workflow pause INST-001`，让当前回合跑完但不再派发；改完文件后 `resume` 继续。
 8. 如果宿主请求审批且我是 hold 策略：`orch run` 终端出现审批行；我在另一个终端 `orch approve APR-001 --decision allow`，会话继续；拒绝时，单节点沿用"审批被拒绝，任务中止于 <动作>"，多节点沿用既有执行失败路径（节点升级、实例挂起）。
-9. 任何时候我都能 `orch attach SES-001` 看会话现场、`orch instance log` 看时间线、`orch instance graph --format json` 做回归对比、`orch handoff show` 查单包。
+9. 任何时候我都能 `orch attach <会话号>` 看会话现场、`orch instance log` 看时间线、`orch instance graph --format json` 做回归对比、`orch handoff show` 查单包。
 10. 想终止：`orch workflow abort INST-001`，输出与 `orch cancel` 一致。
 
 ### 2.14 用户可见的业务规则
@@ -405,7 +408,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 | BR-32 | 列表为空时输出明确的空态行（`升级 —` / `交接包 —` / `事件 —`），不输出空白。 |
 | BR-33 | `attach` 只读：不改变实例、节点、会话状态，不向会话注入输入。 |
 | BR-34 | `instance graph --format json` 的字段与顺序稳定，可直接用于回归对比。 |
-| BR-35 | CLI 用户可见中文集中在 CLI 文案模块；`status.md` 由核心侧独立文案表生成，核心状态词必须与 CLI 文案逐字一致并有对照测试；核心与 daemon 不出现 D-11.2 的 7 词扫描表中任一模板专有字面量（`single` 作为兜底标识除外）。 |
+| BR-35 | CLI 用户可见中文集中在 CLI 文案模块；`status.md` 由核心侧独立文案表生成，核心状态词必须与 CLI 文案逐字一致并有对照测试；核心与 daemon 不出现 D-11.2 的 **11 词并集**（I1.2 四词 + I1.3 七词）中任一模板专有字面量（`single` 是核心允许的缺省模板标识，不在扫描表内）。 |
 | BR-36 | 不新增运行时依赖；`package.json` 的 `dependencies` 仍为空。 |
 | BR-37 | 取消必须覆盖新增的待投递交接包、待处理审批、暂停状态与挂起实例。 |
 | BR-38 | 旧格式实例（v1 单对象）仍只读可查；新命令不得把它们写坏。 |
@@ -424,7 +427,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 
 ### 3.1 功能验收标准（AC）
 
-> **观测口径**：本迭代允许四类观测——① **命令输出**（用户直接看到）；② **机检**：`.orch/instances/<id>/state.json`、`events.jsonl`、`.orch/inbox/**`、`workspace/status.md` 的字段与文件；③ **夹具**：`.mock/prompts/<n>.json`、`.mock/` 标记、夹具 stdout；④ **架构检查**：源码字面量扫描与依赖检查。②③④类断言一律以 **`机检：`** / **`夹具：`** / **`架构检查：`** 开头。查看类 AC 默认在全新项目根执行，每个 AC 开始前清空 `.orch`。
+> **观测口径**：本迭代允许四类观测——① **命令输出**（用户直接看到）；② **机检**：`.orch/instances/<id>/state.json`、`events.jsonl`、`.orch/inbox/**`、`workspace/status.md` 的字段与文件；③ **夹具**：`.mock/prompts/<n>.json`、`.mock/` 标记、夹具 stdout；④ **架构检查**：源码字面量扫描与依赖检查。②③④类断言一律以 **`机检：`** / **`夹具：`** / **`架构检查：`** 开头。查看类 AC 默认在全新项目根执行，每个 AC 开始前清空 `.orch`；多实例 AC 中的 `INST-A/B/C` 是占位符，实际使用运行中生成的 `INST-nnn`。
 >
 > 每条 AC 的 Given 都是用户可见或测试可准备的前置状态；When 是用户命令或夹具动作；Then 是用户可见结果或上述明确标注的观测。
 
@@ -440,7 +443,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 
 - 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-01
 - **Given** 一个全新的项目根，任务含一行 `产物：release-notes.md`
-- **When** 我执行 `orch run --cwd ./demo --task "…" --template task-loop`
+- **When** 我执行 `orch run --cwd ./demo --task "写发布说明，产物：release-notes.md" --template task-loop`
 - **Then** 工作区出现 `shared/`、`stage/T-001/`、`stage/T-002/`、`stage/T-003/`、`status.md`
 - **机检：** 三个 stage 目录都存在；`status.md` 的节点段落列出 T-001、T-002、T-003
 
@@ -449,7 +452,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 - 场景类型：回归 ｜ 风险：P0 ｜ 引用：BR-01、BR-29、BR-44
 - **Given** 一个全新的项目根
 - **When** 我执行 `orch run --cwd ./demo --task "写下说明"`
-- **Then** 终端前三行与 I1.1 基线逐字一致；实例目录出现 `workspace/shared/` 与 `workspace/status.md`；不出现 `stage/`
+- **Then** 终端前三行与 I1.1 基线逐字一致；实例目录出现 `workspace/shared/` 与 `workspace/status.md`；不出现 `stage/`；`status.md` 含实例行与状态行，不含 `## 节点` 段
 - **机检：** `stage` 目录不存在；`handoffs` 只有引导包且不参与 schema 校验，没有 `handoff.rejected` 事件
 
 #### AC-04 `status.md` 随状态变化刷新
@@ -457,8 +460,8 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 - 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-03
 - **Given** 编码闭环已启动，开发和测试各完成过一次状态变化
 - **When** 我打开 `workspace/status.md`
-- **Then** 文件包含实例号与模板名（标题行）、当前状态、任务、两个节点各自的状态与轮次、最近交接包、升级与审批段落；节点状态与 `orch status` 显示一致
-- **机检：** 文件在每次 `events.jsonl` 出现节点/交接包状态变化后 1 秒内包含对应中文状态
+- **Then** 文件包含实例号与模板名（标题行）、当前状态、暂停、任务、当前节点、工作区绝对路径、两个节点各自的状态与轮次、最近交接包、升级与审批段落；节点状态与 `orch status` 显示一致
+- **机检：** 文件在每次 `events.jsonl` 出现节点/交接包/升级/审批状态变化后 1 秒内包含对应中文状态
 
 #### AC-05 人工修改 `status.md` 会被下一次刷新覆盖
 
@@ -476,13 +479,14 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 - **Then** 终端出现"无法创建工作区：…"；退出码 3；没有会话、没有派发、没有留下半个实例目录
 - **机检：** `.orch/instances/INST-001` 不存在；`events.jsonl` 没有 `node.dispatch`
 
-#### AC-07 提示词带工作区与阶段区路径
+#### AC-07 多节点提示词带工作区上下文段
 
-- 场景类型：夹具 ｜ 风险：P1 ｜ 引用：BR-02、BR-03
-- **Given** 编码闭环启动
-- **When** 开发节点与随后的测试节点分别被派发
-- **Then** 开发节点的提示词包含工作区绝对路径、共享区路径、本节点阶段区路径；测试节点的提示词把上游阶段区标为只读输入；单节点提示词不新增这些行
-- **夹具：** `.mock/prompts/1.json` 的提示文本包含 `workspace/shared` 与 `workspace/stage/T-001`；`.mock/prompts/2.json` 的提示文本包含 `workspace/stage/T-001`（上游阶段区，只读）
+- 场景类型：夹具 ｜ 风险：P0 ｜ 引用：BR-02、BR-03
+- **Given** 编码闭环完整跑一轮（含 1 次回流与 1 次复测），文档闭环完整跑一轮（含 1 次驳回回流）
+- **When** 依次派发：code-loop 入口 T-001、forward T-002、backflow T-001（第 2 轮）、retest T-002（第 2 轮）；task-loop T-001 研究、T-002 撰写、T-003 审核、T-002 撰写（回流第 2 轮）、T-003 复测审核（第 2 轮）
+- **Then** 9 个多节点提示词末尾都出现附录 A-6 的「工作区上下文」段；入口（code-loop T-001 首次、task-loop T-001）只有前三行；其余为四行；task-loop 审核（两轮）正文已有 `工作区：`，末尾只追加后三行（`共享区（只读）` / `本节点阶段区` / `上游阶段区（只读）`），不重复 `工作区：`；单节点提示词不出现该段
+- **夹具：** 逐个 `.mock/prompts/<n>.json` 的 `task` 逐字包含 `工作区：<工作区绝对路径>`、`共享区（只读）：<工作区绝对路径>/shared`、`本节点阶段区：<工作区绝对路径>/stage/<本节点>`；非入口另含 `上游阶段区（只读）：<工作区绝对路径>/stage/<来源节点>`
+- **机检：** 审核提示词中的 `工作区：` 行只有一条；只传 `node`、不带 `graph` 的 `promptFor` 单元调用不追加该段；生产派发的每次调用都带 `graph`（`single` 图只有 1 个节点，因而不追加），判定只按节点数、不按模板名
 
 #### AC-08 正常交接包通过校验并投递
 
@@ -490,7 +494,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 - **Given** 开发节点完成，`calc.js` 存在且非空
 - **When** 核心推进到测试
 - **Then** 交接包从"已构造"变为"已投递"；测试会话收到提示；终端不出现拒绝或升级
-- **机检：** 该包 `state` 为 `delivered`/`consumed`；没有 `handoff.rejected` 事件
+- **机检：** `events.jsonl` 含 `handoff.delivered`，且该事件之后该包 `state` 为 `delivered` 或 `consumed`；没有 `handoff.rejected` 事件
 
 #### AC-09 缺必填字段的交接包被拒绝并升级
 
@@ -555,6 +559,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 - **When** 核心投递交接包
 - **Then** 交接包短暂显示"待投递 · 重试 1/2"，随后变为"已投递"；测试会话最终收到提示
 - **机检：** `events.jsonl` 含 `handoff.pending`（`detail.deliveryAttempts === 1`）且位于最终 `handoff.delivered` 之前；包 `deliveryAttempts === 2`；场景根 `.mock/prompt-attempts-<sessionId>.json` 的 `attempts === 2`；目标节点只有 1 个会话（重试不新建会话）；`node.dispatch` 只有一条
+- **补充：** 同一场景改用 `promptFailures: 2` 重跑一次：第 3 次成功，包 `deliveryAttempts === 3`，`events.jsonl` 有两次 `handoff.pending`（attempts 1、2），最终出现 `handoff.delivered`。
 
 #### AC-17 重试耗尽后升级
 
@@ -591,10 +596,10 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 #### AC-21 跨实例列出待处理升级
 
 - 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-15、BR-43
-- **Given** 两个实例各有一个待处理升级，其中一个实例另有一条已处理升级；另有一个全新项目根，没有任何实例与升级
-- **When** 我执行 `orch escalate list`，再执行 `orch escalate list --all`，最后在全新项目根执行 `orch escalate list`
-- **Then** 默认两行都出现，先按实例号、再按升级号排序；行内含实例号、节点与角色、轮次、状态、原因摘要；`--all` 时已处理升级以"已处理（通过/失败/重新分配）"出现；没有升级时输出 `升级 —`
-- **机检：** 两次输出行序稳定；默认不含已处理/已作废，`--all` 含全部
+- **Given** 两个实例各有一个待处理升级，其中 INST-001 另有一条已处理升级与一条已作废升级；另有一个全新项目根，没有任何实例与升级
+- **When** 我执行 `orch escalate list`，再执行 `orch escalate list --all`，再执行 `orch escalate list --instance INST-001 --all`，最后在全新项目根执行 `orch escalate list`
+- **Then** 默认两行都出现，先按实例号、再按升级号排序；行内含实例号、节点与角色、轮次、状态、原因摘要；`--all` 时已处理升级以"已处理（通过/失败/重新分配）"、已作废升级以"已作废"出现；`--instance` 与 `--all` 同时给出时只看该实例、但含其已处理与已作废；没有升级时输出 `升级 —`
+- **机检：** 各次输出行序稳定；默认不含已处理/已作废，`--all` 含全部，`--instance INST-001 --all` 只含 INST-001 的三行（待处理 + 已处理 + 已作废）
 
 #### AC-22 按实例过滤升级
 
@@ -607,9 +612,9 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 #### AC-23 通过处理终节点升级 → 实例完成
 
 - 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-15、BR-16、BR-40
-- **Given** 终节点因轮次超限升级，实例挂起
+- **Given** 编码闭环终节点 T-002 因轮次超限升级，实例挂起
 - **When** 我执行 `orch escalate resolve ESC-001 --instance INST-001 --decision pass`
-- **Then** 输出"升级 ESC-001 已处理（通过）"与"实例 INST-001 · 已完成"；节点为已完成；不需要再敲 `run`
+- **Then** 输出"升级 ESC-001 已处理（通过）"与当前实例行 `实例 INST-001 · 已完成 · 模板 编码闭环`；节点为已完成；不需要再敲 `run`
 - **机检：** 升级 `state === 'resolved'`、`resolution === 'pass'`；实例 `completed`；节点 `done`
 
 #### AC-24 通过处理中间节点升级 → 下游继续
@@ -623,23 +628,23 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 #### AC-25 失败处理升级 → 实例失败
 
 - 场景类型：异常 ｜ 风险：P0 ｜ 引用：BR-17
-- **Given** 任意待处理升级
-- **When** 我执行 `... --decision fail`
-- **Then** 输出"升级 ESC-001 已处理（失败）"与实例失败行；没有新的下游派发
+- **Given** 编码闭环一个待处理升级，实例挂起
+- **When** 我执行 `orch escalate resolve ESC-001 --instance INST-001 --decision fail`
+- **Then** 输出"升级 ESC-001 已处理（失败）"与当前实例行 `实例 INST-001 · 失败 · 模板 编码闭环`；没有新的下游派发
 - **机检：** 节点 `failed`、实例 `failed`；`dispatchCount` 不再增加
 
 #### AC-26 重新分配 → 新会话、新一轮、只重跑该节点
 
 - 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-18、BR-40
-- **Given** 开发节点升级，历史会话为空闲或已隔离
-- **When** 我执行 `... --decision retry`
-- **Then** 输出"升级 ESC-001 已处理（重新分配）"与实例运行行；开发节点出现新会话、轮次 +1；测试没有被重跑
-- **机检：** `sessions.length` 增加 1；目标节点 `round` 增加 1；其他节点 `round` 不变
+- **Given** 独立项目根；开发节点已派发过一次并回到空闲（mock 回合结束后会话即 `idle`，无需额外等待）；用 `NODE_ENV=test` 的 `test.escalate` 接缝把该节点置为 `rounds_exceeded` 升级（`reasonCode: 'rounds_exceeded'`），实例挂起、测试尚未派发
+- **When** 我执行 `orch escalate resolve ESC-001 --instance INST-001 --decision retry`
+- **Then** 输出"升级 ESC-001 已处理（重新分配）"与当前实例行 `实例 INST-001 · 运行中 · 模板 编码闭环`；开发节点出现新会话、轮次 +1；测试没有被重跑
+- **机检：** `sessions.length` 增加 1；目标节点 `round` 增加 1；其他节点 `round` 不变；旧会话不再是 `running`（按 D-6.6 隔离）
 
 #### AC-27 同一升级不能处理两次
 
 - 场景类型：边界 ｜ 风险：P0 ｜ 引用：BR-15
-- **Given**  AC-23 已成功处理
+- **Given** 独立项目根，按 AC-23 的步骤重放至升级已处理
 - **When** 我再次执行同一 `resolve`
 - **Then** 提示升级已处理；退出码 1；实例状态和轮次不变
 - **机检：** 没有第二条 `escalation.resolved` 事件
@@ -648,22 +653,22 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 
 - 场景类型：异常 ｜ 风险：P1 ｜ 引用：BR-19
 - **Given** 升级原因为"交接包不合规"、"派发失败"、"执行失败"或"投递耗尽"
-- **When** 我尝试 `--decision pass`
+- **When** 我对四种原因各执行一次 `orch escalate resolve <升级号> --instance <实例号> --decision pass`
 - **Then** 提示该升级不支持"通过"；退出码 1；升级仍是待处理
 - **机检：** 实例仍挂起；节点仍未完成
 
 #### AC-29 找不到、歧义或状态不对时拒绝处理
 
 - 场景类型：异常 ｜ 风险：P0 ｜ 引用：BR-20、BR-31
-- **Given** 升级号不存在、或两个实例都有 ESC-001、或实例不是挂起
-- **When** 我分别执行 `orch escalate resolve ESC-001 --instance INST-001 --decision fail`（歧义场景执行 `orch escalate resolve ESC-001 --decision fail`，不带 `--instance`）
-- **Then** 分别提示"未找到升级 ESC-001""请加 --instance""实例 INST-001 当前不是挂起状态，不能处理升级"；退出码 1；没有任何写入
+- **Given** 升级号不存在、或两个实例都有 ESC-001、或实例不是挂起（三个子场景各用独立项目根，避免前置互斥）
+- **When** 我分别执行：① `orch escalate resolve ESC-001 --instance INST-001 --decision fail`（升级不存在）；② `orch escalate resolve ESC-001 --decision fail`（两个实例都有 ESC-001，不带 `--instance`）；③ `orch escalate resolve ESC-001 --instance INST-002 --decision fail`（INST-002 不是挂起）
+- **Then** 分别提示"未找到升级 ESC-001""请加 --instance""实例 INST-002 当前不是挂起状态，不能处理升级"；退出码 1；没有任何写入
 - **机检：** 所有实例 `rev` 不变
 
 #### AC-30 重新分配后仍失败会再次升级
 
 - 场景类型：异常 ｜ 风险：P1 ｜ 引用：BR-18、BR-40
-- **Given** 重新分配后新会话仍建不起来
+- **Given** 用夹具让重新分配时的新会话创建失败（`retry` 尚未执行）
 - **When** 我执行 `orch escalate resolve ESC-001 --instance INST-001 --decision retry`
 - **Then** 生成新的升级；实例再次挂起；不会显示"运行中"；`resolve` 命令按挂起收尾，退出码 4
 - **机检：** `escalations` 数量增加 1；实例 `suspended`
@@ -687,7 +692,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 #### AC-33 同一审批不能处理两次
 
 - 场景类型：边界 ｜ 风险：P0 ｜ 引用：BR-23
-- **Given**  AC-31 已处理
+- **Given** 独立项目根，按 AC-31 的步骤重放至审批已通过
 - **When** 我再次执行 `approve APR-001`
 - **Then** 提示审批已处理；退出码 1；实例状态不变
 - **机检：** 审批 `state` 只变一次；只有一条审批处理事件（`permission.allowed`）
@@ -711,9 +716,9 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 #### AC-36 `status` 显示审批与暂停
 
 - 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-28、BR-42
-- **Given** 实例 A 已暂停；实例 B 有 `hold` 待处理审批且未暂停；实例 C 是 I1.3 的无审批旧实例
-- **When** 我分别执行 `orch status --instance INST-A`、`--instance INST-B`、`--instance INST-C`，再执行不带参数的 `orch status`
-- **Then** A 的实例行显示"运行中（已暂停）"；B 在升级块之后出现审批行；C 不出现审批行；不带参数的列表行中 A 同样带"（已暂停）"、B 带"待处理审批 1"
+- **Given** 实例 A 已暂停；实例 B 有 `hold` 待处理审批且未暂停；实例 C 是 I1.3 的无审批旧实例；实例 D 有三条已处理审批（已通过 / 已拒绝 / 已作废）
+- **When** 我分别执行 `orch status --instance INST-A`、`--instance INST-B`、`--instance INST-C`、`--instance INST-D`，再执行不带参数的 `orch status`
+- **Then** A 的实例行显示"运行中（已暂停）"；B 在升级块之后出现待处理审批行；C 不出现审批行；D 按审批号逐条显示"已通过 / 已拒绝 / 已作废"；不带参数的列表行中 A 同样带"（已暂停）"、B 带"待处理审批 1"
 - **机检：** C 的实例输出与 I1.3 A-2 逐字一致；列表行含 A/B 的限定词
 
 #### AC-37 `run` 等待期间出现审批行
@@ -775,9 +780,9 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 #### AC-44 `attach` 只读跟随
 
 - 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-33
-- **Given** 一个正在执行且有历史、宿主已请求审批（`hold`）的会话
-- **When** 我执行 `orch attach SES-001`，看到最近事件后按 Ctrl-C
-- **Then** 首行显示会话、实例、节点；若该会话有待审批，紧跟一行审批信息；随后输出最近事件；脱离后实例状态、节点轮次、会话状态都不变
+- **Given** 一个正在执行且有历史、宿主已请求审批（`hold`）的会话；会话号从发起时 `orch run` 输出的 `会话已创建 <会话号>` 行取得，或从 `orch instance log INST-001 --format json` 中 `object === 'session'` 的 `objectId` 取得（形如 `mock-sess-…`，由宿主给出）
+- **When** 我执行 `orch attach <该会话号>`，看到最近事件后按 Ctrl-C
+- **Then** 首行显示该会话号、实例、节点；若该会话有待审批，紧跟一行审批信息；随后输出该会话最近事件（行数 ≤ 20 且 ≥ 1）；脱离后实例状态、节点轮次、会话状态都不变
 - **机检：** 附着前后 `state.json` 的 `state/rev` 与节点、会话状态不变；stdout 含 `APR-` 行
 
 #### AC-45 `attach` 找不到会话
@@ -792,8 +797,8 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 
 - 场景类型：正常路径 ｜ 风险：P1 ｜ 引用：BR-43
 - **Given** 两个实例各有多张交接包
-- **When** 我执行 `orch handoff list`
-- **Then** 先按实例号、再按包号排序；每行含包号、实例、方向、状态、最后时间；空时输出"交接包 —"
+- **When** 我执行 `orch handoff list`，再执行 `orch handoff list --instance INST-001`
+- **Then** 前者先按实例号、再按包号排序，每行含包号、实例、方向、状态、最后时间；后者只出现 INST-001 的交接包；空时输出"交接包 —"
 - **机检：** 排序稳定，不随快照数组顺序变化
 
 #### AC-47 `handoff show` 展示完整内容
@@ -807,9 +812,9 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 #### AC-48 交接包找不到或歧义
 
 - 场景类型：异常 ｜ 风险：P1 ｜ 引用：BR-31
-- **Given** 包号不存在，或两个实例都有 HO-001
-- **When** 我执行 `handoff show`
-- **Then** 分别提示"未找到交接包"或"请加 --instance"；退出码 1
+- **Given** 包号 HO-999 不存在；另有两个实例都有一张 HO-001
+- **When** 我依次执行 `orch handoff show HO-999 --instance INST-001` 与 `orch handoff show HO-001`（不带 `--instance`）
+- **Then** 前者提示"未找到交接包 HO-999"，后者提示"交接包号 HO-001 在多个实例中存在，请加 --instance"；两次退出码都是 1
 - **机检：** 没有状态写入
 
 #### AC-49 暂停停在下一次派发边界
@@ -823,10 +828,10 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 #### AC-50 恢复后从边界继续
 
 - 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-25、BR-40
-- **Given**  AC-49 的暂停状态，开发已完成
+- **Given** 独立项目根，按 AC-49 的步骤重放至"已暂停且开发已完成"（或在 `NODE_ENV=test` 下用 `MAESTRO_TEST_PAUSE` 接缝 + `workflow pause` 构造）
 - **When** 我执行 `orch workflow resume INST-001`
 - **Then** 实例行恢复"运行中"；核心立即派发测试；测试最终完成
-- **机检：** `paused === false`；以 `events.jsonl` 出现指向测试的 `node.dispatch` 为同步点断言；测试 `round` 增加 1；指向测试的交接包恰好 1 张且 `deliveryAttempts === 1`
+- **机检：** `paused === false`；以 `events.jsonl` 出现指向测试的 `node.dispatch` 为同步点断言；测试 `round` 增加 1；指向测试的交接包恰好 1 张且 `deliveryAttempts === 1`；`workspace/status.md` 含 `- 暂停：否`
 
 #### AC-51 重复暂停 / 恢复幂等
 
@@ -856,9 +861,9 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 
 - 场景类型：回归 ｜ 风险：P0 ｜ 引用：BR-29
 - **Given** 全新项目根
-- **When** 我重跑 I1.1 的单节点、I1.2 的编码闭环、I1.3 的文档闭环（task-loop）成功路径，以及 I1.1 的 `status` 列表、`cancel`、`core stop`
-- **Then** 除"挂起后的下一步"按 M-11 更新外，其余输出、顺序、退出码与 I1.3 基线逐字一致
-- **机检：** 旧夹具全部通过；`status` 无审批/暂停时不出现新行
+- **When** 我重跑 I1.1 的单节点、I1.2 的编码闭环、I1.3 的文档闭环（task-loop）成功路径，以及 I1.1 的 `status` 列表、`cancel`、`core stop`；其中单节点一次不带 `--template`、一次显式带 `--template single`
+- **Then** 除"挂起后的下一步"按 M-11 更新外，其余输出、顺序、退出码与 I1.3 基线逐字一致；显式 `--template single` 与不带该参数的输出逐字相同（实例行不带"· 模板 …"后缀）
+- **机检：** 旧夹具全部通过；`status` 无审批/暂停时不出现新行；两次单节点运行的首行与节点表 diff 为空
 
 #### AC-55 旧格式实例只读可查
 
@@ -872,9 +877,9 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 
 - 场景类型：架构检查 ｜ 风险：P0 ｜ 引用：BR-35、BR-36
 - **Given** 当前源码
-- **When** 执行架构扫描
-- **Then** `src/core/**` 与 `src/daemon/**` 不出现 `task-loop`、`researcher`、`writer`、`reviewer`、`研究员`、`撰写者`、`审核者` 任一字面量（英文注释也算）；`package.json.dependencies` 为空
-- **架构检查：** 字面量扫描 + 依赖读取；另有 `status.md` 状态词与 `labels.js` 的对照测试
+- **When** 我执行 `node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator`
+- **Then** 退出码 0、扫描文件数 > 0、零命中；`package.json.dependencies` 不存在或为空对象
+- **架构检查：** 上述命令（禁词取 I1.2 四词与 I1.3 七词的并集，不依赖脚本默认的 I1.2 四词表）+ 依赖读取；另有 `status.md` 状态词与 `labels.js` 的逐词对照断言（`test/wp2/labels.test.js`）；三个模板的交接包构造与校验都只经 `src/core/handoff-schema.js`（源码 import 检查，不允许模板内联校验）
 
 #### AC-57 新动作都有审计事件
 
@@ -882,12 +887,12 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 - **Given** 一次包含校验失败、投递重试、审批、暂停、升级处理、恢复的完整流程
 - **When** 我执行 `orch instance log INST-001 --format json`
 - **Then** 能分别找到交接包拒绝、投递等待/过期、审批创建/处理、暂停/恢复、升级创建/处理的事件与原因
-- **机检：** 事件 `reason` 覆盖本流程涉及的 `handoff.inboxed`、`handoff.pending`、`handoff.expired`、`escalation.resolved`、`approval.created`、`workflow.paused`、`workflow.resumed`；`approval.withdrawn` 与 `workspace.status_write_failed` 分别由 AC-35、AC-59 覆盖，不在本 AC 断言
+- **机检：** 事件 `reason` 覆盖本流程涉及的 `handoff.inboxed`、`handoff.pending`、`handoff.expired`、`handoff.rejected`、`escalation.created`、`escalation.resolved`、`approval.created`、`permission.allowed`、`permission.denied`、`workflow.paused`、`workflow.resumed`；`approval.withdrawn` 与 `workspace.status_write_failed` 分别由 AC-35、AC-59 覆盖，不在本 AC 断言
 
 #### AC-58 查看类命令严格只读
 
 - 场景类型：边界 ｜ 风险：P0 ｜ 引用：BR-45
-- **Given** 任意运行中实例
+- **Given** 任意运行中实例，且核心已由前一条命令拉起并完成启动对账
 - **When** 我执行 `status`、`instance status/log/graph`、`handoff list/show`、`escalate list`
 - **Then** 实例 `state.json`、节点、会话、交接包、升级、审批都不变（`attach` 的只读性由 AC-44 用等待审批的稳定会话覆盖）
 - **机检：** 命令前后 `rev` 不变
@@ -935,9 +940,9 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 #### AC-64 非法参数按用法错误退出
 
 - 场景类型：边界 ｜ 风险：P1 ｜ 引用：BR-30
-- **Given** 我分别执行 `orch run --cwd ./demo --task "…" --approval maybe`、`orch instance graph INST-001 --format yaml`、`orch escalate resolve ESC-001 --decision maybe`
+- **Given** 我分别执行 `orch run --cwd ./demo --task "…" --approval maybe`、`orch instance graph INST-001 --format yaml`、`orch escalate resolve ESC-001 --decision maybe`、`orch approve APR-001 --decision maybe`
 - **When** 参数解析完成
-- **Then** 分别提示 `--approval` 只允许 `allow|reject|hold`、`--format` 只允许 `text|json`、`--decision` 只允许 `pass|fail|retry`；三者退出码均为 2；不创建实例、不写任何实例状态
+- **Then** 分别提示 `--approval` 只允许 `allow|reject|hold`、`--format` 只允许 `text|json`、`escalate resolve` 的 `--decision` 只允许 `pass|fail|retry`、`approve` 的 `--decision` 只允许 `allow|deny`；四条退出码均为 2；不创建实例、不写任何实例状态
 - **机检：** `.orch/instances` 下没有新实例目录；已有实例 `rev` 不变；stdout/stderr 含允许值说明
 
 #### AC-65 下游会话创建失败不留未投递包
@@ -964,6 +969,30 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 - **Then** 提示"审批 APR-001 已失效：会话不在运行"；退出码 1；审批仍为待处理，不假装已放行
 - **机检：** 审批 `state === 'pending'`；`events.jsonl` 没有 `permission.allowed`；实例 `rev` 在命令前后不变
 
+#### AC-68 合法回流包通过校验并投递
+
+- 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-05、BR-06、BR-07、BR-08
+- **Given** 文档闭环第 1 轮：撰写者已产出 `artifacts/docs/release-notes.v1.md`，审核者驳回并给出 2 条缺陷（摘要与证据位置均非空）与修改要求
+- **When** 核心推进回流到撰写者（第 2 轮）
+- **Then** 回流包从"已构造"变为"已投递"（随后"已接受"）；撰写者收到第 2 轮提示；终端不出现"已拒绝（内容不合规）"或升级
+- **机检：** 该包 `edge.kind === 'backflow'`、`defects.length === 2`、`revisionRequirement` 非空、`artifactRefs.previous.ref` 非空且文件存在；`events.jsonl` 无 `handoff.rejected`；撰写者 `round === 2`
+
+#### AC-69 合法复测包通过校验并投递
+
+- 场景类型：正常路径 ｜ 风险：P0 ｜ 引用：BR-05、BR-06、BR-07
+- **Given** 编码闭环第 1 轮测试判定不通过；开发按缺陷修复后 `calc.js` 存在且非空
+- **When** 核心构造复测包并派发测试第 2 轮
+- **Then** 复测包投递；测试收到第 2 轮提示；终端不出现拒绝或升级
+- **机检：** 该包 `edge.kind === 'retest'`、`artifactRefs.input` 含 `calc.js` 且文件存在；`events.jsonl` 无 `handoff.rejected`；测试 `round === 2`
+
+#### AC-70 编号唯一时 `handoff show` 可省略 `--instance`
+
+- 场景类型：正常路径 ｜ 风险：P1 ｜ 引用：BR-31
+- **Given** 只有一个实例有 HO-002，另一个实例没有该包号
+- **When** 我执行 `orch handoff show HO-002`
+- **Then** 正常输出该包详情；退出码 0；不需要 `--instance`
+- **机检：** 输出含 `交接包 HO-002`；命令前后 `rev` 不变
+
 ### 3.2 非功能验收标准
 
 | # | 场景 | 目标 |
@@ -980,7 +1009,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 
 1. Node.js 24 与本仓库依赖已安装；`npm link` 后 `orch` 可用（或在仓库根用 `node bin/orch.js`）。
 2. 每个 AC 使用全新临时项目根；开始前不存在 `.orch`，避免旧实例干扰。
-3. 需要真实宿主的 AC 使用仓库内 mock ACP agent；需要 hold 的 AC 用 `--approval hold` 或宿主配置 `permissionPolicy=hold`。
+3. 需要真实宿主的 AC 使用仓库内 mock ACP agent；需要 hold 的 AC 用 `--approval hold` 或宿主配置 `permissionPolicy=hold`，并让 mock 以 `--permission=ask` 启动（默认 `auto` 不会发审批请求）。
 4. 需要投递失败的 AC 使用扩展后的 mock 步字段（首次/前两次 `prompt` 失败）或既有 `--host-error` 开关；mock 的尝试计数文件用于断言实际尝试次数，不修改生产代码开关。
 5. 需要交接包校验失败、中间节点 `rounds_exceeded`、或待投递中取消的 AC 使用 `NODE_ENV=test` 下注册的接缝：`test.handoff`（构造坏包）、`test.escalate`（可选 `reasonCode` 与 `artifactRefs`）、`test.delivery`（`hold`/`release`）；生产进程没有这些 RPC。
 6. 需要工作区/信箱/状态页故障的 AC 使用 `MAESTRO_FAULT` 注入：`workspace_init:fail` 沿用既有行为；新增值 `inbox_write:fail`、`workspace_status_write:fail` 只在 `NODE_ENV=test` 下生效（与 `test.*` 接缝同一门控），生产进程不会因环境变量误触发。
@@ -988,10 +1017,11 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 8. 需要旧实例的 AC 使用 I1.1 夹具生成的 v1 快照。
 9. 所有机检以实例根 `.orch/instances/<id>/` 与项目根 `.orch/inbox/**` 为准；mock 夹具路径按 D-10 的基准（场景根或任务 cwd）；时间断言允许同一秒内比较。
 10. Windows 下用 Git Bash 或 PowerShell 等价命令；本文命令以 POSIX shell 书写。
+11. C-13 的并发写冲突（`STORE_CONFLICT`）与 D-7 的暂停/派发原子性作为实现约束，由实现侧单测覆盖，本轮不设独立用户 AC；A-5 的提示文案随实现落地。
 
 ---
 
-## 附录 A 输出基线（**唯一**，AC-01 ~ AC-07、AC-14 ~ AC-67 中涉及文件与命令输出的判定依据）
+## 附录 A 输出基线（**唯一**，AC-01 ~ AC-07、AC-14 ~ AC-70 中涉及文件与命令输出的判定依据）
 
 > 既有基线（I1.1 §3 的输出要求、I1.2 A-1~A-4、I1.3 A-1~A-4）继续有效。本附录只登记**新增或变更**的输出；未登记的输出不得改动。
 
@@ -1030,7 +1060,7 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 
 ## 交接包
 
-- HO-001 开发→测试：已完成 · 输入 calc.js
+- HO-001 开发→测试：已接受 · 输入 calc.js
 
 ## 升级
 
@@ -1054,6 +1084,8 @@ I1.1 到 I1.3 之后，一条命令已经能让单节点、编码闭环、文档
 ```
 
 暂停时 `- 暂停：是`。`status.md` 永远以原子替换写入，不追加。
+
+`single` 实例的 `status.md` 同结构，但省略 `## 节点` 段与"当前节点"行（单节点没有可区分的节点标题）；`## 交接包` 只有引导包 HO-001；`## 升级` / `## 审批` 仍保留。
 
 ### A-2 `run` / `status` 的新增行
 
@@ -1180,7 +1212,7 @@ T-002 测试 · 已完成 · 第 1 轮
 
 ```
 升级 ESC-001 已处理（通过）
-实例 INST-001 · 已完成
+实例 INST-001 · 已完成 · 模板 编码闭环
 ```
 
 `fail` 第二行为实例失败行；`retry` 第二行为实例运行行。第二行的实例行与 `status --instance` 同口径（`single` 不带模板，多节点带"· 模板 <名>"）。若处理导致再次升级，第二行为挂起收尾（实例行 + 升级摘要 + 下一步）。
@@ -1231,7 +1263,7 @@ T-002 测试 · 已完成 · 第 1 轮
 
 信箱文件存在时显示相对项目根的路径（如 `.orch/inbox/INST-001/HO-002.json`）；校验失败而未写信箱时打印 `—`，不显示一个不存在的路径。无对应项一律打印 `—`，不省略行。
 
-**`orch attach SES-001`**：
+**`orch attach <会话号>`**（下例的 `SES-001` 为示例，实际编号由宿主给出）：
 
 ```
 已附着会话 SES-001（实例 INST-001 · 节点 T-001 开发）
@@ -1241,7 +1273,7 @@ T-002 测试 · 已完成 · 第 1 轮
 已脱离会话 SES-001
 ```
 
-没有事件时只有首尾两行。
+没有事件时只有首尾两行。事件行沿用 `instance log` 的格式；`...` 表示持续跟随，实际行数取决于事件数。
 
 **`orch workflow pause INST-001`**：
 
@@ -1337,6 +1369,25 @@ T-002 测试 · 已完成 · 第 1 轮
 
 **成功路径退出码**：`escalate resolve` 成功 0（若处理后立即再次挂起则为 4）；`approve` 处理 allow 或 deny 均 0；`pause` / `resume` 成功或幂等 0；`workflow abort` 成功 0（等同 `cancel`）；查看类命令（`instance status/log/graph`、`attach` 正常脱离、`handoff list/show`、`escalate list`）0。
 
+### A-6 多节点提示词的「工作区上下文」段
+
+所有多节点派发（`code-loop` 的入口 / forward / backflow / retest，`task-loop` 的 research / write / review；含图入口的无包派发）在模板正文之后空一行追加：
+
+```
+工作区：<workspaceAbs>
+共享区（只读）：<workspaceAbs>/shared
+本节点阶段区：<workspaceAbs>/stage/<本节点号>
+上游阶段区（只读）：<workspaceAbs>/stage/<上游节点号>
+```
+
+- 入口节点（无上游交接包）只追加前三行。
+- `single` 不追加。
+- **追加条件**：`promptFor` 调用同时带 `graph` 且 `graph.nodes.length > 1`；只传 `node` 的单元调用不追加，保持既有整串断言不变。
+- **生产路径必须带 `graph`**：所有派发入口（`advance` 的"新构造包"与"复用既有包"两条、`test.dispatch` 的复用包路径、恢复/重新分配时按落盘包重建提示词）一律传 `graph`，包括 `single`；`single` 的图只有一个节点，因此按**节点数**判定即可，不得在核心再写 `template !== 'single'` 之类的模板名分支（模板名字面量只能在 `src/templates/**`，见 D-1、D-11）。
+- 若模板正文已含 `工作区：` 行（`task-loop` 审核模板），不再重复追加该行，只追加后三行。
+- `PROMPT_TEMPLATES` 常量保持不变；该段由 `promptFor` 在填充后拼接，不进入模板表。
+- 上游节点取本次派发所沿边的来源节点（forward / backflow / retest 一致）。
+
 ---
 
 ## 附录 B 术语与未决问题
@@ -1352,6 +1403,8 @@ T-002 测试 · 已完成 · 第 1 轮
 | 待投递 | 消息已落盘、正在重试；不是"已投递"，也不是"已过期" |
 | 重新分配 | 升级裁决的一种：新建会话、轮次 +1、只重跑该节点 |
 | 审批 | 宿主请求的单个工具动作；编号 `APR-nnn`，不是升级 |
+| 审批策略 `--approval allow\|reject\|hold` | **发起时**的策略：放行 / 一律拒绝（不产生待处理项）/ 挂起等人工 |
+| 审批裁决 `--decision allow\|deny` | **对一条待处理审批**的单次决定；`deny` 与策略里的 `reject` 不是同一个开关 |
 | 附着 | 只读跟随会话事件；不是向会话注入输入 |
 | 暂停 | 阻止下一次派发；不打断当前回合 |
 
@@ -1359,7 +1412,7 @@ T-002 测试 · 已完成 · 第 1 轮
 
 | 编号 | 内容 | 状态 |
 |---|---|---|
-| B-01 | `stage/<nodeId>/` 的可见域是"本节点写、下游读"；如果后续工作流要求"上游写下游目录"，在 I1.6 重新定义 | 假设 |
+| B-01 | `stage/<nodeId>/` 的可见域是"本节点写、下游读"；与 `docs/index.md` §5.4「上游可写」同义（上游写自己的 stage，下游读它）。如果后续工作流要求"上游写下游目录"，在 I1.6 重新定义 | 假设 |
 | B-02 | `shared/` 由核心/人工写入，Agent 只读；核心本轮不主动写业务文件，只建目录 | 假设 |
 | B-03 | 交接包校验在"投递那一刻"成立，不保证投递后文件不变；产物锁定在 I1.7 | 已定 |
 | B-04 | 重试只覆盖图驱动交接包（`edge !== null`）的 `adapter.prompt` 失败且尚未收到 turn 内事件；单节点/图入口不重试；已收事件后的失败沿用旧路径 | 已定 |
@@ -1397,6 +1450,12 @@ T-002 测试 · 已完成 · 第 1 轮
 | v15 | 2026-11-07 | 十六/十七轮评审修复：D-6.9 按裁决拆分入口——`pass` 走 `advance()`、`retry` 由裁决自身 `dispatchInState` 直派（轮次只由该次派发提交自增）再交给后台 `driveGraph` 收尾，明确升级事务 CAS 冲突重放一次；D-7.4 复用 `created` 包时提示词由已落盘包的 `defects`/要求/`artifactRefs` 经 `promptFor` 重建，不再依赖本轮 `verdict`，复用只发 `node.dispatch`；D-7.3 的 `driveGraph` 在 `advance` 返回暂停态后、删句柄前重读磁盘，未暂停且仍在运行则再推进；D-7.2 无活动回合的暂停/恢复写入在队列内校验业务前置（`running` 且未挂起，恢复还须 `paused === true`），冲突由调用方作为新 `save` 重试；D-2 让 `delivered({ atMs, attempt })` 写入尝试数（未传不写该键），与 AC-16 的 `deliveryAttempts === 2` 对齐；D-6.8 轮次门限由四处补齐为五处，纳入 `shouldWake`/`checkWakeGate` 的 `extraRounds`；D-9.8 只写交接包上实际存在的键；AC-57 的机检收敛为流程实际产生的事件集；AC-29 补 `--decision` 使命令与退出码 1 对应，AC-30 补命令，AC-28 补"执行失败"，AC-40/AC-45/AC-64 的 BR 引用归位；AC-07 覆盖测试节点上游只读子句，AC-42 允许升级/审批摘要行，AC-58 注明 Ctrl-C 脱离；A-2 补 `single` 审批行形状 |
 | v16 | 2026-11-07 | 十八轮评审修复：实例不存在的输出沿用 I1.1 的 `实例 {id} · 不存在`（删除 A-5 新增的 `INSTANCE_NOT_FOUND` 行），AC-38 补存在/不存在两分支；NFR-06 的回归授权范围补上附录 D-10；AC-21 补 `升级 —` 空态，AC-34 补"审批不存在"，新增 AC-67（核心重启后 `approve` 返回 `APPROVAL_SESSION_GONE`、审批仍待处理、退出 1），全文 AC 计数与映射同步为 67 条；D-7.3 改为退出前**先删句柄再读盘**、需要时另起一次后台 `driveGraph`，关闭恢复写盘与删句柄之间的活动性空洞；D-7.2 给 `ctx.conflicted` 定义收尾——`driveGraph` 以 `STORE_CONFLICT` 停止并按 A-5 提示，不再"按既有路径"（代码中无该路径）；D-4.2 明确新会话尚未落盘，`commitEscalation` 需用新会话叠加参数并入读盘状态后再覆盖终态；D-10 把 `test.handoff` 注册改到 `src/daemon/server.js`、`test.escalate` 的 `reasonCode`/`artifactRefs` 需由 server 转发且先在 `escalateOnce` 中以一次 CAS 落盘 `artifactRefs` |
 | v17 | 2026-11-07 | 十九轮评审修复：D-2 审批迁移把"会话失效"限定为核心运行中观察到会话不可应答，并注明核心重启不迁移、`approve` 返回 `APPROVAL_SESSION_GONE`（与 AC-67 对齐）；AC-21 补全新项目根的零升级场景；AC-58 移除运行中实例上的 `attach` 断言（其只读性由 AC-44 的稳定会话覆盖）；D-7.2 补回合收尾/`complete` 分支的 CAS 冲突重放一次，并要求 `waitForRun` 透传 `STORE_CONFLICT` 失败码，关闭"`reject` 后静默退出、实例停在 `running`"的窗口；D-7.3 的自恢复改为复用 `resume` 的后台入口（同步检查+claim、无 `await`），避免另起空 `driveGraph` 与双驱动；D-4.2 的会话叠加参数同时覆盖节点 `sessionId`/`round` 并参数化会话终态与事件 `to`；D-10 补三组新增冲突/隔离用例 |
+| v18 | 2026-11-08 | 独立评审（干净上下文）修复：① AC-07 改为覆盖 `code-loop` 与 `task-loop` 的「工作区上下文」段，新增 A-6，并授权 `test/templates/task-loop.test.js` 逐字断言更新；② D-10.6 补 `test/wp6/render.test.js:602–608` 的 `ESCALATION_BLOCK.next` 授权；③ AC-48 补具体包号，命令可执行；④ AC-23/25/26 的实例行改为带模板名的完整当前实例行；⑤ 新增 AC-68/69（合法回流/复测包通过校验）、AC-70（唯一编号 `show` 省略 `--instance`）；⑥ AC-56 给出可执行架构扫描命令并改为 11 词并集，D-11.2 同步；⑦ 新增 R-10 登记 `pending → rejected` 取消撤回；⑧ AC-04/21/44/46/58/64 补断言与完整命令；AC 计数 67 → 70 |
+| v19 | 2026-11-08 | 二次独立评审修复：① A-6 补追加条件（`promptFor` 带 `graph` 且 `graph.nodes.length > 1`；只传 `node` 不追加），D-10.1.2 收窄到以 `graph` 调用的断言；② AC-44 改为先用 `orch status` 取实际会话号，§2.8 标注 `SES-001` 为示例；③ D-10.1.3 授权 `instance-store.list` 投影新增 `paused/approvals/pendingApprovals`；④ D-10.3 改为点名 `labels.test.js` 四处精确对象与 39→48 条原因；⑤ AC-27/33/50 补独立项目根重放。非阻塞收口：AC-03/04/08/56、§3.1 观测口径、§3.3#3 补断言与说明，新增 R-11 登记 `stage/` 语义 |
+| v20 | 2026-11-08 | 三次独立评审修复：① AC-44 的会话号来源改为 `orch run` 的「会话已创建」行或 `instance log --format json` 的会话事件（`status` 会话行不含 id）；② BR-35 与 AC-56/D-11.2 统一为 11 词并集，`single` 改为"允许的缺省标识、不在表内"；③ AC-07 扩展到 8 类派发（含 writer / backflow / retest），并修正审核节点只追加后三行；④ A-6 的共享区行改为 `共享区（只读）`，与 §2.2 对齐。非阻塞收口：A-3 resolve 样例补模板、AC-02/08/16/28/29/56/57 补断言、§2.2 明确会话状态不写 `status.md`、§3.3 补 `--permission=ask` 与 C-13 说明 |
+| v21 | 2026-11-08 | 四次独立评审修复：AC-29 ③ 的期望文案改为 `实例 INST-002`（与命令一致）；非阻塞收口：AC-29 三子场景各用独立项目根、AC-30 明确"夹具让新会话创建失败"、A-1 交接包样例改为"已接受"、§2.2 刷新触发补暂停/恢复、D-1 的 `labels.js` 改为"CLI 侧唯一中文来源"、A-3 补 attach 事件行格式说明、D-10.3 补核心状态词与 `labels.js` 的逐词对照断言 |
+| v22 | 2026-11-08 | 五次评审 PASS 后的非阻塞收口：AC-07 的派发计数改为 9（补 T-003 复测审核）、A-1 补 `single` 的 `status.md` 版式、D-4.4 明确每次失败尝试都发 `handoff.pending`、D-10.6 授权用法摘要首行不变、AC-36 补三种终态审批、D-10.4 澄清 `WORKSPACE_INIT_FAILED` 已存在 |
+| v23 | 2026-11-08 | 第六次（独立、干净上下文）评审 PASS，其余 6 条非阻塞建议收口：① AC-26 的前置改为可复现（独立项目根 + `test.escalate` 接缝 + 旧会话已回空闲），机检补"旧会话不再 `running`"；② §2.10 与附录 B 明确 `--approval reject`（发起时策略）与 `--decision deny`（单次裁决）不是同一开关；③ AC-54 增加显式 `--template single` 与缺省等价的断言；④ §2.9 与 AC-21 明确 `--instance` 与 `--all` 同时给出时"先按实例过滤、再由 `--all` 放开状态范围"；⑤ AC-50 机检补 `status.md` 的 `- 暂停：否`；⑥ A-6 补"生产派发一律带 `graph`、只按节点数判定"（避免核心出现模板名字面量），AC-07 机检同步。AC 计数仍为 70 |
 
 ---
 
@@ -1416,8 +1475,8 @@ T-002 测试 · 已完成 · 第 1 轮
 | `src/daemon/server.js` | 新 RPC：`escalation.resolve`、`approval.list/resolve`、`workflow.pause/resume/abort`、`session.locate`（名称可调整，语义固定） | 参数校验在边界；不拼中文 |
 | `src/cli/main.js` | 命令树、位置参数、新 flag、分发 | 不拼中文；不直接读 `state.json` |
 | `src/cli/render.js` | 新命令渲染、审批/暂停/重试行、graph text | 所有中文来自 `labels.js` |
-| `src/cli/labels.js` | 新文案/错误码/原因词条 | 唯一中文来源 |
-| `src/templates/index.js` | 图对象加 `title`；多节点提示词追加工作区路径 | 仍允许模板名/角色名；`single` 提示词不变 |
+| `src/cli/labels.js` | 新文案/错误码/原因词条 | CLI 侧唯一中文来源；核心侧状态文案表另行维护并逐字对照 |
+| `src/templates/index.js` | 图对象加 `title`；`promptFor` 在多节点派发时于正文末尾追加 A-6 的「工作区上下文」段（`PROMPT_TEMPLATES` 常量不变） | 仍允许模板名/角色名；`single` 提示词不变；正文已有 `工作区：` 行时不重复追加 |
 
 ### D-2 状态迁移表（新增边）
 
@@ -1509,7 +1568,7 @@ T-002 测试 · 已完成 · 第 1 轮
    ```
 2. 写入：临时文件 + `rename`；失败返回 `INBOX_WRITE_FAILED`，交接包 `rejected` / `delivery_failed`，节点升级 `delivery_failed`，实例挂起。若目标会话已创建（可能尚未落盘——`dispatchInState` 在会话创建到首次 `saveLive` 之间有窗口），在同一落盘中把该会话置 `idle` + `quarantined`（覆盖升级事务默认的 `escalated`），不得留下"执行中"或"已升级"的假会话；`commitEscalation` 会从磁盘重读状态，因此给 `escalateState` / `commitEscalation` 增加**新会话叠加参数**：把尚未落盘的会话对象并入读盘状态，**同时覆盖目标节点的 `sessionId` 与 `round`**（派发落盘早于这两项赋值，否则会按旧会话隔离），再把会话终态、`quarantined` 与事件目标状态一起传给 `applyInMemory`（会话事件的 `to` 不得硬编码 `escalated`），不靠事后补写。
 3. 尝试次数：共 3 次（首次 + 最多 2 次重试）；失败间隔 200ms、500ms；用可取消的定时器。每次重试前重新检查实例状态，已 `cancelled` 则清理定时器、不再尝试；取消实例时立即停止后续尝试，待投递交接包按取消规则转 `rejected` / `withdrawn`，信箱文件保留供审计。`NODE_ENV=test` 下可用 `test.delivery` 在重试等待点确定性暂停/放行。
-4. 第 1 次尝试在收到任何 turn 内事件前失败：交接包由乐观置位的 `delivered` 回落 `pending`，置 `pendingAt` 与 `deliveryAttempts=1`，一次 CAS 落盘并发 `handoff.pending`；此后每次尝试（含最后一次失败）同步更新 `deliveryAttempts` 与 `lastError`，并重写信箱文件中的对应字段。不新增 `created → pending`：代码在调用 `adapter.prompt` 后已置 `delivered`，失败只能发生在 `delivered` 之后。
+4. 第 1 次尝试在收到任何 turn 内事件前失败：交接包由乐观置位的 `delivered` 回落 `pending`，置 `pendingAt` 与 `deliveryAttempts=1`，一次 CAS 落盘并发 `handoff.pending`；此后每次尝试（含最后一次失败）同步更新 `deliveryAttempts` 与 `lastError`，各发一条 `handoff.pending`（带本次 `deliveryAttempts` 与 `lastError`），并重写信箱文件中的对应字段。不新增 `created → pending`：代码在调用 `adapter.prompt` 后已置 `delivered`，失败只能发生在 `delivered` 之后。
 5. 成功：`pending → delivered`（首次即成功则保持 `created → delivered`）；置位时刻是"调用 `adapter.prompt` 后立即"，以提示词已交给宿主为准，不等待回合 resolve；这样同一回合内先到的 turn 事件仍能看到 `delivered` 并正常推进 `accepted`。调用 `delivered({ atMs, attempt })` 传入本次尝试数，`deliveryAttempts` 保留；信箱文件的 `deliveredAt` 更新为成功时间；后续接受/完成沿用原逻辑。
 6. 耗尽：`pending → expired`；节点升级 `delivery_failed`，`reasonDetail` 含尝试次数与最后错误；实例挂起；目标会话在同一落盘中置 `idle` + `quarantined`（不置 `escalated`）。
 7. 不重试：`createAdapter` / 会话创建失败（沿用 I1.2 `dispatch_failed`；若本次是图驱动交接包，在随后写入升级的同一次落盘中把它置 `rejected` / `delivery_failed`，不留 `created`）；`single` 的 `HO-001` 与图入口的无交接包派发（分别沿用 I1.2 失败结果与 I1.3 `execution_failed` 升级）；已收到任何 turn 内事件后的失败（沿用 I1.2 / I1.3）。
@@ -1616,14 +1675,16 @@ T-002 测试 · 已完成 · 第 1 轮
 
 1. `test/wp3/handoff-tracker.test.js`：`REJECT_REASONS` 精确数组增加 `invalid_payload`、`delivery_failed`。
 1.1 CAS 快照形状：`casSnapshot` 增加 `paused` 后，冲突返回的 `actual` 多出该键，以下**只改 actual 深比较**（不改冲突语义）：`test/wp1/instance-store.test.js` 约 212、273 行的 `actual` 加 `paused: false`（并新增一条 `{ expected: { paused: true } }` 冲突用例）；`test/wp8/f3-cas.test.js` 约 53 行同改。
+1.2 `test/templates/task-loop.test.js`：**以 `graph` 调用** `promptFor` 的多节点逐字断言（约 165–190、247–282 行）按 A-6 追加「工作区上下文」段后更新；只传 `node` 的调用（约 135–145、203–224 行）、`PROMPT_TEMPLATES` 常量断言、`single` 逐字断言与「模板表只追加不修改」断言保持不变。
+1.3 `test/wp1/instance-store.test.js`：list 投影整对象断言（约 335–349 行）每项增加 `paused: false`、`approvals: []`、`pendingApprovals: 0`；v1 单字段用例（约 352–369 行）只查单字段，不受影响。
 2. `test/wp8/f1-permission.test.js`：hold 用例的"唯一外部决定是取消"改为"取消或 `approve`"；新增 allow/deny 用例。
-3. `test/wp2/labels.test.js`：新增审批/已处理/暂停/新原因/新错误码断言；如存在"原因条数"精确断言，按新增条数更新。
-4. `test/wp2/error-map.test.js`：`src/core/error-map.js` 的 `CODES`/`ERROR_TEXT_KEY` 只承载 prompt/preflight 分类用的码；本附录 A-5 的命令级错误码（`*_NOT_FOUND` / `*_AMBIGUOUS` / `*_NOT_PENDING` / `*_INVALID` 等）由各命令的渲染器处理，**不加入** `CODES`，该测试的精确清单不变。只有进入 `renderError` 的通用码（本迭代为 `WORKSPACE_INIT_FAILED`、`STORE_CONFLICT`）才加到 `ERROR_TEMPLATE`，并在 `test/wp2/labels.test.js` 补断言。
+3. `test/wp2/labels.test.js`：四处**既有精确对象断言**必须同步更新——`LAYER`（约 181–187 行）加 `approval: '审批'`；`ESCALATION_LABEL`（约 132–134 行）加 `resolved: '已处理'`；`HANDOFF_REJECT_REASON`（约 173–177 行）加 `invalid_payload: '内容不合规'`、`delivery_failed: '投递失败'`；`REASON_LABEL`（约 192–234 行）由 39 条改为 48 条，新增 `handoff.inboxed`、`handoff.pending`、`handoff.expired`、`escalation.resolved`、`approval.created`、`approval.withdrawn`、`workflow.paused`、`workflow.resumed`、`workspace.status_write_failed`。另新增暂停/重试/审批行文案与 `NEXT_STEP_PAUSED`、`WORKSPACE_INIT_FAILED`、`STORE_CONFLICT` 的断言，以及核心状态词与 `labels.js` 的逐词对照断言（`status.md` 生成器 vs CLI 文案）。
+4. `test/wp2/error-map.test.js`：`src/core/error-map.js` 的 `CODES`/`ERROR_TEXT_KEY` 只承载 prompt/preflight 分类用的码；本附录 A-5 的命令级错误码（`*_NOT_FOUND` / `*_AMBIGUOUS` / `*_NOT_PENDING` / `*_INVALID` 等）由各命令的渲染器处理，**不加入** `CODES`，该测试的精确清单不变。只有进入 `renderError` 的通用码才加到 `ERROR_TEMPLATE`（`WORKSPACE_INIT_FAILED` 已在；本迭代新增的通用码只有 `STORE_CONFLICT`），并在 `test/wp2/labels.test.js` 补断言。
 5. `test/wp2/state-machine.test.js`：迁移表增加 D-2 的边；同时更新以下**排他性断言**（只动这四处以及迁移表本身）：
    - "node: escalated has exactly one exit (cancel)"（约 240 行）→ 改为"取消仍是唯一终止边，另允许裁决出边"；
    - `suspended -> running/completed` 为假的断言（约 309–310 行）→ 改为 `suspended -> running/completed/failed` 为真；
    - `escalated -> running` 为假的断言（约 350 行）→ 改为 `escalated -> running/done/failed` 为真；`CANCELABLE_HANDOFF` 精确数组（约 340 行）增加 `pending`。
-6. 挂起下一步文案：`test/wp2/labels.test.js`（`ESCALATION_BLOCK.next`、`NEXT_STEP_SUSPENDED`，约 245–259 行）、`test/wp6/main.test.js`（约 298 行）、`test/wp6/render.test.js`（约 624、1039 行）按 A-2 的新文案更新；`NEXT_STEP_HALTED` 与 halted 路径保持不变；新增 `NEXT_STEP_PAUSED` 词条断言。
+6. 挂起下一步文案：`test/wp2/labels.test.js`（`ESCALATION_BLOCK.next`、`NEXT_STEP_SUSPENDED`，约 245–259 行）、`test/wp6/main.test.js`（约 298 行）、`test/wp6/render.test.js`（约 602–608、624、1039 行；其中 602–608 是 `ESCALATION_BLOCK.next` 的逐字断言）按 A-2 的新文案更新；`NEXT_STEP_HALTED` 与 halted 路径保持不变；新增 `NEXT_STEP_PAUSED` 词条断言。`test/wp6/main.test.js` 约 77 行的用法摘要首行保持不变（M-9 只在用法里追加新命令行，不改首行）。
 7. `test/templates/fake-graph.test.js`（约 203–232 行）：交接包精确键断言从 16 键增加 `instanceId`、`round`、`fromNodeId`、`toNodeId`、`retestRequirement`、`deliveryAttempts`、`pendingAt`、`expiredAt`、`lastError` 九键；只改这一处键集合，不改其余行为断言。
 8. 新增用例（不改既有断言）：回合收尾与 `complete` 分支的 CAS 冲突重放一次；`waitForRun` 透传 `STORE_CONFLICT` 失败 outcome；信箱写失败时新会话叠加后按 `idle` + `quarantined` 隔离且节点 `sessionId` 指向新会话。
 
@@ -1643,6 +1704,7 @@ T-002 测试 · 已完成 · 第 1 轮
 - 升级裁决：终节点 pass、中间节点 pass、fail、retry 新会话。
 - 命令：`instance log/graph`、`attach`、`handoff list/show`、`escalate list`、`workflow`。
 - 旧实例：I1.1 v1 快照。
+- 架构检查：`test/fixtures/purity-check.mjs` 的 `--forbid` 显式传 11 词并集（I1.2 四词 + I1.3 七词）；AC-56 的命令即基线，不依赖脚本默认的四词表。
 
 **mock 扩展**
 
@@ -1653,7 +1715,7 @@ T-002 测试 · 已完成 · 第 1 轮
 ### D-11 架构与零依赖
 
 1. 新增核心模块只接收注入的图数据与状态；不按模板名/角色名分支。
-2. 源码字面量扫描仍按 7 词：`task-loop`、`researcher`、`writer`、`reviewer`、`研究员`、`撰写者`、`审核者`；英文注释也算。
+2. 源码字面量扫描取 11 词并集：I1.2 的 `code-loop`、`developer`、`tester`、`coordinator` 与 I1.3 的 `task-loop`、`researcher`、`writer`、`reviewer`、`研究员`、`撰写者`、`审核者`；英文注释也算。`purity-check.mjs` 必须用 `--forbid` 显式传全表（脚本默认表只有 I1.2 四词），不得依赖默认值。
 3. `status.md` 的模板名/角色名从图对象 `title` 与节点 `title` 取；核心文案表只含状态/字段名。核心状态词必须与 `src/cli/labels.js` 的状态词逐字一致，测试需加一条对照断言，防止两份文案漂移。
 4. `package.json.dependencies` 保持为空；不引入 YAML、模板、CLI 解析库。
 5. 所有新文件写到临时路径后 `rename`；`fsync` 口径沿用 `atomic-write.js`。
