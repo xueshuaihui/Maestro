@@ -1,6 +1,6 @@
 # 需求模板
 
-> **用途**：每个迭代的「需求」统一按本模板撰写。顺序是：需求文档 → 任务拆分（`iteration-N.md`）→ 执行 → 验证报告（`iteration-N/report.md`）。
+> **用途**：每个迭代的「需求」统一按本模板撰写。顺序是：需求文档 → 任务拆分（`iteration-N.md`）→ 执行 → 验证报告（`iteration-N/report.md`）。**拆分、实现、验收与收口的执行标准见 `docs/templates/execution-template.md`**（各同学的 Agent 一律照此执行）。
 >
 > **使用方式**：复制本文件到 `docs/iterations/iteration-N/requirement.md`，替换 `[需求标题]` 与各节括号内的填写指引；**交付前必须删除所有括号指引**，只留实际内容。
 >
