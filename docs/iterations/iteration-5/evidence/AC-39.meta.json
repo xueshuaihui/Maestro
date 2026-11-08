@@ -1,0 +1,30 @@
+{
+  "ac": "AC-39",
+  "title": "`--instance` 指向不存在的实例",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:27.768Z",
+  "finishedAt": "2026-11-08T12:22:28.191Z",
+  "durationMs": 423,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-39",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-39"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 4,
+  "notes": [],
+  "extraFiles": [
+    "AC-39.show.txt"
+  ]
+}

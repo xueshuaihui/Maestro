@@ -1,0 +1,82 @@
+{
+  "ac": "AC-26",
+  "title": "会话升级时角色为不可用",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 机检：T-002 节点 state === escalated（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "Given 机检：T-002 的会话 state === escalated（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "Given 机检：实例 state === suspended（非终态，故不是 retired）（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "Then status === 'unavailable'（期望 \"unavailable\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"unavailable\""
+    },
+    {
+      "text": "Then statusReason === 'escalated'（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "机检：roleInstanceId（期望 \"RI-tester\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"RI-tester\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "driver --scenario rounds-exceeded（测试两轮不通过 → 升级）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-26",
+        "--scenario",
+        "rounds-exceeded"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1930,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-26\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-26\\\\demo-code-pass\",\"scenario\":\"rounds-exceeded\",\"resolvedScenario\":\"rounds-exceeded\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":4,\"instanceId\":\"INST-001\",\"state\":\"suspended\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"escalated\"}],\"handoffs\":3,\"escalations\":[{\"escalationId\":\"ESC-001\",\"reasonCode\":\"rounds_exceeded\"}],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1550,\"checks\":[{\"name\":\"state=suspended\",\"ok\":true,\"detail\":\"suspended\"},{\"name\":\"nodes[1]=escalated round=2\",\"ok\":true},{\"name\":\"escalation reason=rounds_exceeded\",\"ok\":true,\"detail\":\"rounds_exceeded\"}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-31732-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "label": "orch role show tester --instance INST-001 --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "tester",
+        "--instance",
+        "INST-001",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-26",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 211,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"tester\",\n    \"name\": \"测试\",\n    \"group\": \"coding\",\n    \"groupLabel\": \"编码工程\",\n    \"artifactType\": \"code\",\n    \"sideEffect\": \"exec\",\n    \"skills\": [\n      \"test-run\"\n    ],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"builtin\",\n    \"file\": \"assets/roles/tester.yaml\"\n  },\n  \"instance\": {\n    \"instanceId\": \"INST-001\",\n    \"template\": \"code-loop\",\n    \"state\": \"suspended\",\n    \"roleToSessions\": {\n      \"developer\": [\n        \"mock-sess-31732-1\",\n        \"mock-sess-25864-1\"\n      ],\n      \"tester\": [\n        \"mock-sess-35372-1\",\n        \"mock-sess-30160-1\"\n      ]\n    }\n  },\n  \"roleInstance\": {\n    \"roleId\": \"tester\",\n    \"roleInstanceId\": \"RI-tester\",\n    \"status\": \"unavailable\",\n    \"statusReason\": \"escalated\",\n    \"activeSessions\": [\n      \"mock-sess-30160-1\"\n    ],\n    \"servingNodes\": [],\n    \"hostIcons\": [],\n    \"maxConcurrentSessions\": 1,\n    \"lastAction\": {\n      \"nodeId\": \"T-002\",\n      \"round\": 2,\n      \"maxRounds\": 2,\n      \"state\": \"escalated\",\n      \"stateSince\": \"2026-11-08T12:22:03.502Z\"\n    }\n  }\n}\n",
+      "stderr": ""
+    }
+  ]
+}

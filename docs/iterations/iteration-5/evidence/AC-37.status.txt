@@ -1,0 +1,38 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role bogus
+# label=orch role bogus cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-37 exit=2 88ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch role list [--group <组>] [--instance <实例号>] [--format text|json]
+  orch role show <角色> [--instance <实例号>] [--format text|json]
+  orch role validate [<角色>] [--format json]
+  （未知的 role 子命令：bogus）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role list --nope
+# label=orch role list --nope cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-37 exit=2 90ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch role list [--group <组>] [--instance <实例号>] [--format text|json]
+  orch role show <角色> [--instance <实例号>] [--format text|json]
+  orch role validate [<角色>] [--format json]
+  （未知参数：--nope）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role list --format yaml
+# label=orch role list --format yaml cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-37 exit=2 92ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch role list [--group <组>] [--instance <实例号>] [--format text|json]
+  orch role show <角色> [--instance <实例号>] [--format text|json]
+  orch role validate [<角色>] [--format json]
+  （--format 只接受 text 或 json）
+

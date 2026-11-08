@@ -1,0 +1,26 @@
+{
+  "referenced": [
+    "code-change",
+    "code-review",
+    "compliance-check",
+    "coordination",
+    "data-analysis",
+    "doc-draft",
+    "doc-review",
+    "fact-check",
+    "research-brief",
+    "test-run"
+  ],
+  "builtinSkills": [
+    "code-change",
+    "code-review",
+    "compliance-check",
+    "coordination",
+    "data-analysis",
+    "doc-draft",
+    "doc-review",
+    "fact-check",
+    "research-brief",
+    "test-run"
+  ]
+}

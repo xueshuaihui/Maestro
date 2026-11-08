@@ -1,0 +1,107 @@
+{
+  "ac": "AC-36",
+  "title": "`role validate` 可只校验单个角色",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 只报「校验资产 1 个：全部通过（角色 1 · 技能 0）」（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 该行逐字（期望逐字 \"校验资产 1 个：全部通过（角色 1 · 技能 0）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验资产 1 个：全部通过（角色 1 · 技能 0）\""
+    },
+    {
+      "text": "机检：输出行不含坏文件名（期望不含 \"ghost-skill\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 1 个：全部通过（角色 1 · 技能 0）\n"
+    },
+    {
+      "text": "机检：counts.assets 为 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：counts.skills 为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：errors 只含该角色文件（此处为空）（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写坏角色 .orch/roles/ghost-skill.yaml（技能不存在）",
+      "argv": [
+        "(fixture) 写坏角色 .orch/roles/ghost-skill.yaml（技能不存在）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-36\\.orch\\roles\\ghost-skill.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：写好角色 .orch/roles/researcher.yaml",
+      "argv": [
+        "(fixture) 写好角色 .orch/roles/researcher.yaml"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-36\\.orch\\roles\\researcher.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate researcher",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "researcher"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-36",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 115,
+      "stdout": "校验资产 1 个：全部通过（角色 1 · 技能 0）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate researcher --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "researcher",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-36",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"roles\": 1,\n    \"skills\": 0,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+$ "(fixture) 写 .orch/skills/quote/SKILL.md（id: quoting、缺 summary，全文同一份文件）"
+# label=夹具：写 .orch/skills/quote/SKILL.md（id: quoting、缺 summary，全文同一份文件） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-14\.orch\skills\quote\SKILL.md
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-14 exit=1 90ms
+校验资产 27 个：1 个不合法
+- skills/quote/SKILL.md：缺少必填字段：summary（SKILL_SCHEMA_MISSING）
+- skills/quote/SKILL.md：技能 id 与目录名不一致：目录 quote / 声明 quoting（SKILL_ID_MISMATCH）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-14 exit=1 93ms
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "SKILL_SCHEMA_MISSING",
+      "file": "skills/quote/SKILL.md",
+      "scope": "skill",
+      "field": "summary",
+      "line": null,
+      "detail": "缺少必填字段：summary"
+    },
+    {
+      "code": "SKILL_ID_MISMATCH",
+      "file": "skills/quote/SKILL.md",
+      "scope": "skill",
+      "field": "id",
+      "line": null,
+      "detail": "技能 id 与目录名不一致：目录 quote / 声明 quoting"
+    }
+  ]
+}
+

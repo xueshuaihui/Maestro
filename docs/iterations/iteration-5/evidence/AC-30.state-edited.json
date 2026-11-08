@@ -1,0 +1,31 @@
+{
+  "state": "suspended",
+  "rev": 43,
+  "updatedAt": "2026-11-08T12:22:15.661Z",
+  "sessions": [
+    {
+      "sessionId": "mock-sess-32516-1",
+      "nodeId": "T-001",
+      "state": "idle",
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-19664-1",
+      "nodeId": "T-002",
+      "state": "idle",
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-11020-1",
+      "nodeId": "T-001",
+      "state": "idle",
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-21100-1",
+      "nodeId": "T-002",
+      "state": "idle",
+      "quarantined": false
+    }
+  ]
+}

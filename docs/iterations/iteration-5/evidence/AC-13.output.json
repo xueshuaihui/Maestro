@@ -1,0 +1,82 @@
+{
+  "ac": "AC-13",
+  "title": "技能目录缺 SKILL.md 被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 原因码 SKILL_FILE_MISSING（期望含 \"SKILL_FILE_MISSING\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：1 个不合法\n- skills/half-done/SKILL.md：技能目录缺少 SKILL.md：half-done（SKILL_FILE_MISSING）\n"
+    },
+    {
+      "text": "机检：errors[0].code === SKILL_FILE_MISSING（期望 \"SKILL_FILE_MISSING\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"SKILL_FILE_MISSING\""
+    },
+    {
+      "text": "Then 明细含该目录名 half-done（期望含 \"half-done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "技能目录缺少 SKILL.md：half-done"
+    },
+    {
+      "text": "机检：errors[0].scope 为 skill（期望 \"skill\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"skill\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：建 .orch/skills/half-done/ 但不放 SKILL.md",
+      "argv": [
+        "(fixture) 建 .orch/skills/half-done/ 但不放 SKILL.md"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-13\\.orch\\skills\\half-done",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-13",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 92,
+      "stdout": "校验资产 27 个：1 个不合法\n- skills/half-done/SKILL.md：技能目录缺少 SKILL.md：half-done（SKILL_FILE_MISSING）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-13",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"SKILL_FILE_MISSING\",\n      \"file\": \"skills/half-done/SKILL.md\",\n      \"scope\": \"skill\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"技能目录缺少 SKILL.md：half-done\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

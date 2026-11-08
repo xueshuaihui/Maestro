@@ -1,0 +1,88 @@
+{
+  "ac": "AC-29",
+  "title": "角色到会话的映射保留全部会话",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 夹具：T-001 与 T-002 都已进入第 2 轮",
+      "ok": true,
+      "blocked": false,
+      "actual": "[[\"T-001\",2,\"done\"],[\"T-002\",2,\"running\"]]"
+    },
+    {
+      "text": "Given 机检：两个节点各已新建第 2 轮会话",
+      "ok": true,
+      "blocked": false,
+      "actual": "roleToSessions 各 2 个"
+    },
+    {
+      "text": "Then roleToSessions.developer 有 2 个会话 id（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then roleToSessions.tester 有 2 个会话 id（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：developer 的会话与 state.json 里 T-001 的会话顺序一致（期望 [\"mock-sess-15668-1\",\"mock-sess-23040-1\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"mock-sess-15668-1\",\"mock-sess-23040-1\"]"
+    },
+    {
+      "text": "机检：tester 的会话与 state.json 里 T-002 的会话顺序一致（期望 [\"mock-sess-30780-1\",\"mock-sess-3572-1\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"mock-sess-30780-1\",\"mock-sess-3572-1\"]"
+    },
+    {
+      "text": "机检：两个数组都按创建顺序（与 state.json 的 sessions[] 顺序一致）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"developer\":[\"mock-sess-15668-1\",\"mock-sess-23040-1\"],\"tester\":[\"mock-sess-30780-1\",\"mock-sess-3572-1\"]}"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch role list --instance INST-001 --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list",
+        "--instance",
+        "INST-001",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-29",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "{\n  \"counts\": {\n    \"total\": 16,\n    \"builtin\": 16,\n    \"project\": 0,\n    \"invalid\": 0\n  },\n  \"groups\": [\n    {\n      \"group\": \"coordinator\",\n      \"label\": \"通用协调\",\n      \"count\": 5\n    },\n    {\n      \"group\": \"research\",\n      \"label\": \"研究分析\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"writing\",\n      \"label\": \"内容创作\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"coding\",\n      \"label\": \"编码工程\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"ops\",\n      \"label\": \"业务运营\",\n      \"count\": 2\n    }\n  ],\n  \"roles\": [\n    {\n      \"id\": \"arbiter\",\n      \"name\": \"裁决者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"none\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/arbiter.yaml\"\n    },\n    {\n      \"id\": \"coordinator\",\n      \"name\": \"协调者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"none\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/coordinator.yaml\"\n    },\n    {\n      \"id\": \"planner\",\n      \"name\": \"规划者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"coordination\",\n        \"research-brief\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/planner.yaml\"\n    },\n    {\n      \"id\": \"summarizer\",\n      \"name\": \"汇总者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/summarizer.yaml\"\n    },\n    {\n      \"id\": \"worker\",\n      \"name\": \"执行者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/worker.yaml\"\n    },\n    {\n      \"id\": \"data-analyst\",\n      \"name\": \"数据分析师\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"dataset\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"data-analysis\",\n        \"fact-check\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/data-analyst.yaml\"\n    },\n    {\n      \"id\": \"fact-checker\",\n      \"name\": \"事实核查员\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"fact-check\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/fact-checker.yaml\"\n    },\n    {\n      \"id\": \"researcher\",\n      \"name\": \"研究员\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"research-brief\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/researcher.yaml\"\n    },\n    {\n      \"id\": \"editor\",\n      \"name\": \"编辑\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\",\n        \"doc-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/editor.yaml\"\n    },\n    {\n      \"id\": \"reviewer\",\n      \"name\": \"审核者\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"doc-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/reviewer.yaml\"\n    },\n    {\n      \"id\": \"writer\",\n      \"name\": \"撰写者\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/writer.yaml\"\n    },\n    {\n      \"id\": \"code-reviewer\",\n      \"name\": \"代码审查\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"code-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/code-reviewer.yaml\"\n    },\n    {\n      \"id\": \"developer\",\n      \"name\": \"开发\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"code-change\",\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/developer.yaml\"\n    },\n    {\n      \"id\": \"tester\",\n      \"name\": \"测试\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"exec\",\n      \"skills\": [\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/tester.yaml\"\n    },\n    {\n      \"id\": \"compliance-reviewer\",\n      \"name\": \"合规审查者\",\n      \"group\": \"ops\",\n      \"groupLabel\": \"业务运营\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"compliance-check\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/compliance-reviewer.yaml\"\n    },\n    {\n      \"id\": \"requirement-clarifier\",\n      \"name\": \"需求澄清者\",\n      \"group\": \"ops\",\n      \"groupLabel\": \"业务运营\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\",\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/requirement-clarifier.yaml\"\n    }\n  ],\n  \"instance\": {\n    \"instanceId\": \"INST-001\",\n    \"template\": \"code-loop\",\n    \"state\": \"running\",\n    \"roles\": [\n      {\n        \"roleId\": \"coordinator\",\n        \"roleInstanceId\": \"RI-coordinator\",\n        \"status\": \"inactive\",\n        \"statusReason\": null,\n        \"activeSessions\": [],\n        \"servingNodes\": [],\n        \"hostIcons\": [],\n        \"maxConcurrentSessions\": 1,\n        \"lastAction\": null\n      },\n      {\n        \"roleId\": \"developer\",\n        \"roleInstanceId\": \"RI-developer\",\n        \"status\": \"cooldown\",\n        \"statusReason\": null,\n        \"activeSessions\": [],\n        \"servingNodes\": [],\n        \"hostIcons\": [],\n        \"maxConcurrentSessions\": 1,\n        \"lastAction\": {\n          \"nodeId\": \"T-001\",\n          \"round\": 2,\n          \"maxRounds\": 2,\n          \"state\": \"done\",\n          \"stateSince\": \"2026-11-08T12:22:11.995Z\"\n        }\n      },\n      {\n        \"roleId\": \"tester\",\n        \"roleInstanceId\": \"RI-tester\",\n        \"status\": \"busy\",\n        \"statusReason\": null,\n        \"activeSessions\": [\n          \"mock-sess-3572-1\"\n        ],\n        \"servingNodes\": [\n          \"T-002\"\n        ],\n        \"hostIcons\": [\n          \"mock\"\n        ],\n        \"maxConcurrentSessions\": 1,\n        \"lastAction\": {\n          \"nodeId\": \"T-002\",\n          \"round\": 2,\n          \"maxRounds\": 2,\n          \"state\": \"running\",\n          \"stateSince\": \"2026-11-08T12:22:12.028Z\"\n        }\n      }\n    ],\n    \"roleToSessions\": {\n      \"developer\": [\n        \"mock-sess-15668-1\",\n        \"mock-sess-23040-1\"\n      ],\n      \"tester\": [\n        \"mock-sess-30780-1\",\n        \"mock-sess-3572-1\"\n      ]\n    }\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario retest-slow --keep（停在 T-002 第 2 轮执行中）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-29",
+        "--scenario",
+        "retest-slow",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 13,
+      "timedOut": false,
+      "durationMs": 2378,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-29\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-29\\\\demo-code-pass\",\"scenario\":\"retest-slow\",\"resolvedScenario\":\"retest-slow\",\"stopAfter\":null,\"keep\":true,\"released\":false,\"target\":\"exit\",\"exitCode\":1,\"instanceId\":\"INST-001\",\"state\":\"running\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"running\"}],\"handoffs\":3,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":2093,\"checks\":[{\"name\":\"停在暂停/执行点\",\"ok\":true,\"detail\":{\"paused\":false,\"stopped\":false,\"state\":\"running\"}}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-15668-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n实例 INST-001 · 已中断 ｜ 核心已停止\nWarning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/code-loop-driver.mjs:832\r\n  const code = await main(process.argv.slice(2));\r\n               ^\r\n\r\n\r\n\r\n"
+    }
+  ]
+}

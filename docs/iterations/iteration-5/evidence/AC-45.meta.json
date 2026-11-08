@@ -1,0 +1,33 @@
+{
+  "ac": "AC-45",
+  "title": "项目级技能可覆盖内置同名技能",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:33.239Z",
+  "finishedAt": "2026-11-08T12:22:33.916Z",
+  "durationMs": 677,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-45",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-45"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 12,
+  "notes": [],
+  "extraFiles": [
+    "AC-45.payload-before.json",
+    "AC-45.payload-after.json",
+    "AC-45.payload-developer.json",
+    "AC-45.registry-test.txt"
+  ]
+}

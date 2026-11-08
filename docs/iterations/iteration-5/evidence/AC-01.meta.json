@@ -1,0 +1,31 @@
+{
+  "ac": "AC-01",
+  "title": "内置角色全表可列出",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:14.767Z",
+  "finishedAt": "2026-11-08T12:21:14.965Z",
+  "durationMs": 198,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-01",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-01"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 8,
+  "notes": [],
+  "extraFiles": [
+    "AC-01.list.txt",
+    "AC-01.payload.json"
+  ]
+}

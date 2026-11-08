@@ -1,0 +1,114 @@
+{
+  "ac": "AC-40",
+  "title": "架构纯净：核心与守护进程零角色字面量",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 第 1 条退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第 1 条输出「OK: 扫描 N 个文件…零命中」（期望匹配 /OK: 扫描 \\d+ 个文件.*零命中/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "OK: 扫描 16 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中\n"
+    },
+    {
+      "text": "Then 第 2 条退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第 2 条输出「OK: 扫描 N 个文件…零命中」（期望匹配 /OK: 扫描 \\d+ 个文件.*零命中/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "OK: 扫描 6 个文件，src/registry 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中\n"
+    },
+    {
+      "text": "Then 第 3 条退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第 3 条输出「OK: 扫描 N 个文件…零命中」（期望匹配 /OK: 扫描 \\d+ 个文件.*零命中/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "OK: 扫描 1 个文件，src/cli/roles.js 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中\n"
+    },
+    {
+      "text": "机检：coordinator 在 src/registry/** 只出现 1 次（GROUPS 那一行）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：命中的文件是 src/registry/role-schema.js（期望 \"src/registry/role-schema.js\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"src/registry/role-schema.js\""
+    },
+    {
+      "text": "机检：命中行含 GROUPS（是分组枚举定义，不是按分组 id 分支）（期望含 \"GROUPS\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"dir\":null,\"file\":\"src/registry/role-schema.js\",\"line\":16,\"word\":\"coordinator\",\"snippet\":\"export const GROUPS = Object.freeze(['coordinator', 'research', 'writing', 'coding', 'ops']);\"}"
+    }
+  ],
+  "commands": [
+    {
+      "label": "purity-check --dirs src/core,src/daemon --forbid <31 词>",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\purity-check.mjs",
+        "--dirs",
+        "src/core,src/daemon",
+        "--forbid",
+        "task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 89,
+      "stdout": "OK: 扫描 16 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中\n",
+      "stderr": ""
+    },
+    {
+      "label": "purity-check --dirs src/registry --forbid <30 词>",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\purity-check.mjs",
+        "--dirs",
+        "src/registry",
+        "--forbid",
+        "task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 74,
+      "stdout": "OK: 扫描 6 个文件，src/registry 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中\n",
+      "stderr": ""
+    },
+    {
+      "label": "purity-check --files src/cli/roles.js --forbid <31 词>",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\purity-check.mjs",
+        "--files",
+        "src/cli/roles.js",
+        "--forbid",
+        "task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 81,
+      "stdout": "OK: 扫描 1 个文件，src/cli/roles.js 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中\n",
+      "stderr": ""
+    }
+  ]
+}

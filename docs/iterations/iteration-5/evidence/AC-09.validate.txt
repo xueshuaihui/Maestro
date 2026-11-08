@@ -1,0 +1,3 @@
+校验资产 27 个：1 个不合法
+- roles/broken.yaml：第 4 行无法解析：缩进不一致（YAML_PARSE_FAILED）
+

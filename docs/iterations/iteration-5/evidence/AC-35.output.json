@@ -1,0 +1,48 @@
+{
+  "ac": "AC-35",
+  "title": "`role show` 缺参数是用法错误",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 打印用法（含 orch role show <角色> 一行）（期望含 \"  orch role show <角色> [--instance <实例号>] [--format text|json]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  （role show 需要角色 id）\n"
+    },
+    {
+      "text": "Then 与「（role show 需要角色 id）」（期望含 \"（role show 需要角色 id）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  （role show 需要角色 id）\n"
+    },
+    {
+      "text": "机检：用法块 8 行齐全",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch role show（缺角色 id）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-35",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 88,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  （role show 需要角色 id）\n",
+      "stderr": ""
+    }
+  ]
+}

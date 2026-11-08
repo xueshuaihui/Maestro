@@ -1,0 +1,9 @@
+[
+  {
+    "file": "test//wp10//perf.test.js",
+    "exitCode": 0,
+    "tests": 2,
+    "pass": 2,
+    "fail": 0
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "YAML_PARSE_FAILED",
+      "file": "roles/broken.yaml",
+      "scope": "role",
+      "field": null,
+      "line": 4,
+      "detail": "第 4 行无法解析：缩进不一致"
+    }
+  ]
+}

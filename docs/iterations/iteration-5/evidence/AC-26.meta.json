@@ -1,0 +1,39 @@
+{
+  "ac": "AC-26",
+  "title": "会话升级时角色为不可用",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:01.858Z",
+  "finishedAt": "2026-11-08T12:22:04.030Z",
+  "durationMs": 2172,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-26",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-26"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-26",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "events": 51,
+  "eventsNote": null,
+  "checks": 6,
+  "notes": [
+    "隔离分支（`quarantined === true` → `statusReason === quarantined`）按需求原文不设独立 AC，由 `test/wp11/role-instances.test.js` 的单测覆盖（D-9）；本条只判 escalated 分支。"
+  ],
+  "extraFiles": [
+    "AC-26.driver.txt",
+    "AC-26.payload.json"
+  ]
+}

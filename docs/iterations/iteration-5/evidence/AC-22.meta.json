@@ -1,0 +1,37 @@
+{
+  "ac": "AC-22",
+  "title": "运行中角色为服务中且活跃会话、服务节点正确",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:50.272Z",
+  "finishedAt": "2026-11-08T12:21:51.894Z",
+  "durationMs": 1622,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-22",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-22"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-22",
+      "instanceId": "INST-001",
+      "state": "running"
+    }
+  ],
+  "events": 35,
+  "eventsNote": null,
+  "checks": 12,
+  "notes": [],
+  "extraFiles": [
+    "AC-22.payload.json",
+    "AC-22.state-live.json"
+  ]
+}

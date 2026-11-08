@@ -1,0 +1,8 @@
+- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1
+  职责：运行测试并把结果落成报告，不掩盖失败用例
+  技能：test-run
+  工具：read, write, bash
+  可唤醒：—
+  来源：内置 assets/roles/tester.yaml
+  实例 INST-001：不可用 · 活跃会话 1/1 · 服务节点 — · 宿主 — · 最近 T-002 · 轮次 2/2
+

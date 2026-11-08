@@ -1,0 +1,39 @@
+{
+  "ac": "AC-30",
+  "title": "角色实例是派生视图，改状态即变且不回写",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:14.036Z",
+  "finishedAt": "2026-11-08T12:22:16.722Z",
+  "durationMs": 2686,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-30",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-30"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-30",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "events": 51,
+  "eventsNote": null,
+  "checks": 9,
+  "notes": [],
+  "extraFiles": [
+    "AC-30.show-before.txt",
+    "AC-30.payload-before.json",
+    "AC-30.state-edited.json",
+    "AC-30.payload-after.json"
+  ]
+}

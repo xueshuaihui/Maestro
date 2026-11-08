@@ -1,0 +1,36 @@
+{
+  "ac": "AC-21",
+  "title": "每个图角色恰好一个角色实例",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:47.516Z",
+  "finishedAt": "2026-11-08T12:21:49.271Z",
+  "durationMs": 1755,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-21",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-21"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-21",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "events": 36,
+  "eventsNote": null,
+  "checks": 7,
+  "notes": [],
+  "extraFiles": [
+    "AC-21.payload.json"
+  ]
+}

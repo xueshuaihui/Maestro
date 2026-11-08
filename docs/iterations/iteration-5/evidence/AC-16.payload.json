@@ -1,0 +1,20 @@
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "SKILL_GROUP_INVALID",
+      "file": "skills/bad-group/SKILL.md",
+      "scope": "skill",
+      "field": "applies_to",
+      "line": null,
+      "detail": "适用分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    }
+  ]
+}

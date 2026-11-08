@@ -1,0 +1,36 @@
+{
+  "ac": "AC-24",
+  "title": "已完成角色为冷却中",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:55.434Z",
+  "finishedAt": "2026-11-08T12:21:57.645Z",
+  "durationMs": 2211,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-24",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-24"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-24",
+      "instanceId": "INST-001",
+      "state": "running"
+    }
+  ],
+  "events": 41,
+  "eventsNote": null,
+  "checks": 6,
+  "notes": [],
+  "extraFiles": [
+    "AC-24.payload.json"
+  ]
+}

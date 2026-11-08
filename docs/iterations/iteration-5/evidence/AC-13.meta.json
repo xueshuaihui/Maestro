@@ -1,0 +1,31 @@
+{
+  "ac": "AC-13",
+  "title": "技能目录缺 SKILL.md 被拒绝",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:26.781Z",
+  "finishedAt": "2026-11-08T12:21:26.978Z",
+  "durationMs": 197,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-13",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-13"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 5,
+  "notes": [],
+  "extraFiles": [
+    "AC-13.validate.txt",
+    "AC-13.payload.json"
+  ]
+}

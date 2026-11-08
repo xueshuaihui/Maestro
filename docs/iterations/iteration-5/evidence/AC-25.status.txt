@@ -1,0 +1,79 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show coordinator --instance INST-001
+# label=orch role show coordinator --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-25 exit=0 137ms
+- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1
+  职责：拆解任务、编排节点顺序，并把各节点结论汇总成一份交付说明
+  技能：coordination
+  工具：—
+  可唤醒：planner, worker
+  来源：内置 assets/roles/coordinator.yaml
+  实例 INST-001：未参与 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 —
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show coordinator --instance INST-001 --format json
+# label=orch role show coordinator --instance INST-001 --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-25 exit=0 107ms
+{
+  "role": {
+    "id": "coordinator",
+    "name": "协调者",
+    "group": "coordinator",
+    "groupLabel": "通用协调",
+    "artifactType": "report",
+    "sideEffect": "none",
+    "skills": [
+      "coordination"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/coordinator.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "code-loop",
+    "state": "running",
+    "roleToSessions": {
+      "developer": [
+        "mock-sess-33112-1",
+        "mock-sess-12772-1"
+      ],
+      "tester": [
+        "mock-sess-8880-1",
+        "mock-sess-33912-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "coordinator",
+    "roleInstanceId": "RI-coordinator",
+    "status": "inactive",
+    "statusReason": null,
+    "activeSessions": [],
+    "servingNodes": [],
+    "hostIcons": [],
+    "maxConcurrentSessions": 1,
+    "lastAction": null
+  }
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\code-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-25 --scenario retest-slow --keep
+# label=driver --scenario retest-slow --keep（停在 T-002 第 2 轮执行中） cwd=D:\WWW\Maestro exit=13 2232ms
+{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-25","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-25\\demo-code-pass","scenario":"retest-slow","resolvedScenario":"retest-slow","stopAfter":null,"keep":true,"released":false,"target":"exit","exitCode":1,"instanceId":"INST-001","state":"running","nodes":[{"nodeId":"T-001","round":2,"state":"done"},{"nodeId":"T-002","round":2,"state":"running"}],"handoffs":3,"escalations":[],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":1974,"checks":[{"name":"停在暂停/执行点","ok":true,"detail":{"paused":false,"stopped":false,"state":"running"}}]}
+
+--- stderr ---
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-33112-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+实例 INST-001 · 已中断 ｜ 核心已停止
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/code-loop-driver.mjs:832
+  const code = await main(process.argv.slice(2));
+               ^

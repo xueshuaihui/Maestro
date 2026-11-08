@@ -1,0 +1,168 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show writer --instance INST-001
+# label=orch role show writer --instance INST-001（内置上限） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-28 exit=0 119ms
+- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2
+  职责：依据调研结论写出结构完整的文档初稿
+  技能：doc-draft
+  工具：read, write, edit
+  可唤醒：editor
+  来源：内置 assets/roles/writer.yaml
+  实例 INST-001：服务中 · 活跃会话 1/2 · 服务节点 T-002 · 宿主 dsh · 最近 T-002 · 轮次 1/2
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show writer --instance INST-001 --format json
+# label=orch role show writer --instance INST-001 --format json（内置上限） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-28 exit=0 113ms
+{
+  "role": {
+    "id": "writer",
+    "name": "撰写者",
+    "group": "writing",
+    "groupLabel": "内容创作",
+    "artifactType": "document",
+    "sideEffect": "write",
+    "skills": [
+      "doc-draft"
+    ],
+    "maxConcurrentSessions": 2,
+    "source": "builtin",
+    "file": "assets/roles/writer.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "task-loop",
+    "state": "running",
+    "roleToSessions": {
+      "researcher": [
+        "mock-sess-31892-1"
+      ],
+      "writer": [
+        "mock-sess-2400-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "writer",
+    "roleInstanceId": "RI-writer",
+    "status": "busy",
+    "statusReason": null,
+    "activeSessions": [
+      "mock-sess-2400-1"
+    ],
+    "servingNodes": [
+      "T-002"
+    ],
+    "hostIcons": [
+      "dsh"
+    ],
+    "maxConcurrentSessions": 2,
+    "lastAction": {
+      "nodeId": "T-002",
+      "round": 1,
+      "maxRounds": 2,
+      "state": "running",
+      "stateSince": "2026-11-08T12:22:08.353Z"
+    }
+  }
+}
+
+
+$ "(fixture) 写 .orch/roles/writer.yaml（max_concurrent_sessions: 3）"
+# label=夹具：写 .orch/roles/writer.yaml（max_concurrent_sessions: 3） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-28\.orch\roles\writer.yaml
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show writer --instance INST-001
+# label=orch role show writer --instance INST-001（项目覆盖上限 3） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-28 exit=0 102ms
+- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 3
+  职责：按大纲写初稿（项目版上限 3）
+  技能：doc-draft
+  工具：read, write
+  可唤醒：—
+  来源：项目 .orch/roles/writer.yaml
+  实例 INST-001：服务中 · 活跃会话 1/3 · 服务节点 T-002 · 宿主 dsh · 最近 T-002 · 轮次 1/2
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show writer --instance INST-001 --format json
+# label=orch role show writer --instance INST-001 --format json（项目覆盖上限 3） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-28 exit=0 104ms
+{
+  "role": {
+    "id": "writer",
+    "name": "撰写者",
+    "group": "writing",
+    "groupLabel": "内容创作",
+    "artifactType": "document",
+    "sideEffect": "write",
+    "skills": [
+      "doc-draft"
+    ],
+    "maxConcurrentSessions": 3,
+    "source": "project",
+    "file": ".orch/roles/writer.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "task-loop",
+    "state": "running",
+    "roleToSessions": {
+      "researcher": [
+        "mock-sess-31892-1"
+      ],
+      "writer": [
+        "mock-sess-2400-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "writer",
+    "roleInstanceId": "RI-writer",
+    "status": "busy",
+    "statusReason": null,
+    "activeSessions": [
+      "mock-sess-2400-1"
+    ],
+    "servingNodes": [
+      "T-002"
+    ],
+    "hostIcons": [
+      "dsh"
+    ],
+    "maxConcurrentSessions": 3,
+    "lastAction": {
+      "nodeId": "T-002",
+      "round": 1,
+      "maxRounds": 2,
+      "state": "running",
+      "stateSince": "2026-11-08T12:22:08.353Z"
+    }
+  }
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-28 --scenario doc-pass --keep
+# label=driver --scenario doc-pass --keep（MAESTRO_TEST_PAUSE=after_accepted:T-002） cwd=D:\WWW\Maestro exit=13 2042ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-31892-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md
+节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过
+交接包 HO-001  研究员→撰写者  已构造   20:22:08
+交接包 HO-001  研究员→撰写者  已投递   20:22:08
+交接包 HO-001  研究员→撰写者  已接受   20:22:08
+交接包 HO-001  研究员→撰写者  已完成   20:22:09
+交接包 HO-002  撰写者→审核者  已构造   20:22:09
+交接包 HO-002  撰写者→审核者  已投递   20:22:09
+交接包 HO-002  撰写者→审核者  已接受   20:22:09
+交接包 HO-002  撰写者→审核者  已完成   20:22:09
+升级 —
+
+--- stderr ---
+task-loop-driver: 已停在 paused，Ctrl-C 结束
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/task-loop-driver.mjs:442
+  const code = await main(process.argv.slice(2));
+               ^

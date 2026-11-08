@@ -1,0 +1,8 @@
+- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1
+  职责：拆解任务、编排节点顺序，并把各节点结论汇总成一份交付说明
+  技能：coordination
+  工具：—
+  可唤醒：planner, worker
+  来源：内置 assets/roles/coordinator.yaml
+  实例 INST-001：未参与 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 —
+

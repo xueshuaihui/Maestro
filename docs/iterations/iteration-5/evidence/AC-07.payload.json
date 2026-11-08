@@ -1,0 +1,36 @@
+{
+  "counts": {
+    "assets": 29,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 3
+  },
+  "errors": [
+    {
+      "code": "ROLE_ARTIFACT_TYPE_INVALID",
+      "file": "roles/bad-artifact.yaml",
+      "scope": "role",
+      "field": "artifact_type",
+      "line": null,
+      "detail": "产物类型取值非法：slides；合法取值：code / document / dataset / report"
+    },
+    {
+      "code": "ROLE_MAX_CONCURRENT_INVALID",
+      "file": "roles/bad-max.yaml",
+      "scope": "role",
+      "field": "max_concurrent_sessions",
+      "line": null,
+      "detail": "并发上限取值非法：9；合法范围：1~5 的整数"
+    },
+    {
+      "code": "ROLE_SIDE_EFFECT_INVALID",
+      "file": "roles/bad-side-effect.yaml",
+      "scope": "role",
+      "field": "side_effect",
+      "line": null,
+      "detail": "副作用等级取值非法：admin；合法取值：none / read / write / exec"
+    }
+  ]
+}

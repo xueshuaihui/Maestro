@@ -1,0 +1,45 @@
+{
+  "graphRoleIds": [
+    "coordinator",
+    "developer",
+    "researcher",
+    "reviewer",
+    "tester",
+    "worker",
+    "writer"
+  ],
+  "rolesKeys": [
+    "coordinator",
+    "developer",
+    "researcher",
+    "reviewer",
+    "tester",
+    "writer"
+  ],
+  "registryIds": [
+    "arbiter",
+    "code-reviewer",
+    "compliance-reviewer",
+    "coordinator",
+    "data-analyst",
+    "developer",
+    "editor",
+    "fact-checker",
+    "planner",
+    "requirement-clarifier",
+    "researcher",
+    "reviewer",
+    "summarizer",
+    "tester",
+    "worker",
+    "writer"
+  ],
+  "roleLabels": {
+    "developer": "开发",
+    "tester": "测试",
+    "coordinator": "协调者",
+    "researcher": "研究员",
+    "writer": "撰写者",
+    "reviewer": "审核者"
+  }
+}

@@ -1,0 +1,3 @@
+校验资产 27 个：1 个不合法
+- roles/bad-group.yaml：分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops（ROLE_GROUP_INVALID）
+

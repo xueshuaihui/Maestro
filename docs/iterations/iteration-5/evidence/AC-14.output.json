@@ -1,0 +1,88 @@
+{
+  "ac": "AC-14",
+  "title": "技能元数据缺字段或 id 不一致被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：对该文件报两条，code 集合恰好是 SKILL_SCHEMA_MISSING 与 SKILL_ID_MISMATCH（期望 [\"SKILL_SCHEMA_MISSING\",\"SKILL_ID_MISMATCH\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"SKILL_SCHEMA_MISSING\",\"SKILL_ID_MISMATCH\"]"
+    },
+    {
+      "text": "机检：SKILL_SCHEMA_MISSING 的字段是 summary（期望 \"summary\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"summary\""
+    },
+    {
+      "text": "机检：SKILL_ID_MISMATCH 明细给出目录名 quote（期望含 \"quote\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "技能 id 与目录名不一致：目录 quote / 声明 quoting"
+    },
+    {
+      "text": "机检：SKILL_ID_MISMATCH 明细给出声明 id quoting（期望含 \"quoting\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "技能 id 与目录名不一致：目录 quote / 声明 quoting"
+    },
+    {
+      "text": "机检：counts.invalid 按文件计（1，不是 2）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 .orch/skills/quote/SKILL.md（id: quoting、缺 summary，全文同一份文件）",
+      "argv": [
+        "(fixture) 写 .orch/skills/quote/SKILL.md（id: quoting、缺 summary，全文同一份文件）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-14\\.orch\\skills\\quote\\SKILL.md",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-14",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 90,
+      "stdout": "校验资产 27 个：1 个不合法\n- skills/quote/SKILL.md：缺少必填字段：summary（SKILL_SCHEMA_MISSING）\n- skills/quote/SKILL.md：技能 id 与目录名不一致：目录 quote / 声明 quoting（SKILL_ID_MISMATCH）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-14",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 93,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"SKILL_SCHEMA_MISSING\",\n      \"file\": \"skills/quote/SKILL.md\",\n      \"scope\": \"skill\",\n      \"field\": \"summary\",\n      \"line\": null,\n      \"detail\": \"缺少必填字段：summary\"\n    },\n    {\n      \"code\": \"SKILL_ID_MISMATCH\",\n      \"file\": \"skills/quote/SKILL.md\",\n      \"scope\": \"skill\",\n      \"field\": \"id\",\n      \"line\": null,\n      \"detail\": \"技能 id 与目录名不一致：目录 quote / 声明 quoting\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

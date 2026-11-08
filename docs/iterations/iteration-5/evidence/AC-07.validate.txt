@@ -1,0 +1,5 @@
+校验资产 29 个：3 个不合法
+- roles/bad-artifact.yaml：产物类型取值非法：slides；合法取值：code / document / dataset / report（ROLE_ARTIFACT_TYPE_INVALID）
+- roles/bad-max.yaml：并发上限取值非法：9；合法范围：1~5 的整数（ROLE_MAX_CONCURRENT_INVALID）
+- roles/bad-side-effect.yaml：副作用等级取值非法：admin；合法取值：none / read / write / exec（ROLE_SIDE_EFFECT_INVALID）
+

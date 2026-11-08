@@ -1,0 +1,106 @@
+{
+  "ac": "AC-16",
+  "title": "技能适用分组取值非法被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 原因码 SKILL_GROUP_INVALID（期望含 \"SKILL_GROUP_INVALID\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：1 个不合法\n- skills/bad-group/SKILL.md：适用分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops（SKILL_GROUP_INVALID）\n"
+    },
+    {
+      "text": "机检：errors[0].code === SKILL_GROUP_INVALID（期望 \"SKILL_GROUP_INVALID\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"SKILL_GROUP_INVALID\""
+    },
+    {
+      "text": "机检：明细列出合法取值 coordinator（期望含 \"coordinator\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "适用分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：明细列出合法取值 research（期望含 \"research\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "适用分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：明细列出合法取值 writing（期望含 \"writing\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "适用分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：明细列出合法取值 coding（期望含 \"coding\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "适用分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：明细列出合法取值 ops（期望含 \"ops\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "适用分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：errors[0].field 指出 applies_to（期望 \"applies_to\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"applies_to\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 .orch/skills/bad-group/SKILL.md（applies_to: [marketing]）",
+      "argv": [
+        "(fixture) 写 .orch/skills/bad-group/SKILL.md（applies_to: [marketing]）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-16\\.orch\\skills\\bad-group\\SKILL.md",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-16",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "校验资产 27 个：1 个不合法\n- skills/bad-group/SKILL.md：适用分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops（SKILL_GROUP_INVALID）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-16",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"SKILL_GROUP_INVALID\",\n      \"file\": \"skills/bad-group/SKILL.md\",\n      \"scope\": \"skill\",\n      \"field\": \"applies_to\",\n      \"line\": null,\n      \"detail\": \"适用分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

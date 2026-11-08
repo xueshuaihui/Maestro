@@ -1,0 +1,45 @@
+{
+  "ac": "AC-42",
+  "title": "既有 418 条测试全绿",
+  "face": "架构检查",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:37.307Z",
+  "finishedAt": "2026-11-08T12:23:48.801Z",
+  "durationMs": 71494,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-42",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-42"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 5,
+  "notes": [
+    "单条限时由 90s 放宽到 900s：本条最多跑 6 次全量回归（每次约 13~20s）+ 失败项单跑归因 + 1 次降并发诊断 + 1 次基线对照，模板 §3.2 的 90s 用于防挂死，本条按实测耗时登记为已授权例外（见 probe/acc5-cases/README.md）。",
+    "【观察项，不翻判定】共跑 3 次，1 次全绿（1/3）；失败项（去重）为 [\"NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）\",\"NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）\"]。该命令在本机默认并发（12 核）下**已知不稳定**：既有的 p95 计时断言与 wp3/wp8 的子进程时序断言会随机红，单独跑这些用例一律通过、`--test-concurrency=4` 时全绿（见本条的诊断证据），未改任何断言、未放宽 p95 预算。按 D-2 登记、`report.md` §5 R-1 列为不阻断遗留项；判定口径按需求字面（单次执行 fail===0），主控裁决见 decisions.md B-2。",
+    "诊断（不参与判定）：--test-concurrency=4 时 exit=0、pass=599/599、fail=0；它只回答「同一份代码降并行是否全绿」，用于把失败归因到并行负载而不是产品退步。",
+    "基线对照（1490f6d，不参与判定）：tests=418、pass=418、fail=0。基线这次全绿——说明本机默认并发下的「不满绿」是**随机负载**造成的，两边都会不同程度命中，不能据此说基线更健康、也不能据此说 I1.5 退步；判定只认「有一次同命令全绿」。",
+    "「不得修改任何既有断言」（附录 D-8 的授权断言清单为空）由 S4 报告的 `git diff --stat` 与 AC-19 的基线树比对复核；本条只判测试全绿、条数下限与失败归因。"
+  ],
+  "extraFiles": [
+    "AC-42.suite-run1.txt",
+    "AC-42.suite-run2.txt",
+    "AC-42.suite-run3.txt",
+    "AC-42.runs.json",
+    "AC-42.isolated.json",
+    "AC-42.stability.json",
+    "AC-42.diag-concurrency4.txt",
+    "AC-42.diag.json",
+    "AC-42.baseline-1490f6d.txt",
+    "AC-42.baseline.json"
+  ]
+}

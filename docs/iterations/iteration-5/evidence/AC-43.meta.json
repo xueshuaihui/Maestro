@@ -1,0 +1,31 @@
+{
+  "ac": "AC-43",
+  "title": "新增中文只在 labels.js",
+  "face": "架构检查",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:31.529Z",
+  "finishedAt": "2026-11-08T12:22:31.627Z",
+  "durationMs": 98,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-43",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-43"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 4,
+  "notes": [],
+  "extraFiles": [
+    "AC-43.cjk-scan.txt",
+    "AC-43.scanned-files.json"
+  ]
+}

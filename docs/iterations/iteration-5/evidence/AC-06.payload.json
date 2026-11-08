@@ -1,0 +1,20 @@
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "ROLE_GROUP_INVALID",
+      "file": "roles/bad-group.yaml",
+      "scope": "role",
+      "field": "group",
+      "line": null,
+      "detail": "分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    }
+  ]
+}

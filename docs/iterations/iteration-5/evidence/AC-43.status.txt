@@ -1,0 +1,4 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe -e "\nconst fs = require('fs');\nconst path = require('path');\nconst roots = ['src/registry', 'src/cli/roles.js'];\nconst hits = [];\nfunction walk(p) {\n  const st = fs.statSync(p);\n  if (st.isDirectory()) {\n    for (const name of fs.readdirSync(p).sort()) walk(path.join(p, name));\n    return;\n  }\n  const src = fs.readFileSync(p, 'utf8');\n  src.split(/\\r?\\n/).forEach((line, i) => {\n    if (/[\\u4e00-\\u9fff]/.test(line)) hits.push(p.replace(/\\\\/g, '/') + ':' + (i + 1) + ': ' + line.trim());\n  });\n}\nfor (const r of roots) walk(r);\nif (hits.length > 0) { console.log(hits.join('\\n')); process.exit(1); }\nconsole.log('OK: 零 CJK 命中（' + roots.join(', ') + '）');\n"
+# label=node -e <扫 [\u4e00-\u9fff] src/registry + src/cli/roles.js> cwd=D:\WWW\Maestro exit=0 93ms
+OK: 零 CJK 命中（src/registry, src/cli/roles.js）
+

@@ -1,0 +1,332 @@
+{
+  "counts": {
+    "total": 16,
+    "builtin": 16,
+    "project": 0,
+    "invalid": 0
+  },
+  "groups": [
+    {
+      "group": "coordinator",
+      "label": "通用协调",
+      "count": 5
+    },
+    {
+      "group": "research",
+      "label": "研究分析",
+      "count": 3
+    },
+    {
+      "group": "writing",
+      "label": "内容创作",
+      "count": 3
+    },
+    {
+      "group": "coding",
+      "label": "编码工程",
+      "count": 3
+    },
+    {
+      "group": "ops",
+      "label": "业务运营",
+      "count": 2
+    }
+  ],
+  "roles": [
+    {
+      "id": "arbiter",
+      "name": "裁决者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "none",
+      "skills": [
+        "coordination"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/arbiter.yaml"
+    },
+    {
+      "id": "coordinator",
+      "name": "协调者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "none",
+      "skills": [
+        "coordination"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/coordinator.yaml"
+    },
+    {
+      "id": "planner",
+      "name": "规划者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "coordination",
+        "research-brief"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/planner.yaml"
+    },
+    {
+      "id": "summarizer",
+      "name": "汇总者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "coordination"
+      ],
+      "maxConcurrentSessions": 2,
+      "source": "builtin",
+      "file": "assets/roles/summarizer.yaml"
+    },
+    {
+      "id": "worker",
+      "name": "执行者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/worker.yaml"
+    },
+    {
+      "id": "data-analyst",
+      "name": "数据分析师",
+      "group": "research",
+      "groupLabel": "研究分析",
+      "artifactType": "dataset",
+      "sideEffect": "write",
+      "skills": [
+        "data-analysis",
+        "fact-check"
+      ],
+      "maxConcurrentSessions": 2,
+      "source": "builtin",
+      "file": "assets/roles/data-analyst.yaml"
+    },
+    {
+      "id": "fact-checker",
+      "name": "事实核查员",
+      "group": "research",
+      "groupLabel": "研究分析",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "fact-check"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/fact-checker.yaml"
+    },
+    {
+      "id": "researcher",
+      "name": "研究员",
+      "group": "research",
+      "groupLabel": "研究分析",
+      "artifactType": "report",
+      "sideEffect": "write",
+      "skills": [
+        "research-brief"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/researcher.yaml"
+    },
+    {
+      "id": "editor",
+      "name": "编辑",
+      "group": "writing",
+      "groupLabel": "内容创作",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [
+        "doc-draft",
+        "doc-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/editor.yaml"
+    },
+    {
+      "id": "reviewer",
+      "name": "审核者",
+      "group": "writing",
+      "groupLabel": "内容创作",
+      "artifactType": "document",
+      "sideEffect": "read",
+      "skills": [
+        "doc-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/reviewer.yaml"
+    },
+    {
+      "id": "writer",
+      "name": "撰写者",
+      "group": "writing",
+      "groupLabel": "内容创作",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [
+        "doc-draft"
+      ],
+      "maxConcurrentSessions": 2,
+      "source": "builtin",
+      "file": "assets/roles/writer.yaml"
+    },
+    {
+      "id": "code-reviewer",
+      "name": "代码审查",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "read",
+      "skills": [
+        "code-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/code-reviewer.yaml"
+    },
+    {
+      "id": "developer",
+      "name": "开发",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "write",
+      "skills": [
+        "code-change",
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/developer.yaml"
+    },
+    {
+      "id": "tester",
+      "name": "测试",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "exec",
+      "skills": [
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/tester.yaml"
+    },
+    {
+      "id": "compliance-reviewer",
+      "name": "合规审查者",
+      "group": "ops",
+      "groupLabel": "业务运营",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "compliance-check"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/compliance-reviewer.yaml"
+    },
+    {
+      "id": "requirement-clarifier",
+      "name": "需求澄清者",
+      "group": "ops",
+      "groupLabel": "业务运营",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [
+        "doc-draft",
+        "coordination"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/requirement-clarifier.yaml"
+    }
+  ],
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "code-loop",
+    "state": "running",
+    "roles": [
+      {
+        "roleId": "coordinator",
+        "roleInstanceId": "RI-coordinator",
+        "status": "inactive",
+        "statusReason": null,
+        "activeSessions": [],
+        "servingNodes": [],
+        "hostIcons": [],
+        "maxConcurrentSessions": 1,
+        "lastAction": null
+      },
+      {
+        "roleId": "developer",
+        "roleInstanceId": "RI-developer",
+        "status": "cooldown",
+        "statusReason": null,
+        "activeSessions": [],
+        "servingNodes": [],
+        "hostIcons": [],
+        "maxConcurrentSessions": 1,
+        "lastAction": {
+          "nodeId": "T-001",
+          "round": 2,
+          "maxRounds": 2,
+          "state": "done",
+          "stateSince": "2026-11-08T12:22:11.995Z"
+        }
+      },
+      {
+        "roleId": "tester",
+        "roleInstanceId": "RI-tester",
+        "status": "busy",
+        "statusReason": null,
+        "activeSessions": [
+          "mock-sess-3572-1"
+        ],
+        "servingNodes": [
+          "T-002"
+        ],
+        "hostIcons": [
+          "mock"
+        ],
+        "maxConcurrentSessions": 1,
+        "lastAction": {
+          "nodeId": "T-002",
+          "round": 2,
+          "maxRounds": 2,
+          "state": "running",
+          "stateSince": "2026-11-08T12:22:12.028Z"
+        }
+      }
+    ],
+    "roleToSessions": {
+      "developer": [
+        "mock-sess-15668-1",
+        "mock-sess-23040-1"
+      ],
+      "tester": [
+        "mock-sess-30780-1",
+        "mock-sess-3572-1"
+      ]
+    }
+  }
+}

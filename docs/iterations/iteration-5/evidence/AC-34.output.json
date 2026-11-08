@@ -1,0 +1,49 @@
+{
+  "ac": "AC-34",
+  "title": "角色不存在时明确报错",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 终端出现「找不到角色：no-such-role」（期望含 \"找不到角色：no-such-role\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "找不到角色：no-such-role\n可用角色：执行 orch role list 查看\n"
+    },
+    {
+      "text": "Then 一行「可用角色：执行 orch role list 查看」（期望含 \"可用角色：执行 orch role list 查看\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "找不到角色：no-such-role\n可用角色：执行 orch role list 查看\n"
+    },
+    {
+      "text": "机检：stdout 含这两行",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"找不到角色：no-such-role\",\"可用角色：执行 orch role list 查看\"]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch role show no-such-role",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "no-such-role"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-34",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 90,
+      "stdout": "找不到角色：no-such-role\n可用角色：执行 orch role list 查看\n",
+      "stderr": ""
+    }
+  ]
+}

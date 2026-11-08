@@ -1,0 +1,70 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./work --task "写一段 200 字的产品说明，保存到 out/intro.md" --host dsh
+# label=orch run --cwd ./work --task 「写一段 200 字的产品说明，保存到 out/intro.md」（single） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-27 exit=0 581ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-4512-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 已完成 · 耗时 1s
+交接包 HO-001  已构造   20:22:05
+交接包 HO-001  已投递   20:22:05
+交接包 HO-001  已接受   20:22:05
+交接包 HO-001  已完成   20:22:06
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show worker --instance INST-001
+# label=orch role show worker --instance INST-001 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-27 exit=0 99ms
+- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1
+  职责：按任务单执行一步操作，交出任务里声明的产物文件
+  技能：—
+  工具：read, write, edit
+  可唤醒：—
+  来源：内置 assets/roles/worker.yaml
+  实例 INST-001：已关闭 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/1
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show worker --instance INST-001 --format json
+# label=orch role show worker --instance INST-001 --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-27 exit=0 98ms
+{
+  "role": {
+    "id": "worker",
+    "name": "执行者",
+    "group": "coordinator",
+    "groupLabel": "通用协调",
+    "artifactType": "document",
+    "sideEffect": "write",
+    "skills": [],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/worker.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "single",
+    "state": "completed",
+    "roleToSessions": {
+      "worker": [
+        "mock-sess-4512-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "worker",
+    "roleInstanceId": "RI-worker",
+    "status": "retired",
+    "statusReason": null,
+    "activeSessions": [],
+    "servingNodes": [],
+    "hostIcons": [],
+    "maxConcurrentSessions": 1,
+    "lastAction": {
+      "nodeId": "T-001",
+      "round": 1,
+      "maxRounds": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T12:22:06.009Z"
+    }
+  }
+}
+

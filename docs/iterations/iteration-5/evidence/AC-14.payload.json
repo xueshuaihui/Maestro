@@ -1,0 +1,28 @@
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "SKILL_SCHEMA_MISSING",
+      "file": "skills/quote/SKILL.md",
+      "scope": "skill",
+      "field": "summary",
+      "line": null,
+      "detail": "缺少必填字段：summary"
+    },
+    {
+      "code": "SKILL_ID_MISMATCH",
+      "file": "skills/quote/SKILL.md",
+      "scope": "skill",
+      "field": "id",
+      "line": null,
+      "detail": "技能 id 与目录名不一致：目录 quote / 声明 quoting"
+    }
+  ]
+}

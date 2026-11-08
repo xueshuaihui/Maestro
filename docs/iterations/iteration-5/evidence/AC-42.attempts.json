@@ -1,0 +1,33 @@
+[
+  {
+    "attempt": 1,
+    "exitCode": 1,
+    "tests": 599,
+    "pass": 597,
+    "fail": 2,
+    "failing": [
+      "NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）",
+      "NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）"
+    ]
+  },
+  {
+    "attempt": 2,
+    "exitCode": 1,
+    "tests": 599,
+    "pass": 598,
+    "fail": 1,
+    "failing": [
+      "NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）"
+    ]
+  },
+  {
+    "attempt": 3,
+    "exitCode": 1,
+    "tests": 599,
+    "pass": 598,
+    "fail": 1,
+    "failing": [
+      "NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）"
+    ]
+  }
+]

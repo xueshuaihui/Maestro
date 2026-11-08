@@ -1,0 +1,39 @@
+{
+  "ac": "AC-28",
+  "title": "活跃会话数与并发上限同时展示，且上限来自注册表",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:07.628Z",
+  "finishedAt": "2026-11-08T12:22:09.709Z",
+  "durationMs": 2081,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-28",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-28"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-28",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "events": 36,
+  "eventsNote": null,
+  "checks": 10,
+  "notes": [],
+  "extraFiles": [
+    "AC-28.show-builtin.txt",
+    "AC-28.payload-builtin.json",
+    "AC-28.show-project.txt",
+    "AC-28.payload-project.json"
+  ]
+}

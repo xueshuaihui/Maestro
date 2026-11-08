@@ -1,0 +1,40 @@
+[
+  {
+    "attempt": 1,
+    "exitCode": 1,
+    "tests": 599,
+    "pass": 597,
+    "fail": 2,
+    "fails": [
+      {
+        "name": "NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）",
+        "file": "test//wp10//perf.test.js"
+      },
+      {
+        "name": "NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）",
+        "file": "test//wp10//perf.test.js"
+      }
+    ]
+  },
+  {
+    "attempt": 2,
+    "exitCode": 1,
+    "tests": 599,
+    "pass": 598,
+    "fail": 1,
+    "fails": [
+      {
+        "name": "NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）",
+        "file": "test//wp10//perf.test.js"
+      }
+    ]
+  },
+  {
+    "attempt": 3,
+    "exitCode": 0,
+    "tests": 599,
+    "pass": 599,
+    "fail": 0,
+    "fails": []
+  }
+]

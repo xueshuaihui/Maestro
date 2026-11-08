@@ -1,0 +1,118 @@
+{
+  "ac": "AC-04",
+  "title": "缺必填字段被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 输出含「- roles/no-concurrency.yaml：缺少必填字段：max_concurrent_sessions（ROLE_SCHEMA_MISSING）」（期望含 \"- roles/no-concurrency.yaml：缺少必填字段：max_concurrent_sessions（ROLE_SCHEMA_MISSING）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：1 个不合法\n- roles/no-concurrency.yaml：缺少必填字段：max_concurrent_sessions（ROLE_SCHEMA_MISSING）\n"
+    },
+    {
+      "text": "Then 首行给出 27 个资产 1 个不合法（期望 \"校验资产 27 个：1 个不合法\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验资产 27 个：1 个不合法\""
+    },
+    {
+      "text": "机检：counts.assets === 27（期望 27）",
+      "ok": true,
+      "blocked": false,
+      "actual": "27"
+    },
+    {
+      "text": "机检：counts.invalid === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：counts.roles === 16（期望 16）",
+      "ok": true,
+      "blocked": false,
+      "actual": "16"
+    },
+    {
+      "text": "机检：counts.skills === 10（期望 10）",
+      "ok": true,
+      "blocked": false,
+      "actual": "10"
+    },
+    {
+      "text": "机检：errors 长度 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：errors[0].code（期望 \"ROLE_SCHEMA_MISSING\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"ROLE_SCHEMA_MISSING\""
+    },
+    {
+      "text": "机检：errors[0].field（期望 \"max_concurrent_sessions\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"max_concurrent_sessions\""
+    },
+    {
+      "text": "机检：errors[0].file（期望 \"roles/no-concurrency.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"roles/no-concurrency.yaml\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 .orch/roles/no-concurrency.yaml（省略 max_concurrent_sessions）",
+      "argv": [
+        "(fixture) 写 .orch/roles/no-concurrency.yaml（省略 max_concurrent_sessions）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-04\\.orch\\roles\\no-concurrency.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-04",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 91,
+      "stdout": "校验资产 27 个：1 个不合法\n- roles/no-concurrency.yaml：缺少必填字段：max_concurrent_sessions（ROLE_SCHEMA_MISSING）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-04",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 93,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_SCHEMA_MISSING\",\n      \"file\": \"roles/no-concurrency.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"max_concurrent_sessions\",\n      \"line\": null,\n      \"detail\": \"缺少必填字段：max_concurrent_sessions\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "total": 1,
+  "perFile": [
+    {
+      "file": "src/registry/assets.js",
+      "hits": 0
+    },
+    {
+      "file": "src/registry/index.js",
+      "hits": 0
+    },
+    {
+      "file": "src/registry/role-instances.js",
+      "hits": 0
+    },
+    {
+      "file": "src/registry/role-schema.js",
+      "hits": 1
+    },
+    {
+      "file": "src/registry/skill-file.js",
+      "hits": 0
+    },
+    {
+      "file": "src/registry/yaml-lite.js",
+      "hits": 0
+    }
+  ]
+}

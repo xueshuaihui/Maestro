@@ -1,0 +1,36 @@
+{
+  "ac": "AC-23",
+  "title": "未开始角色为可用",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:52.878Z",
+  "finishedAt": "2026-11-08T12:21:54.430Z",
+  "durationMs": 1552,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-23",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-23"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-23",
+      "instanceId": "INST-001",
+      "state": "running"
+    }
+  ],
+  "events": 25,
+  "eventsNote": null,
+  "checks": 8,
+  "notes": [],
+  "extraFiles": [
+    "AC-23.payload.json"
+  ]
+}

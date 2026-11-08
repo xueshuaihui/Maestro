@@ -1,0 +1,59 @@
+$ "(fixture) 写 A（artifact_type: slides）"
+# label=夹具：写 A（artifact_type: slides） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-07\.orch\roles\bad-artifact.yaml
+
+$ "(fixture) 写 B（max_concurrent_sessions: 9）"
+# label=夹具：写 B（max_concurrent_sessions: 9） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-07\.orch\roles\bad-max.yaml
+
+$ "(fixture) 写 C（side_effect: admin）"
+# label=夹具：写 C（side_effect: admin） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-07\.orch\roles\bad-side-effect.yaml
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-07 exit=1 99ms
+校验资产 29 个：3 个不合法
+- roles/bad-artifact.yaml：产物类型取值非法：slides；合法取值：code / document / dataset / report（ROLE_ARTIFACT_TYPE_INVALID）
+- roles/bad-max.yaml：并发上限取值非法：9；合法范围：1~5 的整数（ROLE_MAX_CONCURRENT_INVALID）
+- roles/bad-side-effect.yaml：副作用等级取值非法：admin；合法取值：none / read / write / exec（ROLE_SIDE_EFFECT_INVALID）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-07 exit=1 104ms
+{
+  "counts": {
+    "assets": 29,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 3
+  },
+  "errors": [
+    {
+      "code": "ROLE_ARTIFACT_TYPE_INVALID",
+      "file": "roles/bad-artifact.yaml",
+      "scope": "role",
+      "field": "artifact_type",
+      "line": null,
+      "detail": "产物类型取值非法：slides；合法取值：code / document / dataset / report"
+    },
+    {
+      "code": "ROLE_MAX_CONCURRENT_INVALID",
+      "file": "roles/bad-max.yaml",
+      "scope": "role",
+      "field": "max_concurrent_sessions",
+      "line": null,
+      "detail": "并发上限取值非法：9；合法范围：1~5 的整数"
+    },
+    {
+      "code": "ROLE_SIDE_EFFECT_INVALID",
+      "file": "roles/bad-side-effect.yaml",
+      "scope": "role",
+      "field": "side_effect",
+      "line": null,
+      "detail": "副作用等级取值非法：admin；合法取值：none / read / write / exec"
+    }
+  ]
+}
+

@@ -1,0 +1,5 @@
+角色 3 个（内置 3 · 项目 0）
+- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1
+- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1
+- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1
+

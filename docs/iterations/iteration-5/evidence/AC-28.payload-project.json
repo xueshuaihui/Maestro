@@ -1,0 +1,52 @@
+{
+  "role": {
+    "id": "writer",
+    "name": "撰写者",
+    "group": "writing",
+    "groupLabel": "内容创作",
+    "artifactType": "document",
+    "sideEffect": "write",
+    "skills": [
+      "doc-draft"
+    ],
+    "maxConcurrentSessions": 3,
+    "source": "project",
+    "file": ".orch/roles/writer.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "task-loop",
+    "state": "running",
+    "roleToSessions": {
+      "researcher": [
+        "mock-sess-31892-1"
+      ],
+      "writer": [
+        "mock-sess-2400-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "writer",
+    "roleInstanceId": "RI-writer",
+    "status": "busy",
+    "statusReason": null,
+    "activeSessions": [
+      "mock-sess-2400-1"
+    ],
+    "servingNodes": [
+      "T-002"
+    ],
+    "hostIcons": [
+      "dsh"
+    ],
+    "maxConcurrentSessions": 3,
+    "lastAction": {
+      "nodeId": "T-002",
+      "round": 1,
+      "maxRounds": 2,
+      "state": "running",
+      "stateSince": "2026-11-08T12:22:08.353Z"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "ok": false,
+  "dirs": [],
+  "files": [
+    "src/registry/role-schema.js"
+  ],
+  "forbidden": [
+    "coordinator"
+  ],
+  "scannedFiles": 1,
+  "hits": [
+    {
+      "dir": null,
+      "file": "src/registry/role-schema.js",
+      "line": 16,
+      "word": "coordinator",
+      "snippet": "export const GROUPS = Object.freeze(['coordinator', 'research', 'writing', 'coding', 'ops']);"
+    }
+  ]
+}

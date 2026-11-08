@@ -1,0 +1,27 @@
+$ "(fixture) 写坏角色 .orch/roles/ghost-skill.yaml（技能不存在）"
+# label=夹具：写坏角色 .orch/roles/ghost-skill.yaml（技能不存在） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-36\.orch\roles\ghost-skill.yaml
+
+$ "(fixture) 写好角色 .orch/roles/researcher.yaml"
+# label=夹具：写好角色 .orch/roles/researcher.yaml cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-36\.orch\roles\researcher.yaml
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate researcher
+# label=orch role validate researcher cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-36 exit=0 115ms
+校验资产 1 个：全部通过（角色 1 · 技能 0）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate researcher --format json
+# label=orch role validate researcher --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-36 exit=0 97ms
+{
+  "counts": {
+    "assets": 1,
+    "roles": 1,
+    "skills": 0,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+

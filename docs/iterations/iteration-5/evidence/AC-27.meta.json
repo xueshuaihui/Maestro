@@ -1,0 +1,38 @@
+{
+  "ac": "AC-27",
+  "title": "实例结束后角色为已关闭且仍可查",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:05.452Z",
+  "finishedAt": "2026-11-08T12:22:06.253Z",
+  "durationMs": 801,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-27",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-27"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-27",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "events": 14,
+  "eventsNote": null,
+  "checks": 10,
+  "notes": [],
+  "extraFiles": [
+    "AC-27.run.txt",
+    "AC-27.show.txt",
+    "AC-27.payload.json"
+  ]
+}

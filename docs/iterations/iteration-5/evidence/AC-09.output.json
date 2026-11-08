@@ -1,0 +1,142 @@
+{
+  "ac": "AC-09",
+  "title": "YAML 语法错误带行号",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 原因码 YAML_PARSE_FAILED（期望含 \"YAML_PARSE_FAILED\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：1 个不合法\n- roles/broken.yaml：第 4 行无法解析：缩进不一致（YAML_PARSE_FAILED）\n"
+    },
+    {
+      "text": "Then 明细含「第 4 行」（期望含 \"第 4 行\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：1 个不合法\n- roles/broken.yaml：第 4 行无法解析：缩进不一致（YAML_PARSE_FAILED）\n"
+    },
+    {
+      "text": "Then 行文本逐字（期望 \"- roles/broken.yaml：第 4 行无法解析：缩进不一致（YAML_PARSE_FAILED）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- roles/broken.yaml：第 4 行无法解析：缩进不一致（YAML_PARSE_FAILED）\""
+    },
+    {
+      "text": "机检：errors[0].code === YAML_PARSE_FAILED（期望 \"YAML_PARSE_FAILED\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"YAML_PARSE_FAILED\""
+    },
+    {
+      "text": "机检：errors[0].line === 4（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "机检：counts.roles 仍为 16（A-7 的六键表，不是 A-6 的 total）（期望 16）",
+      "ok": true,
+      "blocked": false,
+      "actual": "16"
+    },
+    {
+      "text": "机检：该文件不进入角色表（list 里没有 broken）",
+      "ok": true,
+      "blocked": false,
+      "actual": "list 输出无 broken 行"
+    },
+    {
+      "text": "Then 其它 16 个角色不受影响（首行仍是 16 个内置）（期望 \"角色 16 个（内置 16 · 项目 0）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"角色 16 个（内置 16 · 项目 0）\""
+    },
+    {
+      "text": "机检：list 仍是 18 行（首行 + 16 行 + 末行提示）（期望 18）",
+      "ok": true,
+      "blocked": false,
+      "actual": "18"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 .orch/roles/broken.yaml（第 4 行非法缩进）",
+      "argv": [
+        "(fixture) 写 .orch/roles/broken.yaml（第 4 行非法缩进）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-09\\.orch\\roles\\broken.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-09",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "校验资产 27 个：1 个不合法\n- roles/broken.yaml：第 4 行无法解析：缩进不一致（YAML_PARSE_FAILED）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-09",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 105,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"YAML_PARSE_FAILED\",\n      \"file\": \"roles/broken.yaml\",\n      \"scope\": \"role\",\n      \"field\": null,\n      \"line\": 4,\n      \"detail\": \"第 4 行无法解析：缩进不一致\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-09",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 113,
+      "stdout": "角色 16 个（内置 16 · 项目 0）\n- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\n- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\n- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\n- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\n- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\n- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\n- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\n- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\n- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\n- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\n- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\n- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\n- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\n1 个资产未通过校验，执行 orch role validate 查看\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-09",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "角色 16 个（内置 16 · 项目 0）\n- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\n- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\n- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\n- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\n- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\n- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\n- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\n- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\n- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\n- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\n- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\n- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\n- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\n1 个资产未通过校验，执行 orch role validate 查看\n",
+      "stderr": ""
+    }
+  ]
+}

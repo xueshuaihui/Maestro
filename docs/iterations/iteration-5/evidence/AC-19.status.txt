@@ -1,0 +1,132 @@
+$ git worktree add --detach C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19-baseline 1490f6d
+# label=git worktree add --detach <base> 1490f6d（挂 I1.3 基线代码树） cwd=D:\WWW\Maestro exit=0 828ms
+HEAD is now at 1490f6d docs(templates): 执行模板独立审核 — 纠正 4 处事实错误并补齐可复核性
+
+--- stderr ---
+Preparing worktree (detached HEAD 1490f6d)
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19-baseline\bin\orch.js run --cwd ./work --task "写一段 200 字的产品说明，保存到 out/intro.md" --host dsh
+# label=orch run（single，基线 1490f6d） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19 exit=0 551ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-14072-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 已完成 · 耗时 1s
+交接包 HO-001  已构造   20:21:34
+交接包 HO-001  已投递   20:21:34
+交接包 HO-001  已接受   20:21:34
+交接包 HO-001  已完成   20:21:34
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./work --task "写一段 200 字的产品说明，保存到 out/intro.md" --host dsh
+# label=orch run（single，当前 HEAD） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19 exit=0 534ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-24028-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 已完成 · 耗时 1s
+交接包 HO-001  已构造   20:21:35
+交接包 HO-001  已投递   20:21:35
+交接包 HO-001  已接受   20:21:35
+交接包 HO-001  已完成   20:21:35
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19-baseline\test\fixtures\code-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19 --scenario pass
+# label=orch run（code-loop，基线 1490f6d） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19-baseline exit=0 1257ms
+{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-19","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-19\\demo-code-pass","scenario":"pass","resolvedScenario":"pass","stopAfter":null,"keep":false,"released":false,"target":"exit","exitCode":0,"instanceId":"INST-001","state":"completed","nodes":[{"nodeId":"T-001","round":1,"state":"done"},{"nodeId":"T-002","round":1,"state":"done"}],"handoffs":1,"escalations":[],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":892,"checks":[{"name":"state=completed","ok":true,"detail":"completed"},{"name":"两节点 done","ok":true},{"name":"handoffs=1 forward","ok":true}]}
+
+--- stderr ---
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-33224-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过
+交接包 HO-001  开发→测试  已构造   20:21:36
+交接包 HO-001  开发→测试  已投递   20:21:36
+交接包 HO-001  开发→测试  已接受   20:21:36
+交接包 HO-001  开发→测试  已完成   20:21:36
+升级 —
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\code-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19 --scenario pass
+# label=orch run（code-loop，当前 HEAD） cwd=D:\WWW\Maestro exit=0 1271ms
+{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-19","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-19\\demo-code-pass","scenario":"pass","resolvedScenario":"pass","stopAfter":null,"keep":false,"released":false,"target":"exit","exitCode":0,"instanceId":"INST-001","state":"completed","nodes":[{"nodeId":"T-001","round":1,"state":"done"},{"nodeId":"T-002","round":1,"state":"done"}],"handoffs":1,"escalations":[],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":892,"checks":[{"name":"state=completed","ok":true,"detail":"completed"},{"name":"两节点 done","ok":true},{"name":"handoffs=1 forward","ok":true}]}
+
+--- stderr ---
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-35396-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过
+交接包 HO-001  开发→测试  已构造   20:21:37
+交接包 HO-001  开发→测试  已投递   20:21:38
+交接包 HO-001  开发→测试  已接受   20:21:38
+交接包 HO-001  开发→测试  已完成   20:21:38
+升级 —
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19-baseline\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19 --scenario doc-pass
+# label=orch run（task-loop，基线 1490f6d） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19-baseline exit=0 1577ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-35480-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md
+节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过
+交接包 HO-001  研究员→撰写者  已构造   20:21:39
+交接包 HO-001  研究员→撰写者  已投递   20:21:39
+交接包 HO-001  研究员→撰写者  已接受   20:21:39
+交接包 HO-001  研究员→撰写者  已完成   20:21:39
+交接包 HO-002  撰写者→审核者  已构造   20:21:39
+交接包 HO-002  撰写者→审核者  已投递   20:21:40
+交接包 HO-002  撰写者→审核者  已接受   20:21:40
+交接包 HO-002  撰写者→审核者  已完成   20:21:40
+升级 —
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\task-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-19 --scenario doc-pass
+# label=orch run（task-loop，当前 HEAD） cwd=D:\WWW\Maestro exit=0 1568ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-12888-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md
+节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过
+交接包 HO-001  研究员→撰写者  已构造   20:21:41
+交接包 HO-001  研究员→撰写者  已投递   20:21:41
+交接包 HO-001  研究员→撰写者  已接受   20:21:41
+交接包 HO-001  研究员→撰写者  已完成   20:21:41
+交接包 HO-002  撰写者→审核者  已构造   20:21:41
+交接包 HO-002  撰写者→审核者  已投递   20:21:41
+交接包 HO-002  撰写者→审核者  已接受   20:21:41
+交接包 HO-002  撰写者→审核者  已完成   20:21:42
+升级 —
+

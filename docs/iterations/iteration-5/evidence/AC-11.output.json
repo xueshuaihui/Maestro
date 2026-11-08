@@ -1,0 +1,94 @@
+{
+  "ac": "AC-11",
+  "title": "坏资产不阻塞列表但以失败退出",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 首行计数仍为「角色 16 个（内置 16 · 项目 0）」（期望逐字 \"角色 16 个（内置 16 · 项目 0）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"角色 16 个（内置 16 · 项目 0）\""
+    },
+    {
+      "text": "Then 仍列出 16 个合法角色（与 A-2 逐字一致）（期望 [\"- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\",\"- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\",\"- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\",\"- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\",\"- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\",\"- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\",\"- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\",\"- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\",\"- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\",\"- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\",\"- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\",\"- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\",\"- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\",\"- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\",\"- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\",\"- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\",\"- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\",\"- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\",\"- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\",\"- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\",\"- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\",\"- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\",\"- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\",\"- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\",\"- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\",\"- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\",\"- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\",\"- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\",\"- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\",\"- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\",\"- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\"]"
+    },
+    {
+      "text": "Then 末行是「1 个资产未通过校验，执行 orch role validate 查看」（期望逐字 \"1 个资产未通过校验，执行 orch role validate 查看\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"1 个资产未通过校验，执行 orch role validate 查看\""
+    },
+    {
+      "text": "机检：行数 18（首行 + 16 行 + 末行）（期望 18）",
+      "ok": true,
+      "blocked": false,
+      "actual": "18"
+    },
+    {
+      "text": "机检：counts.invalid === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：roles 长度 16（期望 16）",
+      "ok": true,
+      "blocked": false,
+      "actual": "16"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 .orch/roles/broken.yaml（第 4 行 4 空格缩进、无父可挂）",
+      "argv": [
+        "(fixture) 写 .orch/roles/broken.yaml（第 4 行 4 空格缩进、无父可挂）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-11\\.orch\\roles\\broken.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-11",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 92,
+      "stdout": "角色 16 个（内置 16 · 项目 0）\n- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\n- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\n- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\n- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\n- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\n- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\n- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\n- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\n- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\n- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\n- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\n- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\n- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\n1 个资产未通过校验，执行 orch role validate 查看\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-11",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 124,
+      "stdout": "{\n  \"counts\": {\n    \"total\": 16,\n    \"builtin\": 16,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"groups\": [\n    {\n      \"group\": \"coordinator\",\n      \"label\": \"通用协调\",\n      \"count\": 5\n    },\n    {\n      \"group\": \"research\",\n      \"label\": \"研究分析\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"writing\",\n      \"label\": \"内容创作\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"coding\",\n      \"label\": \"编码工程\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"ops\",\n      \"label\": \"业务运营\",\n      \"count\": 2\n    }\n  ],\n  \"roles\": [\n    {\n      \"id\": \"arbiter\",\n      \"name\": \"裁决者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"none\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/arbiter.yaml\"\n    },\n    {\n      \"id\": \"coordinator\",\n      \"name\": \"协调者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"none\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/coordinator.yaml\"\n    },\n    {\n      \"id\": \"planner\",\n      \"name\": \"规划者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"coordination\",\n        \"research-brief\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/planner.yaml\"\n    },\n    {\n      \"id\": \"summarizer\",\n      \"name\": \"汇总者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/summarizer.yaml\"\n    },\n    {\n      \"id\": \"worker\",\n      \"name\": \"执行者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/worker.yaml\"\n    },\n    {\n      \"id\": \"data-analyst\",\n      \"name\": \"数据分析师\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"dataset\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"data-analysis\",\n        \"fact-check\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/data-analyst.yaml\"\n    },\n    {\n      \"id\": \"fact-checker\",\n      \"name\": \"事实核查员\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"fact-check\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/fact-checker.yaml\"\n    },\n    {\n      \"id\": \"researcher\",\n      \"name\": \"研究员\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"research-brief\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/researcher.yaml\"\n    },\n    {\n      \"id\": \"editor\",\n      \"name\": \"编辑\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\",\n        \"doc-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/editor.yaml\"\n    },\n    {\n      \"id\": \"reviewer\",\n      \"name\": \"审核者\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"doc-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/reviewer.yaml\"\n    },\n    {\n      \"id\": \"writer\",\n      \"name\": \"撰写者\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/writer.yaml\"\n    },\n    {\n      \"id\": \"code-reviewer\",\n      \"name\": \"代码审查\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"code-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/code-reviewer.yaml\"\n    },\n    {\n      \"id\": \"developer\",\n      \"name\": \"开发\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"code-change\",\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/developer.yaml\"\n    },\n    {\n      \"id\": \"tester\",\n      \"name\": \"测试\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"exec\",\n      \"skills\": [\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/tester.yaml\"\n    },\n    {\n      \"id\": \"compliance-reviewer\",\n      \"name\": \"合规审查者\",\n      \"group\": \"ops\",\n      \"groupLabel\": \"业务运营\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"compliance-check\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/compliance-reviewer.yaml\"\n    },\n    {\n      \"id\": \"requirement-clarifier\",\n      \"name\": \"需求澄清者\",\n      \"group\": \"ops\",\n      \"groupLabel\": \"业务运营\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\",\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/requirement-clarifier.yaml\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "ac": "AC-06",
+  "title": "分组不在五组被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 原因码 ROLE_GROUP_INVALID（期望含 \"ROLE_GROUP_INVALID\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：1 个不合法\n- roles/bad-group.yaml：分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops（ROLE_GROUP_INVALID）\n"
+    },
+    {
+      "text": "机检：errors[0].code === ROLE_GROUP_INVALID（期望 \"ROLE_GROUP_INVALID\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"ROLE_GROUP_INVALID\""
+    },
+    {
+      "text": "机检：明细列出合法取值 coordinator（期望含 \"coordinator\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：明细列出合法取值 research（期望含 \"research\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：明细列出合法取值 writing（期望含 \"writing\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：明细列出合法取值 coding（期望含 \"coding\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：明细列出合法取值 ops（期望含 \"ops\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    },
+    {
+      "text": "机检：明细逐字（五个取值依次列出）（期望 \"分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 .orch/roles/bad-group.yaml（group: marketing）",
+      "argv": [
+        "(fixture) 写 .orch/roles/bad-group.yaml（group: marketing）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-06\\.orch\\roles\\bad-group.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-06",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 119,
+      "stdout": "校验资产 27 个：1 个不合法\n- roles/bad-group.yaml：分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops（ROLE_GROUP_INVALID）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-06",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_GROUP_INVALID\",\n      \"file\": \"roles/bad-group.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"group\",\n      \"line\": null,\n      \"detail\": \"分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

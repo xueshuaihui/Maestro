@@ -1,0 +1,5 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show no-such-role
+# label=orch role show no-such-role cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-34 exit=1 90ms
+找不到角色：no-such-role
+可用角色：执行 orch role list 查看
+

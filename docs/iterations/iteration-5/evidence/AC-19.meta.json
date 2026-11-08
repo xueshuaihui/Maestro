@@ -1,0 +1,51 @@
+{
+  "ac": "AC-19",
+  "title": "新增角色不改变三条主链输出",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:32.759Z",
+  "finishedAt": "2026-11-08T12:21:43.112Z",
+  "durationMs": 10353,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-19",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-19"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-19",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "events": 36,
+  "eventsNote": null,
+  "checks": 27,
+  "notes": [
+    "单条限时由 90s 放宽到 240s：本条要跑 3 条主链 × 2 份代码树 = 6 次完整运行。模板 §3.2 的 90s 用于防挂死，本条按实测耗时登记为已授权例外（见 probe/acc5-cases/README.md）。",
+    "比对口径：① 需求原文的两条归一化（`已运行 Ns` 与 `HH:mm:ss`）原样执行；② 另加夹具侧易变量（`mock-sess-<pid>-<n>` 会话号、`耗时 Ns`）——同一场景两次运行必然不同，与产品是否回归无关，并逐条证明「只用需求两条时」的剩余差异全部落在这两类变量上；③ 驱动自己的收尾 JSON 行（`{\"ok\":true,\"root\":…}`）是夹具自述，不属产品终端输出，已剔除（原始输出仍整段落盘）。",
+    "基线工作树已移除（`git worktree remove --force` + `prune`），仓库工作区未被改动。"
+  ],
+  "extraFiles": [
+    "AC-19.single-baseline.txt",
+    "AC-19.single-current.txt",
+    "AC-19.single-diff-required.txt",
+    "AC-19.single-diff-normalized.txt",
+    "AC-19.code-loop-baseline.txt",
+    "AC-19.code-loop-current.txt",
+    "AC-19.code-loop-diff-required.txt",
+    "AC-19.code-loop-diff-normalized.txt",
+    "AC-19.task-loop-baseline.txt",
+    "AC-19.task-loop-current.txt",
+    "AC-19.task-loop-diff-required.txt",
+    "AC-19.task-loop-diff-normalized.txt"
+  ]
+}

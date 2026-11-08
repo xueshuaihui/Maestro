@@ -1,0 +1,3 @@
+校验资产 27 个：1 个不合法
+- skills/half-done/SKILL.md：技能目录缺少 SKILL.md：half-done（SKILL_FILE_MISSING）
+

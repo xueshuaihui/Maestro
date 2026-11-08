@@ -1,0 +1,81 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\code-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-22 --scenario backflow --prepare-only --reset
+# label=夹具：code-loop 驱动 --prepare-only --reset（备 .mock 现场） cwd=D:\WWW\Maestro exit=0 84ms
+{"ok":true,"prepareOnly":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-22","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-22\\demo-code-pass","scenario":"backflow","resolvedScenario":"backflow","cursorPath":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-22\\.mock\\cursor.json","hostPath":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-22\\.orch\\hosts\\mock.json","cursor":{"next":1},"host":{"id":"mock","transport":"stdio","launch":{"command":"C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe","args":["D:\\WWW\\Maestro\\test\\fixtures\\mock-acp-agent.js","--root","C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-22","--scenario","backflow"]}}}
+
+
+$ "(fixture) 写 .orch/hosts/dsh.json（launch 指向仓库内 mock agent，scenario=backflow）"
+# label=夹具：写 .orch/hosts/dsh.json（launch 指向仓库内 mock agent，scenario=backflow） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-22\.orch\hosts\dsh.json
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show tester --instance INST-001 --format json
+# label=orch role show tester --instance INST-001 --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-22 exit=0 103ms
+{
+  "role": {
+    "id": "tester",
+    "name": "测试",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "exec",
+    "skills": [
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/tester.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "code-loop",
+    "state": "running",
+    "roleToSessions": {
+      "developer": [
+        "mock-sess-15668-1"
+      ],
+      "tester": [
+        "mock-sess-15388-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "tester",
+    "roleInstanceId": "RI-tester",
+    "status": "busy",
+    "statusReason": null,
+    "activeSessions": [
+      "mock-sess-15388-1"
+    ],
+    "servingNodes": [
+      "T-002"
+    ],
+    "hostIcons": [
+      "dsh"
+    ],
+    "maxConcurrentSessions": 1,
+    "lastAction": {
+      "nodeId": "T-002",
+      "round": 1,
+      "maxRounds": 2,
+      "state": "running",
+      "stateSince": "2026-11-08T12:21:50.916Z"
+    }
+  }
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo-code --task "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js" --template code-loop --host dsh
+# label=orch run --template code-loop --host dsh（MAESTRO_TEST_PAUSE=after_accepted:T-002，长驻） cwd=D:\WWW\Maestro exit=1 1500ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-15668-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+实例 INST-001 · 已中断 ｜ 核心已停止
+

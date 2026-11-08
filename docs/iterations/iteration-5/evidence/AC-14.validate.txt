@@ -1,0 +1,4 @@
+校验资产 27 个：1 个不合法
+- skills/quote/SKILL.md：缺少必填字段：summary（SKILL_SCHEMA_MISSING）
+- skills/quote/SKILL.md：技能 id 与目录名不一致：目录 quote / 声明 quoting（SKILL_ID_MISMATCH）
+

@@ -1,0 +1,48 @@
+{
+  "role": {
+    "id": "developer",
+    "name": "开发",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "write",
+    "skills": [
+      "code-change",
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/developer.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "code-loop",
+    "state": "running",
+    "roleToSessions": {
+      "developer": [
+        "mock-sess-18056-1",
+        "mock-sess-35152-1"
+      ],
+      "tester": [
+        "mock-sess-27004-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "developer",
+    "roleInstanceId": "RI-developer",
+    "status": "cooldown",
+    "statusReason": null,
+    "activeSessions": [],
+    "servingNodes": [],
+    "hostIcons": [],
+    "maxConcurrentSessions": 1,
+    "lastAction": {
+      "nodeId": "T-001",
+      "round": 2,
+      "maxRounds": 2,
+      "state": "done",
+      "stateSince": "2026-11-08T12:21:56.746Z"
+    }
+  }
+}
