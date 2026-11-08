@@ -44,7 +44,7 @@ S0 需求定稿 ──► S1 拆分 ──► S2 实现 ──► S3 验收 ─�
 |---|---|
 | 运行时 | Node ≥ 22；Windows + Git Bash；零第三方运行时依赖（`dependencies` 恒为 `{}`） |
 | 测试命令 | `node --test "test/**/*.test.js"`（`npm test` / `node --test test/` 会报 `MODULE_NOT_FOUND`） |
-| 架构扫描 | `node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid <本迭代禁词表>` —— **英文注释也会命中** |
+| 架构扫描 | `node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid <本迭代禁词表>` —— **脚本默认表只有 I1.2 四词，必须显式传全表**（当前 11 词并集：I1.2 的 `code-loop,developer,tester,coordinator` + I1.3 的 `task-loop,researcher,writer,reviewer,研究员,撰写者,审核者`）；英文注释也会命中 |
 | 夹具现场 | 项目根一律放 `%TEMP%`，**不放仓库内**；`NODE_ENV=test` 必注入；同进程串行场景 ≤ 10 个 |
 | 提示词产物点 | `src/core/advance.js` 的 `planAdvance`（经 `plan.promptText`），不是 orchestrator 兜底分支 |
 | 中文唯一来源 | `src/cli/labels.js` |
@@ -62,12 +62,16 @@ S0 需求定稿 ──► S1 拆分 ──► S2 实现 ──► S3 验收 ─�
 3. 每条 AC 至少有 `机检：` / `夹具：` / `架构检查：` 之一作为判定锚点。
 4. BR 双向覆盖：每条 BR 至少被一条 AC 引用，AC 引用的 BR 都真实存在。
 5. 附录 A 的输出基线覆盖所有带文案的 AC；附录 D 的实现约束能直接指导编码。
-6. 附录 D 中「授权断言修改清单」列全了要改的测试文件与位置。
+6. 附录 D 中「授权断言修改清单」**点名文件 + 行号 + 只改哪一段**。新行为打破既有精确断言时一律扩清单，不许为保住回归指标而弱化功能。
 7. 无阻塞实现的「假设」状态未决问题；前置条件里的命令与夹具都真实存在。
 8. 范围外清单明确（哪些留给后续迭代）。
 9. 全量测试当前基线数字已记录（`<基线>`），且为全绿。
+10. **每条 AC 的 Given 可构造**：禁止「历史会话为空闲或已隔离」这类无法复现的状态；必须写明独立项目根 + `NODE_ENV=test` 接缝（`test.escalate` / `test.handoff` / `test.delivery`）+ 具体步骤。
+11. **同一编号跨 AC 语义不漂移**：如 `INST-001` / `SES-001` 被复用、`reject` 与 `deny` 混用 → 术语表单列一行区分。
+12. **架构检查必须给可执行命令**：AC 里要写出完整的 `--forbid` 词表，不写「执行架构扫描」这种无法复核的话。
 
-> 依据：I1.4 交接时机械扫描确认需求底子（67 AC 连续、46 BR 全覆盖），真正缺口只是定稿与拆分两道手续。
+> 依据：I1.4 需求 v23 经过 **6 轮独立评审**（每轮新开一个干净上下文的 SubAgent，只给需求文件路径 + 判定标准、不做引导；1~5 轮 FAIL，第 6 轮 PASS）。上面 6 / 10 / 11 / 12 四条，正是那 6 轮里反复出现的同类阻塞项。
+> 拆分前机械扫描（AC 连续、Then 齐全、BR 全覆盖）只是准入的下限，不是评审的替代品。
 
 ### 1.2 「完善需求」只能补，不能减
 
@@ -529,5 +533,6 @@ node test/fixtures/<driver>.mjs --root "$TEMP/i<N>-smoke/<场景>" --scenario <�
 | 一次最多 2 个 Agent、分批落盘 | I1.3 一次派 3 个大 Agent 触发 429 |
 | 证据分级、不放宽断言、阻塞写法 | 阶段零约定 + I1.3 报告 §3 |
 | 全部硬约束（§5） | I1.1~I1.3 验收期缺陷与阶段零锁定约束 |
+| DoR 的 6/10/11/12 条、禁词表显式传全、六轮独立评审做法 | I1.4 需求 v23 的六轮评审修复（v17 → v23，AC 由 67 增至 70） |
 
 > 本模板不新增需求条目，也不替代 `requirement-template.md`。两者冲突时以需求模板与需求原文为准；执行流程本身以本文件为准。
