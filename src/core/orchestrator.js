@@ -1438,7 +1438,11 @@ export function createOrchestrator({
           to: 'completed',
         });
       }
-      await quiesceSession(ctx, 'run.completed');
+      // 成功收尾走 idleSession（与 code-loop / task-loop 的成功收尾一致）：
+      // quiesceSession 会把会话置 quarantined=true，而那是「取消/失败后迟到帧一律丢弃」的隔离语义，
+      // 隔离会话按需求 D-5/C-06 要计入活跃会话，终态实例于是会显示「活跃会话 1/1」（AC-27 冲突）。
+      // 迟到帧的丢弃由 ctx.quiescing 保证，与本标志无关。
+      await idleSession(ctx, 'run.completed');
       ctx.node.endedAt = iso();
       await saveLive(ctx);
       await cleanup(ctx);
