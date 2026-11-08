@@ -15,7 +15,11 @@ import path from 'node:path';
 
 import { createClient as createDefaultClient } from '../daemon/client.js';
 import { corruptPath } from '../persistence/paths.js';
+import { loadRegistry } from '../registry/index.js';
+import { getGraph } from '../templates/index.js';
+import { ROLE_CLI_TEXT } from './labels.js';
 import * as render from './render.js';
+import { firstRegistryDetail, roleCommand } from './roles.js';
 
 /** 会话行刷新间隔（AC-03：时长递增；NFR-02：状态变化 1s 内反映）。 */
 const POLL_INTERVAL_MS = 1000;
@@ -40,6 +44,8 @@ const PREFLIGHT_CODES = new Set([
   'CORE_START_FAILED',
   // 需求 M-9 / C-01：工作区建不起来属于「开始前失败」，与 DSH 起不来同类（退出码 3）
   'WORKSPACE_INIT_FAILED',
+  // I1.5 C-10：注册表不合法也属于「开始前失败」，退出 3，且不连核心
+  'REGISTRY_INVALID',
 ]);
 
 /**
@@ -48,9 +54,26 @@ const PREFLIGHT_CODES = new Set([
  */
 const CONNECTION_LOST_CODES = new Set(['IPC_CLOSED', 'IPC_TIMEOUT', 'IPC_BAD_FRAME', 'CORE_NOT_RUNNING']);
 
-const COMMANDS = new Set(['run', 'status', 'cancel', 'core']);
+const COMMANDS = new Set(['run', 'status', 'cancel', 'core', 'role']);
 const BOOLEAN_FLAGS = new Set(['events']);
-const VALUE_FLAGS = new Set(['cwd', 'task', 'instance', 'project', 'generation', 'template', 'host']);
+const VALUE_FLAGS = new Set([
+  'cwd',
+  'task',
+  'instance',
+  'project',
+  'generation',
+  'template',
+  'host',
+  'group',
+  'format'
+]);
+/** `role` 的子命令；其余命令没有第二级。 */
+const ROLE_SUBS = new Set(['list', 'show', 'validate']);
+/**
+ * 这两个标志只属于 `role`（M-9）。加进 `VALUE_FLAGS` 只是让解析阶段认识它们，
+ * 别的命令照样按 `未知参数：--<key>` 拒绝 —— 不能因为共享词表就被静默忽略。
+ */
+const ROLE_ONLY_FLAGS = new Set(['group', 'format']);
 
 // ---------------------------------------------------------------- 参数解析
 
@@ -71,10 +94,19 @@ export function parseArgs(argv) {
   }
 
   let sub = null;
+  let positional = null;
   if (command === 'core') {
     sub = tokens.shift() ?? null;
     if (sub === null || sub.startsWith('--')) {
       return usage('core 需要子命令：stop');
+    }
+  }
+  if (command === 'role') {
+    sub = tokens.shift() ?? null;
+    if (sub === null || sub.startsWith('--') || !ROLE_SUBS.has(sub)) {
+      return usage(
+        fillTemplate(ROLE_CLI_TEXT.usageReason.unknownRoleSub, { sub: sub ?? '' })
+      );
     }
   }
 
@@ -83,6 +115,12 @@ export function parseArgs(argv) {
   for (let i = 0; i < tokens.length; i += 1) {
     const token = tokens[i];
     if (typeof token !== 'string' || !token.startsWith('--')) {
+      // `role` 有一个可选位置参数（`show` 的角色 id / `validate` 的角色 id）；
+      // 其余命令仍然一个都不接受。
+      if (command === 'role' && positional === null && typeof token === 'string' && token.length > 0) {
+        positional = token;
+        continue;
+      }
       return usage(`多余的参数：${token}`);
     }
 
@@ -98,6 +136,9 @@ export function parseArgs(argv) {
       continue;
     }
     if (!VALUE_FLAGS.has(key)) {
+      return usage(`未知参数：--${key}`);
+    }
+    if (ROLE_ONLY_FLAGS.has(key) && command !== 'role') {
       return usage(`未知参数：--${key}`);
     }
 
@@ -124,8 +165,37 @@ export function parseArgs(argv) {
   if (command === 'core' && sub !== 'stop') {
     return usage(`未知的 core 子命令：${sub}`);
   }
+  if (command === 'role') {
+    if (sub === 'show' && positional === null) {
+      return usage(ROLE_CLI_TEXT.usageReason.missingRoleId);
+    }
+    if (sub !== 'list' && flags.group !== undefined) {
+      return usage(
+        fillTemplate(ROLE_CLI_TEXT.usageReason.flagNotApplicable, { key: 'group', sub })
+      );
+    }
+    if (sub !== 'list' && sub !== 'show' && flags.instance !== undefined) {
+      return usage(
+        fillTemplate(ROLE_CLI_TEXT.usageReason.flagNotApplicable, { key: 'instance', sub })
+      );
+    }
+    if (flags.format !== undefined && flags.format !== 'text' && flags.format !== 'json') {
+      return usage(ROLE_CLI_TEXT.usageReason.badFormat);
+    }
+  }
 
-  return { ok: true, command, sub, flags };
+  // `positional` 只在 role 上出现：其余命令的返回对象字段集合一个都不变。
+  const result = { ok: true, command, sub, flags };
+  if (command === 'role') result.positional = positional;
+  return result;
+}
+
+/** 占位符替换（`{name}`）。只有 role 的用法文案需要它。 */
+function fillTemplate(template, vars) {
+  return String(template).replace(/\{(\w+)\}/g, (match, key) => {
+    const value = vars?.[key];
+    return value === undefined || value === null ? '' : String(value);
+  });
 }
 
 function usage(message) {
@@ -172,6 +242,7 @@ export async function main(argv, options = {}) {
     if (parsed.command === 'run') code = await runCommand(parsed.flags, ctx);
     else if (parsed.command === 'status') code = await statusCommand(parsed.flags, ctx);
     else if (parsed.command === 'cancel') code = await cancelCommand(parsed.flags, ctx);
+    else if (parsed.command === 'role') code = await roleCommand(parsed, ctx);
     else code = await coreCommand(parsed.sub, ctx);
   } catch (error) {
     // 渲染层与 IPC 都不应该抛；真抛了也不能吞成“成功”。
@@ -199,6 +270,21 @@ async function flushStdout() {
 
 async function runCommand(flags, ctx) {
   const out = ctx.out;
+
+  // C-10：两步预检都在 `createClient` 之前 —— 先建 client 就已经把核心拉起来了，
+  // 「不启动核心」的验收（AC-10）用「一调 createClient 就 assert.fail」的桩来验。
+  // ① 模板名（沿用既有 `getGraph` 判定与 `TEMPLATE_UNKNOWN` 文案）
+  if (typeof flags.template === 'string' && getGraph(flags.template) === null) {
+    out(render.renderError({ code: 'TEMPLATE_UNKNOWN', params: { name: flags.template } }));
+    return exitCodeFor('TEMPLATE_UNKNOWN');
+  }
+  // ② 注册表（明细由 `roles.js` 的同一函数组装，与 A-4 一行同版式、不带 `- `）
+  const registry = loadRegistry({ root: ctx.cwd });
+  if (!registry.ok) {
+    out(render.renderRegistryInvalid(firstRegistryDetail(registry.errors)));
+    return EXIT_PREFLIGHT;
+  }
+
   const client = ctx.createClient(ctx.cwd);
 
   let timer = null;

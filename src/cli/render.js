@@ -27,8 +27,11 @@ import {
   NODE_QUALIFIER,
   NODE_SUFFIX,
   REASON_LABEL,
+  ROLE_CLI_TEXT,
+  ROLE_INSTANCE_STATUS_LABEL,
   ROLE_LABEL,
   SESSION_LABEL,
+  USAGE_LINES,
   TEMPLATE_LABEL,
   BACKFLOW_DEFECT_LINE,
   BACKFLOW_RETEST_LINE,
@@ -51,14 +54,6 @@ const REJECT_REASON = HANDOFF_REJECT_REASON;
 const TERMINAL_INSTANCE = new Set(['completed', 'failed', 'cancelled', 'interrupted']);
 
 const BACKFLOW_DETAIL_INDENT = '      ';
-
-const USAGE_LINES = Object.freeze([
-  '用法：orch run|status|cancel|core',
-  '  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]',
-  '  orch status [--instance <实例号>] [--events]',
-  '  orch cancel --instance <实例号>',
-  '  orch core stop',
-]);
 
 // ---------------------------------------------------------------- 基础工具
 
@@ -988,4 +983,135 @@ export function renderCoreNotRunning() {
 export function renderUsage(message) {
   const lines = message ? [...USAGE_LINES, `  （${message}）`] : [...USAGE_LINES];
   return lines.join('\n');
+}
+
+// ---------------------------------------------------------------- role（I1.5）
+
+/**
+ * `orch role list` 的文本：首行 + 每角色一行 +（有坏资产时的）末行。
+ *
+ * `counts` 必须是 `roles.js` 的 `listCounts()` 产物（角色级 4 键）。传注册表的
+ * 资产级 6 键不会报错——`total` 为 `undefined` 会渲染成空串——所以这条约束没法靠
+ * 运行时兜住，只能在这里写死口径（A-2 的首行是逐字断言）。
+ *
+ * @param {{counts:{total:number,builtin:number,project:number,invalid:number},
+ *          groups:Array<{group:string,label:string,count:number}>,
+ *          rows:Array<object>}} input
+ * @returns {string[]}
+ */
+export function renderRoleList({ counts, groups, rows }) {
+  const lines = [replaceAll(ROLE_CLI_TEXT.listHeader, counts)];
+  for (const row of Array.isArray(rows) ? rows : []) {
+    lines.push(replaceAll(ROLE_CLI_TEXT.listRow, row));
+  }
+  if (Number(counts?.invalid) > 0) {
+    lines.push(replaceAll(ROLE_CLI_TEXT.listInvalidTail, { n: counts.invalid }));
+  }
+  return lines;
+}
+
+/**
+ * `orch role show` 的文本：契约行 + 职责 / 技能 / 工具 / 可唤醒 / 来源，共 6 行；
+ * `instanceLine` 非空时追加第 7 行。
+ *
+ * `roleRow` 必须由 `ROLE_CLI_TEXT.listRow` 渲染（A-3 要求与 list 行逐字相同，含 `- `）。
+ * 三种空态一律用 `ROLE_CLI_TEXT.placeholder`（`—`），不各自造占位符。
+ *
+ * @param {{roleRow:string, duty:string, skills:string[], tools:string[], wake:string[],
+ *          source:{kind:'builtin'|'project', file:string}, instanceLine?:string|null}} input
+ * @returns {string[]}
+ */
+export function renderRoleShow({ roleRow, duty, skills, tools, wake, source, instanceLine }) {
+  const placeholder = ROLE_CLI_TEXT.placeholder;
+  const join = (values) => {
+    const list = Array.isArray(values) ? values : [];
+    return list.length > 0 ? list.join(', ') : placeholder;
+  };
+  const template =
+    source?.kind === 'project' ? ROLE_CLI_TEXT.showSourceProject : ROLE_CLI_TEXT.showSourceBuiltin;
+
+  const lines = [
+    roleRow,
+    replaceAll(ROLE_CLI_TEXT.showDuty, { summary: duty ?? '' }),
+    replaceAll(ROLE_CLI_TEXT.showSkills, { skills: join(skills) }),
+    replaceAll(ROLE_CLI_TEXT.showTools, { tools: join(tools) }),
+    replaceAll(ROLE_CLI_TEXT.showWake, { wake: join(wake) }),
+    replaceAll(template, { file: source?.file ?? placeholder })
+  ];
+  if (typeof instanceLine === 'string' && instanceLine.length > 0) lines.push(instanceLine);
+  return lines;
+}
+
+/**
+ * `orch role validate` 的文本：全通过一行；有错时首行 + 每资产一行（A-4）。
+ *
+ * `counts` 是 A-7 的**资产级** 6 键（首行要 assets / roles / skills）；与
+ * `renderRoleList` 的角色级 4 键不是同一张表，切勿互换。
+ *
+ * @param {{counts:object, rows:Array<{file:string,detail:string,code:string}>}} input
+ * @returns {string[]}
+ */
+export function renderRoleValidate({ counts, rows }) {
+  if (!(Number(counts?.invalid) > 0)) {
+    return [replaceAll(ROLE_CLI_TEXT.validateOk, counts)];
+  }
+  const lines = [replaceAll(ROLE_CLI_TEXT.validateFail, counts)];
+  for (const row of Array.isArray(rows) ? rows : []) {
+    lines.push(replaceAll(ROLE_CLI_TEXT.validateRow, row));
+  }
+  return lines;
+}
+
+/**
+ * `orch run` 预检失败：`注册表不合法：<第一条明细>`（A-5）。明细由 `roles.js` 组装，
+ * 与 A-4 的行内容相同但**不带** `- ` 前缀。
+ *
+ * @param {string|null} detail
+ * @returns {string}
+ */
+export function renderRegistryInvalid(detail) {
+  return replaceAll(ROLE_CLI_TEXT.runRegistryInvalid, { detail: detail ?? ROLE_CLI_TEXT.placeholder });
+}
+
+/**
+ * `role show|list --instance` 的那一行（A-3）。状态名取六态表；服务节点 / 宿主 /
+ * 最近为空时写 `—`；未注册角色的并发上限为 `null`，该位置也写 `—` 并在行尾追加说明。
+ *
+ * @param {{instanceId:string, view:object, unused?:boolean}} input
+ * @returns {string}
+ */
+export function renderRoleInstanceLine({ instanceId, view }) {
+  const placeholder = ROLE_CLI_TEXT.placeholder;
+  const status = ROLE_INSTANCE_STATUS_LABEL[view.status] ?? view.status;
+  const nodes = Array.isArray(view.servingNodes) && view.servingNodes.length > 0
+    ? view.servingNodes.join(', ')
+    : placeholder;
+  const hosts = Array.isArray(view.hostIcons) && view.hostIcons.length > 0
+    ? view.hostIcons.join(', ')
+    : placeholder;
+  const max =
+    view.maxConcurrentSessions === null || view.maxConcurrentSessions === undefined
+      ? placeholder
+      : String(view.maxConcurrentSessions);
+  const last = view.lastAction
+    ? replaceAll(ROLE_CLI_TEXT.lastAction, view.lastAction)
+    : ROLE_CLI_TEXT.lastActionMissing;
+
+  const line = replaceAll(ROLE_CLI_TEXT.instanceLine, {
+    instanceId,
+    status,
+    active: Array.isArray(view.activeSessions) ? view.activeSessions.length : 0,
+    max,
+    nodes,
+    host: hosts,
+    last
+  });
+  return view.statusReason === 'unknown-role'
+    ? `${line}${ROLE_CLI_TEXT.unknownRoleNote}`
+    : line;
+}
+
+/** 该角色不属于本实例时的那一行（A-3）。 */
+export function renderRoleInstanceUnused(instanceId) {
+  return replaceAll(ROLE_CLI_TEXT.instanceUnused, { instanceId });
 }

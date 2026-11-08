@@ -58,6 +58,108 @@ export const ROLE_LABEL = Object.freeze({
   reviewer: '审核者'
 });
 
+/** 分组名（D-3 的五组，顺序即展示顺序）。 */
+export const GROUP_LABEL = Object.freeze({
+  coordinator: '通用协调',
+  research: '研究分析',
+  writing: '内容创作',
+  coding: '编码工程',
+  ops: '业务运营'
+});
+
+/** 角色实例六态（D-5）。`unknown-role` 不是状态，是 `unavailable` 的 `statusReason`。 */
+export const ROLE_INSTANCE_STATUS_LABEL = Object.freeze({
+  inactive: '未参与',
+  available: '可用',
+  busy: '服务中',
+  cooldown: '冷却中',
+  unavailable: '不可用',
+  retired: '已关闭'
+});
+
+/**
+ * `orch role` 的全部文案（唯一来源；`render.js` / `roles.js` 只引用键名）。
+ * `usageReason` 的五条模板由 `main.js` 的 `parseArgs` 取用，`badGroup` 例外：
+ * `--group` 的**取值**归 `roles.js` 判，`{groups}` 由它用 `GROUPS` 拼。
+ */
+export const ROLE_CLI_TEXT = Object.freeze({
+  listHeader: '角色 {total} 个（内置 {builtin} · 项目 {project}）',
+  listRow: '- {id} {name} · {groupLabel} · {artifactType} · {sideEffect} · 技能 {skillCount} · 并发 {max}',
+  listInvalidTail: '{n} 个资产未通过校验，执行 orch role validate 查看',
+  showDuty: '  职责：{summary}',
+  showSkills: '  技能：{skills}',
+  showTools: '  工具：{tools}',
+  showWake: '  可唤醒：{wake}',
+  showSourceBuiltin: '  来源：内置 {file}',
+  showSourceProject: '  来源：项目 {file}',
+  instanceLine:
+    '  实例 {instanceId}：{status} · 活跃会话 {active}/{max} · 服务节点 {nodes} · 宿主 {host} · {last}',
+  lastAction: '最近 {nodeId} · 轮次 {round}/{maxRounds}',
+  lastActionMissing: '最近 —',
+  instanceUnused: '  实例 {instanceId}：本实例未使用该角色',
+  unknownRoleNote: '（注册表中不存在该角色）',
+  validateOk: '校验资产 {assets} 个：全部通过（角色 {roles} · 技能 {skills}）',
+  validateFail: '校验资产 {assets} 个：{invalid} 个不合法',
+  validateRow: '- {file}：{detail}（{code}）',
+  notFoundRole: '找不到角色：{id}',
+  notFoundRoleHint: '可用角色：执行 orch role list 查看',
+  notFoundInstance: '找不到实例：{id}',
+  runRegistryInvalid: '注册表不合法：{detail}',
+  placeholder: '—',
+  usageReason: Object.freeze({
+    unknownRoleSub: '未知的 role 子命令：{sub}',
+    missingRoleId: 'role show 需要角色 id',
+    badFormat: '--format 只接受 text 或 json',
+    badGroup: '--group 只接受 {groups}',
+    flagNotApplicable: '--{key} 不适用于 role {sub}'
+  })
+});
+
+/**
+ * 14 个资产级原因码的人话模板（附录 A-5 逐字）。`registry` 只给
+ * `{code, file, scope, field, line, params}`，由 `roles.js` 的 `fill()` 组装。
+ */
+export const REGISTRY_ERROR = Object.freeze({
+  YAML_PARSE_FAILED: '第 {line} 行无法解析：{detail}',
+  ROLE_SCHEMA_MISSING: '缺少必填字段：{field}',
+  ROLE_ID_MISMATCH: '角色 id 与文件名不一致：文件 {fileId} / 声明 {declaredId}',
+  ROLE_GROUP_INVALID: '分组取值非法：{value}；合法取值：coordinator / research / writing / coding / ops',
+  ROLE_ARTIFACT_TYPE_INVALID: '产物类型取值非法：{value}；合法取值：code / document / dataset / report',
+  ROLE_SIDE_EFFECT_INVALID: '副作用等级取值非法：{value}；合法取值：none / read / write / exec',
+  ROLE_MAX_CONCURRENT_INVALID: '并发上限取值非法：{value}；合法范围：1~5 的整数',
+  ROLE_SKILL_NOT_FOUND: '引用的技能不存在：{skill}',
+  SKILL_FILE_MISSING: '技能目录缺少 SKILL.md：{dir}',
+  SKILL_SCHEMA_MISSING: '缺少必填字段：{field}',
+  SKILL_ID_MISMATCH: '技能 id 与目录名不一致：目录 {dirId} / 声明 {declaredId}',
+  SKILL_BODY_EMPTY: '技能正文为空：{dir}',
+  SKILL_GROUP_INVALID: '适用分组取值非法：{value}；合法取值：coordinator / research / writing / coding / ops',
+  REGISTRY_ASSETS_MISSING: '内置资产目录缺失：{path}'
+});
+
+/** `yaml-lite` / `skill-file` 的五个机器键 → 中文短语（D-3 的 v5 修正）。 */
+export const YAML_DETAIL = Object.freeze({
+  'inconsistent-indentation': '缩进不一致',
+  'unsupported-token': '不支持的语法：{token}',
+  'duplicate-key': '键重复：{key}',
+  'missing-value': '缺少值：{key}',
+  'missing-front-matter': '缺少前置元数据分隔符'
+});
+
+/**
+ * 用法块（附录 A-5，共 8 行）。前 5 行是 I1.1 原文，逐字不变——`test/wp6/main.test.js`
+ * 断言了第 1 行的子串；`role` 只通过末尾 3 条子行体现。
+ */
+export const USAGE_LINES = Object.freeze([
+  '用法：orch run|status|cancel|core',
+  '  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]',
+  '  orch status [--instance <实例号>] [--events]',
+  '  orch cancel --instance <实例号>',
+  '  orch core stop',
+  '  orch role list [--group <组>] [--instance <实例号>] [--format text|json]',
+  '  orch role show <角色> [--instance <实例号>] [--format text|json]',
+  '  orch role validate [<角色>] [--format json]'
+]);
+
 /** Template names. The `single` entry is kept but unused: a `single` instance line prints no template. */
 export const TEMPLATE_LABEL = Object.freeze({
   single: '单节点',
