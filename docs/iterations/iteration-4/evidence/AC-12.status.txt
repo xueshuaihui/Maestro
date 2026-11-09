@@ -1,0 +1,55 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run[escape-ref]（回流边坏包，前台挂起收尾） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-escape-ref exit=4 9472ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-13276-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs --root /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-escape-ref --call test.handoff --instance INST-001 --node T-002 --mutate escape-ref --edge-kind backflow --round 2
+# label=call-seam test.handoff --mutate escape-ref --edge-kind backflow --round 2 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-escape-ref exit=0 189ms
+{"ok":true,"registered":true,"instanceId":"INST-001","nodeId":"T-002","edgeKind":"backflow","round":2,"mutate":"escape-ref","snapshot":null}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run[hash-mismatch]（回流边坏包，前台挂起收尾） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-hash-mismatch exit=4 9713ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-13395-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs --root /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-hash-mismatch --call test.handoff --instance INST-001 --node T-002 --mutate hash-mismatch --edge-kind backflow --round 2
+# label=call-seam test.handoff --mutate hash-mismatch --edge-kind backflow --round 2 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-hash-mismatch exit=0 198ms
+{"ok":true,"registered":true,"instanceId":"INST-001","nodeId":"T-002","edgeKind":"backflow","round":2,"mutate":"hash-mismatch","snapshot":null}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-escape-ref exit=0 254ms
+核心未在运行
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-hash-mismatch exit=0 261ms
+核心未在运行
+

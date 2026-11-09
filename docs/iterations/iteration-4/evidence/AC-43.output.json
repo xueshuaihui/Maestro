@@ -1,0 +1,188 @@
+{
+  "ac": "AC-43",
+  "title": "图反映暂停、挂起、审批与升级",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then：A 的 paused === true（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then：A 的 approvals 含待处理项",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"approvalId\":\"APR-001\",\"instanceId\":\"INST-001\",\"nodeId\":\"T-001\",\"sessionId\":\"mock-sess-fix\",\"action\":\"write\",\"toolCallId\":\"call_fix\",\"state\":\"pending\",\"createdAt\":\"2026-11-08T19:00:00.000Z\",\"resolvedAt\":null,\"resolution\":null}]"
+    },
+    {
+      "text": "Then：A 的 current 指向当前节点或为 null",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"nodeId\":\"T-001\",\"sessionId\":\"mock-sess-29202-1\",\"state\":\"running\"}"
+    },
+    {
+      "text": "Then：B 的 paused === false（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "Then：B 的 escalations 含待处理项",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"escalationId\":\"ESC-001\",\"nodeId\":\"T-002\",\"round\":2,\"reasonCode\":\"rounds_exceeded\",\"reasonDetail\":\"回流超上限：测试已派发 2 次仍未通过\",\"defects\":[{\"summary\":\"div 在除数为 0 时返回 Infinity，未抛错\",\"evidence\":\"out/test-log.txt\"}],\"state\":\"pending\",\"createdAt\":\"2026-11-08T22:41:46.559Z\",\"resolvedAt\":null,\"resolution\":null,\"voidedAt\":null}]"
+    },
+    {
+      "text": "Then：B 的 current 指向当前节点或为 null",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    },
+    {
+      "text": "机检：A paused 与 state.json 一致（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：A approvals 长度与 state.json 一致（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：A state 与 state.json 一致（期望 \"running\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"running\""
+    },
+    {
+      "text": "机检：B paused 与 state.json 一致（未写字段按 false）（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：B escalations 长度与 state.json 一致（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：B state 与 state.json 一致（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop pass（A 母版）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-43-A",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 8565,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-29202-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:41:28\n交接包 HO-001  开发→测试  已投递   06:41:29\n交接包 HO-001  开发→测试  已接受   06:41:30\n交接包 HO-001  开发→测试  已完成   06:41:31\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run code-loop rounds-exceeded（B 挂起 + 升级）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-43-B",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 14351,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-29317-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch instance graph INST-001 --format json（A）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "instance",
+        "graph",
+        "INST-001",
+        "--format",
+        "json"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-43-A",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 287,
+      "stdout": "{\n  \"graphVersion\": 1,\n  \"instanceId\": \"INST-001\",\n  \"template\": \"code-loop\",\n  \"state\": \"running\",\n  \"paused\": true,\n  \"nodes\": [\n    {\n      \"nodeId\": \"T-001\",\n      \"title\": \"开发\",\n      \"roleId\": \"developer\",\n      \"state\": \"running\",\n      \"round\": 1\n    },\n    {\n      \"nodeId\": \"T-002\",\n      \"title\": \"测试\",\n      \"roleId\": \"tester\",\n      \"state\": \"done\",\n      \"round\": 1\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\"\n    },\n    {\n      \"from\": \"T-002\",\n      \"to\": \"T-001\",\n      \"kind\": \"backflow\"\n    },\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"retest\"\n    }\n  ],\n  \"handoffs\": [\n    {\n      \"handoffId\": \"HO-001\",\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\",\n      \"state\": \"consumed\",\n      \"round\": 1\n    }\n  ],\n  \"escalations\": [],\n  \"approvals\": [\n    {\n      \"approvalId\": \"APR-001\",\n      \"instanceId\": \"INST-001\",\n      \"nodeId\": \"T-001\",\n      \"sessionId\": \"mock-sess-fix\",\n      \"action\": \"write\",\n      \"toolCallId\": \"call_fix\",\n      \"state\": \"pending\",\n      \"createdAt\": \"2026-11-08T19:00:00.000Z\",\n      \"resolvedAt\": null,\n      \"resolution\": null\n    }\n  ],\n  \"current\": {\n    \"nodeId\": \"T-001\",\n    \"sessionId\": \"mock-sess-29202-1\",\n    \"state\": \"running\"\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch instance graph INST-001 --format json（B）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "instance",
+        "graph",
+        "INST-001",
+        "--format",
+        "json"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-43-B",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 308,
+      "stdout": "{\n  \"graphVersion\": 1,\n  \"instanceId\": \"INST-001\",\n  \"template\": \"code-loop\",\n  \"state\": \"suspended\",\n  \"paused\": false,\n  \"nodes\": [\n    {\n      \"nodeId\": \"T-001\",\n      \"title\": \"开发\",\n      \"roleId\": \"developer\",\n      \"state\": \"done\",\n      \"round\": 2\n    },\n    {\n      \"nodeId\": \"T-002\",\n      \"title\": \"测试\",\n      \"roleId\": \"tester\",\n      \"state\": \"escalated\",\n      \"round\": 2\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\"\n    },\n    {\n      \"from\": \"T-002\",\n      \"to\": \"T-001\",\n      \"kind\": \"backflow\"\n    },\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"retest\"\n    }\n  ],\n  \"handoffs\": [\n    {\n      \"handoffId\": \"HO-001\",\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\",\n      \"state\": \"consumed\",\n      \"round\": 1\n    },\n    {\n      \"handoffId\": \"HO-002\",\n      \"from\": \"T-002\",\n      \"to\": \"T-001\",\n      \"kind\": \"backflow\",\n      \"state\": \"consumed\",\n      \"round\": 2\n    },\n    {\n      \"handoffId\": \"HO-003\",\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"retest\",\n      \"state\": \"consumed\",\n      \"round\": 2\n    }\n  ],\n  \"escalations\": [\n    {\n      \"escalationId\": \"ESC-001\",\n      \"nodeId\": \"T-002\",\n      \"round\": 2,\n      \"reasonCode\": \"rounds_exceeded\",\n      \"reasonDetail\": \"回流超上限：测试已派发 2 次仍未通过\",\n      \"defects\": [\n        {\n          \"summary\": \"div 在除数为 0 时返回 Infinity，未抛错\",\n          \"evidence\": \"out/test-log.txt\"\n        }\n      ],\n      \"state\": \"pending\",\n      \"createdAt\": \"2026-11-08T22:41:46.559Z\",\n      \"resolvedAt\": null,\n      \"resolution\": null,\n      \"voidedAt\": null\n    }\n  ],\n  \"approvals\": [],\n  \"current\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-43-A",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 480,
+      "stdout": "核心已停止（pid 29179，运行 23s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-43-B",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 337,
+      "stdout": "核心已停止（pid 29271，运行 15s）\n",
+      "stderr": ""
+    }
+  ]
+}

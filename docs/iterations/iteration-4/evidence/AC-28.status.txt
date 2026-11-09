@@ -1,0 +1,48 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo1 --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop rounds-exceeded（母版 INST-001） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28 exit=4 14730ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-26118-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate resolve ESC-001 --decision pass --instance INST-001
+# label=orch escalate resolve ESC-001 --instance INST-001 --decision pass（handoff_invalid） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28 exit=1 497ms
+升级 ESC-001 不支持「pass」；可选：fail|retry
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate resolve ESC-001 --decision pass --instance INST-002
+# label=orch escalate resolve ESC-001 --instance INST-002 --decision pass（dispatch_failed） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28 exit=1 389ms
+升级 ESC-001 不支持「pass」；可选：fail|retry
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate resolve ESC-001 --decision pass --instance INST-003
+# label=orch escalate resolve ESC-001 --instance INST-003 --decision pass（execution_failed） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28 exit=1 388ms
+升级 ESC-001 不支持「pass」；可选：fail|retry
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate resolve ESC-001 --decision pass --instance INST-004
+# label=orch escalate resolve ESC-001 --instance INST-004 --decision pass（delivery_failed） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28 exit=1 380ms
+升级 ESC-001 不支持「pass」；可选：fail|retry
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28 exit=0 338ms
+核心已停止（pid 26091，运行 16s）
+

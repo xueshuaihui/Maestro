@@ -1,0 +1,155 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop rounds-exceeded（回流 + 升级） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-39 exit=4 14168ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-28163-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate resolve ESC-001 --decision pass --instance INST-001
+# label=orch escalate resolve ESC-001 --decision pass（处理升级） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-39 exit=0 608ms
+升级 ESC-001 已处理（通过）
+实例 INST-001 · 已完成 · 模板 编码闭环
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001
+# label=orch instance log INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-39 exit=0 314ms
+[#1] 06:39:58  实例 INST-001  已创建 → 运行中  原因 开始运行
+[#2] 06:39:58  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮
+[#3] 06:39:59  会话 mock-sess-28163-1  空闲 → 执行中  原因 会话状态
+[#4] 06:39:59  会话 mock-sess-28163-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#5] 06:39:59  会话 mock-sess-28163-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#6] 06:39:59  会话 mock-sess-28163-1  执行中 → 等待下游  原因 产出已提交
+[#7] 06:39:59  节点 T-001  执行中 → 待校验  原因 产出已提交
+[#8] 06:40:00  节点 T-001  待校验 → 已完成  原因 核对通过
+[#9] 06:40:00  会话 mock-sess-28163-1  等待下游 → 空闲  原因 运行完成
+[#10] 06:40:00  交接包 HO-001  已构造  原因 构造交接
+[#11] 06:40:00  节点 T-002  派发 → 执行中  原因 派发 · 第 1 轮
+[#12] 06:40:01  交接包 HO-001  handoff.inboxed  原因 已入信箱
+[#13] 06:40:01  交接包 HO-001  已构造 → 已投递  原因 交接已投递
+[#14] 06:40:01  会话 mock-sess-28182-1  空闲 → 执行中  原因 会话状态
+[#15] 06:40:02  交接包 HO-001  已投递 → 已接受  原因 首个事件
+[#16] 06:40:02  会话 mock-sess-28182-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#17] 06:40:02  会话 mock-sess-28182-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#18] 06:40:02  会话 mock-sess-28182-1  执行中 → 等待下游  原因 产出已提交
+[#19] 06:40:03  节点 T-002  执行中 → 待校验  原因 产出已提交
+[#20] 06:40:03  节点 T-002  verdict.read  原因 读取判定
+[#21] 06:40:03  交接包 HO-001  已接受 → 已完成  原因 产出核对通过
+[#22] 06:40:03  节点 T-002  待校验 → 失败  原因 核对失败
+[#23] 06:40:03  会话 mock-sess-28182-1  等待下游 → 空闲  原因 核对失败
+[#24] 06:40:03  交接包 HO-002  已构造  原因 构造交接
+[#25] 06:40:03  交接包 HO-002  backflow.constructed  原因 构造回流
+      缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）
+      缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）
+      复测要求：按上方每条缺陷修正后重新提交产物
+[#26] 06:40:04  节点 T-001  派发 → 执行中  原因 派发 · 第 2 轮
+[#27] 06:40:04  交接包 HO-002  handoff.inboxed  原因 已入信箱
+[#28] 06:40:04  交接包 HO-002  已构造 → 已投递  原因 交接已投递
+[#29] 06:40:05  会话 mock-sess-28236-1  空闲 → 执行中  原因 会话状态
+[#30] 06:40:05  交接包 HO-002  已投递 → 已接受  原因 首个事件
+[#31] 06:40:05  会话 mock-sess-28236-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#32] 06:40:05  会话 mock-sess-28236-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#33] 06:40:05  会话 mock-sess-28236-1  执行中 → 等待下游  原因 产出已提交
+[#34] 06:40:05  节点 T-001  执行中 → 待校验  原因 产出已提交
+[#35] 06:40:06  节点 T-001  待校验 → 已完成  原因 核对通过
+[#36] 06:40:06  交接包 HO-002  已接受 → 已完成  原因 产出核对通过
+[#37] 06:40:06  会话 mock-sess-28236-1  等待下游 → 空闲  原因 运行完成
+[#38] 06:40:06  交接包 HO-003  已构造  原因 构造交接
+[#39] 06:40:06  节点 T-002  派发 → 执行中  原因 派发 · 第 2 轮
+[#40] 06:40:07  交接包 HO-003  handoff.inboxed  原因 已入信箱
+[#41] 06:40:07  交接包 HO-003  已构造 → 已投递  原因 交接已投递
+[#42] 06:40:08  会话 mock-sess-28277-1  空闲 → 执行中  原因 会话状态
+[#43] 06:40:08  交接包 HO-003  已投递 → 已接受  原因 首个事件
+[#44] 06:40:08  会话 mock-sess-28277-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#45] 06:40:08  会话 mock-sess-28277-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#46] 06:40:08  会话 mock-sess-28277-1  执行中 → 等待下游  原因 产出已提交
+[#47] 06:40:09  节点 T-002  执行中 → 待校验  原因 产出已提交
+[#48] 06:40:09  节点 T-002  verdict.read  原因 读取判定
+[#49] 06:40:09  交接包 HO-003  已接受 → 已完成  原因 产出核对通过
+[#50] 06:40:09  节点 T-002  rounds.exceeded  原因 超上限
+[#51] 06:40:09  升级 ESC-001  待处理  原因 创建升级
+[#52] 06:40:09  节点 T-002  待校验 → 已升级  原因 状态变化
+[#53] 06:40:09  会话 mock-sess-28277-1  等待下游 → 已升级  原因 状态变化
+[#54] 06:40:09  实例 INST-001  运行中 → 已挂起  原因 挂起
+[#55] 06:40:10  升级 ESC-001  待处理 → 已处理  原因 处理升级
+[#56] 06:40:10  会话 mock-sess-28163-1  空闲  原因 状态变化
+[#57] 06:40:10  会话 mock-sess-28182-1  空闲  原因 状态变化
+[#58] 06:40:10  会话 mock-sess-28236-1  空闲  原因 状态变化
+[#59] 06:40:10  会话 mock-sess-28277-1  已升级 → 空闲  原因 状态变化
+[#60] 06:40:10  节点 T-002  已升级 → 已完成  原因 状态变化
+[#61] 06:40:10  实例 INST-001  已挂起 → 已完成  原因 状态变化
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001
+# label=orch instance log INST-001（含拒绝事件） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-39-reject exit=0 1394ms
+[#1] 06:40:13  实例 INST-001  已创建 → 运行中  原因 开始运行
+[#2] 06:40:13  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮
+[#3] 06:40:14  会话 mock-sess-28353-1  空闲 → 执行中  原因 会话状态
+[#4] 06:40:15  会话 mock-sess-28353-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#5] 06:40:15  会话 mock-sess-28353-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#6] 06:40:15  会话 mock-sess-28353-1  执行中 → 等待下游  原因 产出已提交
+[#7] 06:40:15  节点 T-001  执行中 → 待校验  原因 产出已提交
+[#8] 06:40:16  节点 T-001  待校验 → 已完成  原因 核对通过
+[#9] 06:40:16  会话 mock-sess-28353-1  等待下游 → 空闲  原因 运行完成
+[#10] 06:40:16  交接包 HO-001  已拒绝  原因 交接被拒
+[#11] 06:40:16  升级 ESC-001  待处理  原因 创建升级
+[#12] 06:40:16  节点 T-001  已完成 → 已升级  原因 状态变化
+[#13] 06:40:16  会话 mock-sess-28353-1  空闲 → 已升级  原因 状态变化
+[#14] 06:40:16  实例 INST-001  运行中 → 已挂起  原因 挂起
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（母版） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-39-empty exit=0 8588ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-28446-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:40:24
+交接包 HO-001  开发→测试  已投递   06:40:25
+交接包 HO-001  开发→测试  已接受   06:40:26
+交接包 HO-001  开发→测试  已完成   06:40:27
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-002
+# label=orch instance log INST-002（空事件） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-39-empty exit=0 359ms
+事件 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-39 exit=0 316ms
+核心已停止（pid 28144，运行 32s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-39-reject exit=0 305ms
+核心已停止（pid 28397，运行 11s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-39-empty exit=0 315ms
+核心已停止（pid 28419，运行 9s）
+

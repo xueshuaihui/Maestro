@@ -1,0 +1,137 @@
+{
+  "ac": "AC-33",
+  "title": "同一审批不能处理两次",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：第一次已通过（期望含 \"审批 APR-001 已通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 已通过 · 动作 write\n"
+    },
+    {
+      "text": "Given：审批已变为 approved（期望 \"approved\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"approved\""
+    },
+    {
+      "text": "Then：提示审批已处理（期望含 \"审批 APR-001 已处理\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 已处理（已通过），无需再次处理\n"
+    },
+    {
+      "text": "Then：提示无需再次处理（期望含 \"无需再次处理\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 已处理（已通过），无需再次处理\n"
+    },
+    {
+      "text": "Then：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：实例状态不变（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "机检：审批 state 仍为 approved（只变一次）（期望 \"approved\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"approved\""
+    },
+    {
+      "text": "机检：只有一条 permission.allowed 事件（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：实例 rev 不变（期望 14）",
+      "ok": true,
+      "blocked": false,
+      "actual": "14"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch approve APR-001 --instance INST-001 --decision allow（第一次）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "approve",
+        "APR-001",
+        "--decision",
+        "allow",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-33",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 676,
+      "stdout": "审批 APR-001 已通过 · 动作 write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --approval hold（前台）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写下说明",
+        "--approval",
+        "hold"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-33",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 5152,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-27499-1\n任务已投递\n审批 APR-001 待处理 · 动作 write\n会话 等待审批：write\n会话 执行中 · 已运行 2s\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 3s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 3s\n交接包 HO-001  已构造   06:39:02\n交接包 HO-001  已投递   06:39:02\n交接包 HO-001  已接受   06:39:02\n交接包 HO-001  已完成   06:39:04\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch approve APR-001 --decision allow（第二次）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "approve",
+        "APR-001",
+        "--decision",
+        "allow",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-33",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 281,
+      "stdout": "审批 APR-001 已处理（已通过），无需再次处理\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-33",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 281,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

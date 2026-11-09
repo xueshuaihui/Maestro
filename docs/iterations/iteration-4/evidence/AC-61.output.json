@@ -1,0 +1,190 @@
+{
+  "ac": "AC-61",
+  "title": "取消时待投递交接包不再重试",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：项目根出现 .mock/paused",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-80974-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n"
+    },
+    {
+      "text": "Given：交接包停在「待投递 · 重试 1/2」重试等待点",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"handoffs\":[[\"HO-001\",\"pending\",1]],\"reasons\":[\"run.started\",\"node.dispatch\",\"session.state\",\"session.state\",\"session.state\",\"output.submitted\",\"output.submitted\",\"review.evidence_verified\",\"handoff.created\",\"node.dispatch\",\"handoff.inboxed\",\"handoff.delivered\",\"handoff.pending\"]}"
+    },
+    {
+      "text": "Then：cancel 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：该交接包显示「已拒绝（已撤回）」（期望含 \"已拒绝（已撤回）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "会话 空闲\n会话 空闲\n节点 T-001 研究员 已取消\n节点 T-002 撰写者 已取消\n节点 T-003 审核者 已取消\n交接包 HO-001 已拒绝（已撤回）\n"
+    },
+    {
+      "text": "机检：实例 cancelled（期望 \"cancelled\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"cancelled\""
+    },
+    {
+      "text": "机检：包 state === rejected（期望 \"rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检：包 rejectReason === withdrawn（期望 \"withdrawn\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"withdrawn\""
+    },
+    {
+      "text": "机检：deliveryAttempts 不再增加（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：release 后 .mock/prompt-attempts-<sessionId>.json 的 attempts 不再增加",
+      "ok": true,
+      "blocked": false,
+      "actual": "before={\"prompt-attempts-mock-sess-80974-1.json\":{\"attempts\":1},\"prompt-attempts-mock-sess-80994-1.json\":{\"attempts\":1},\"prompt-failures-mock-sess-80994-1.json\":{\"attempts\":1,\"failures\":1}} after={\"prompt-attempts-mock-sess-80974-1.json\":{\"attempts\":1},\"prompt-attempts-mock-sess-80994-1.json\":{\"attempts\":1},\"prompt-failures-mock-sess-80994-1.json\":{\"attempts\":1,\"failures\":1}}"
+    },
+    {
+      "text": "机检：.orch/inbox/INST-001/HO-001.json 仍存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "INST-001/HO-001.json"
+    },
+    {
+      "text": "机检：释放后不再发起重试（无新增 handoff.pending）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "call-seam test.delivery --action hold",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61",
+        "--call",
+        "test.delivery",
+        "--instance",
+        "INST-001",
+        "--action",
+        "hold"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 274,
+      "stdout": "{\"ok\":true,\"action\":\"hold\"}\n",
+      "stderr": ""
+    },
+    {
+      "label": "call-seam test.delivery --action hold（占位复跑，确认幂等）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61",
+        "--call",
+        "test.delivery",
+        "--instance",
+        "INST-001",
+        "--action",
+        "hold"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 198,
+      "stdout": "{\"ok\":true,\"action\":\"hold\"}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cancel --instance INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cancel",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 582,
+      "stdout": "会话 空闲\n会话 空闲\n节点 T-001 研究员 已取消\n节点 T-002 撰写者 已取消\n节点 T-003 审核者 已取消\n交接包 HO-001 已拒绝（已撤回）\n",
+      "stderr": ""
+    },
+    {
+      "label": "call-seam test.delivery --action release",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61",
+        "--call",
+        "test.delivery",
+        "--instance",
+        "INST-001",
+        "--action",
+        "release"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 201,
+      "stdout": "{\"ok\":true,\"action\":\"release\"}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run task-loop（前台，投递重试等待点）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写发布说明，产物：release-notes.md",
+        "--template",
+        "task-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 8495,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-80974-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 待校验（等待下游） · 第 1 轮 · 耗时 2s\n节点 T-002 撰写者 执行中 · 第 1 轮\n节点 T-003 审核者 待执行\n交接包 HO-001  研究员→撰写者  已构造   19:58:49\n交接包 HO-001  研究员→撰写者  待投递 · 重试 1/2   19:58:51\n交接包 HO-001  研究员→撰写者  已投递   19:58:50\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 244,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

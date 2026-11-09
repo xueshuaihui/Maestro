@@ -1,0 +1,4 @@
+{
+  "AC-34/INST-001": "# INST-001 单节点\n\n- 状态：已中断\n- 暂停：否\n- 任务：写下说明\n- 更新：2026-11-08T22:39:13.140Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34/.orch/instances/INST-001/workspace\n\n## 交接包\n\n- HO-001：已接受\n\n## 升级\n\n- 无\n\n## 审批\n\n- APR-001 待处理 · 节点 T-001 T-001 · 动作 write\n",
+  "AC-34/INST-002": "# INST-002 单节点\n\n- 状态：已中断\n- 暂停：否\n- 任务：写下说明\n- 更新：2026-11-08T22:39:13.348Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34/.orch/instances/INST-002/workspace\n\n## 交接包\n\n- HO-001：已接受\n\n## 升级\n\n- 无\n\n## 审批\n\n- APR-001 待处理 · 节点 T-001 T-001 · 动作 write\n"
+}

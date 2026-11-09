@@ -15,6 +15,10 @@ probe/dsh-home/
 # 探针运行时产物（ACL 备份含本机 SID / 绝对路径）
 probe/runs/*/acl-recovery/
 
+# mock 宿主运行时计数产物（prompt attempts，逐次运行生成）
+.mock/
+**/.mock/
+
 # 临时脚本
 probe/tmp-*.mjs
 .tmp-*.mjs

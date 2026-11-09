@@ -1,0 +1,34 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001（预热核心，完成启动对账） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44 exit=0 367ms
+实例 INST-001 · 运行中
+节点 执行中
+会话 等待审批：write
+交接包 HO-001  已构造   06:41:53
+交接包 HO-001  已投递   06:41:53
+交接包 HO-001  已接受   06:41:53
+审批 APR-001 待处理 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js attach mock-sess-29512-1
+# label=orch attach mock-sess-29512-1 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44 exit=0 3000ms
+已附着会话 mock-sess-29512-1（实例 INST-001 · 节点 T-001 worker）
+审批 APR-001 待处理 · 动作 write
+06:41:53  会话 mock-sess-29512-1  空闲 → 执行中  原因 session.state
+06:41:54  会话 mock-sess-29512-1  执行中 → 执行中（tool_call）  原因 session.state
+06:41:54  会话 mock-sess-29512-1  执行中 → 等待审批  原因 permission.requested
+已脱离会话 mock-sess-29512-1
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明 --approval hold
+# label=orch run --approval hold（前台稳定会话） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44 exit=- 4177ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-29512-1
+任务已投递
+审批 APR-001 待处理 · 动作 write
+会话 等待审批：write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44 exit=0 317ms
+核心未在运行
+

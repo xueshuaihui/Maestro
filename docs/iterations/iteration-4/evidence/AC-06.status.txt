@@ -1,0 +1,9 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop（MAESTRO_FAULT=workspace_init:fail） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-06 exit=3 1470ms
+无法创建工作区：注入故障（workspace_init:fail）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-06 exit=0 364ms
+核心已停止（pid 12232，运行 1s）
+

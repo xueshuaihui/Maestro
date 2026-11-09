@@ -213,8 +213,7 @@ test('buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据',
     now: NOW
   });
   assert.equal(handoff.handoffId, 'HO-005');
-  // M-4 授权变更（D-9）：I1.3 追加 `artifactRefs` 与 `revisionRequirement` 两个字段，
-  // 其余 14 键与顺序逐字不变。
+  // D-10.7 授权变更：图驱动交接包在 I1.3 的 16 键之上追加 9 个落盘字段。
   assert.deepEqual(Object.keys(handoff).sort(), [
     'acceptedAt',
     'acceptedSignal',
@@ -224,13 +223,22 @@ test('buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据',
     'createdAt',
     'defects',
     'deliveredAt',
+    'deliveryAttempts',
     'edge',
+    'expiredAt',
+    'fromNodeId',
     'handoffId',
+    'instanceId',
+    'lastError',
     'note',
+    'pendingAt',
     'rejectReason',
     'rejectedAt',
+    'retestRequirement',
     'revisionRequirement',
+    'round',
     'state',
+    'toNodeId',
     'wakeConsumedAt'
   ]);
 

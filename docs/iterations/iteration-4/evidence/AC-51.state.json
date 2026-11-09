@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-a1eecb86a90a8bde",
+  "createdAt": "2026-11-08T22:43:55.735Z",
+  "updatedAt": "2026-11-08T22:44:04.474Z",
+  "state": "interrupted",
+  "stateSince": "2026-11-08T22:44:04.454Z",
+  "template": "code-loop",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51/demo",
+  "task": "实现 calc.js，产物：calc.js",
+  "halted": false,
+  "rev": 24,
+  "counters": {
+    "eventSeq": 24,
+    "runCount": 1,
+    "dispatchCount": 2
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T22:43:59.498Z",
+      "startedAt": "2026-11-08T22:43:56.695Z",
+      "roundStartedAt": "2026-11-08T22:43:56.695Z",
+      "endedAt": "2026-11-08T22:43:59.640Z",
+      "failure": null,
+      "note": "stopped at node done / session waiting_dependency",
+      "verdict": null,
+      "sessionId": "mock-sess-30960-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51/demo/calc.js",
+          "declared": true,
+          "exists": true,
+          "bytes": 251,
+          "sha256": null,
+          "verifiedAt": "2026-11-08T22:43:59.489Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T22:44:04.037Z",
+      "startedAt": "2026-11-08T22:44:00.776Z",
+      "roundStartedAt": "2026-11-08T22:44:00.776Z",
+      "endedAt": "2026-11-08T22:44:04.227Z",
+      "failure": null,
+      "note": null,
+      "verdict": {
+        "value": "pass",
+        "defectCount": 0,
+        "verdictPath": "out/verdict.json",
+        "readAt": "2026-11-08T22:44:04.000Z"
+      },
+      "sessionId": "mock-sess-31000-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-30960-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:43:59.690Z",
+      "createdAt": "2026-11-08T22:43:57.479Z",
+      "lastEventAt": "2026-11-08T22:43:57.872Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51/demo/calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-31000-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": null,
+      "state": "waiting_dependency",
+      "stateSince": "2026-11-08T22:44:02.918Z",
+      "createdAt": "2026-11-08T22:44:01.458Z",
+      "lastEventAt": "2026-11-08T22:44:02.447Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51/demo/out/verdict.json",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-08T22:44:00.572Z",
+      "deliveredAt": "2026-11-08T22:44:01.904Z",
+      "acceptedAt": "2026-11-08T22:44:02.198Z",
+      "consumedAt": "2026-11-08T22:44:04.227Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 294,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "calc.js"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 1,
+      "fromNodeId": "T-001",
+      "toNodeId": "T-002",
+      "retestRequirement": null,
+      "deliveryAttempts": 1,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    }
+  ],
+  "escalations": [],
+  "paused": false
+}

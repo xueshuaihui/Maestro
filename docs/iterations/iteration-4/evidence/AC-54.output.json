@@ -1,0 +1,324 @@
+{
+  "ac": "AC-54",
+  "title": "旧命令基线不回归",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then：显式 --template single 与不带该参数的输出逐字相同（期望 \"实例 INST-001 · 运行中\\n会话已创建 mock-sess-<sid>\\n任务已投递\\n会话 执行中 · 已运行 2s\\n会话 等待下游 · 产出已提交\\n会话 空闲\\n节点 已完成 · 耗时 <n>s\\n交接包 HO-001  已构造   <time>\\n交接包 HO-001  已投递   <time>\\n交接包 HO-001  已接受   <time>\\n交接包 HO-001  已完成   <time>\\n\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 · 运行中\\n会话已创建 mock-sess-<sid>\\n任务已投递\\n会话 执行中 · 已运行 2s\\n会话 等待下游 · 产出已提交\\n会话 空闲\\n节点 已完成 · 耗时 <n>s\\n交接包 HO-001  已构造   <time>\\n交接包 HO-001  已投递   <time>\\n交接包 HO-001  已接受   <time>\\n交接包 HO-001  已完成   <time>\\n\""
+    },
+    {
+      "text": "机检：两次单节点运行的首行 diff 为空（期望 \"实例 INST-001 · 运行中\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 · 运行中\""
+    },
+    {
+      "text": "Then：实例行不带「· 模板 …」后缀（期望含 \"实例 INST-001 · 运行中\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中"
+    },
+    {
+      "text": "机检：single 实例行不含模板后缀（期望不含 \"· 模板\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中"
+    },
+    {
+      "text": "机检：不带 --template 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：显式 --template single 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：I1.2 编码闭环成功（退出码 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：I1.2 实例 completed（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "Then：I1.3 文档闭环成功（退出码 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：I1.3 实例 completed（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "Then：status 列表退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：status 无审批时不出现「待处理审批」（期望不含 \"待处理审批\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 3s · 更新 06:44:38\n"
+    },
+    {
+      "text": "机检：status 无暂停时不出现「（已暂停）」（期望不含 \"（已暂停）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 3s · 更新 06:44:38\n"
+    },
+    {
+      "text": "Then：cancel 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：core stop 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：core stop 输出「核心已停止」（期望含 \"核心已停止\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "核心已停止（pid 31514，运行 26s）\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --cwd ./demo --task ...（不带 --template）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写下说明"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-implicit",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 4397,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-31420-1\n任务已投递\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 3s\n交接包 HO-001  已构造   06:44:36\n交接包 HO-001  已投递   06:44:36\n交接包 HO-001  已接受   06:44:37\n交接包 HO-001  已完成   06:44:38\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --cwd ./demo --task ... --template single",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写下说明",
+        "--template",
+        "single"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-explicit",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 4494,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-31459-1\n任务已投递\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 3s\n交接包 HO-001  已构造   06:44:41\n交接包 HO-001  已投递   06:44:41\n交接包 HO-001  已接受   06:44:42\n交接包 HO-001  已完成   06:44:43\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run code-loop pass（I1.2 成功路径）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-code",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 8173,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-31537-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:44:48\n交接包 HO-001  开发→测试  已投递   06:44:50\n交接包 HO-001  开发→测试  已接受   06:44:50\n交接包 HO-001  开发→测试  已完成   06:44:51\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run task-loop doc-pass（I1.3 成功路径）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写发布说明，产物：release-notes.md",
+        "--template",
+        "task-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-doc",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 11489,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-31630-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 2s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 3s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 3s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   06:44:57\n交接包 HO-001  研究员→撰写者  已投递   06:44:59\n交接包 HO-001  研究员→撰写者  已接受   06:44:59\n交接包 HO-001  研究员→撰写者  已完成   06:45:00\n交接包 HO-002  撰写者→审核者  已构造   06:45:01\n交接包 HO-002  撰写者→审核者  已投递   06:45:02\n交接包 HO-002  撰写者→审核者  已接受   06:45:02\n交接包 HO-002  撰写者→审核者  已完成   06:45:03\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status（I1.1 列表）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-implicit",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 323,
+      "stdout": "实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 3s · 更新 06:44:38\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cancel --instance INST-001（I1.1 cancel）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cancel",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-cancel",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 615,
+      "stdout": "会话 空闲\n节点 T-001 开发 已取消\n节点 T-002 测试 已取消\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（前台，停止在派发边界）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-cancel",
+      "exitCode": null,
+      "timedOut": false,
+      "durationMs": 5168,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-31769-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop（I1.1 core stop）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-code",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 302,
+      "stdout": "核心已停止（pid 31514，运行 26s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-implicit",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 336,
+      "stdout": "核心已停止（pid 31397，运行 36s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-explicit",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 311,
+      "stdout": "核心已停止（pid 31440，运行 32s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-code",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 258,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-doc",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 320,
+      "stdout": "核心已停止（pid 31602，运行 19s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-cancel",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 261,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+  "ac": "AC-12",
+  "title": "证据越界或哈希不符被拒绝",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具[escape-ref]：接缝注册成功",
+      "ok": true,
+      "blocked": false,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "夹具[escape-ref]：工作区外同名文件确实存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "outside.txt"
+    },
+    {
+      "text": "机检[escape-ref]：实例挂起 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检[escape-ref]：有交接包被拒绝（期望 \"rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检[escape-ref]：rejectReason = invalid_payload（期望 \"invalid_payload\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"invalid_payload\""
+    },
+    {
+      "text": "机检[escape-ref]：reasonCode = handoff_invalid（期望 \"handoff_invalid\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"handoff_invalid\""
+    },
+    {
+      "text": "Then[escape-ref]：升级原因指出证据越界（期望含 \"证据越界\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-002 内容不合规：证据越界 ../outside.txt"
+    },
+    {
+      "text": "机检[escape-ref]：目标节点 round 不增加（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "夹具[hash-mismatch]：接缝注册成功",
+      "ok": true,
+      "blocked": false,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "夹具[hash-mismatch]：工作区外同名文件确实存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "outside.txt"
+    },
+    {
+      "text": "机检[hash-mismatch]：实例挂起 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检[hash-mismatch]：有交接包被拒绝（期望 \"rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检[hash-mismatch]：rejectReason = invalid_payload（期望 \"invalid_payload\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"invalid_payload\""
+    },
+    {
+      "text": "机检[hash-mismatch]：reasonCode = handoff_invalid（期望 \"handoff_invalid\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"handoff_invalid\""
+    },
+    {
+      "text": "Then[hash-mismatch]：升级原因指出证据哈希不符（期望含 \"证据哈希不符\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-002 内容不合规：证据哈希不符 calc.js"
+    },
+    {
+      "text": "机检[hash-mismatch]：目标节点 round 不增加（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run[escape-ref]（回流边坏包，前台挂起收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-escape-ref",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 9472,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-13276-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "call-seam test.handoff --mutate escape-ref --edge-kind backflow --round 2",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-escape-ref",
+        "--call",
+        "test.handoff",
+        "--instance",
+        "INST-001",
+        "--node",
+        "T-002",
+        "--mutate",
+        "escape-ref",
+        "--edge-kind",
+        "backflow",
+        "--round",
+        "2"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-escape-ref",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 189,
+      "stdout": "{\"ok\":true,\"registered\":true,\"instanceId\":\"INST-001\",\"nodeId\":\"T-002\",\"edgeKind\":\"backflow\",\"round\":2,\"mutate\":\"escape-ref\",\"snapshot\":null}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run[hash-mismatch]（回流边坏包，前台挂起收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-hash-mismatch",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 9713,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-13395-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "call-seam test.handoff --mutate hash-mismatch --edge-kind backflow --round 2",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-hash-mismatch",
+        "--call",
+        "test.handoff",
+        "--instance",
+        "INST-001",
+        "--node",
+        "T-002",
+        "--mutate",
+        "hash-mismatch",
+        "--edge-kind",
+        "backflow",
+        "--round",
+        "2"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-hash-mismatch",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 198,
+      "stdout": "{\"ok\":true,\"registered\":true,\"instanceId\":\"INST-001\",\"nodeId\":\"T-002\",\"edgeKind\":\"backflow\",\"round\":2,\"mutate\":\"hash-mismatch\",\"snapshot\":null}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-escape-ref",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 254,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-12-hash-mismatch",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 261,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

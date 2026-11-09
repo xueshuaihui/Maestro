@@ -1,0 +1,32 @@
+{
+  "ac": "AC-19",
+  "title": "会话创建失败仍按一次尝试升级",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:33:53.437Z",
+  "finishedAt": "2026-11-08T22:34:02.055Z",
+  "durationMs": 8618,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-19",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-19"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-19",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 7,
+  "notes": []
+}

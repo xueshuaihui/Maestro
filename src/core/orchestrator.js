@@ -65,6 +65,16 @@ import {
   initialNodes,
   promptFor,
 } from '../templates/index.js';
+import { validateHandoff } from './handoff-schema.js';
+import { CORE_TEXT, applyPlaceholders, handoffInvalidDetail } from './status-text.js';
+import { buildInboxMessage, writeInbox, patchInbox } from './inbox.js';
+import {
+  prepareWorkspace as prepareWorkspaceDir,
+  refreshStatusDoc,
+  STATUS_WRITE_FAULT,
+  WORKSPACE_INIT_FAILED,
+} from './workspace.js';
+import * as approvals from './approvals.js';
 
 const TURN_ID = 'turn-1';
 
@@ -200,6 +210,24 @@ function productsOfTask(state) {
 }
 
 /**
+ * D-9.8: the 9 fields persisted on graph-driven handoffs. They are projected
+ * key-by-key (only when the source actually carries them) so a tracker snapshot
+ * that lacks them never writes `undefined` into state.json.
+ */
+const HANDOFF_EXTRA_KEYS = Object.freeze([
+  'instanceId',
+  'round',
+  'fromNodeId',
+  'toNodeId',
+  'retestRequirement',
+  'deliveryAttempts',
+  'pendingAt',
+  'expiredAt',
+  'lastError',
+]);
+const HANDOFF_EXTRA_KEYS_SET = new Set(HANDOFF_EXTRA_KEYS);
+
+/**
  * Handoff projection whitelist (D-6). Fields the tracker does not produce
  * (`edge` / `defects` / `note` / `wakeConsumedAt`) are only written when the source
  * object actually carries them, so a plain `session/update` never wipes them.
@@ -231,13 +259,34 @@ function handoffToState(snapshot) {
   if (Object.prototype.hasOwnProperty.call(snapshot, 'revisionRequirement')) {
     out.revisionRequirement = snapshot.revisionRequirement;
   }
+  // D-9.8: only keys that actually exist on the source are projected. Never
+  // spread the whole tracker snapshot (it would carry internal fields and
+  // overwrite the 9 persisted fields with tracker defaults).
+  for (const key of HANDOFF_EXTRA_KEYS) {
+    if (
+      Object.prototype.hasOwnProperty.call(snapshot, key) &&
+      snapshot[key] !== undefined
+    ) {
+      out[key] = snapshot[key];
+    }
+  }
   return out;
 }
 
 function applyHandoff(handoff, snapshot) {
   if (!handoff) return;
   const next = handoffToState(snapshot);
-  for (const [key, value] of Object.entries(next)) handoff[key] = value;
+  for (const [key, value] of Object.entries(next)) {
+    // The 9 fields only live on graph-driven packages. A `single` bootstrap
+    // package (edge === null) must never gain them (C-04 / D-9.3).
+    if (
+      HANDOFF_EXTRA_KEYS_SET.has(key) &&
+      !Object.prototype.hasOwnProperty.call(handoff, key)
+    ) {
+      continue;
+    }
+    handoff[key] = value;
+  }
 }
 
 /**
@@ -265,6 +314,17 @@ export function createOrchestrator({
   env = process.env,
   graph = defaultGraph(),
   graphs = GRAPHS,
+  // M-01 / AC-61: product-side injectable hold gate in front of the retry
+  // backoff. WP-6 registers the `test.delivery` / `holdDelivery` RPC over this
+  // controller from daemon/server.js; this package only consumes it and never
+  // registers an RPC or touches `return {}`.
+  //   wait(info) -> Promise<boolean>   true = proceed, false = cancel/stop
+  //   info.cancelTimer() clears any pending backoff timer.
+  deliveryHold = null,
+  // B-01 / D-3 (AC-09~14): test-only hook that may mutate the handoff draft
+  // before validation (the `test.handoff` seam is driven by WP-6). NODE_ENV=test
+  // only; a bad draft here goes through the same one-CAS rejection as production.
+  handoffDraftHook = null,
 } = {}) {
   if (!store || typeof store.save !== 'function' || typeof store.load !== 'function') {
     throw new TypeError('createOrchestrator: 需要实现 load/save/list 的 store');
@@ -295,6 +355,18 @@ export function createOrchestrator({
   /** AC-44 fault injection: the workspace cannot be created. */
   const workspaceFault =
     runtimeEnv?.MAESTRO_FAULT === 'workspace_init:fail' ? 'workspace_init:fail' : null;
+  /** D-4 / D-10: durable-inbox write fault (test-only seam value). */
+  const inboxFault =
+    isTest && runtimeEnv?.MAESTRO_FAULT === 'inbox_write:fail' ? 'inbox_write:fail' : null;
+  /** AC-59: status.md refresh fault (test-only seam value). */
+  const statusFault =
+    isTest && runtimeEnv?.MAESTRO_FAULT === 'workspace_status_write:fail' ? STATUS_WRITE_FAULT : null;
+  /** Deterministic retry gate for tests; production always uses 200/500ms. */
+  const deliveryDelayMs = (() => {
+    if (!isTest) return null;
+    const value = Number.parseInt(runtimeEnv?.MAESTRO_TEST_DELIVERY_DELAY_MS ?? '', 10);
+    return Number.isInteger(value) && value >= 0 ? value : null;
+  })();
 
   /** 审批策略：显式参数 > env > 宿主配置 > 默认 allow（宿主细节不进入核心分支）。 */
   const explicitPermissionPolicy = normalizePermissionPolicy(permissionPolicy);
@@ -370,7 +442,12 @@ export function createOrchestrator({
     if (state?.counters) {
       state.counters.eventSeq = Math.max(0, store.nextSeq(instanceId) - 1);
     }
-    return opts ? store.save(instanceId, state, opts) : store.save(instanceId, state);
+    const pending = opts ? store.save(instanceId, state, opts) : store.save(instanceId, state);
+    const saved = await pending;
+    // C-02: every successful snapshot write rewrites status.md atomically.
+    // A refresh failure only emits an event and never rolls the state back (AC-59).
+    if (saved?.ok) await refreshWorkspaceStatus(instanceId, state);
+    return saved;
   }
 
   function expectedOf(state) {
@@ -378,7 +455,38 @@ export function createOrchestrator({
       state: state?.state ?? null,
       halted: Boolean(state?.halted),
       rev: Number.isInteger(state?.rev) ? state.rev : 0,
+      paused: Boolean(state?.paused),
     };
+  }
+
+  /** D-7.4 step 3: a dispatch CAS always expects a non-paused disk snapshot. */
+  function expectedForDispatch(reloaded) {
+    return {
+      state: reloaded?.state ?? null,
+      halted: Boolean(reloaded?.halted),
+      rev: Number.isInteger(reloaded?.rev) ? reloaded.rev : 0,
+      paused: false,
+    };
+  }
+
+  /**
+   * Refresh `status.md` from the just-persisted snapshot. Writing is best-effort:
+   * `refreshStatusDoc` emits `workspace.status_write_failed` on failure and the
+   * caller keeps going (AC-59).
+   */
+  async function refreshWorkspaceStatus(instanceId, state) {
+    try {
+      return await refreshStatusDoc({
+        root: store.root,
+        state,
+        graph: graphForState(state),
+        emit: makeEmitter(instanceId, null),
+        workspaceDir: workspaceDirOf(state),
+        fault: statusFault,
+      });
+    } catch {
+      return { ok: false, code: 'WORKSPACE_STATUS_WRITE_FAILED', params: {} };
+    }
   }
 
   /** 把磁盘快照灌回内存副本（保持引用不变，ctx 里的 state 仍然有效）。 */
@@ -560,8 +668,18 @@ export function createOrchestrator({
 
   /** 落盘内存快照（CAS 到内存当前的实例状态/版本）。 */
   async function saveLive(ctx) {
-    const res = await saveState(ctx.instanceId, ctx.state, { expectedState: expectedOf(ctx.state) });
-    if (!res.ok && res.code === 'STORE_CONFLICT') ctx.conflicted = true;
+    let res = await saveState(ctx.instanceId, ctx.state, { expectedState: expectedOf(ctx.state) });
+    if (!res.ok && res.code === 'STORE_CONFLICT') {
+      // D-7.2: a pause/resume write may have won the CAS. Backfill rev/paused
+      // from the disk snapshot and replay the round write once.
+      const disk = await store.load(ctx.instanceId);
+      if (disk.ok) {
+        ctx.state.rev = disk.state.rev;
+        ctx.state.paused = Boolean(disk.state.paused);
+        res = await saveState(ctx.instanceId, ctx.state, { expectedState: expectedOf(ctx.state) });
+      }
+      if (!res.ok && res.code === 'STORE_CONFLICT') ctx.conflicted = true;
+    }
     return res;
   }
 
@@ -681,17 +799,20 @@ export function createOrchestrator({
     }
   }
 
-  async function prepareWorkspace(instanceId) {
+  async function prepareWorkspace(instanceId, runGraph = null, state = null) {
     if (workspaceFault) return { ok: false, cause: `注入故障（${workspaceFault}）` };
-    try {
-      await fs.mkdir(instanceWorkspaceDir(store.root, instanceId), { recursive: true });
-      await fs.mkdir(instanceDocsDir(store.root, instanceId), { recursive: true });
-      await fs.mkdir(instanceReportsDir(store.root, instanceId), { recursive: true });
-      return { ok: true };
-    } catch (error) {
-      const message = String(error?.message ?? error ?? '').split('\n')[0];
-      return { ok: false, cause: message.length > 0 ? message : 'workspace_init_failed' };
+    // M-1 / D-8: delegate to the core workspace builder so every instance gets
+    // shared/, status.md and (for multi-node graphs) one stage/ dir per node.
+    const prepared = await prepareWorkspaceDir({
+      root: store.root,
+      instanceId,
+      graph: runGraph,
+      state,
+    });
+    if (!prepared.ok) {
+      return { ok: false, cause: prepared.params?.cause ?? prepared.cause ?? 'workspace_init_failed' };
     }
+    return { ok: true };
   }
 
   /**
@@ -846,6 +967,70 @@ export function createOrchestrator({
       action,
     });
 
+    // D-5.2: an explicit per-run policy overrides the host default. With no
+    // override this is exactly the old `ctx.permissionPolicy` (declared in the
+    // WP-6 tail section below, read here through the closure at call time).
+    const policy = runtimeApprovalPolicy ?? ctx.permissionPolicy;
+
+    // hold: the approval row AND the session's waiting_input move land in ONE
+    // CAS; every event is broadcast only after that write (D-5.4 / section 2.9).
+    if (policy === 'hold') {
+      const state = ctx.state;
+      const session = ctx.session;
+      const from = session ? session.state : null;
+      if (session) {
+        session.state = 'waiting_input';
+        session.stateSince = iso();
+        session.pendingPermission = { toolCallId: permission.toolCallId ?? null, action };
+      }
+      if (!Array.isArray(state.approvals)) state.approvals = [];
+      const approval = approvals.buildApproval({
+        approvals: state.approvals,
+        instanceId: ctx.instanceId,
+        nodeId: ctx.nodeId,
+        sessionId: ctx.sessionId,
+        action,
+        toolCallId: permission.toolCallId ?? null,
+        now: clock,
+      });
+      state.approvals.push(approval);
+
+      const events = [];
+      if (session && from !== 'waiting_input') {
+        events.push({
+          object: 'session',
+          objectId: ctx.sessionId,
+          from,
+          to: 'waiting_input',
+          result: 'applied',
+          reason: 'permission.requested',
+          detail: { action, toolCallId: permission.toolCallId ?? null },
+        });
+      }
+      events.push({
+        object: 'approval',
+        objectId: approval.approvalId,
+        from: null,
+        to: 'pending',
+        result: 'applied',
+        reason: 'approval.created',
+        detail: {
+          approvalId: approval.approvalId,
+          nodeId: ctx.nodeId,
+          sessionId: ctx.sessionId,
+          action,
+          toolCallId: permission.toolCallId ?? null,
+        },
+      });
+      await enqueue(ctx, async () => {
+        await saveLive(ctx);
+        for (const event of events) await ctx.emit(event);
+      });
+      // No respond: an external decide (approve/cancel) owns the next move.
+      return;
+    }
+
+    // allow / reject are launch-time policies: keep the I1.1 path byte-for-byte.
     const session = ctx.session;
     if (session) {
       const from = session.state;
@@ -870,20 +1055,22 @@ export function createOrchestrator({
       }
     }
 
-    if (ctx.permissionPolicy === 'allow') {
+    if (policy === 'allow') {
       permission.respond({ outcome: { outcome: 'selected', optionId: 'allow-once' } });
       await settlePermission(ctx, 'allow');
       return;
     }
-    if (ctx.permissionPolicy === 'reject') {
+    if (policy === 'reject') {
       permission.respond({ outcome: { outcome: 'selected', optionId: 'reject-once' } });
       await settlePermission(ctx, 'reject');
       return;
     }
-    // hold：一直不回，等外部决定（本迭代的外部决定就是取消）。
+    // Unknown policy: keep the session waiting without a respond, exactly like
+    // the old hold fallback (normalizePermissionPolicy guards the valid values).
   }
 
-  async function settlePermission(ctx, decision) {
+  async function settlePermission(ctx, decision, options = {}) {
+    const { approval = null, respond = null } = options;
     ctx.normalizer.onPermissionSettled({ sessionId: ctx.sessionId, decision });
     const to = decision === 'allow' ? 'thinking' : 'idle';
     const session = ctx.session;
@@ -895,6 +1082,48 @@ export function createOrchestrator({
     }
     session.state = to;
     session.stateSince = iso();
+
+    if (approval) {
+      // approve --decision allow|deny: the row move, the session move and the
+      // event share ONE CAS; broadcast only after the write, then answer the
+      // host so it cannot overtake the committed state.
+      const verdict = approvals.decideApproval(
+        approval,
+        decision === 'allow' ? 'allow' : 'deny',
+        iso(),
+      );
+      await enqueue(ctx, async () => {
+        await saveLive(ctx);
+        if (verdict.ok) {
+          await ctx.emit({
+            object: 'session',
+            objectId: ctx.sessionId,
+            from,
+            to,
+            result: 'applied',
+            reason: decision === 'allow' ? 'permission.allowed' : 'permission.denied',
+            detail: ctx.permission
+              ? { action: ctx.permission.action, approvalId: approval.approvalId }
+              : { approvalId: approval.approvalId },
+          });
+        }
+        if (typeof respond === 'function') {
+          try {
+            respond({
+              outcome: {
+                outcome: 'selected',
+                optionId: decision === 'allow' ? 'allow-once' : 'reject-once',
+              },
+            });
+          } catch {
+            // A late host acknowledgement must not roll back the committed row.
+          }
+        }
+      });
+      return;
+    }
+
+    // Launch-time allow / reject strategy: the I1.1 path stays byte-for-byte.
     if (from !== to) {
       await enqueue(ctx, async () => {
         await ctx.emit({
@@ -1111,6 +1340,219 @@ export function createOrchestrator({
    * 顺序固定：轮次 +1（含派发计数）→ 落盘 → `node.dispatch` → 建会话 →
    * 投递 prompt → 交接包 delivered → 落盘。建会话失败也保留这次派发计数。
    */
+  /**
+   * M-01 / AC-61: injectable hold point in front of the retry backoff.
+   * When a controller is injected, its `wait(info)` fully replaces the real
+   * timer (no sleep, deterministic release/cancel from the RPC or a test);
+   * `null` means "no controller, fall through to the cancellable timer".
+   * WP-6 owns release()/cancel() on the controller; here we only consume it.
+   */
+  async function awaitDeliveryHold(info) {
+    if (!deliveryHold || typeof deliveryHold.wait !== 'function') return null;
+    const proceed = await deliveryHold.wait(info);
+    return proceed === false ? false : true;
+  }
+
+  /** 可取消的重试等待：每 20ms 重查取消标记，定时器句柄常驻 ctx.deliveryTimer。 */
+  function waitDeliveryRetry(ctx, ms) {
+    return new Promise((resolve) => {
+      const total = Math.max(0, Number.isFinite(ms) ? ms : 0);
+      const step = Math.min(20, total || 1);
+      let waited = 0;
+      const poll = () => {
+        if (ctx.cancelled || ctx.finished) {
+          if (ctx.deliveryTimer) clearTimeout(ctx.deliveryTimer);
+          ctx.deliveryTimer = null;
+          resolve(false);
+          return;
+        }
+        if (waited >= total) {
+          ctx.deliveryTimer = null;
+          resolve(true);
+          return;
+        }
+        const slice = Math.min(step, total - waited);
+        waited += slice;
+        const timer = setTimeout(poll, slice);
+        timer.unref?.();
+        ctx.deliveryTimer = timer;
+      };
+      poll();
+    });
+  }
+
+  /** D-4.6 / D-4.9: exhaust -> expired package, then one-CAS delivery_failed escalation. */
+  async function escalateDeliveryFailure(ctx, lastError, attempts) {
+    const { state, node, session } = ctx;
+    const detail = applyPlaceholders(CORE_TEXT.deliveryFailed, {
+      id: ctx.handoff?.handoffId ?? '',
+      n: attempts,
+      lastError,
+    });
+    return escalateState({
+      instanceId: ctx.instanceId,
+      state,
+      node,
+      reasonCode: 'delivery_failed',
+      reasonDetail: detail,
+      defects: [],
+      overlaySession: session ? { ...session } : null,
+      sessionTerminal: 'idle',
+      emit: ctx.emit,
+    });
+  }
+
+  /**
+   * D-4: deliver a graph-driven handoff with 1 first attempt + 2 retries.
+   * The returned promise resolves only with the final prompt result so
+   * finishGraphNode never sees an intermediate failure. Events are persisted
+   * by ctx.emit before the state CAS, and the inbox is rewritten per attempt.
+   */
+  async function deliverWithRetry(ctx, text) {
+    const { state, adapter, sessionId, handoff, tracker } = ctx;
+    const instanceId = ctx.instanceId;
+    const delays = deliveryDelayMs === null ? [200, 500] : [deliveryDelayMs, deliveryDelayMs, deliveryDelayMs];
+    let lastError = 'delivery failed';
+    let final = null;
+
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      // D-4.3 / C-14: re-check the instance before every attempt.
+      if (ctx.cancelled || ctx.finished) break;
+      const disk = await store.load(instanceId);
+      if (!disk.ok || disk.state.state === 'cancelled' || disk.state.halted === true) break;
+
+      // Optimistic `delivered` is placed BEFORE adapter.prompt so the first
+      // turn frame can still drive delivered -> accepted (D-4.5 / C-10).
+      if (tracker && handoff && tracker.can('delivered')) {
+        tracker.delivered({ atMs: now(), attempt });
+        applyHandoff(handoff, {
+          ...tracker.snapshot(),
+          edge: handoff.edge,
+          defects: handoff.defects,
+          note: handoff.note,
+          wakeConsumedAt: handoff.wakeConsumedAt,
+          artifactRefs: handoff.artifactRefs,
+          revisionRequirement: handoff.revisionRequirement,
+        });
+        await flushHandoff(ctx);
+        await saveLive(ctx);
+      }
+
+      let result;
+      try {
+        result = await Promise.resolve().then(() =>
+          adapter.prompt(sessionId, [{ type: 'text', text }]),
+        );
+      } catch (error) {
+        result = { ok: false, error: { code: 'UNKNOWN_ERROR', message: String(error?.message ?? error) } };
+      }
+
+      if (result && result.ok === true) {
+        await patchInbox({
+          root: store.root,
+          instanceId,
+          handoffId: handoff.handoffId,
+          patch: { deliveryAttempts: attempt, deliveredAt: iso(), lastError: null },
+          fault: inboxFault,
+        });
+        final = result;
+        break;
+      }
+
+      lastError = String(result?.error?.message ?? result?.error?.code ?? 'delivery failed');
+
+      // A turn frame already arrived: this is an execution failure, not a
+      // delivery failure (C-09). Hand the result straight to the finish path.
+      if (tracker && tracker.state() !== 'delivered') {
+        final = result;
+        break;
+      }
+
+      // delivered -> pending fallback, one CAS and one handoff.pending event (D-4.4).
+      if (tracker && handoff) {
+        tracker.pending({ atMs: now(), attempt, lastError });
+        applyHandoff(handoff, {
+          ...tracker.snapshot(),
+          edge: handoff.edge,
+          defects: handoff.defects,
+          note: handoff.note,
+          wakeConsumedAt: handoff.wakeConsumedAt,
+          artifactRefs: handoff.artifactRefs,
+          revisionRequirement: handoff.revisionRequirement,
+        });
+        await flushHandoff(ctx);
+        await saveLive(ctx);
+      }
+      await patchInbox({
+        root: store.root,
+        instanceId,
+        handoffId: handoff.handoffId,
+        patch: { deliveryAttempts: attempt, lastError },
+        fault: inboxFault,
+      });
+
+      if (attempt === 3) {
+        if (tracker && handoff) {
+          tracker.expired({ atMs: now(), attempts: 3 });
+          applyHandoff(handoff, {
+            ...tracker.snapshot(),
+            edge: handoff.edge,
+            defects: handoff.defects,
+            note: handoff.note,
+            wakeConsumedAt: handoff.wakeConsumedAt,
+            artifactRefs: handoff.artifactRefs,
+            revisionRequirement: handoff.revisionRequirement,
+          });
+          await flushHandoff(ctx);
+          await saveLive(ctx);
+        }
+        await patchInbox({
+          root: store.root,
+          instanceId,
+          handoffId: handoff.handoffId,
+          patch: { deliveryAttempts: 3, lastError },
+          fault: inboxFault,
+        });
+        // Escalate BEFORE the promise settles so finishGraphNode is short-circuited.
+        await escalateDeliveryFailure(ctx, lastError, 3);
+        final = result;
+        break;
+      }
+
+      // M-01: an injected hold gate replaces the real backoff timer entirely,
+      // so retries are driven by explicit release/cancel (no sleep under load).
+      const hold = await awaitDeliveryHold({
+        instanceId,
+        handoffId: handoff?.handoffId ?? null,
+        attempt,
+        cancelTimer: () => {
+          if (ctx.deliveryTimer) clearTimeout(ctx.deliveryTimer);
+          ctx.deliveryTimer = null;
+        },
+      });
+      if (hold === false || ctx.cancelled || ctx.finished) {
+        if (ctx.deliveryTimer) clearTimeout(ctx.deliveryTimer);
+        ctx.deliveryTimer = null;
+        final = result;
+        break;
+      }
+      if (hold === null) {
+        const goOn = await waitDeliveryRetry(ctx, delays[attempt - 1]);
+        if (!goOn) {
+          if (ctx.deliveryTimer) clearTimeout(ctx.deliveryTimer);
+          ctx.deliveryTimer = null;
+          final = result;
+          break;
+        }
+      }
+    }
+    if (ctx.deliveryTimer) {
+      clearTimeout(ctx.deliveryTimer);
+      ctx.deliveryTimer = null;
+    }
+    return final ?? { ok: false, error: { code: 'HOST_ERROR', message: lastError } };
+  }
+
   async function dispatchInState(state, nodeId, options = {}) {
     const { handoffId = null, promptText = null, hostId = null, emit, onProgress } = options;
     const runGraph = graphForState(state);
@@ -1133,7 +1575,11 @@ export function createOrchestrator({
     state.state = 'running';
     state.stateSince = at;
 
-    const saved = await saveState(state.instanceId, state, { expectedState: expectedOf(state) });
+    // D-7.4 step 3: the dispatch CAS expects the seam-fresh snapshot and a
+    // fixed `paused: false`, so a pause write that landed first must conflict.
+    const saved = await saveState(state.instanceId, state, {
+      expectedState: expectedForDispatch(state),
+    });
     if (!saved.ok) return { ok: false, action: 'reject', code: saved.code };
 
     await emit({
@@ -1157,6 +1603,12 @@ export function createOrchestrator({
       sessionId = created.sessionId;
     } catch (error) {
       if (adapter) await disposeAdapter(adapter);
+      // AC-65 / BR-13,BR-29: the handoff was already persisted as `created`
+      // before this dispatch. A session-creation failure must not leave it as
+      // an orphan; fold it into the escalation's single CAS as rejected.
+      const pendingHandoff = (state.handoffs ?? []).find(
+        (item) => item?.handoffId === handoffId,
+      ) ?? null;
       const escalation = await escalateState({
         instanceId: state.instanceId,
         state,
@@ -1164,6 +1616,9 @@ export function createOrchestrator({
         reasonCode: 'dispatch_failed',
         reasonDetail: ESC_TEXT.dispatchFailed,
         defects: [],
+        ...(pendingHandoff
+          ? { pendingHandoff: { ...pendingHandoff, rejectReason: 'delivery_failed' } }
+          : {}),
         emit,
       });
       return {
@@ -1233,28 +1688,94 @@ export function createOrchestrator({
       });
     }
 
-    const promptPromise = Promise.resolve().then(() =>
-      adapter.prompt(ctx.sessionId, [{ type: 'text', text }]),
-    );
-    promptPromise.catch(() => {});
-    ctx.promptPromise = promptPromise;
-
-    if (ctx.tracker && ctx.handoff) {
-      if (ctx.handoff.state === 'created') {
-        ctx.tracker.delivered({ atMs: now() });
-        applyHandoff(ctx.handoff, {
-          ...ctx.tracker.snapshot(),
-          edge: ctx.handoff.edge,
-          defects: ctx.handoff.defects,
-          note: ctx.handoff.note,
-          wakeConsumedAt: ctx.handoff.wakeConsumedAt,
-          artifactRefs: ctx.handoff.artifactRefs,
-          revisionRequirement: ctx.handoff.revisionRequirement,
+    // D-4.1 / C-04: only graph-driven packages (edge !== null) enter the
+    // durable-inbox + retry path. Single bootstraps and the entry-node dispatch
+    // keep the I1.2 / I1.3 delivery path byte-for-byte.
+    const graphHandoff = ctx.handoff && ctx.handoff.edge != null ? ctx.handoff : null;
+    if (graphHandoff) {
+      // D-7.4 step 2: atomically persist the inbox BEFORE any delivery; only
+      // deliverable === true may reach adapter.prompt (AC-15 / C-08).
+      const message = buildInboxMessage({
+        handoffId: graphHandoff.handoffId,
+        instanceId: state.instanceId,
+        fromNodeId: graphHandoff.fromNodeId ?? graphHandoff.edge?.from ?? null,
+        toNodeId: graphHandoff.toNodeId ?? graphHandoff.edge?.to ?? null,
+        sessionId: ctx.sessionId,
+        promptText: text,
+        createdAt: graphHandoff.createdAt ?? at,
+        deliveryAttempts: 1,
+      });
+      const inbox = await writeInbox({
+        root: store.root,
+        instanceId: state.instanceId,
+        handoffId: graphHandoff.handoffId,
+        message,
+        fault: inboxFault,
+      });
+      if (!inbox.deliverable) {
+        // D-4.2 / D-4.7: no delivery; one CAS writes the rejected package,
+        // quarantines the just-created session and escalates delivery_failed.
+        const escalation = await escalateState({
+          instanceId: state.instanceId,
+          state,
+          node,
+          reasonCode: 'delivery_failed',
+          reasonDetail: applyPlaceholders(CORE_TEXT.deliveryFailed, {
+            id: graphHandoff.handoffId,
+            n: 0,
+            lastError: inbox.code ?? 'INBOX_WRITE_FAILED',
+          }),
+          defects: [],
+          pendingHandoff: { ...graphHandoff, rejectReason: 'delivery_failed' },
+          overlaySession: session ? { ...session } : null,
+          sessionTerminal: 'idle',
+          emit,
         });
-        await flushHandoff(ctx);
+        return {
+          ok: false,
+          action: 'stop',
+          code: escalation.ok ? 'INBOX_WRITE_FAILED' : 'ESCALATION_WRITE_FAILED',
+          escalation,
+        };
       }
+      // D-7.4 step 3 / AC-15: handoff.inboxed strictly precedes delivered.
+      await emit({
+        object: 'handoff',
+        objectId: graphHandoff.handoffId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'handoff.inboxed',
+        detail: { path: inbox.path },
+      });
+      // D-4.9: ctx.promptPromise exposes ONLY the final result; the retry loop
+      // owns every intermediate delivered/pending/expired CAS.
+      ctx.promptPromise = deliverWithRetry(ctx, text);
+      ctx.promptPromise.catch(() => {});
+    } else {
+      const promptPromise = Promise.resolve().then(() =>
+        adapter.prompt(ctx.sessionId, [{ type: 'text', text }]),
+      );
+      promptPromise.catch(() => {});
+      ctx.promptPromise = promptPromise;
+
+      if (ctx.tracker && ctx.handoff) {
+        if (ctx.handoff.state === 'created') {
+          ctx.tracker.delivered({ atMs: now() });
+          applyHandoff(ctx.handoff, {
+            ...ctx.tracker.snapshot(),
+            edge: ctx.handoff.edge,
+            defects: ctx.handoff.defects,
+            note: ctx.handoff.note,
+            wakeConsumedAt: ctx.handoff.wakeConsumedAt,
+            artifactRefs: ctx.handoff.artifactRefs,
+            revisionRequirement: ctx.handoff.revisionRequirement,
+          });
+          await flushHandoff(ctx);
+        }
+      }
+      await saveLive(ctx);
     }
-    await saveLive(ctx);
 
     const handle = activeRuns.get(state.instanceId);
     if (handle) handle.currentCtx = ctx;
@@ -1271,7 +1792,19 @@ export function createOrchestrator({
 
   // -------------------------------------------------------------- 升级事务
 
-  async function escalateState({ instanceId, state, node, reasonCode, reasonDetail, defects = [], emit }) {
+  async function escalateState({
+    instanceId,
+    state,
+    node,
+    reasonCode,
+    reasonDetail,
+    defects = [],
+    pendingHandoff = null,
+    overlaySession = null,
+    sessionTerminal = 'escalated',
+    retryOnConflict = 1,
+    emit,
+  }) {
     if (!node) return { ok: false, code: 'ESCALATION_WRITE_FAILED' };
     // commitEscalation 的 emit 是同步签名（不允许回滚已提交事务），这里把返回的
     // promise 收集起来，事务结束前统一 await —— 否则调用方一拿到结果就读
@@ -1296,6 +1829,10 @@ export function createOrchestrator({
     const committed = await commitEscalation({
       instanceId,
       escalation: entry,
+      pendingHandoff,
+      overlaySession,
+      sessionTerminal,
+      retryOnConflict,
       load: store.load,
       saveState: (id, value, opts) => saveState(id, value, opts),
       emit: tracked,
@@ -1799,8 +2336,27 @@ export function createOrchestrator({
     }
 
     // 4. projection: the versioned-doc policy never stores absolute paths (NFR-08).
+    // B-01: a declared-but-empty source node (products: []) verifies to an empty
+    // refs list, so the disk snapshot—and every downstream handoff built from it—
+    // would carry no evidence. Re-derive the references from the task's `产物：`
+    // line through the same verifier used at turn finish, then persist them via
+    // the saveLive below. A doc-single graph is excluded: its versioned documents
+    // live in the workspace, not next to the task (R3). The refsForEdge fallback
+    // in advance.js remains the last safety net for any still-empty snapshot.
     const verifiedAt = iso();
-    node.artifactRefs = (verified.refs ?? []).map((ref) =>
+    let refsForNode = verified.refs ?? [];
+    if (refsForNode.length === 0 && productPolicy !== 'doc-single') {
+      const declared = productsOfTask(state);
+      if (declared.length > 0) {
+        const observed = await verify({
+          cwd: state.cwd,
+          declared,
+          observedRefs: ctx.observedRefs,
+        });
+        if (observed.ok) refsForNode = observed.refs;
+      }
+    }
+    node.artifactRefs = refsForNode.map((ref) =>
       withSha
         ? { ref: ref.ref, bytes: ref.bytes, sha256: ref.sha256 ?? null, verifiedAt }
         : { ...ref, verifiedAt }
@@ -1917,7 +2473,8 @@ export function createOrchestrator({
     });
 
     if (review.decision === 'reject') {
-      const limit = maxRoundsOf(graphForState(state), node.nodeId);
+      // D-6.8: a human `retry` grants one more round at this gate too.
+      const limit = maxRoundsOf(graphForState(state), node.nodeId) + (node.extraRounds ?? 0);
       const exhausted = Number.isFinite(limit) && node.round >= limit;
       await consumeHandoff(ctx, 'handoff.consumed');
       await ctx.emit({
@@ -2034,7 +2591,8 @@ export function createOrchestrator({
     });
 
     if (verdict.value === 'fail') {
-      const limit = maxRoundsOf(graphForState(state), node.nodeId);
+      // D-6.8: a human `retry` grants one more round at this gate too.
+      const limit = maxRoundsOf(graphForState(state), node.nodeId) + (node.extraRounds ?? 0);
       const exhausted = Number.isFinite(limit) && node.round >= limit;
       await consumeHandoff(ctx, 'handoff.consumed');
 
@@ -2217,6 +2775,47 @@ export function createOrchestrator({
     const emit = makeEmitter(instanceId, onProgress);
     const handoff = plan.handoffDraft;
     if (!handoff) return { action: 'stop' };
+
+    // D-3 / B-01 (AC-08~14 / 68 / 69): every graph-driven package (edge !== null)
+    // is validated BEFORE it is committed. `edge === null` single bootstraps stay
+    // exempt (C-04 / D-3.2 step 1) and keep their I1.2 output byte-for-byte.
+    if (handoff.edge !== null && handoff.edge !== undefined) {
+      // NODE_ENV=test seam: let a test mutate the draft into a bad package;
+      // WP-6's `test.handoff` RPC drives the same controller. A bad draft here
+      // goes through the exact same one-CAS rejection as a production bad package.
+      if (isTest && typeof handoffDraftHook === 'function') {
+        await handoffDraftHook(handoff, {
+          instanceId,
+          graph: runGraph,
+          cwd: state.cwd,
+          workspaceDir: workspaceDirOf(state),
+        });
+      }
+      const check = await validateHandoff(handoff, {
+        graph: runGraph,
+        workspaceDir: workspaceDirOf(state),
+        cwd: state.cwd,
+        sourceNode: graphNode(runGraph, handoff.edge.from),
+      });
+      if (!check.ok) {
+        // D-3.5: ONE CAS writes the rejected package / invalid_payload,
+        // escalates the source node, suspends the instance and creates the
+        // handoff_invalid escalation. No handoff.created, no node.dispatch,
+        // no inbox, no session, no round increment.
+        await escalateState({
+          instanceId,
+          state,
+          node: nodeOf(state, handoff.edge.from),
+          reasonCode: 'handoff_invalid',
+          reasonDetail: check.detail,
+          defects: [],
+          pendingHandoff: { ...handoff, rejectReason: 'invalid_payload' },
+          emit,
+        });
+        return { action: 'stop' };
+      }
+    }
+
     if (handoff.edge?.kind === 'backflow') handoff.wakeConsumedAt = iso();
     const expected = expectedOf(state);
     state.handoffs.push(handoff);
@@ -2277,6 +2876,9 @@ export function createOrchestrator({
         products: productsOfTask(state),
         defectCount: target?.verdict?.defectCount ?? 0,
         reviewPath: reviewPathOf(state),
+        // AC-07: the retest prompt is a multi-node prompt too; without the
+        // workspace base the A-6 "workspace context" section is dropped.
+        workspaceDir: workspaceDirOf(state),
       });
     }
 
@@ -2360,7 +2962,28 @@ export function createOrchestrator({
           break;
         }
 
+        // D-7.2: a round whose own write was conflicted stops immediately; it
+        // must not enter advance() (that would write again).
+        if (ctx.conflicted === true) {
+          outcome = await pausedTailOrConflict(handle.instanceId);
+          break;
+        }
+
         await maybeStopAfter(handle.instanceId);
+
+        // D-7.4 step 3: re-read the disk before the next dispatch. A pause that
+        // landed during the just-finished round ends the drive here: no write,
+        // no escalation, no dispatch (AC-49).
+        const beforeAdvance = await store.load(handle.instanceId);
+        if (
+          beforeAdvance.ok &&
+          beforeAdvance.state.paused === true &&
+          beforeAdvance.state.state === 'running' &&
+          beforeAdvance.state.halted !== true
+        ) {
+          outcome = { ok: true, snapshot: snapshotOf(beforeAdvance.state) };
+          break;
+        }
 
         const next = await advance(handle.instanceId, {
           onProgress: ctx.onProgress,
@@ -2370,6 +2993,34 @@ export function createOrchestrator({
         if (next.action === 'dispatch' && next.ctx) {
           handle.currentCtx = next.ctx;
           continue;
+        }
+
+        // WP-6 tail branches (D-7.2 / D-7.4). Neither writes a snapshot,
+        // escalates, nor replays a write after re-reading the disk.
+        let action = next.action;
+        if (action === 'reject' && next.code === 'STORE_CONFLICT') {
+          // A pause write that won the dispatch CAS surfaces as a conflict with
+          // `paused === true` on disk. Normalize it to the paused tail (exit 0);
+          // every other conflict is surfaced verbatim to waitForRun.
+          const disk = await store.load(handle.instanceId);
+          const pausedOnDisk =
+            disk.ok &&
+            disk.state.paused === true &&
+            disk.state.state === 'running' &&
+            disk.state.halted !== true;
+          action = pausedOnDisk ? 'paused' : 'conflict';
+        }
+        if (action === 'paused') {
+          // `paused` was already persisted by workflow.pause. End this drive
+          // WITHOUT any write, escalation or retry; hand the paused snapshot
+          // to run.wait (exit 0). No `pausedAt` field exists in the contract.
+          outcome = { ok: true, snapshot: await currentSnapshot(handle.instanceId) };
+          break;
+        }
+        if (action === 'conflict') {
+          // Stop the drive and pass the code through to waitForRun unchanged.
+          outcome = { ok: false, code: 'STORE_CONFLICT' };
+          break;
         }
         outcome = { ok: true, snapshot: await currentSnapshot(handle.instanceId) };
         break;
@@ -2497,6 +3148,17 @@ export function createOrchestrator({
     state.counters.dispatchCount += 1;
 
     const emit = makeEmitter(instanceId, onProgress);
+
+    if (fresh) {
+      // §2.9 / AC-44: build the workspace (shared/ + status.md) BEFORE any
+      // session or state.json exists. A single-node graph never gets stage/.
+      const workspace = await prepareWorkspace(instanceId, runGraph, state);
+      if (!workspace.ok) {
+        await discardInstance(instanceId);
+        return { ok: false, result: fail('WORKSPACE_INIT_FAILED', { cause: workspace.cause }) };
+      }
+    }
+
     let adapter = null;
     let sessionId = null;
     try {
@@ -2614,6 +3276,10 @@ export function createOrchestrator({
       task,
       products: [],
       reviewPath: reviewPathOf(state),
+      // A-6 / AC-07: every graph=true production call site carries a non-empty
+      // workspaceDir; a single-node graph has one node, so no section is appended,
+      // but the argument must still be present (prompt-context.test.js 机检).
+      workspaceDir: workspaceDirOf(state),
     });
     const promptPromise = Promise.resolve().then(() =>
       adapter.prompt(ctx.sessionId, [{ type: 'text', text }]),
@@ -2648,9 +3314,13 @@ export function createOrchestrator({
       // D-8: the stem is computed once from the task's `产物：` line and only read later.
       const declared = parseProductDeclaration(task);
       state.artifactStem = declared.ok ? declared.stem : null;
-      // AC-44: the workspace is built **before** `state.json` exists, so a failure leaves
-      // no half-created instance behind.
-      const workspace = await prepareWorkspace(instanceId);
+    }
+    if (fresh) {
+      // §2.9 / AC-44: EVERY graph builds shared/, status.md, multi-node stage/
+      // and doc-single artifacts/ BEFORE state.json and any session exist.
+      // Passing graph/state lets the upstream builder lay out stage/ and render
+      // the initial status.md; a failure leaves no half-created instance behind.
+      const workspace = await prepareWorkspace(instanceId, runGraph, state);
       if (!workspace.ok) {
         await discardInstance(instanceId);
         return { ok: false, result: fail('WORKSPACE_INIT_FAILED', { cause: workspace.cause }) };
@@ -2886,6 +3556,15 @@ export function createOrchestrator({
 
     if (outcome === WAIT_TIMEOUT) return fail('WAIT_TIMEOUT', { instanceId, timeoutMs: limit });
 
+    // D-7.2 / §4.9: ONLY a conflicted run handle surfaces its code verbatim.
+    // Every other terminal result (HOST_ERROR / VERIFY_FAILED / ...) must still
+    // fall through to getStatus and return ok:true with the final snapshot —
+    // that is the pre-WP-4 contract wp7:140 relies on. A broad `ok===false`
+    // passthrough would turn a normal failed run into a waitForRun error.
+    if (outcome && outcome.ok === false && outcome.code === 'STORE_CONFLICT') {
+      return { ok: false, code: outcome.code };
+    }
+
     const status = await getStatus({ instanceId });
     if (status.ok) return { ok: true, snapshot: status.snapshot };
     return { ok: true, snapshot: outcome?.snapshot ?? null };
@@ -2957,6 +3636,11 @@ export function createOrchestrator({
    * 取消：遍历四张数组，内存改完后**一次 CAS** 落盘，再逐条 emit。
    */
   async function applyCancel(instanceId, state, emit, ctx, handle = null) {
+    // AC-61: release any retry parked at the injected delivery gate BEFORE the
+    // CAS, so no late prompt can race with the cancelled terminal write.
+    if (deliveryHold && typeof deliveryHold.cancel === 'function') {
+      try { deliveryHold.cancel(); } catch { /* best effort */ }
+    }
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const disk = attempt === 0 ? { ok: true, state } : await store.load(instanceId);
       if (!disk.ok) return fail(disk.code ?? 'NOT_FOUND', disk.params ?? {});
@@ -3059,6 +3743,22 @@ export function createOrchestrator({
         cancelledEscalations.push(escalation);
       }
 
+      // D-5.8 / AC-35 / AC-60: cancel voids every pending approval and clears
+      // the pause flag in the SAME CAS as the rest of the cancellation.
+      const withdrawnApprovals = approvals.withdrawPending(work.approvals, at);
+      for (const approval of withdrawnApprovals) {
+        events.push({
+          object: 'approval',
+          objectId: approval.approvalId,
+          from: 'pending',
+          to: 'withdrawn',
+          result: 'applied',
+          reason: 'approval.withdrawn',
+          detail: { approvalId: approval.approvalId },
+        });
+      }
+      work.paused = false;
+
       if (work.state !== 'cancelled') {
         const from = work.state;
         work.state = 'cancelled';
@@ -3152,6 +3852,15 @@ export function createOrchestrator({
     snapshot.haltCause = state?.haltCause ?? null;
     snapshot.pendingEscalations = (state?.escalations ?? []).filter((entry) => entry.state === 'pending')
       .length;
+    // §4.9 WP-4 owns only the `paused` field here; approvals / pendingApprovals
+    // are frozen as field names and left to WP-6.
+    snapshot.paused = Boolean(state?.paused);
+    // WP-6: appended AFTER every frozen field, so the existing field order is
+    // unchanged. Old snapshots project to [] / 0 (D-9.1 / M-10).
+    snapshot.approvals = Array.isArray(state?.approvals) ? state.approvals : [];
+    snapshot.pendingApprovals = snapshot.approvals.filter(
+      (entry) => entry?.state === 'pending',
+    ).length;
     return snapshot;
   }
 
@@ -3366,7 +4075,13 @@ export function createOrchestrator({
     });
   }
 
-  async function escalateOnce(instanceId, nodeId) {
+  async function escalateOnce(instanceId, nodeId, options = {}) {
+    // D-10 / G10: the test seam may request a specific escalation reason and
+    // seed artifactRefs on the escalated node (AC-24 middle-node pass).
+    const reasonCode = typeof options.reasonCode === 'string' && options.reasonCode.length > 0
+      ? options.reasonCode
+      : 'execution_failed';
+    const artifactRefs = Array.isArray(options.artifactRefs) ? options.artifactRefs : null;
     return withLock(instanceId, async () => {
       const loaded = await store.load(instanceId);
       if (!loaded.ok) return fail(loaded.code ?? 'NOT_FOUND', loaded.params ?? {});
@@ -3381,12 +4096,21 @@ export function createOrchestrator({
         return { ok: true, escalationId: existing.escalationId, reused: true };
       }
 
+      if (artifactRefs) {
+        // commitEscalation re-reads the disk, so an in-memory-only change would
+        // be lost. Persist the seed in ONE CAS before the escalation transaction.
+        node.artifactRefs = artifactRefs;
+        const seeded = await saveState(instanceId, state, { expectedState: expectedOf(state) });
+        if (!seeded.ok) return fail(seeded.code, seeded.params ?? {});
+        state.rev = seeded.rev;
+      }
+
       const emit = makeEmitter(instanceId, null);
       const result = await escalateState({
         instanceId,
         state,
         node,
-        reasonCode: 'execution_failed',
+        reasonCode,
         reasonDetail: `${ESC_TEXT.executionPrefix}${node.failure?.message ?? ''}`,
         defects: node.verdict?.value === 'fail' ? (node.verdict.defects ?? []) : [],
         emit,
@@ -3414,6 +4138,678 @@ export function createOrchestrator({
     }
   }
 
+  // ------------------------------------------------------------ WP-6 lifecycle
+
+  // D-5.2: explicit per-run approval policy (set by the run.start RPC). Read by
+  // handlePermission through the closure; null keeps the host-configured value.
+  let runtimeApprovalPolicy = null;
+  function setApprovalPolicy(policy) {
+    runtimeApprovalPolicy = normalizePermissionPolicy(policy);
+    return { ok: true, policy: runtimeApprovalPolicy };
+  }
+
+  // WP-4's two injectable gates are constructor parameters. Rebind them lazily
+  // here (only when the constructor did NOT supply one) so the daemon can drive
+  // them over the test-only RPCs without recreating the orchestrator.
+  const deliveryGate = { wait: null, cancel: null };
+  if (!deliveryHold) deliveryHold = deliveryGate;
+  let deliveryActive = false;
+  const deliveryWaiters = [];
+  let deliveryHeldNotify = null;
+
+  deliveryGate.cancel = () => {
+    deliveryActive = false;
+    for (const waiter of deliveryWaiters.splice(0)) {
+      waiter.info?.cancelTimer?.();
+      waiter.resolve(false);
+    }
+  };
+
+  function holdDelivery({ action } = {}) {
+    if (action === 'hold') {
+      deliveryActive = true;
+      deliveryGate.wait = (info) => new Promise((resolve) => {
+        deliveryWaiters.push({ resolve, info });
+        if (typeof deliveryHeldNotify === 'function') {
+          const notify = deliveryHeldNotify;
+          deliveryHeldNotify = null;
+          notify(info);
+        }
+      });
+      return { ok: true, action };
+    }
+    if (action === 'release') {
+      deliveryActive = false;
+      deliveryGate.wait = null;
+      for (const waiter of deliveryWaiters.splice(0)) waiter.resolve(true);
+      return { ok: true, action };
+    }
+    if (action === 'cancel') {
+      deliveryGate.cancel();
+      deliveryGate.wait = null;
+      return { ok: true, action };
+    }
+    return fail('IPC_BAD_PARAMS', { field: 'action' });
+  }
+
+  function whenDeliveryHeld() {
+    if (deliveryWaiters.length > 0) return Promise.resolve();
+    return new Promise((resolve) => { deliveryHeldNotify = resolve; });
+  }
+
+  let handoffMutator = null;
+  if (isTest && !handoffDraftHook) {
+    handoffDraftHook = (handoff, meta) => {
+      if (typeof handoffMutator !== 'function') return undefined;
+      const apply = handoffMutator;
+      handoffMutator = null; // one-shot
+      return apply(handoff, meta);
+    };
+  }
+
+  function applyHandoffMutation(handoff, mutate) {
+    const refs = handoff.artifactRefs && typeof handoff.artifactRefs === 'object'
+      ? { ...handoff.artifactRefs }
+      : { input: [], output: null, previous: null };
+    switch (mutate) {
+      case 'missing-to':
+        handoff.toNodeId = null;
+        break;
+      case 'missing-field':
+        delete handoff.round;
+        break;
+      case 'no-evidence':
+        handoff.artifactRefs = { ...refs, input: [], previous: null };
+        handoff.defects = [];
+        break;
+      case 'remove-evidence':
+        handoff.artifactRefs = { ...refs, input: [] };
+        break;
+      case 'escape-ref':
+        handoff.artifactRefs = { ...refs, input: ['../outside.txt'] };
+        break;
+      case 'hash-mismatch':
+        handoff.artifactRefs = { ...refs, previous: { ref: 'calc.js', sha256: 'deadbeef' } };
+        break;
+      case 'backflow-empty-defects':
+        handoff.defects = [];
+        break;
+      case 'empty-requirements':
+        handoff.revisionRequirement = '';
+        handoff.retestRequirement = '';
+        break;
+      default:
+        break;
+    }
+    return handoff;
+  }
+
+  /** D-10 / AC-09~14: register a one-shot draft mutation for `test.handoff`. */
+  function seamHandoff({ instanceId, nodeId, edgeKind = null, round = null, mutate = null } = {}) {
+    if (typeof instanceId !== 'string' || instanceId.length === 0) {
+      return fail('IPC_BAD_PARAMS', { field: 'instanceId' });
+    }
+    if (typeof nodeId !== 'string' || nodeId.length === 0) {
+      return fail('IPC_BAD_PARAMS', { field: 'nodeId' });
+    }
+    if (typeof mutate !== 'string' || mutate.length === 0) {
+      return fail('IPC_BAD_PARAMS', { field: 'mutate' });
+    }
+    if (!isTest) return fail('IPC_BAD_METHOD', { method: 'test.handoff' });
+    handoffMutator = (handoff) => applyHandoffMutation(handoff, mutate);
+    return {
+      ok: true,
+      registered: true,
+      instanceId,
+      nodeId,
+      edgeKind,
+      round,
+      mutate,
+      // A draft exists only once the next drive reaches the hook. The caller
+      // asserts the rejected package from state.json / events.jsonl.
+      snapshot: null,
+    };
+  }
+
+  function terminalNodeId(graph, id) {
+    if (!graph) return false;
+    if (typeof graph.terminal === 'string' && graph.terminal.length > 0) return graph.terminal === id;
+    if (Array.isArray(graph.terminals)) return graph.terminals.includes(id);
+    return (Array.isArray(graph.edges) ? graph.edges : []).every((edge) => edge.from !== id);
+  }
+
+  /** Distinguish a pause that won the CAS from a genuine concurrent-write conflict. */
+  async function pausedTailOrConflict(instanceId) {
+    const disk = await store.load(instanceId);
+    const pausedOnDisk =
+      disk.ok &&
+      disk.state.paused === true &&
+      disk.state.state === 'running' &&
+      disk.state.halted !== true;
+    return pausedOnDisk
+      ? { ok: true, snapshot: snapshotOf(disk.state) }
+      : { ok: false, code: 'STORE_CONFLICT' };
+  }
+
+  /**
+   * D-7.2: pause/resume never take the instance lock. One queued save carries a
+   * function-valued expectedState evaluated INSIDE the queue task, right after
+   * the disk read, so a rev bump during queuing is not a false conflict. A
+   * business-precondition failure is expressed as a guaranteed conflict (no
+   * write); the caller re-enqueues at most 3 times and NEVER calls store.save
+   * from inside the queue task (self-deadlock).
+   */
+  function pausedExpected(kind, disk, guard) {
+    if (!disk) return { state: '__missing__' };
+    if (disk.state !== 'running' || disk.halted === true) {
+      guard.code = kind === 'pause' ? 'INSTANCE_NOT_PAUSABLE' : 'INSTANCE_NOT_RESUMABLE';
+      guard.state = disk.state ?? null;
+      return { state: '__guard__' };
+    }
+    const target = kind === 'pause';
+    if (Boolean(disk.paused) === target) {
+      guard.code = 'IDEMPOTENT';
+      return { state: '__guard__' };
+    }
+    return {
+      state: disk.state,
+      halted: Boolean(disk.halted),
+      rev: Number.isInteger(disk.rev) ? disk.rev : 0,
+      paused: Boolean(disk.paused),
+    };
+  }
+
+  async function withPausedWrite(instanceId, kind) {
+    if (typeof instanceId !== 'string' || instanceId.length === 0) {
+      return fail('NOT_FOUND', { instanceId: instanceId ?? null });
+    }
+    const target = kind === 'pause';
+    const live = activeRuns.get(instanceId);
+    const ctx = live && !live.finished ? live.currentCtx : null;
+    let state;
+    if (ctx?.state) {
+      // D-7.2 step 5: flip the live round's in-memory snapshot first so its
+      // next saveLive uses the newest rev.
+      state = ctx.state;
+      state.paused = target;
+    } else {
+      const loaded = await store.load(instanceId);
+      if (!loaded.ok) return fail(loaded.code ?? 'NOT_FOUND', loaded.params ?? {});
+      if (isLegacy(loaded.state)) return fail('LEGACY_READ_ONLY', {});
+      state = arraysOf(loaded.state);
+      state.paused = target;
+    }
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const guard = {};
+      const saved = await store.save(instanceId, state, {
+        expectedState: (disk) => pausedExpected(kind, disk, guard),
+      });
+      if (saved.ok) {
+        state.rev = saved.rev;
+        const emit = makeEmitter(instanceId, null);
+        await emit({
+          object: 'instance',
+          objectId: instanceId,
+          from: null,
+          to: null,
+          result: 'applied',
+          reason: target ? 'workflow.paused' : 'workflow.resumed',
+          detail: { paused: target },
+        });
+        if (!target) maybeResumeDrive(instanceId, state);
+        return { ok: true, paused: target, idempotent: false, snapshot: snapshotOf(state) };
+      }
+      if (saved.code !== 'STORE_CONFLICT') return fail(saved.code, saved.params ?? {});
+      if (guard.code === 'IDEMPOTENT') {
+        const loaded = await store.load(instanceId);
+        return {
+          ok: true,
+          idempotent: true,
+          paused: Boolean(loaded.ok && loaded.state.paused),
+          snapshot: loaded.ok ? snapshotOf(loaded.state) : null,
+        };
+      }
+      if (guard.code) return fail(guard.code, { instanceId, state: guard.state });
+      // Genuine concurrent-write conflict: re-enqueue a FRESH save. The expected
+      // function re-reads the disk inside the next queue task.
+    }
+    return fail('STORE_CONFLICT', {});
+  }
+
+  async function pause(args = {}) { return withPausedWrite(args.instanceId, 'pause'); }
+  async function resume(args = {}) { return withPausedWrite(args.instanceId, 'resume'); }
+  async function abort(args = {}) { return cancel({ instanceId: args.instanceId }); }
+
+  /** D-7.3: lock-free background drive after a real resume. */
+  function maybeResumeDrive(instanceId, state) {
+    const live = activeRuns.get(instanceId);
+    if (live && !live.finished) return; // an existing drive keeps going
+    const handle = {
+      instanceId,
+      graph: graphForState(state),
+      currentCtx: null,
+      cancelled: false,
+      finished: false,
+    };
+    // Claim synchronously: no await between the activeRuns check and the set.
+    activeRuns.set(instanceId, handle);
+    const hostId = latestSession(state)?.hostId ?? null;
+    (async () => {
+      try {
+        // AC-66 / BR-14,BR-24,BR-25 / D-7.4 step 1+3: a handoff persisted as
+        // `created` just before the pause is the package that was about to be
+        // dispatched. Reuse it ONLY under the three gates and the round guard;
+        // a committed dispatch leaving a stale `created` package on disk must
+        // never trigger a second package, dispatch, round or session.
+        // Re-read the disk snapshot: the in-memory copy from withPausedWrite
+        // may predate the dispatch that committed, and dispatchInState must
+        // expect the disk rev (AC-53), not a stale one.
+        const freshLoaded = await store.load(instanceId);
+        const fresh = freshLoaded.ok && !isLegacy(freshLoaded.state)
+          ? arraysOf(freshLoaded.state)
+          : null;
+        let runGraph = null;
+        let targetNodeId = null;
+        let pending = null;
+        let skipAdvance = false;
+        if (fresh) {
+          runGraph = graphForState(fresh);
+          // D-7.4 step 1: derive THIS advance's target node + targetRound from
+          // the planner (advance.js: targetRound = target node round + 1),
+          // never reverse-derive the node id from the chosen package.
+          const fromNodeId = latestEndedNodeId(fresh);
+          const plan = planAdvance({
+            graph: runGraph,
+            snapshot: fresh,
+            fromNodeId,
+            outcome: classifyNodeOutcome(fresh, fromNodeId, null),
+            verdict: null,
+            workspaceDir: workspaceDirOf(fresh),
+            now: clock,
+          });
+          targetNodeId = plan.targetNodeId ?? plan.nodeId ?? null;
+          const targetRound = plan.targetRound ?? plan.round ?? null;
+          const targetNode = nodeOf(fresh, targetNodeId);
+          // A `created` package carries construction-time targetRound in
+          // handoff.round (iteration-4.md section 2.10). A busy target, a disk
+          // node.round already >= that round, or a session already started for
+          // it all mean the dispatch committed -> D-7.4 step 1 stop guard.
+          const built = [...(fresh.handoffs ?? [])].reverse().find(
+            (item) => item?.state === 'created' && item?.edge &&
+              item.toNodeId === targetNodeId,
+          ) ?? null;
+          const builtRound = Number.isInteger(built?.round) ? built.round : null;
+          const committed = !!built && !!targetNode &&
+            Number.isInteger(builtRound) && targetNode.round >= builtRound;
+          const startedThisRound = !!built && (fresh.sessions ?? []).some(
+            (session) => session?.nodeId === targetNodeId &&
+              session?.round === builtRound,
+          );
+          const stopped = !!targetNode &&
+            (isNodeBusyState(targetNode.state) || committed);
+          const anyCreated = (fresh.handoffs ?? []).some(
+            (item) => item?.state === 'created' && item?.edge,
+          );
+          if (!stopped && ['dispatch', 'backflow'].includes(plan.action)) {
+            // Three gates: toNodeId === target, round === targetRound, and no
+            // session started for that round (old-round sessions do not count).
+            pending = [...(fresh.handoffs ?? [])].reverse().find((item) =>
+              item?.state === 'created' && item?.edge &&
+              item.toNodeId === targetNodeId &&
+              item.round === targetRound &&
+              !startedThisRound,
+            ) ?? null;
+          }
+          // With a `created` package on disk but no gated match, re-planning
+          // would build a second package. Stop instead; a clean resume with no
+          // `created` package still falls through to advance().
+          skipAdvance = stopped || (anyCreated && !pending);
+        }
+        if (pending) {
+          const dispatched = await dispatchInState(fresh, targetNodeId, {
+            handoffId: pending.handoffId,
+            promptText: retryPromptText(fresh, { nodeId: targetNodeId }, runGraph),
+            hostId,
+            emit: makeEmitter(instanceId, null),
+            onProgress: null,
+          });
+          if (dispatched.ok && dispatched.ctx) {
+            handle.currentCtx = dispatched.ctx;
+            driveGraph(handle).catch(() => {});
+            return;
+          }
+        } else if (fresh && !skipAdvance) {
+          const next = await advance(instanceId, { hostId });
+          if (next.action === 'dispatch' && next.ctx) {
+            handle.currentCtx = next.ctx;
+            driveGraph(handle).catch(() => {});
+            return;
+          }
+        }
+        handle.finished = true;
+        if (activeRuns.get(instanceId) === handle) activeRuns.delete(instanceId);
+      } catch {
+        handle.finished = true;
+        if (activeRuns.get(instanceId) === handle) activeRuns.delete(instanceId);
+      }
+    })();
+  }
+
+  function attachToDrive(instanceId, state, ctx) {
+    const existing = activeRuns.get(instanceId);
+    const handle = existing && !existing.finished
+      ? existing
+      : {
+          instanceId,
+          graph: graphForState(state),
+          currentCtx: null,
+          cancelled: false,
+          finished: false,
+        };
+    activeRuns.set(instanceId, handle);
+    handle.currentCtx = ctx;
+    return handle;
+  }
+
+  async function instanceIds(scoped) {
+    if (typeof scoped === 'string' && scoped.length > 0) return [scoped];
+    const listed = await store.list();
+    return (listed?.items ?? [])
+      .map((item) => item?.instanceId)
+      .filter((id) => typeof id === 'string');
+  }
+
+  async function listApprovals({ instanceId = null, sessionId = null } = {}) {
+    const ids = await instanceIds(instanceId);
+    const rows = [];
+    for (const id of ids) {
+      const loaded = await store.load(id);
+      if (!loaded.ok) continue;
+      const list = Array.isArray(loaded.state.approvals) ? loaded.state.approvals : [];
+      for (const row of list) {
+        if (typeof sessionId === 'string' && sessionId.length > 0 && row?.sessionId !== sessionId) {
+          continue;
+        }
+        rows.push({ instanceId: id, ...row });
+      }
+    }
+    rows.sort((a, b) =>
+      String(a.instanceId).localeCompare(String(b.instanceId)) ||
+      String(a.approvalId).localeCompare(String(b.approvalId)));
+    return { ok: true, approvals: rows };
+  }
+
+  async function resolveApproval({ instanceId = null, approvalId, decision } = {}) {
+    if (typeof approvalId !== 'string' || approvalId.length === 0) {
+      return fail('APPROVAL_NOT_FOUND', { approvalId: approvalId ?? null });
+    }
+    if (decision !== 'allow' && decision !== 'deny') {
+      return fail('USAGE_ERROR', { field: 'decision' });
+    }
+    const scoped = typeof instanceId === 'string' && instanceId.length > 0;
+    const ids = await instanceIds(instanceId);
+    const matches = [];
+    for (const id of ids) {
+      const loaded = await store.load(id);
+      if (!loaded.ok) continue;
+      const row = approvals.findApproval(loaded.state.approvals, approvalId);
+      if (row) matches.push({ id, state: loaded.state, row });
+    }
+    if (matches.length === 0) return fail('APPROVAL_NOT_FOUND', { approvalId });
+    if (matches.length > 1 && !scoped) return fail('APPROVAL_AMBIGUOUS', { approvalId });
+    const target = matches[0];
+    if (target.row.state !== 'pending') {
+      return fail('APPROVAL_NOT_PENDING', { approvalId, state: target.row.state });
+    }
+
+    // Section 1.5 / D-5.9: without the in-memory respond handle (core restart)
+    // keep the row pending and refuse; never fake an approval.
+    const live = activeRuns.get(target.id);
+    const ctx = live && !live.finished ? live.currentCtx : null;
+    const permission = ctx?.permission ?? null;
+    const check = approvals.approvalSessionCheck(target.row, permission);
+    if (!check.ok) return fail(check.code, { approvalId });
+    if (ctx.finished || ctx.cancelled || !ctx.session || ctx.session.state !== 'waiting_input') {
+      return fail(approvals.APPROVAL_SESSION_GONE, { approvalId });
+    }
+    const row = approvals.findApproval(ctx.state.approvals, approvalId) ?? target.row;
+    const respond = (arg) => permission.respond(arg);
+    await settlePermission(ctx, decision === 'allow' ? 'allow' : 'reject', {
+      approval: row,
+      respond,
+    });
+    return {
+      ok: true,
+      approvalId,
+      state: row.state,
+      resolution: row.resolution,
+      action: row.action,
+      instanceId: target.id,
+    };
+  }
+
+  async function locateSession({ sessionId } = {}) {
+    if (typeof sessionId !== 'string' || sessionId.length === 0) {
+      return fail('SESSION_NOT_FOUND', { sessionId: sessionId ?? null });
+    }
+    for (const id of await instanceIds(null)) {
+      const loaded = await store.load(id);
+      if (!loaded.ok) continue;
+      const session = sessionOf(loaded.state, sessionId);
+      if (!session) continue;
+      return { ok: true, instanceId: id, nodeId: session.nodeId ?? null, session };
+    }
+    return fail('SESSION_NOT_FOUND', { sessionId });
+  }
+
+  /** D-6.7: reuse the newest handoff aimed at the node, else reassemble. */
+  function retryPromptText(state, entry, graph) {
+    const candidate = [...(state.handoffs ?? [])].reverse().find(
+      (item) => item.toNodeId === entry.nodeId || item.edge?.to === entry.nodeId,
+    ) ?? null;
+    const def = graphNode(graph, entry.nodeId);
+    return promptFor({
+      graph,
+      node: def,
+      handoff: candidate,
+      task: state.task ?? '',
+      products: productsOfTask(state),
+      defects: candidate?.defects ?? [],
+      defectCount: candidate?.defects?.length ?? 0,
+      round: (nodeOf(state, entry.nodeId)?.round ?? 0) + 1,
+      workspaceDir: workspaceDirOf(state),
+      reviewPath: reviewPathOf(state),
+      revisionRequirement: candidate?.revisionRequirement ?? null,
+    });
+  }
+
+  /**
+   * Three adjudication exits (D-6 / section 3.1). ONE CAS persists the verdict
+   * plus the node/instance/session moves; events are broadcast only afterwards.
+   * No `advance()` runs inside a held lock: resolveEscalation itself takes no
+   * lock, and the follow-up dispatch/advance runs AFTER the write is committed.
+   * A failed dispatch degrades to "verdict persisted + new escalation" (section
+   * 4 WP-6 rollback), never a half-written running instance.
+   */
+  async function resolveEscalation({ instanceId = null, escalationId, decision } = {}) {
+    if (typeof escalationId !== 'string' || escalationId.length === 0) {
+      return fail('ESCALATION_NOT_FOUND', { escalationId: escalationId ?? null });
+    }
+    if (!['pass', 'fail', 'retry'].includes(decision)) {
+      return fail('ESCALATION_DECISION_INVALID', {
+        escalationId, decision, allowed: 'pass|fail|retry',
+      });
+    }
+
+    // C-12: locate across instances; ambiguity only when no instance was given.
+    const scoped = typeof instanceId === 'string' && instanceId.length > 0;
+    const ids = await instanceIds(instanceId);
+    const matches = [];
+    for (const id of ids) {
+      const loaded = await store.load(id);
+      if (!loaded.ok) continue;
+      const entry = (Array.isArray(loaded.state.escalations) ? loaded.state.escalations : [])
+        .find((item) => item?.escalationId === escalationId);
+      if (entry) matches.push({ id, state: loaded.state, entry });
+    }
+    if (matches.length === 0) return fail('ESCALATION_NOT_FOUND', { escalationId });
+    if (matches.length > 1 && !scoped) return fail('ESCALATION_AMBIGUOUS', { escalationId });
+
+    const { id, state: diskState, entry } = matches[0];
+    const state = arraysOf(diskState);
+    if (entry.state !== 'pending') {
+      return fail('ESCALATION_NOT_PENDING', { escalationId, state: entry.state });
+    }
+    if (state.state !== 'suspended' || state.halted === true) {
+      return fail('INSTANCE_NOT_SUSPENDED', { instanceId: id, state: state.state });
+    }
+    // BR-19: only a rounds_exceeded escalation may be passed.
+    if (decision === 'pass' && entry.reasonCode !== 'rounds_exceeded') {
+      return fail('ESCALATION_DECISION_INVALID', {
+        escalationId, decision, allowed: 'fail|retry',
+      });
+    }
+
+    const node = nodeOf(state, entry.nodeId);
+    if (!node) return fail('ESCALATION_NOT_FOUND', { escalationId });
+    const graph = graphForState(state);
+    const terminal = terminalNodeId(graph, entry.nodeId);
+
+    // Section 2.9 invariant: every new write entry point validates the table.
+    const nodeTo = decision === 'fail' ? 'failed' : decision === 'pass' ? 'done' : 'running';
+    const nodeCheck = nodeSM.can(node.state, nodeTo);
+    if (!nodeCheck.ok) {
+      return { ok: false, code: nodeCheck.code, params: { from: node.state, to: nodeTo } };
+    }
+    const instanceTo = decision === 'fail'
+      ? 'failed'
+      : decision === 'pass' && terminal
+        ? 'completed'
+        : 'running';
+    const instanceCheck = instanceSM.can(state.state, instanceTo);
+    if (!instanceCheck.ok) {
+      return { ok: false, code: instanceCheck.code, params: { from: state.state, to: instanceTo } };
+    }
+
+    const expected = expectedOf(state);
+    const at = iso();
+    const events = [];
+
+    // ONE CAS: adjudication + node/instance/session moves + (retry) extraRounds.
+    entry.state = 'resolved';
+    entry.resolution = decision;
+    entry.resolvedAt = at;
+    events.push({
+      object: 'escalation',
+      objectId: escalationId,
+      from: 'pending',
+      to: 'resolved',
+      result: 'applied',
+      reason: 'escalation.resolved',
+      detail: { escalationId, resolution: decision },
+    });
+
+    for (const session of state.sessions) {
+      if (session.state === 'idle' && session.quarantined) continue;
+      const from = session.state;
+      session.state = 'idle';
+      session.quarantined = true;
+      session.stateSince = at;
+      events.push({
+        object: 'session', objectId: session.sessionId,
+        from, to: 'idle', result: 'applied', reason: 'state.change', detail: null,
+      });
+    }
+
+    if (decision === 'retry') {
+      // D-6.6 / D-6.8: grant exactly ONE extra round by persisting it here, in
+      // the adjudication CAS. No explicit `extraRounds` argument is EVER passed
+      // to advance/planAdvance, so `extraOf` reads persisted(1) + explicit(0)
+      // = 1 (no double counting, WP-4 review MINOR).
+      node.extraRounds = (Number.isInteger(node.extraRounds) ? node.extraRounds : 0) + 1;
+      // The node stays `escalated` in this write; the dispatch CAS below
+      // performs escalated -> running and bumps the round exactly once.
+      state.state = 'running';
+    } else {
+      const from = node.state;
+      node.state = nodeTo;
+      node.note = null;
+      node.endedAt = at;
+      node.stateSince = at;
+      events.push({
+        object: 'node', objectId: node.nodeId,
+        from, to: nodeTo, result: 'applied', reason: 'state.change', detail: null,
+      });
+      state.state = instanceTo;
+    }
+    state.paused = false; // D-7.6
+    state.stateSince = at;
+    events.push({
+      object: 'instance', objectId: id,
+      from: 'suspended', to: state.state,
+      result: 'applied', reason: 'state.change', detail: null,
+    });
+
+    const saved = await saveState(id, state, { expectedState: expected });
+    if (!saved.ok) return fail(saved.code, saved.params ?? {});
+    state.rev = saved.rev;
+    // Events are broadcast only AFTER the state write (section 2.9 invariant).
+    const emit = makeEmitter(id, null);
+    for (const event of events) await emit(event);
+
+    const hostId = latestSession(state)?.hostId ?? null;
+    let outcome;
+
+    if (decision === 'retry') {
+      // D-6.9: dispatch directly (never call advance() afterwards: the target
+      // is already running and would be judged busy). Adjudication is already
+      // on disk, so a failed dispatch degrades to "verdict persisted + a new
+      // escalation by dispatchInState".
+      const dispatched = await dispatchInState(state, entry.nodeId, {
+        handoffId: null,
+        promptText: retryPromptText(state, entry, graph),
+        hostId,
+        emit,
+        onProgress: null,
+      });
+      if (dispatched.ok && dispatched.ctx) {
+        const handle = attachToDrive(id, state, dispatched.ctx);
+        driveGraph(handle).catch(() => {});
+        outcome = { ok: true, dispatched: true, sessionId: dispatched.sessionId };
+      } else {
+        outcome = { ok: true, dispatched: false, suspended: true, code: dispatched.code ?? null };
+      }
+    } else if (decision === 'pass' && !terminal) {
+      // D-6.4 / D-6.9: claim a handle then advance() ONCE, outside any held
+      // lock (withLock is not reentrant). Hand a dispatch to driveGraph.
+      const handle = attachToDrive(id, state, null);
+      const next = await advance(id, { hostId });
+      if (next.action === 'dispatch' && next.ctx) {
+        handle.currentCtx = next.ctx;
+        driveGraph(handle).catch(() => {});
+        outcome = { ok: true, dispatched: true };
+      } else {
+        handle.finished = true;
+        if (activeRuns.get(id) === handle) activeRuns.delete(id);
+        outcome = { ok: true, dispatched: false };
+      }
+    } else {
+      // fail / terminal pass: no further advance.
+      outcome = { ok: true, dispatched: false };
+    }
+
+    return {
+      ok: true,
+      escalationId,
+      resolution: decision,
+      state: state.state,
+      instanceId: id,
+      snapshot: snapshotOf(state),
+      ...outcome,
+    };
+  }
+
   return {
     startRun,
     waitForRun,
@@ -3423,6 +4819,20 @@ export function createOrchestrator({
     reconcileOnBoot,
     interruptAll,
     dispose,
-    ...(isTest ? { dispatchToNode: seamDispatch, escalateOnce } : {}),
+    pause,
+    resume,
+    abort,
+    resolveEscalation,
+    listApprovals,
+    resolveApproval,
+    locateSession,
+    setApprovalPolicy,
+    ...(isTest ? {
+      dispatchToNode: seamDispatch,
+      escalateOnce,
+      seamHandoff,
+      holdDelivery,
+      whenDeliveryHeld,
+    } : {}),
   };
 }

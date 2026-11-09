@@ -64,6 +64,7 @@ function parseArgv(argv) {
     holdSession: false,
     slowTool: null,
     writeRef: null,
+    promptFailures: 0,
     root: null,
     scenario: null,
     suite: null,
@@ -106,6 +107,13 @@ function parseArgv(argv) {
         const value = nextValue(i, inline);
         if (inline === undefined) i += 1;
         opts.writeRef = value ?? null;
+        break;
+      }
+      case '--prompt-failures': {
+        const value = nextValue(i, inline);
+        if (inline === undefined) i += 1;
+        const n = Number(value);
+        opts.promptFailures = Number.isInteger(n) && n > 0 ? n : 0;
         break;
       }
       case '--noise-on-session-new':
@@ -167,6 +175,7 @@ const MOCK_USAGE = [
   '用法（I1.2 场景）：node mock-acp-agent.js --root <项目根绝对路径> --scenario <场景名>',
   '      并发自测：node mock-acp-agent.js --root <根> --scenario <场景名> --consume-only',
   '用法（I1.3 场景）：node mock-acp-agent.js --root <根> --suite task-loop --scenario <场景名>',
+  '用法（WP-7 计数）：--prompt-failures=<n> 前 n 次 prompt 回 -32603，每次先写 .mock/prompt-attempts-<sessionId>.json',
 ].join('\n');
 
 if (opts.help) {
@@ -409,6 +418,55 @@ function writeArtifact(session) {
   return { filePath, wrote: true };
 }
 
+// ---------------------------------------------------------------- WP-7 尝试计数
+//
+// 每次 session/prompt 在「任何成功 / 失败 / --host-error 早返回」之前先落累计计数。
+// 基准（§2.19 / D-10）：场景模式 = 场景根 .mock/；非场景模式 = 任务 cwd（session.cwd）/.mock。
+// 文件：.mock/prompt-attempts-<sessionId>.json = {attempts}
+//       .mock/prompt-failures-<sessionId>.json = {attempts, failures}
+// 写盘失败静默，绝不影响既有 I1.1 / I1.2 / I1.3 行为。
+
+function countDirFor(session) {
+  return scenarioMode ? MOCK_DIR : path.join(session.cwd, '.mock');
+}
+
+function recordAttempt(session) {
+  const attempts = (session.promptAttempts ?? 0) + 1;
+  session.promptAttempts = attempts;
+  try {
+    const dir = countDirFor(session);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, `prompt-attempts-${session.sessionId}.json`),
+      JSON.stringify({ attempts }) + '\n',
+      'utf8',
+    );
+  } catch {
+    // 计数写不出来不影响会话本身
+  }
+  return attempts;
+}
+
+function recordFailure(session, attempts) {
+  const failures = (session.promptFailureCount ?? 0) + 1;
+  session.promptFailureCount = failures;
+  try {
+    const dir = countDirFor(session);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, `prompt-failures-${session.sessionId}.json`),
+      JSON.stringify({ attempts, failures }) + '\n',
+      'utf8',
+    );
+  } catch {
+    // ignore
+  }
+}
+
+function shouldFailPrompt(limit, attempts) {
+  return Number.isInteger(limit) && limit > 0 && attempts <= limit;
+}
+
 // ---------------------------------------------------------------- 场景步执行
 
 function promptText(params) {
@@ -505,6 +563,13 @@ async function runScenarioStep(id, params, session, claim) {
 
   if (step.hostError) {
     replyError(id, -32603, String(step.hostError));
+    return;
+  }
+
+  // WP-7 步字段 promptFailures：前 n 次 prompt 在 turn 内事件之前确定性失败。
+  if (shouldFailPrompt(step.promptFailures, session.promptAttempts)) {
+    recordFailure(session, session.promptAttempts);
+    replyError(id, -32603, MOCK_HOST_ERROR_MESSAGE);
     return;
   }
 
@@ -813,6 +878,13 @@ async function runTaskLoopStep(id, params, session, claim) {
   const token = session.tokens;
   session.cancelled = false;
 
+  // WP-7 步字段 promptFailures：前 n 次 prompt 在 turn 内事件之前确定性失败。
+  if (shouldFailPrompt(step.promptFailures, session.promptAttempts)) {
+    recordFailure(session, session.promptAttempts);
+    replyError(id, -32603, MOCK_HOST_ERROR_MESSAGE);
+    return;
+  }
+
   notifyUpdate(session.sessionId, {
     sessionUpdate: 'agent_thought_chunk',
     content: { type: 'text', text: 'mock: thinking about the request' },
@@ -879,6 +951,15 @@ async function handlePrompt(id, params) {
   if (!session || (opts.sessionMissing && session.closed)) {
     // -32602 双义之一：会话不存在（另一义是 prompt 在飞行，由真实宿主产生）
     replyError(id, -32602, 'unknown session');
+    return;
+  }
+
+  // WP-7：计数必须是本次 prompt 的第一个动作——在 scenarioMode 分支、
+  // --host-error / --unknown-error 早返回、以及任何成功/失败之前完成。
+  const attempts = recordAttempt(session);
+  if (!scenarioMode && shouldFailPrompt(opts.promptFailures, attempts)) {
+    recordFailure(session, attempts);
+    replyError(id, -32603, MOCK_HOST_ERROR_MESSAGE);
     return;
   }
 

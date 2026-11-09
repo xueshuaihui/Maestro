@@ -1,0 +1,124 @@
+{
+  "ac": "AC-32",
+  "title": "审批拒绝后沿用原失败口径",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：处于等待审批",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-27409-1\n任务已投递\n审批 APR-001 待处理 · 动作 write\n会话 等待审批：write\n"
+    },
+    {
+      "text": "Then：输出「审批 APR-001 已拒绝 · 动作 write」（期望含 \"审批 APR-001 已拒绝 · 动作 write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 已拒绝 · 动作 write\n"
+    },
+    {
+      "text": "机检：approve 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：orch run 以「审批被拒绝，任务中止于 write」收尾（期望含 \"审批被拒绝，任务中止于 write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-27409-1\n任务已投递\n审批 APR-001 待处理 · 动作 write\n会话 等待审批：write\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 空闲\n节点 失败 · 审批被拒绝，任务中止于 write\n交接包 HO-001  已构造   06:38:54\n交接包 HO-001  已投递   06:38:54\n交接包 HO-001  已接受   06:38:55\n交接包 HO-001  已拒绝   06:38:56  原因 审批被拒\n审批被拒绝，任务中止于 write\n"
+    },
+    {
+      "text": "Then：run 以失败收尾（退出码 1）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：审批 denied（期望 \"denied\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"denied\""
+    },
+    {
+      "text": "机检：实例 failed（期望 \"failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"failed\""
+    },
+    {
+      "text": "机检：节点 failed（期望 \"failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"failed\""
+    },
+    {
+      "text": "机检：出现 permission.denied 事件",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,run.started,handoff.created,handoff.delivered,session.state,turn.first_event,session.state,permission.requested,approval.created,permission.denied,session.state,run.failed,run.failed,handoff.rejected,permission.denied"
+    },
+    {
+      "text": "机检：没有第二套原因文案（不出现执行失败口径）（期望不含 \"执行失败\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-27409-1\n任务已投递\n审批 APR-001 待处理 · 动作 write\n会话 等待审批：write\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 空闲\n节点 失败 · 审批被拒绝，任务中止于 write\n交接包 HO-001  已构造   06:38:54\n交接包 HO-001  已投递   06:38:54\n交接包 HO-001  已接受   06:38:55\n交接包 HO-001  已拒绝   06:38:56  原因 审批被拒\n审批被拒绝，任务中止于 write\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch approve APR-001 --instance INST-001 --decision deny",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "approve",
+        "APR-001",
+        "--decision",
+        "deny",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-32",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 573,
+      "stdout": "审批 APR-001 已拒绝 · 动作 write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --approval hold（前台，拒绝后收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写下说明",
+        "--approval",
+        "hold"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-32",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 4431,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-27409-1\n任务已投递\n审批 APR-001 待处理 · 动作 write\n会话 等待审批：write\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 空闲\n节点 失败 · 审批被拒绝，任务中止于 write\n交接包 HO-001  已构造   06:38:54\n交接包 HO-001  已投递   06:38:54\n交接包 HO-001  已接受   06:38:55\n交接包 HO-001  已拒绝   06:38:56  原因 审批被拒\n审批被拒绝，任务中止于 write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-32",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 236,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

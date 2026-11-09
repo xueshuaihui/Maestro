@@ -1,0 +1,32 @@
+{
+  "ac": "AC-32",
+  "title": "审批拒绝后沿用原失败口径",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:38:51.700Z",
+  "finishedAt": "2026-11-08T22:38:57.673Z",
+  "durationMs": 5973,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-32",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-32"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-32",
+      "instanceId": "INST-001",
+      "state": "failed"
+    }
+  ],
+  "checks": 10,
+  "notes": []
+}

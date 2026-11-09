@@ -1,0 +1,65 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run（AC-10 坏包场景，前台挂起收尾） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14 exit=4 5977ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-13815-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs --root /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14 --call test.handoff --instance INST-001 --node T-001 --mutate no-evidence
+# label=call-seam test.handoff --mutate no-evidence cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14 exit=0 232ms
+{"ok":true,"registered":true,"instanceId":"INST-001","nodeId":"T-001","edgeKind":null,"round":null,"mutate":"no-evidence","snapshot":null}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14 exit=0 1287ms
+实例 INST-001 · 已挂起 · 模板 编码闭环
+节点 T-001 开发 已升级 · 第 1 轮
+节点 T-002 测试 待执行
+会话 已升级
+交接包 HO-001  开发→测试  已构造   06:20:06
+交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规
+升级 ESC-001 待处理
+  原因：交接包 HO-001 内容不合规：缺少证据引用 
+  节点：T-001 开发 · 第 1 轮
+  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001 --events
+# label=orch status --instance INST-001 --events cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14 exit=0 299ms
+实例 INST-001 · 已挂起 · 模板 编码闭环
+节点 T-001 开发 已升级 · 第 1 轮
+节点 T-002 测试 待执行
+会话 已升级
+交接包 HO-001  开发→测试  已构造   06:20:06
+交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规
+升级 ESC-001 待处理
+  原因：交接包 HO-001 内容不合规：缺少证据引用 
+  节点：T-001 开发 · 第 1 轮
+  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+[#1] 06:20:03  实例 INST-001  已创建 → 运行中  原因 开始运行
+[#2] 06:20:03  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮
+[#3] 06:20:04  会话 mock-sess-13815-1  空闲 → 执行中  原因 会话状态
+[#4] 06:20:04  会话 mock-sess-13815-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#5] 06:20:04  会话 mock-sess-13815-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#6] 06:20:05  会话 mock-sess-13815-1  执行中 → 等待下游  原因 产出已提交
+[#7] 06:20:05  节点 T-001  执行中 → 待校验  原因 产出已提交
+[#8] 06:20:05  节点 T-001  待校验 → 已完成  原因 核对通过
+[#9] 06:20:06  会话 mock-sess-13815-1  等待下游 → 空闲  原因 运行完成
+[#10] 06:20:06  交接包 HO-001  已拒绝  原因 交接被拒
+[#11] 06:20:06  升级 ESC-001  待处理  原因 创建升级
+[#12] 06:20:06  节点 T-001  已完成 → 已升级  原因 状态变化
+[#13] 06:20:06  会话 mock-sess-13815-1  空闲 → 已升级  原因 状态变化
+[#14] 06:20:06  实例 INST-001  运行中 → 已挂起  原因 挂起
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14 exit=0 309ms
+核心已停止（pid 13859，运行 1s）
+

@@ -1,0 +1,23 @@
+{
+  "AC-39/prompt-attempts-mock-sess-28163-1.json": {
+    "attempts": 1
+  },
+  "AC-39/prompt-attempts-mock-sess-28182-1.json": {
+    "attempts": 1
+  },
+  "AC-39/prompt-attempts-mock-sess-28236-1.json": {
+    "attempts": 1
+  },
+  "AC-39/prompt-attempts-mock-sess-28277-1.json": {
+    "attempts": 1
+  },
+  "AC-39-reject/prompt-attempts-mock-sess-28353-1.json": {
+    "attempts": 1
+  },
+  "AC-39-empty/prompt-attempts-mock-sess-28446-1.json": {
+    "attempts": 1
+  },
+  "AC-39-empty/prompt-attempts-mock-sess-28474-1.json": {
+    "attempts": 1
+  }
+}

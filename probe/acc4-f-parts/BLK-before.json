@@ -1,0 +1,176 @@
+{
+  "说明": "上一轮收口期（3 处产品修复生效之前）的实测证据节选，供 probe/acc4-f-blockers.md 复核；原始日志 /tmp/acc4-probe-e.json 与 /tmp/acc4-probe-e2.json 为上一轮遗留。",
+  "AC-29(3)_修复前_按旧参数口径重建": {
+    "重建方式": "只读调用 src/cli/render.js renderCommandError（修复前 main.js 对 INSTANCE_NOT_SUSPENDED 传 {id: escalationId}）",
+    "旧参数": {
+      "id": "ESC-001"
+    },
+    "旧输出": "实例 ESC-001 当前不是挂起状态，不能处理升级",
+    "新参数": {
+      "id": "INST-002"
+    },
+    "新输出": "实例 INST-002 当前不是挂起状态，不能处理升级",
+    "备注": "修复前该子场景的原始 stdout 未在工作区留存；labels.js 逐字模板与修复前代码路径可复核。"
+  },
+  "AC-65_修复前": {
+    "来源": "/tmp/acc4-probe-e.json#ac65",
+    "实测": {
+      "runExit": 4,
+      "state": "suspended",
+      "handoffs": [
+        {
+          "id": "HO-001",
+          "state": "consumed",
+          "reason": null,
+          "to": "T-002",
+          "kind": "forward",
+          "attempts": 1
+        },
+        {
+          "id": "HO-002",
+          "state": "consumed",
+          "reason": null,
+          "to": "T-001",
+          "kind": "backflow",
+          "attempts": 1
+        },
+        {
+          "id": "HO-003",
+          "state": "created",
+          "reason": null,
+          "to": "T-002",
+          "kind": "retest",
+          "attempts": 0
+        }
+      ],
+      "esc": [
+        {
+          "code": "dispatch_failed",
+          "state": "pending"
+        }
+      ],
+      "hasPending": false,
+      "reasons": [
+        "handoff.consumed",
+        "run.completed",
+        "handoff.created",
+        "node.dispatch",
+        "escalation.created",
+        "state.change",
+        "state.change",
+        "core.suspend"
+      ]
+    }
+  },
+  "AC-66_修复前": {
+    "来源": "/tmp/acc4-probe-e2.json#ac66_pause 与 #ac66_resume",
+    "暂停时": {
+      "paused": true,
+      "state": "running",
+      "handoffs": [
+        {
+          "id": "HO-001",
+          "state": "consumed",
+          "to": "T-002",
+          "kind": "forward",
+          "defects": 0,
+          "attempts": 1
+        },
+        {
+          "id": "HO-002",
+          "state": "created",
+          "to": "T-001",
+          "kind": "backflow",
+          "defects": 2,
+          "attempts": 0
+        }
+      ],
+      "dispatch": 2,
+      "nodes": [
+        "T-001:r1",
+        "T-002:r1"
+      ],
+      "dispatchEvents": 2,
+      "pauseExit": 0,
+      "runExit": 0,
+      "afterPause": {
+        "state": "running",
+        "paused": true,
+        "handoffs": [
+          {
+            "id": "HO-001",
+            "state": "consumed",
+            "to": "T-002",
+            "defects": 0
+          },
+          {
+            "id": "HO-002",
+            "state": "created",
+            "to": "T-001",
+            "defects": 2
+          }
+        ]
+      }
+    },
+    "恢复后": {
+      "exit": 0,
+      "out": "实例 INST-001 · 运行中 · 模板 编码闭环\n",
+      "state": "suspended",
+      "handoffs": [
+        {
+          "id": "HO-001",
+          "state": "consumed",
+          "to": "T-002",
+          "kind": "forward",
+          "defects": 0,
+          "reason": null,
+          "attempts": 1
+        },
+        {
+          "id": "HO-002",
+          "state": "created",
+          "to": "T-001",
+          "kind": "backflow",
+          "defects": 2,
+          "reason": null,
+          "attempts": 0
+        },
+        {
+          "id": "HO-003",
+          "state": "rejected",
+          "to": "T-001",
+          "kind": "backflow",
+          "defects": 0,
+          "reason": "invalid_payload",
+          "attempts": 0
+        }
+      ],
+      "dispatch": 2,
+      "dispatchEvents": 2,
+      "reasons": [
+        "session.state",
+        "output.submitted",
+        "output.submitted",
+        "verdict.read",
+        "handoff.consumed",
+        "verification.failed",
+        "verification.failed",
+        "handoff.created",
+        "backflow.constructed",
+        "workflow.paused",
+        "workflow.resumed",
+        "handoff.rejected",
+        "escalation.created",
+        "state.change",
+        "state.change",
+        "core.suspend"
+      ],
+      "esc": [
+        {
+          "code": "handoff_invalid",
+          "detail": "交接包 HO-003 内容不合规：回流缺少defects"
+        }
+      ]
+    }
+  }
+}

@@ -124,3 +124,12 @@ export async function diskState(store, instanceId) {
   if (!loaded.ok) throw new Error(`load ${instanceId} 失败：${loaded.code}`);
   return loaded.state;
 }
+
+/**
+ * WP-6 / D-10.2 授权同步：取实例内第一条待处理审批，供 approve 用例取
+ * `approvalId`。core 把审批投影在 `approvals[]`，列表只读、不改盘。
+ */
+export async function firstPendingApproval(orch, instanceId) {
+  const listed = await orch.listApprovals({ instanceId });
+  return (listed?.approvals ?? []).find((row) => row?.state === 'pending') ?? null;
+}

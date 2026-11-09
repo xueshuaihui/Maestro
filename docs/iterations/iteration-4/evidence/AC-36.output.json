@@ -1,0 +1,201 @@
+{
+  "ac": "AC-36",
+  "title": "`status` 显示审批与暂停",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具：A/B/C/D 四类实例齐全",
+      "ok": true,
+      "blocked": false,
+      "actual": "INST-001,INST-002,INST-004,OLD-001"
+    },
+    {
+      "text": "Then：A 的实例行显示「运行中（已暂停）」（期望含 \"实例 INST-001 · 运行中（已暂停）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中（已暂停） · 模板 编码闭环"
+    },
+    {
+      "text": "Then：B 在升级块之后出现待处理审批行（期望含 \"升级 —\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-002 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:39:28\n交接包 HO-001  开发→测试  已投递   06:39:29\n交接包 HO-001  开发→测试  已接受   06:39:29\n交接包 HO-001  开发→测试  已完成   06:39:30\n升级 —\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n"
+    },
+    {
+      "text": "Then：B 待处理审批行含审批号/节点/角色/动作（期望含 \"审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-002 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:39:28\n交接包 HO-001  开发→测试  已投递   06:39:29\n交接包 HO-001  开发→测试  已接受   06:39:29\n交接包 HO-001  开发→测试  已完成   06:39:30\n升级 —\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n"
+    },
+    {
+      "text": "机检：B 的审批行位于升级块之后",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级块在前"
+    },
+    {
+      "text": "Then：C 不出现审批行（期望不含 \"审批\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 OLD-001 · 已完成\n节点 已完成 · 耗时 11m55s\n会话 空闲\n交接包 HO-001  已构造   17:00:04\n交接包 HO-001  已投递   17:00:04\n交接包 HO-001  已接受   17:00:05\n交接包 HO-001  已完成   17:00:05\n"
+    },
+    {
+      "text": "机检：C 的实例输出与 I1.3 A-2 一致（无审批段、单节点显示）（期望含 \"实例 OLD-001 · 已完成\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 OLD-001 · 已完成\n节点 已完成 · 耗时 11m55s\n会话 空闲\n交接包 HO-001  已构造   17:00:04\n交接包 HO-001  已投递   17:00:04\n交接包 HO-001  已接受   17:00:05\n交接包 HO-001  已完成   17:00:05\n"
+    },
+    {
+      "text": "机检：C 仍显示会话与交接包（旧字段可读）（期望含 \"节点 已完成\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 OLD-001 · 已完成\n节点 已完成 · 耗时 11m55s\n会话 空闲\n交接包 HO-001  已构造   17:00:04\n交接包 HO-001  已投递   17:00:04\n交接包 HO-001  已接受   17:00:05\n交接包 HO-001  已完成   17:00:05\n"
+    },
+    {
+      "text": "Then：D 逐条显示「已通过」（期望含 \"审批 APR-001 已通过 · 节点 T-001 开发 · 动作 write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-004 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:39:28\n交接包 HO-001  开发→测试  已投递   06:39:29\n交接包 HO-001  开发→测试  已接受   06:39:29\n交接包 HO-001  开发→测试  已完成   06:39:30\n升级 —\n审批 APR-001 已通过 · 节点 T-001 开发 · 动作 write\n审批 APR-002 已拒绝 · 节点 T-001 开发 · 动作 write\n审批 APR-003 已作废 · 节点 T-001 开发 · 动作 write\n"
+    },
+    {
+      "text": "Then：D 逐条显示「已拒绝」（期望含 \"审批 APR-002 已拒绝 · 节点 T-001 开发 · 动作 write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-004 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:39:28\n交接包 HO-001  开发→测试  已投递   06:39:29\n交接包 HO-001  开发→测试  已接受   06:39:29\n交接包 HO-001  开发→测试  已完成   06:39:30\n升级 —\n审批 APR-001 已通过 · 节点 T-001 开发 · 动作 write\n审批 APR-002 已拒绝 · 节点 T-001 开发 · 动作 write\n审批 APR-003 已作废 · 节点 T-001 开发 · 动作 write\n"
+    },
+    {
+      "text": "Then：D 逐条显示「已作废」（期望含 \"审批 APR-003 已作废 · 节点 T-001 开发 · 动作 write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-004 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:39:28\n交接包 HO-001  开发→测试  已投递   06:39:29\n交接包 HO-001  开发→测试  已接受   06:39:29\n交接包 HO-001  开发→测试  已完成   06:39:30\n升级 —\n审批 APR-001 已通过 · 节点 T-001 开发 · 动作 write\n审批 APR-002 已拒绝 · 节点 T-001 开发 · 动作 write\n审批 APR-003 已作废 · 节点 T-001 开发 · 动作 write\n"
+    },
+    {
+      "text": "机检：列表行中 A 带「（已暂停）」",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中（已暂停） · 模板 编码闭环 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31|实例 INST-002 · 运行中 · 模板 编码闭环 · 待处理审批 1 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31|实例 INST-004 · 已完成 · 模板 编码闭环 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31|实例 OLD-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 11m55s · 更新 17:12:00"
+    },
+    {
+      "text": "机检：列表行中 B 带「待处理审批 1」",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中（已暂停） · 模板 编码闭环 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31|实例 INST-002 · 运行中 · 模板 编码闭环 · 待处理审批 1 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31|实例 INST-004 · 已完成 · 模板 编码闭环 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31|实例 OLD-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 11m55s · 更新 17:12:00"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop pass（母版）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 7901,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-27798-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:39:28\n交接包 HO-001  开发→测试  已投递   06:39:29\n交接包 HO-001  开发→测试  已接受   06:39:29\n交接包 HO-001  开发→测试  已完成   06:39:30\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001（A 已暂停）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 353,
+      "stdout": "实例 INST-001 · 运行中（已暂停） · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:39:28\n交接包 HO-001  开发→测试  已投递   06:39:29\n交接包 HO-001  开发→测试  已接受   06:39:29\n交接包 HO-001  开发→测试  已完成   06:39:30\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-002（B 待处理审批）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-002"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 255,
+      "stdout": "实例 INST-002 · 运行中 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:39:28\n交接包 HO-001  开发→测试  已投递   06:39:29\n交接包 HO-001  开发→测试  已接受   06:39:29\n交接包 HO-001  开发→测试  已完成   06:39:30\n升级 —\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance OLD-001（C 旧实例）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "OLD-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 301,
+      "stdout": "实例 OLD-001 · 已完成\n节点 已完成 · 耗时 11m55s\n会话 空闲\n交接包 HO-001  已构造   17:00:04\n交接包 HO-001  已投递   17:00:04\n交接包 HO-001  已接受   17:00:05\n交接包 HO-001  已完成   17:00:05\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-004（D 三条已处理审批）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-004"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 267,
+      "stdout": "实例 INST-004 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:39:28\n交接包 HO-001  开发→测试  已投递   06:39:29\n交接包 HO-001  开发→测试  已接受   06:39:29\n交接包 HO-001  开发→测试  已完成   06:39:30\n升级 —\n审批 APR-001 已通过 · 节点 T-001 开发 · 动作 write\n审批 APR-002 已拒绝 · 节点 T-001 开发 · 动作 write\n审批 APR-003 已作废 · 节点 T-001 开发 · 动作 write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status（不带参数）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 323,
+      "stdout": "实例 INST-001 · 运行中（已暂停） · 模板 编码闭环 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31\n实例 INST-002 · 运行中 · 模板 编码闭环 · 待处理审批 1 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31\n实例 INST-004 · 已完成 · 模板 编码闭环 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31\n实例 OLD-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 11m55s · 更新 17:12:00\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 871,
+      "stdout": "核心已停止（pid 27757，运行 10s）\n",
+      "stderr": ""
+    }
+  ]
+}

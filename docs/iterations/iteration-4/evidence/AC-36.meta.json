@@ -1,0 +1,49 @@
+{
+  "ac": "AC-36",
+  "title": "`status` 显示审批与暂停",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:39:22.933Z",
+  "finishedAt": "2026-11-08T22:39:35.025Z",
+  "durationMs": 12092,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-36",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-36",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    },
+    {
+      "__root": "AC-36",
+      "instanceId": "INST-002",
+      "state": "interrupted"
+    },
+    {
+      "__root": "AC-36",
+      "instanceId": "INST-004",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-36",
+      "instanceId": "OLD-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 13,
+  "notes": [
+    "Given 的暂停/审批/旧格式以真实状态为母版克隆改写或安装 legacy-v1 夹具；视图 RPC 逐字段渲染，构造 Given 不等于伪造结论。"
+  ]
+}

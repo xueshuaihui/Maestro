@@ -1,0 +1,7 @@
+{"object":"instance","objectId":"INST-001","from":"created","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-2f6b1260620fc29e","seq":1,"ts":"2026-11-08T22:47:35.949Z"}
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-2f6b1260620fc29e","seq":2,"ts":"2026-11-08T22:47:35.971Z"}
+{"object":"handoff","objectId":"HO-001","from":null,"to":"created","result":"applied","reason":"handoff.created","detail":null,"gen":"gen-2f6b1260620fc29e","seq":3,"ts":"2026-11-08T22:47:36.111Z"}
+{"object":"handoff","objectId":"HO-001","from":"created","to":"delivered","result":"applied","reason":"handoff.delivered","detail":{"atMs":1794178056232},"gen":"gen-2f6b1260620fc29e","seq":4,"ts":"2026-11-08T22:47:36.240Z"}
+{"object":"node","objectId":"T-001","from":"running","to":"failed","result":"applied","reason":"run.failed","detail":{"code":"HOST_ERROR","message":"mock-host: upstream model request failed (code 500)"},"gen":"gen-2f6b1260620fc29e","seq":5,"ts":"2026-11-08T22:47:36.809Z"}
+{"object":"instance","objectId":"INST-001","from":"running","to":"failed","result":"applied","reason":"run.failed","detail":null,"gen":"gen-2f6b1260620fc29e","seq":6,"ts":"2026-11-08T22:47:36.987Z"}
+{"object":"handoff","objectId":"HO-001","from":"delivered","to":"rejected","result":"applied","reason":"handoff.rejected","detail":{"reason":"target_rejected"},"gen":"gen-2f6b1260620fc29e","seq":7,"ts":"2026-11-08T22:47:37.007Z"}

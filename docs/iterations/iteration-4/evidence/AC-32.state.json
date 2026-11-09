@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-de7893b4bb3f4989",
+  "createdAt": "2026-11-08T22:38:53.833Z",
+  "updatedAt": "2026-11-08T22:38:56.691Z",
+  "state": "failed",
+  "stateSince": "2026-11-08T22:38:56.424Z",
+  "template": "single",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-32/demo",
+  "task": "写下说明",
+  "halted": false,
+  "rev": 11,
+  "counters": {
+    "eventSeq": 15,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": "refusal",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "worker",
+      "round": 1,
+      "state": "failed",
+      "stateSince": "2026-11-08T22:38:56.273Z",
+      "startedAt": "2026-11-08T22:38:53.833Z",
+      "roundStartedAt": "2026-11-08T22:38:53.833Z",
+      "endedAt": "2026-11-08T22:38:56.571Z",
+      "failure": {
+        "code": "PERMISSION_DENIED",
+        "message": "write"
+      },
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-27409-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-27409-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:38:56.662Z",
+      "createdAt": "2026-11-08T22:38:54.397Z",
+      "lastEventAt": "2026-11-08T22:38:56.068Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-32/demo/note.md",
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": null,
+      "state": "rejected",
+      "createdAt": "2026-11-08T22:38:54.767Z",
+      "deliveredAt": "2026-11-08T22:38:54.895Z",
+      "acceptedAt": "2026-11-08T22:38:55.126Z",
+      "consumedAt": null,
+      "rejectedAt": "2026-11-08T22:38:56.571Z",
+      "rejectReason": "permission_denied",
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 231,
+      "defects": [],
+      "note": null
+    }
+  ],
+  "escalations": [],
+  "approvals": [
+    {
+      "approvalId": "APR-001",
+      "instanceId": "INST-001",
+      "nodeId": "T-001",
+      "sessionId": "mock-sess-27409-1",
+      "action": "write",
+      "toolCallId": "call_mock_27409_1",
+      "state": "denied",
+      "createdAt": "2026-11-08T22:38:55.218Z",
+      "resolvedAt": "2026-11-08T22:38:55.930Z",
+      "resolution": "deny"
+    }
+  ]
+}

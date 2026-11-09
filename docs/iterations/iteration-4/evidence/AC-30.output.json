@@ -1,0 +1,107 @@
+{
+  "ac": "AC-30",
+  "title": "重新分配后仍失败会再次升级",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：实例 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "Then：输出「升级 ESC-001 已处理（重新分配）」（期望含 \"升级 ESC-001 已处理（重新分配）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 已处理（重新分配）\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-002 待处理 · 节点 T-002 测试 · 第 3 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：不会显示「运行中」（期望不含 \"实例 INST-001 · 运行中\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 已处理（重新分配）\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-002 待处理 · 节点 T-002 测试 · 第 3 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：resolve 命令按挂起收尾，退出码 4（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "机检：escalations 数量增加 1（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：实例 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "Then：生成新的升级（期望含 \"升级 ESC-002 待处理\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 已处理（重新分配）\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-002 待处理 · 节点 T-002 测试 · 第 3 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop rounds-exceeded（挂起 + ESC-001 待处理）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-30",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 14288,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-26931-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch escalate resolve ESC-001 --instance INST-001 --decision retry",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "retry",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-30",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 1543,
+      "stdout": "升级 ESC-001 已处理（重新分配）\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-002 待处理 · 节点 T-002 测试 · 第 3 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-30",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 313,
+      "stdout": "核心已停止（pid 26884，运行 15s）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo1 --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop rounds-exceeded（cwd demo1 → INST-001） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-21 exit=4 13032ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-40973-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo2 --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop rounds-exceeded（cwd demo2 → INST-002） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-21 exit=4 11496ms
+实例 INST-002 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-41111-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+实例 INST-002 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：orch escalate list --instance INST-002 查看升级；orch escalate resolve ESC-nnn --instance INST-002 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-002
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate list
+# label=orch escalate list cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-21 exit=0 269ms
+升级 ESC-001  实例 INST-001  节点 T-002 测试 · 第 2 轮  待处理  回流超上限：测试已派发 2 次仍未通过
+升级 ESC-001  实例 INST-002  节点 T-002 测试 · 第 2 轮  待处理  回流超上限：测试已派发 2 次仍未通过
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate list
+# label=orch escalate list（复跑验行序） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-21 exit=0 270ms
+升级 ESC-001  实例 INST-001  节点 T-002 测试 · 第 2 轮  待处理  回流超上限：测试已派发 2 次仍未通过
+升级 ESC-001  实例 INST-002  节点 T-002 测试 · 第 2 轮  待处理  回流超上限：测试已派发 2 次仍未通过
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate list --all
+# label=orch escalate list --all cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-21 exit=0 343ms
+升级 ESC-001  实例 INST-001  节点 T-002 测试 · 第 2 轮  待处理  回流超上限：测试已派发 2 次仍未通过
+升级 ESC-002  实例 INST-001  节点 T-002 测试 · 第 2 轮  已处理（通过）  回流超上限：测试已派发 2 次仍未通过
+升级 ESC-003  实例 INST-001  节点 T-002 测试 · 第 2 轮  已作废  回流超上限：测试已派发 2 次仍未通过
+升级 ESC-001  实例 INST-002  节点 T-002 测试 · 第 2 轮  待处理  回流超上限：测试已派发 2 次仍未通过
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate list --instance INST-001 --all
+# label=orch escalate list --instance INST-001 --all cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-21 exit=0 264ms
+升级 ESC-001  实例 INST-001  节点 T-002 测试 · 第 2 轮  待处理  回流超上限：测试已派发 2 次仍未通过
+升级 ESC-002  实例 INST-001  节点 T-002 测试 · 第 2 轮  已处理（通过）  回流超上限：测试已派发 2 次仍未通过
+升级 ESC-003  实例 INST-001  节点 T-002 测试 · 第 2 轮  已作废  回流超上限：测试已派发 2 次仍未通过
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate list
+# label=orch escalate list（全新项目根） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-21-empty exit=0 1267ms
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-21 exit=0 318ms
+核心已停止（pid 40953，运行 26s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-21-empty exit=0 254ms
+核心已停止（pid 41271，运行 1s）
+

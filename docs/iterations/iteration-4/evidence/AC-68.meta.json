@@ -1,0 +1,32 @@
+{
+  "ac": "AC-68",
+  "title": "合法回流包通过校验并投递",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:48:28.847Z",
+  "finishedAt": "2026-11-08T22:48:47.466Z",
+  "durationMs": 18619,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-68",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-68",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 12,
+  "notes": []
+}

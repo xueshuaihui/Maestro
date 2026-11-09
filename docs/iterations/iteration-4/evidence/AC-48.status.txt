@@ -1,0 +1,95 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（单实例） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-a exit=0 8244ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-30386-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:43:10
+交接包 HO-001  开发→测试  已投递   06:43:11
+交接包 HO-001  开发→测试  已接受   06:43:11
+交接包 HO-001  开发→测试  已完成   06:43:13
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff show HO-999 --instance INST-001
+# label=orch handoff show HO-999 --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-a exit=1 270ms
+未找到交接包 HO-999
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo1 --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（cwd demo1 → INST-001） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b exit=0 8004ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-30484-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:43:19
+交接包 HO-001  开发→测试  已投递   06:43:20
+交接包 HO-001  开发→测试  已接受   06:43:20
+交接包 HO-001  开发→测试  已完成   06:43:21
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo2 --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（cwd demo2 → INST-002） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b exit=0 6782ms
+实例 INST-002 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-30576-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:43:26
+交接包 HO-001  开发→测试  已投递   06:43:27
+交接包 HO-001  开发→测试  已接受   06:43:27
+交接包 HO-001  开发→测试  已完成   06:43:28
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001（预热核心，完成启动对账） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b exit=0 250ms
+实例 INST-001 · 已完成 · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+会话 空闲
+交接包 HO-001  开发→测试  已构造   06:43:19
+交接包 HO-001  开发→测试  已投递   06:43:20
+交接包 HO-001  开发→测试  已接受   06:43:20
+交接包 HO-001  开发→测试  已完成   06:43:21
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff show HO-001
+# label=orch handoff show HO-001（不带 --instance，歧义） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b exit=1 299ms
+交接包号 HO-001 在多个实例中存在，请加 --instance
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-a exit=0 291ms
+核心已停止（pid 30363，运行 24s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b exit=0 331ms
+核心已停止（pid 30461，运行 15s）
+

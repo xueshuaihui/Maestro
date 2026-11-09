@@ -7,6 +7,7 @@ import {
   currentSession,
   diskState,
   firstNode,
+  firstPendingApproval,
   lastHandoff,
   setup,
   tmpDir,
@@ -64,7 +65,8 @@ test('F-1 hold：--permission=ask → 会话 waiting_input 且节点仍 running�
     assert.equal(waiting.length, 1);
     assert.equal(waiting[0].detail.action, 'write');
 
-    // hold 的唯一外部决定：cancel → 回 cancelled 再收尾
+    // hold 的外部决定：cancel 或 approve（D-10.2；本用例走 cancel 收尾，
+    // allow/deny 两条 approve 路径见下方新增用例）。
     const cancelled = await env.orch.cancel({ instanceId: INSTANCE });
     assert.equal(cancelled.ok, true, JSON.stringify(cancelled));
     const after = await diskState(env.store, INSTANCE);
@@ -121,6 +123,77 @@ test('F-1 allow：--permission=ask 跑完，事件里 waiting_input 有进有出
     assert.ok(inIdx >= 0, '应有 session → waiting_input');
     assert.ok(outIdx > inIdx, '应有 waiting_input → thinking');
     assert.equal(events[outIdx].reason, 'permission.allowed');
+  } finally {
+    await env.teardown();
+  }
+});
+
+/** D-10.2：hold 的外部决定除 cancel 外，还有 approve --decision allow|deny。 */
+async function holdWithApproval() {
+  const env = await setup({ switches: ['--permission=ask'], permissionPolicy: 'hold' });
+  await env.orch.startRun({ cwd: env.cwd, task: '写下 out/a.md', earlyReturn: true });
+  await waitFor(async () => {
+    const status = await env.orch.getStatus({ instanceId: INSTANCE });
+    if (!(status.ok && status.snapshot.session?.state === 'waiting_input')) return false;
+    return (await firstPendingApproval(env.orch, INSTANCE)) !== null;
+  });
+  return env;
+}
+
+test('F-1 approve --decision allow：hold 审批 → approved + permission.allowed 带 approvalId', async () => {
+  const env = await holdWithApproval();
+  try {
+    const row = await firstPendingApproval(env.orch, INSTANCE);
+    assert.ok(row, 'hold 应产生一条待处理审批');
+    assert.equal(row.approvalId, 'APR-001');
+    assert.equal(row.action, 'write');
+
+    const res = await env.orch.resolveApproval({
+      instanceId: INSTANCE, approvalId: row.approvalId, decision: 'allow',
+    });
+    assert.equal(res.ok, true, JSON.stringify(res));
+    assert.equal(res.state, 'approved');
+    assert.equal(res.resolution, 'allow');
+
+    const listed = await env.orch.listApprovals({ instanceId: INSTANCE });
+    assert.equal(listed.approvals.find((a) => a.approvalId === 'APR-001').state, 'approved');
+    const snap = (await env.orch.getStatus({ instanceId: INSTANCE })).snapshot;
+    assert.equal(snap.pendingApprovals, 0);
+
+    const events = (await env.store.readEvents(INSTANCE)).events;
+    assert.ok(events.some(
+      (ev) => ev.reason === 'approval.created' && ev.detail?.approvalId === 'APR-001',
+    ), '审批创建事件先落盘');
+    const allowed = events.find((ev) => ev.reason === 'permission.allowed');
+    assert.ok(allowed, 'allow 复用既有 permission.allowed 事件');
+    assert.equal(allowed.detail.approvalId, 'APR-001');
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('F-1 approve --decision deny：hold 审批 → denied + permission.denied 带 approvalId', async () => {
+  const env = await holdWithApproval();
+  try {
+    const row = await firstPendingApproval(env.orch, INSTANCE);
+    assert.ok(row);
+
+    const res = await env.orch.resolveApproval({
+      instanceId: INSTANCE, approvalId: row.approvalId, decision: 'deny',
+    });
+    assert.equal(res.ok, true, JSON.stringify(res));
+    assert.equal(res.state, 'denied');
+    assert.equal(res.resolution, 'deny');
+
+    const listed = await env.orch.listApprovals({ instanceId: INSTANCE });
+    assert.equal(listed.approvals.find((a) => a.approvalId === 'APR-001').state, 'denied');
+    const snap = (await env.orch.getStatus({ instanceId: INSTANCE })).snapshot;
+    assert.equal(snap.pendingApprovals, 0);
+
+    const events = (await env.store.readEvents(INSTANCE)).events;
+    const denied = events.find((ev) => ev.reason === 'permission.denied');
+    assert.ok(denied, 'deny 沿用既有失败路径的 permission.denied 事件');
+    assert.equal(denied.detail.approvalId, 'APR-001');
   } finally {
     await env.teardown();
   }

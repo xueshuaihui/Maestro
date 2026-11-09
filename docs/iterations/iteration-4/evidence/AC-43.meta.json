@@ -1,0 +1,41 @@
+{
+  "ac": "AC-43",
+  "title": "图反映暂停、挂起、审批与升级",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:41:22.685Z",
+  "finishedAt": "2026-11-08T22:41:48.718Z",
+  "durationMs": 26033,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-43-A",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-43-A"
+    },
+    {
+      "case": "AC-43-B",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-43-B"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-43-A",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    },
+    {
+      "__root": "AC-43-B",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 12,
+  "notes": []
+}

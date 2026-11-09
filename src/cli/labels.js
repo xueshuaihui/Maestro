@@ -44,7 +44,33 @@ export const HANDOFF_LABEL = Object.freeze({
 
 export const ESCALATION_LABEL = Object.freeze({
   pending: '待处理',
+  resolved: '已处理',
   voided: '已作废'
+});
+
+/** Approval lifecycle (requirement D-8 / M-7). */
+export const APPROVAL_LABEL = Object.freeze({
+  pending: '待处理',
+  approved: '已通过',
+  denied: '已拒绝',
+  withdrawn: '已作废'
+});
+
+/** Escalation decision wording (requirement D-8 / D-6). */
+export const RESOLUTION_LABEL = Object.freeze({
+  pass: '通过',
+  fail: '失败',
+  retry: '重新分配'
+});
+
+/**
+ * `workflow` subcommand wording (requirement A-3 / D-8). The result lines themselves
+ * reuse the instance row and the cancel row; only the action words live here.
+ */
+export const WORKFLOW_LABEL = Object.freeze({
+  pause: '暂停',
+  resume: '恢复',
+  abort: '终止'
 });
 
 /** Role names (requirement D-5). `coordinator` is defined but not dispatched. */
@@ -71,7 +97,8 @@ export const LAYER = Object.freeze({
   node: '节点',
   session: '会话',
   handoff: '交接包',
-  escalation: '升级'
+  escalation: '升级',
+  approval: '审批'
 });
 
 /**
@@ -121,7 +148,9 @@ export const NODE_SUFFIX = Object.freeze({
 export const HANDOFF_REJECT_REASON = Object.freeze({
   withdrawn: '已撤回',
   permission_denied: '审批被拒',
-  target_rejected: '目标拒绝'
+  target_rejected: '目标拒绝',
+  invalid_payload: '内容不合规',
+  delivery_failed: '投递失败'
 });
 
 /**
@@ -165,7 +194,33 @@ export const ERROR_TEMPLATE = Object.freeze({
     '通用任务闭环需要在任务里写「产物：<文件名>.md」一行（全角冒号，例如 产物：release-notes.md）',
   PRODUCT_INVALID_TASK_LOOP:
     '通用任务闭环的产物名不合法：{name}（只写文件名，.md 结尾，不带目录与版本号）',
-  WORKSPACE_INIT_FAILED: '无法创建工作区：{cause}'
+  WORKSPACE_INIT_FAILED: '无法创建工作区：{cause}',
+  // I1.4 general code (requirement A-5): only generic codes enter this table; the
+  // command-level A-5 codes are rendered by their own command handlers.
+  STORE_CONFLICT: '操作冲突，请重试'
+});
+
+/**
+ * Command-level failure texts (requirement A-5, verbatim). These codes never enter
+ * `src/core/error-map.js` `CODES` (D-10.4) and never reach `renderError`; each command
+ * renders its own row from this table. Placeholders: `{id}` = the addressed id,
+ * `{state}` = a Chinese state word, `{decision}` / `{allowed}` = raw CLI values.
+ */
+export const COMMAND_ERROR = Object.freeze({
+  SESSION_NOT_FOUND: '未找到会话 {id}',
+  ESCALATION_NOT_FOUND: '未找到升级 {id}',
+  ESCALATION_NOT_PENDING: '升级 {id} 已处理（{state}），无需再次处理',
+  ESCALATION_DECISION_INVALID: '升级 {id} 不支持「{decision}」；可选：{allowed}',
+  ESCALATION_AMBIGUOUS: '升级号 {id} 在多个实例中存在，请加 --instance',
+  INSTANCE_NOT_SUSPENDED: '实例 {id} 当前不是挂起状态，不能处理升级',
+  APPROVAL_NOT_FOUND: '未找到审批 {id}',
+  APPROVAL_NOT_PENDING: '审批 {id} 已处理（{state}），无需再次处理',
+  APPROVAL_AMBIGUOUS: '审批号 {id} 在多个实例中存在，请加 --instance',
+  APPROVAL_SESSION_GONE: '审批 {id} 已失效：会话不在运行',
+  HANDOFF_NOT_FOUND: '未找到交接包 {id}',
+  HANDOFF_AMBIGUOUS: '交接包号 {id} 在多个实例中存在，请加 --instance',
+  INSTANCE_NOT_PAUSABLE: '实例 {id} 当前为{state}，不能暂停',
+  INSTANCE_NOT_RESUMABLE: '实例 {id} 当前为{state}，不能恢复'
 });
 
 /**
@@ -214,11 +269,30 @@ export const REASON_LABEL = Object.freeze({
   'review.rejected': '审核驳回',
   'review.invalid': '审核无效',
   'review.downstream_accepted': '下游已接受',
-  'review.evidence_verified': '证据核对通过'
+  'review.evidence_verified': '证据核对通过',
+  // I1.4 additions (inbox retry / approval / pause / workspace status page).
+  'handoff.inboxed': '已入信箱',
+  'handoff.pending': '等待投递',
+  'handoff.expired': '投递已过期',
+  'escalation.resolved': '处理升级',
+  'approval.created': '创建审批',
+  'approval.withdrawn': '作废审批',
+  'workflow.paused': '暂停推进',
+  'workflow.resumed': '恢复推进',
+  'workspace.status_write_failed': '状态页写入失败'
 });
 
 /** `已停止推进` suffix on the instance line when the escalation write failed. */
 export const INSTANCE_STOPPED_SUFFIX = '已停止推进';
+
+/**
+ * I1.4 row fragments (requirement A-2 / D-8): the paused qualifier replaces the state
+ * word on an instance line, the approval counter is only appended when > 0, and the
+ * retry suffix is appended to a `待投递` handoff row.
+ */
+export const INSTANCE_PAUSED_SUFFIX = '（已暂停）';
+export const PENDING_APPROVAL_SUFFIX = '待处理审批 {n}';
+export const HANDOFF_RETRY_SUFFIX = '重试 {n}/2';
 
 /**
  * Verdict-file wording (requirement D-5). WP-3 currently keeps an identical copy in
@@ -276,24 +350,30 @@ export const BACKFLOW_REVISION_LINE = '修改要求：{text}';
 /** Waiting line for a session that has already produced output (requirement appendix A-1 #5). */
 export const SESSION_WAITING_DOWNSTREAM = '会话 等待下游';
 
-/** Escalation block under `orch status` (requirement 2.6 / D-5). */
+/** Escalation block under `orch status` (requirement 2.6 / D-5 / A-2 #4). */
 export const ESCALATION_BLOCK = Object.freeze({
   none: '升级 —',
   header: '升级 {id} {state}',
   reason: '  原因：{detail}',
   node: '  节点：{nodeId} {role} · 第 {round} 轮',
   defect: '  缺陷：{summary}（证据 {evidence}）',
-  next: '  下一步：本版本只能查看；要终止请执行 orch cancel --instance {id}'
+  next:
+    '  下一步：orch escalate list --instance {id} 查看升级；orch escalate resolve ESC-nnn --instance {id} --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance {id}'
 });
 
 /** One-line escalation summary printed by `orch run` when it ends suspended (appendix A-4). */
 export const ESCALATION_SUMMARY_LINE = '升级 {id} {state} · 节点 {nodeId} {role} · 第 {round} 轮';
 
-/** Closing "next step" lines for `orch run` (appendix A-4). */
+/**
+ * Closing "next step" lines for `orch run` (appendix A-2 #4 / #5). `NEXT_STEP_HALTED`
+ * is unchanged: a halted instance can only be cancelled.
+ */
 export const NEXT_STEP_SUSPENDED =
-  '下一步：查看详情 orch status --instance {id} --events；本版本不能继续，要终止请执行 orch cancel --instance {id}';
+  '下一步：orch escalate list --instance {id} 查看升级；orch escalate resolve ESC-nnn --instance {id} --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance {id}';
 export const NEXT_STEP_HALTED =
   '下一步：查看 orch status --instance {id} --events；本版本不能继续，只能取消';
+/** Foreground `orch run` ending on a dispatch-boundary pause (requirement A-2 #6 / D-7.9). */
+export const NEXT_STEP_PAUSED = '下一步：恢复推进 orch workflow resume {id}';
 
 /**
  * Duration for display: '3s' | '1m12s' | '2m'.

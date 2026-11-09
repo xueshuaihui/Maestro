@@ -13,6 +13,10 @@ import {
   NODE_QUALIFIER,
   HANDOFF_REJECT_REASON,
   LAYER,
+  APPROVAL_LABEL,
+  RESOLUTION_LABEL,
+  WORKFLOW_LABEL,
+  COMMAND_ERROR,
   REASON_LABEL,
   ESCALATION_BLOCK,
   INSTANCE_STOPPED_SUFFIX,
@@ -22,6 +26,10 @@ import {
   ESCALATION_SUMMARY_LINE,
   NEXT_STEP_SUSPENDED,
   NEXT_STEP_HALTED,
+  NEXT_STEP_PAUSED,
+  INSTANCE_PAUSED_SUFFIX,
+  PENDING_APPROVAL_SUFFIX,
+  HANDOFF_RETRY_SUFFIX,
   ERROR_TEMPLATE,
   REVIEW_TEXT,
   ARTIFACT_TEXT,
@@ -130,7 +138,21 @@ test('handoff labels cover all seven states', () => {
 });
 
 test('escalation labels match D-5', () => {
-  assert.deepEqual({ ...ESCALATION_LABEL }, { pending: '待处理', voided: '已作废' });
+  assert.deepEqual({ ...ESCALATION_LABEL }, {
+    pending: '待处理',
+    resolved: '已处理',
+    voided: '已作废'
+  });
+});
+
+test('approval labels match D-8 / M-7', () => {
+  assert.deepEqual({ ...APPROVAL_LABEL }, {
+    pending: '待处理',
+    approved: '已通过',
+    denied: '已拒绝',
+    withdrawn: '已作废'
+  });
+  assert.deepEqual({ ...RESOLUTION_LABEL }, { pass: '通过', fail: '失败', retry: '重新分配' });
 });
 
 test('role labels keep coordinator defined', () => {
@@ -173,17 +195,20 @@ test('node qualifiers and handoff reject reasons match the display table', () =>
   assert.deepEqual({ ...HANDOFF_REJECT_REASON }, {
     withdrawn: '已撤回',
     permission_denied: '审批被拒',
-    target_rejected: '目标拒绝'
+    target_rejected: '目标拒绝',
+    invalid_payload: '内容不合规',
+    delivery_failed: '投递失败'
   });
 });
 
-test('layer prefixes include escalation', () => {
+test('layer prefixes include escalation and approval', () => {
   assert.deepEqual({ ...LAYER }, {
     instance: '实例',
     node: '节点',
     session: '会话',
     handoff: '交接包',
-    escalation: '升级'
+    escalation: '升级',
+    approval: '审批'
   });
 });
 
@@ -229,9 +254,19 @@ test('reason vocabulary is complete (I1.1 baseline + I1.2 additions)', () => {
     'review.rejected': '审核驳回',
     'review.invalid': '审核无效',
     'review.downstream_accepted': '下游已接受',
-    'review.evidence_verified': '证据核对通过'
+    'review.evidence_verified': '证据核对通过',
+    // I1.4 additions (inbox retry / approval / pause / workspace status page).
+    'handoff.inboxed': '已入信箱',
+    'handoff.pending': '等待投递',
+    'handoff.expired': '投递已过期',
+    'escalation.resolved': '处理升级',
+    'approval.created': '创建审批',
+    'approval.withdrawn': '作废审批',
+    'workflow.paused': '暂停推进',
+    'workflow.resumed': '恢复推进',
+    'workspace.status_write_failed': '状态页写入失败'
   });
-  assert.equal(Object.keys(REASON_LABEL).length, 39);
+  assert.equal(Object.keys(REASON_LABEL).length, 48);
 });
 
 test('event-line fragments match D-5 verbatim', () => {
@@ -248,20 +283,92 @@ test('escalation block matches requirement 2.6 / D-5', () => {
     reason: '  原因：{detail}',
     node: '  节点：{nodeId} {role} · 第 {round} 轮',
     defect: '  缺陷：{summary}（证据 {evidence}）',
-    next: '  下一步：本版本只能查看；要终止请执行 orch cancel --instance {id}'
+    next:
+      '  下一步：orch escalate list --instance {id} 查看升级；orch escalate resolve ESC-nnn --instance {id} --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance {id}'
   });
 });
 
 test('orch run closing lines match appendix A-4', () => {
   assert.equal(ESCALATION_SUMMARY_LINE, '升级 {id} {state} · 节点 {nodeId} {role} · 第 {round} 轮');
+  // A-2 #4 / M-11: 挂起后的下一步必须给出 escalate list / resolve。
   assert.equal(
     NEXT_STEP_SUSPENDED,
-    '下一步：查看详情 orch status --instance {id} --events；本版本不能继续，要终止请执行 orch cancel --instance {id}'
+    '下一步：orch escalate list --instance {id} 查看升级；orch escalate resolve ESC-nnn --instance {id} --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance {id}'
   );
   assert.equal(
     NEXT_STEP_HALTED,
     '下一步：查看 orch status --instance {id} --events；本版本不能继续，只能取消'
   );
+  // A-2 #6 / D-7.9: paused is not a failure and not a suspension.
+  assert.equal(NEXT_STEP_PAUSED, '下一步：恢复推进 orch workflow resume {id}');
+});
+
+test('workflow action words match D-8', () => {
+  assert.deepEqual({ ...WORKFLOW_LABEL }, { pause: '暂停', resume: '恢复', abort: '终止' });
+});
+
+test('I1.4 row fragments match A-2 / D-8', () => {
+  assert.equal(INSTANCE_PAUSED_SUFFIX, '（已暂停）');
+  assert.equal(PENDING_APPROVAL_SUFFIX, '待处理审批 {n}');
+  assert.equal(HANDOFF_RETRY_SUFFIX, '重试 {n}/2');
+});
+
+test('I1.4 generic error texts match A-5', () => {
+  // 命令级错误码由各命令渲染器处理，只有通用码进 ERROR_TEMPLATE（D-10.4）。
+  assert.equal(ERROR_TEMPLATE.STORE_CONFLICT, '操作冲突，请重试');
+  assert.equal(ERROR_TEMPLATE.WORKSPACE_INIT_FAILED, '无法创建工作区：{cause}');
+});
+
+test('A-5 command-level error texts (14 codes, verbatim)', () => {
+  assert.deepEqual({ ...COMMAND_ERROR }, {
+    SESSION_NOT_FOUND: '未找到会话 {id}',
+    ESCALATION_NOT_FOUND: '未找到升级 {id}',
+    ESCALATION_NOT_PENDING: '升级 {id} 已处理（{state}），无需再次处理',
+    ESCALATION_DECISION_INVALID: '升级 {id} 不支持「{decision}」；可选：{allowed}',
+    ESCALATION_AMBIGUOUS: '升级号 {id} 在多个实例中存在，请加 --instance',
+    INSTANCE_NOT_SUSPENDED: '实例 {id} 当前不是挂起状态，不能处理升级',
+    APPROVAL_NOT_FOUND: '未找到审批 {id}',
+    APPROVAL_NOT_PENDING: '审批 {id} 已处理（{state}），无需再次处理',
+    APPROVAL_AMBIGUOUS: '审批号 {id} 在多个实例中存在，请加 --instance',
+    APPROVAL_SESSION_GONE: '审批 {id} 已失效：会话不在运行',
+    HANDOFF_NOT_FOUND: '未找到交接包 {id}',
+    HANDOFF_AMBIGUOUS: '交接包号 {id} 在多个实例中存在，请加 --instance',
+    INSTANCE_NOT_PAUSABLE: '实例 {id} 当前为{state}，不能暂停',
+    INSTANCE_NOT_RESUMABLE: '实例 {id} 当前为{state}，不能恢复'
+  });
+  assert.equal(Object.keys(COMMAND_ERROR).length, 14);
+});
+
+test('A-5 command-level texts render with their placeholders filled', () => {
+  const fill = (template, vars) =>
+    String(template).replace(/\{(\w+)\}/g, (match, key) =>
+      vars[key] === undefined || vars[key] === null ? '' : String(vars[key])
+    );
+
+  const cases = [
+    ['SESSION_NOT_FOUND', { id: 'SES-001' }, '未找到会话 SES-001'],
+    ['ESCALATION_NOT_FOUND', { id: 'ESC-001' }, '未找到升级 ESC-001'],
+    ['ESCALATION_NOT_PENDING', { id: 'ESC-001', state: '已作废' }, '升级 ESC-001 已处理（已作废），无需再次处理'],
+    [
+      'ESCALATION_DECISION_INVALID',
+      { id: 'ESC-001', decision: 'reopen', allowed: 'retry|pass|fail' },
+      '升级 ESC-001 不支持「reopen」；可选：retry|pass|fail'
+    ],
+    ['ESCALATION_AMBIGUOUS', { id: 'ESC-001' }, '升级号 ESC-001 在多个实例中存在，请加 --instance'],
+    ['INSTANCE_NOT_SUSPENDED', { id: 'INST-001' }, '实例 INST-001 当前不是挂起状态，不能处理升级'],
+    ['APPROVAL_NOT_FOUND', { id: 'APR-001' }, '未找到审批 APR-001'],
+    ['APPROVAL_NOT_PENDING', { id: 'APR-001', state: '已通过' }, '审批 APR-001 已处理（已通过），无需再次处理'],
+    ['APPROVAL_AMBIGUOUS', { id: 'APR-001' }, '审批号 APR-001 在多个实例中存在，请加 --instance'],
+    ['APPROVAL_SESSION_GONE', { id: 'APR-001' }, '审批 APR-001 已失效：会话不在运行'],
+    ['HANDOFF_NOT_FOUND', { id: 'HO-001' }, '未找到交接包 HO-001'],
+    ['HANDOFF_AMBIGUOUS', { id: 'HO-001' }, '交接包号 HO-001 在多个实例中存在，请加 --instance'],
+    ['INSTANCE_NOT_PAUSABLE', { id: 'INST-001', state: '已挂起' }, '实例 INST-001 当前为已挂起，不能暂停'],
+    ['INSTANCE_NOT_RESUMABLE', { id: 'INST-001', state: '已取消' }, '实例 INST-001 当前为已取消，不能恢复']
+  ];
+
+  for (const [code, vars, expected] of cases) {
+    assert.equal(fill(COMMAND_ERROR[code], vars), expected, code);
+  }
 });
 
 // --- I1.3 (requirement D-4 / D-5) ---------------------------------------------------

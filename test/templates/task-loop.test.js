@@ -174,6 +174,7 @@ test('撰写回流提示词逐字（D-8 撰写第 2 轮）', () => {
     previousRef: 'artifacts/docs/release-notes.v1.md',
     docRef: 'artifacts/docs/release-notes.v2.md',
     writePath: `${WORKSPACE}/artifacts/docs/release-notes.v2.md`,
+    workspaceDir: WORKSPACE,
     round: 2
   });
   assert.equal(
@@ -185,7 +186,12 @@ test('撰写回流提示词逐字（D-8 撰写第 2 轮）', () => {
       `研究笔记：${RESEARCH_REF}\n` +
       '上一版文档引用：artifacts/docs/release-notes.v1.md\n' +
       '本轮文档引用：artifacts/docs/release-notes.v2.md\n' +
-      `写入路径：${WORKSPACE}/artifacts/docs/release-notes.v2.md\n不得改写上一版文件。`
+      `写入路径：${WORKSPACE}/artifacts/docs/release-notes.v2.md\n不得改写上一版文件。\n\n` +
+      // A-6 工作区上下文段（多节点图：四行，上游为本次派发所沿边的来源节点）。
+      `工作区：${WORKSPACE}\n` +
+      `共享区（只读）：${WORKSPACE}/shared\n` +
+      `本节点阶段区：${WORKSPACE}/stage/T-002\n` +
+      `上游阶段区（只读）：${WORKSPACE}/stage/T-003`
   );
 });
 
@@ -249,21 +255,30 @@ test('code-loop 的 forward / verify 提示词逐字不变（I1.2）', () => {
   const forward = promptFor({
     graph: codeLoop,
     handoff: { edge: { from: 'T-001', to: 'T-002', kind: 'forward' } },
-    task: TASK
+    task: TASK,
+    workspaceDir: WORKSPACE
   });
-  assert.equal(forward, `${TASK}${VERDICT_REQUIREMENT}`);
+  assert.equal(
+    forward,
+    `${TASK}${VERDICT_REQUIREMENT}\n\n` +
+      `工作区：${WORKSPACE}\n共享区（只读）：${WORKSPACE}/shared\n` +
+      `本节点阶段区：${WORKSPACE}/stage/T-002\n上游阶段区（只读）：${WORKSPACE}/stage/T-001`
+  );
 
   const backflow = promptFor({
     graph: codeLoop,
     handoff: { edge: { from: 'T-002', to: 'T-001', kind: 'backflow' } },
     task: TASK,
     defects: [{ summary: 'division by zero', evidence: 'out/log.txt' }],
-    retestRequirement: 'guard b === 0'
+    retestRequirement: 'guard b === 0',
+    workspaceDir: WORKSPACE
   });
   assert.equal(
     backflow,
     `${TASK}\n\n上一轮判定不通过，请按下列缺陷修正：\n` +
-      '缺陷 1：division by zero（证据 out/log.txt）\n复测要求：guard b === 0'
+      '缺陷 1：division by zero（证据 out/log.txt）\n复测要求：guard b === 0\n\n' +
+      `工作区：${WORKSPACE}\n共享区（只读）：${WORKSPACE}/shared\n` +
+      `本节点阶段区：${WORKSPACE}/stage/T-001\n上游阶段区（只读）：${WORKSPACE}/stage/T-002`
   );
   // 编码闭环的回流文案是「复测要求」，不是「修改要求」。
   assert.equal(backflow.includes('修改要求'), false);
@@ -273,11 +288,14 @@ test('code-loop 的 forward / verify 提示词逐字不变（I1.2）', () => {
     handoff: { edge: { from: 'T-001', to: 'T-002', kind: 'retest' } },
     task: TASK,
     defectCount: 2,
-    products: ['calc.js']
+    products: ['calc.js'],
+    workspaceDir: WORKSPACE
   });
   assert.equal(
     retest,
-    `${TASK}\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。`
+    `${TASK}\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。\n\n` +
+      `工作区：${WORKSPACE}\n共享区（只读）：${WORKSPACE}/shared\n` +
+      `本节点阶段区：${WORKSPACE}/stage/T-002\n上游阶段区（只读）：${WORKSPACE}/stage/T-001`
   );
 });
 

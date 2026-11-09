@@ -1,0 +1,99 @@
+{
+  "ac": "AC-63",
+  "title": "单节点投递失败不进入信箱重试",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：CLI 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：<任务 cwd>/.mock/prompt-attempts-<sessionId>.json 的 attempts === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：events.jsonl 没有 handoff.pending",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,run.started,handoff.created,handoff.delivered,run.failed,run.failed,handoff.rejected"
+    },
+    {
+      "text": "Then：不出现「待投递」、不重试（无 handoff.pending / handoff.inboxed）",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,run.started,handoff.created,handoff.delivered,run.failed,run.failed,handoff.rejected"
+    },
+    {
+      "text": "机检：.orch/inbox/INST-001/HO-001.json 不存在",
+      "ok": true,
+      "blocked": false,
+      "actual": ""
+    },
+    {
+      "text": "机检：实例 failed（期望 \"failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"failed\""
+    },
+    {
+      "text": "机检：节点 failed（期望 \"failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"failed\""
+    },
+    {
+      "text": "机检：会话 idle（期望 \"idle\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"idle\""
+    },
+    {
+      "text": "机检：nodes[0].failure.code === HOST_ERROR（期望 \"HOST_ERROR\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"HOST_ERROR\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run single（mock --host-error 对所有 prompt 返回失败）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写下说明",
+        "--template",
+        "single"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-63",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 3488,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-33551-1\n任务已投递\n会话 空闲\n节点 失败 · 执行失败：mock-host: upstream model request failed (code 500)\n交接包 HO-001  已构造   06:47:36\n交接包 HO-001  已投递   06:47:36\n交接包 HO-001  已拒绝   06:47:36  原因 目标拒绝\n执行失败：mock-host: upstream model request failed (code 500)\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-63",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 323,
+      "stdout": "核心已停止（pid 33548，运行 3s）\n",
+      "stderr": ""
+    }
+  ]
+}

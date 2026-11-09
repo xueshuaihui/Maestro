@@ -1,0 +1,46 @@
+{
+  "ac": "AC-48",
+  "title": "交接包找不到或歧义",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:43:04.602Z",
+  "finishedAt": "2026-11-08T22:43:31.084Z",
+  "durationMs": 26483,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-48-a",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-a"
+    },
+    {
+      "case": "AC-48-b",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-48-a",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-48-b",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-48-b",
+      "instanceId": "INST-002",
+      "state": "completed"
+    }
+  ],
+  "checks": 7,
+  "notes": []
+}

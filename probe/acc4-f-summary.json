@@ -1,0 +1,4874 @@
+{
+  "通过": 70,
+  "不通过": 0,
+  "阻塞": 0,
+  "未执行": 0,
+  "executed": 70,
+  "missing": [],
+  "grade": {
+    "已实测（真实宿主）": 0,
+    "mock 实测": 70,
+    "阻塞": 0,
+    "未执行": 0
+  },
+  "batches": {
+    "a": {
+      "通过": 15,
+      "不通过": 0,
+      "阻塞": 0,
+      "未执行": 0
+    },
+    "b": {
+      "通过": 15,
+      "不通过": 0,
+      "阻塞": 0,
+      "未执行": 0
+    },
+    "c": {
+      "通过": 15,
+      "不通过": 0,
+      "阻塞": 0,
+      "未执行": 0
+    },
+    "d": {
+      "通过": 15,
+      "不通过": 0,
+      "阻塞": 0,
+      "未执行": 0
+    },
+    "e": {
+      "通过": 10,
+      "不通过": 0,
+      "阻塞": 0,
+      "未执行": 0
+    }
+  },
+  "evidenceFiles": 630,
+  "perAc": [
+    {
+      "id": "AC-01",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "机检：workspace/shared 是目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workspace/stage/T-001 是目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workspace/stage/T-002 是目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status.md 存在且是可读 Markdown",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：标题行含实例号与模板名",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 状态：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 暂停：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 任务：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 当前节点：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 工作区：」绝对路径行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 节点」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 交接包」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 升级」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 审批」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：status 首行仍是原来的实例行（期望 \"实例 INST-001 · 已完成 · 模板 编码闭环\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：state=completed（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：schemaVersion=2（期望 2）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-02",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "机检：workspace/shared 是目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workspace/stage/T-001 是目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workspace/stage/T-002 是目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workspace/stage/T-003 是目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status.md 存在且是可读 Markdown",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：标题行含实例号与模板名",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 状态：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 暂停：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 任务：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 当前节点：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 工作区：」绝对路径行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 节点」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 交接包」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 升级」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 审批」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status.md 节点段落列出 T-001（期望含 \"- T-001 研究员\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status.md 节点段落列出 T-002（期望含 \"- T-002 撰写者\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status.md 节点段落列出 T-003（期望含 \"- T-003 审核者\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：T-001 state=done（期望 \"done\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：T-002 state=done（期望 \"done\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：T-003 state=done（期望 \"done\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：template=task-loop（期望 \"task-loop\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-03",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：第 1 行逐字（期望 \"实例 INST-001 · 运行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：第 2 行「会话已创建 <宿主会话号>」（期望匹配 /^会话已创建 mock-sess-\\d+-\\d+$/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：第 3 行逐字（期望 \"任务已投递\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workspace/shared 是目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：single 不出现 stage/ 目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status.md 存在且是可读 Markdown",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：标题行含实例号与模板名",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 状态：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 暂停：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 任务：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：single 不含「当前节点」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 工作区：」绝对路径行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 节点」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 交接包」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 升级」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 审批」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：status.md 含实例行（期望含 \"# INST-001 单节点\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：status.md 含状态行（期望含 \"- 状态：已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：status.md 不含 ## 节点 段（期望不含 \"## 节点\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：stage 目录不存在（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoffs 只有引导包（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：引导包号 HO-001（期望 \"HO-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有 handoff.rejected 事件（期望不含 \"handoff.rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：引导包不参与 schema 校验（state=consumed，无 rejectReason）（期望含 \"consumed|null\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-04",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "A-1：标题行含实例号与模板名",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 状态：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 暂停：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 任务：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 当前节点：」行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「- 工作区：」绝对路径行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 节点」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 交接包」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 升级」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-1：含「## 审批」段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：文件含实例号与模板名（标题行）（期望含 \"# INST-001 编码闭环\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：两个节点各自的状态与轮次（T-001）（期望含 \"- T-001 开发：已完成 · 第 1 轮\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：两个节点各自的状态与轮次（T-002）（期望含 \"- T-002 测试：已完成 · 第 1 轮\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：最近交接包段（期望含 \"- HO-001 开发→测试：已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：升级段落（期望含 \"## 升级\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：审批段落（期望含 \"## 审批\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：节点状态与 orch status 显示一致（T-001）（期望含 \"节点 T-001 开发 已完成 · 第 1 轮\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：节点状态与 orch status 显示一致（T-002）（期望含 \"节点 T-002 测试 已完成 · 第 1 轮\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 含节点状态变化事件 verification.passed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 含交接包状态变化事件 handoff.created",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 含交接包投递事件 handoff.delivered",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status.md 含对应中文状态「已完成」（期望含 \"已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status.md 含对应中文状态「已完成」（交接包）（期望含 \"已完成 · 输入 calc.js\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-05",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具：实例运行到暂停接缝（.mock/paused）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：暂停时 status.md 是核心生成的可读 Markdown",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：手工写入一行后文件确实含该字符串（期望含 \"待办：修 calc.js\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：该手写行消失（期望不含 \"待办：修 calc.js\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：status.md 恢复为核心生成的内容（期望含 \"# INST-001 编码闭环\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：刷新后的文件不含我写的字符串（期望不含 \"待办：修 calc.js\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：刷新后仍是原子替换的完整结构（含节点段）（期望含 \"## 节点\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-06",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：终端出现「无法创建工作区：…」（期望含 \"无法创建工作区：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：没有留下半个实例目录（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/instances/INST-001 不存在（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 没有 node.dispatch（期望不含 \"node.dispatch\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有会话记录（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-07",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具：code-loop 入口 T-001 提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop 入口 T-001 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop 入口 T-001 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop 入口 T-001 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop 入口 T-001 入口不含上游阶段区行（期望不含 \"上游阶段区（只读）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop forward T-002 提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop forward T-002 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop forward T-002 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop forward T-002 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop forward T-002 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop backflow T-001 第 2 轮 提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop backflow T-001 第 2 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop backflow T-001 第 2 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop backflow T-001 第 2 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop backflow T-001 第 2 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop retest T-002 第 2 轮 提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop retest T-002 第 2 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop retest T-002 第 2 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop retest T-002 第 2 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：code-loop retest T-002 第 2 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 研究 T-001 提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 研究 T-001 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 研究 T-001 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 研究 T-001 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 研究 T-001 入口不含上游阶段区行（期望不含 \"上游阶段区（只读）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写 T-002 提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写 T-002 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写 T-002 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写 T-002 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写 T-002 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 审核 T-003 第 1 轮 提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 审核 T-003 第 1 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 审核 T-003 第 1 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 审核 T-003 第 1 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 审核 T-003 第 1 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：task-loop 审核 T-003 第 1 轮 审核提示词「工作区：」行只有一条（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 复测审核 T-003 第 2 轮 提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 复测审核 T-003 第 2 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 复测审核 T-003 第 2 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 复测审核 T-003 第 2 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：task-loop 复测审核 T-003 第 2 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：task-loop 复测审核 T-003 第 2 轮 审核提示词「工作区：」行只有一条（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：9 个多节点提示词（4 + 5）（期望 9）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：单节点提示词存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：单节点提示词不出现工作区上下文段（期望不含 \"工作区：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：单节点提示词不出现共享区只读行（期望不含 \"共享区（只读）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：只传 node 不带 graph 的 promptFor 单元调用不追加该段（期望不含 \"工作区：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：single 图只有 1 个节点，因而不追加（期望不含 \"共享区（只读）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：graph.nodes.length > 1 时追加工作区上下文段（期望含 \"共享区（只读）：/tmp/ws/shared\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：追加条件按节点数 graph.nodes.length <= 1（期望含 \"graph.nodes.length <= 1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：判定不含模板名字面量分支（期望不含 \"'single'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：判定不含 template 分支（期望不含 \"template !==\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：生产派发 6 处 promptFor 调用都带 graph（期望 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：不带 graph 的仅纯构造器 buildBackflowHandoff（单元调用）1 处（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-08",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：终端不出现拒绝（期望不含 \"已拒绝\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：终端不出现升级（期望不含 \"升级 ESC\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 含 handoff.delivered",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有 handoff.rejected 事件（期望不含 \"handoff.rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoff.delivered 之后该包 state 为 delivered 或 consumed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：测试会话收到提示（信箱 promptText 非空）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-09",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具：接缝注册成功",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：暂停接缝命中（after_output:T-001）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例挂起 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：交接包以 rejected 出现",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：rejectReason === invalid_payload（期望 \"invalid_payload\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 有 handoff.rejected",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 有 escalation.created",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations[0].reasonCode（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：node.dispatch 只有入口一条（零新派发）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoffs 无 created 记录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：升级原因 detail 含缺少字段 toNodeId（期望含 \"toNodeId\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：没有新会话（sessions 只有入口 1 个）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：拒绝事件之后没有 node.dispatch（零新派发）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoffs 无 created 记录（期望不含 \"created\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-10",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "机检：实例挂起 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：交接包以 rejected 出现",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：rejectReason === invalid_payload（期望 \"invalid_payload\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 有 handoff.rejected",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 有 escalation.created",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations[0].reasonCode（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：node.dispatch 只有入口一条（零新派发）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoffs 无 created 记录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations[0].reasonCode（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：终端升级原因显示「缺少证据引用」（期望含 \"缺少证据引用\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：reasonDetail 含「缺少证据引用」（期望含 \"缺少证据引用\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：下游未启动（T-002 round 仍为 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-11",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具[删除文件]：投递前 calc.js 存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[删除文件]：实例挂起 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[删除文件]：交接包已拒绝（期望 \"rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[删除文件]：rejectReason = invalid_payload（期望 \"invalid_payload\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[删除文件]：reasonCode = handoff_invalid（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[删除文件]：升级原因指出 calc.js 不存在或为空（期望含 \"calc.js\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[删除文件]：下游节点 T-002 round 不变（仍为 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具[写成 0 字节]：投递前 calc.js 存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[写成 0 字节]：实例挂起 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[写成 0 字节]：交接包已拒绝（期望 \"rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[写成 0 字节]：rejectReason = invalid_payload（期望 \"invalid_payload\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[写成 0 字节]：reasonCode = handoff_invalid（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[写成 0 字节]：升级原因指出 calc.js 不存在或为空（期望含 \"calc.js\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[写成 0 字节]：下游节点 T-002 round 不变（仍为 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-12",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具[escape-ref]：接缝注册成功",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具[escape-ref]：工作区外同名文件确实存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[escape-ref]：实例挂起 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[escape-ref]：有交接包被拒绝（期望 \"rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[escape-ref]：rejectReason = invalid_payload（期望 \"invalid_payload\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[escape-ref]：reasonCode = handoff_invalid（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[escape-ref]：升级原因指出证据越界（期望含 \"证据越界\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[escape-ref]：目标节点 round 不增加（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具[hash-mismatch]：接缝注册成功",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具[hash-mismatch]：工作区外同名文件确实存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[hash-mismatch]：实例挂起 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[hash-mismatch]：有交接包被拒绝（期望 \"rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[hash-mismatch]：rejectReason = invalid_payload（期望 \"invalid_payload\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[hash-mismatch]：reasonCode = handoff_invalid（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[hash-mismatch]：升级原因指出证据哈希不符（期望含 \"证据哈希不符\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[hash-mismatch]：目标节点 round 不增加（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-13",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具[backflow-empty-defects]：接缝注册成功",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[backflow-empty-defects]：回流包已拒绝（期望 \"rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[backflow-empty-defects]：rejectReason === 'invalid_payload'（期望 \"invalid_payload\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[backflow-empty-defects]：reasonCode === 'handoff_invalid'（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[backflow-empty-defects]：升级原因指出回流缺少defects（期望含 \"回流缺少defects\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[backflow-empty-defects]：目标节点（撰写者/开发）没有被派发（sessions 只有 2 个）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[backflow-empty-defects]：来源节点 escalated（期望 \"escalated\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具[empty-requirements]：接缝注册成功",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[empty-requirements]：回流包已拒绝（期望 \"rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[empty-requirements]：rejectReason === 'invalid_payload'（期望 \"invalid_payload\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[empty-requirements]：reasonCode === 'handoff_invalid'（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[empty-requirements]：升级原因指出回流缺少requirements（期望含 \"回流缺少requirements\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[empty-requirements]：目标节点（撰写者/开发）没有被派发（sessions 只有 2 个）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[empty-requirements]：来源节点 escalated（期望 \"escalated\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-14",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "机检：实例挂起 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：交接包以 rejected 出现",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：rejectReason === invalid_payload（期望 \"invalid_payload\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 有 handoff.rejected",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 有 escalation.created",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations[0].reasonCode（期望 \"handoff_invalid\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：node.dispatch 只有入口一条（零新派发）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoffs 无 created 记录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：交接包行显示已拒绝（内容不合规）（期望含 \"已拒绝\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：交接包行显示「内容不合规」原因（期望含 \"内容不合规\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：升级块给出节点（期望含 \"节点：T-001 开发\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：升级块给出轮次（期望含 \"第 1 轮\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：升级块给出原因（期望含 \"原因：交接包 HO-001 内容不合规：缺少证据引用\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：升级块给出下一步（期望含 \"下一步：orch escalate list\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：日志里能看到拒绝事件（期望含 \"交接被拒\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：日志里能看到升级事件（期望含 \"创建升级\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：没有「执行中」的假会话（期望不含 \"会话 执行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：sessions.length 不增加（仍为入口 1 个）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counters.dispatchCount 不增加（仍为 1）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 没有额外的 node.dispatch（拒绝后）（期望不含 \"node.dispatch\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-15",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "机检：events 含 handoff.inboxed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then/机检：handoff.inboxed 出现在该包 handoff.delivered 之前",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：信箱文件 HO-001.json 可解析",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：含目标节点 toNodeId（期望 \"T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：含目标会话 sessionId",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：含提示词 promptText",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：含 deliveryAttempts 字段",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：含 lastError 字段",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-16",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then/机检：实例 completed（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoff.pending 恰好 1 次（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：pending.detail.deliveryAttempts === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：pending 位于最终 handoff.delivered 之前",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：HO-001 deliveryAttempts === 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：目标会话 prompt-attempts 文件 attempts === 2",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：目标节点 T-002 只有 1 个会话（重试不新建会话）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：T-002 的 node.dispatch 只有一条（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "补充：HO-001 deliveryAttempts === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "补充：有两次 handoff.pending（attempts 1、2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "补充：最终出现 handoff.delivered",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-17",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then/机检：实例挂起 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：包 state === expired（期望 \"expired\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：deliveryAttempts === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：expiredAt 非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：升级原因写明已尝试 3 次（期望含 \"已尝试 3 次\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations[0].reasonCode === delivery_failed（期望 \"delivery_failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：信箱文件 deliveryAttempts === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：信箱文件 lastError 非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：目标会话 prompt-attempts 文件 attempts === 3",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：目标节点 T-002 仍只有 1 个会话（重试不新增会话）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 含 handoff.expired",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-18",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "机检：counters.dispatchCount 只加 1（每节点一次，共 3）（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：目标节点 T-002 round 不变（第 1 轮）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events 中 T-002 的 node.dispatch 只有一条（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：终端没有重复的派发事件（无第 4 条 node.dispatch）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-19",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：实例直接挂起并显示升级（期望含 \"已挂起\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：没有「待投递」（期望不含 \"待投递\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then/机检：实例 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations[0].reasonCode === dispatch_failed（期望 \"dispatch_failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：sessions.length === 0（首派会话没建起来）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：node.dispatch 只有一条（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoffs 中没有 created 包（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-20",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then/机检：实例挂起 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：交接包已拒绝（投递失败）（期望 \"rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：rejectReason === delivery_failed（期望 \"delivery_failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations[0].reasonCode === delivery_failed（期望 \"delivery_failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.mock/prompts/2.json 的 task 仍为 null（宿主没收到提示）（期望 null）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：目标会话最多 1 个（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：目标会话为 idle（期望 \"idle\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：目标会话 mock-sess-24141-1 没有 prompt-attempts 文件",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：宿主没有收到提示（events 无 handoff.delivered）（期望不含 \"handoff.delivered\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-21",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具：确有两个实例",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：默认两行（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：默认行序稳定（INST-001 在 INST-002 之前）（期望含 \"实例 INST-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：默认第 2 行 INST-002（期望含 \"实例 INST-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：行内含实例号、节点与角色、轮次、状态、原因摘要（期望含 \"节点 T-002 测试 · 第 2 轮  待处理  回流超上限\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：默认不含已处理（期望不含 \"已处理\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：默认不含已作废（期望不含 \"已作废\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：默认各次输出行序稳定（期望 \"升级 ESC-001  实例 INST-001  节点 T-002 测试 · 第 2 轮  待处理  回流超上限：测试已派发 2 次仍未通过\\n升级 ESC-001  实例 INST-002  节点 T-002 测试 · 第 2 轮  待处理  回流超上限：测试已派发 2 次仍未通过\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：--all 四行（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：--all 已处理以「已处理（通过）」出现（期望含 \"已处理（通过）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：--all 已作废以「已作废」出现（期望含 \"已作废\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：已处理行（ESC-002）逐字带「已处理（通过）」（期望含 \"已处理（通过）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：已作废行（ESC-003）逐字带「已作废」（期望含 \"已作废\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：--all 含 INST-002 的待处理行（含全部实例）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：--instance + --all 只含 INST-001 三行（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：三行都是 INST-001",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：含待处理（期望含 \"待处理\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：含已处理（通过）（期望含 \"已处理（通过）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：含已作废（期望含 \"已作废\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：没有升级时输出「升级 —」（期望 \"升级 —\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-22",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：两个实例都有升级",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：只出现 INST-001 的升级行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：该行含 INST-001（期望含 \"实例 INST-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：输出不含 INST-002（期望不含 \"INST-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：INST-002 确有 1 条待处理升级（被过滤的是真实行）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：该行含升级号 ESC-001（期望含 \"ESC-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：该行含节点与角色、轮次、状态、原因摘要（期望含 \"节点 T-002 测试 · 第 2 轮  待处理  回流超上限\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-23",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：实例挂起且升级待处理（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：ESC-001 待处理（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出「升级 ESC-001 已处理（通过）」（期望含 \"升级 ESC-001 已处理（通过）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出当前实例行「实例 INST-001 · 已完成 · 模板 编码闭环」（期望含 \"实例 INST-001 · 已完成 · 模板 编码闭环\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：升级 state === resolved（期望 \"resolved\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：resolution === pass（期望 \"pass\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 completed（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：节点都为 done",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-24",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具：pause at after_output:T-001 命中",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：接缝注入升级成功",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：实例挂起（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：测试尚未派发（T-002 round 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出「升级 ESC-001 已处理（通过）」（期望含 \"升级 ESC-001 已处理（通过）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then/机检：实例 running 或 completed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：orch status 显示测试执行中或已完成（期望含 \"节点 T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：出现一次新的 node.dispatch（指向 T-002）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：下游节点 T-002 round 增加",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有 handoff.rejected 事件（期望不含 \"handoff.rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：交接包校验通过（指向测试的 HO-001 进入 delivered/consumed）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-25",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：输出「升级 ESC-001 已处理（失败）」（期望含 \"升级 ESC-001 已处理（失败）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出实例失败行「实例 INST-001 · 失败 · 模板 编码闭环」（期望含 \"实例 INST-001 · 失败 · 模板 编码闭环\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 failed（期望 \"failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：节点 failed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：没有新的下游派发（dispatchCount 不再增加）（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 没有新增 node.dispatch（失败处理不派发下游）（期望 4）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-26",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具：pause 命中",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具：接缝注册升级成功",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：实例 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：测试 round 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出「升级 ESC-001 已处理（重新分配）」（期望含 \"升级 ESC-001 已处理（重新分配）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出当前实例行「实例 INST-001 · 运行中 · 模板 编码闭环」（期望含 \"实例 INST-001 · 运行中 · 模板 编码闭环\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：sessions.length 增加 1（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：目标节点 T-001 round 增加 1（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：测试没有被重跑（T-002 round 不变，仍 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：旧会话不再是 running",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-27",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具：第 1 次 resolve 成功（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：提示升级已处理（期望含 \"已处理\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例状态不变（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：节点轮次不变（期望 \"[2,2]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：rev 不变（期望 44）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有第二条 escalation.resolved 事件（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-28",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then[handoff_invalid]：提示该升级不支持「通过」（期望含 \"不支持「pass」\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[handoff_invalid]：给出可选决策 fail|retry（期望含 \"可选：fail|retry\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[handoff_invalid]：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[handoff_invalid]：实例仍挂起（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[handoff_invalid]：升级仍是待处理（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[handoff_invalid]：节点仍未完成",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[dispatch_failed]：提示该升级不支持「通过」（期望含 \"不支持「pass」\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[dispatch_failed]：给出可选决策 fail|retry（期望含 \"可选：fail|retry\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[dispatch_failed]：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[dispatch_failed]：实例仍挂起（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[dispatch_failed]：升级仍是待处理（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[dispatch_failed]：节点仍未完成",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[execution_failed]：提示该升级不支持「通过」（期望含 \"不支持「pass」\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[execution_failed]：给出可选决策 fail|retry（期望含 \"可选：fail|retry\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[execution_failed]：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[execution_failed]：实例仍挂起（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[execution_failed]：升级仍是待处理（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[execution_failed]：节点仍未完成",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[delivery_failed]：提示该升级不支持「通过」（期望含 \"不支持「pass」\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[delivery_failed]：给出可选决策 fail|retry（期望含 \"可选：fail|retry\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then[delivery_failed]：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[delivery_failed]：实例仍挂起（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[delivery_failed]：升级仍是待处理（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检[delivery_failed]：节点仍未完成",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-29",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then①：提示「未找到升级 ESC-001」（期望 \"未找到升级 ESC-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then①：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检①：没有实例被写入（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given②：两个实例都有 ESC-001",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then②：提示「请加 --instance」（期望含 \"请加 --instance\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then②：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检②：所有实例 rev 不变（期望 \"[43,43]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then③：提示「实例 INST-002 当前不是挂起状态，不能处理升级」（期望含 \"实例 INST-002 当前不是挂起状态，不能处理升级\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then③：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检③：所有实例 rev 不变（期望 \"[43,43]\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-30",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：实例 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出「升级 ESC-001 已处理（重新分配）」（期望含 \"升级 ESC-001 已处理（重新分配）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：不会显示「运行中」（期望不含 \"实例 INST-001 · 运行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：resolve 命令按挂起收尾，退出码 4（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations 数量增加 1（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：生成新的升级（期望含 \"升级 ESC-002 待处理\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-31",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：run 打印了待处理审批行（会话在等待审批）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：审批为 pending（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：审批动作为 write（期望含 \"\\\"action\\\":\\\"write\\\"\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出「审批 APR-001 已通过 · 动作 write」（期望含 \"审批 APR-001 已通过 · 动作 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：approve 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：任务最终按正常路径结束（实例 completed）（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：审批 state === approved（期望 \"approved\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：出现 permission.allowed 事件",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：会话从「等待审批」回到执行中（run stdout 审批行之后仍有会话执行行）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status --instance 的审批行显示「已通过」（期望含 \"审批 APR-001 已通过 · 动作 write\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-32",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：处于等待审批",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出「审批 APR-001 已拒绝 · 动作 write」（期望含 \"审批 APR-001 已拒绝 · 动作 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：approve 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：orch run 以「审批被拒绝，任务中止于 write」收尾（期望含 \"审批被拒绝，任务中止于 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：run 以失败收尾（退出码 1）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：审批 denied（期望 \"denied\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 failed（期望 \"failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：节点 failed（期望 \"failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：出现 permission.denied 事件",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有第二套原因文案（不出现执行失败口径）（期望不含 \"执行失败\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-33",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：第一次已通过（期望含 \"审批 APR-001 已通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：审批已变为 approved（期望 \"approved\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：提示审批已处理（期望含 \"审批 APR-001 已处理\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：提示无需再次处理（期望含 \"无需再次处理\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例状态不变（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：审批 state 仍为 approved（只变一次）（期望 \"approved\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：只有一条 permission.allowed 事件（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 rev 不变（期望 14）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-34",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：两个实例都有 APR-001",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then①：提示「审批号 APR-001 在多个实例中存在，请加 --instance」（期望 \"审批号 APR-001 在多个实例中存在，请加 --instance\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then①：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then②：提示「未找到审批 APR-999」（期望 \"未找到审批 APR-999\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then②：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：相关实例 rev 都不变（期望 \"[6,4]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：APR-001 仍是 pending（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-35",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：处于等待审批",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：审批 pending（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：cancel 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 cancelled（期望 \"cancelled\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：审批 withdrawn（期望 \"withdrawn\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：会话 idle（期望 \"idle\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：出现 approval.withdrawn 事件",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：审批行显示「已作废」（期望含 \"审批 APR-001 已作废\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：宿主收到取消，审批不留下「待处理」（期望不含 \"待处理\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-36",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "夹具：A/B/C/D 四类实例齐全",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：A 的实例行显示「运行中（已暂停）」（期望含 \"实例 INST-001 · 运行中（已暂停）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：B 在升级块之后出现待处理审批行（期望含 \"升级 —\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：B 待处理审批行含审批号/节点/角色/动作（期望含 \"审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：B 的审批行位于升级块之后",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：C 不出现审批行（期望不含 \"审批\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：C 的实例输出与 I1.3 A-2 一致（无审批段、单节点显示）（期望含 \"实例 OLD-001 · 已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：C 仍显示会话与交接包（旧字段可读）（期望含 \"节点 已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：D 逐条显示「已通过」（期望含 \"审批 APR-001 已通过 · 节点 T-001 开发 · 动作 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：D 逐条显示「已拒绝」（期望含 \"审批 APR-002 已拒绝 · 节点 T-001 开发 · 动作 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：D 逐条显示「已作废」（期望含 \"审批 APR-003 已作废 · 节点 T-001 开发 · 动作 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：列表行中 A 带「（已暂停）」",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：列表行中 B 带「待处理审批 1」",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-37",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：等待期间审批产生（stdout 出现 APR- 行）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：审批行含审批号（期望含 \"审批 APR-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：审批行含节点号（期望含 \"节点 T-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：审批行含角色（期望含 \"开发\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：审批行含动作（期望含 \"动作 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：审批行打印在会话行之后",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：不需要退出 run 就能看到（断言时刻 run 仍在运行）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：run 进程 stdout 含 APR-001（期望含 \"APR-001\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-38",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：INST-001 两次输出逐字一致（时间相关行归一）（期望 \"实例 INST-001 · 已完成 · 模板 编码闭环\\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 <n>s\\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 <n>s · 判定 通过\\n会话 空闲\\n交接包 HO-001  开发→测试  已构造   <time>\\n交接包 HO-001  开发→测试  已投递   <time>\\n交接包 HO-001  开发→测试  已接受   <time>\\n交接包 HO-001  开发→测试  已完成   <time>\\n升级 —\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：INST-001 存在时退出码都是 0（期望 \"0/0\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：INST-999 两次都输出「实例 INST-999 · 不存在」（期望 \"实例 INST-999 · 不存在\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：INST-999 两次输出一致（期望 \"实例 INST-999 · 不存在\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：INST-999 不存在时退出码都是 1（期望 \"1/1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch 不变（rev 不变）（期望 23）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-39",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：事件按发生顺序逐行输出（[#n] 行数 == events.jsonl 行数）（期望 61）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：行序与 events.jsonl 的 seq 一致（期望 \"[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：含升级事件（期望含 \"原因 创建升级\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：含处理升级事件（期望含 \"原因 处理升级\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：含回流事件（期望含 \"原因 构造回流\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：含拒绝事件（期望含 \"拒绝\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：没有事件时输出「事件 —」（期望 \"事件 —\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-40",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：stdout 是可解析的 JSON 数组",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：数组长度等于 events.jsonl 可解析行数（期望 54）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：顺序一致（seq 与 events.jsonl 相同）（期望 \"[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：元素字段与事件日志一致（首条 reason）（期望 \"run.started\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：元素字段与事件日志一致（首条 object/objectId）（期望 \"instance/INST-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：元素含 gen / ts / detail 等原始字段",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-41",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：输出可解析为 JSON 对象",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：键顺序与附录 A-4 一致（期望 \"[\\\"graphVersion\\\",\\\"instanceId\\\",\\\"template\\\",\\\"state\\\",\\\"paused\\\",\\\"nodes\\\",\\\"edges\\\",\\\"handoffs\\\",\\\"escalations\\\",\\\"approvals\\\",\\\"current\\\"]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：graphVersion === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：instanceId === INST-001（期望 \"INST-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：template === code-loop（期望 \"code-loop\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：state === completed（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：paused === false（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：nodes 含节点号/标题/角色/状态/轮次",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：节点 title 保留中文标题（期望 \"开发\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：节点 roleId 保留英文标识（期望 \"developer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：edges 含来源/目标/方向",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：边方向覆盖 forward / backflow / retest（期望 \"[\\\"forward\\\",\\\"backflow\\\",\\\"retest\\\"]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "A-4：handoffs / escalations / approvals / current 都存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：两次执行输出逐字一致（期望 \"{\\n  \\\"graphVersion\\\": 1,\\n  \\\"instanceId\\\": \\\"INST-001\\\",\\n  \\\"template\\\": \\\"code-loop\\\",\\n  \\\"state\\\": \\\"completed\\\",\\n  \\\"paused\\\": false,\\n  \\\"nodes\\\": [\\n    {\\n      \\\"nodeId\\\": \\\"T-001\\\",\\n      \\\"title\\\": \\\"开发\\\",\\n      \\\"roleId\\\": \\\"developer\\\",\\n      \\\"state\\\": \\\"done\\\",\\n      \\\"round\\\": 1\\n    },\\n    {\\n      \\\"nodeId\\\": \\\"T-002\\\",\\n      \\\"title\\\": \\\"测试\\\",\\n      \\\"roleId\\\": \\\"tester\\\",\\n      \\\"state\\\": \\\"done\\\",\\n      \\\"round\\\": 1\\n    }\\n  ],\\n  \\\"edges\\\": [\\n    {\\n      \\\"from\\\": \\\"T-001\\\",\\n      \\\"to\\\": \\\"T-002\\\",\\n      \\\"kind\\\": \\\"forward\\\"\\n    },\\n    {\\n      \\\"from\\\": \\\"T-002\\\",\\n      \\\"to\\\": \\\"T-001\\\",\\n      \\\"kind\\\": \\\"backflow\\\"\\n    },\\n    {\\n      \\\"from\\\": \\\"T-001\\\",\\n      \\\"to\\\": \\\"T-002\\\",\\n      \\\"kind\\\": \\\"retest\\\"\\n    }\\n  ],\\n  \\\"handoffs\\\": [\\n    {\\n      \\\"handoffId\\\": \\\"HO-001\\\",\\n      \\\"from\\\": \\\"T-001\\\",\\n      \\\"to\\\": \\\"T-002\\\",\\n      \\\"kind\\\": \\\"forward\\\",\\n      \\\"state\\\": \\\"consumed\\\",\\n      \\\"round\\\": 1\\n    }\\n  ],\\n  \\\"escalations\\\": [],\\n  \\\"approvals\\\": [],\\n  \\\"current\\\": null\\n}\\n\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-42",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：首行是实例、模板、状态（期望含 \"实例 INST-001 · 编码闭环 · 已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：每个节点一行（T-001）（期望含 \"T-001 开发 · 已完成 · 第 1 轮\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：每个节点一行（T-002）（期望含 \"T-002 测试 · 已完成 · 第 1 轮\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：末尾「边：」段落（期望含 \"边：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：边逐条列出方向（正向）（期望含 \"T-001 -> T-002 正向\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：边逐条列出方向（回流）（期望含 \"T-002 -> T-001 回流\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：边逐条列出方向（复测）（期望含 \"T-001 -> T-002 复测\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：输出为纯 ASCII 结构字符（中文字符与中文标点除外）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：暂停时首行带「（已暂停）」（期望含 \"实例 INST-001 · 编码闭环 · 运行中（已暂停）\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-43",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：A 的 paused === true（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：A 的 approvals 含待处理项",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：A 的 current 指向当前节点或为 null",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：B 的 paused === false（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：B 的 escalations 含待处理项",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：B 的 current 指向当前节点或为 null",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：A paused 与 state.json 一致（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：A approvals 长度与 state.json 一致（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：A state 与 state.json 一致（期望 \"running\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：B paused 与 state.json 一致（未写字段按 false）（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：B escalations 长度与 state.json 一致（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：B state 与 state.json 一致（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-44",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：会话在等待审批",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：会话号来源可取得（run 的「会话已创建」或 instance log json 的 objectId）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：attach 正常脱离（退出码 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：首行显示该会话号、实例、节点（期望含 \"已附着会话 mock-sess-29512-1（实例 INST-001 · 节点\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：若有待审批，紧跟一行审批信息（期望含 \"审批 APR-001 待处理\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：随后输出该会话最近事件（行数 ≤ 20 且 ≥ 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：脱离收尾行（期望含 \"已脱离会话 mock-sess-29512-1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：stdout 含 APR- 行（期望含 \"APR-\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：附着前后 state 不变（期望 \"running\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：附着前后 rev 不变（期望 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：附着前后节点状态不变（期望 \"[\\\"running\\\"]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：附着前后会话状态不变（期望 \"[\\\"waiting_input\\\"]\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-45",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：项目根没有 SES-999",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出「未找到会话 SES-999」（期望 \"未找到会话 SES-999\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有状态写入（不创建实例）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有状态写入（实例目录集合前后逐字一致）（期望 \"[]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有状态写入（输出不含已附着会话行）（期望不含 \"已附着会话\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有状态写入（输出不含审批行）（期望不含 \"审批 APR-\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-46",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：两个实例",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：两实例共 6 张包（期望 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：先按实例号、再按包号排序",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：每行含包号、实例、方向、状态、最后时间（期望含 \"交接包 HO-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：每行含实例号（期望含 \"实例 INST-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：每行含方向中文（期望匹配 /开发→测试|测试→开发/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：--instance 只出现 INST-001 的交接包（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：--instance 不含 INST-002",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：排序稳定，不随快照数组顺序变化（期望 \"交接包 HO-001  实例 INST-001  开发→测试  已完成  06:42:24\\n交接包 HO-002  实例 INST-001  测试→开发（回流）  已完成  06:42:27\\n交接包 HO-003  实例 INST-001  开发→测试（复测）  已完成  06:42:29\\n交接包 HO-001  实例 INST-002  开发→测试  已完成  06:42:36\\n交接包 HO-002  实例 INST-002  测试→开发（回流）  已完成  06:42:39\\n交接包 HO-003  实例 INST-002  开发→测试（复测）  已完成  06:42:42\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：空时输出「交接包 —」（期望 \"交接包 —\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-47",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：HO-002 是回流包（期望 \"backflow\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：HO-002 含缺陷",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出交接包号（期望含 \"交接包 HO-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出实例（期望含 \"实例：INST-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出方向（期望含 \"方向：测试→开发（回流）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出状态（期望含 \"状态：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：各阶段时间行含「构造：」（期望含 \"构造：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：各阶段时间行含「待投递：」（期望含 \"待投递：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：各阶段时间行含「投递：」（期望含 \"投递：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：各阶段时间行含「接受：」（期望含 \"接受：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：各阶段时间行含「完成：」（期望含 \"完成：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：各阶段时间行含「拒绝：」（期望含 \"拒绝：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：各阶段时间行含「过期：」（期望含 \"过期：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出证据（期望含 \"证据：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：缺陷摘要逐字来自交接包（期望含 \"div 在除数为 0 时返回 Infinity，未抛错\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：证据位置逐字来自交接包（期望含 \"out/test-log.txt\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：缺陷摘要逐字来自交接包（期望含 \"div 在整除场景存在浮点误差\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：证据位置逐字来自交接包（期望含 \"out/test-log-2.txt\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：修改要求（期望含 \"修改要求：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：复测要求（期望含 \"复测要求：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：尝试次数（期望含 \"尝试：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：最后一次错误（期望含 \"最后错误：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：信箱路径（期望含 \"信箱：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：「尝试」行的分母为 3（期望含 \"/3\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：已尝试次数与 deliveryAttempts 一致（期望匹配 /尝试：1\\/3/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：状态行逐字为「已完成」（consumed 状态词映射）（期望含 \"状态：已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：证据行逐字来自交接包 artifactRefs.input（期望含 \"证据：out/verdict.json\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：复测要求逐字来自交接包（期望含 \"按上方每条缺陷修正后重新提交产物\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-48",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then①：提示「未找到交接包 HO-999」（期望 \"未找到交接包 HO-999\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then①：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given②：两个实例都有一张 HO-001",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then②：提示「交接包号 HO-001 在多个实例中存在，请加 --instance」（期望 \"交接包号 HO-001 在多个实例中存在，请加 --instance\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then②：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检①：没有状态写入（rev 不变）（期望 23）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检②：没有状态写入（所有实例 rev 不变）（期望 \"[23,23]\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-49",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：项目根出现 .mock/paused（开发产出后停住）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：pause 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：pause 输出实例行「运行中（已暂停）」（期望含 \"实例 INST-001 · 运行中（已暂停） · 模板 编码闭环\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：前台 orch run 以暂停收尾并退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：run 收尾只打印实例行与下一步（期望含 \"下一步：恢复推进 orch workflow resume INST-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：run 收尾不打印节点表（期望不含 \"节点 T-001 开发 已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：run 收尾不打印交接包行与升级块（期望不含 \"交接包 HO-\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：磁盘快照 paused === true（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：磁盘快照 halted === false（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：state 仍为 running（期望 \"running\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：开发节点 T-001 done（期望 \"done\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counters.dispatchCount 仍为 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：测试 round === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoffs 中没有指向测试的包（不存在 created 孤儿包）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 中开发节点之后没有新的 node.dispatch（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：status 显示已暂停（期望含 \"运行中（已暂停）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workspace/status.md 含「- 暂停：是」（期望含 \"- 暂停：是\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-50",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：已暂停（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：resume 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：实例行恢复「运行中」（期望含 \"实例 INST-001 · 运行中 · 模板 编码闭环\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：paused === false（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 出现指向测试的 node.dispatch（同步点）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：测试 round 增加 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：指向测试的交接包恰好 1 张（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：该包 deliveryAttempts === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：测试最终完成（实例 completed）（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：核心立即派发测试并跑完",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workspace/status.md 含「- 暂停：否」（期望含 \"- 暂停：否\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-51",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：开发回合停在派发边界",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：已暂停且开发已完成（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：pause① 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：pause① 打印当前实例行（期望含 \"实例 INST-001 · 运行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：pause② 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：pause② 打印当前实例行（期望含 \"实例 INST-001 · 运行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：resume① 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：resume① 打印当前实例行（期望含 \"实例 INST-001 · 运行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：resume② 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：resume② 打印当前实例行（期望含 \"实例 INST-001 · 运行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：测试回合的 .mock/paused 重新出现",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二次 resume 前后 dispatchCount 不变（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二次 resume 前后测试节点 round 不变（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：只有第一次 resume 产生一次派发（dispatchCount 由 1 增至 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 中 node.dispatch 共 2 条（开发、测试各一条）（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：指向测试的交接包恰好 1 张（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：测试节点会话恰好 1 个（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：paused 最终为 false（期望 false）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-52",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：workflow abort 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：cancel 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出与 orch cancel --instance 相同的结果行（期望 \"会话 空闲\\n节点 T-001 开发 已取消\\n节点 T-002 测试 已取消\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 cancelled（期望 \"cancelled\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：节点按取消规则收尾（全部 cancelled）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：会话按取消规则收尾（idle）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有遗留待投递交接包",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有遗留待处理升级",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-53",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：实例已完成（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：pause 提示当前状态与不能执行的原因（期望 \"实例 INST-001 当前为已完成，不能暂停\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：resume 提示当前状态与不能执行的原因（期望 \"实例 INST-001 当前为已完成，不能恢复\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：pause 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：resume 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：状态不变（state 仍 completed）（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：rev 不变（期望 23）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-54",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：显式 --template single 与不带该参数的输出逐字相同（期望 \"实例 INST-001 · 运行中\\n会话已创建 mock-sess-<sid>\\n任务已投递\\n会话 执行中 · 已运行 2s\\n会话 等待下游 · 产出已提交\\n会话 空闲\\n节点 已完成 · 耗时 <n>s\\n交接包 HO-001  已构造   <time>\\n交接包 HO-001  已投递   <time>\\n交接包 HO-001  已接受   <time>\\n交接包 HO-001  已完成   <time>\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：两次单节点运行的首行 diff 为空（期望 \"实例 INST-001 · 运行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：实例行不带「· 模板 …」后缀（期望含 \"实例 INST-001 · 运行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：single 实例行不含模板后缀（期望不含 \"· 模板\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：不带 --template 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：显式 --template single 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：I1.2 编码闭环成功（退出码 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：I1.2 实例 completed（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：I1.3 文档闭环成功（退出码 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：I1.3 实例 completed（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：status 列表退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status 无审批时不出现「待处理审批」（期望不含 \"待处理审批\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status 无暂停时不出现「（已暂停）」（期望不含 \"（已暂停）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：cancel 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：core stop 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：core stop 输出「核心已停止」（期望含 \"核心已停止\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-55",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：schemaVersion === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：status --instance 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：instance status 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：instance log 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：instance graph 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：都能读出旧字段，按单节点显示（实例行）（期望含 \"实例 OLD-001 · 已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：按单节点显示（节点行）（期望含 \"节点 已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：交接包旧字段可读（期望含 \"交接包 HO-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：instance log 读出旧事件（期望含 \"原因 run.started\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：graph 的 template 为 single（期望 \"single\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：不因缺新字段报错（graph 输出含 nodes/edges/current）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：不写 state.json（字节不变）（期望 \"95f4a7ba3de34ef57e3f9d07ebca54f32526d3229258164f3251efcccfb78d9a\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：rev 不变（期望 undefined）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-56",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：扫描文件数 > 0（期望匹配 /扫描 [1-9]\\d* 个文件/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：零命中（期望含 \"零命中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：package.json.dependencies 不存在或为空对象",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：test/wp2/labels.test.js 存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：labels.test.js 含逐词对照断言（assert.equal）（期望含 \"assert.equal\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：labels.test.js 对照 labels.js 的状态词表（INSTANCE_LABEL）（期望含 \"INSTANCE_LABEL\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：labels.test.js 引用 labels.js 文案表（期望含 \"src/cli/labels.js\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：src/core/handoff-schema.js 定义唯一校验出口 validateHandoff（期望含 \"export async function validateHandoff\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：orchestrator.js 只从 ./handoff-schema.js 引入校验（期望含 \"import { validateHandoff } from './handoff-schema.js'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：advance.js 只负责构造、不内联校验（无 validateHandoff 字面量）（期望不含 \"validateHandoff\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：src/templates/** 不内联交接包校验（零命中）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：src/templates/index.js 不内联 import（构造/校验不在模板内）（期望不含 \"import \"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：模板 single 定义存在（期望含 \"single\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：模板 code-loop 定义存在（期望含 \"code-loop\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构检查：模板 task-loop 定义存在（期望含 \"task-loop\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-57",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：AC-57-bad 的 log json 可解析且非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：AC-57-retry 的 log json 可解析且非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：AC-57-allow 的 log json 可解析且非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：AC-57-deny 的 log json 可解析且非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：AC-57-escalation 的 log json 可解析且非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：AC-57-flow 的 log json 可解析且非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：所有 instance log --format json 均可解析",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 handoff.inboxed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 handoff.pending",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 handoff.expired",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 handoff.rejected",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 escalation.created",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 escalation.resolved",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 approval.created",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 permission.allowed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 permission.denied",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 workflow.paused",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：事件 reason 覆盖 workflow.resumed",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-58",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：查看类命令退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：查看类命令退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：查看类命令退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：查看类命令退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：查看类命令退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：查看类命令退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：查看类命令退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：命令前后 rev 不变（期望 23）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：实例 state.json 完全不变（期望 \"{\\\"schemaVersion\\\":2,\\\"instanceId\\\":\\\"INST-001\\\",\\\"coreGeneration\\\":\\\"gen-b2cbe8838f4bb6f5\\\",\\\"createdAt\\\":\\\"2026-11-08T22:46:29.634Z\\\",\\\"updatedAt\\\":\\\"2026-11-08T22:46:36.394Z\\\",\\\"state\\\":\\\"completed\\\",\\\"stateSince\\\":\\\"2026-11-08T22:46:36.377Z\\\",\\\"template\\\":\\\"code-loop\\\",\\\"cwd\\\":\\\"/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58/demo\\\",\\\"task\\\":\\\"实现 calc.js，产物：calc.js\\\",\\\"halted\\\":false,\\\"rev\\\":23,\\\"counters\\\":{\\\"eventSeq\\\":23,\\\"runCount\\\":1,\\\"dispatchCount\\\":2},\\\"hostRaw\\\":{\\\"stopReason\\\":\\\"end_turn\\\",\\\"lastError\\\":null,\\\"agentInfo\\\":null},\\\"nodes\\\":[{\\\"nodeId\\\":\\\"T-001\\\",\\\"roleId\\\":\\\"developer\\\",\\\"round\\\":1,\\\"state\\\":\\\"done\\\",\\\"stateSince\\\":\\\"2026-11-08T22:46:32.687Z\\\",\\\"startedAt\\\":\\\"2026-11-08T22:46:30.559Z\\\",\\\"roundStartedAt\\\":\\\"2026-11-08T22:46:30.559Z\\\",\\\"endedAt\\\":\\\"2026-11-08T22:46:32.827Z\\\",\\\"failure\\\":null,\\\"note\\\":null,\\\"verdict\\\":null,\\\"sessionId\\\":\\\"mock-sess-32775-1\\\",\\\"artifactRefs\\\":[{\\\"ref\\\":\\\"calc.js\\\",\\\"absPath\\\":\\\"/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58/demo/calc.js\\\",\\\"declared\\\":true,\\\"exists\\\":true,\\\"bytes\\\":251,\\\"sha256\\\":null,\\\"verifiedAt\\\":\\\"2026-11-08T22:46:32.677Z\\\"}]},{\\\"nodeId\\\":\\\"T-002\\\",\\\"roleId\\\":\\\"tester\\\",\\\"round\\\":1,\\\"state\\\":\\\"done\\\",\\\"stateSince\\\":\\\"2026-11-08T22:46:35.874Z\\\",\\\"startedAt\\\":\\\"2026-11-08T22:46:33.205Z\\\",\\\"roundStartedAt\\\":\\\"2026-11-08T22:46:33.205Z\\\",\\\"endedAt\\\":\\\"2026-11-08T22:46:36.011Z\\\",\\\"failure\\\":null,\\\"note\\\":null,\\\"verdict\\\":{\\\"value\\\":\\\"pass\\\",\\\"defectCount\\\":0,\\\"verdictPath\\\":\\\"out/verdict.json\\\",\\\"readAt\\\":\\\"2026-11-08T22:46:35.830Z\\\"},\\\"sessionId\\\":\\\"mock-sess-32809-1\\\",\\\"artifactRefs\\\":[]}],\\\"sessions\\\":[{\\\"sessionId\\\":\\\"mock-sess-32775-1\\\",\\\"nodeId\\\":\\\"T-001\\\",\\\"round\\\":1,\\\"hostId\\\":null,\\\"state\\\":\\\"idle\\\",\\\"stateSince\\\":\\\"2026-11-08T22:46:32.867Z\\\",\\\"createdAt\\\":\\\"2026-11-08T22:46:31.431Z\\\",\\\"lastEventAt\\\":\\\"2026-11-08T22:46:31.825Z\\\",\\\"toolName\\\":null,\\\"turnId\\\":\\\"turn-1\\\",\\\"artifactRef\\\":\\\"/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58/demo/calc.js\\\",\\\"pendingPermission\\\":null,\\\"quarantined\\\":false},{\\\"sessionId\\\":\\\"mock-sess-32809-1\\\",\\\"nodeId\\\":\\\"T-002\\\",\\\"round\\\":1,\\\"hostId\\\":null,\\\"state\\\":\\\"idle\\\",\\\"stateSince\\\":\\\"2026-11-08T22:46:36.225Z\\\",\\\"createdAt\\\":\\\"2026-11-08T22:46:33.943Z\\\",\\\"lastEventAt\\\":\\\"2026-11-08T22:46:34.884Z\\\",\\\"toolName\\\":null,\\\"turnId\\\":\\\"turn-1\\\",\\\"artifactRef\\\":\\\"/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58/demo/out/verdict.json\\\",\\\"pendingPermission\\\":null,\\\"quarantined\\\":false}],\\\"handoffs\\\":[{\\\"handoffId\\\":\\\"HO-001\\\",\\\"edge\\\":{\\\"from\\\":\\\"T-001\\\",\\\"to\\\":\\\"T-002\\\",\\\"kind\\\":\\\"forward\\\"},\\\"state\\\":\\\"consumed\\\",\\\"createdAt\\\":\\\"2026-11-08T22:46:33.073Z\\\",\\\"deliveredAt\\\":\\\"2026-11-08T22:46:34.305Z\\\",\\\"acceptedAt\\\":\\\"2026-11-08T22:46:34.619Z\\\",\\\"consumedAt\\\":\\\"2026-11-08T22:46:36.011Z\\\",\\\"rejectedAt\\\":null,\\\"rejectReason\\\":null,\\\"wakeConsumedAt\\\":null,\\\"acceptedSignal\\\":\\\"agent_thought_chunk\\\",\\\"ambiguityWindowMs\\\":314,\\\"defects\\\":[],\\\"note\\\":null,\\\"artifactRefs\\\":{\\\"input\\\":[\\\"calc.js\\\"],\\\"output\\\":null,\\\"previous\\\":null},\\\"revisionRequirement\\\":null,\\\"instanceId\\\":\\\"INST-001\\\",\\\"round\\\":1,\\\"fromNodeId\\\":\\\"T-001\\\",\\\"toNodeId\\\":\\\"T-002\\\",\\\"retestRequirement\\\":null,\\\"deliveryAttempts\\\":1,\\\"pendingAt\\\":null,\\\"expiredAt\\\":null,\\\"lastError\\\":null}],\\\"escalations\\\":[]}\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-59",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：实例继续推进（run 退出码 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：实例状态 completed（期望 \"completed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：state.json 的节点状态已更新（不回滚）（期望 \"done\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 含 workspace.status_write_failed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：后续状态变化仍会尝试刷新（失败事件多次）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：status 仍显示新状态（期望含 \"实例 INST-001 · 已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：instance log 能看到一次状态页写入失败事件（reason=workspace.status_write_failed）（期望含 \"workspace.status_write_failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：instance log 将该原因渲染为「状态页写入失败」（期望含 \"状态页写入失败\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：status.md 仍存在（写入被尝试但失败，不影响状态）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-60",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：宿主请求 write，实例等待审批",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：pause 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：已暂停（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：暂停时仍有待处理审批（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：cancel 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 cancelled（期望 \"cancelled\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：暂停标记清除（paused === false）（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：审批 withdrawn（期望 \"withdrawn\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：会话 idle（期望 \"idle\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：审批行显示已作废（期望含 \"审批 APR-001 已作废\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：不会留下「待处理」（期望不含 \"待处理\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-61",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：项目根出现 .mock/paused",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：交接包停在「待投递 · 重试 1/2」重试等待点",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：cancel 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：该交接包显示「已拒绝（已撤回）」（期望含 \"已拒绝（已撤回）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 cancelled（期望 \"cancelled\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：包 state === rejected（期望 \"rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：包 rejectReason === withdrawn（期望 \"withdrawn\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：deliveryAttempts 不再增加（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：release 后 .mock/prompt-attempts-<sessionId>.json 的 attempts 不再增加",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/inbox/INST-001/HO-001.json 仍存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：释放后不再发起重试（无新增 handoff.pending）（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-62",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：开发节点 T-001 等待审批（run 打印 APR-001 待处理行）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：审批 pending（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：来源节点为开发 T-001（期望 \"T-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：审批动作为 write（期望 \"write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：输出「审批 APR-001 已拒绝 · 动作 write」（期望含 \"审批 APR-001 已拒绝 · 动作 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：审批 denied（期望 \"denied\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：来源节点 escalated（期望 \"escalated\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 suspended（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations[0].reasonCode === execution_failed（期望 \"execution_failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：不出现 failed 实例行（期望不含 \"· 已失败\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：不出现第二套失败文案（执行失败口径）（期望不含 \"执行失败\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：出现 permission.denied 事件",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：出现 escalation.created 事件（沿 refusal 路径升级）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-63",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "机检：CLI 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：<任务 cwd>/.mock/prompt-attempts-<sessionId>.json 的 attempts === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 没有 handoff.pending",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：不出现「待投递」、不重试（无 handoff.pending / handoff.inboxed）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/inbox/INST-001/HO-001.json 不存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 failed（期望 \"failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：节点 failed（期望 \"failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：会话 idle（期望 \"idle\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：nodes[0].failure.code === HOST_ERROR（期望 \"HOST_ERROR\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-64",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "机检：run --cwd ./demo --task x --approval maybe 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：stdout/stderr 含允许值说明 allow|reject|hold（期望含 \"allow|reject|hold\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：run --cwd ./demo --task x --approval maybe 按用法错误输出（含「用法：」）（期望含 \"用法：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：instance graph INST-001 --format yaml 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：stdout/stderr 含允许值说明 text|json（期望含 \"text|json\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：instance graph INST-001 --format yaml 按用法错误输出（含「用法：」）（期望含 \"用法：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalate resolve ESC-001 --decision maybe 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：stdout/stderr 含允许值说明 pass|fail|retry（期望含 \"pass|fail|retry\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：escalate resolve ESC-001 --decision maybe 按用法错误输出（含「用法：」）（期望含 \"用法：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：approve APR-001 --decision maybe 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：stdout/stderr 含允许值说明 allow|deny（期望含 \"allow|deny\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：approve APR-001 --decision maybe 按用法错误输出（含「用法：」）（期望含 \"用法：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/instances 下没有新实例目录",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：已有实例 rev 不变（期望 23）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-65",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Then：实例挂起并显示升级（suspended）（期望 \"suspended\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalations[0].reasonCode === dispatch_failed（期望 \"dispatch_failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：本轮复测包 state === rejected（期望 \"rejected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：本轮复测包 rejectReason === delivery_failed（期望 \"delivery_failed\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：handoffs 中没有该节点本轮的 created 包（不留孤儿包）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：没有 handoff.pending",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：不出现「待投递」（期望不含 \"待投递\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：该交接包以「已拒绝（投递失败）」收尾（期望含 \"已拒绝（投递失败）\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-66",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：项目根出现 .mock/paused（回流包已落盘、派发未提交）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：暂停落定后指向该节点的 created 包恰好 1 张（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "When：pause 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "When：前台 orch run 以暂停收尾（退出 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：暂停期间该包显示「已构造」（created 仍在）（期望 \"created\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：暂停落定后目标节点 round 未增加（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：暂停落定后 dispatchCount 未增加（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：暂停落定后没有新增 node.dispatch（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "When：resume 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：恢复后该 created 包被派发（离开 created 态）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：恢复后核心用同一张包派发（不产生第二张包）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：该 handoffId 变为 delivered/consumed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：deliveryAttempts === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：dispatchCount 恰好 +1（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：指向该节点的包仍只有 1 张（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：node.dispatch 新增恰好 1 条（期望 3）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-67",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：宿主请求 write 动作、实例等待审批",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：审批仍为 pending（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：提示「审批 APR-001 已失效：会话不在运行」（期望含 \"审批 APR-001 已失效：会话不在运行\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：审批 state === pending（不假装已放行）（期望 \"pending\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 没有 permission.allowed",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：实例 rev 在命令前后不变（期望 7）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-68",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：存在回流包",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：该包 edge.kind === backflow（期望 \"backflow\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：defects.length === 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：revisionRequirement 非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：artifactRefs.previous.ref 非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：artifactRefs.previous.ref 指向的文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：回流包从「已构造」变为「已投递」",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：撰写者收到第 2 轮提示",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：撰写者 round === 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 无 handoff.rejected",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：终端不出现「已拒绝（内容不合规）」（期望不含 \"已拒绝（内容不合规）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：终端不出现升级行（期望不含 \"升级 ESC-\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-69",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：存在复测包",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：该包 edge.kind === retest（期望 \"retest\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：artifactRefs.input 含 calc.js",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：calc.js 文件存在且非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：复测包投递（含 handoff.delivered）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：测试收到第 2 轮提示",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：测试 round === 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：events.jsonl 无 handoff.rejected",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：终端不出现拒绝（期望不含 \"已拒绝（\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：终端不出现升级（期望不含 \"升级 ESC-\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-70",
+      "verdict": "通过",
+      "grade": "mock 实测",
+      "checks": [
+        {
+          "text": "Given：项目根有两个实例",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：INST-001 有 HO-002",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：INST-002 没有 HO-002",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then：正常输出该包详情（不需要 --instance）（期望含 \"交接包 HO-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：输出含实例行（期望含 \"实例：INST-001\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：输出含方向与状态（期望含 \"方向：测试→开发（回流）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：输出含缺陷逐条（期望含 \"缺陷：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：输出含尝试次数（分母 3）（期望含 \"尝试：1/3\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：命令前后 rev 不变（期望 43）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：省略 --instance 与显式 --instance 输出逐字一致（期望 \"交接包 HO-002\\n  实例：INST-001\\n  方向：测试→开发（回流）\\n  状态：已完成\\n  构造：<time>  待投递：—  投递：<time>  接受：<time>  完成：<time>  拒绝：—  过期：—\\n  证据：out/verdict.json\\n  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\\n  缺陷：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\\n  修改要求：—\\n  复测要求：按上方每条缺陷修正后重新提交产物\\n  尝试：1/3\\n  最后错误：—\\n  信箱：—\\n\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    }
+  ]
+}

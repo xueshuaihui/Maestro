@@ -127,10 +127,23 @@ export function createServer({
         return { ok: false, code: 'IPC_BAD_PARAMS', params: { field: 'task' } };
       }
 
+      // D-5.2 / G9: `run --approval <policy>` overrides the host policy. Validate
+      // the value at the IPC boundary (never build Chinese here), then hand it to
+      // the orchestrator. Absent -> keep whatever the host config resolved.
+      const approvalPolicy = params?.approvalPolicy;
+      if (approvalPolicy !== undefined && approvalPolicy !== null) {
+        if (!['allow', 'reject', 'hold'].includes(approvalPolicy)) {
+          return { ok: false, code: 'IPC_BAD_PARAMS', params: { field: 'approvalPolicy' } };
+        }
+        if (typeof orchestrator.setApprovalPolicy === 'function') {
+          orchestrator.setApprovalPolicy(approvalPolicy);
+        }
+      }
+
       // 早返回契约：orchestrator.startRun 必须在会话建立后立即 resolve，
       // 之后的进展通过返回的 `stream`（遍历后转 bus）或它自己往 bus 里 emit 推进。
       // 白名单固定为 `{cwd,task,earlyReturn,instanceId,hostId,template}`：`template`
-      // 以前被静默丢弃（C-05），现在全链路透传。
+      // 以前被静默丢弃（C-05），现在全链路透传。`approvalPolicy` 按 D-5.2 追加。
       const started = await withProgress(orchestrator, {
         cwd: path.resolve(cwd),
         task,
@@ -139,6 +152,7 @@ export function createServer({
         ...(params?.instanceId ? { instanceId: params.instanceId } : {}),
         ...(typeof params?.hostId === 'string' ? { hostId: params.hostId } : {}),
         ...(typeof params?.template === 'string' ? { template: params.template } : {}),
+        ...(typeof approvalPolicy === 'string' ? { approvalPolicy } : {}),
       });
 
       if (!started || started.ok !== true) {
@@ -238,7 +252,34 @@ export function createServer({
     },
   };
 
-  // 仅 test 接缝（§1.8 / M-14）：生产进程的 methods 表里没有这两个键。
+  // ---------------------------------------------------------------- WP-6 生命周期 RPC
+  // §2.18: 参数在边界校验（不拼中文），语义错误码（*_NOT_FOUND / *_NOT_PENDING /
+  // *_AMBIGUOUS / *_INVALID …）由编排层给出，IPC 原样透传。
+  const lifecycle = (method, required) => async (params) => {
+    for (const field of required) {
+      if (typeof params?.[field] !== 'string' || params[field].length === 0) {
+        return { ok: false, code: 'IPC_BAD_PARAMS', params: { field } };
+      }
+    }
+    if (typeof orchestrator[method] !== 'function') {
+      return { ok: false, code: 'IPC_BAD_METHOD', params: { method } };
+    }
+    const res = await orchestrator[method](params ?? {});
+    if (!res || res.ok !== true) {
+      return { ok: false, code: res?.code ?? 'UNKNOWN_ERROR', params: res?.params ?? {} };
+    }
+    return { ok: true, result: res };
+  };
+
+  methods['escalation.resolve'] = lifecycle('resolveEscalation', ['escalationId', 'decision']);
+  methods['approval.list'] = lifecycle('listApprovals', []);
+  methods['approval.resolve'] = lifecycle('resolveApproval', ['approvalId', 'decision']);
+  methods['workflow.pause'] = lifecycle('pause', ['instanceId']);
+  methods['workflow.resume'] = lifecycle('resume', ['instanceId']);
+  methods['workflow.abort'] = lifecycle('abort', ['instanceId']);
+  methods['session.locate'] = lifecycle('locateSession', ['sessionId']);
+
+  // 仅 test 接缝（§1.8 / M-14 / D-10）：生产进程的 methods 表里没有这些键。
   // 非 test 环境调用走通用未知方法分支，返回 `{ok:false, code:'IPC_BAD_METHOD'}`。
   if (process.env.NODE_ENV === 'test') {
     if (typeof orchestrator.dispatchToNode === 'function') {
@@ -246,8 +287,32 @@ export function createServer({
         callSeam('test.dispatch', params, () => orchestrator.dispatchToNode(params?.instanceId, params?.nodeId));
     }
     if (typeof orchestrator.escalateOnce === 'function') {
+      // D-10 / G10: forward reasonCode / artifactRefs to the escalation seam.
       methods['test.escalate'] = async (params) =>
-        callSeam('test.escalate', params, () => orchestrator.escalateOnce(params?.instanceId, params?.nodeId));
+        callSeam('test.escalate', params, () => orchestrator.escalateOnce(
+          params?.instanceId,
+          params?.nodeId,
+          {
+            ...(typeof params?.reasonCode === 'string' ? { reasonCode: params.reasonCode } : {}),
+            ...(Array.isArray(params?.artifactRefs) ? { artifactRefs: params.artifactRefs } : {}),
+          },
+        ));
+    }
+    if (typeof orchestrator.seamHandoff === 'function') {
+      methods['test.handoff'] = async (params) =>
+        testSeam('test.handoff', params, ['instanceId', 'nodeId', 'mutate'],
+          () => orchestrator.seamHandoff(params));
+    }
+    if (typeof orchestrator.holdDelivery === 'function') {
+      methods['test.delivery'] = async (params) =>
+        testSeam('test.delivery', params, ['instanceId', 'action'],
+          () => orchestrator.holdDelivery({ instanceId: params?.instanceId, action: params?.action }));
+    }
+    if (typeof orchestrator.whenDeliveryHeld === 'function') {
+      methods['test.delivery.whenHeld'] = async () => {
+        await orchestrator.whenDeliveryHeld();
+        return { ok: true, result: { held: true } };
+      };
     }
   }
 
@@ -689,6 +754,20 @@ async function callSeam(method, params, invoke) {
   const res = await invoke();
   if (!res || res.ok !== true) {
     return { ok: false, code: res?.code ?? 'UNKNOWN_ERROR', params: res?.detail ?? res?.params ?? { method } };
+  }
+  return { ok: true, result: res };
+}
+
+/** WP-6 test-only seam wrapper: boundary-check the named string fields, then forward. */
+async function testSeam(method, params, required, invoke) {
+  for (const field of required) {
+    if (typeof params?.[field] !== 'string' || params[field].length === 0) {
+      return { ok: false, code: 'IPC_BAD_PARAMS', params: { method, field } };
+    }
+  }
+  const res = await invoke();
+  if (!res || res.ok !== true) {
+    return { ok: false, code: res?.code ?? 'UNKNOWN_ERROR', params: res?.params ?? res?.detail ?? { method } };
   }
   return { ok: true, result: res };
 }

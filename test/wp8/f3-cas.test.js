@@ -50,7 +50,7 @@ test('F-3 存储层：expectedState 不符 → STORE_CONFLICT 且不写', async 
     );
     assert.equal(staleRev.ok, false);
     assert.equal(staleRev.code, 'STORE_CONFLICT');
-    assert.deepEqual(staleRev.params.actual, { state: 'running', halted: false, rev: 1 });
+    assert.deepEqual(staleRev.params.actual, { state: 'running', halted: false, rev: 1, paused: false });
 
     const after = await diskState(env.store, INSTANCE);
     assert.equal(after.state, 'running', '冲突时不得写入');

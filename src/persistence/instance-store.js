@@ -43,13 +43,15 @@ function hasOwn(value, key) {
 
 /**
  * 磁盘快照的 CAS 摘要。缺字段按「未写」处理（`rev` 缺失视为 0），不抛错 ——
- * v1 快照没有 `halted` / `rev`，读取方不应该因为字段缺失而失败。
+ * v1 快照没有 `halted` / `rev` / `paused`，读取方不应该因为字段缺失而失败。
  */
 function casSnapshot(snapshot) {
   return {
     state: snapshot?.state ?? null,
     halted: Boolean(snapshot?.halted),
     rev: Number.isInteger(snapshot?.rev) ? snapshot.rev : 0,
+    // 'paused' 参与 CAS 比较；旧快照缺字段时按 false（D-7.1）。
+    paused: Boolean(snapshot?.paused),
   };
 }
 
@@ -57,8 +59,10 @@ function casSnapshot(snapshot) {
  * 逐字段比较，**只比 `expected` 里显式提供了的键**（便于「只写 halted」这类窄条件写）。
  *
  * - `string`：v1 旧语义，只比 `disk.state.state`；冲突时 `actual` 也是字符串（旧断言不变）。
- * - `{state?, halted?, rev?}`：v2 新语义；冲突时 `actual` 是三元摘要。
+ * - `{state?, halted?, rev?, paused?}`：v2 新语义；冲突时 `actual` 是四元摘要。
  * - 其他形状（null / 数字 / 数组）：一律按冲突处理，绝不静默放行。
+ *
+ * `paused` 只在调用方显式提供时才比较，既有调用行为不变（D-7.1）。
  *
  * @returns {null | {expected:any, actual:any}}
  */
@@ -72,7 +76,8 @@ function compareExpected(expected, actual) {
   const mismatch =
     (hasOwn(expected, 'state') && actual.state !== expected.state) ||
     (hasOwn(expected, 'halted') && actual.halted !== Boolean(expected.halted)) ||
-    (hasOwn(expected, 'rev') && actual.rev !== expected.rev);
+    (hasOwn(expected, 'rev') && actual.rev !== expected.rev) ||
+    (hasOwn(expected, 'paused') && actual.paused !== Boolean(expected.paused));
   return mismatch ? { expected, actual } : null;
 }
 
@@ -168,7 +173,10 @@ export function createStore({ root } = {}) {
    *
    * `opts.expectedState`（可选）：比较并交换 —— 与磁盘现值不符时不写，返回 `STORE_CONFLICT`。
    * - `string`（I1.1 旧语义）：只比磁盘 `state.state`；
-   * - `{state?, halted?, rev?}`（v2）：逐字段比较**提供了的键**。
+   * - `{state?, halted?, rev?, paused?}`（v2）：逐字段比较**提供了的键**；
+   * - `function(diskState) → 上述任一形状`：在队列任务内、**读盘之后写盘之前**求值
+   *   （D-7.2 的 pause/resume 写序列：期望值必须取读盘现值，排队期间 `rev` 变化不算冲突）。
+   *   函数抛错按写失败处理（`errno: 'EXPECTED_FN'`），绝不当成 CAS 通过。
    * 不传时与旧实现行为一致（最后写者胜，不做 CAS 比较），但**仍然读盘取前值**——
    * `rev` 必须全局单调，不能因为内存缓存未命中就回落到 0（进程重启后首个无 CAS 写
    * 会把 `rev` 打回 1，后续 `expectedState:{rev}` 全部误判）。
@@ -211,7 +219,18 @@ export function createStore({ root } = {}) {
 
     let prevRev = null;
     if (hasOwn(opts, 'expectedState')) {
-      const conflict = compareExpected(opts.expectedState, actual);
+      let expected = opts.expectedState;
+      if (typeof expected === 'function') {
+        // 取值函数在队列任务内、读盘之后求值：pause/resume 用它把 'paused' 的期望值
+        // 取成读盘现值，排队期间 rev 变化不产生假冲突（D-7.2）。
+        try {
+          expected = expected(disk.ok ? disk.state : null);
+        } catch {
+          // 取值函数本身失败：既不能放行，也不能当成冲突（那会诱发无意义重试）。
+          return { ok: false, code: 'STORE_WRITE_FAILED', params: { errno: 'EXPECTED_FN', path: file } };
+        }
+      }
+      const conflict = compareExpected(expected, actual);
       if (conflict) {
         // 冲突不写盘：原文件字节保持不变。
         return {
@@ -387,6 +406,7 @@ export function createStore({ root } = {}) {
  *
  * v2 读数组（`nodes[0]` / 最后一个会话 / 最后一张交接包 / `escalations` 计数）；
  * v1 读单对象，`template` 固定 `single`、`pendingEscalations` 为 0。
+ * `paused` / `approvals` / `pendingApprovals` 对旧快照缺省为 `false` / `[]` / `0`。
  * 任何字段缺失都退化成 `null` / `0`，不抛错。
  */
 function projectItem(root, id, snapshot) {
@@ -396,12 +416,18 @@ function projectItem(root, id, snapshot) {
   const sessions = isV2 && Array.isArray(snapshot.sessions) ? snapshot.sessions : [];
   const handoffs = isV2 && Array.isArray(snapshot.handoffs) ? snapshot.handoffs : [];
   const escalations = isV2 && Array.isArray(snapshot.escalations) ? snapshot.escalations : [];
+  const approvals = isV2 && Array.isArray(snapshot.approvals) ? snapshot.approvals : [];
 
   let pendingEscalations = 0;
   if (isV2) {
     for (const escalation of escalations) {
       if (escalation?.state === 'pending') pendingEscalations += 1;
     }
+  }
+
+  let pendingApprovals = 0;
+  for (const approval of approvals) {
+    if (approval?.state === 'pending') pendingApprovals += 1;
   }
 
   return {
@@ -411,6 +437,7 @@ function projectItem(root, id, snapshot) {
     // v1 快照可能自带 cwd；缺失时退回项目根（实例目录 `.orch/instances/<id>` 的上级祖先）。
     cwd: typeof snapshot.cwd === 'string' && snapshot.cwd.length > 0 ? snapshot.cwd : root,
     state: snapshot.state ?? null,
+    paused: Boolean(snapshot.paused),
     nodeState: isV2 ? (nodes[0]?.state ?? null) : (snapshot.node?.state ?? null),
     sessionState: isV2
       ? (sessions[sessions.length - 1]?.state ?? null)
@@ -419,6 +446,8 @@ function projectItem(root, id, snapshot) {
       ? (handoffs[handoffs.length - 1]?.state ?? null)
       : (snapshot.handoff?.state ?? null),
     pendingEscalations,
+    approvals,
+    pendingApprovals,
     updatedAt: typeof snapshot.updatedAt === 'string' ? snapshot.updatedAt : null,
     readable: true,
   };
@@ -431,10 +460,13 @@ function emptyItem(instanceId, updatedAt) {
     template: null,
     cwd: null,
     state: null,
+    paused: false,
     nodeState: null,
     sessionState: null,
     handoffState: null,
     pendingEscalations: 0,
+    approvals: [],
+    pendingApprovals: 0,
     updatedAt,
     readable: false,
   };

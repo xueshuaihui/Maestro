@@ -1,0 +1,13 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop --approval hold
+# label=orch run --template code-loop --approval hold（前台，等待审批） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-37 exit=- 3224ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-27942-1
+任务已投递
+审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write
+会话 等待审批：write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-37 exit=0 235ms
+核心未在运行
+

@@ -1,0 +1,8 @@
+{
+  "AC-10/1.json": {
+    "n": 1,
+    "nodeId": "T-001",
+    "round": 1,
+    "task": "实现 calc.js，产物：calc.js\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10/.orch/instances/INST-001/workspace/stage/T-001"
+  }
+}

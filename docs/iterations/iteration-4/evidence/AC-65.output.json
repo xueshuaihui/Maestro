@@ -1,0 +1,108 @@
+{
+  "ac": "AC-65",
+  "title": "下游会话创建失败不留未投递包",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then：实例挂起并显示升级（suspended）（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检：escalations[0].reasonCode === dispatch_failed（期望 \"dispatch_failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"dispatch_failed\""
+    },
+    {
+      "text": "机检：本轮复测包 state === rejected（期望 \"rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检：本轮复测包 rejectReason === delivery_failed（期望 \"delivery_failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"delivery_failed\""
+    },
+    {
+      "text": "机检：handoffs 中没有该节点本轮的 created 包（不留孤儿包）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"id\":\"HO-001\",\"state\":\"consumed\",\"to\":\"T-002\",\"reason\":null},{\"id\":\"HO-002\",\"state\":\"consumed\",\"to\":\"T-001\",\"reason\":null},{\"id\":\"HO-003\",\"state\":\"rejected\",\"to\":\"T-002\",\"reason\":\"delivery_failed\"}]"
+    },
+    {
+      "text": "机检：没有 handoff.pending",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,verification.passed,run.completed,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,session.state,session.state,output.submitted,output.submitted,verdict.read,handoff.consumed,verification.failed,verification.failed,handoff.created,backflow.constructed,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,session.state,session.state,output.submitted,output.submitted,verification.passed,handoff.consumed,run.completed,handoff.created,node.dispatch,handoff.rejected,escalation.created,state.change,state.change,core.suspend"
+    },
+    {
+      "text": "Then：不出现「待投递」（期望不含 \"待投递\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-63319-1\n任务已投递\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 3s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：该交接包以「已拒绝（投递失败）」收尾（期望含 \"已拒绝（投递失败）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-001  实例 INST-001  开发→测试  已完成  19:33:12\n交接包 HO-002  实例 INST-001  测试→开发（回流）  已完成  19:33:16\n交接包 HO-003  实例 INST-001  开发→测试（复测）  已拒绝（投递失败）  19:33:17\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop dispatch-fail-retest",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-65",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 16266,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-63319-1\n任务已投递\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 3s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch handoff list",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "handoff",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-65",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 292,
+      "stdout": "交接包 HO-001  实例 INST-001  开发→测试  已完成  19:33:12\n交接包 HO-002  实例 INST-001  测试→开发（回流）  已完成  19:33:16\n交接包 HO-003  实例 INST-001  开发→测试（复测）  已拒绝（投递失败）  19:33:17\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-65",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 303,
+      "stdout": "核心已停止（pid 63278，运行 14s）\n",
+      "stderr": ""
+    }
+  ]
+}

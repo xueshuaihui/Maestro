@@ -1,0 +1,87 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop rounds-exceeded（造 INST-001） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-70 exit=4 13116ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-42165-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001（预热核心） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-70 exit=0 252ms
+实例 INST-001 · 已挂起 · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 2 轮 · 耗时 8s
+节点 T-002 测试 已升级 · 第 2 轮 · 判定 不通过 · 缺陷 1 条
+会话 已升级
+交接包 HO-001  开发→测试  已构造   19:01:54
+交接包 HO-001  开发→测试  已投递   19:01:55
+交接包 HO-001  开发→测试  已接受   19:01:56
+交接包 HO-001  开发→测试  已完成   19:01:57
+交接包 HO-002  测试→开发（回流）  已构造   19:01:57
+交接包 HO-002  测试→开发（回流）  已投递   19:01:59
+交接包 HO-002  测试→开发（回流）  已接受   19:01:59
+交接包 HO-002  测试→开发（回流）  已完成   19:02:00
+交接包 HO-003  开发→测试（复测）  已构造   19:02:00
+交接包 HO-003  开发→测试（复测）  已投递   19:02:01
+交接包 HO-003  开发→测试（复测）  已接受   19:02:01
+交接包 HO-003  开发→测试（复测）  已完成   19:02:02
+升级 ESC-001 待处理
+  原因：回流超上限：测试已派发 2 次仍未通过
+  节点：T-002 测试 · 第 2 轮
+  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）
+  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff show HO-002
+# label=orch handoff show HO-002 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-70 exit=0 282ms
+交接包 HO-002
+  实例：INST-001
+  方向：测试→开发（回流）
+  状态：已完成
+  构造：19:01:57  待投递：—  投递：19:01:59  接受：19:01:59  完成：19:02:00  拒绝：—  过期：—
+  证据：out/verdict.json
+  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）
+  缺陷：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）
+  修改要求：—
+  复测要求：按上方每条缺陷修正后重新提交产物
+  尝试：1/3
+  最后错误：—
+  信箱：—
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff show HO-002 --instance INST-001
+# label=orch handoff show HO-002 --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-70 exit=0 274ms
+交接包 HO-002
+  实例：INST-001
+  方向：测试→开发（回流）
+  状态：已完成
+  构造：19:01:57  待投递：—  投递：19:01:59  接受：19:01:59  完成：19:02:00  拒绝：—  过期：—
+  证据：out/verdict.json
+  缺陷：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）
+  缺陷：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）
+  修改要求：—
+  复测要求：按上方每条缺陷修正后重新提交产物
+  尝试：1/3
+  最后错误：—
+  信箱：—
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-70 exit=0 288ms
+核心已停止（pid 42146，运行 13s）
+

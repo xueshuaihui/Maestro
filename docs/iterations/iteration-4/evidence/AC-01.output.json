@@ -1,0 +1,163 @@
+{
+  "ac": "AC-01",
+  "title": "编码闭环启动后出现共享工作区",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：workspace/shared 是目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-01/.orch/instances/INST-001/workspace"
+    },
+    {
+      "text": "机检：workspace/stage/T-001 是目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-01/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "机检：workspace/stage/T-002 是目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-01/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "机检：status.md 存在且是可读 Markdown",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 编码闭环\n\n- 状态：已完成\n- 暂停：否\n- 任务：实现 calc.js，产物：calc.js\n- 当前节点：T-002 测试\n- 更新"
+    },
+    {
+      "text": "A-1：标题行含实例号与模板名",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 编码闭环"
+    },
+    {
+      "text": "A-1：含「- 状态：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 状态：已完成"
+    },
+    {
+      "text": "A-1：含「- 暂停：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 暂停：否"
+    },
+    {
+      "text": "A-1：含「- 任务：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 任务：实现 calc.js，产物：calc.js"
+    },
+    {
+      "text": "A-1：含「- 当前节点：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 当前节点：T-002 测试"
+    },
+    {
+      "text": "A-1：含「- 工作区：」绝对路径行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-01/.orch/instances/INST-001/workspace"
+    },
+    {
+      "text": "A-1：含「## 节点」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "A-1：含「## 交接包」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "A-1：含「## 升级」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "A-1：含「## 审批」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "Then：status 首行仍是原来的实例行（期望 \"实例 INST-001 · 已完成 · 模板 编码闭环\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 · 已完成 · 模板 编码闭环\""
+    },
+    {
+      "text": "机检：state=completed（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "机检：schemaVersion=2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --cwd ./demo --task CODE_TASK --template code-loop（夹具 pass）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-01",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 8496,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-11583-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:16:53\n交接包 HO-001  开发→测试  已投递   06:16:54\n交接包 HO-001  开发→测试  已接受   06:16:54\n交接包 HO-001  开发→测试  已完成   06:16:56\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-01",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 313,
+      "stdout": "实例 INST-001 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:16:53\n交接包 HO-001  开发→测试  已投递   06:16:54\n交接包 HO-001  开发→测试  已接受   06:16:54\n交接包 HO-001  开发→测试  已完成   06:16:56\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-01",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 315,
+      "stdout": "核心已停止（pid 11538，运行 8s）\n",
+      "stderr": ""
+    }
+  ]
+}

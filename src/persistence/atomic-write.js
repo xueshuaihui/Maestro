@@ -32,6 +32,18 @@ async function removeQuietly(filePath) {
 }
 
 /**
+ * 原子写文本（`status.md` / 信箱等复用同一内核，NFR-05）。
+ *
+ * @returns {Promise<{ok:true, bytes:number, updatedAt:null}
+ *   | {ok:false, code:'STORE_WRITE_FAILED', params:{errno:string|null, path:string}}>}
+ */
+export async function writeTextAtomic(filePath, text) {
+  const written = await writeBufferAtomic(filePath, Buffer.from(String(text ?? ''), 'utf8'));
+  if (!written.ok) return written;
+  return { ok: true, bytes: written.bytes, updatedAt: null };
+}
+
+/**
  * 原子写 JSON。
  *
  * `value.updatedAt` 由调用方（store.save）负责更新，这里只回报最终落盘的时间戳。
@@ -40,12 +52,20 @@ async function removeQuietly(filePath) {
  *   | {ok:false, code:'STORE_WRITE_FAILED', params:{errno:string|null, path:string}}>}
  */
 export async function writeJsonAtomic(filePath, value) {
+  const buf = Buffer.from(`${JSON.stringify(value, null, 2)}\n`, 'utf8');
+  const written = await writeBufferAtomic(filePath, buf);
+  if (!written.ok) return written;
+  const updatedAt = typeof value?.updatedAt === 'string' ? value.updatedAt : null;
+  return { ok: true, bytes: written.bytes, updatedAt };
+}
+
+/** 原子写内核：`open(tmp,'wx') → write → fsync → close → rename`。 */
+async function writeBufferAtomic(filePath, buf) {
   const dir = path.dirname(filePath);
   const tmpPath = path.join(
     dir,
     `${path.basename(filePath)}.tmp-${process.pid}-${crypto.randomBytes(4).toString('hex')}`,
   );
-  const buf = Buffer.from(`${JSON.stringify(value, null, 2)}\n`, 'utf8');
 
   let handle = null;
   try {
@@ -82,8 +102,7 @@ export async function writeJsonAtomic(filePath, value) {
     return writeFailed(renamed.err, filePath);
   }
 
-  const updatedAt = typeof value?.updatedAt === 'string' ? value.updatedAt : null;
-  return { ok: true, bytes: buf.length, updatedAt };
+  return { ok: true, bytes: buf.length };
 }
 
 /**

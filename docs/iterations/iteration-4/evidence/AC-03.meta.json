@@ -1,0 +1,32 @@
+{
+  "ac": "AC-03",
+  "title": "单节点工作区新增但不改旧输出",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:17:14.507Z",
+  "finishedAt": "2026-11-08T22:17:20.674Z",
+  "durationMs": 6167,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-03",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-03",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 24,
+  "notes": []
+}

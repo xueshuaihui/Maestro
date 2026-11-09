@@ -1,0 +1,95 @@
+{
+  "ac": "AC-37",
+  "title": "`run` 等待期间出现审批行",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：等待期间审批产生（stdout 出现 APR- 行）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-27942-1\n任务已投递\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n会话 等待审批：write\n"
+    },
+    {
+      "text": "Then：审批行含审批号（期望含 \"审批 APR-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write"
+    },
+    {
+      "text": "Then：审批行含节点号（期望含 \"节点 T-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write"
+    },
+    {
+      "text": "Then：审批行含角色（期望含 \"开发\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write"
+    },
+    {
+      "text": "Then：审批行含动作（期望含 \"动作 write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write"
+    },
+    {
+      "text": "Then：审批行打印在会话行之后",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-27942-1\n任务已投递\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n会话 等待审批：write\n"
+    },
+    {
+      "text": "Then：不需要退出 run 就能看到（断言时刻 run 仍在运行）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exited=false"
+    },
+    {
+      "text": "机检：run 进程 stdout 含 APR-001（期望含 \"APR-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-27942-1\n任务已投递\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n会话 等待审批：write\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --template code-loop --approval hold（前台，等待审批）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop",
+        "--approval",
+        "hold"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-37",
+      "exitCode": null,
+      "timedOut": false,
+      "durationMs": 3224,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-27942-1\n任务已投递\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n会话 等待审批：write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-37",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 235,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

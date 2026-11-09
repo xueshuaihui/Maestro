@@ -1,0 +1,12 @@
+{
+  "AC-61/prompt-attempts-mock-sess-80974-1.json": {
+    "attempts": 1
+  },
+  "AC-61/prompt-attempts-mock-sess-80994-1.json": {
+    "attempts": 1
+  },
+  "AC-61/prompt-failures-mock-sess-80994-1.json": {
+    "attempts": 1,
+    "failures": 1
+  }
+}

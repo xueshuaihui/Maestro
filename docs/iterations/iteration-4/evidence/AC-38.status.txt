@@ -1,0 +1,61 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-38 exit=0 8011ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-28024-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:39:48
+交接包 HO-001  开发→测试  已投递   06:39:49
+交接包 HO-001  开发→测试  已接受   06:39:49
+交接包 HO-001  开发→测试  已完成   06:39:51
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance status INST-001
+# label=orch instance status INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-38 exit=0 253ms
+实例 INST-001 · 已完成 · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+会话 空闲
+交接包 HO-001  开发→测试  已构造   06:39:48
+交接包 HO-001  开发→测试  已投递   06:39:49
+交接包 HO-001  开发→测试  已接受   06:39:49
+交接包 HO-001  开发→测试  已完成   06:39:51
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-38 exit=0 285ms
+实例 INST-001 · 已完成 · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+会话 空闲
+交接包 HO-001  开发→测试  已构造   06:39:48
+交接包 HO-001  开发→测试  已投递   06:39:49
+交接包 HO-001  开发→测试  已接受   06:39:49
+交接包 HO-001  开发→测试  已完成   06:39:51
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance status INST-999
+# label=orch instance status INST-999 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-38 exit=1 457ms
+实例 INST-999 · 不存在
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-999
+# label=orch status --instance INST-999 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-38 exit=1 270ms
+实例 INST-999 · 不存在
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-38 exit=0 288ms
+核心已停止（pid 27999，运行 8s）
+

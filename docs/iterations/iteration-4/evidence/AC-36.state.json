@@ -1,0 +1,573 @@
+{
+  "instances": [
+    {
+      "__root": "AC-36",
+      "instanceId": "INST-001",
+      "state": {
+        "schemaVersion": 2,
+        "instanceId": "INST-001",
+        "coreGeneration": "gen-494466400e4db24e",
+        "createdAt": "2026-11-08T22:39:25.019Z",
+        "updatedAt": "2026-11-08T22:39:34.290Z",
+        "state": "interrupted",
+        "stateSince": "2026-11-08T22:39:34.269Z",
+        "template": "code-loop",
+        "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo",
+        "task": "实现 calc.js，产物：calc.js",
+        "halted": false,
+        "rev": 24,
+        "counters": {
+          "eventSeq": 24,
+          "runCount": 1,
+          "dispatchCount": 2
+        },
+        "hostRaw": {
+          "stopReason": "end_turn",
+          "lastError": null,
+          "agentInfo": null
+        },
+        "nodes": [
+          {
+            "nodeId": "T-001",
+            "roleId": "developer",
+            "round": 1,
+            "state": "done",
+            "stateSince": "2026-11-08T22:39:27.882Z",
+            "startedAt": "2026-11-08T22:39:25.894Z",
+            "roundStartedAt": "2026-11-08T22:39:25.894Z",
+            "endedAt": "2026-11-08T22:39:28.014Z",
+            "failure": null,
+            "note": "stopped at node done / session idle",
+            "verdict": null,
+            "sessionId": "mock-sess-27798-1",
+            "artifactRefs": [
+              {
+                "ref": "calc.js",
+                "absPath": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo/calc.js",
+                "declared": true,
+                "exists": true,
+                "bytes": 251,
+                "sha256": null,
+                "verifiedAt": "2026-11-08T22:39:27.872Z"
+              }
+            ]
+          },
+          {
+            "nodeId": "T-002",
+            "roleId": "tester",
+            "round": 1,
+            "state": "done",
+            "stateSince": "2026-11-08T22:39:30.863Z",
+            "startedAt": "2026-11-08T22:39:28.365Z",
+            "roundStartedAt": "2026-11-08T22:39:28.365Z",
+            "endedAt": "2026-11-08T22:39:30.985Z",
+            "failure": null,
+            "note": null,
+            "verdict": {
+              "value": "pass",
+              "defectCount": 0,
+              "verdictPath": "out/verdict.json",
+              "readAt": "2026-11-08T22:39:30.792Z"
+            },
+            "sessionId": "mock-sess-27817-1",
+            "artifactRefs": []
+          }
+        ],
+        "sessions": [
+          {
+            "sessionId": "mock-sess-27798-1",
+            "nodeId": "T-001",
+            "round": 1,
+            "hostId": null,
+            "state": "idle",
+            "stateSince": "2026-11-08T22:39:28.045Z",
+            "createdAt": "2026-11-08T22:39:26.645Z",
+            "lastEventAt": "2026-11-08T22:39:27.033Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo/calc.js",
+            "pendingPermission": null,
+            "quarantined": false
+          },
+          {
+            "sessionId": "mock-sess-27817-1",
+            "nodeId": "T-002",
+            "round": 1,
+            "hostId": null,
+            "state": "idle",
+            "stateSince": "2026-11-08T22:39:31.185Z",
+            "createdAt": "2026-11-08T22:39:29.052Z",
+            "lastEventAt": "2026-11-08T22:39:29.978Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo/out/verdict.json",
+            "pendingPermission": null,
+            "quarantined": false
+          }
+        ],
+        "handoffs": [
+          {
+            "handoffId": "HO-001",
+            "edge": {
+              "from": "T-001",
+              "to": "T-002",
+              "kind": "forward"
+            },
+            "state": "consumed",
+            "createdAt": "2026-11-08T22:39:28.233Z",
+            "deliveredAt": "2026-11-08T22:39:29.425Z",
+            "acceptedAt": "2026-11-08T22:39:29.712Z",
+            "consumedAt": "2026-11-08T22:39:30.985Z",
+            "rejectedAt": null,
+            "rejectReason": null,
+            "wakeConsumedAt": null,
+            "acceptedSignal": "agent_thought_chunk",
+            "ambiguityWindowMs": 287,
+            "defects": [],
+            "note": null,
+            "artifactRefs": {
+              "input": [
+                "calc.js"
+              ],
+              "output": null,
+              "previous": null
+            },
+            "revisionRequirement": null,
+            "instanceId": "INST-001",
+            "round": 1,
+            "fromNodeId": "T-001",
+            "toNodeId": "T-002",
+            "retestRequirement": null,
+            "deliveryAttempts": 1,
+            "pendingAt": null,
+            "expiredAt": null,
+            "lastError": null
+          }
+        ],
+        "escalations": [],
+        "paused": true
+      }
+    },
+    {
+      "__root": "AC-36",
+      "instanceId": "INST-002",
+      "state": {
+        "schemaVersion": 2,
+        "instanceId": "INST-002",
+        "coreGeneration": "gen-494466400e4db24e",
+        "createdAt": "2026-11-08T22:39:25.019Z",
+        "updatedAt": "2026-11-08T22:39:34.474Z",
+        "state": "interrupted",
+        "stateSince": "2026-11-08T22:39:34.458Z",
+        "template": "code-loop",
+        "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo",
+        "task": "实现 calc.js，产物：calc.js",
+        "halted": false,
+        "rev": 24,
+        "counters": {
+          "eventSeq": 0,
+          "runCount": 1,
+          "dispatchCount": 2
+        },
+        "hostRaw": {
+          "stopReason": "end_turn",
+          "lastError": null,
+          "agentInfo": null
+        },
+        "nodes": [
+          {
+            "nodeId": "T-001",
+            "roleId": "developer",
+            "round": 1,
+            "state": "done",
+            "stateSince": "2026-11-08T22:39:27.882Z",
+            "startedAt": "2026-11-08T22:39:25.894Z",
+            "roundStartedAt": "2026-11-08T22:39:25.894Z",
+            "endedAt": "2026-11-08T22:39:28.014Z",
+            "failure": null,
+            "note": "stopped at node done / session idle",
+            "verdict": null,
+            "sessionId": "mock-sess-27798-1",
+            "artifactRefs": [
+              {
+                "ref": "calc.js",
+                "absPath": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo/calc.js",
+                "declared": true,
+                "exists": true,
+                "bytes": 251,
+                "sha256": null,
+                "verifiedAt": "2026-11-08T22:39:27.872Z"
+              }
+            ]
+          },
+          {
+            "nodeId": "T-002",
+            "roleId": "tester",
+            "round": 1,
+            "state": "done",
+            "stateSince": "2026-11-08T22:39:30.863Z",
+            "startedAt": "2026-11-08T22:39:28.365Z",
+            "roundStartedAt": "2026-11-08T22:39:28.365Z",
+            "endedAt": "2026-11-08T22:39:30.985Z",
+            "failure": null,
+            "note": null,
+            "verdict": {
+              "value": "pass",
+              "defectCount": 0,
+              "verdictPath": "out/verdict.json",
+              "readAt": "2026-11-08T22:39:30.792Z"
+            },
+            "sessionId": "mock-sess-27817-1",
+            "artifactRefs": []
+          }
+        ],
+        "sessions": [
+          {
+            "sessionId": "mock-sess-27798-1",
+            "nodeId": "T-001",
+            "round": 1,
+            "hostId": null,
+            "state": "idle",
+            "stateSince": "2026-11-08T22:39:28.045Z",
+            "createdAt": "2026-11-08T22:39:26.645Z",
+            "lastEventAt": "2026-11-08T22:39:27.033Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo/calc.js",
+            "pendingPermission": null,
+            "quarantined": false
+          },
+          {
+            "sessionId": "mock-sess-27817-1",
+            "nodeId": "T-002",
+            "round": 1,
+            "hostId": null,
+            "state": "idle",
+            "stateSince": "2026-11-08T22:39:31.185Z",
+            "createdAt": "2026-11-08T22:39:29.052Z",
+            "lastEventAt": "2026-11-08T22:39:29.978Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo/out/verdict.json",
+            "pendingPermission": null,
+            "quarantined": false
+          }
+        ],
+        "handoffs": [
+          {
+            "handoffId": "HO-001",
+            "edge": {
+              "from": "T-001",
+              "to": "T-002",
+              "kind": "forward"
+            },
+            "state": "consumed",
+            "createdAt": "2026-11-08T22:39:28.233Z",
+            "deliveredAt": "2026-11-08T22:39:29.425Z",
+            "acceptedAt": "2026-11-08T22:39:29.712Z",
+            "consumedAt": "2026-11-08T22:39:30.985Z",
+            "rejectedAt": null,
+            "rejectReason": null,
+            "wakeConsumedAt": null,
+            "acceptedSignal": "agent_thought_chunk",
+            "ambiguityWindowMs": 287,
+            "defects": [],
+            "note": null,
+            "artifactRefs": {
+              "input": [
+                "calc.js"
+              ],
+              "output": null,
+              "previous": null
+            },
+            "revisionRequirement": null,
+            "instanceId": "INST-001",
+            "round": 1,
+            "fromNodeId": "T-001",
+            "toNodeId": "T-002",
+            "retestRequirement": null,
+            "deliveryAttempts": 1,
+            "pendingAt": null,
+            "expiredAt": null,
+            "lastError": null
+          }
+        ],
+        "escalations": [],
+        "paused": false,
+        "approvals": [
+          {
+            "approvalId": "APR-001",
+            "instanceId": "INST-002",
+            "nodeId": "T-001",
+            "sessionId": "mock-sess-fix",
+            "action": "write",
+            "toolCallId": "call_fix",
+            "state": "pending",
+            "createdAt": "2026-11-08T19:00:00.000Z",
+            "resolvedAt": null,
+            "resolution": null
+          }
+        ]
+      }
+    },
+    {
+      "__root": "AC-36",
+      "instanceId": "INST-004",
+      "state": {
+        "schemaVersion": 2,
+        "instanceId": "INST-004",
+        "coreGeneration": "gen-494466400e4db24e",
+        "createdAt": "2026-11-08T22:39:25.019Z",
+        "updatedAt": "2026-11-08T22:39:31.340Z",
+        "state": "completed",
+        "stateSince": "2026-11-08T22:39:31.324Z",
+        "template": "code-loop",
+        "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo",
+        "task": "实现 calc.js，产物：calc.js",
+        "halted": false,
+        "rev": 23,
+        "counters": {
+          "eventSeq": 23,
+          "runCount": 1,
+          "dispatchCount": 2
+        },
+        "hostRaw": {
+          "stopReason": "end_turn",
+          "lastError": null,
+          "agentInfo": null
+        },
+        "nodes": [
+          {
+            "nodeId": "T-001",
+            "roleId": "developer",
+            "round": 1,
+            "state": "done",
+            "stateSince": "2026-11-08T22:39:27.882Z",
+            "startedAt": "2026-11-08T22:39:25.894Z",
+            "roundStartedAt": "2026-11-08T22:39:25.894Z",
+            "endedAt": "2026-11-08T22:39:28.014Z",
+            "failure": null,
+            "note": null,
+            "verdict": null,
+            "sessionId": "mock-sess-27798-1",
+            "artifactRefs": [
+              {
+                "ref": "calc.js",
+                "absPath": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo/calc.js",
+                "declared": true,
+                "exists": true,
+                "bytes": 251,
+                "sha256": null,
+                "verifiedAt": "2026-11-08T22:39:27.872Z"
+              }
+            ]
+          },
+          {
+            "nodeId": "T-002",
+            "roleId": "tester",
+            "round": 1,
+            "state": "done",
+            "stateSince": "2026-11-08T22:39:30.863Z",
+            "startedAt": "2026-11-08T22:39:28.365Z",
+            "roundStartedAt": "2026-11-08T22:39:28.365Z",
+            "endedAt": "2026-11-08T22:39:30.985Z",
+            "failure": null,
+            "note": null,
+            "verdict": {
+              "value": "pass",
+              "defectCount": 0,
+              "verdictPath": "out/verdict.json",
+              "readAt": "2026-11-08T22:39:30.792Z"
+            },
+            "sessionId": "mock-sess-27817-1",
+            "artifactRefs": []
+          }
+        ],
+        "sessions": [
+          {
+            "sessionId": "mock-sess-27798-1",
+            "nodeId": "T-001",
+            "round": 1,
+            "hostId": null,
+            "state": "idle",
+            "stateSince": "2026-11-08T22:39:28.045Z",
+            "createdAt": "2026-11-08T22:39:26.645Z",
+            "lastEventAt": "2026-11-08T22:39:27.033Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo/calc.js",
+            "pendingPermission": null,
+            "quarantined": false
+          },
+          {
+            "sessionId": "mock-sess-27817-1",
+            "nodeId": "T-002",
+            "round": 1,
+            "hostId": null,
+            "state": "idle",
+            "stateSince": "2026-11-08T22:39:31.185Z",
+            "createdAt": "2026-11-08T22:39:29.052Z",
+            "lastEventAt": "2026-11-08T22:39:29.978Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36/demo/out/verdict.json",
+            "pendingPermission": null,
+            "quarantined": false
+          }
+        ],
+        "handoffs": [
+          {
+            "handoffId": "HO-001",
+            "edge": {
+              "from": "T-001",
+              "to": "T-002",
+              "kind": "forward"
+            },
+            "state": "consumed",
+            "createdAt": "2026-11-08T22:39:28.233Z",
+            "deliveredAt": "2026-11-08T22:39:29.425Z",
+            "acceptedAt": "2026-11-08T22:39:29.712Z",
+            "consumedAt": "2026-11-08T22:39:30.985Z",
+            "rejectedAt": null,
+            "rejectReason": null,
+            "wakeConsumedAt": null,
+            "acceptedSignal": "agent_thought_chunk",
+            "ambiguityWindowMs": 287,
+            "defects": [],
+            "note": null,
+            "artifactRefs": {
+              "input": [
+                "calc.js"
+              ],
+              "output": null,
+              "previous": null
+            },
+            "revisionRequirement": null,
+            "instanceId": "INST-001",
+            "round": 1,
+            "fromNodeId": "T-001",
+            "toNodeId": "T-002",
+            "retestRequirement": null,
+            "deliveryAttempts": 1,
+            "pendingAt": null,
+            "expiredAt": null,
+            "lastError": null
+          }
+        ],
+        "escalations": [],
+        "paused": false,
+        "approvals": [
+          {
+            "approvalId": "APR-001",
+            "instanceId": "INST-004",
+            "nodeId": "T-001",
+            "sessionId": "mock-sess-fix",
+            "action": "write",
+            "toolCallId": "call_fix",
+            "state": "approved",
+            "createdAt": "2026-11-08T19:00:00.000Z",
+            "resolvedAt": "2026-11-08T19:00:00.000Z",
+            "resolution": "allow"
+          },
+          {
+            "approvalId": "APR-002",
+            "instanceId": "INST-004",
+            "nodeId": "T-001",
+            "sessionId": "mock-sess-fix",
+            "action": "write",
+            "toolCallId": "call_fix",
+            "state": "denied",
+            "createdAt": "2026-11-08T19:00:00.000Z",
+            "resolvedAt": "2026-11-08T19:00:01.000Z",
+            "resolution": "deny"
+          },
+          {
+            "approvalId": "APR-003",
+            "instanceId": "INST-004",
+            "nodeId": "T-001",
+            "sessionId": "mock-sess-fix",
+            "action": "write",
+            "toolCallId": "call_fix",
+            "state": "withdrawn",
+            "createdAt": "2026-11-08T19:00:00.000Z",
+            "resolvedAt": null,
+            "resolution": null
+          }
+        ]
+      }
+    },
+    {
+      "__root": "AC-36",
+      "instanceId": "OLD-001",
+      "state": {
+        "schemaVersion": 1,
+        "instanceId": "OLD-001",
+        "coreGeneration": "gen-legacy",
+        "state": "completed",
+        "stateSince": "2026-10-01T09:12:00.000Z",
+        "cwd": "D:\\WWW\\Maestro\\demo-legacy-1",
+        "task": "旧格式实例：单节点单会话单交接包",
+        "roleId": "coordinator",
+        "createdAt": "2026-10-01T09:00:00.000Z",
+        "updatedAt": "2026-10-01T09:12:00.000Z",
+        "node": {
+          "nodeId": "T-001",
+          "state": "done",
+          "stateSince": "2026-10-01T09:12:00.000Z",
+          "startedAt": "2026-10-01T09:00:05.000Z",
+          "endedAt": "2026-10-01T09:12:00.000Z",
+          "failure": null,
+          "note": null
+        },
+        "session": {
+          "sessionId": "sess-legacy-1",
+          "hostId": "dsh",
+          "state": "idle",
+          "stateSince": "2026-10-01T09:12:00.000Z",
+          "createdAt": "2026-10-01T09:00:05.500Z",
+          "lastEventAt": "2026-10-01T09:11:58.000Z",
+          "toolName": null,
+          "turnId": "turn-1",
+          "pendingPermission": null,
+          "quarantined": false,
+          "artifactRef": "out/report.md"
+        },
+        "handoff": {
+          "handoffId": "HO-001",
+          "state": "consumed",
+          "createdAt": "2026-10-01T09:00:04.000Z",
+          "deliveredAt": "2026-10-01T09:00:04.100Z",
+          "acceptedAt": "2026-10-01T09:00:05.000Z",
+          "consumedAt": "2026-10-01T09:00:05.400Z",
+          "rejectedAt": null,
+          "rejectReason": null,
+          "wakeConsumedAt": null,
+          "acceptedSignal": "agent_thought_chunk",
+          "ambiguityWindowMs": 63,
+          "note": null
+        },
+        "artifactRefs": [
+          {
+            "ref": "out/report.md",
+            "absPath": "D:\\WWW\\Maestro\\demo-legacy-1\\out\\report.md",
+            "exists": true,
+            "bytes": 128,
+            "verifiedAt": "2026-10-01T09:11:59.000Z"
+          }
+        ],
+        "hostRaw": {
+          "stopReason": "end_turn",
+          "lastError": null,
+          "agentInfo": {
+            "name": "deepseek-harness-acp",
+            "version": "0.0.1"
+          }
+        },
+        "counters": {
+          "eventSeq": 18,
+          "runCount": 1
+        }
+      }
+    }
+  ]
+}

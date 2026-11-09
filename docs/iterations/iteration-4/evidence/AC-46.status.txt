@@ -1,0 +1,90 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo1 --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop rounds-exceeded（cwd demo1 → INST-001） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-46 exit=4 13919ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-29813-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo2 --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop rounds-exceeded（cwd demo2 → INST-002） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-46 exit=4 12297ms
+实例 INST-002 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-29959-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 已升级
+实例 INST-002 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：orch escalate list --instance INST-002 查看升级；orch escalate resolve ESC-nnn --instance INST-002 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-002
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff list
+# label=orch handoff list cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-46 exit=0 286ms
+交接包 HO-001  实例 INST-001  开发→测试  已完成  06:42:24
+交接包 HO-002  实例 INST-001  测试→开发（回流）  已完成  06:42:27
+交接包 HO-003  实例 INST-001  开发→测试（复测）  已完成  06:42:29
+交接包 HO-001  实例 INST-002  开发→测试  已完成  06:42:36
+交接包 HO-002  实例 INST-002  测试→开发（回流）  已完成  06:42:39
+交接包 HO-003  实例 INST-002  开发→测试（复测）  已完成  06:42:42
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff list --instance INST-001
+# label=orch handoff list --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-46 exit=0 300ms
+交接包 HO-001  实例 INST-001  开发→测试  已完成  06:42:24
+交接包 HO-002  实例 INST-001  测试→开发（回流）  已完成  06:42:27
+交接包 HO-003  实例 INST-001  开发→测试（复测）  已完成  06:42:29
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff list
+# label=orch handoff list（打乱快照数组后复跑） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-46 exit=0 303ms
+交接包 HO-001  实例 INST-001  开发→测试  已完成  06:42:24
+交接包 HO-002  实例 INST-001  测试→开发（回流）  已完成  06:42:27
+交接包 HO-003  实例 INST-001  开发→测试（复测）  已完成  06:42:29
+交接包 HO-001  实例 INST-002  开发→测试  已完成  06:42:36
+交接包 HO-002  实例 INST-002  测试→开发（回流）  已完成  06:42:39
+交接包 HO-003  实例 INST-002  开发→测试（复测）  已完成  06:42:42
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff list
+# label=orch handoff list（全新项目根） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-46-empty exit=0 1393ms
+交接包 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-46 exit=0 315ms
+核心已停止（pid 29794，运行 28s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-46-empty exit=0 273ms
+核心已停止（pid 30105，运行 1s）
+

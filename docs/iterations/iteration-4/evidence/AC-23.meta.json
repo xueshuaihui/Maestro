@@ -1,0 +1,34 @@
+{
+  "ac": "AC-23",
+  "title": "通过处理终节点升级 → 实例完成",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:35:44.921Z",
+  "finishedAt": "2026-11-08T22:36:00.802Z",
+  "durationMs": 15881,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-23",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-23"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-23",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 9,
+  "notes": [
+    "「不需要再敲 run」：resolve 命令自身把实例推进到 completed，未再执行 orch run。"
+  ]
+}

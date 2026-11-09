@@ -6,6 +6,7 @@ import {
   NODE_STATES,
   HANDOFF_STATES,
   ESCALATION_STATES,
+  APPROVAL_STATES,
   SESSION_STATES,
   TERMINAL_INSTANCE,
   CORE_IMMUTABLE_INSTANCE,
@@ -17,10 +18,11 @@ import {
   createNodeSM,
   createHandoffSM,
   createEscalationSM,
+  createApprovalSM,
   createSessionSM
 } from '../../src/core/state-machine.js';
 
-/** Expected tables, transcribed one row per source state from requirement D-1 / D-4 / D-6. */
+/** Expected tables, transcribed one row per source state from requirement D-1 / D-2 / D-4 / D-6. */
 const INSTANCE_EDGES = [
   ['created', 'running'],
   ['created', 'cancelled'],
@@ -29,14 +31,15 @@ const INSTANCE_EDGES = [
   ['running', 'cancelled'],
   ['running', 'interrupted'],
   ['running', 'suspended'],
+  ['suspended', 'running'],
+  ['suspended', 'completed'],
+  ['suspended', 'failed'],
   ['suspended', 'cancelled']
 ];
 
 /**
- * Requirement D-1. The 10 edges added over the I1.1 seven-state table are:
- * pending->escalated, running->escalated, review->escalated, review->cancelled,
- * done->running, done->escalated, failed->running, failed->escalated,
- * failed->cancelled, escalated->cancelled.
+ * Requirement D-1 plus the I1.4 D-2 adjudication exits: `escalated` may be reopened
+ * for a retry (`running`) or closed by `pass` / `fail`, and still stays cancellable.
  * `running->failed` and `review->failed` are kept; `done` deliberately has no cancel edge.
  */
 const NODE_EDGES = [
@@ -56,6 +59,9 @@ const NODE_EDGES = [
   ['failed', 'running'],
   ['failed', 'escalated'],
   ['failed', 'cancelled'],
+  ['escalated', 'running'],
+  ['escalated', 'done'],
+  ['escalated', 'failed'],
   ['escalated', 'cancelled']
 ];
 
@@ -64,13 +70,25 @@ const HANDOFF_EDGES = [
   ['created', 'rejected'],
   ['delivered', 'accepted'],
   ['delivered', 'rejected'],
+  ['delivered', 'pending'],
   ['accepted', 'consumed'],
   ['accepted', 'rejected'],
   ['pending', 'delivered'],
-  ['pending', 'expired']
+  ['pending', 'expired'],
+  ['pending', 'rejected']
 ];
 
-const ESCALATION_EDGES = [['pending', 'voided']];
+const ESCALATION_EDGES = [
+  ['pending', 'resolved'],
+  ['pending', 'voided']
+];
+
+/** requirement D-2: approval lifecycle (memory-only rows). */
+const APPROVAL_EDGES = [
+  ['pending', 'approved'],
+  ['pending', 'denied'],
+  ['pending', 'withdrawn']
+];
 
 /** Requirement D-6: session guard table. `escalated` has no exit except cancel (`idle`). */
 const SESSION_EDGES = [
@@ -105,7 +123,7 @@ const CASES = [
   },
   {
     // `cancelled` is the only state with no outbound edge: `done` can be reopened by a
-    // backflow wake-up, `failed` by a retest, `escalated` still has to be cancellable.
+    // backflow wake-up, `failed` by a retest, `escalated` by an adjudication verdict.
     name: 'node',
     states: NODE_STATES,
     edges: NODE_EDGES,
@@ -127,6 +145,14 @@ const CASES = [
     edges: ESCALATION_EDGES,
     create: createEscalationSM,
     terminal: ['voided'],
+    definedOnly: []
+  },
+  {
+    name: 'approval',
+    states: APPROVAL_STATES,
+    edges: APPROVAL_EDGES,
+    create: createApprovalSM,
+    terminal: ['approved', 'denied', 'withdrawn'],
     definedOnly: []
   },
   {
@@ -237,14 +263,18 @@ test('node: only cancelled is terminal; done / failed / escalated still have exi
   assert.equal(sm.isTerminal('nope'), false);
 });
 
-test('node: escalated has exactly one exit (cancel)', async () => {
+test('node: cancel is still the only terminal edge; adjudication exits exist (D-2)', async () => {
   const sm = createNodeSM({ emit: () => {} });
 
   assert.deepEqual(sm.can('escalated', 'cancelled'), { ok: true });
   const res = await sm.apply('escalated', 'cancelled', { objectId: 'T-002' });
   assert.deepEqual(res, { ok: true, from: 'escalated', to: 'cancelled' });
 
-  const denied = sm.can('escalated', 'done');
+  // 人工裁决出边（retry / pass / fail）与取消并列，取消仍是唯一的终止边。
+  for (const to of ['running', 'done', 'failed']) {
+    assert.deepEqual(sm.can('escalated', to), { ok: true }, `escalated->${to}`);
+  }
+  const denied = sm.can('escalated', 'review');
   assert.equal(denied.ok, false);
   assert.equal(denied.code, 'ILLEGAL_TRANSITION');
   // No state is defined-only any more.
@@ -278,6 +308,15 @@ test('escalation: pending->voided only', async () => {
   assert.equal(sm.can('voided', 'voided').code, 'ILLEGAL_TRANSITION');
 });
 
+test('escalation: resolved is terminal and only reachable from pending (D-2)', () => {
+  const sm = createEscalationSM({ emit: () => {} });
+
+  assert.deepEqual(sm.can('pending', 'resolved'), { ok: true });
+  assert.equal(sm.isTerminal('resolved'), true);
+  assert.equal(sm.can('resolved', 'pending').ok, false);
+  assert.equal(sm.can('voided', 'resolved').ok, false);
+});
+
 test('session: escalated only leaves on cancel (idle)', () => {
   const sm = createSessionSM({ emit: () => {} });
 
@@ -302,12 +341,13 @@ test('session: every state can be escalated, and idle only starts a turn', () =>
   assert.equal(sm.can('tool_running', 'thinking').ok, true);
 });
 
-test('instance: suspended is reachable from running and only leaves on cancel', () => {
+test('instance: suspended is reachable from running and leaves via adjudication or cancel', () => {
   const sm = createInstanceSM({ emit: () => {} });
   assert.equal(sm.can('running', 'suspended').ok, true);
   assert.equal(sm.can('suspended', 'cancelled').ok, true);
-  assert.equal(sm.can('suspended', 'running').ok, false);
-  assert.equal(sm.can('suspended', 'completed').ok, false);
+  assert.equal(sm.can('suspended', 'running').ok, true);
+  assert.equal(sm.can('suspended', 'completed').ok, true);
+  assert.equal(sm.can('suspended', 'failed').ok, true);
   assert.equal(sm.isTerminal('suspended'), false);
 });
 
@@ -337,7 +377,7 @@ test('five constant groups match requirement D-4', () => {
   assert.equal(CANCELABLE_NODE.includes('done'), false);
   assert.equal(CANCELABLE_NODE.includes('cancelled'), false);
 
-  assert.deepEqual([...CANCELABLE_HANDOFF], ['created', 'delivered', 'accepted']);
+  assert.deepEqual([...CANCELABLE_HANDOFF], ['created', 'delivered', 'pending', 'accepted']);
   assert.equal(CANCELABLE_HANDOFF.includes('consumed'), false);
 });
 
@@ -347,7 +387,10 @@ test('explicit out-of-table samples from the acceptance list', async () => {
   const handoff = createHandoffSM({ emit: () => {} });
 
   assert.equal(node.can('done', 'review').ok, false);
-  assert.equal(node.can('escalated', 'running').ok, false);
+  assert.equal(node.can('escalated', 'running').ok, true);
+  assert.equal(node.can('escalated', 'done').ok, true);
+  assert.equal(node.can('escalated', 'failed').ok, true);
+  assert.equal(node.can('escalated', 'review').ok, false);
   for (const to of NODE_STATES) {
     assert.equal(node.can('cancelled', to).ok, false, `cancelled->${to}`);
   }
@@ -377,7 +420,7 @@ test('rejected apply emits one rejected event with the attempted target', async 
   const events = [];
   const sm = createNodeSM({ emit: (ev) => events.push(ev) });
 
-  const res = await sm.apply('escalated', 'done', {
+  const res = await sm.apply('escalated', 'review', {
     objectId: 'T-002',
     reason: 'fixture.attempt_transition',
     detail: { source: 'fixture/attempt-transition' }
@@ -391,7 +434,7 @@ test('rejected apply emits one rejected event with the attempted target', async 
   assert.equal(ev.object, 'node');
   assert.equal(ev.objectId, 'T-002');
   assert.equal(ev.from, 'escalated');
-  assert.equal(ev.to, 'done');
+  assert.equal(ev.to, 'review');
   assert.equal(ev.result, 'rejected');
   assert.equal(ev.reason, 'illegal_transition');
   assert.equal(ev.detail.source, 'fixture/attempt-transition');
@@ -426,7 +469,7 @@ test('assert throws IllegalTransitionError carrying from/to/code', () => {
     }
   );
 
-  assert.throws(() => createNodeSM({ emit: () => {} }).assert('escalated', 'done'), /not in the transition table/);
+  assert.throws(() => createNodeSM({ emit: () => {} }).assert('escalated', 'review'), /not in the transition table/);
   assert.doesNotThrow(() => sm.assert('created', 'delivered'));
   assert.doesNotThrow(() => createNodeSM({ emit: () => {} }).assert('escalated', 'cancelled'));
 });

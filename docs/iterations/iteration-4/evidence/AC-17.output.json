@@ -1,0 +1,111 @@
+{
+  "ac": "AC-17",
+  "title": "重试耗尽后升级",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then/机检：实例挂起 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检：包 state === expired（期望 \"expired\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"expired\""
+    },
+    {
+      "text": "机检：deliveryAttempts === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：expiredAt 非空",
+      "ok": true,
+      "blocked": false,
+      "actual": "2026-11-08T22:33:20.781Z"
+    },
+    {
+      "text": "Then：升级原因写明已尝试 3 次（期望含 \"已尝试 3 次\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-001 投递失败（已尝试 3 次）：mock-host: upstream model request failed (code 500)"
+    },
+    {
+      "text": "机检：escalations[0].reasonCode === delivery_failed（期望 \"delivery_failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"delivery_failed\""
+    },
+    {
+      "text": "机检：信箱文件 deliveryAttempts === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：信箱文件 lastError 非空",
+      "ok": true,
+      "blocked": false,
+      "actual": "mock-host: upstream model request failed (code 500)"
+    },
+    {
+      "text": "机检：目标会话 prompt-attempts 文件 attempts === 3",
+      "ok": true,
+      "blocked": false,
+      "actual": "[1,3,3]"
+    },
+    {
+      "text": "机检：目标节点 T-002 仍只有 1 个会话（重试不新增会话）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：events 含 handoff.expired",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,review.evidence_verified,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,handoff.pending,handoff.delivered,handoff.pending,handoff.delivered,handoff.pending,handoff.expired,escalation.created,state.change,state.change,core.suspend"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run task-loop（本地夹具 promptFailures:3）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写发布说明，产物：release-notes.md",
+        "--template",
+        "task-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-17",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 20386,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-23422-1\n任务已投递\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-002 撰写者 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-17",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 717,
+      "stdout": "核心已停止（pid 23354，运行 17s）\n",
+      "stderr": ""
+    }
+  ]
+}

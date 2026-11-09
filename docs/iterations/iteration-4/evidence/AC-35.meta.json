@@ -1,0 +1,32 @@
+{
+  "ac": "AC-35",
+  "title": "取消时待处理审批作废",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:39:15.554Z",
+  "finishedAt": "2026-11-08T22:39:21.492Z",
+  "durationMs": 5938,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-35",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-35"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-35",
+      "instanceId": "INST-001",
+      "state": "cancelled"
+    }
+  ],
+  "checks": 9,
+  "notes": []
+}

@@ -1,0 +1,39 @@
+{
+  "ac": "AC-34",
+  "title": "审批号歧义时要求指定实例",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:39:07.537Z",
+  "finishedAt": "2026-11-08T22:39:14.131Z",
+  "durationMs": 6594,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-34",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-34",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    },
+    {
+      "__root": "AC-34",
+      "instanceId": "INST-002",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 7,
+  "notes": [
+    "Given 的第二个实例以真实 hold 快照为母版克隆，仅改写 approvals.instanceId；视图/决策 RPC 逐字段读取，构造 Given 不等于伪造结论。"
+  ]
+}

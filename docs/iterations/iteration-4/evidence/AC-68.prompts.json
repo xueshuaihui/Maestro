@@ -1,0 +1,32 @@
+{
+  "AC-68/1.json": {
+    "n": 1,
+    "nodeId": "T-001",
+    "round": 1,
+    "task": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md\n只交研究笔记，不写最终文档。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/stage/T-001"
+  },
+  "AC-68/2.json": {
+    "n": 2,
+    "nodeId": "T-002",
+    "round": 1,
+    "task": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/stage/T-001"
+  },
+  "AC-68/3.json": {
+    "n": 3,
+    "nodeId": "T-003",
+    "round": 1,
+    "task": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v1.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v1.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v1.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/stage/T-002"
+  },
+  "AC-68/4.json": {
+    "n": 4,
+    "nodeId": "T-002",
+    "round": 2,
+    "task": "写发布说明，产物：release-notes.md\n\n上一轮审核不通过，请按下列缺陷修改：\n缺陷 1：缺少回滚方案（证据 artifacts/docs/release-notes.v1.md#L1）\n缺陷 2：升级步骤缺少验证（证据 artifacts/docs/release-notes.v1.md#L18）\n修改要求：补写「回滚方案」一节\n研究笔记：artifacts/reports/research-notes.v1.md\n上一版文档引用：artifacts/docs/release-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v2.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v2.md\n不得改写上一版文件。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/stage/T-003"
+  },
+  "AC-68/5.json": {
+    "n": 5,
+    "nodeId": "T-003",
+    "round": 2,
+    "task": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v2.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v2.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v2.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/stage/T-002"
+  }
+}

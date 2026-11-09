@@ -1,0 +1,40 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js approve APR-001 --decision allow --instance INST-001
+# label=orch approve APR-001 --instance INST-001 --decision allow cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-31 exit=0 607ms
+审批 APR-001 已通过 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明 --approval hold
+# label=orch run --approval hold（前台，待审批→继续） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-31 exit=0 5024ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-27306-1
+任务已投递
+审批 APR-001 待处理 · 动作 write
+会话 等待审批：write
+会话 执行中 · 已运行 2s
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 3s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 已完成 · 耗时 3s
+交接包 HO-001  已构造   06:38:46
+交接包 HO-001  已投递   06:38:46
+交接包 HO-001  已接受   06:38:46
+交接包 HO-001  已完成   06:38:48
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-31 exit=0 311ms
+实例 INST-001 · 已完成
+节点 已完成 · 耗时 3s
+会话 空闲
+交接包 HO-001  已构造   06:38:46
+交接包 HO-001  已投递   06:38:46
+交接包 HO-001  已接受   06:38:46
+交接包 HO-001  已完成   06:38:48
+审批 APR-001 已通过 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-31 exit=0 349ms
+核心未在运行
+

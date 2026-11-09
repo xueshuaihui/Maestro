@@ -1,0 +1,32 @@
+{
+  "ac": "AC-30",
+  "title": "重新分配后仍失败会再次升级",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:38:09.126Z",
+  "finishedAt": "2026-11-08T22:38:26.116Z",
+  "durationMs": 16990,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-30",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-30"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-30",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 7,
+  "notes": []
+}

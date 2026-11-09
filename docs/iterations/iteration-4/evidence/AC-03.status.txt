@@ -1,0 +1,19 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明
+# label=orch run --cwd ./demo --task「写下说明」（不带 --template） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03 exit=0 4963ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-11874-1
+任务已投递
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 已完成 · 耗时 3s
+交接包 HO-001  已构造   06:17:18
+交接包 HO-001  已投递   06:17:18
+交接包 HO-001  已接受   06:17:18
+交接包 HO-001  已完成   06:17:19
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03 exit=0 310ms
+核心已停止（pid 11868，运行 4s）
+

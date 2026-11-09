@@ -1,0 +1,32 @@
+{
+  "ac": "AC-33",
+  "title": "同一审批不能处理两次",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:38:59.101Z",
+  "finishedAt": "2026-11-08T22:39:06.137Z",
+  "durationMs": 7036,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-33",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-33"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-33",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 9,
+  "notes": []
+}

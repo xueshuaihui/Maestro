@@ -1,0 +1,68 @@
+{
+  "ac": "AC-54",
+  "title": "旧命令基线不回归",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:44:33.194Z",
+  "finishedAt": "2026-11-08T22:45:13.449Z",
+  "durationMs": 40255,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-54-implicit",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-implicit"
+    },
+    {
+      "case": "AC-54-explicit",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-explicit"
+    },
+    {
+      "case": "AC-54-code",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-code"
+    },
+    {
+      "case": "AC-54-doc",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-doc"
+    },
+    {
+      "case": "AC-54-cancel",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-cancel"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-54-implicit",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-54-explicit",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-54-code",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-54-doc",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-54-cancel",
+      "instanceId": "INST-001",
+      "state": "cancelled"
+    }
+  ],
+  "checks": 16,
+  "notes": []
+}

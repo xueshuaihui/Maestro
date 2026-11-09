@@ -1,0 +1,34 @@
+{
+  "ac": "AC-66",
+  "title": "暂停落在交接包已构造、尚未派发之间",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T11:58:53.778Z",
+  "finishedAt": "2026-11-09T11:59:06.583Z",
+  "durationMs": 12805,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-66",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-66"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-66",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 16,
+  "notes": [
+    "上一轮收口期发现的产品缺陷（resume 重新规划构造第二张包）已由 src/core/orchestrator.js:4400 的既有修复收口：本轮机检全通过（同一张 created 包被复用、deliveryAttempts===1、dispatchCount 恰好 +1、无第二张包）。修复登记见 probe/acc4-f-blockers.md。"
+  ]
+}

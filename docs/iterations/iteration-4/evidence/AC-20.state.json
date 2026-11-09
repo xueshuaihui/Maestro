@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-11521b3c77856889",
+  "createdAt": "2026-11-08T22:34:06.245Z",
+  "updatedAt": "2026-11-08T22:34:14.151Z",
+  "state": "suspended",
+  "stateSince": "2026-11-08T22:34:14.096Z",
+  "template": "code-loop",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-20/demo",
+  "task": "实现 calc.js，产物：calc.js",
+  "halted": false,
+  "rev": 14,
+  "counters": {
+    "eventSeq": 11,
+    "runCount": 1,
+    "dispatchCount": 2
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T22:34:11.407Z",
+      "startedAt": "2026-11-08T22:34:07.509Z",
+      "roundStartedAt": "2026-11-08T22:34:07.509Z",
+      "endedAt": "2026-11-08T22:34:11.692Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-24096-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-20/demo/calc.js",
+          "declared": true,
+          "exists": true,
+          "bytes": 251,
+          "sha256": null,
+          "verifiedAt": "2026-11-08T22:34:11.397Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "escalated",
+      "stateSince": "2026-11-08T22:34:14.096Z",
+      "startedAt": "2026-11-08T22:34:12.613Z",
+      "roundStartedAt": "2026-11-08T22:34:12.613Z",
+      "endedAt": "2026-11-08T22:34:14.096Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-24141-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-24096-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:34:11.773Z",
+      "createdAt": "2026-11-08T22:34:08.999Z",
+      "lastEventAt": "2026-11-08T22:34:09.610Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-20/demo/calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-24141-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:34:14.096Z",
+      "createdAt": "2026-11-08T22:34:14.011Z",
+      "lastEventAt": "2026-11-08T22:34:14.011Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "rejected",
+      "createdAt": "2026-11-08T22:34:12.478Z",
+      "deliveredAt": null,
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": "2026-11-08T22:34:14.096Z",
+      "rejectReason": "delivery_failed",
+      "wakeConsumedAt": null,
+      "acceptedSignal": null,
+      "ambiguityWindowMs": null,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "calc.js"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 1,
+      "fromNodeId": "T-001",
+      "toNodeId": "T-002",
+      "retestRequirement": null,
+      "deliveryAttempts": 0,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    }
+  ],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-002",
+      "round": 1,
+      "reasonCode": "delivery_failed",
+      "reasonDetail": "交接包 HO-001 投递失败（已尝试 0 次）：INBOX_WRITE_FAILED",
+      "defects": [],
+      "state": "pending",
+      "createdAt": "2026-11-08T22:34:14.096Z",
+      "resolvedAt": null,
+      "resolution": null,
+      "voidedAt": null
+    }
+  ]
+}

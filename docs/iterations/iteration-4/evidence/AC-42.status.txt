@@ -1,0 +1,73 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-42 exit=0 8449ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-28964-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:41:06
+交接包 HO-001  开发→测试  已投递   06:41:08
+交接包 HO-001  开发→测试  已接受   06:41:08
+交接包 HO-001  开发→测试  已完成   06:41:09
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance graph INST-001
+# label=orch instance graph INST-001（text） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-42 exit=0 275ms
+实例 INST-001 · 编码闭环 · 已完成
+T-001 开发 · 已完成 · 第 1 轮
+T-002 测试 · 已完成 · 第 1 轮
+边：
+  T-001 -> T-002 正向
+  T-002 -> T-001 回流
+  T-001 -> T-002 复测
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（暂停夹具母版） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-42-paused exit=0 8349ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-29062-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:41:16
+交接包 HO-001  开发→测试  已投递   06:41:17
+交接包 HO-001  开发→测试  已接受   06:41:17
+交接包 HO-001  开发→测试  已完成   06:41:19
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance graph INST-001
+# label=orch instance graph INST-001（暂停态 text） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-42-paused exit=0 307ms
+实例 INST-001 · 编码闭环 · 运行中（已暂停）
+T-001 开发 · 已完成 · 第 1 轮
+T-002 测试 · 已完成 · 第 1 轮
+边：
+  T-001 -> T-002 正向
+  T-002 -> T-001 回流
+  T-001 -> T-002 复测
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-42 exit=0 323ms
+核心已停止（pid 28917，运行 17s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-42-paused exit=0 504ms
+核心已停止（pid 29026，运行 8s）
+

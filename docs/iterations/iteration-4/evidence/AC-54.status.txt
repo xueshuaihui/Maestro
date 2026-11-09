@@ -1,0 +1,130 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明
+# label=orch run --cwd ./demo --task ...（不带 --template） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-implicit exit=0 4397ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-31420-1
+任务已投递
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 已完成 · 耗时 3s
+交接包 HO-001  已构造   06:44:36
+交接包 HO-001  已投递   06:44:36
+交接包 HO-001  已接受   06:44:37
+交接包 HO-001  已完成   06:44:38
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明 --template single
+# label=orch run --cwd ./demo --task ... --template single cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-explicit exit=0 4494ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-31459-1
+任务已投递
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 已完成 · 耗时 3s
+交接包 HO-001  已构造   06:44:41
+交接包 HO-001  已投递   06:44:41
+交接包 HO-001  已接受   06:44:42
+交接包 HO-001  已完成   06:44:43
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（I1.2 成功路径） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-code exit=0 8173ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-31537-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:44:48
+交接包 HO-001  开发→测试  已投递   06:44:50
+交接包 HO-001  开发→测试  已接受   06:44:50
+交接包 HO-001  开发→测试  已完成   06:44:51
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写发布说明，产物：release-notes.md --template task-loop
+# label=orch run task-loop doc-pass（I1.3 成功路径） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-doc exit=0 11489ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-31630-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 2s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 3s · 产物 artifacts/docs/release-notes.v1.md
+节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 3s · 审核 通过
+交接包 HO-001  研究员→撰写者  已构造   06:44:57
+交接包 HO-001  研究员→撰写者  已投递   06:44:59
+交接包 HO-001  研究员→撰写者  已接受   06:44:59
+交接包 HO-001  研究员→撰写者  已完成   06:45:00
+交接包 HO-002  撰写者→审核者  已构造   06:45:01
+交接包 HO-002  撰写者→审核者  已投递   06:45:02
+交接包 HO-002  撰写者→审核者  已接受   06:45:02
+交接包 HO-002  撰写者→审核者  已完成   06:45:03
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status
+# label=orch status（I1.1 列表） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-implicit exit=0 323ms
+实例 INST-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 3s · 更新 06:44:38
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cancel --instance INST-001
+# label=orch cancel --instance INST-001（I1.1 cancel） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-cancel exit=0 615ms
+会话 空闲
+节点 T-001 开发 已取消
+节点 T-002 测试 已取消
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run（前台，停止在派发边界） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-cancel exit=- 5168ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-31769-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop（I1.1 core stop） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-code exit=0 302ms
+核心已停止（pid 31514，运行 26s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-implicit exit=0 336ms
+核心已停止（pid 31397，运行 36s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-explicit exit=0 311ms
+核心已停止（pid 31440，运行 32s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-code exit=0 258ms
+核心未在运行
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-doc exit=0 320ms
+核心已停止（pid 31602，运行 19s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-54-cancel exit=0 261ms
+核心未在运行
+

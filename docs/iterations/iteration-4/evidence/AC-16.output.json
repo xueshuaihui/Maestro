@@ -1,0 +1,146 @@
+{
+  "ac": "AC-16",
+  "title": "一次投递失败后重试成功",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then/机检：实例 completed（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "机检：handoff.pending 恰好 1 次（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：pending.detail.deliveryAttempts === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：pending 位于最终 handoff.delivered 之前",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,review.evidence_verified,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,handoff.pending,handoff.delivered,session.state,turn.first_event,review.downstream_accepted,session.state,session.state,output.submitted,output.submitted,review.evidence_verified,handoff.consumed,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,review.downstream_accepted,session.state,session.state,output.submitted,output.submitted,review.read,review.passed,verification.passed,handoff.consumed,run.completed,run.completed"
+    },
+    {
+      "text": "机检：HO-001 deliveryAttempts === 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：目标会话 prompt-attempts 文件 attempts === 2",
+      "ok": true,
+      "blocked": false,
+      "actual": "[1,2,1,1]"
+    },
+    {
+      "text": "机检：目标节点 T-002 只有 1 个会话（重试不新建会话）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：T-002 的 node.dispatch 只有一条（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "补充：HO-001 deliveryAttempts === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "补充：有两次 handoff.pending（attempts 1、2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[1,2]"
+    },
+    {
+      "text": "补充：最终出现 handoff.delivered",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,review.evidence_verified,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,handoff.pending,handoff.delivered,handoff.pending,handoff.delivered,session.state,turn.first_event,review.downstream_accepted,session.state,session.state,output.submitted,output.submitted,review.evidence_verified,handoff.consumed,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,review.downstream_accepted,session.state,session.state,output.submitted,output.submitted,review.read,review.passed,verification.passed,handoff.consumed,run.completed,run.completed"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run task-loop（本地夹具 promptFailures:1）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写发布说明，产物：release-notes.md",
+        "--template",
+        "task-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-16",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 26063,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-22812-1\n任务已投递\n会话 执行中 · 已运行 3s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 4s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 6s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 6s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 4s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   06:32:20\n交接包 HO-001  研究员→撰写者  待投递 · 重试 2/2   06:32:23\n交接包 HO-001  研究员→撰写者  已投递   06:32:24\n交接包 HO-001  研究员→撰写者  已接受   06:32:24\n交接包 HO-001  研究员→撰写者  已完成   06:32:26\n交接包 HO-002  撰写者→审核者  已构造   06:32:26\n交接包 HO-002  撰写者→审核者  已投递   06:32:27\n交接包 HO-002  撰写者→审核者  已接受   06:32:28\n交接包 HO-002  撰写者→审核者  已完成   06:32:30\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run task-loop（本地夹具 promptFailures:2，补充场景）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写发布说明，产物：release-notes.md",
+        "--template",
+        "task-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-16-f2",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 22735,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-23068-1\n任务已投递\n会话 执行中 · 已运行 3s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 5s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 3s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 5s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 6s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 5s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   06:32:43\n交接包 HO-001  研究员→撰写者  待投递 · 重试 3/2   06:32:46\n交接包 HO-001  研究员→撰写者  已投递   06:32:47\n交接包 HO-001  研究员→撰写者  已接受   06:32:47\n交接包 HO-001  研究员→撰写者  已完成   06:32:49\n交接包 HO-002  撰写者→审核者  已构造   06:32:49\n交接包 HO-002  撰写者→审核者  已投递   06:32:51\n交接包 HO-002  撰写者→审核者  已接受   06:32:52\n交接包 HO-002  撰写者→审核者  已完成   06:32:54\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-16",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 524,
+      "stdout": "核心已停止（pid 22722，运行 47s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-16-f2",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1083,
+      "stdout": "核心已停止（pid 23025，运行 22s）\n",
+      "stderr": ""
+    }
+  ]
+}

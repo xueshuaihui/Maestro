@@ -1,0 +1,117 @@
+{
+  "ac": "AC-68",
+  "title": "合法回流包通过校验并投递",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：存在回流包",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"id\":\"HO-001\",\"kind\":\"forward\"},{\"id\":\"HO-002\",\"kind\":\"forward\"},{\"id\":\"HO-003\",\"kind\":\"backflow\"},{\"id\":\"HO-004\",\"kind\":\"retest\"}]"
+    },
+    {
+      "text": "机检：该包 edge.kind === backflow（期望 \"backflow\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"backflow\""
+    },
+    {
+      "text": "机检：defects.length === 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：revisionRequirement 非空",
+      "ok": true,
+      "blocked": false,
+      "actual": "补写「回滚方案」一节"
+    },
+    {
+      "text": "机检：artifactRefs.previous.ref 非空",
+      "ok": true,
+      "blocked": false,
+      "actual": "artifacts/docs/release-notes.v1.md"
+    },
+    {
+      "text": "机检：artifactRefs.previous.ref 指向的文件存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md"
+    },
+    {
+      "text": "Then：回流包从「已构造」变为「已投递」",
+      "ok": true,
+      "blocked": false,
+      "actual": "handoff.created,backflow.constructed,handoff.inboxed,handoff.delivered,turn.first_event,handoff.consumed"
+    },
+    {
+      "text": "Then：撰写者收到第 2 轮提示",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"node\":\"T-001\",\"round\":1},{\"node\":\"T-002\",\"round\":1},{\"node\":\"T-003\",\"round\":1},{\"node\":\"T-002\",\"round\":2},{\"node\":\"T-003\",\"round\":2}]"
+    },
+    {
+      "text": "机检：撰写者 round === 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：events.jsonl 无 handoff.rejected",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,review.evidence_verified,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,review.downstream_accepted,session.state,session.state,output.submitted,output.submitted,review.evidence_verified,handoff.consumed,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,review.downstream_accepted,session.state,session.state,output.submitted,output.submitted,review.read,handoff.consumed,review.rejected,review.rejected,verification.failed,handoff.created,backflow.constructed,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,session.state,session.state,output.submitted,output.submitted,review.evidence_verified,handoff.consumed,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,review.downstream_accepted,session.state,session.state,output.submitted,output.submitted,review.read,review.passed,verification.passed,handoff.consumed,run.completed,run.completed"
+    },
+    {
+      "text": "Then：终端不出现「已拒绝（内容不合规）」（期望不含 \"已拒绝（内容不合规）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-34216-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 2s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 9s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 9s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   06:48:34\n交接包 HO-001  研究员→撰写者  已投递   06:48:35\n交接包 HO-001  研究员→撰写者  已接受   06:48:35\n交接包 HO-001  研究员→撰写者  已完成   06:48:36\n交接包 HO-002  撰写者→审核者  已构造   06:48:37\n交接包 HO-002  撰写者→审核者  已投递   06:48:38\n交接包 HO-002  撰写者→审核者  已接受   06:48:38\n交接包 HO-002  撰写者→审核者  已完成   06:48:39\n交接包 HO-003  审核者→撰写者（回流）  已构造   06:48:40\n交接包 HO-003  审核者→撰写者（回流）  已投递   06:48:41\n交接包 HO-003  审核者→撰写者（回流）  已接受   06:48:42\n交接包 HO-003  审核者→撰写者（回流）  已完成   06:48:43\n交接包 HO-004  撰写者→审核者（复测）  已构造   06:48:43\n交接包 HO-004  撰写者→审核者（复测）  已投递   06:48:44\n交接包 HO-004  撰写者→审核者（复测）  已接受   06:48:45\n交接包 HO-004  撰写者→审核者（复测）  已完成   06:48:46\n升级 —\n"
+    },
+    {
+      "text": "Then：终端不出现升级行（期望不含 \"升级 ESC-\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-34216-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 2s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 9s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 9s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   06:48:34\n交接包 HO-001  研究员→撰写者  已投递   06:48:35\n交接包 HO-001  研究员→撰写者  已接受   06:48:35\n交接包 HO-001  研究员→撰写者  已完成   06:48:36\n交接包 HO-002  撰写者→审核者  已构造   06:48:37\n交接包 HO-002  撰写者→审核者  已投递   06:48:38\n交接包 HO-002  撰写者→审核者  已接受   06:48:38\n交接包 HO-002  撰写者→审核者  已完成   06:48:39\n交接包 HO-003  审核者→撰写者（回流）  已构造   06:48:40\n交接包 HO-003  审核者→撰写者（回流）  已投递   06:48:41\n交接包 HO-003  审核者→撰写者（回流）  已接受   06:48:42\n交接包 HO-003  审核者→撰写者（回流）  已完成   06:48:43\n交接包 HO-004  撰写者→审核者（复测）  已构造   06:48:43\n交接包 HO-004  撰写者→审核者（复测）  已投递   06:48:44\n交接包 HO-004  撰写者→审核者（复测）  已接受   06:48:45\n交接包 HO-004  撰写者→审核者（复测）  已完成   06:48:46\n升级 —\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run task-loop doc-backflow-once",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写发布说明，产物：release-notes.md",
+        "--template",
+        "task-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 17401,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-34216-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 2s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 9s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 9s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   06:48:34\n交接包 HO-001  研究员→撰写者  已投递   06:48:35\n交接包 HO-001  研究员→撰写者  已接受   06:48:35\n交接包 HO-001  研究员→撰写者  已完成   06:48:36\n交接包 HO-002  撰写者→审核者  已构造   06:48:37\n交接包 HO-002  撰写者→审核者  已投递   06:48:38\n交接包 HO-002  撰写者→审核者  已接受   06:48:38\n交接包 HO-002  撰写者→审核者  已完成   06:48:39\n交接包 HO-003  审核者→撰写者（回流）  已构造   06:48:40\n交接包 HO-003  审核者→撰写者（回流）  已投递   06:48:41\n交接包 HO-003  审核者→撰写者（回流）  已接受   06:48:42\n交接包 HO-003  审核者→撰写者（回流）  已完成   06:48:43\n交接包 HO-004  撰写者→审核者（复测）  已构造   06:48:43\n交接包 HO-004  撰写者→审核者（复测）  已投递   06:48:44\n交接包 HO-004  撰写者→审核者（复测）  已接受   06:48:45\n交接包 HO-004  撰写者→审核者（复测）  已完成   06:48:46\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 313,
+      "stdout": "核心已停止（pid 34185，运行 17s）\n",
+      "stderr": ""
+    }
+  ]
+}

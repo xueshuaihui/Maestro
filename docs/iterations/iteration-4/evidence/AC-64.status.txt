@@ -1,0 +1,97 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（造一个已有实例） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64 exit=0 7612ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-42045-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 2s · 判定 通过
+交接包 HO-001  开发→测试  已构造   19:01:44
+交接包 HO-001  开发→测试  已投递   19:01:45
+交接包 HO-001  开发→测试  已接受   19:01:45
+交接包 HO-001  开发→测试  已完成   19:01:47
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task x --approval maybe
+# label=orch run --cwd ./demo --task x --approval maybe cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64 exit=2 273ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch instance status|log|graph <实例号> [--format text|json]
+  orch attach <会话号>
+  orch escalate list [--instance <实例号>] [--all]
+  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]
+  orch approve <审批号> --decision allow|deny [--instance <实例号>]
+  orch handoff list [--instance <实例号>]
+  orch handoff show <交接包号> [--instance <实例号>]
+  orch workflow pause|resume|abort <实例号>
+  （无法识别的参数：--approval=maybe（allow|reject|hold））
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance graph INST-001 --format yaml
+# label=orch instance graph INST-001 --format yaml cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64 exit=2 220ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch instance status|log|graph <实例号> [--format text|json]
+  orch attach <会话号>
+  orch escalate list [--instance <实例号>] [--all]
+  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]
+  orch approve <审批号> --decision allow|deny [--instance <实例号>]
+  orch handoff list [--instance <实例号>]
+  orch handoff show <交接包号> [--instance <实例号>]
+  orch workflow pause|resume|abort <实例号>
+  （无法识别的参数：--format=yaml（text|json））
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate resolve ESC-001 --decision maybe
+# label=orch escalate resolve ESC-001 --decision maybe cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64 exit=2 233ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch instance status|log|graph <实例号> [--format text|json]
+  orch attach <会话号>
+  orch escalate list [--instance <实例号>] [--all]
+  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]
+  orch approve <审批号> --decision allow|deny [--instance <实例号>]
+  orch handoff list [--instance <实例号>]
+  orch handoff show <交接包号> [--instance <实例号>]
+  orch workflow pause|resume|abort <实例号>
+  （无法识别的参数：--decision=maybe（pass|fail|retry））
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js approve APR-001 --decision maybe
+# label=orch approve APR-001 --decision maybe cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64 exit=2 303ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch instance status|log|graph <实例号> [--format text|json]
+  orch attach <会话号>
+  orch escalate list [--instance <实例号>] [--all]
+  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]
+  orch approve <审批号> --decision allow|deny [--instance <实例号>]
+  orch handoff list [--instance <实例号>]
+  orch handoff show <交接包号> [--instance <实例号>]
+  orch workflow pause|resume|abort <实例号>
+  （无法识别的参数：--decision=maybe（allow|deny））
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64 exit=0 309ms
+核心已停止（pid 42026，运行 8s）
+

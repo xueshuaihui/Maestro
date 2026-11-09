@@ -1,0 +1,87 @@
+{
+  "ac": "AC-05",
+  "title": "人工修改 `status.md` 会被下一次刷新覆盖",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具：实例运行到暂停接缝（.mock/paused）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Given：暂停时 status.md 是核心生成的可读 Markdown",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 编码闭环\n\n- 状态：运行中\n- 暂停：否\n- 任务：实现 calc.js，产物：calc.js\n- 当前节点：T-001 开发\n- 更新"
+    },
+    {
+      "text": "Given：手工写入一行后文件确实含该字符串（期望含 \"待办：修 calc.js\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 编码闭环\n\n- 状态：运行中\n- 暂停：否\n- 任务：实现 calc.js，产物：calc.js\n- 当前节点：T-001 开发\n- 更新：2026-11-08T22:17:39.563Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-05/.orch/instances/INST-001/workspace\n\n## 节点\n\n- T-001 开发：待校验 · 第 1 轮\n- T-002 测试：待执行 · 第 0 轮\n\n## 交接包\n\n- 无\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n- 待办：修 calc.js\n"
+    },
+    {
+      "text": "Then：该手写行消失（期望不含 \"待办：修 calc.js\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 编码闭环\n\n- 状态：已完成\n- 暂停：否\n- 任务：实现 calc.js，产物：calc.js\n- 当前节点：T-002 测试\n- 更新：2026-11-08T22:17:43.406Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-05/.orch/instances/INST-001/workspace\n\n## 节点\n\n- T-001 开发：已完成 · 第 1 轮\n- T-002 测试：已完成 · 第 1 轮\n\n## 交接包\n\n- HO-001 开发→测试：已完成 · 输入 calc.js\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    },
+    {
+      "text": "Then：status.md 恢复为核心生成的内容（期望含 \"# INST-001 编码闭环\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 编码闭环\n\n- 状态：已完成\n- 暂停：否\n- 任务：实现 calc.js，产物：calc.js\n- 当前节点：T-002 测试\n- 更新：2026-11-08T22:17:43.406Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-05/.orch/instances/INST-001/workspace\n\n## 节点\n\n- T-001 开发：已完成 · 第 1 轮\n- T-002 测试：已完成 · 第 1 轮\n\n## 交接包\n\n- HO-001 开发→测试：已完成 · 输入 calc.js\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    },
+    {
+      "text": "机检：刷新后的文件不含我写的字符串（期望不含 \"待办：修 calc.js\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 编码闭环\n\n- 状态：已完成\n- 暂停：否\n- 任务：实现 calc.js，产物：calc.js\n- 当前节点：T-002 测试\n- 更新：2026-11-08T22:17:43.406Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-05/.orch/instances/INST-001/workspace\n\n## 节点\n\n- T-001 开发：已完成 · 第 1 轮\n- T-002 测试：已完成 · 第 1 轮\n\n## 交接包\n\n- HO-001 开发→测试：已完成 · 输入 calc.js\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    },
+    {
+      "text": "机检：刷新后仍是原子替换的完整结构（含节点段）（期望含 \"## 节点\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 编码闭环\n\n- 状态：已完成\n- 暂停：否\n- 任务：实现 calc.js，产物：calc.js\n- 当前节点：T-002 测试\n- 更新：2026-11-08T22:17:43.406Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-05/.orch/instances/INST-001/workspace\n\n## 节点\n\n- T-001 开发：已完成 · 第 1 轮\n- T-002 测试：已完成 · 第 1 轮\n\n## 交接包\n\n- HO-001 开发→测试：已完成 · 输入 calc.js\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run（放行后前台收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 8345,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-12115-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:17:40\n交接包 HO-001  开发→测试  已投递   06:17:41\n交接包 HO-001  开发→测试  已接受   06:17:41\n交接包 HO-001  开发→测试  已完成   06:17:43\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 249,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

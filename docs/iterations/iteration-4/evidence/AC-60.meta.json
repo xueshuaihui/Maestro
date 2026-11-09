@@ -1,0 +1,32 @@
+{
+  "ac": "AC-60",
+  "title": "取消覆盖暂停与待审批",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:46:52.181Z",
+  "finishedAt": "2026-11-08T22:46:58.326Z",
+  "durationMs": 6145,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-60",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-60"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-60",
+      "instanceId": "INST-001",
+      "state": "cancelled"
+    }
+  ],
+  "checks": 11,
+  "notes": []
+}

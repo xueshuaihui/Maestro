@@ -1,0 +1,233 @@
+{
+  "ac": "AC-29",
+  "title": "找不到、歧义或状态不对时拒绝处理",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then①：提示「未找到升级 ESC-001」（期望 \"未找到升级 ESC-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"未找到升级 ESC-001\""
+    },
+    {
+      "text": "Then①：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检①：没有实例被写入（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Given②：两个实例都有 ESC-001",
+      "ok": true,
+      "blocked": false,
+      "actual": "INST-001,INST-002"
+    },
+    {
+      "text": "Then②：提示「请加 --instance」（期望含 \"请加 --instance\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级号 ESC-001 在多个实例中存在，请加 --instance\n"
+    },
+    {
+      "text": "Then②：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检②：所有实例 rev 不变（期望 \"[43,43]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"[43,43]\""
+    },
+    {
+      "text": "Then③：提示「实例 INST-002 当前不是挂起状态，不能处理升级」（期望含 \"实例 INST-002 当前不是挂起状态，不能处理升级\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-002 当前不是挂起状态，不能处理升级\n"
+    },
+    {
+      "text": "Then③：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检③：所有实例 rev 不变（期望 \"[43,43]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"[43,43]\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch escalate resolve ESC-001 --instance INST-001 --decision fail（升级不存在）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "fail",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-a",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 1476,
+      "stdout": "未找到升级 ESC-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run code-loop rounds-exceeded（INST-001）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo1",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 14617,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-26370-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run code-loop rounds-exceeded（INST-002）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo2",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 12605,
+      "stdout": "实例 INST-002 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-26530-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-002 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：orch escalate list --instance INST-002 查看升级；orch escalate resolve ESC-nnn --instance INST-002 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-002\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch escalate resolve ESC-001 --decision fail（不带 --instance，歧义）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "fail"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 309,
+      "stdout": "升级号 ESC-001 在多个实例中存在，请加 --instance\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run code-loop rounds-exceeded（母版 INST-001 挂起）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo1",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 14550,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-26692-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch escalate resolve ESC-001 --instance INST-002 --decision fail（INST-002 非挂起）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "fail",
+        "--instance",
+        "INST-002"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 342,
+      "stdout": "实例 INST-002 当前不是挂起状态，不能处理升级\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-a",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 335,
+      "stdout": "核心已停止（pid 26309，运行 45s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 310,
+      "stdout": "核心已停止（pid 26342，运行 43s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 312,
+      "stdout": "核心已停止（pid 26665，运行 15s）\n",
+      "stderr": ""
+    }
+  ]
+}

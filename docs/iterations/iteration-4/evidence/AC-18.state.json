@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-b830eea85ab8b386",
+  "createdAt": "2026-11-08T22:33:29.881Z",
+  "updatedAt": "2026-11-08T22:33:50.958Z",
+  "state": "completed",
+  "stateSince": "2026-11-08T22:33:50.938Z",
+  "template": "task-loop",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-18/demo",
+  "task": "写发布说明，产物：release-notes.md",
+  "halted": false,
+  "rev": 34,
+  "counters": {
+    "eventSeq": 39,
+    "runCount": 1,
+    "dispatchCount": 3
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "researcher",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T22:33:41.637Z",
+      "startedAt": "2026-11-08T22:33:31.944Z",
+      "roundStartedAt": "2026-11-08T22:33:31.944Z",
+      "endedAt": "2026-11-08T22:33:36.177Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-23681-1",
+      "artifactRefs": [
+        {
+          "ref": "artifacts/reports/research-notes.v1.md",
+          "bytes": 35,
+          "sha256": "dda5826734a1a09a21e5f1949c5445ea473905b3690274247e68a84d85abf1d6",
+          "verifiedAt": "2026-11-08T22:33:36.177Z"
+        }
+      ],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": [
+        {
+          "round": 1,
+          "ref": "artifacts/reports/research-notes.v1.md",
+          "sha256": "dda5826734a1a09a21e5f1949c5445ea473905b3690274247e68a84d85abf1d6",
+          "bytes": 35,
+          "verifiedAt": "2026-11-08T22:33:36.177Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "writer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T22:33:47.108Z",
+      "startedAt": "2026-11-08T22:33:37.078Z",
+      "roundStartedAt": "2026-11-08T22:33:37.078Z",
+      "endedAt": "2026-11-08T22:33:43.552Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-23749-1",
+      "artifactRefs": [
+        {
+          "ref": "artifacts/docs/release-notes.v1.md",
+          "bytes": 38,
+          "sha256": "65de364efde8d2080b543b3d181bfebc949a1da158b530806aa333de5fe8df2c",
+          "verifiedAt": "2026-11-08T22:33:43.552Z"
+        }
+      ],
+      "reviewReason": null,
+      "review": null,
+      "artifactHistory": [
+        {
+          "round": 1,
+          "ref": "artifacts/docs/release-notes.v1.md",
+          "sha256": "65de364efde8d2080b543b3d181bfebc949a1da158b530806aa333de5fe8df2c",
+          "bytes": 38,
+          "verifiedAt": "2026-11-08T22:33:43.552Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-003",
+      "roleId": "reviewer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T22:33:49.863Z",
+      "startedAt": "2026-11-08T22:33:44.979Z",
+      "roundStartedAt": "2026-11-08T22:33:44.979Z",
+      "endedAt": "2026-11-08T22:33:50.242Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-23839-1",
+      "artifactRefs": [],
+      "reviewReason": null,
+      "review": {
+        "decision": "pass",
+        "defectCount": 0,
+        "reviewPath": "out/review.json",
+        "artifact": "artifacts/docs/release-notes.v1.md",
+        "readAt": "2026-11-08T22:33:49.764Z",
+        "defects": [],
+        "revisionRequirement": "请按缺陷清单逐条修改后交出新版本"
+      },
+      "artifactHistory": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-23681-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:33:41.637Z",
+      "createdAt": "2026-11-08T22:33:33.342Z",
+      "lastEventAt": "2026-11-08T22:33:34.444Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-18/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-23749-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:33:47.108Z",
+      "createdAt": "2026-11-08T22:33:38.827Z",
+      "lastEventAt": "2026-11-08T22:33:42.264Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-18/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-23839-1",
+      "nodeId": "T-003",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:33:50.718Z",
+      "createdAt": "2026-11-08T22:33:46.214Z",
+      "lastEventAt": "2026-11-08T22:33:47.441Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-18/demo/out/review.json",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-08T22:33:36.672Z",
+      "deliveredAt": "2026-11-08T22:33:41.270Z",
+      "acceptedAt": "2026-11-08T22:33:41.637Z",
+      "consumedAt": "2026-11-08T22:33:43.571Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 367,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "artifacts/reports/research-notes.v1.md"
+        ],
+        "output": "artifacts/docs/release-notes.v1.md",
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 1,
+      "fromNodeId": "T-001",
+      "toNodeId": "T-002",
+      "retestRequirement": null,
+      "deliveryAttempts": 2,
+      "pendingAt": "2026-11-08T22:33:40.342Z",
+      "expiredAt": null,
+      "lastError": "mock-host: upstream model request failed (code 500)"
+    },
+    {
+      "handoffId": "HO-002",
+      "edge": {
+        "from": "T-002",
+        "to": "T-003",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-08T22:33:44.540Z",
+      "deliveredAt": "2026-11-08T22:33:46.561Z",
+      "acceptedAt": "2026-11-08T22:33:47.108Z",
+      "consumedAt": "2026-11-08T22:33:50.242Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 547,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "artifacts/docs/release-notes.v1.md"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 1,
+      "fromNodeId": "T-002",
+      "toNodeId": "T-003",
+      "retestRequirement": null,
+      "deliveryAttempts": 1,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    }
+  ],
+  "escalations": [],
+  "artifactStem": "release-notes"
+}

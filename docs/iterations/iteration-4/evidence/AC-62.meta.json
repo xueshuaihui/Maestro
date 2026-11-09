@@ -1,0 +1,32 @@
+{
+  "ac": "AC-62",
+  "title": "多节点审批拒绝走既有执行失败路径",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:47:25.299Z",
+  "finishedAt": "2026-11-08T22:47:31.598Z",
+  "durationMs": 6299,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-62",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-62"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-62",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 13,
+  "notes": []
+}

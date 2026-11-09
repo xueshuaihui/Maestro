@@ -1,10 +1,11 @@
 // 交接包状态推导。
 //
-// 硬约束（requirement 2.5 / AC-19 / AC-24 / BR-15）：
+// 硬约束（requirement 2.5 / AC-19 / AC-24 / BR-15 / I1.4 D-2 / D-4）：
 // - accepted 的唯一入口是 observeTurnEvent，且 name ∈ TURN_UPDATES；
 // - 噪声帧（usage_update / available_commands_update）即便先到也不改变状态；
-// - 本迭代禁止任何 TTL / 定时器 / 超时判 expired —— expired 零产生路径；
-// - rejected 的三种原因必须可区分（AC-11 要求“已撤回”不能与“目标拒绝”混为一条）。
+// - 本层禁止任何 TTL / 定时器 / 超时判 expired —— expired 只由投递层显式调用；
+// - rejected 的四种原因必须可区分（AC-11 要求“已撤回”不能与“目标拒绝”混为一条）；
+// - 投递失败先回落 pending（delivered → pending），重试耗尽才 expired。
 //
 // 适配器不认识核心：emit 由调用方注入，这里只产出与 events.jsonl 同构的迁移描述。
 
@@ -20,13 +21,19 @@ export const HANDOFF_STATES = [
   'expired',
 ];
 
-export const REJECT_REASONS = ['target_rejected', 'permission_denied', 'withdrawn'];
+export const REJECT_REASONS = [
+  'target_rejected',
+  'permission_denied',
+  'withdrawn',
+  'invalid_payload',
+  'delivery_failed',
+];
 
 const LEGAL = {
-  created: ['delivered'],
-  delivered: ['accepted', 'rejected'],
+  created: ['delivered', 'rejected'],
+  delivered: ['accepted', 'rejected', 'pending'],
   accepted: ['consumed', 'rejected'],
-  pending: ['delivered', 'expired'], // 本迭代无 pending 产生路径
+  pending: ['delivered', 'expired', 'rejected'],
   consumed: [],
   rejected: [],
   expired: [],
@@ -67,10 +74,15 @@ export function createHandoffTracker({
     acceptedAt: null,
     consumedAt: null,
     rejectedAt: null,
+    pendingAt: null,
+    expiredAt: null,
   };
   let acceptedSignal = null;
   let ambiguityWindowMs = null;
   let rejectReason = null;
+  // 投递尝试次数：调用方在每次 adapter.prompt 之前自增并传入（首次成功 = 1）。
+  let deliveryAttempts = 0;
+  let lastError = null;
 
   const at = (atMs) => (Number.isFinite(atMs) ? atMs : clock());
   const iso = (ms) => (ms === null || ms === undefined ? null : new Date(ms).toISOString());
@@ -121,14 +133,71 @@ export function createHandoffTracker({
     return { ok: true, state: 'created', createdAt: iso(createdAt) };
   }
 
-  function delivered({ atMs } = {}) {
+  function delivered({ atMs, attempt } = {}) {
     if (state === 'delivered') {
       return { ok: true, state, deliveredAt: iso(timestamps.deliveredAt), duplicate: true };
     }
     if (!LEGAL[state]?.includes('delivered')) return illegal(state, 'delivered');
     timestamps.deliveredAt = at(atMs);
-    apply('delivered', 'handoff.delivered', { atMs: timestamps.deliveredAt }, timestamps.deliveredAt);
-    return { ok: true, state: 'delivered', deliveredAt: iso(timestamps.deliveredAt) };
+    if (Number.isFinite(attempt)) deliveryAttempts = attempt;
+    apply(
+      'delivered',
+      'handoff.delivered',
+      Number.isFinite(attempt)
+        ? { atMs: timestamps.deliveredAt, attempt }
+        : { atMs: timestamps.deliveredAt },
+      timestamps.deliveredAt,
+    );
+    return {
+      ok: true,
+      state: 'delivered',
+      deliveredAt: iso(timestamps.deliveredAt),
+      deliveryAttempts,
+    };
+  }
+
+  /**
+   * 投递失败回落（delivered → pending）或再次失败时的字段更新（pending → pending）。
+   * 每一次失败尝试都要落一条 `handoff.pending`（D-4.4），因此状态不变时也发事件。
+   */
+  function pending({ atMs, attempt, lastError: error } = {}) {
+    if (state !== 'delivered' && state !== 'pending') return illegal(state, 'pending');
+    const atMsValue = at(atMs);
+    timestamps.pendingAt = atMsValue;
+    if (Number.isFinite(attempt)) deliveryAttempts = attempt;
+    if (error !== undefined) lastError = error ?? null;
+    apply('pending', 'handoff.pending', { atMs: atMsValue, deliveryAttempts, lastError }, atMsValue);
+    return {
+      ok: true,
+      state: 'pending',
+      pendingAt: iso(timestamps.pendingAt),
+      deliveryAttempts,
+      lastError,
+    };
+  }
+
+  /** 重试耗尽（pending → expired）：写 expiredAt，保留尝试次数与最后错误。 */
+  function expired({ atMs, attempts } = {}) {
+    if (state === 'expired') {
+      return { ok: true, state, expiredAt: iso(timestamps.expiredAt), duplicate: true };
+    }
+    if (!LEGAL[state]?.includes('expired')) return illegal(state, 'expired');
+    const atMsValue = at(atMs);
+    timestamps.expiredAt = atMsValue;
+    if (Number.isFinite(attempts)) deliveryAttempts = attempts;
+    apply(
+      'expired',
+      'handoff.expired',
+      { atMs: atMsValue, deliveryAttempts, lastError },
+      atMsValue,
+    );
+    return {
+      ok: true,
+      state: 'expired',
+      expiredAt: iso(timestamps.expiredAt),
+      deliveryAttempts,
+      lastError,
+    };
   }
 
   // accepted 的唯一入口：只认 6 类 turn 内事件（严格白名单）
@@ -203,12 +272,18 @@ export function createHandoffTracker({
       ambiguityWindowMs,
       rejectReason,
       createdMeta,
+      deliveryAttempts,
+      pendingAt: iso(timestamps.pendingAt),
+      expiredAt: iso(timestamps.expiredAt),
+      lastError,
     };
   }
 
   return {
     created,
     delivered,
+    pending,
+    expired,
     observeTurnEvent,
     consumed,
     rejected,

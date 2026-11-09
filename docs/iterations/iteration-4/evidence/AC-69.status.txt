@@ -1,0 +1,40 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop backflow cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-69 exit=0 14744ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-34446-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 2 轮 · 耗时 9s
+节点 T-002 测试 已完成 · 第 2 轮 · 耗时 9s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:48:54
+交接包 HO-001  开发→测试  已投递   06:48:56
+交接包 HO-001  开发→测试  已接受   06:48:56
+交接包 HO-001  开发→测试  已完成   06:48:57
+交接包 HO-002  测试→开发（回流）  已构造   06:48:58
+交接包 HO-002  测试→开发（回流）  已投递   06:48:59
+交接包 HO-002  测试→开发（回流）  已接受   06:48:59
+交接包 HO-002  测试→开发（回流）  已完成   06:49:00
+交接包 HO-003  开发→测试（复测）  已构造   06:49:01
+交接包 HO-003  开发→测试（复测）  已投递   06:49:02
+交接包 HO-003  开发→测试（复测）  已接受   06:49:02
+交接包 HO-003  开发→测试（复测）  已完成   06:49:03
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-69 exit=0 304ms
+核心已停止（pid 34419，运行 14s）
+

@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-d0dd975adf3fc98e",
+  "createdAt": "2026-11-08T22:38:45.358Z",
+  "updatedAt": "2026-11-08T22:38:48.843Z",
+  "state": "completed",
+  "stateSince": "2026-11-08T22:38:48.624Z",
+  "template": "single",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-31/demo",
+  "task": "写下说明",
+  "halted": false,
+  "rev": 14,
+  "counters": {
+    "eventSeq": 19,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "worker",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T22:38:48.464Z",
+      "startedAt": "2026-11-08T22:38:45.359Z",
+      "roundStartedAt": "2026-11-08T22:38:45.359Z",
+      "endedAt": "2026-11-08T22:38:48.814Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-27306-1",
+      "artifactRefs": [
+        {
+          "ref": "note.md",
+          "absPath": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-31/demo/note.md",
+          "declared": false,
+          "exists": true,
+          "bytes": 15,
+          "sha256": null,
+          "verifiedAt": "2026-11-08T22:38:48.422Z"
+        }
+      ]
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-27306-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:38:48.813Z",
+      "createdAt": "2026-11-08T22:38:45.975Z",
+      "lastEventAt": "2026-11-08T22:38:47.844Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-31/demo/note.md",
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": null,
+      "state": "consumed",
+      "createdAt": "2026-11-08T22:38:46.325Z",
+      "deliveredAt": "2026-11-08T22:38:46.486Z",
+      "acceptedAt": "2026-11-08T22:38:46.710Z",
+      "consumedAt": "2026-11-08T22:38:48.567Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 224,
+      "defects": [],
+      "note": null
+    }
+  ],
+  "escalations": [],
+  "approvals": [
+    {
+      "approvalId": "APR-001",
+      "instanceId": "INST-001",
+      "nodeId": "T-001",
+      "sessionId": "mock-sess-27306-1",
+      "action": "write",
+      "toolCallId": "call_mock_27306_1",
+      "state": "approved",
+      "createdAt": "2026-11-08T22:38:46.719Z",
+      "resolvedAt": "2026-11-08T22:38:47.520Z",
+      "resolution": "allow"
+    }
+  ]
+}

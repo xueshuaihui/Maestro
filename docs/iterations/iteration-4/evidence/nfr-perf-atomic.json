@@ -1,0 +1,25 @@
+{
+  "nfr": "NFR-05",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "writes": [
+    {
+      "target": "status.md",
+      "ms": 858.94,
+      "bytes": 311
+    },
+    {
+      "target": "inbox/HO-001.json",
+      "ms": 805.627,
+      "bytes": 86
+    }
+  ],
+  "assertions": [
+    "整份替换",
+    "目标可读",
+    "JSON 可解析",
+    "无新 tmp 残留",
+    "覆盖写完整"
+  ],
+  "note": "确定性结构断言；耗时仅作证据落盘，不设墙钟阈值（避免 §7.2 白名单同类负载红）"
+}

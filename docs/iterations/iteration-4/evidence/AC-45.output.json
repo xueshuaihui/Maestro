@@ -1,0 +1,82 @@
+{
+  "ac": "AC-45",
+  "title": "`attach` 找不到会话",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：项目根没有 SES-999",
+      "ok": true,
+      "blocked": false,
+      "actual": ""
+    },
+    {
+      "text": "Then：输出「未找到会话 SES-999」（期望 \"未找到会话 SES-999\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"未找到会话 SES-999\""
+    },
+    {
+      "text": "Then：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：没有状态写入（不创建实例）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：没有状态写入（实例目录集合前后逐字一致）（期望 \"[]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"[]\""
+    },
+    {
+      "text": "机检：没有状态写入（输出不含已附着会话行）（期望不含 \"已附着会话\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "未找到会话 SES-999\n"
+    },
+    {
+      "text": "机检：没有状态写入（输出不含审批行）（期望不含 \"审批 APR-\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "未找到会话 SES-999\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch attach SES-999",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "attach",
+        "SES-999"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-45",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 3000,
+      "stdout": "未找到会话 SES-999\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 289,
+      "stdout": "核心已停止（pid 41806，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

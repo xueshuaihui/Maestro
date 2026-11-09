@@ -1,0 +1,221 @@
+{
+  "ac": "AC-14",
+  "title": "校验失败时零派发且原因可见",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：实例挂起 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检：交接包以 rejected 出现",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"id\":\"HO-001\",\"state\":\"rejected\"}]"
+    },
+    {
+      "text": "机检：rejectReason === invalid_payload（期望 \"invalid_payload\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"invalid_payload\""
+    },
+    {
+      "text": "机检：events 有 handoff.rejected",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,verification.passed,run.completed,handoff.rejected,escalation.created,state.change,state.change,core.suspend"
+    },
+    {
+      "text": "机检：events 有 escalation.created",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,verification.passed,run.completed,handoff.rejected,escalation.created,state.change,state.change,core.suspend"
+    },
+    {
+      "text": "机检：escalations[0].reasonCode（期望 \"handoff_invalid\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"handoff_invalid\""
+    },
+    {
+      "text": "机检：node.dispatch 只有入口一条（零新派发）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：handoffs 无 created 记录",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"rejected\"]"
+    },
+    {
+      "text": "Then：交接包行显示已拒绝（内容不合规）（期望含 \"已拒绝\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：交接包行显示「内容不合规」原因（期望含 \"内容不合规\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：升级块给出节点（期望含 \"节点：T-001 开发\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：升级块给出轮次（期望含 \"第 1 轮\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：升级块给出原因（期望含 \"原因：交接包 HO-001 内容不合规：缺少证据引用\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：升级块给出下一步（期望含 \"下一步：orch escalate list\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：日志里能看到拒绝事件（期望含 \"交接被拒\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n[#1] 06:20:03  实例 INST-001  已创建 → 运行中  原因 开始运行\n[#2] 06:20:03  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮\n[#3] 06:20:04  会话 mock-sess-13815-1  空闲 → 执行中  原因 会话状态\n[#4] 06:20:04  会话 mock-sess-13815-1  执行中 → 执行中（tool_call）  原因 会话状态\n[#5] 06:20:04  会话 mock-sess-13815-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态\n[#6] 06:20:05  会话 mock-sess-13815-1  执行中 → 等待下游  原因 产出已提交\n[#7] 06:20:05  节点 T-001  执行中 → 待校验  原因 产出已提交\n[#8] 06:20:05  节点 T-001  待校验 → 已完成  原因 核对通过\n[#9] 06:20:06  会话 mock-sess-13815-1  等待下游 → 空闲  原因 运行完成\n[#10] 06:20:06  交接包 HO-001  已拒绝  原因 交接被拒\n[#11] 06:20:06  升级 ESC-001  待处理  原因 创建升级\n[#12] 06:20:06  节点 T-001  已完成 → 已升级  原因 状态变化\n[#13] 06:20:06  会话 mock-sess-13815-1  空闲 → 已升级  原因 状态变化\n[#14] 06:20:06  实例 INST-001  运行中 → 已挂起  原因 挂起\n"
+    },
+    {
+      "text": "Then：日志里能看到升级事件（期望含 \"创建升级\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n[#1] 06:20:03  实例 INST-001  已创建 → 运行中  原因 开始运行\n[#2] 06:20:03  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮\n[#3] 06:20:04  会话 mock-sess-13815-1  空闲 → 执行中  原因 会话状态\n[#4] 06:20:04  会话 mock-sess-13815-1  执行中 → 执行中（tool_call）  原因 会话状态\n[#5] 06:20:04  会话 mock-sess-13815-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态\n[#6] 06:20:05  会话 mock-sess-13815-1  执行中 → 等待下游  原因 产出已提交\n[#7] 06:20:05  节点 T-001  执行中 → 待校验  原因 产出已提交\n[#8] 06:20:05  节点 T-001  待校验 → 已完成  原因 核对通过\n[#9] 06:20:06  会话 mock-sess-13815-1  等待下游 → 空闲  原因 运行完成\n[#10] 06:20:06  交接包 HO-001  已拒绝  原因 交接被拒\n[#11] 06:20:06  升级 ESC-001  待处理  原因 创建升级\n[#12] 06:20:06  节点 T-001  已完成 → 已升级  原因 状态变化\n[#13] 06:20:06  会话 mock-sess-13815-1  空闲 → 已升级  原因 状态变化\n[#14] 06:20:06  实例 INST-001  运行中 → 已挂起  原因 挂起\n"
+    },
+    {
+      "text": "Then：没有「执行中」的假会话（期望不含 \"会话 执行中\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "机检：sessions.length 不增加（仍为入口 1 个）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：counters.dispatchCount 不增加（仍为 1）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：events 没有额外的 node.dispatch（拒绝后）（期望不含 \"node.dispatch\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "handoff.rejected,escalation.created,state.change,state.change,core.suspend"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run（AC-10 坏包场景，前台挂起收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 5977,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-13815-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "call-seam test.handoff --mutate no-evidence",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14",
+        "--call",
+        "test.handoff",
+        "--instance",
+        "INST-001",
+        "--node",
+        "T-001",
+        "--mutate",
+        "no-evidence"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 232,
+      "stdout": "{\"ok\":true,\"registered\":true,\"instanceId\":\"INST-001\",\"nodeId\":\"T-001\",\"edgeKind\":null,\"round\":null,\"mutate\":\"no-evidence\",\"snapshot\":null}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1287,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001 --events",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001",
+        "--events"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 299,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:20:06\n交接包 HO-001  开发→测试  已拒绝   06:20:06  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n[#1] 06:20:03  实例 INST-001  已创建 → 运行中  原因 开始运行\n[#2] 06:20:03  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮\n[#3] 06:20:04  会话 mock-sess-13815-1  空闲 → 执行中  原因 会话状态\n[#4] 06:20:04  会话 mock-sess-13815-1  执行中 → 执行中（tool_call）  原因 会话状态\n[#5] 06:20:04  会话 mock-sess-13815-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态\n[#6] 06:20:05  会话 mock-sess-13815-1  执行中 → 等待下游  原因 产出已提交\n[#7] 06:20:05  节点 T-001  执行中 → 待校验  原因 产出已提交\n[#8] 06:20:05  节点 T-001  待校验 → 已完成  原因 核对通过\n[#9] 06:20:06  会话 mock-sess-13815-1  等待下游 → 空闲  原因 运行完成\n[#10] 06:20:06  交接包 HO-001  已拒绝  原因 交接被拒\n[#11] 06:20:06  升级 ESC-001  待处理  原因 创建升级\n[#12] 06:20:06  节点 T-001  已完成 → 已升级  原因 状态变化\n[#13] 06:20:06  会话 mock-sess-13815-1  空闲 → 已升级  原因 状态变化\n[#14] 06:20:06  实例 INST-001  运行中 → 已挂起  原因 挂起\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 309,
+      "stdout": "核心已停止（pid 13859，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

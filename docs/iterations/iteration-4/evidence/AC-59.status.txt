@@ -1,0 +1,89 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=MAESTRO_FAULT=workspace_status_write:fail orch run code-loop pass cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-59 exit=0 7863ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-32943-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:46:46
+交接包 HO-001  开发→测试  已投递   06:46:47
+交接包 HO-001  开发→测试  已接受   06:46:47
+交接包 HO-001  开发→测试  已完成   06:46:49
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-59 exit=0 286ms
+实例 INST-001 · 已完成 · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+会话 空闲
+交接包 HO-001  开发→测试  已构造   06:46:46
+交接包 HO-001  开发→测试  已投递   06:46:47
+交接包 HO-001  开发→测试  已接受   06:46:47
+交接包 HO-001  开发→测试  已完成   06:46:49
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001
+# label=orch instance log INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-59 exit=0 318ms
+[#1] 06:46:43  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#2] 06:46:44  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#3] 06:46:44  实例 INST-001  已创建 → 运行中  原因 开始运行
+[#4] 06:46:44  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#5] 06:46:44  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮
+[#6] 06:46:45  会话 mock-sess-32943-1  空闲 → 执行中  原因 会话状态
+[#7] 06:46:45  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#8] 06:46:45  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#9] 06:46:45  会话 mock-sess-32943-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#10] 06:46:45  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#11] 06:46:45  会话 mock-sess-32943-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#12] 06:46:45  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#13] 06:46:45  会话 mock-sess-32943-1  执行中 → 等待下游  原因 产出已提交
+[#14] 06:46:45  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#15] 06:46:45  节点 T-001  执行中 → 待校验  原因 产出已提交
+[#16] 06:46:45  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#17] 06:46:46  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#18] 06:46:46  节点 T-001  待校验 → 已完成  原因 核对通过
+[#19] 06:46:46  会话 mock-sess-32943-1  等待下游 → 空闲  原因 运行完成
+[#20] 06:46:46  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#21] 06:46:46  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#22] 06:46:46  交接包 HO-001  已构造  原因 构造交接
+[#23] 06:46:46  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#24] 06:46:46  节点 T-002  派发 → 执行中  原因 派发 · 第 1 轮
+[#25] 06:46:47  交接包 HO-001  handoff.inboxed  原因 已入信箱
+[#26] 06:46:47  交接包 HO-001  已构造 → 已投递  原因 交接已投递
+[#27] 06:46:47  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#28] 06:46:47  会话 mock-sess-32966-1  空闲 → 执行中  原因 会话状态
+[#29] 06:46:48  交接包 HO-001  已投递 → 已接受  原因 首个事件
+[#30] 06:46:48  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#31] 06:46:48  会话 mock-sess-32966-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#32] 06:46:48  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#33] 06:46:48  会话 mock-sess-32966-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#34] 06:46:48  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#35] 06:46:48  会话 mock-sess-32966-1  执行中 → 等待下游  原因 产出已提交
+[#36] 06:46:48  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#37] 06:46:48  节点 T-002  执行中 → 待校验  原因 产出已提交
+[#38] 06:46:48  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#39] 06:46:48  节点 T-002  verdict.read  原因 读取判定
+[#40] 06:46:49  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#41] 06:46:49  节点 T-002  待校验 → 已完成  原因 核对通过
+[#42] 06:46:49  交接包 HO-001  已接受 → 已完成  原因 产出核对通过
+[#43] 06:46:49  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#44] 06:46:49  会话 mock-sess-32966-1  等待下游 → 空闲  原因 运行完成
+[#45] 06:46:49  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#46] 06:46:49  实例 INST-001  workspace.status_write_failed  原因 状态页写入失败
+[#47] 06:46:49  实例 INST-001  运行中 → 已完成  原因 运行完成
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-59 exit=0 312ms
+核心已停止（pid 32913，运行 7s）
+

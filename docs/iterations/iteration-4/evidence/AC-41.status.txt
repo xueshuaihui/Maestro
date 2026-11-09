@@ -1,0 +1,139 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（已完成的编码闭环） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-41 exit=0 8338ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-28818-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:40:55
+交接包 HO-001  开发→测试  已投递   06:40:56
+交接包 HO-001  开发→测试  已接受   06:40:56
+交接包 HO-001  开发→测试  已完成   06:40:57
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance graph INST-001 --format json
+# label=orch instance graph INST-001 --format json cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-41 exit=0 301ms
+{
+  "graphVersion": 1,
+  "instanceId": "INST-001",
+  "template": "code-loop",
+  "state": "completed",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": "开发",
+      "roleId": "developer",
+      "state": "done",
+      "round": 1
+    },
+    {
+      "nodeId": "T-002",
+      "title": "测试",
+      "roleId": "tester",
+      "state": "done",
+      "round": 1
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward"
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow"
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest"
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "state": "consumed",
+      "round": 1
+    }
+  ],
+  "escalations": [],
+  "approvals": [],
+  "current": null
+}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance graph INST-001 --format json
+# label=orch instance graph INST-001 --format json（复跑） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-41 exit=0 275ms
+{
+  "graphVersion": 1,
+  "instanceId": "INST-001",
+  "template": "code-loop",
+  "state": "completed",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": "开发",
+      "roleId": "developer",
+      "state": "done",
+      "round": 1
+    },
+    {
+      "nodeId": "T-002",
+      "title": "测试",
+      "roleId": "tester",
+      "state": "done",
+      "round": 1
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward"
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow"
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest"
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "state": "consumed",
+      "round": 1
+    }
+  ],
+  "escalations": [],
+  "approvals": [],
+  "current": null
+}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-41 exit=0 315ms
+核心已停止（pid 28790，运行 8s）
+

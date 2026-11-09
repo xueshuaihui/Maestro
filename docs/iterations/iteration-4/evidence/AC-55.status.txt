@@ -1,0 +1,66 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance OLD-001
+# label=orch status --instance OLD-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-55 exit=0 1258ms
+实例 OLD-001 · 已完成
+节点 已完成 · 耗时 11m55s
+会话 空闲
+交接包 HO-001  已构造   17:00:04
+交接包 HO-001  已投递   17:00:04
+交接包 HO-001  已接受   17:00:05
+交接包 HO-001  已完成   17:00:05
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance status OLD-001
+# label=orch instance status OLD-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-55 exit=0 364ms
+实例 OLD-001 · 已完成
+节点 已完成 · 耗时 11m55s
+会话 空闲
+交接包 HO-001  已构造   17:00:04
+交接包 HO-001  已投递   17:00:04
+交接包 HO-001  已接受   17:00:05
+交接包 HO-001  已完成   17:00:05
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log OLD-001
+# label=orch instance log OLD-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-55 exit=0 320ms
+17:00:00  实例 OLD-001  已创建 → 运行中  原因 run.started
+17:12:00  节点 T-001  执行中 → 待校验  原因 output.submitted
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance graph OLD-001 --format json
+# label=orch instance graph OLD-001 --format json cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-55 exit=0 281ms
+{
+  "graphVersion": 1,
+  "instanceId": "OLD-001",
+  "template": "single",
+  "state": "completed",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": null,
+      "roleId": "worker",
+      "state": "done",
+      "round": 0
+    }
+  ],
+  "edges": [],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "from": null,
+      "to": null,
+      "kind": "forward",
+      "state": "consumed",
+      "round": 0
+    }
+  ],
+  "escalations": [],
+  "approvals": [],
+  "current": null
+}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-55 exit=0 301ms
+核心已停止（pid 31868，运行 1s）
+

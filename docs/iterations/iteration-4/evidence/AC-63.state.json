@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-2f6b1260620fc29e",
+  "createdAt": "2026-11-08T22:47:35.156Z",
+  "updatedAt": "2026-11-08T22:47:37.062Z",
+  "state": "failed",
+  "stateSince": "2026-11-08T22:47:36.848Z",
+  "template": "single",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-63/demo",
+  "task": "写下说明",
+  "halted": false,
+  "rev": 6,
+  "counters": {
+    "eventSeq": 7,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": {
+      "code": -32603,
+      "message": "mock-host: upstream model request failed (code 500)",
+      "at": "2026-11-08T22:47:36.640Z"
+    },
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "worker",
+      "round": 1,
+      "state": "failed",
+      "stateSince": "2026-11-08T22:47:36.687Z",
+      "startedAt": "2026-11-08T22:47:35.156Z",
+      "roundStartedAt": "2026-11-08T22:47:35.156Z",
+      "endedAt": "2026-11-08T22:47:36.999Z",
+      "failure": {
+        "code": "HOST_ERROR",
+        "message": "mock-host: upstream model request failed (code 500)"
+      },
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-33551-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-33551-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:47:37.032Z",
+      "createdAt": "2026-11-08T22:47:35.738Z",
+      "lastEventAt": "2026-11-08T22:47:35.738Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": null,
+      "state": "rejected",
+      "createdAt": "2026-11-08T22:47:36.102Z",
+      "deliveredAt": "2026-11-08T22:47:36.232Z",
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": "2026-11-08T22:47:36.999Z",
+      "rejectReason": "target_rejected",
+      "wakeConsumedAt": null,
+      "acceptedSignal": null,
+      "ambiguityWindowMs": null,
+      "defects": [],
+      "note": null
+    }
+  ],
+  "escalations": []
+}

@@ -1,0 +1,32 @@
+{
+  "ac": "AC-10",
+  "title": "缺证据引用被拒绝并升级",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:18:50.570Z",
+  "finishedAt": "2026-11-08T22:18:58.954Z",
+  "durationMs": 8384,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-10",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-10",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 12,
+  "notes": []
+}

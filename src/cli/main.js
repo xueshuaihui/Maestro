@@ -15,6 +15,7 @@ import path from 'node:path';
 
 import { createClient as createDefaultClient } from '../daemon/client.js';
 import { corruptPath } from '../persistence/paths.js';
+import { getGraph } from '../templates/index.js';
 import * as render from './render.js';
 
 /** 会话行刷新间隔（AC-03：时长递增；NFR-02：状态变化 1s 内反映）。 */
@@ -48,9 +49,30 @@ const PREFLIGHT_CODES = new Set([
  */
 const CONNECTION_LOST_CODES = new Set(['IPC_CLOSED', 'IPC_TIMEOUT', 'IPC_BAD_FRAME', 'CORE_NOT_RUNNING']);
 
-const COMMANDS = new Set(['run', 'status', 'cancel', 'core']);
-const BOOLEAN_FLAGS = new Set(['events']);
-const VALUE_FLAGS = new Set(['cwd', 'task', 'instance', 'project', 'generation', 'template', 'host']);
+/** 顶层命令表（M-9）：旧四条 + 六组新命令。 */
+const COMMANDS = new Set([
+  'run', 'status', 'cancel', 'core',
+  'instance', 'attach', 'escalate', 'approve', 'handoff', 'workflow',
+]);
+/** 两层命令表：第一层命令 → 合法子命令（§1.7）。 */
+const SUBS = Object.freeze({
+  core: ['stop'],
+  instance: ['status', 'log', 'graph'],
+  escalate: ['list', 'resolve'],
+  handoff: ['list', 'show'],
+  workflow: ['pause', 'resume', 'abort'],
+});
+const BOOLEAN_FLAGS = new Set(['events', 'all']);
+const VALUE_FLAGS = new Set([
+  'cwd', 'task', 'instance', 'project', 'generation', 'template', 'host',
+  'format', 'approval', 'decision',
+]);
+
+/** 取值白名单（AC-64）：校验在解析层完成，非法值退出 2 且不连核心、不写状态。 */
+const FORMAT_VALUES = Object.freeze(['text', 'json']);
+const APPROVAL_VALUES = Object.freeze(['allow', 'reject', 'hold']);
+const ESCALATE_DECISION_VALUES = Object.freeze(['pass', 'fail', 'retry']);
+const APPROVE_DECISION_VALUES = Object.freeze(['allow', 'deny']);
 
 // ---------------------------------------------------------------- 参数解析
 
@@ -58,7 +80,7 @@ const VALUE_FLAGS = new Set(['cwd', 'task', 'instance', 'project', 'generation',
  * 纯解析，不碰 IO —— 用法错误路径可以直接单测。
  *
  * @param {string[]} argv 不含 node 与脚本路径
- * @returns {{ok:true, command:string, sub:string|null, flags:object} | {ok:false, code:'USAGE', message:string}}
+ * @returns {{ok:true, command:string, sub:string|null, positionals:string[], flags:object} | {ok:false, code:'USAGE', message:string}}
  */
 export function parseArgs(argv) {
   const tokens = Array.isArray(argv) ? [...argv] : [];
@@ -70,20 +92,18 @@ export function parseArgs(argv) {
     return usage(`未知命令：${command}`);
   }
 
-  let sub = null;
-  if (command === 'core') {
-    sub = tokens.shift() ?? null;
-    if (sub === null || sub.startsWith('--')) {
-      return usage('core 需要子命令：stop');
-    }
-  }
-
+  /** @type {string[]} */
+  const positionals = [];
   /** @type {Record<string, string|boolean>} */
   const flags = {};
   for (let i = 0; i < tokens.length; i += 1) {
     const token = tokens[i];
-    if (typeof token !== 'string' || !token.startsWith('--')) {
+    if (typeof token !== 'string') {
       return usage(`多余的参数：${token}`);
+    }
+    if (!token.startsWith('--')) {
+      positionals.push(token);
+      continue;
     }
 
     const eq = token.indexOf('=');
@@ -114,6 +134,41 @@ export function parseArgs(argv) {
     flags[key] = value;
   }
 
+  // 两层命令：第一个位置参数是子命令
+  let sub = null;
+  if (SUBS[command]) {
+    sub = positionals.shift() ?? null;
+    if (sub === null || !SUBS[command].includes(sub)) {
+      return usage(`${command} 需要子命令：${SUBS[command].join('|')}`);
+    }
+  }
+
+  // 取值校验（AC-64）：失败即用法错误，退出 2，不连核心、不写状态
+  if (typeof flags.format === 'string' && !FORMAT_VALUES.includes(flags.format)) {
+    return usage(`无法识别的参数：--format=${flags.format}（${FORMAT_VALUES.join('|')}）`);
+  }
+  if (typeof flags.approval === 'string' && !APPROVAL_VALUES.includes(flags.approval)) {
+    return usage(`无法识别的参数：--approval=${flags.approval}（${APPROVAL_VALUES.join('|')}）`);
+  }
+  if (typeof flags.decision === 'string') {
+    if (command === 'escalate' && !ESCALATE_DECISION_VALUES.includes(flags.decision)) {
+      return usage(`无法识别的参数：--decision=${flags.decision}（${ESCALATE_DECISION_VALUES.join('|')}）`);
+    }
+    if (command === 'approve' && !APPROVE_DECISION_VALUES.includes(flags.decision)) {
+      return usage(`无法识别的参数：--decision=${flags.decision}（${APPROVE_DECISION_VALUES.join('|')}）`);
+    }
+  }
+
+  // 位置参数形态（§1.7）：多余 / 缺失都在解析层挡掉
+  const rule = positionalRule(command, sub);
+  if (positionals.length > rule.max) return usage(`多余的参数：${positionals[rule.max]}`);
+  if (rule.exact !== undefined && positionals.length !== rule.exact) {
+    return usage(`${describeCommand(command, sub)} 需要一个值`);
+  }
+  if (rule.needsId && positionals.length === 0 && typeof flags.instance !== 'string') {
+    return usage(`${describeCommand(command, sub)} 需要一个值`);
+  }
+
   if (command === 'run') {
     if (typeof flags.cwd !== 'string') return usage('run 需要 --cwd <目录>');
     if (typeof flags.task !== 'string') return usage('run 需要 --task <说明>');
@@ -121,11 +176,32 @@ export function parseArgs(argv) {
   if (command === 'cancel' && typeof flags.instance !== 'string') {
     return usage('cancel 需要 --instance <实例号>');
   }
-  if (command === 'core' && sub !== 'stop') {
-    return usage(`未知的 core 子命令：${sub}`);
-  }
 
-  return { ok: true, command, sub, flags };
+  return { ok: true, command, sub, positionals, flags };
+}
+
+/** 各（命令, 子命令）的位置参数规则；`needsId` 允许 `--instance` 作为可替代写法（C-12）。 */
+function positionalRule(command, sub) {
+  switch (command) {
+    case 'attach':
+      return { max: 1, exact: 1 };
+    case 'approve':
+      return { max: 1, exact: 1 };
+    case 'instance':
+      return { max: 1, needsId: true };
+    case 'escalate':
+      return sub === 'resolve' ? { max: 1, exact: 1 } : { max: 0 };
+    case 'handoff':
+      return sub === 'show' ? { max: 1, exact: 1 } : { max: 0 };
+    case 'workflow':
+      return { max: 1, needsId: true };
+    default:
+      return { max: 0 };
+  }
+}
+
+function describeCommand(command, sub) {
+  return sub ? `${command} ${sub}` : command;
 }
 
 function usage(message) {
@@ -148,6 +224,7 @@ export function exitCodeFor(code) {
  *   now?: () => number,
  *   out?: (line: string) => void,
  *   createClient?: (root: string) => object,
+ *   waitForDetach?: () => Promise<void>,
  * }} [options]
  * @returns {Promise<number>} 0 成功 / 1 运行失败 / 2 用法错误 / 3 预检失败
  */
@@ -165,6 +242,7 @@ export async function main(argv, options = {}) {
     now: options.now ?? (() => Date.now()),
     out: options.out ?? defaultOut,
     createClient: options.createClient ?? ((root) => createDefaultClient({ root })),
+    waitForDetach: options.waitForDetach,
   };
 
   let code;
@@ -172,7 +250,13 @@ export async function main(argv, options = {}) {
     if (parsed.command === 'run') code = await runCommand(parsed.flags, ctx);
     else if (parsed.command === 'status') code = await statusCommand(parsed.flags, ctx);
     else if (parsed.command === 'cancel') code = await cancelCommand(parsed.flags, ctx);
-    else code = await coreCommand(parsed.sub, ctx);
+    else if (parsed.command === 'core') code = await coreCommand(parsed.sub, ctx);
+    else if (parsed.command === 'instance') code = await instanceCommand(parsed, ctx);
+    else if (parsed.command === 'attach') code = await attachCommand(parsed, ctx);
+    else if (parsed.command === 'escalate') code = await escalateCommand(parsed, ctx);
+    else if (parsed.command === 'approve') code = await approveCommand(parsed, ctx);
+    else if (parsed.command === 'handoff') code = await handoffCommand(parsed, ctx);
+    else code = await workflowCommand(parsed, ctx);
   } catch (error) {
     // 渲染层与 IPC 都不应该抛；真抛了也不能吞成“成功”。
     ctx.out(render.renderError({ code: 'UNKNOWN_ERROR', params: { raw: error?.message ?? String(error) } }));
@@ -195,6 +279,71 @@ async function flushStdout() {
   });
 }
 
+// ---------------------------------------------------------------- 公共读取工具
+
+/** 连接（与旧命令一致使用 `ensure:true`）；失败渲染错误并返回退出码，成功返回 null。 */
+async function connectOrError(client, out) {
+  const connected = await client.connect({ ensure: true });
+  if (!connected.ok) {
+    out(render.renderError({ code: connected.code, params: connected.params }));
+    return exitCodeFor(connected.code);
+  }
+  return null;
+}
+
+/** 命令级错误：文案全部取自 `COMMAND_ERROR`，退出码经 `exitCodeFor`。 */
+function commandError(out, code, params = {}) {
+  out(render.renderCommandError(code, params));
+  return exitCodeFor(code);
+}
+
+/** 只读：跨实例收集某类条目，并给每条打上 instanceId；同时带回实例快照供渲染查角色。 */
+async function collectEntries(client, field) {
+  const listed = await client.request('instance.list', {});
+  if (!listed.ok) return { ok: false, res: listed };
+  const items = listed.result?.items ?? [];
+  const snapshots = new Map();
+  const entries = [];
+  for (const item of items) {
+    if (!item?.readable) continue;
+    const res = await client.request('instance.get', { instanceId: item.instanceId }, { timeoutMs: 5000 });
+    if (!res.ok) continue;
+    snapshots.set(item.instanceId, res.result);
+    const list = Array.isArray(res.result?.[field]) ? res.result[field] : [];
+    for (const entry of list) {
+      entries.push({ ...entry, instanceId: entry?.instanceId ?? item.instanceId });
+    }
+  }
+  return { ok: true, snapshots, entries };
+}
+
+function renderCollectError(out, collected) {
+  out(render.renderError({ code: collected.res.code, params: collected.res.params ?? {} }));
+  return exitCodeFor(collected.res.code);
+}
+
+/** 稳定排序：先实例号、再编号（BR-43）。 */
+function byInstanceThenId(idKey) {
+  return (a, b) => {
+    const ia = String(a?.instanceId ?? '');
+    const ib = String(b?.instanceId ?? '');
+    if (ia !== ib) return ia < ib ? -1 : 1;
+    const ka = String(a?.[idKey] ?? '');
+    const kb = String(b?.[idKey] ?? '');
+    return ka < kb ? -1 : ka > kb ? 1 : 0;
+  };
+}
+
+/** 写类动作成功后统一回读一次完整快照，保证渲染字段齐全。 */
+async function fetchSnapshot(client, instanceId) {
+  const res = await client.request('instance.get', { instanceId }, { timeoutMs: 10_000 });
+  return res.ok ? res.result : null;
+}
+
+function templateOf(snapshot) {
+  return typeof snapshot?.template === 'string' && snapshot.template.length > 0 ? snapshot.template : 'single';
+}
+
 // ---------------------------------------------------------------- run
 
 async function runCommand(flags, ctx) {
@@ -207,6 +356,7 @@ async function runCommand(flags, ctx) {
   let lastKey = null;
   let lastLine = null;
   let lastPrintedAt = 0;
+  const printedApprovals = new Set();
 
   const stopWatching = () => {
     if (timer !== null) clearInterval(timer);
@@ -238,6 +388,8 @@ async function runCommand(flags, ctx) {
         ...(typeof flags.template === 'string' ? { template: flags.template } : {}),
         // `--host` 仅验收夹具注入用（附录 B-20），不进用户任务样例。
         ...(typeof flags.host === 'string' ? { hostId: flags.host } : {}),
+        // `--approval` 透传为发起策略（D-5.2 / run.start 白名单）。
+        ...(typeof flags.approval === 'string' ? { approvalPolicy: flags.approval } : {}),
       },
       { timeoutMs: CONNECT_HANDSHAKE_TIMEOUT_MS },
     );
@@ -286,6 +438,15 @@ async function runCommand(flags, ctx) {
 
     const printSnapshot = (snapshot) => {
       if (!snapshot) return;
+      // 等待期间新产生的待处理审批立即跟进一行（AC-37 / A-2 #2）；无审批旧流程逐字不变。
+      for (const approval of Array.isArray(snapshot.approvals) ? snapshot.approvals : []) {
+        if (approval?.state !== 'pending') continue;
+        const id = approval?.approvalId ?? '?';
+        if (printedApprovals.has(id)) continue;
+        printedApprovals.add(id);
+        out(render.renderApprovalLine(approval, snapshot));
+      }
+
       const nowMs = ctx.now();
       const stalled = snapshot.sessionStalled === true;
       const waiting = snapshot.session?.state === 'waiting_dependency';
@@ -356,6 +517,12 @@ async function runCommand(flags, ctx) {
 
     const snapshot = waited.result;
     const template = typeof snapshot?.template === 'string' ? snapshot.template : templateHint;
+
+    // 前台 `orch run` 遇暂停（D-7.9 / A-2 #6）：只打实例行 + 恢复提示，退出 0。
+    if (snapshot?.state === 'running' && snapshot?.paused === true && snapshot?.halted !== true) {
+      for (const line of render.renderRunTail({ ...snapshot, template }, { template })) out(line);
+      return EXIT_OK;
+    }
 
     // ⑦ 挂起 / 停止推进：按附录 A-4 立即收尾（不打印节点表其余行、交接包行与等待行，B-18）
     if (snapshot?.state === 'suspended' || snapshot?.halted === true) {
@@ -471,7 +638,7 @@ async function statusCommand(flags, ctx) {
     }
 
     const snapshot = res.result;
-    const template = typeof snapshot?.template === 'string' ? snapshot.template : 'single';
+    const template = templateOf(snapshot);
 
     // interrupted 时只打带停点的那一行（它已含实例号与状态），不重复实例行（C-7）。
     if (snapshot?.state === 'interrupted') {
@@ -489,6 +656,8 @@ async function statusCommand(flags, ctx) {
     const wait = render.renderHandoffWait(snapshot, ctx.now());
     if (wait) out(wait);
     for (const line of render.renderEscalationBlock(snapshot, { template })) out(line);
+    // 审批行在升级块之后按审批号逐条列出；无审批记录的旧流程逐字不变（A-2 #2 / AC-36）。
+    for (const line of render.renderApprovalLines(snapshot, { template })) out(line);
 
     if (flags.events === true) {
       const events = await client.request('instance.events', { instanceId }, { timeoutMs: 10_000 });
@@ -571,6 +740,358 @@ async function coreCommand(sub, ctx) {
       return EXIT_FAILED;
     }
     out(render.renderCoreStopped({ pid, startedAt }, ctx.now()));
+    return EXIT_OK;
+  } finally {
+    await client.close?.();
+  }
+}
+
+// ---------------------------------------------------------------- instance status|log|graph
+
+async function instanceCommand(parsed, ctx) {
+  const { sub, positionals, flags } = parsed;
+
+  // `instance status` 与 `orch status --instance` 逐字一致（AC-38）：直接复用同一 handler。
+  if (sub === 'status') {
+    return statusCommand({ instance: positionals[0] ?? flags.instance }, ctx);
+  }
+
+  const out = ctx.out;
+  const client = ctx.createClient(ctx.cwd);
+  try {
+    const connectErr = await connectOrError(client, out);
+    if (connectErr !== null) return connectErr;
+
+    const instanceId = positionals[0] ?? flags.instance;
+    const res = await client.request('instance.get', { instanceId }, { timeoutMs: 10_000 });
+    if (!res.ok) {
+      if (res.code === 'NOT_FOUND') {
+        out(render.renderInstanceMissing(instanceId));
+        return EXIT_FAILED;
+      }
+      out(render.renderError({ code: res.code, params: res.params ?? {} }));
+      return exitCodeFor(res.code);
+    }
+    const snapshot = res.result;
+    const template = templateOf(snapshot);
+
+    if (sub === 'log') {
+      const eventsRes = await client.request('instance.events', { instanceId }, { timeoutMs: 10_000 });
+      if (!eventsRes.ok) {
+        out(render.renderError({ code: eventsRes.code, params: eventsRes.params ?? {} }));
+        return exitCodeFor(eventsRes.code);
+      }
+      const list = [...(eventsRes.result?.events ?? [])].sort((a, b) => (a?.seq ?? 0) - (b?.seq ?? 0));
+      if (flags.format === 'json') {
+        out(render.renderLogJson(list));
+      } else if (list.length === 0) {
+        out(render.renderEmptyLine('event'));
+      } else {
+        for (const event of list) {
+          for (const line of render.renderEventLines(event, { template })) out(line);
+        }
+      }
+      return EXIT_OK;
+    }
+
+    // graph：`instance.get` + 模板定义在 CLI 侧组装（§1.9）；不写状态、不输出 rev/generatedAt。
+    const graph = getGraph(template) ?? { nodes: [], edges: [] };
+    if (flags.format === 'json') {
+      out(render.renderGraphJson(snapshot, graph));
+    } else {
+      for (const line of render.renderGraphText(snapshot, graph)) out(line);
+    }
+    return EXIT_OK;
+  } finally {
+    await client.close?.();
+  }
+}
+
+// ---------------------------------------------------------------- attach
+
+/**
+ * `orch attach <会话号>`（§1.8 / A-3）：订阅 + 增量轮询双通道，严格只读。
+ * 首屏打印该会话最近 20 条事件与待审批行；跟随期间只走 instance.events；
+ * Ctrl-C（或注入的 waitForDetach）清定时器、退订、打印脱离行，退出 0，不调任何写 RPC。
+ */
+async function attachCommand(parsed, ctx) {
+  const out = ctx.out;
+  const sessionId = parsed.positionals[0];
+  const client = ctx.createClient(ctx.cwd);
+  let timer = null;
+  let unsubscribe = () => {};
+
+  try {
+    const connectErr = await connectOrError(client, out);
+    if (connectErr !== null) return connectErr;
+
+    const located = await client.request('session.locate', { sessionId }, { timeoutMs: 10_000 });
+    if (!located.ok) {
+      if (located.code === 'NOT_FOUND' || located.code === 'SESSION_NOT_FOUND') {
+        return commandError(out, 'SESSION_NOT_FOUND', { id: sessionId });
+      }
+      return commandError(out, located.code, { id: sessionId, ...(located.params ?? {}) });
+    }
+
+    const { instanceId, nodeId } = located.result ?? {};
+    const snap = await client.request('instance.get', { instanceId }, { timeoutMs: 10_000 });
+    const snapshot = snap.ok ? snap.result : null;
+    const template = templateOf(snapshot);
+    out(render.renderAttachHeader({ sessionId, instanceId, nodeId }, snapshot));
+
+    // 待审批（AC-44）：紧跟一行审批信息
+    const approvals = await client.request('approval.list', { sessionId }, { timeoutMs: 10_000 });
+    if (approvals.ok) {
+      const list = Array.isArray(approvals.result?.approvals) ? approvals.result.approvals : [];
+      for (const approval of list) {
+        if (approval?.state === 'pending') out(render.renderApprovalLine(approval, snapshot, { template }));
+      }
+    }
+
+    let lastSeq = 0;
+    const printEvent = (event) => {
+      if (!event || event.objectId !== sessionId) return;
+      if (Number.isInteger(event.seq) && event.seq <= lastSeq) return;
+      for (const line of render.renderEventLines(event, { template })) out(line);
+      if (Number.isInteger(event.seq)) lastSeq = Math.max(lastSeq, event.seq);
+    };
+
+    // 首屏：该会话最近 20 条事件，版式与 `instance log` 共用 renderEventLines / formatClock。
+    const eventsRes = await client.request('instance.events', { instanceId }, { timeoutMs: 10_000 });
+    if (eventsRes.ok) {
+      const all = [...(eventsRes.result?.events ?? [])].sort((a, b) => (a?.seq ?? 0) - (b?.seq ?? 0));
+      const recent = all.filter((event) => event?.objectId === sessionId).slice(-20);
+      for (const event of recent) printEvent(event);
+      for (const event of all) {
+        if (Number.isInteger(event?.seq)) lastSeq = Math.max(lastSeq, event.seq);
+      }
+    }
+
+    // 跟随：订阅负责即时，500ms 轮询负责断线重连后的续读，二者都用同一去重口径。
+    unsubscribe = client.subscribe(instanceId, printEvent);
+    timer = setInterval(() => {
+      void (async () => {
+        const res = await client.request('instance.events', { instanceId, sinceSeq: lastSeq }, { timeoutMs: 5000 });
+        if (!res.ok) return;
+        const list = [...(res.result?.events ?? [])].sort((a, b) => (a?.seq ?? 0) - (b?.seq ?? 0));
+        for (const event of list) printEvent(event);
+      })();
+    }, 500);
+    if (typeof timer.unref === 'function') timer.unref();
+
+    const wait = typeof ctx.waitForDetach === 'function'
+      ? ctx.waitForDetach
+      : () => new Promise((resolve) => {
+        const onSigint = () => {
+          process.off('SIGINT', onSigint);
+          resolve();
+        };
+        process.on('SIGINT', onSigint);
+      });
+    await wait();
+    out(render.renderDetached(sessionId));
+    return EXIT_OK;
+  } finally {
+    if (timer !== null) clearInterval(timer);
+    unsubscribe();
+    await client.close?.();
+  }
+}
+
+// ---------------------------------------------------------------- escalate list|resolve
+
+async function escalateCommand(parsed, ctx) {
+  const out = ctx.out;
+  const { sub, positionals, flags } = parsed;
+  const client = ctx.createClient(ctx.cwd);
+
+  try {
+    const connectErr = await connectOrError(client, out);
+    if (connectErr !== null) return connectErr;
+
+    const collected = await collectEntries(client, 'escalations');
+    if (!collected.ok) return renderCollectError(out, collected);
+
+    if (sub === 'list') {
+      // 默认待处理；--instance 先按实例过滤，--all 再放开状态范围（AC-21/22）。
+      const onlyInstance = typeof flags.instance === 'string' ? flags.instance : null;
+      const rows = collected.entries
+        .filter((entry) => {
+          if (onlyInstance && entry.instanceId !== onlyInstance) return false;
+          if (!flags.all && entry?.state !== 'pending') return false;
+          return true;
+        })
+        .sort(byInstanceThenId('escalationId'));
+      if (rows.length === 0) {
+        out(render.renderEmptyLine('escalation'));
+      } else {
+        for (const row of rows) {
+          out(render.renderEscalationListRow(row, collected.snapshots.get(row.instanceId)));
+        }
+      }
+      return EXIT_OK;
+    }
+
+    // resolve：先在只读快照里定位唯一实例，再把裁决交给核心 RPC。
+    const escalationId = positionals[0];
+    let matches = collected.entries.filter((entry) => entry?.escalationId === escalationId);
+    if (typeof flags.instance === 'string') {
+      matches = matches.filter((entry) => entry.instanceId === flags.instance);
+    }
+    if (matches.length === 0) return commandError(out, 'ESCALATION_NOT_FOUND', { id: escalationId });
+    if (new Set(matches.map((entry) => entry.instanceId)).size > 1) {
+      return commandError(out, 'ESCALATION_AMBIGUOUS', { id: escalationId });
+    }
+    const instanceId = matches[0].instanceId;
+
+    const res = await client.request(
+      'escalation.resolve',
+      { instanceId, escalationId, decision: flags.decision },
+      { timeoutMs: 15_000 },
+    );
+    if (!res.ok) {
+      // A-5 / AC-29(3)：INSTANCE_NOT_SUSPENDED 文案的 {id} 是实例号（其余错误是升级号）。
+      return commandError(out, res.code, {
+        id: res.code === 'INSTANCE_NOT_SUSPENDED' ? instanceId : escalationId,
+        decision: flags.decision,
+        ...(res.params ?? {}),
+      });
+    }
+    const snapshot = await fetchSnapshot(client, instanceId);
+    const template = templateOf(snapshot);
+    for (const line of render.renderEscalationResult(escalationId, flags.decision, snapshot, { template })) out(line);
+    if (snapshot?.state === 'suspended') return EXIT_SUSPENDED;
+    if (snapshot?.halted === true) return EXIT_HALTED;
+    return EXIT_OK;
+  } finally {
+    await client.close?.();
+  }
+}
+
+// ---------------------------------------------------------------- approve
+
+async function approveCommand(parsed, ctx) {
+  const out = ctx.out;
+  const { positionals, flags } = parsed;
+  const approvalId = positionals[0];
+  const client = ctx.createClient(ctx.cwd);
+
+  try {
+    const connectErr = await connectOrError(client, out);
+    if (connectErr !== null) return connectErr;
+
+    const collected = await collectEntries(client, 'approvals');
+    if (!collected.ok) return renderCollectError(out, collected);
+
+    let matches = collected.entries.filter((entry) => entry?.approvalId === approvalId);
+    if (typeof flags.instance === 'string') {
+      matches = matches.filter((entry) => entry.instanceId === flags.instance);
+    }
+    if (matches.length === 0) return commandError(out, 'APPROVAL_NOT_FOUND', { id: approvalId });
+    if (new Set(matches.map((entry) => entry.instanceId)).size > 1) {
+      return commandError(out, 'APPROVAL_AMBIGUOUS', { id: approvalId });
+    }
+    const instanceId = matches[0].instanceId;
+    const action = matches[0].action;
+
+    const res = await client.request(
+      'approval.resolve',
+      { instanceId, approvalId, decision: flags.decision },
+      { timeoutMs: 15_000 },
+    );
+    if (!res.ok) {
+      return commandError(out, res.code, { id: approvalId, decision: flags.decision, ...(res.params ?? {}) });
+    }
+    const state = flags.decision === 'deny' ? 'denied' : 'approved';
+    out(render.renderApprovalResult({ approvalId, state, action }));
+    return EXIT_OK;
+  } finally {
+    await client.close?.();
+  }
+}
+
+// ---------------------------------------------------------------- handoff list|show
+
+async function handoffCommand(parsed, ctx) {
+  const out = ctx.out;
+  const { sub, positionals, flags } = parsed;
+  const client = ctx.createClient(ctx.cwd);
+
+  try {
+    const connectErr = await connectOrError(client, out);
+    if (connectErr !== null) return connectErr;
+
+    const collected = await collectEntries(client, 'handoffs');
+    if (!collected.ok) return renderCollectError(out, collected);
+    const onlyInstance = typeof flags.instance === 'string' ? flags.instance : null;
+
+    if (sub === 'list') {
+      const rows = collected.entries
+        .filter((entry) => !onlyInstance || entry.instanceId === onlyInstance)
+        .sort(byInstanceThenId('handoffId'));
+      if (rows.length === 0) {
+        out(render.renderEmptyLine('handoff'));
+      } else {
+        for (const row of rows) {
+          out(render.renderHandoffListRow(row, collected.snapshots.get(row.instanceId)));
+        }
+      }
+      return EXIT_OK;
+    }
+
+    // show：编号唯一时可省略 --instance（AC-70）；重复且未指定则要求 --instance（AC-48）。
+    const handoffId = positionals[0];
+    let matches = collected.entries.filter((entry) => entry?.handoffId === handoffId);
+    if (onlyInstance) matches = matches.filter((entry) => entry.instanceId === onlyInstance);
+    if (matches.length === 0) return commandError(out, 'HANDOFF_NOT_FOUND', { id: handoffId });
+    if (new Set(matches.map((entry) => entry.instanceId)).size > 1) {
+      return commandError(out, 'HANDOFF_AMBIGUOUS', { id: handoffId });
+    }
+    const row = matches[0];
+    for (const line of render.renderHandoffShow(row, collected.snapshots.get(row.instanceId))) out(line);
+    return EXIT_OK;
+  } finally {
+    await client.close?.();
+  }
+}
+
+// ---------------------------------------------------------------- workflow pause|resume|abort
+
+async function workflowCommand(parsed, ctx) {
+  const out = ctx.out;
+  const { sub, positionals, flags } = parsed;
+  const instanceId = positionals[0] ?? flags.instance;
+  const client = ctx.createClient(ctx.cwd);
+
+  try {
+    const connectErr = await connectOrError(client, out);
+    if (connectErr !== null) return connectErr;
+
+    if (sub === 'abort') {
+      // 等同取消（BR-27 / AC-52）：沿用取消的结果行。
+      const res = await client.request('workflow.abort', { instanceId }, { timeoutMs: 15_000 });
+      if (!res.ok) {
+        if (res.code === 'NOT_FOUND') {
+          out(render.renderInstanceMissing(instanceId));
+          return EXIT_FAILED;
+        }
+        return commandError(out, res.code, { id: instanceId, ...(res.params ?? {}) });
+      }
+      for (const line of render.renderCancelLines(res.result ?? {})) out(line);
+      return EXIT_OK;
+    }
+
+    const method = sub === 'pause' ? 'workflow.pause' : 'workflow.resume';
+    const res = await client.request(method, { instanceId }, { timeoutMs: 15_000 });
+    if (!res.ok) {
+      if (res.code === 'NOT_FOUND') {
+        out(render.renderInstanceMissing(instanceId));
+        return EXIT_FAILED;
+      }
+      return commandError(out, res.code, { id: instanceId, ...(res.params ?? {}) });
+    }
+    const snapshot = await fetchSnapshot(client, instanceId);
+    out(render.renderInstanceLine(snapshot));
     return EXIT_OK;
   } finally {
     await client.close?.();

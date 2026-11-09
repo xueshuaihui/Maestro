@@ -1,0 +1,148 @@
+{
+  "ac": "AC-44",
+  "title": "`attach` 只读跟随",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：会话在等待审批",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-29512-1\n任务已投递\n审批 APR-001 待处理 · 动作 write\n会话 等待审批：write\n"
+    },
+    {
+      "text": "Given：会话号来源可取得（run 的「会话已创建」或 instance log json 的 objectId）",
+      "ok": true,
+      "blocked": false,
+      "actual": "mock-sess-29512-1"
+    },
+    {
+      "text": "Then：attach 正常脱离（退出码 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：首行显示该会话号、实例、节点（期望含 \"已附着会话 mock-sess-29512-1（实例 INST-001 · 节点\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "已附着会话 mock-sess-29512-1（实例 INST-001 · 节点 T-001 worker）"
+    },
+    {
+      "text": "Then：若有待审批，紧跟一行审批信息（期望含 \"审批 APR-001 待处理\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 待处理 · 动作 write"
+    },
+    {
+      "text": "Then：随后输出该会话最近事件（行数 ≤ 20 且 ≥ 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then：脱离收尾行（期望含 \"已脱离会话 mock-sess-29512-1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "已附着会话 mock-sess-29512-1（实例 INST-001 · 节点 T-001 worker）\n审批 APR-001 待处理 · 动作 write\n06:41:53  会话 mock-sess-29512-1  空闲 → 执行中  原因 session.state\n06:41:54  会话 mock-sess-29512-1  执行中 → 执行中（tool_call）  原因 session.state\n06:41:54  会话 mock-sess-29512-1  执行中 → 等待审批  原因 permission.requested\n已脱离会话 mock-sess-29512-1\n"
+    },
+    {
+      "text": "机检：stdout 含 APR- 行（期望含 \"APR-\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "已附着会话 mock-sess-29512-1（实例 INST-001 · 节点 T-001 worker）\n审批 APR-001 待处理 · 动作 write\n06:41:53  会话 mock-sess-29512-1  空闲 → 执行中  原因 session.state\n06:41:54  会话 mock-sess-29512-1  执行中 → 执行中（tool_call）  原因 session.state\n06:41:54  会话 mock-sess-29512-1  执行中 → 等待审批  原因 permission.requested\n已脱离会话 mock-sess-29512-1\n"
+    },
+    {
+      "text": "机检：附着前后 state 不变（期望 \"running\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"running\""
+    },
+    {
+      "text": "机检：附着前后 rev 不变（期望 6）",
+      "ok": true,
+      "blocked": false,
+      "actual": "6"
+    },
+    {
+      "text": "机检：附着前后节点状态不变（期望 \"[\\\"running\\\"]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"[\\\"running\\\"]\""
+    },
+    {
+      "text": "机检：附着前后会话状态不变（期望 \"[\\\"waiting_input\\\"]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"[\\\"waiting_input\\\"]\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch status --instance INST-001（预热核心，完成启动对账）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 367,
+      "stdout": "实例 INST-001 · 运行中\n节点 执行中\n会话 等待审批：write\n交接包 HO-001  已构造   06:41:53\n交接包 HO-001  已投递   06:41:53\n交接包 HO-001  已接受   06:41:53\n审批 APR-001 待处理 · 动作 write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch attach mock-sess-29512-1",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "attach",
+        "mock-sess-29512-1"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 3000,
+      "stdout": "已附着会话 mock-sess-29512-1（实例 INST-001 · 节点 T-001 worker）\n审批 APR-001 待处理 · 动作 write\n06:41:53  会话 mock-sess-29512-1  空闲 → 执行中  原因 session.state\n06:41:54  会话 mock-sess-29512-1  执行中 → 执行中（tool_call）  原因 session.state\n06:41:54  会话 mock-sess-29512-1  执行中 → 等待审批  原因 permission.requested\n已脱离会话 mock-sess-29512-1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --approval hold（前台稳定会话）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写下说明",
+        "--approval",
+        "hold"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44",
+      "exitCode": null,
+      "timedOut": false,
+      "durationMs": 4177,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-29512-1\n任务已投递\n审批 APR-001 待处理 · 动作 write\n会话 等待审批：write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 317,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "ac": "AC-10",
+  "title": "缺证据引用被拒绝并升级",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：实例挂起 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检：交接包以 rejected 出现",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"id\":\"HO-001\",\"state\":\"rejected\"}]"
+    },
+    {
+      "text": "机检：rejectReason === invalid_payload（期望 \"invalid_payload\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"invalid_payload\""
+    },
+    {
+      "text": "机检：events 有 handoff.rejected",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,verification.passed,run.completed,handoff.rejected,escalation.created,state.change,state.change,core.suspend"
+    },
+    {
+      "text": "机检：events 有 escalation.created",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,verification.passed,run.completed,handoff.rejected,escalation.created,state.change,state.change,core.suspend"
+    },
+    {
+      "text": "机检：escalations[0].reasonCode（期望 \"handoff_invalid\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"handoff_invalid\""
+    },
+    {
+      "text": "机检：node.dispatch 只有入口一条（零新派发）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：handoffs 无 created 记录",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"rejected\"]"
+    },
+    {
+      "text": "机检：escalations[0].reasonCode（期望 \"handoff_invalid\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"handoff_invalid\""
+    },
+    {
+      "text": "Then：终端升级原因显示「缺少证据引用」（期望含 \"缺少证据引用\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:18:56\n交接包 HO-001  开发→测试  已拒绝   06:18:56  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "机检：reasonDetail 含「缺少证据引用」（期望含 \"缺少证据引用\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-001 内容不合规：缺少证据引用 "
+    },
+    {
+      "text": "Then：下游未启动（T-002 round 仍为 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run（test.handoff --mutate no-evidence，放行后前台挂起收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 6049,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-12996-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "call-seam test.handoff --mutate no-evidence",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10",
+        "--call",
+        "test.handoff",
+        "--instance",
+        "INST-001",
+        "--node",
+        "T-001",
+        "--mutate",
+        "no-evidence"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 257,
+      "stdout": "{\"ok\":true,\"registered\":true,\"instanceId\":\"INST-001\",\"nodeId\":\"T-001\",\"edgeKind\":null,\"round\":null,\"mutate\":\"no-evidence\",\"snapshot\":null}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1195,
+      "stdout": "实例 INST-001 · 已挂起 · 模板 编码闭环\n节点 T-001 开发 已升级 · 第 1 轮\n节点 T-002 测试 待执行\n会话 已升级\n交接包 HO-001  开发→测试  已构造   06:18:56\n交接包 HO-001  开发→测试  已拒绝   06:18:56  原因 内容不合规\n升级 ESC-001 待处理\n  原因：交接包 HO-001 内容不合规：缺少证据引用 \n  节点：T-001 开发 · 第 1 轮\n  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 313,
+      "stdout": "核心已停止（pid 13040，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

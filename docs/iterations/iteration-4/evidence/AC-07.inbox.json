@@ -1,0 +1,86 @@
+{
+  "AC-07/INST-001/HO-001.json": {
+    "handoffId": "HO-001",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-12330-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:17:55.917Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:17:57.885Z",
+    "lastError": null
+  },
+  "AC-07/INST-001/HO-002.json": {
+    "handoffId": "HO-002",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-002",
+    "toNodeId": "T-001",
+    "sessionId": "mock-sess-12367-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002",
+    "createdAt": "2026-11-08T22:17:59.189Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:18:00.652Z",
+    "lastError": null
+  },
+  "AC-07/INST-001/HO-003.json": {
+    "handoffId": "HO-003",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-12394-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:18:02.174Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:18:03.746Z",
+    "lastError": null
+  },
+  "AC-07-task/INST-001/HO-001.json": {
+    "handoffId": "HO-001",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-12509-1",
+    "promptText": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:18:10.570Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:18:12.308Z",
+    "lastError": null
+  },
+  "AC-07-task/INST-001/HO-002.json": {
+    "handoffId": "HO-002",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-002",
+    "toNodeId": "T-003",
+    "sessionId": "mock-sess-12537-1",
+    "promptText": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v1.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v1.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v1.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002",
+    "createdAt": "2026-11-08T22:18:13.506Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:18:15.102Z",
+    "lastError": null
+  },
+  "AC-07-task/INST-001/HO-003.json": {
+    "handoffId": "HO-003",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-003",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-12560-1",
+    "promptText": "写发布说明，产物：release-notes.md\n\n上一轮审核不通过，请按下列缺陷修改：\n缺陷 1：缺少回滚方案（证据 artifacts/docs/release-notes.v1.md#L1）\n缺陷 2：升级步骤缺少验证（证据 artifacts/docs/release-notes.v1.md#L18）\n修改要求：补写「回滚方案」一节\n研究笔记：artifacts/reports/research-notes.v1.md\n上一版文档引用：artifacts/docs/release-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v2.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v2.md\n不得改写上一版文件。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003",
+    "createdAt": "2026-11-08T22:18:16.606Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:18:18.302Z",
+    "lastError": null
+  },
+  "AC-07-task/INST-001/HO-004.json": {
+    "handoffId": "HO-004",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-002",
+    "toNodeId": "T-003",
+    "sessionId": "mock-sess-12597-1",
+    "promptText": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v2.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v2.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v2.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002",
+    "createdAt": "2026-11-08T22:18:19.507Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:18:20.973Z",
+    "lastError": null
+  }
+}

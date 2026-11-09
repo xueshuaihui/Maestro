@@ -1,0 +1,160 @@
+{
+  "ac": "AC-52",
+  "title": "终止等同取消",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then：workflow abort 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：cancel 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：输出与 orch cancel --instance 相同的结果行（期望 \"会话 空闲\\n节点 T-001 开发 已取消\\n节点 T-002 测试 已取消\\n\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"会话 空闲\\n节点 T-001 开发 已取消\\n节点 T-002 测试 已取消\\n\""
+    },
+    {
+      "text": "机检：实例 cancelled（期望 \"cancelled\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"cancelled\""
+    },
+    {
+      "text": "机检：节点按取消规则收尾（全部 cancelled）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"cancelled\",\"cancelled\"]"
+    },
+    {
+      "text": "机检：会话按取消规则收尾（idle）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"idle\"]"
+    },
+    {
+      "text": "机检：没有遗留待投递交接包",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    },
+    {
+      "text": "机检：没有遗留待处理升级",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch workflow abort INST-001 / orch cancel --instance INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "workflow",
+        "abort",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-abort",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 595,
+      "stdout": "会话 空闲\n节点 T-001 开发 已取消\n节点 T-002 测试 已取消\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow cancel INST-001 / orch cancel --instance INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cancel",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-cancel",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 625,
+      "stdout": "会话 空闲\n节点 T-001 开发 已取消\n节点 T-002 测试 已取消\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（前台，停止在派发边界）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-abort",
+      "exitCode": null,
+      "timedOut": false,
+      "durationMs": 10982,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-31100-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（前台，停止在派发边界）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-cancel",
+      "exitCode": null,
+      "timedOut": false,
+      "durationMs": 5738,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-31175-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-abort",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 253,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-cancel",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 294,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

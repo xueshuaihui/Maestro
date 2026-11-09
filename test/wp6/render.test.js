@@ -604,7 +604,7 @@ test('A-2 升级块：single 不打印；code-loop 无升级打“升级 —”�
     '  原因：回流超上限：测试已派发 2 次仍未通过',
     '  节点：T-002 测试 · 第 2 轮',
     '  缺陷：div 在除数为 0 时返回 Infinity（证据 out/test-log.txt）',
-    '  下一步：本版本只能查看；要终止请执行 orch cancel --instance INST-001',
+    '  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001',
   ]);
 });
 
@@ -621,7 +621,7 @@ test('A-4 挂起收尾：正好三行（实例 + 升级摘要 + 下一步），�
   assert.deepEqual(render.renderRunTail(snapshot), [
     '实例 INST-001 · 已挂起 · 模板 编码闭环',
     '升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮',
-    '下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001',
+    '下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001',
   ]);
 });
 
@@ -1036,7 +1036,7 @@ test('task-loop A-3 收尾：挂起三行逐字', () => {
   assert.deepEqual(render.renderRunTail(snapshot, { template: 'task-loop' }), [
     '实例 INST-001 · 已挂起 · 模板 通用任务闭环',
     '升级 ESC-001 待处理 · 节点 T-003 审核者 · 第 2 轮',
-    '下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001',
+    '下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001',
   ]);
 });
 

@@ -1,0 +1,93 @@
+{
+  "ac": "AC-15",
+  "title": "信箱先落盘再投递",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：events 含 handoff.inboxed",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,verification.passed,run.completed,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,session.state,session.state,output.submitted,output.submitted,verdict.read,verification.passed,handoff.consumed,run.completed,run.completed"
+    },
+    {
+      "text": "Then/机检：handoff.inboxed 出现在该包 handoff.delivered 之前",
+      "ok": true,
+      "blocked": false,
+      "actual": "inboxed=11 delivered=12"
+    },
+    {
+      "text": "机检：信箱文件 HO-001.json 可解析",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"handoffId\",\"instanceId\",\"fromNodeId\",\"toNodeId\",\"sessionId\",\"promptText\",\"createdAt\",\"deliveryAttempts\",\"deliveredAt\",\"lastError\"]"
+    },
+    {
+      "text": "机检：含目标节点 toNodeId（期望 \"T-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"T-002\""
+    },
+    {
+      "text": "机检：含目标会话 sessionId",
+      "ok": true,
+      "blocked": false,
+      "actual": "mock-sess-13977-1"
+    },
+    {
+      "text": "机检：含提示词 promptText",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdic"
+    },
+    {
+      "text": "机检：含 deliveryAttempts 字段",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：含 lastError 字段",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop（开发完成，核心唤醒测试）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-15",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 8387,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-13936-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:20:16\n交接包 HO-001  开发→测试  已投递   06:20:17\n交接包 HO-001  开发→测试  已接受   06:20:17\n交接包 HO-001  开发→测试  已完成   06:20:19\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-15",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 301,
+      "stdout": "核心已停止（pid 13908，运行 7s）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "ac": "AC-02",
+  "title": "文档闭环每个节点都有阶段区",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:16:59.422Z",
+  "finishedAt": "2026-11-08T22:17:12.928Z",
+  "durationMs": 13506,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-02",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-02",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 22,
+  "notes": []
+}

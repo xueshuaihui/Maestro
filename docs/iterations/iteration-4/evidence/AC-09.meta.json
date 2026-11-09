@@ -1,0 +1,34 @@
+{
+  "ac": "AC-09",
+  "title": "缺必填字段的交接包被拒绝并升级",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:18:41.998Z",
+  "finishedAt": "2026-11-08T22:18:49.165Z",
+  "durationMs": 7167,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-09",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-09"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-09",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 14,
+  "notes": [
+    "入口 T-001 的 node.dispatch 属 Given 上游；AC-09 Then「没有新派发」以拒绝事件之后零 node.dispatch + sessions 不增加取证。"
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "AC-29-b/INST-001/HO-001.json": {
+    "handoffId": "HO-001",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-26411-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:37:27.088Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:37:29.120Z",
+    "lastError": null
+  },
+  "AC-29-b/INST-001/HO-002.json": {
+    "handoffId": "HO-002",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-002",
+    "toNodeId": "T-001",
+    "sessionId": "mock-sess-26430-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace/stage/T-001\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace/stage/T-002",
+    "createdAt": "2026-11-08T22:37:30.466Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:37:32.109Z",
+    "lastError": null
+  },
+  "AC-29-b/INST-001/HO-003.json": {
+    "handoffId": "HO-003",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-26488-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-001/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:37:33.558Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:37:35.224Z",
+    "lastError": null
+  },
+  "AC-29-b/INST-002/HO-001.json": {
+    "handoffId": "HO-001",
+    "instanceId": "INST-002",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-26549-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:37:40.318Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:37:42.327Z",
+    "lastError": null
+  },
+  "AC-29-b/INST-002/HO-002.json": {
+    "handoffId": "HO-002",
+    "instanceId": "INST-002",
+    "fromNodeId": "T-002",
+    "toNodeId": "T-001",
+    "sessionId": "mock-sess-26603-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace/stage/T-001\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace/stage/T-002",
+    "createdAt": "2026-11-08T22:37:43.739Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:37:45.151Z",
+    "lastError": null
+  },
+  "AC-29-b/INST-002/HO-003.json": {
+    "handoffId": "HO-003",
+    "instanceId": "INST-002",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-26626-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-b/.orch/instances/INST-002/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:37:46.566Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:37:48.060Z",
+    "lastError": null
+  },
+  "AC-29-c/INST-001/HO-001.json": {
+    "handoffId": "HO-001",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-26738-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:37:55.487Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:37:57.515Z",
+    "lastError": null
+  },
+  "AC-29-c/INST-001/HO-002.json": {
+    "handoffId": "HO-002",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-002",
+    "toNodeId": "T-001",
+    "sessionId": "mock-sess-26761-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace/stage/T-001\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace/stage/T-002",
+    "createdAt": "2026-11-08T22:37:59.016Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:38:00.548Z",
+    "lastError": null
+  },
+  "AC-29-c/INST-001/HO-003.json": {
+    "handoffId": "HO-003",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-26807-1",
+    "promptText": "实现 calc.js，产物：calc.js\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-29-c/.orch/instances/INST-001/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:38:01.962Z",
+    "deliveryAttempts": 1,
+    "deliveredAt": "2026-11-08T22:38:03.583Z",
+    "lastError": null
+  }
+}

@@ -1,5 +1,5 @@
 /**
- * Five state machines for I1.2: instance, node, handoff, escalation, session.
+ * State machines: instance, node, handoff, escalation, approval, session.
  *
  * Consistency rules (see iteration doc 2.3 / 1.8):
  *   - can() never throws
@@ -13,10 +13,17 @@
  * A baseline step such as blocked -> ready or assigned -> running is deliberately
  * not an edge here: the tables below are the only authority.
  *
- * I1.2 extension (requirement D-1): `escalated` is a real state with exactly one
- * outbound edge (`cancelled`, the cancel path), `done` can be reopened by a
- * backflow wake-up, `failed` can be reopened by a retest dispatch, and every
- * "cannot continue" verdict lands on `escalated`. `DEFINED_ONLY.node` is now empty.
+ * I1.2 extension (requirement D-1): `escalated` is a real state, `done` can be
+ * reopened by a backflow wake-up, `failed` can be reopened by a retest dispatch,
+ * and every "cannot continue" verdict lands on `escalated`. `DEFINED_ONLY.node`
+ * is now empty.
+ *
+ * I1.4 extension (requirement D-2): `escalated` gains the three human-adjudication
+ * exits (`running` / `done` / `failed`) plus the existing cancel edge, `suspended`
+ * can leave for `running` / `completed` / `failed` besides cancel, and the handoff
+ * table gains `delivered -> pending`, `pending -> delivered/rejected/expired`.
+ * `resolved` is the terminal escalation state for a human decision; approvals get
+ * their own four-state table.
  *
  * `done` deliberately has no `cancelled` edge: a finished node is never rolled back
  * by cancel. `running -> failed` and `review -> failed` are kept because the
@@ -53,7 +60,10 @@ export const HANDOFF_STATES = Object.freeze([
   'expired'
 ]);
 
-export const ESCALATION_STATES = Object.freeze(['pending', 'voided']);
+export const ESCALATION_STATES = Object.freeze(['pending', 'resolved', 'voided']);
+
+/** Approval lifecycle (requirement D-2 / D-5). Memory-only rows, persisted by one CAS. */
+export const APPROVAL_STATES = Object.freeze(['pending', 'approved', 'denied', 'withdrawn']);
 
 /**
  * Session states used by the guard only (requirement D-6). The engine's direct
@@ -78,7 +88,8 @@ const TABLES = {
     failed: [],
     cancelled: [],
     interrupted: [],
-    suspended: ['cancelled']
+    // A suspended instance is resumed by an escalation verdict (D-2 / D-6).
+    suspended: ['running', 'completed', 'failed', 'cancelled']
   },
   node: {
     pending: ['running', 'escalated', 'cancelled'],
@@ -88,22 +99,30 @@ const TABLES = {
     done: ['running', 'escalated'],
     // Reopened by a retest dispatch or by a failed retest dispatch.
     failed: ['running', 'escalated', 'cancelled'],
-    // The only exit is cancel; human adjudication is I1.4.
-    escalated: ['cancelled'],
+    // Adjudication exits (retry / pass / fail) plus the cancel path.
+    escalated: ['running', 'done', 'failed', 'cancelled'],
     cancelled: []
   },
   handoff: {
     created: ['delivered', 'rejected'],
-    delivered: ['accepted', 'rejected'],
+    // Delivery failure falls back to `pending` before the retry window.
+    delivered: ['accepted', 'rejected', 'pending'],
     accepted: ['consumed', 'rejected'],
-    pending: ['delivered', 'expired'],
+    pending: ['delivered', 'expired', 'rejected'],
     consumed: [],
     rejected: [],
     expired: []
   },
   escalation: {
-    pending: ['voided'],
+    pending: ['resolved', 'voided'],
+    resolved: [],
     voided: []
+  },
+  approval: {
+    pending: ['approved', 'denied', 'withdrawn'],
+    approved: [],
+    denied: [],
+    withdrawn: []
   },
   session: {
     idle: ['thinking', 'escalated'],
@@ -121,6 +140,7 @@ const STATE_SETS = {
   node: NODE_STATES,
   handoff: HANDOFF_STATES,
   escalation: ESCALATION_STATES,
+  approval: APPROVAL_STATES,
   session: SESSION_STATES
 };
 
@@ -129,11 +149,12 @@ const DEFINED_ONLY = {
   node: Object.freeze([]),
   handoff: Object.freeze([]),
   escalation: Object.freeze([]),
+  approval: Object.freeze([]),
   session: Object.freeze([])
 };
 
 /**
- * Five constant groups for I1.2 (requirement D-4). They are exported as frozen
+ * Constant groups for I1.2 / I1.4 (requirement D-4 / D-2). They are exported as frozen
  * arrays so they serialise and compare cheaply; wrap them in a Set when a membership
  * test is hot. Never merge one group into another: `suspended` must stay out of
  * TERMINAL_INSTANCE, otherwise cancel would answer "already finished" for a
@@ -154,7 +175,8 @@ export const RUN_DONE_INSTANCE = Object.freeze([...TERMINAL_INSTANCE, 'suspended
 
 export const CANCELABLE_NODE = Object.freeze(['pending', 'running', 'review', 'failed', 'escalated']);
 
-export const CANCELABLE_HANDOFF = Object.freeze(['created', 'delivered', 'accepted']);
+/** `pending` is cancelable too: a withdrawn retry lands on `rejected` / `withdrawn` (D-2). */
+export const CANCELABLE_HANDOFF = Object.freeze(['created', 'delivered', 'pending', 'accepted']);
 
 export class IllegalTransitionError extends Error {
   constructor(from, to, code, message) {
@@ -274,6 +296,10 @@ export function createHandoffSM(options = {}) {
 
 export function createEscalationSM(options = {}) {
   return createSM('escalation', options);
+}
+
+export function createApprovalSM(options = {}) {
+  return createSM('approval', options);
 }
 
 export function createSessionSM(options = {}) {

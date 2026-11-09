@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-eed5c354b134fb14",
+  "createdAt": "2026-11-08T22:47:27.410Z",
+  "updatedAt": "2026-11-08T22:47:30.420Z",
+  "state": "suspended",
+  "stateSince": "2026-11-08T22:47:30.395Z",
+  "template": "code-loop",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-62/demo",
+  "task": "实现 calc.js，产物：calc.js",
+  "halted": false,
+  "rev": 12,
+  "counters": {
+    "eventSeq": 10,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "escalated",
+      "stateSince": "2026-11-08T22:47:30.395Z",
+      "startedAt": "2026-11-08T22:47:28.323Z",
+      "roundStartedAt": "2026-11-08T22:47:28.323Z",
+      "endedAt": "2026-11-08T22:47:30.395Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-33463-1",
+      "artifactRefs": []
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 0,
+      "state": "pending",
+      "stateSince": "2026-11-08T22:47:27.410Z",
+      "startedAt": null,
+      "roundStartedAt": null,
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-33463-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "escalated",
+      "stateSince": "2026-11-08T22:47:30.395Z",
+      "createdAt": "2026-11-08T22:47:28.757Z",
+      "lastEventAt": "2026-11-08T22:47:29.821Z",
+      "toolName": "write",
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-62/demo/calc.js",
+      "pendingPermission": {
+        "toolCallId": "call_mock_33463_1",
+        "action": "write"
+      },
+      "quarantined": true
+    }
+  ],
+  "handoffs": [],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-001",
+      "round": 1,
+      "reasonCode": "execution_failed",
+      "reasonDetail": "执行失败：stopReason: refusal",
+      "defects": [],
+      "state": "pending",
+      "createdAt": "2026-11-08T22:47:30.394Z",
+      "resolvedAt": null,
+      "resolution": null,
+      "voidedAt": null
+    }
+  ],
+  "approvals": [
+    {
+      "approvalId": "APR-001",
+      "instanceId": "INST-001",
+      "nodeId": "T-001",
+      "sessionId": "mock-sess-33463-1",
+      "action": "write",
+      "toolCallId": "call_mock_33463_1",
+      "state": "denied",
+      "createdAt": "2026-11-08T22:47:29.015Z",
+      "resolvedAt": "2026-11-08T22:47:29.579Z",
+      "resolution": "deny"
+    }
+  ]
+}

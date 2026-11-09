@@ -1,0 +1,87 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（母版） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36 exit=0 7901ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-27798-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:39:28
+交接包 HO-001  开发→测试  已投递   06:39:29
+交接包 HO-001  开发→测试  已接受   06:39:29
+交接包 HO-001  开发→测试  已完成   06:39:30
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001（A 已暂停） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36 exit=0 353ms
+实例 INST-001 · 运行中（已暂停） · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+会话 空闲
+交接包 HO-001  开发→测试  已构造   06:39:28
+交接包 HO-001  开发→测试  已投递   06:39:29
+交接包 HO-001  开发→测试  已接受   06:39:29
+交接包 HO-001  开发→测试  已完成   06:39:30
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-002
+# label=orch status --instance INST-002（B 待处理审批） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36 exit=0 255ms
+实例 INST-002 · 运行中 · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+会话 空闲
+交接包 HO-001  开发→测试  已构造   06:39:28
+交接包 HO-001  开发→测试  已投递   06:39:29
+交接包 HO-001  开发→测试  已接受   06:39:29
+交接包 HO-001  开发→测试  已完成   06:39:30
+升级 —
+审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance OLD-001
+# label=orch status --instance OLD-001（C 旧实例） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36 exit=0 301ms
+实例 OLD-001 · 已完成
+节点 已完成 · 耗时 11m55s
+会话 空闲
+交接包 HO-001  已构造   17:00:04
+交接包 HO-001  已投递   17:00:04
+交接包 HO-001  已接受   17:00:05
+交接包 HO-001  已完成   17:00:05
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-004
+# label=orch status --instance INST-004（D 三条已处理审批） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36 exit=0 267ms
+实例 INST-004 · 已完成 · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+会话 空闲
+交接包 HO-001  开发→测试  已构造   06:39:28
+交接包 HO-001  开发→测试  已投递   06:39:29
+交接包 HO-001  开发→测试  已接受   06:39:29
+交接包 HO-001  开发→测试  已完成   06:39:30
+升级 —
+审批 APR-001 已通过 · 节点 T-001 开发 · 动作 write
+审批 APR-002 已拒绝 · 节点 T-001 开发 · 动作 write
+审批 APR-003 已作废 · 节点 T-001 开发 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status
+# label=orch status（不带参数） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36 exit=0 323ms
+实例 INST-001 · 运行中（已暂停） · 模板 编码闭环 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31
+实例 INST-002 · 运行中 · 模板 编码闭环 · 待处理审批 1 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31
+实例 INST-004 · 已完成 · 模板 编码闭环 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:39:31
+实例 OLD-001 · 已完成 · 节点 已完成 · 会话 空闲 · 耗时 11m55s · 更新 17:12:00
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-36 exit=0 871ms
+核心已停止（pid 27757，运行 10s）
+

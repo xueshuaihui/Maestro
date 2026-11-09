@@ -1,0 +1,41 @@
+{
+  "ac": "AC-42",
+  "title": "`instance graph --format text` 可读",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:41:01.212Z",
+  "finishedAt": "2026-11-08T22:41:21.121Z",
+  "durationMs": 19909,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-42",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-42"
+    },
+    {
+      "case": "AC-42-paused",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-42-paused"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-42",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-42-paused",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 10,
+  "notes": []
+}

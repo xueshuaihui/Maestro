@@ -1,0 +1,50 @@
+{
+  "ac": "AC-07",
+  "title": "多节点提示词带工作区上下文段",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:17:50.320Z",
+  "finishedAt": "2026-11-08T22:18:29.727Z",
+  "durationMs": 39407,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-07",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07"
+    },
+    {
+      "case": "AC-07-task",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task"
+    },
+    {
+      "case": "AC-07-single",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-single"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-07",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-07-task",
+      "instanceId": "INST-001",
+      "state": "completed"
+    },
+    {
+      "__root": "AC-07-single",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 59,
+  "notes": []
+}

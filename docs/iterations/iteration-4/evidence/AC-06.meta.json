@@ -1,0 +1,28 @@
+{
+  "ac": "AC-06",
+  "title": "工作区建不出来时发起前停住",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:17:46.236Z",
+  "finishedAt": "2026-11-08T22:17:48.925Z",
+  "durationMs": 2689,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-06",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-06"
+    }
+  ],
+  "instances": [],
+  "checks": 6,
+  "notes": [
+    "「没有会话」以 events 无 session.state 事件 + 无实例目录取证；退出码 3 对齐 A-5 WORKSPACE_INIT_FAILED。"
+  ]
+}

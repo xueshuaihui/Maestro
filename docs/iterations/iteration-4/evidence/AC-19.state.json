@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-b93551489dfe0476",
+  "createdAt": "2026-11-08T22:33:57.507Z",
+  "updatedAt": "2026-11-08T22:34:00.805Z",
+  "state": "suspended",
+  "stateSince": "2026-11-08T22:34:00.688Z",
+  "template": "code-loop",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-19/demo",
+  "task": "实现 calc.js，产物：calc.js",
+  "halted": false,
+  "rev": 4,
+  "counters": {
+    "eventSeq": 2,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "escalated",
+      "stateSince": "2026-11-08T22:34:00.688Z",
+      "startedAt": "2026-11-08T22:33:59.292Z",
+      "roundStartedAt": "2026-11-08T22:33:59.292Z",
+      "endedAt": "2026-11-08T22:34:00.688Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": []
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 0,
+      "state": "pending",
+      "stateSince": "2026-11-08T22:33:57.507Z",
+      "startedAt": null,
+      "roundStartedAt": null,
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [],
+  "handoffs": [],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-001",
+      "round": 1,
+      "reasonCode": "dispatch_failed",
+      "reasonDetail": "派遣失败：目标会话不可用",
+      "defects": [],
+      "state": "pending",
+      "createdAt": "2026-11-08T22:34:00.688Z",
+      "resolvedAt": null,
+      "resolution": null,
+      "voidedAt": null
+    }
+  ]
+}

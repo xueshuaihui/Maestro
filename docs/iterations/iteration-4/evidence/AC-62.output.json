@@ -1,0 +1,144 @@
+{
+  "ac": "AC-62",
+  "title": "多节点审批拒绝走既有执行失败路径",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：开发节点 T-001 等待审批（run 打印 APR-001 待处理行）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-33463-1\n任务已投递\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n会话 等待审批：write\n"
+    },
+    {
+      "text": "Given：审批 pending（期望 \"pending\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending\""
+    },
+    {
+      "text": "Given：来源节点为开发 T-001（期望 \"T-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"T-001\""
+    },
+    {
+      "text": "Given：审批动作为 write（期望 \"write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"write\""
+    },
+    {
+      "text": "Then：输出「审批 APR-001 已拒绝 · 动作 write」（期望含 \"审批 APR-001 已拒绝 · 动作 write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 已拒绝 · 动作 write\n"
+    },
+    {
+      "text": "机检：审批 denied（期望 \"denied\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"denied\""
+    },
+    {
+      "text": "机检：来源节点 escalated（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "机检：实例 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检：escalations[0].reasonCode === execution_failed（期望 \"execution_failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"execution_failed\""
+    },
+    {
+      "text": "机检：不出现 failed 实例行（期望不含 \"· 已失败\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-33463-1\n任务已投递\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n会话 等待审批：write\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "Then：不出现第二套失败文案（执行失败口径）（期望不含 \"执行失败\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-33463-1\n任务已投递\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n会话 等待审批：write\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "text": "机检：出现 permission.denied 事件",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,permission.requested,approval.created,permission.denied,session.state,output.submitted,output.submitted,escalation.created,state.change,state.change,core.suspend"
+    },
+    {
+      "text": "机检：出现 escalation.created 事件（沿 refusal 路径升级）",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,permission.requested,approval.created,permission.denied,session.state,output.submitted,output.submitted,escalation.created,state.change,state.change,core.suspend"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch approve APR-001 --instance INST-001 --decision deny",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "approve",
+        "APR-001",
+        "--decision",
+        "deny",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-62",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 633,
+      "stdout": "审批 APR-001 已拒绝 · 动作 write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run code-loop --approval hold（前台，拒绝后收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop",
+        "--approval",
+        "hold"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-62",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 4787,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-33463-1\n任务已投递\n审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write\n会话 等待审批：write\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-62",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 240,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

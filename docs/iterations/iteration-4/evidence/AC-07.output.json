@@ -1,0 +1,467 @@
+{
+  "ac": "AC-07",
+  "title": "多节点提示词带工作区上下文段",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具：code-loop 入口 T-001 提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "1.json"
+    },
+    {
+      "text": "夹具：code-loop 入口 T-001 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop 入口 T-001 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop 入口 T-001 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop 入口 T-001 入口不含上游阶段区行（期望不含 \"上游阶段区（只读）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop forward T-002 提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "2.json"
+    },
+    {
+      "text": "夹具：code-loop forward T-002 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop forward T-002 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop forward T-002 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop forward T-002 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop backflow T-001 第 2 轮 提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "3.json"
+    },
+    {
+      "text": "夹具：code-loop backflow T-001 第 2 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：code-loop backflow T-001 第 2 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：code-loop backflow T-001 第 2 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：code-loop backflow T-001 第 2 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n上一轮判定不通过，请按下列缺陷修正：\n缺陷 1：div 在除数为 0 时返回 Infinity，未抛错（证据 out/test-log.txt）\n缺陷 2：div 在整除场景存在浮点误差（证据 out/test-log-2.txt）\n复测要求：按上方每条缺陷修正后重新提交产物\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：code-loop retest T-002 第 2 轮 提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "4.json"
+    },
+    {
+      "text": "夹具：code-loop retest T-002 第 2 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop retest T-002 第 2 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop retest T-002 第 2 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：code-loop retest T-002 第 2 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实现 calc.js，产物：calc.js\n\n上一轮缺陷：2 条\n产物：calc.js\n请复测并把结构化判定写到 out/verdict.json。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：task-loop 研究 T-001 提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "1.json"
+    },
+    {
+      "text": "夹具：task-loop 研究 T-001 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md\n只交研究笔记，不写最终文档。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：task-loop 研究 T-001 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md\n只交研究笔记，不写最终文档。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：task-loop 研究 T-001 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md\n只交研究笔记，不写最终文档。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：task-loop 研究 T-001 入口不含上游阶段区行（期望不含 \"上游阶段区（只读）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md\n只交研究笔记，不写最终文档。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：task-loop 撰写 T-002 提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "2.json"
+    },
+    {
+      "text": "夹具：task-loop 撰写 T-002 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：task-loop 撰写 T-002 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：task-loop 撰写 T-002 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：task-loop 撰写 T-002 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "夹具：task-loop 审核 T-003 第 1 轮 提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "3.json"
+    },
+    {
+      "text": "夹具：task-loop 审核 T-003 第 1 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v1.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v1.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v1.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：task-loop 审核 T-003 第 1 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v1.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v1.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v1.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：task-loop 审核 T-003 第 1 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v1.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v1.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v1.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：task-loop 审核 T-003 第 1 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v1.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v1.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v1.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "机检：task-loop 审核 T-003 第 1 轮 审核提示词「工作区：」行只有一条（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "4.json"
+    },
+    {
+      "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n上一轮审核不通过，请按下列缺陷修改：\n缺陷 1：缺少回滚方案（证据 artifacts/docs/release-notes.v1.md#L1）\n缺陷 2：升级步骤缺少验证（证据 artifacts/docs/release-notes.v1.md#L18）\n修改要求：补写「回滚方案」一节\n研究笔记：artifacts/reports/research-notes.v1.md\n上一版文档引用：artifacts/docs/release-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v2.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v2.md\n不得改写上一版文件。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003"
+    },
+    {
+      "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n上一轮审核不通过，请按下列缺陷修改：\n缺陷 1：缺少回滚方案（证据 artifacts/docs/release-notes.v1.md#L1）\n缺陷 2：升级步骤缺少验证（证据 artifacts/docs/release-notes.v1.md#L18）\n修改要求：补写「回滚方案」一节\n研究笔记：artifacts/reports/research-notes.v1.md\n上一版文档引用：artifacts/docs/release-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v2.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v2.md\n不得改写上一版文件。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003"
+    },
+    {
+      "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n上一轮审核不通过，请按下列缺陷修改：\n缺陷 1：缺少回滚方案（证据 artifacts/docs/release-notes.v1.md#L1）\n缺陷 2：升级步骤缺少验证（证据 artifacts/docs/release-notes.v1.md#L18）\n修改要求：补写「回滚方案」一节\n研究笔记：artifacts/reports/research-notes.v1.md\n上一版文档引用：artifacts/docs/release-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v2.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v2.md\n不得改写上一版文件。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003"
+    },
+    {
+      "text": "夹具：task-loop 撰写回流 T-002 第 2 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n上一轮审核不通过，请按下列缺陷修改：\n缺陷 1：缺少回滚方案（证据 artifacts/docs/release-notes.v1.md#L1）\n缺陷 2：升级步骤缺少验证（证据 artifacts/docs/release-notes.v1.md#L18）\n修改要求：补写「回滚方案」一节\n研究笔记：artifacts/reports/research-notes.v1.md\n上一版文档引用：artifacts/docs/release-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v2.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v2.md\n不得改写上一版文件。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003"
+    },
+    {
+      "text": "夹具：task-loop 复测审核 T-003 第 2 轮 提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "5.json"
+    },
+    {
+      "text": "夹具：task-loop 复测审核 T-003 第 2 轮 含「工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace」（期望含 \"工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v2.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v2.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v2.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：task-loop 复测审核 T-003 第 2 轮 含共享区只读行（期望含 \"共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v2.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v2.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v2.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：task-loop 复测审核 T-003 第 2 轮 含本节点阶段区行（期望含 \"本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v2.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v2.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v2.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "夹具：task-loop 复测审核 T-003 第 2 轮 含上游阶段区行（期望含 \"上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写发布说明，产物：release-notes.md\n\n本轮文档引用：artifacts/docs/release-notes.v2.md\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace\n审核文件写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/demo/out/review.json\n只认审核文件：{\"decision\":\"pass\"|\"reject\",\"artifact\":\"artifacts/docs/release-notes.v2.md\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"artifacts/docs/release-notes.v2.md#L1\"}],\"revisionRequirement\":\"...\"}\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\n不要修改文档。\n\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-003\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "机检：task-loop 复测审核 T-003 第 2 轮 审核提示词「工作区：」行只有一条（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "夹具：9 个多节点提示词（4 + 5）（期望 9）",
+      "ok": true,
+      "blocked": false,
+      "actual": "9"
+    },
+    {
+      "text": "夹具：单节点提示词存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"1.json\"]"
+    },
+    {
+      "text": "Then：单节点提示词不出现工作区上下文段（期望不含 \"工作区：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写下说明\n\n完成后直接结束，不需要额外说明。"
+    },
+    {
+      "text": "Then：单节点提示词不出现共享区只读行（期望不含 \"共享区（只读）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "写下说明\n\n完成后直接结束，不需要额外说明。"
+    },
+    {
+      "text": "机检：只传 node 不带 graph 的 promptFor 单元调用不追加该段（期望不含 \"工作区：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "x\n\n完成后直接结束，不需要额外说明。"
+    },
+    {
+      "text": "机检：single 图只有 1 个节点，因而不追加（期望不含 \"共享区（只读）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "x\n\n完成后直接结束，不需要额外说明。"
+    },
+    {
+      "text": "机检：graph.nodes.length > 1 时追加工作区上下文段（期望含 \"共享区（只读）：/tmp/ws/shared\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "x\n\n完成后直接结束，不需要额外说明。\n\n工作区：/tmp/ws\n共享区（只读）：/tmp/ws/shared\n本节点阶段区：/tmp/ws/stage/T-001"
+    },
+    {
+      "text": "架构检查：追加条件按节点数 graph.nodes.length <= 1（期望含 \"graph.nodes.length <= 1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "function workspaceContextLines(body, { graph = null, node = null, handoff = null, workspaceDir = null } = {}) {\n  if (!graph || !Array.isArray(graph.nodes) || graph.nodes.length <= 1) return null;\n  const workspaceAbs = workspaceBase(workspaceDir);\n  if (workspaceAbs === null) return null;\n\n  const target = node ?? nodeOf(graph, handoff?.edge?.to);\n  const nodeId = target?.id ?? target?.nodeId ?? null;\n  const upstreamId = handoff?.edge?.from ?? null;\n\n  const lines = [];\n  if (!/^工作区：/m.test(body)) {\n    lines.push(fill(WORKSPACE_CONTEXT_LINES.workspace, { workspaceAbs }));\n  }\n  lines.push(fill(WORKSPACE_CONTEXT_LINES.shared, { workspaceAbs }));\n  if (typeof nodeId === 'string' && nodeId.length > 0) {\n    lines.push(fill(WORKSPACE_CONTEXT_LINES.stageOwn, { workspaceAbs, nodeId }));\n  }\n  if (typeof upstreamId === 'string' && upstreamId.length > 0) {\n    lines.push(fill(WORKSPACE_CONTEXT_LINES.stageUpstream, { workspaceAbs, upstreamId }));\n  }\n  return lines.length > 0 ? lines.join('\\n') : null;\n}\n\n/**\n * 派发提示词的公开入口：模板正文 + （多节点图时）A-6「工作区上下文」段。\n *\n * 只传 `node` 不传 `graph` 单元调用时不追加，输出与 I1.2 / I1.3 逐字一致。\n *\n * @param {object} [options]  见 `composePrompt`\n * @returns {string}\n */\nexpor"
+    },
+    {
+      "text": "架构检查：判定不含模板名字面量分支（期望不含 \"'single'\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "function workspaceContextLines(body, { graph = null, node = null, handoff = null, workspaceDir = null } = {}) {\n  if (!graph || !Array.isArray(graph.nodes) || graph.nodes.length <= 1) return null;\n  const workspaceAbs = workspaceBase(workspaceDir);\n  if (workspaceAbs === null) return null;\n\n  const target = node ?? nodeOf(graph, handoff?.edge?.to);\n  const nodeId = target?.id ?? target?.nodeId ?? null;\n  const upstreamId = handoff?.edge?.from ?? null;\n\n  const lines = [];\n  if (!/^工作区：/m.test(body)) {\n    lines.push(fill(WORKSPACE_CONTEXT_LINES.workspace, { workspaceAbs }));\n  }\n  lines.push(fill(WORKSPACE_CONTEXT_LINES.shared, { workspaceAbs }));\n  if (typeof nodeId === 'string' && nodeId.length > 0) {\n    lines.push(fill(WORKSPACE_CONTEXT_LINES.stageOwn, { workspaceAbs, nodeId }));\n  }\n  if (typeof upstreamId === 'string' && upstreamId.length > 0) {\n    lines.push(fill(WORKSPACE_CONTEXT_LINES.stageUpstream, { workspaceAbs, upstreamId }));\n  }\n  return lines.length > 0 ? lines.join('\\n') : null;\n}\n\n/**\n * 派发提示词的公开入口：模板正文 + （多节点图时）A-6「工作区上下文」段。\n *\n * 只传 `node` 不传 `graph` 单元调用时不追加，输出与 I1.2 / I1.3 逐字一致。\n *\n * @param {object} [options]  见 `composePrompt`\n * @returns {string}\n */\nexpor"
+    },
+    {
+      "text": "架构检查：判定不含 template 分支（期望不含 \"template !==\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "function workspaceContextLines(body, { graph = null, node = null, handoff = null, workspaceDir = null } = {}) {\n  if (!graph || !Array.isArray(graph.nodes) || graph.nodes.length <= 1) return null;\n  const workspaceAbs = workspaceBase(workspaceDir);\n  if (workspaceAbs === null) return null;\n\n  const target = node ?? nodeOf(graph, handoff?.edge?.to);\n  const nodeId = target?.id ?? target?.nodeId ?? null;\n  const upstreamId = handoff?.edge?.from ?? null;\n\n  const lines = [];\n  if (!/^工作区：/m.test(body)) {\n    lines.push(fill(WORKSPACE_CONTEXT_LINES.workspace, { workspaceAbs }));\n  }\n  lines.push(fill(WORKSPACE_CONTEXT_LINES.shared, { workspaceAbs }));\n  if (typeof nodeId === 'string' && nodeId.length > 0) {\n    lines.push(fill(WORKSPACE_CONTEXT_LINES.stageOwn, { workspaceAbs, nodeId }));\n  }\n  if (typeof upstreamId === 'string' && upstreamId.length > 0) {\n    lines.push(fill(WORKSPACE_CONTEXT_LINES.stageUpstream, { workspaceAbs, upstreamId }));\n  }\n  return lines.length > 0 ? lines.join('\\n') : null;\n}\n\n/**\n * 派发提示词的公开入口：模板正文 + （多节点图时）A-6「工作区上下文」段。\n *\n * 只传 `node` 不传 `graph` 单元调用时不追加，输出与 I1.2 / I1.3 逐字一致。\n *\n * @param {object} [options]  见 `composePrompt`\n * @returns {string}\n */\nexpor"
+    },
+    {
+      "text": "架构检查：生产派发 6 处 promptFor 调用都带 graph（期望 6）",
+      "ok": true,
+      "blocked": false,
+      "actual": "6"
+    },
+    {
+      "text": "架构检查：不带 graph 的仅纯构造器 buildBackflowHandoff（单元调用）1 处（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop（含 1 次回流与 1 次复测）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 14066,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-12307-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 8s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 9s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:17:55\n交接包 HO-001  开发→测试  已投递   06:17:57\n交接包 HO-001  开发→测试  已接受   06:17:57\n交接包 HO-001  开发→测试  已完成   06:17:58\n交接包 HO-002  测试→开发（回流）  已构造   06:17:59\n交接包 HO-002  测试→开发（回流）  已投递   06:18:00\n交接包 HO-002  测试→开发（回流）  已接受   06:18:00\n交接包 HO-002  测试→开发（回流）  已完成   06:18:01\n交接包 HO-003  开发→测试（复测）  已构造   06:18:02\n交接包 HO-003  开发→测试（复测）  已投递   06:18:03\n交接包 HO-003  开发→测试（复测）  已接受   06:18:03\n交接包 HO-003  开发→测试（复测）  已完成   06:18:04\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run task-loop（含 1 次驳回回流）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写发布说明，产物：release-notes.md",
+        "--template",
+        "task-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 16797,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-12464-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 2s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 8s · 产物 artifacts/docs/release-notes.v2.md\n节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 8s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   06:18:10\n交接包 HO-001  研究员→撰写者  已投递   06:18:11\n交接包 HO-001  研究员→撰写者  已接受   06:18:12\n交接包 HO-001  研究员→撰写者  已完成   06:18:13\n交接包 HO-002  撰写者→审核者  已构造   06:18:13\n交接包 HO-002  撰写者→审核者  已投递   06:18:14\n交接包 HO-002  撰写者→审核者  已接受   06:18:14\n交接包 HO-002  撰写者→审核者  已完成   06:18:16\n交接包 HO-003  审核者→撰写者（回流）  已构造   06:18:16\n交接包 HO-003  审核者→撰写者（回流）  已投递   06:18:17\n交接包 HO-003  审核者→撰写者（回流）  已接受   06:18:18\n交接包 HO-003  审核者→撰写者（回流）  已完成   06:18:19\n交接包 HO-004  撰写者→审核者（复测）  已构造   06:18:19\n交接包 HO-004  撰写者→审核者（复测）  已投递   06:18:20\n交接包 HO-004  撰写者→审核者（复测）  已接受   06:18:20\n交接包 HO-004  撰写者→审核者（复测）  已完成   06:18:22\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run single（不带 --template）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写下说明"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-single",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 5002,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-12653-1\n任务已投递\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 3s\n交接包 HO-001  已构造   06:18:26\n交接包 HO-001  已投递   06:18:26\n交接包 HO-001  已接受   06:18:26\n交接包 HO-001  已完成   06:18:27\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 310,
+      "stdout": "核心已停止（pid 12279，运行 36s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 295,
+      "stdout": "核心已停止（pid 12445，运行 22s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-single",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 296,
+      "stdout": "核心已停止（pid 12652，运行 5s）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "ac": "AC-18",
+  "title": "重试不增加派发、轮次或会话",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：counters.dispatchCount 只加 1（每节点一次，共 3）（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then：目标节点 T-002 round 不变（第 1 轮）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：events 中 T-002 的 node.dispatch 只有一条（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then：终端没有重复的派发事件（无第 4 条 node.dispatch）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run task-loop（AC-16 重试场景）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写发布说明，产物：release-notes.md",
+        "--template",
+        "task-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-18",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 25385,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-23681-1\n任务已投递\n会话 执行中 · 已运行 3s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 5s\n会话 执行中 · 已运行 5s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 3s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 4s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 6s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 5s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   06:33:36\n交接包 HO-001  研究员→撰写者  待投递 · 重试 2/2   06:33:40\n交接包 HO-001  研究员→撰写者  已投递   06:33:41\n交接包 HO-001  研究员→撰写者  已接受   06:33:41\n交接包 HO-001  研究员→撰写者  已完成   06:33:43\n交接包 HO-002  撰写者→审核者  已构造   06:33:44\n交接包 HO-002  撰写者→审核者  已投递   06:33:46\n交接包 HO-002  撰写者→审核者  已接受   06:33:47\n交接包 HO-002  撰写者→审核者  已完成   06:33:50\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-18",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 632,
+      "stdout": "核心已停止（pid 23632，运行 22s）\n",
+      "stderr": ""
+    }
+  ]
+}

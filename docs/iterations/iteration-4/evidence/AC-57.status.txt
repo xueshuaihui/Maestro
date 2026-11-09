@@ -1,0 +1,2323 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写发布说明，产物：release-notes.md --template task-loop
+# label=orch run task-loop（3 次投递失败） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-retry exit=4 8998ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-32071-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+升级 ESC-001 待处理 · 节点 T-002 撰写者 · 第 1 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js approve APR-001 --decision allow --instance INST-001
+# label=orch approve APR-001 --decision allow cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-allow exit=0 589ms
+审批 APR-001 已通过 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明 --approval hold
+# label=orch run --approval hold（allow 前台） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-allow exit=0 5259ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-32178-1
+任务已投递
+审批 APR-001 待处理 · 动作 write
+会话 等待审批：write
+会话 执行中 · 已运行 2s
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 3s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 已完成 · 耗时 4s
+交接包 HO-001  已构造   06:45:41
+交接包 HO-001  已投递   06:45:42
+交接包 HO-001  已接受   06:45:42
+交接包 HO-001  已完成   06:45:44
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js approve APR-001 --decision deny --instance INST-001
+# label=orch approve APR-001 --decision deny cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-deny exit=0 661ms
+审批 APR-001 已拒绝 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明 --approval hold
+# label=orch run --approval hold（deny 前台） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-deny exit=1 4458ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-32258-1
+任务已投递
+审批 APR-001 待处理 · 动作 write
+会话 等待审批：write
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 空闲
+节点 失败 · 审批被拒绝，任务中止于 write
+交接包 HO-001  已构造   06:45:48
+交接包 HO-001  已投递   06:45:48
+交接包 HO-001  已接受   06:45:48
+交接包 HO-001  已拒绝   06:45:50  原因 审批被拒
+审批被拒绝，任务中止于 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop rounds-exceeded cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-escalation exit=4 14548ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-32342-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate resolve ESC-001 --decision pass --instance INST-001
+# label=orch escalate resolve ESC-001 --decision pass cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-escalation exit=0 612ms
+升级 ESC-001 已处理（通过）
+实例 INST-001 · 已完成 · 模板 编码闭环
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js workflow pause INST-001
+# label=orch workflow pause INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-flow exit=0 465ms
+实例 INST-001 · 运行中（已暂停） · 模板 编码闭环
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js workflow resume INST-001
+# label=orch workflow resume INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-flow exit=0 409ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run（暂停/恢复前台） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-flow exit=0 9144ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-32526-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+实例 INST-001 · 运行中（已暂停） · 模板 编码闭环
+下一步：恢复推进 orch workflow resume INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001 --format json
+# label=orch instance log INST-001 --format json（AC-57-bad） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-bad exit=0 1205ms
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "created",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 1,
+    "ts": "2026-11-08T22:45:25.196Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 1,
+      "nodeId": "T-001",
+      "roleId": "developer"
+    },
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 2,
+    "ts": "2026-11-08T22:45:25.207Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-31996-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 3,
+    "ts": "2026-11-08T22:45:26.257Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-31996-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 4,
+    "ts": "2026-11-08T22:45:26.594Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-31996-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 5,
+    "ts": "2026-11-08T22:45:26.756Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-31996-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 6,
+    "ts": "2026-11-08T22:45:26.919Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 7,
+    "ts": "2026-11-08T22:45:27.092Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "review",
+    "to": "done",
+    "result": "applied",
+    "reason": "verification.passed",
+    "detail": null,
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 8,
+    "ts": "2026-11-08T22:45:27.801Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-31996-1",
+    "from": "waiting_dependency",
+    "to": "idle",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 9,
+    "ts": "2026-11-08T22:45:27.821Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": "rejected",
+    "result": "applied",
+    "reason": "handoff.rejected",
+    "detail": {
+      "reason": "invalid_payload"
+    },
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 10,
+    "ts": "2026-11-08T22:45:28.159Z"
+  },
+  {
+    "object": "escalation",
+    "objectId": "ESC-001",
+    "from": null,
+    "to": "pending",
+    "result": "applied",
+    "reason": "escalation.created",
+    "detail": {
+      "nodeId": "T-001",
+      "round": 1,
+      "reasonCode": "handoff_invalid"
+    },
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 11,
+    "ts": "2026-11-08T22:45:28.188Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "done",
+    "to": "escalated",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 12,
+    "ts": "2026-11-08T22:45:28.224Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-31996-1",
+    "from": "idle",
+    "to": "escalated",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 13,
+    "ts": "2026-11-08T22:45:28.269Z"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "running",
+    "to": "suspended",
+    "result": "applied",
+    "reason": "core.suspend",
+    "detail": null,
+    "gen": "gen-e31c506f8c6dc6e4",
+    "seq": 14,
+    "ts": "2026-11-08T22:45:28.310Z"
+  }
+]
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001 --format json
+# label=orch instance log INST-001 --format json（AC-57-retry） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-retry exit=0 317ms
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "created",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 1,
+    "ts": "2026-11-08T22:45:32.492Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 1,
+      "nodeId": "T-001",
+      "roleId": "researcher"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 2,
+    "ts": "2026-11-08T22:45:32.504Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32071-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 3,
+    "ts": "2026-11-08T22:45:33.541Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32071-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 4,
+    "ts": "2026-11-08T22:45:33.808Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32071-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 5,
+    "ts": "2026-11-08T22:45:33.984Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32071-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 6,
+    "ts": "2026-11-08T22:45:34.140Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 7,
+    "ts": "2026-11-08T22:45:34.317Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "review.evidence_verified",
+    "detail": {
+      "ref": "artifacts/reports/research-notes.v1.md",
+      "sha256": "dda5826734a1a09a21e5f1949c5445ea473905b3690274247e68a84d85abf1d6"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 8,
+    "ts": "2026-11-08T22:45:34.483Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": "created",
+    "result": "applied",
+    "reason": "handoff.created",
+    "detail": null,
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 9,
+    "ts": "2026-11-08T22:45:34.845Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 1,
+      "nodeId": "T-002",
+      "roleId": "writer"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 10,
+    "ts": "2026-11-08T22:45:34.857Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "handoff.inboxed",
+    "detail": {
+      "path": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-retry/.orch/inbox/INST-001/HO-001.json"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 11,
+    "ts": "2026-11-08T22:45:35.910Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "created",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794177935953,
+      "attempt": 1
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 12,
+    "ts": "2026-11-08T22:45:35.962Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "pending",
+    "result": "applied",
+    "reason": "handoff.pending",
+    "detail": {
+      "atMs": 1794177936290,
+      "deliveryAttempts": 1,
+      "lastError": "mock-host: upstream model request failed (code 500)"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 13,
+    "ts": "2026-11-08T22:45:36.369Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "pending",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794177936797,
+      "attempt": 2
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 14,
+    "ts": "2026-11-08T22:45:36.808Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "pending",
+    "result": "applied",
+    "reason": "handoff.pending",
+    "detail": {
+      "atMs": 1794177937027,
+      "deliveryAttempts": 2,
+      "lastError": "mock-host: upstream model request failed (code 500)"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 15,
+    "ts": "2026-11-08T22:45:37.036Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "pending",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794177937801,
+      "attempt": 3
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 16,
+    "ts": "2026-11-08T22:45:37.810Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "pending",
+    "result": "applied",
+    "reason": "handoff.pending",
+    "detail": {
+      "atMs": 1794177937989,
+      "deliveryAttempts": 3,
+      "lastError": "mock-host: upstream model request failed (code 500)"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 17,
+    "ts": "2026-11-08T22:45:37.998Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "pending",
+    "to": "expired",
+    "result": "applied",
+    "reason": "handoff.expired",
+    "detail": {
+      "atMs": 1794177938253,
+      "deliveryAttempts": 3,
+      "lastError": "mock-host: upstream model request failed (code 500)"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 18,
+    "ts": "2026-11-08T22:45:38.262Z"
+  },
+  {
+    "object": "escalation",
+    "objectId": "ESC-001",
+    "from": null,
+    "to": "pending",
+    "result": "applied",
+    "reason": "escalation.created",
+    "detail": {
+      "nodeId": "T-002",
+      "round": 1,
+      "reasonCode": "delivery_failed"
+    },
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 19,
+    "ts": "2026-11-08T22:45:38.628Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "running",
+    "to": "escalated",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 20,
+    "ts": "2026-11-08T22:45:38.647Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32117-1",
+    "from": "idle",
+    "to": "idle",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 21,
+    "ts": "2026-11-08T22:45:38.681Z"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "running",
+    "to": "suspended",
+    "result": "applied",
+    "reason": "core.suspend",
+    "detail": null,
+    "gen": "gen-dd7d97dcf0986dbc",
+    "seq": 22,
+    "ts": "2026-11-08T22:45:38.714Z"
+  }
+]
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001 --format json
+# label=orch instance log INST-001 --format json（AC-57-allow） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-allow exit=0 1220ms
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "created",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-e503b343926c3a82",
+    "seq": 1,
+    "ts": "2026-11-08T22:45:41.794Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-e503b343926c3a82",
+    "seq": 2,
+    "ts": "2026-11-08T22:45:41.817Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": "created",
+    "result": "applied",
+    "reason": "handoff.created",
+    "detail": null,
+    "gen": "gen-e503b343926c3a82",
+    "seq": 3,
+    "ts": "2026-11-08T22:45:41.963Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "created",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794177942094
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 4,
+    "ts": "2026-11-08T22:45:42.102Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32178-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 5,
+    "ts": "2026-11-08T22:45:42.338Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "accepted",
+    "result": "applied",
+    "reason": "turn.first_event",
+    "detail": {
+      "event": "agent_thought_chunk",
+      "ambiguityWindowMs": 233
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 6,
+    "ts": "2026-11-08T22:45:42.369Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32178-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 7,
+    "ts": "2026-11-08T22:45:42.576Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32178-1",
+    "from": "tool_running",
+    "to": "waiting_input",
+    "result": "applied",
+    "reason": "permission.requested",
+    "detail": {
+      "action": "write",
+      "toolCallId": "call_mock_32178_1"
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 8,
+    "ts": "2026-11-08T22:45:43.018Z"
+  },
+  {
+    "object": "approval",
+    "objectId": "APR-001",
+    "from": null,
+    "to": "pending",
+    "result": "applied",
+    "reason": "approval.created",
+    "detail": {
+      "approvalId": "APR-001",
+      "nodeId": "T-001",
+      "sessionId": "mock-sess-32178-1",
+      "action": "write",
+      "toolCallId": "call_mock_32178_1"
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 9,
+    "ts": "2026-11-08T22:45:43.038Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32178-1",
+    "from": "waiting_input",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "permission.allowed",
+    "detail": {
+      "action": "write",
+      "approvalId": "APR-001"
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 10,
+    "ts": "2026-11-08T22:45:43.182Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32178-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call_update"
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 11,
+    "ts": "2026-11-08T22:45:43.230Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32178-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 12,
+    "ts": "2026-11-08T22:45:43.486Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32178-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-e503b343926c3a82",
+    "seq": 13,
+    "ts": "2026-11-08T22:45:43.649Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-e503b343926c3a82",
+    "seq": 14,
+    "ts": "2026-11-08T22:45:43.851Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "verification.skipped",
+    "detail": {
+      "note": "未声明产出，跳过存在性检查"
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 15,
+    "ts": "2026-11-08T22:45:43.998Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "review",
+    "to": "done",
+    "result": "applied",
+    "reason": "verification.passed",
+    "detail": null,
+    "gen": "gen-e503b343926c3a82",
+    "seq": 16,
+    "ts": "2026-11-08T22:45:44.277Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "accepted",
+    "to": "consumed",
+    "result": "applied",
+    "reason": "handoff.consumed",
+    "detail": {
+      "atMs": 1794177944290
+    },
+    "gen": "gen-e503b343926c3a82",
+    "seq": 17,
+    "ts": "2026-11-08T22:45:44.300Z"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "running",
+    "to": "completed",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-e503b343926c3a82",
+    "seq": 18,
+    "ts": "2026-11-08T22:45:44.473Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32178-1",
+    "from": "waiting_dependency",
+    "to": "idle",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-e503b343926c3a82",
+    "seq": 19,
+    "ts": "2026-11-08T22:45:44.492Z"
+  }
+]
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001 --format json
+# label=orch instance log INST-001 --format json（AC-57-deny） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-deny exit=0 1313ms
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "created",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 1,
+    "ts": "2026-11-08T22:45:48.190Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 2,
+    "ts": "2026-11-08T22:45:48.214Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": "created",
+    "result": "applied",
+    "reason": "handoff.created",
+    "detail": null,
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 3,
+    "ts": "2026-11-08T22:45:48.354Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "created",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794177948489
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 4,
+    "ts": "2026-11-08T22:45:48.498Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32258-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 5,
+    "ts": "2026-11-08T22:45:48.734Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "accepted",
+    "result": "applied",
+    "reason": "turn.first_event",
+    "detail": {
+      "event": "agent_thought_chunk",
+      "ambiguityWindowMs": 235
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 6,
+    "ts": "2026-11-08T22:45:48.766Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32258-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 7,
+    "ts": "2026-11-08T22:45:48.968Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32258-1",
+    "from": "tool_running",
+    "to": "waiting_input",
+    "result": "applied",
+    "reason": "permission.requested",
+    "detail": {
+      "action": "write",
+      "toolCallId": "call_mock_32258_1"
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 8,
+    "ts": "2026-11-08T22:45:49.454Z"
+  },
+  {
+    "object": "approval",
+    "objectId": "APR-001",
+    "from": null,
+    "to": "pending",
+    "result": "applied",
+    "reason": "approval.created",
+    "detail": {
+      "approvalId": "APR-001",
+      "nodeId": "T-001",
+      "sessionId": "mock-sess-32258-1",
+      "action": "write",
+      "toolCallId": "call_mock_32258_1"
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 9,
+    "ts": "2026-11-08T22:45:49.474Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32258-1",
+    "from": "waiting_input",
+    "to": "idle",
+    "result": "applied",
+    "reason": "permission.denied",
+    "detail": {
+      "action": "write",
+      "approvalId": "APR-001"
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 10,
+    "ts": "2026-11-08T22:45:49.633Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32258-1",
+    "from": "idle",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call_update"
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 11,
+    "ts": "2026-11-08T22:45:49.667Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "failed",
+    "result": "applied",
+    "reason": "run.failed",
+    "detail": {
+      "code": "PERMISSION_DENIED",
+      "message": "write"
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 12,
+    "ts": "2026-11-08T22:45:49.984Z"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "running",
+    "to": "failed",
+    "result": "applied",
+    "reason": "run.failed",
+    "detail": null,
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 13,
+    "ts": "2026-11-08T22:45:50.178Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "accepted",
+    "to": "rejected",
+    "result": "applied",
+    "reason": "handoff.rejected",
+    "detail": {
+      "reason": "permission_denied"
+    },
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 14,
+    "ts": "2026-11-08T22:45:50.198Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32258-1",
+    "from": "tool_running",
+    "to": "idle",
+    "result": "applied",
+    "reason": "permission.denied",
+    "detail": null,
+    "gen": "gen-4a3201f922fe476f",
+    "seq": 15,
+    "ts": "2026-11-08T22:45:50.232Z"
+  }
+]
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001 --format json
+# label=orch instance log INST-001 --format json（AC-57-escalation） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-escalation exit=0 314ms
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "created",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 1,
+    "ts": "2026-11-08T22:45:54.077Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 1,
+      "nodeId": "T-001",
+      "roleId": "developer"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 2,
+    "ts": "2026-11-08T22:45:54.089Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32342-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 3,
+    "ts": "2026-11-08T22:45:55.128Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32342-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 4,
+    "ts": "2026-11-08T22:45:55.445Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32342-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 5,
+    "ts": "2026-11-08T22:45:55.632Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32342-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 6,
+    "ts": "2026-11-08T22:45:55.790Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 7,
+    "ts": "2026-11-08T22:45:55.970Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "review",
+    "to": "done",
+    "result": "applied",
+    "reason": "verification.passed",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 8,
+    "ts": "2026-11-08T22:45:56.266Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32342-1",
+    "from": "waiting_dependency",
+    "to": "idle",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 9,
+    "ts": "2026-11-08T22:45:56.289Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": "created",
+    "result": "applied",
+    "reason": "handoff.created",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 10,
+    "ts": "2026-11-08T22:45:56.635Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 1,
+      "nodeId": "T-002",
+      "roleId": "tester"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 11,
+    "ts": "2026-11-08T22:45:56.645Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "handoff.inboxed",
+    "detail": {
+      "path": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-escalation/.orch/inbox/INST-001/HO-001.json"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 12,
+    "ts": "2026-11-08T22:45:57.691Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "created",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794177957734,
+      "attempt": 1
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 13,
+    "ts": "2026-11-08T22:45:57.744Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32365-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 14,
+    "ts": "2026-11-08T22:45:58.065Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "accepted",
+    "result": "applied",
+    "reason": "turn.first_event",
+    "detail": {
+      "event": "agent_thought_chunk",
+      "ambiguityWindowMs": 316
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 15,
+    "ts": "2026-11-08T22:45:58.261Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32365-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 16,
+    "ts": "2026-11-08T22:45:58.662Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32365-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 17,
+    "ts": "2026-11-08T22:45:58.829Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32365-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 18,
+    "ts": "2026-11-08T22:45:59.024Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 19,
+    "ts": "2026-11-08T22:45:59.180Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "verdict.read",
+    "detail": {
+      "source": "file",
+      "path": "out/verdict.json",
+      "verdict": "fail"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 20,
+    "ts": "2026-11-08T22:45:59.385Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "accepted",
+    "to": "consumed",
+    "result": "applied",
+    "reason": "handoff.consumed",
+    "detail": {
+      "atMs": 1794177959402
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 21,
+    "ts": "2026-11-08T22:45:59.411Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "review",
+    "to": "failed",
+    "result": "applied",
+    "reason": "verification.failed",
+    "detail": {
+      "verdict": "fail",
+      "defectCount": 2
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 22,
+    "ts": "2026-11-08T22:45:59.919Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32365-1",
+    "from": "waiting_dependency",
+    "to": "idle",
+    "result": "applied",
+    "reason": "verification.failed",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 23,
+    "ts": "2026-11-08T22:45:59.938Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-002",
+    "from": null,
+    "to": "created",
+    "result": "applied",
+    "reason": "handoff.created",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 24,
+    "ts": "2026-11-08T22:46:00.279Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-002",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "backflow.constructed",
+    "detail": {
+      "defects": [
+        {
+          "summary": "div 在除数为 0 时返回 Infinity，未抛错",
+          "evidence": "out/test-log.txt"
+        },
+        {
+          "summary": "div 在整除场景存在浮点误差",
+          "evidence": "out/test-log-2.txt"
+        }
+      ],
+      "retestRequirement": "按上方每条缺陷修正后重新提交产物"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 25,
+    "ts": "2026-11-08T22:46:00.298Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "done",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 2,
+      "nodeId": "T-001",
+      "roleId": "developer"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 26,
+    "ts": "2026-11-08T22:46:00.346Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-002",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "handoff.inboxed",
+    "detail": {
+      "path": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-escalation/.orch/inbox/INST-001/HO-002.json"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 27,
+    "ts": "2026-11-08T22:46:01.286Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-002",
+    "from": "created",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794177961332,
+      "attempt": 1
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 28,
+    "ts": "2026-11-08T22:46:01.342Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32402-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 29,
+    "ts": "2026-11-08T22:46:01.655Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-002",
+    "from": "delivered",
+    "to": "accepted",
+    "result": "applied",
+    "reason": "turn.first_event",
+    "detail": {
+      "event": "agent_thought_chunk",
+      "ambiguityWindowMs": 305
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 30,
+    "ts": "2026-11-08T22:46:01.684Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32402-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 31,
+    "ts": "2026-11-08T22:46:01.880Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32402-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 32,
+    "ts": "2026-11-08T22:46:02.056Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32402-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 33,
+    "ts": "2026-11-08T22:46:02.209Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 34,
+    "ts": "2026-11-08T22:46:02.417Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "review",
+    "to": "done",
+    "result": "applied",
+    "reason": "verification.passed",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 35,
+    "ts": "2026-11-08T22:46:02.741Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-002",
+    "from": "accepted",
+    "to": "consumed",
+    "result": "applied",
+    "reason": "handoff.consumed",
+    "detail": {
+      "atMs": 1794177962752
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 36,
+    "ts": "2026-11-08T22:46:02.761Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32402-1",
+    "from": "waiting_dependency",
+    "to": "idle",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 37,
+    "ts": "2026-11-08T22:46:02.925Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-003",
+    "from": null,
+    "to": "created",
+    "result": "applied",
+    "reason": "handoff.created",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 38,
+    "ts": "2026-11-08T22:46:03.227Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "failed",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 2,
+      "nodeId": "T-002",
+      "roleId": "tester"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 39,
+    "ts": "2026-11-08T22:46:03.238Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-003",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "handoff.inboxed",
+    "detail": {
+      "path": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-escalation/.orch/inbox/INST-001/HO-003.json"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 40,
+    "ts": "2026-11-08T22:46:04.179Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-003",
+    "from": "created",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794177964226,
+      "attempt": 1
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 41,
+    "ts": "2026-11-08T22:46:04.236Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32429-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 42,
+    "ts": "2026-11-08T22:46:04.525Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-003",
+    "from": "delivered",
+    "to": "accepted",
+    "result": "applied",
+    "reason": "turn.first_event",
+    "detail": {
+      "event": "agent_thought_chunk",
+      "ambiguityWindowMs": 281
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 43,
+    "ts": "2026-11-08T22:46:04.556Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32429-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 44,
+    "ts": "2026-11-08T22:46:04.868Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32429-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 45,
+    "ts": "2026-11-08T22:46:05.019Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32429-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 46,
+    "ts": "2026-11-08T22:46:05.214Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 47,
+    "ts": "2026-11-08T22:46:05.382Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "verdict.read",
+    "detail": {
+      "source": "file",
+      "path": "out/verdict.json",
+      "verdict": "fail"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 48,
+    "ts": "2026-11-08T22:46:05.588Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-003",
+    "from": "accepted",
+    "to": "consumed",
+    "result": "applied",
+    "reason": "handoff.consumed",
+    "detail": {
+      "atMs": 1794177965599
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 49,
+    "ts": "2026-11-08T22:46:05.607Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "rounds.exceeded",
+    "detail": {
+      "round": 2,
+      "maxRounds": 2
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 50,
+    "ts": "2026-11-08T22:46:05.821Z"
+  },
+  {
+    "object": "escalation",
+    "objectId": "ESC-001",
+    "from": null,
+    "to": "pending",
+    "result": "applied",
+    "reason": "escalation.created",
+    "detail": {
+      "nodeId": "T-002",
+      "round": 2,
+      "reasonCode": "rounds_exceeded"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 51,
+    "ts": "2026-11-08T22:46:05.999Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "review",
+    "to": "escalated",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 52,
+    "ts": "2026-11-08T22:46:06.018Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32429-1",
+    "from": "waiting_dependency",
+    "to": "escalated",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 53,
+    "ts": "2026-11-08T22:46:06.052Z"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "running",
+    "to": "suspended",
+    "result": "applied",
+    "reason": "core.suspend",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 54,
+    "ts": "2026-11-08T22:46:06.086Z"
+  },
+  {
+    "object": "escalation",
+    "objectId": "ESC-001",
+    "from": "pending",
+    "to": "resolved",
+    "result": "applied",
+    "reason": "escalation.resolved",
+    "detail": {
+      "escalationId": "ESC-001",
+      "resolution": "pass"
+    },
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 55,
+    "ts": "2026-11-08T22:46:06.639Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32342-1",
+    "from": "idle",
+    "to": "idle",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 56,
+    "ts": "2026-11-08T22:46:06.660Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32365-1",
+    "from": "idle",
+    "to": "idle",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 57,
+    "ts": "2026-11-08T22:46:06.679Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32402-1",
+    "from": "idle",
+    "to": "idle",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 58,
+    "ts": "2026-11-08T22:46:06.699Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32429-1",
+    "from": "escalated",
+    "to": "idle",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 59,
+    "ts": "2026-11-08T22:46:06.718Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "escalated",
+    "to": "done",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 60,
+    "ts": "2026-11-08T22:46:06.737Z"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "suspended",
+    "to": "completed",
+    "result": "applied",
+    "reason": "state.change",
+    "detail": null,
+    "gen": "gen-08cedba63cbe2773",
+    "seq": 61,
+    "ts": "2026-11-08T22:46:06.756Z"
+  }
+]
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001 --format json
+# label=orch instance log INST-001 --format json（AC-57-flow） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-flow exit=0 1311ms
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "created",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 1,
+    "ts": "2026-11-08T22:46:09.779Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 1,
+      "nodeId": "T-001",
+      "roleId": "developer"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 2,
+    "ts": "2026-11-08T22:46:09.793Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32526-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 3,
+    "ts": "2026-11-08T22:46:10.825Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32526-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 4,
+    "ts": "2026-11-08T22:46:11.177Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32526-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 5,
+    "ts": "2026-11-08T22:46:11.324Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32526-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 6,
+    "ts": "2026-11-08T22:46:11.520Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 7,
+    "ts": "2026-11-08T22:46:11.677Z"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "applied",
+    "reason": "workflow.paused",
+    "detail": {
+      "paused": true
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 8,
+    "ts": "2026-11-08T22:46:12.320Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "review",
+    "to": "done",
+    "result": "applied",
+    "reason": "verification.passed",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 9,
+    "ts": "2026-11-08T22:46:12.607Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32526-1",
+    "from": "waiting_dependency",
+    "to": "idle",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 10,
+    "ts": "2026-11-08T22:46:12.627Z"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "applied",
+    "reason": "workflow.resumed",
+    "detail": {
+      "paused": false
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 11,
+    "ts": "2026-11-08T22:46:13.212Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": "created",
+    "result": "applied",
+    "reason": "handoff.created",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 12,
+    "ts": "2026-11-08T22:46:13.354Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 1,
+      "nodeId": "T-002",
+      "roleId": "tester"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 13,
+    "ts": "2026-11-08T22:46:13.365Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "handoff.inboxed",
+    "detail": {
+      "path": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-flow/.orch/inbox/INST-001/HO-001.json"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 14,
+    "ts": "2026-11-08T22:46:14.369Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "created",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794177974404,
+      "attempt": 1
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 15,
+    "ts": "2026-11-08T22:46:14.413Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32555-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 16,
+    "ts": "2026-11-08T22:46:14.722Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "accepted",
+    "result": "applied",
+    "reason": "turn.first_event",
+    "detail": {
+      "event": "agent_thought_chunk",
+      "ambiguityWindowMs": 291
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 17,
+    "ts": "2026-11-08T22:46:14.911Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32555-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 18,
+    "ts": "2026-11-08T22:46:15.283Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32555-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 19,
+    "ts": "2026-11-08T22:46:15.462Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32555-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 20,
+    "ts": "2026-11-08T22:46:15.645Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 21,
+    "ts": "2026-11-08T22:46:15.821Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "verdict.read",
+    "detail": {
+      "source": "file",
+      "path": "out/verdict.json",
+      "verdict": "pass"
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 22,
+    "ts": "2026-11-08T22:46:15.966Z"
+  },
+  {
+    "object": "node",
+    "objectId": "T-002",
+    "from": "review",
+    "to": "done",
+    "result": "applied",
+    "reason": "verification.passed",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 23,
+    "ts": "2026-11-08T22:46:16.132Z"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "accepted",
+    "to": "consumed",
+    "result": "applied",
+    "reason": "handoff.consumed",
+    "detail": {
+      "atMs": 1794177976143
+    },
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 24,
+    "ts": "2026-11-08T22:46:16.152Z"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-32555-1",
+    "from": "waiting_dependency",
+    "to": "idle",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 25,
+    "ts": "2026-11-08T22:46:16.291Z"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "running",
+    "to": "completed",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-63cb80deeeda0637",
+    "seq": 26,
+    "ts": "2026-11-08T22:46:16.647Z"
+  }
+]
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-bad exit=0 344ms
+核心已停止（pid 32607，运行 5s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-retry exit=0 306ms
+核心已停止（pid 32040，运行 52s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-allow exit=0 302ms
+核心已停止（pid 32628，运行 4s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-deny exit=0 337ms
+核心已停止（pid 32630，运行 4s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-escalation exit=0 304ms
+核心已停止（pid 32314，运行 32s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-57-flow exit=0 304ms
+核心已停止（pid 32651，运行 3s）
+

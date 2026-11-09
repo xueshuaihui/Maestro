@@ -1,0 +1,41 @@
+{
+  "ac": "AC-52",
+  "title": "终止等同取消",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:44:06.596Z",
+  "finishedAt": "2026-11-08T22:44:20.026Z",
+  "durationMs": 13430,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-52-abort",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-abort"
+    },
+    {
+      "case": "AC-52-cancel",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-cancel"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-52-abort",
+      "instanceId": "INST-001",
+      "state": "cancelled"
+    },
+    {
+      "__root": "AC-52-cancel",
+      "instanceId": "INST-001",
+      "state": "cancelled"
+    }
+  ],
+  "checks": 8,
+  "notes": []
+}

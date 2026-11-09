@@ -1,0 +1,42 @@
+{
+  "note": "B-01 / BLK-03 补修前后证据存档。本轮只改 src/core/orchestrator.js 的 ③ 一处（约 4400-4428 扩展为 4400-4489），不是第 4 处 src 改动。",
+  "before": {
+    "orchestrator_3": "补修前 ③（4404-4415）：查找条件仅 state==='created' && item.edge + reverse() 取最新；nodeId 由选中包反推（pending.toNodeId ?? pending.edge?.to）；无 D-7.4 第 1 步三重门控、无 node.round >= targetRound 防重；用暂停前内存副本 state 直调 dispatchInState，绕过 advance()/planAdvance 的 reuseHandoffId。",
+    "ac66_measured_before_patch": {
+      "evidence": "docs/iterations/iteration-4/evidence/AC-66.state.json（本轮重跑前的落盘值，重跑后会被覆盖，摘要存档于此）",
+      "state": "interrupted",
+      "paused": false,
+      "rev": 29,
+      "dispatchCount": 3,
+      "handoffs": [
+        "HO-001 consumed / round 1 / T-002",
+        "HO-002 accepted / round 2 / T-001 / deliveryAttempts 1 / defects 2"
+      ],
+      "nodes": ["T-001 running round 2", "T-002 failed round 1"],
+      "sessions": ["T-001 round 1 idle", "T-002 round 1 idle", "T-001 round 2 thinking"],
+      "case": "probe/acc4-cases/ac66.mjs 16/16 通过（主线 70/0/0/0 实测）"
+    },
+    "race_unit_before_patch": {
+      "command": "node --test test/wp11/resume-reuse-guard.test.js（临时把 orchestrator.js 换回补修前备份实跑，随后逐字恢复）",
+      "result": "tests 5 / pass 1 / fail 4（竞态主场景 + 3 负例全红，仅正例过）"
+    }
+  },
+  "after": {
+    "orchestrator_lines": "src/core/orchestrator.js:4400-4489（③ 区域，同一处修复）",
+    "gates": [
+      "toNodeId === targetNodeId：目标节点由 planAdvance(fresh) 独立确定，不由选中包反推",
+      "round === targetRound：targetRound = planAdvance.targetRound = 目标节点当前 round + 1",
+      "该轮无已开始会话：sessions 中 nodeId + round 命中即不复用（旧轮次会话不算）",
+      "防重：isNodeBusyState(targetNode) / node.round >= 构造时 targetRound（handoff.round）→ stop；复用前 store.load 重读盘上最新 fresh 快照（AC-53 rev 语义不变）"
+    ],
+    "ac66_evidence": "docs/iterations/iteration-4/evidence/AC-66.state.json / AC-66.events.jsonl / AC-66.attempts.json（本轮重跑后）",
+    "parts": "probe/acc4-f-parts/AC-66.md（本轮重跑后）",
+    "race_unit": "test/wp11/resume-reuse-guard.test.js（5 用例：竞态主场景 + 3 负例 + 1 正例）",
+    "race_unit_after_patch": "tests 5 / pass 5 / fail 0"
+  },
+  "paths": {
+    "blocker_original": "probe/acc4-f-parts/BLK-before.json → AC-66_修复前（③ 引入前的原始缺陷日志）",
+    "blockers": "probe/acc4-f-blockers.md → BLK-03",
+    "report": "docs/iterations/iteration-4/report.md（结论与证据路径表不变）"
+  }
+}

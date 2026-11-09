@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-08dd594e096f5378",
+  "createdAt": "2026-11-08T22:17:16.640Z",
+  "updatedAt": "2026-11-08T22:17:20.020Z",
+  "state": "completed",
+  "stateSince": "2026-11-08T22:17:19.799Z",
+  "template": "single",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03/demo",
+  "task": "写下说明",
+  "halted": false,
+  "rev": 11,
+  "counters": {
+    "eventSeq": 15,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "worker",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T22:17:19.573Z",
+      "startedAt": "2026-11-08T22:17:16.640Z",
+      "roundStartedAt": "2026-11-08T22:17:16.640Z",
+      "endedAt": "2026-11-08T22:17:19.983Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-11874-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03/demo/calc.js",
+          "declared": false,
+          "exists": true,
+          "bytes": 251,
+          "sha256": null,
+          "verifiedAt": "2026-11-08T22:17:19.536Z"
+        }
+      ]
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-11874-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:17:19.982Z",
+      "createdAt": "2026-11-08T22:17:17.722Z",
+      "lastEventAt": "2026-11-08T22:17:18.681Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03/demo/calc.js",
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": null,
+      "state": "consumed",
+      "createdAt": "2026-11-08T22:17:18.140Z",
+      "deliveredAt": "2026-11-08T22:17:18.331Z",
+      "acceptedAt": "2026-11-08T22:17:18.506Z",
+      "consumedAt": "2026-11-08T22:17:19.744Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 175,
+      "defects": [],
+      "note": null
+    }
+  ],
+  "escalations": []
+}

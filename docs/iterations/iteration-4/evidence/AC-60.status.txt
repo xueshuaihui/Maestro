@@ -1,0 +1,43 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js workflow pause INST-001
+# label=orch workflow pause INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-60 exit=0 493ms
+实例 INST-001 · 运行中（已暂停）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cancel --instance INST-001
+# label=orch cancel --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-60 exit=0 682ms
+会话 空闲
+节点 T-001 worker 已取消
+交接包 HO-001 已拒绝（已撤回）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明 --approval hold
+# label=orch run --approval hold（前台） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-60 exit=1 4322ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-33062-1
+任务已投递
+审批 APR-001 待处理 · 动作 write
+会话 等待审批：write
+会话 执行中 · 调用工具（write） · 已运行 3s
+节点 已取消
+交接包 HO-001  已构造   06:46:55
+交接包 HO-001  已投递   06:46:55
+交接包 HO-001  已接受   06:46:55
+交接包 HO-001  已拒绝   06:46:56  原因 已撤回
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-60 exit=0 317ms
+实例 INST-001 · 已取消
+节点 已取消
+会话 空闲
+交接包 HO-001  已构造   06:46:55
+交接包 HO-001  已投递   06:46:55
+交接包 HO-001  已接受   06:46:55
+交接包 HO-001  已拒绝   06:46:56  原因 已撤回
+审批 APR-001 已作废 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-60 exit=0 271ms
+核心未在运行
+

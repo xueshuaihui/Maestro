@@ -1,0 +1,119 @@
+{
+  "ac": "AC-34",
+  "title": "审批号歧义时要求指定实例",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：两个实例都有 APR-001",
+      "ok": true,
+      "blocked": false,
+      "actual": "INST-001,INST-002"
+    },
+    {
+      "text": "Then①：提示「审批号 APR-001 在多个实例中存在，请加 --instance」（期望 \"审批号 APR-001 在多个实例中存在，请加 --instance\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"审批号 APR-001 在多个实例中存在，请加 --instance\""
+    },
+    {
+      "text": "Then①：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then②：提示「未找到审批 APR-999」（期望 \"未找到审批 APR-999\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"未找到审批 APR-999\""
+    },
+    {
+      "text": "Then②：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：相关实例 rev 都不变（期望 \"[6,4]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"[6,4]\""
+    },
+    {
+      "text": "机检：APR-001 仍是 pending（期望 \"pending\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch status --instance INST-001（预热核心，完成启动对账）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 374,
+      "stdout": "实例 INST-001 · 运行中\n节点 执行中\n会话 等待审批：write\n交接包 HO-001  已构造   06:39:10\n交接包 HO-001  已投递   06:39:10\n交接包 HO-001  已接受   06:39:10\n审批 APR-001 待处理 · 动作 write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch approve APR-001 --decision allow（不带 --instance，歧义）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "approve",
+        "APR-001",
+        "--decision",
+        "allow"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 343,
+      "stdout": "审批号 APR-001 在多个实例中存在，请加 --instance\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch approve APR-999 --instance INST-001 --decision allow",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "approve",
+        "APR-999",
+        "--decision",
+        "allow",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 285,
+      "stdout": "未找到审批 APR-999\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 243,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

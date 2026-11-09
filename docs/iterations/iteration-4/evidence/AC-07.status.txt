@@ -1,0 +1,107 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop（含 1 次回流与 1 次复测） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07 exit=0 14066ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-12307-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 2 轮 · 耗时 8s
+节点 T-002 测试 已完成 · 第 2 轮 · 耗时 9s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:17:55
+交接包 HO-001  开发→测试  已投递   06:17:57
+交接包 HO-001  开发→测试  已接受   06:17:57
+交接包 HO-001  开发→测试  已完成   06:17:58
+交接包 HO-002  测试→开发（回流）  已构造   06:17:59
+交接包 HO-002  测试→开发（回流）  已投递   06:18:00
+交接包 HO-002  测试→开发（回流）  已接受   06:18:00
+交接包 HO-002  测试→开发（回流）  已完成   06:18:01
+交接包 HO-003  开发→测试（复测）  已构造   06:18:02
+交接包 HO-003  开发→测试（复测）  已投递   06:18:03
+交接包 HO-003  开发→测试（复测）  已接受   06:18:03
+交接包 HO-003  开发→测试（复测）  已完成   06:18:04
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写发布说明，产物：release-notes.md --template task-loop
+# label=orch run task-loop（含 1 次驳回回流） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task exit=0 16797ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-12464-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 2s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 8s · 产物 artifacts/docs/release-notes.v2.md
+节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 8s · 审核 通过
+交接包 HO-001  研究员→撰写者  已构造   06:18:10
+交接包 HO-001  研究员→撰写者  已投递   06:18:11
+交接包 HO-001  研究员→撰写者  已接受   06:18:12
+交接包 HO-001  研究员→撰写者  已完成   06:18:13
+交接包 HO-002  撰写者→审核者  已构造   06:18:13
+交接包 HO-002  撰写者→审核者  已投递   06:18:14
+交接包 HO-002  撰写者→审核者  已接受   06:18:14
+交接包 HO-002  撰写者→审核者  已完成   06:18:16
+交接包 HO-003  审核者→撰写者（回流）  已构造   06:18:16
+交接包 HO-003  审核者→撰写者（回流）  已投递   06:18:17
+交接包 HO-003  审核者→撰写者（回流）  已接受   06:18:18
+交接包 HO-003  审核者→撰写者（回流）  已完成   06:18:19
+交接包 HO-004  撰写者→审核者（复测）  已构造   06:18:19
+交接包 HO-004  撰写者→审核者（复测）  已投递   06:18:20
+交接包 HO-004  撰写者→审核者（复测）  已接受   06:18:20
+交接包 HO-004  撰写者→审核者（复测）  已完成   06:18:22
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明
+# label=orch run single（不带 --template） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-single exit=0 5002ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-12653-1
+任务已投递
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 已完成 · 耗时 3s
+交接包 HO-001  已构造   06:18:26
+交接包 HO-001  已投递   06:18:26
+交接包 HO-001  已接受   06:18:26
+交接包 HO-001  已完成   06:18:27
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07 exit=0 310ms
+核心已停止（pid 12279，运行 36s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-task exit=0 295ms
+核心已停止（pid 12445，运行 22s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-07-single exit=0 296ms
+核心已停止（pid 12652，运行 5s）
+

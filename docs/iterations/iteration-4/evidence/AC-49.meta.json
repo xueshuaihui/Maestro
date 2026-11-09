@@ -1,0 +1,32 @@
+{
+  "ac": "AC-49",
+  "title": "暂停停在下一次派发边界",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T11:58:24.121Z",
+  "finishedAt": "2026-11-09T11:58:31.671Z",
+  "durationMs": 7550,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-49",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-49"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-49",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 17,
+  "notes": []
+}

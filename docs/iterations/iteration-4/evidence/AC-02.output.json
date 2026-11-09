@@ -1,0 +1,177 @@
+{
+  "ac": "AC-02",
+  "title": "文档闭环每个节点都有阶段区",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：workspace/shared 是目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02/.orch/instances/INST-001/workspace"
+    },
+    {
+      "text": "机检：workspace/stage/T-001 是目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02/.orch/instances/INST-001/workspace/stage/T-001"
+    },
+    {
+      "text": "机检：workspace/stage/T-002 是目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02/.orch/instances/INST-001/workspace/stage/T-002"
+    },
+    {
+      "text": "机检：workspace/stage/T-003 是目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02/.orch/instances/INST-001/workspace/stage/T-003"
+    },
+    {
+      "text": "机检：status.md 存在且是可读 Markdown",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 通用任务闭环\n\n- 状态：已完成\n- 暂停：否\n- 任务：写发布说明，产物：release-notes.md\n- 当前节点：T-003 审"
+    },
+    {
+      "text": "A-1：标题行含实例号与模板名",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 通用任务闭环"
+    },
+    {
+      "text": "A-1：含「- 状态：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 状态：已完成"
+    },
+    {
+      "text": "A-1：含「- 暂停：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 暂停：否"
+    },
+    {
+      "text": "A-1：含「- 任务：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 通用任务闭环"
+    },
+    {
+      "text": "A-1：含「- 当前节点：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 当前节点：T-003 审核者"
+    },
+    {
+      "text": "A-1：含「- 工作区：」绝对路径行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02/.orch/instances/INST-001/workspace"
+    },
+    {
+      "text": "A-1：含「## 节点」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "A-1：含「## 交接包」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "A-1：含「## 升级」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "A-1：含「## 审批」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "机检：status.md 节点段落列出 T-001（期望含 \"- T-001 研究员\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 通用任务闭环\n\n- 状态：已完成\n- 暂停：否\n- 任务：写发布说明，产物：release-notes.md\n- 当前节点：T-003 审核者\n- 更新：2026-11-08T22:17:12.169Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02/.orch/instances/INST-001/workspace\n\n## 节点\n\n- T-001 研究员：已完成 · 第 1 轮\n- T-002 撰写者：已完成 · 第 1 轮\n- T-003 审核者：已完成 · 第 1 轮\n\n## 交接包\n\n- HO-001 研究员→撰写者：已完成 · 输入 artifacts/reports/research-notes.v1.md\n- HO-002 撰写者→审核者：已完成 · 输入 artifacts/docs/release-notes.v1.md\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    },
+    {
+      "text": "机检：status.md 节点段落列出 T-002（期望含 \"- T-002 撰写者\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 通用任务闭环\n\n- 状态：已完成\n- 暂停：否\n- 任务：写发布说明，产物：release-notes.md\n- 当前节点：T-003 审核者\n- 更新：2026-11-08T22:17:12.169Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02/.orch/instances/INST-001/workspace\n\n## 节点\n\n- T-001 研究员：已完成 · 第 1 轮\n- T-002 撰写者：已完成 · 第 1 轮\n- T-003 审核者：已完成 · 第 1 轮\n\n## 交接包\n\n- HO-001 研究员→撰写者：已完成 · 输入 artifacts/reports/research-notes.v1.md\n- HO-002 撰写者→审核者：已完成 · 输入 artifacts/docs/release-notes.v1.md\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    },
+    {
+      "text": "机检：status.md 节点段落列出 T-003（期望含 \"- T-003 审核者\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 通用任务闭环\n\n- 状态：已完成\n- 暂停：否\n- 任务：写发布说明，产物：release-notes.md\n- 当前节点：T-003 审核者\n- 更新：2026-11-08T22:17:12.169Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02/.orch/instances/INST-001/workspace\n\n## 节点\n\n- T-001 研究员：已完成 · 第 1 轮\n- T-002 撰写者：已完成 · 第 1 轮\n- T-003 审核者：已完成 · 第 1 轮\n\n## 交接包\n\n- HO-001 研究员→撰写者：已完成 · 输入 artifacts/reports/research-notes.v1.md\n- HO-002 撰写者→审核者：已完成 · 输入 artifacts/docs/release-notes.v1.md\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    },
+    {
+      "text": "机检：T-001 state=done（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "机检：T-002 state=done（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "机检：T-003 state=done（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "机检：template=task-loop（期望 \"task-loop\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"task-loop\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run task-loop（夹具 doc-pass）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写发布说明，产物：release-notes.md",
+        "--template",
+        "task-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 12200,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-11733-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 2s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 3s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 3s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   06:17:05\n交接包 HO-001  研究员→撰写者  已投递   06:17:06\n交接包 HO-001  研究员→撰写者  已接受   06:17:07\n交接包 HO-001  研究员→撰写者  已完成   06:17:08\n交接包 HO-002  撰写者→审核者  已构造   06:17:08\n交接包 HO-002  撰写者→审核者  已投递   06:17:09\n交接包 HO-002  撰写者→审核者  已接受   06:17:10\n交接包 HO-002  撰写者→审核者  已完成   06:17:11\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-02",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 362,
+      "stdout": "核心已停止（pid 11679，运行 11s）\n",
+      "stderr": ""
+    }
+  ]
+}

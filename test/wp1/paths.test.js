@@ -51,6 +51,26 @@ test('布局函数指向 .orch 下的标准位置', async () => {
   assert.equal(paths.coreLogPath(root), path.join(root, '.orch', 'core.log'));
 });
 
+test('工作区三层可见域与信箱路径（I1.4 M-1 / M-5）', async () => {
+  const dir = await makeTempDir();
+  const root = paths.projectRoot(dir);
+  const id = 'INST-001';
+  const workspace = path.join(root, '.orch', 'instances', id, 'workspace');
+
+  assert.equal(paths.instanceSharedDir(root, id), path.join(workspace, 'shared'));
+  assert.equal(paths.instanceStageRoot(root, id), path.join(workspace, 'stage'));
+  assert.equal(paths.instanceStageDir(root, id, 'T-002'), path.join(workspace, 'stage', 'T-002'));
+  assert.equal(paths.instanceStatusPath(root, id), path.join(workspace, 'status.md'));
+  assert.equal(paths.instanceInboxDir(root, id), path.join(root, '.orch', 'inbox', id));
+  assert.equal(
+    paths.inboxFilePath(root, id, 'HO-002'),
+    path.join(root, '.orch', 'inbox', id, 'HO-002.json'),
+  );
+
+  // 信箱在实例目录之外：不得被当成实例目录（store.list 只遍历 .orch/instances）。
+  assert.equal(paths.instanceInboxDir(root, id).startsWith(paths.instancesDir(root)), false);
+});
+
 test('ensureLayout 幂等创建 .orch/instances', async () => {
   const dir = await makeTempDir();
   const root = paths.projectRoot(dir);

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-78c49928754caac5",
+  "createdAt": "2026-11-08T22:39:38.701Z",
+  "updatedAt": "2026-11-08T22:39:41.038Z",
+  "state": "interrupted",
+  "stateSince": "2026-11-08T22:39:41.022Z",
+  "template": "code-loop",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-37/demo",
+  "task": "实现 calc.js，产物：calc.js",
+  "halted": false,
+  "rev": 8,
+  "counters": {
+    "eventSeq": 6,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "running",
+      "stateSince": "2026-11-08T22:39:39.581Z",
+      "startedAt": "2026-11-08T22:39:39.581Z",
+      "roundStartedAt": "2026-11-08T22:39:39.581Z",
+      "endedAt": null,
+      "failure": null,
+      "note": "stopped at node running / session waiting_input",
+      "verdict": null,
+      "sessionId": "mock-sess-27942-1",
+      "artifactRefs": []
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 0,
+      "state": "pending",
+      "stateSince": "2026-11-08T22:39:38.701Z",
+      "startedAt": null,
+      "roundStartedAt": null,
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-27942-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "waiting_input",
+      "stateSince": "2026-11-08T22:39:40.285Z",
+      "createdAt": "2026-11-08T22:39:40.025Z",
+      "lastEventAt": "2026-11-08T22:39:40.285Z",
+      "toolName": "write",
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-37/demo/note.md",
+      "pendingPermission": {
+        "toolCallId": "call_mock_27942_1",
+        "action": "write"
+      },
+      "quarantined": false
+    }
+  ],
+  "handoffs": [],
+  "escalations": [],
+  "approvals": [
+    {
+      "approvalId": "APR-001",
+      "instanceId": "INST-001",
+      "nodeId": "T-001",
+      "sessionId": "mock-sess-27942-1",
+      "action": "write",
+      "toolCallId": "call_mock_27942_1",
+      "state": "pending",
+      "createdAt": "2026-11-08T22:39:40.286Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ]
+}

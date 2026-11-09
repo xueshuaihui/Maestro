@@ -44,6 +44,9 @@ test('F-5 产品：--hold-session 下建会话后不推进，status 会话行仍
     assert.equal(status.ok, true);
     assert.equal(status.snapshot.state, 'running');
     assert.equal(currentSession(status.snapshot).state, 'idle', '会话建好但未开始处理时应为空闲');
+    // D-9.1 / WP-6 快照新字段：hold-session 路径不创建审批，投影缺省为空、计数 0。
+    assert.deepEqual(status.snapshot.approvals, []);
+    assert.equal(status.snapshot.pendingApprovals, 0);
 
     const events = (await env.store.readEvents(INSTANCE)).events;
     assert.equal(

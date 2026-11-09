@@ -75,8 +75,22 @@ export function buildEscalation({
     defects: normalizeDefects(defects),
     state: 'pending',
     createdAt: isoOf(now),
+    resolvedAt: null,
+    resolution: null,
     voidedAt: null
   };
+}
+
+/**
+ * Adjudicate a pending escalation in memory (D-6.1). The caller owns the single
+ * CAS write; this function never persists. Non-pending entries are refused.
+ */
+export function applyResolution(entry, { decision = null, atIso = null } = {}) {
+  if (!entry || entry.state !== 'pending') return { ok: false, code: 'ESCALATION_NOT_PENDING' };
+  entry.state = 'resolved';
+  entry.resolution = decision;
+  entry.resolvedAt = atIso ?? isoOf(defaultNow);
+  return { ok: true, state: entry.state, resolution: entry.resolution };
 }
 
 async function callSave(saveState, instanceId, state, expectedState) {
@@ -97,7 +111,7 @@ async function callLoad(load, instanceId) {
   }
 }
 
-function applyInMemory(state, entry, nowIso) {
+function applyInMemory(state, entry, nowIso, sessionTerminal = 'escalated') {
   if (!Array.isArray(state.escalations)) state.escalations = [];
   state.escalations.push(entry);
 
@@ -131,7 +145,7 @@ function applyInMemory(state, entry, nowIso) {
       : null) ?? newest;
   const sessionFrom = session?.state ?? null;
   if (session) {
-    session.state = 'escalated';
+    session.state = sessionTerminal;
     session.quarantined = true;
     session.stateSince = nowIso;
   }
@@ -169,7 +183,11 @@ export async function commitEscalation({
   emit = null,
   instanceId,
   escalation,
+  pendingHandoff = null,
+  overlaySession = null,
+  sessionTerminal = 'escalated',
   fault = null,
+  retryOnConflict = 1,
   now = defaultNow
 } = {}) {
   const doLoad = typeof load === 'function' ? load : store?.load;
@@ -181,94 +199,157 @@ export async function commitEscalation({
     return { ok: false, code: 'ESCALATION_WRITE_FAILED', params: { cause: 'escalation_missing' } };
   }
 
-  const loaded = await callLoad(doLoad, instanceId);
-  if (!loaded.ok) {
-    return {
-      ok: false,
-      code: 'ESCALATION_WRITE_FAILED',
-      params: { cause: loaded.code ?? 'load_failed' }
-    };
-  }
-  const state = loaded.state;
-
-  // Idempotency: the same (nodeId, round) pending entry is reused untouched.
-  const existing = findPending(state.escalations, {
-    nodeId: escalation.nodeId,
-    round: escalation.round
-  });
-  if (existing) {
-    return { ok: true, escalationId: existing.escalationId, reused: true };
-  }
-
   const nowIso = isoOf(now);
-  const entry = {
-    ...escalation,
-    escalationId: nextEscalationId(state.escalations),
-    state: 'pending',
-    defects: normalizeDefects(escalation.defects),
-    voidedAt: null
-  };
-  const { nodeFrom, session, sessionFrom } = applyInMemory(state, entry, nowIso);
+  const attempts = Number.isInteger(retryOnConflict) && retryOnConflict > 0 ? retryOnConflict + 1 : 1;
+  let lastConflict = null;
 
-  const expectedState = {
-    state: 'running',
-    halted: false,
-    rev: Number.isInteger(state.rev) ? state.rev : 0
-  };
-
-  const saved =
-    fault === 'state_write:escalation'
-      ? { ok: false, code: 'STORE_WRITE_FAILED', params: { cause: 'state_write:escalation' } }
-      : await callSave(doSave, instanceId, state, expectedState);
-
-  if (!saved.ok) {
-    return {
-      ok: false,
-      code: saved.code === 'STORE_CONFLICT' ? 'STORE_CONFLICT' : 'ESCALATION_WRITE_FAILED',
-      params: saved.params ?? {}
-    };
-  }
-
-  const events = [
-    {
-      object: 'escalation',
-      objectId: entry.escalationId,
-      from: null,
-      to: 'pending',
-      result: 'applied',
-      reason: 'escalation.created',
-      detail: { nodeId: entry.nodeId, round: entry.round, reasonCode: entry.reasonCode }
-    },
-    {
-      object: 'node',
-      objectId: entry.nodeId,
-      from: nodeFrom,
-      to: 'escalated',
-      result: 'applied',
-      reason: 'state.change'
+  // D-6.9: a pause/resume write may land between this read and the CAS. Replay
+  // once on the fresh disk state instead of degrading the escalation to `halted`.
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const loaded = await callLoad(doLoad, instanceId);
+    if (!loaded.ok) {
+      return {
+        ok: false,
+        code: 'ESCALATION_WRITE_FAILED',
+        params: { cause: loaded.code ?? 'load_failed' }
+      };
     }
-  ];
-  if (session) {
-    events.push({
-      object: 'session',
-      objectId: session.sessionId,
-      from: sessionFrom,
-      to: 'escalated',
-      result: 'applied',
-      reason: 'state.change'
-    });
-  }
-  events.push({
-    object: 'instance',
-    objectId: instanceId,
-    from: 'running',
-    to: 'suspended',
-    result: 'applied',
-    reason: 'core.suspend'
-  });
-  emitMany(emit, events);
+    const state = loaded.state;
 
-  return { ok: true, escalationId: entry.escalationId, reused: false, rev: saved.rev };
+    // Idempotency: the same (nodeId, round) pending entry is reused untouched.
+    const existing = findPending(state.escalations, {
+      nodeId: escalation.nodeId,
+      round: escalation.round
+    });
+    if (existing) {
+      return { ok: true, escalationId: existing.escalationId, reused: true };
+    }
+
+    // D-4.2: fold a session created but not yet persisted into the reloaded
+    // state, and stamp the target node so the escalation isolates that session.
+    if (overlaySession && typeof overlaySession === 'object') {
+      if (!Array.isArray(state.sessions)) state.sessions = [];
+      const idx = state.sessions.findIndex((item) => item?.sessionId === overlaySession.sessionId);
+      if (idx >= 0) state.sessions[idx] = { ...state.sessions[idx], ...overlaySession };
+      else state.sessions.push({ ...overlaySession });
+      const target = (Array.isArray(state.nodes) ? state.nodes : []).find(
+        (item) => item?.nodeId === overlaySession.nodeId
+      ) ?? null;
+      if (target) {
+        target.sessionId = overlaySession.sessionId;
+        if (Number.isInteger(overlaySession.round)) target.round = overlaySession.round;
+      }
+    }
+
+    // D-3.5 / D-4.7: the rejected handoff lands in the SAME CAS as the
+    // escalation. It is a draft that was never committed as `created`, so it is
+    // pushed straight to `rejected` and never emits `handoff.created`.
+    let rejectedDetail = null;
+    if (pendingHandoff && typeof pendingHandoff === 'object' && pendingHandoff.handoffId) {
+      if (!Array.isArray(state.handoffs)) state.handoffs = [];
+      const reason = pendingHandoff.rejectReason ?? 'invalid_payload';
+      const row = {
+        ...pendingHandoff,
+        state: 'rejected',
+        rejectReason: reason,
+        rejectedAt: nowIso,
+        deliveredAt: null
+      };
+      const idx = state.handoffs.findIndex((item) => item?.handoffId === row.handoffId);
+      if (idx >= 0) state.handoffs[idx] = { ...state.handoffs[idx], ...row };
+      else state.handoffs.push(row);
+      rejectedDetail = { reason, handoffId: row.handoffId };
+    }
+
+    const entry = {
+      ...escalation,
+      escalationId: nextEscalationId(state.escalations),
+      state: 'pending',
+      defects: normalizeDefects(escalation.defects),
+      resolvedAt: null,
+      resolution: null,
+      voidedAt: null
+    };
+    const { nodeFrom, session, sessionFrom } = applyInMemory(state, entry, nowIso, sessionTerminal);
+
+    const expectedState = {
+      state: 'running',
+      halted: false,
+      rev: Number.isInteger(state.rev) ? state.rev : 0,
+      paused: false
+    };
+
+    const saved =
+      fault === 'state_write:escalation'
+        ? { ok: false, code: 'STORE_WRITE_FAILED', params: { cause: 'state_write:escalation' } }
+        : await callSave(doSave, instanceId, state, expectedState);
+
+    if (!saved.ok) {
+      if (saved.code === 'STORE_CONFLICT' && attempt + 1 < attempts) {
+        lastConflict = saved;
+        continue;
+      }
+      return {
+        ok: false,
+        code: saved.code === 'STORE_CONFLICT' ? 'STORE_CONFLICT' : 'ESCALATION_WRITE_FAILED',
+        params: saved.params ?? {}
+      };
+    }
+
+    const events = [];
+    if (rejectedDetail) {
+      events.push({
+        object: 'handoff',
+        objectId: rejectedDetail.handoffId,
+        from: null,
+        to: 'rejected',
+        result: 'applied',
+        reason: 'handoff.rejected',
+        detail: { reason: rejectedDetail.reason }
+      });
+    }
+    events.push(
+      {
+        object: 'escalation',
+        objectId: entry.escalationId,
+        from: null,
+        to: 'pending',
+        result: 'applied',
+        reason: 'escalation.created',
+        detail: { nodeId: entry.nodeId, round: entry.round, reasonCode: entry.reasonCode }
+      },
+      {
+        object: 'node',
+        objectId: entry.nodeId,
+        from: nodeFrom,
+        to: 'escalated',
+        result: 'applied',
+        reason: 'state.change'
+      }
+    );
+    if (session) {
+      events.push({
+        object: 'session',
+        objectId: session.sessionId,
+        from: sessionFrom,
+        to: sessionTerminal,
+        result: 'applied',
+        reason: 'state.change'
+      });
+    }
+    events.push({
+      object: 'instance',
+      objectId: instanceId,
+      from: 'running',
+      to: 'suspended',
+      result: 'applied',
+      reason: 'core.suspend'
+    });
+    emitMany(emit, events);
+
+    return { ok: true, escalationId: entry.escalationId, reused: false, rev: saved.rev };
+  }
+  return { ok: false, code: 'STORE_CONFLICT', params: lastConflict?.params ?? {} };
 }
 
 /**

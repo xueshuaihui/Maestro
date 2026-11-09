@@ -1,0 +1,202 @@
+{
+  "ac": "AC-64",
+  "title": "非法参数按用法错误退出",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：run --cwd ./demo --task x --approval maybe 退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then：stdout/stderr 含允许值说明 allow|reject|hold（期望含 \"allow|reject|hold\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--approval=maybe（allow|reject|hold））\n"
+    },
+    {
+      "text": "Then：run --cwd ./demo --task x --approval maybe 按用法错误输出（含「用法：」）（期望含 \"用法：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--approval=maybe（allow|reject|hold））\n"
+    },
+    {
+      "text": "机检：instance graph INST-001 --format yaml 退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then：stdout/stderr 含允许值说明 text|json（期望含 \"text|json\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--format=yaml（text|json））\n"
+    },
+    {
+      "text": "Then：instance graph INST-001 --format yaml 按用法错误输出（含「用法：」）（期望含 \"用法：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--format=yaml（text|json））\n"
+    },
+    {
+      "text": "机检：escalate resolve ESC-001 --decision maybe 退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then：stdout/stderr 含允许值说明 pass|fail|retry（期望含 \"pass|fail|retry\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--decision=maybe（pass|fail|retry））\n"
+    },
+    {
+      "text": "Then：escalate resolve ESC-001 --decision maybe 按用法错误输出（含「用法：」）（期望含 \"用法：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--decision=maybe（pass|fail|retry））\n"
+    },
+    {
+      "text": "机检：approve APR-001 --decision maybe 退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then：stdout/stderr 含允许值说明 allow|deny（期望含 \"allow|deny\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--decision=maybe（allow|deny））\n"
+    },
+    {
+      "text": "Then：approve APR-001 --decision maybe 按用法错误输出（含「用法：」）（期望含 \"用法：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--decision=maybe（allow|deny））\n"
+    },
+    {
+      "text": "机检：.orch/instances 下没有新实例目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "before=INST-001 after=INST-001"
+    },
+    {
+      "text": "机检：已有实例 rev 不变（期望 23）",
+      "ok": true,
+      "blocked": false,
+      "actual": "23"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop pass（造一个已有实例）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 7612,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-42045-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 2s · 判定 通过\n交接包 HO-001  开发→测试  已构造   19:01:44\n交接包 HO-001  开发→测试  已投递   19:01:45\n交接包 HO-001  开发→测试  已接受   19:01:45\n交接包 HO-001  开发→测试  已完成   19:01:47\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --cwd ./demo --task x --approval maybe",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "x",
+        "--approval",
+        "maybe"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 273,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--approval=maybe（allow|reject|hold））\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch instance graph INST-001 --format yaml",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "instance",
+        "graph",
+        "INST-001",
+        "--format",
+        "yaml"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 220,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--format=yaml（text|json））\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch escalate resolve ESC-001 --decision maybe",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "maybe"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 233,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--decision=maybe（pass|fail|retry））\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch approve APR-001 --decision maybe",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "approve",
+        "APR-001",
+        "--decision",
+        "maybe"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 303,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch instance status|log|graph <实例号> [--format text|json]\n  orch attach <会话号>\n  orch escalate list [--instance <实例号>] [--all]\n  orch escalate resolve <升级号> --decision pass|fail|retry [--instance <实例号>]\n  orch approve <审批号> --decision allow|deny [--instance <实例号>]\n  orch handoff list [--instance <实例号>]\n  orch handoff show <交接包号> [--instance <实例号>]\n  orch workflow pause|resume|abort <实例号>\n  （无法识别的参数：--decision=maybe（allow|deny））\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-64",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 309,
+      "stdout": "核心已停止（pid 42026，运行 8s）\n",
+      "stderr": ""
+    }
+  ]
+}

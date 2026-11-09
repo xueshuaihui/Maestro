@@ -1,0 +1,34 @@
+{
+  "ac": "AC-04",
+  "title": "`status.md` 随状态变化刷新",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:17:22.177Z",
+  "finishedAt": "2026-11-08T22:17:33.036Z",
+  "durationMs": 10859,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-04",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-04"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-04",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 23,
+  "notes": [
+    "「1 秒内刷新」为时序性质（NFR-02 覆盖）；本 AC 以 events 状态变化与 status.md 含对应中文状态的可复核快照取证。"
+  ]
+}

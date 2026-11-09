@@ -1,0 +1,187 @@
+{
+  "ac": "AC-03",
+  "title": "单节点工作区新增但不改旧输出",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then：第 1 行逐字（期望 \"实例 INST-001 · 运行中\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 · 运行中\""
+    },
+    {
+      "text": "Then：第 2 行「会话已创建 <宿主会话号>」（期望匹配 /^会话已创建 mock-sess-\\d+-\\d+$/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "会话已创建 mock-sess-11874-1"
+    },
+    {
+      "text": "Then：第 3 行逐字（期望 \"任务已投递\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"任务已投递\""
+    },
+    {
+      "text": "机检：workspace/shared 是目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03/.orch/instances/INST-001/workspace"
+    },
+    {
+      "text": "机检：single 不出现 stage/ 目录",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03/.orch/instances/INST-001/workspace/stage"
+    },
+    {
+      "text": "机检：status.md 存在且是可读 Markdown",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 单节点\n\n- 状态：已完成\n- 暂停：否\n- 任务：写下说明\n- 更新：2026-11-08T22:17:20.020Z\n- 工作区：/p"
+    },
+    {
+      "text": "A-1：标题行含实例号与模板名",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 单节点"
+    },
+    {
+      "text": "A-1：含「- 状态：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 状态：已完成"
+    },
+    {
+      "text": "A-1：含「- 暂停：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 暂停：否"
+    },
+    {
+      "text": "A-1：含「- 任务：」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 任务：写下说明"
+    },
+    {
+      "text": "A-1：single 不含「当前节点」行",
+      "ok": true,
+      "blocked": false,
+      "actual": "（应省略）"
+    },
+    {
+      "text": "A-1：含「- 工作区：」绝对路径行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03/.orch/instances/INST-001/workspace"
+    },
+    {
+      "text": "A-1：含「## 节点」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "single 应省略"
+    },
+    {
+      "text": "A-1：含「## 交接包」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "A-1：含「## 升级」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "A-1：含「## 审批」段",
+      "ok": true,
+      "blocked": false,
+      "actual": "应含"
+    },
+    {
+      "text": "Then：status.md 含实例行（期望含 \"# INST-001 单节点\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 单节点\n\n- 状态：已完成\n- 暂停：否\n- 任务：写下说明\n- 更新：2026-11-08T22:17:20.020Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03/.orch/instances/INST-001/workspace\n\n## 交接包\n\n- HO-001：已完成\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    },
+    {
+      "text": "Then：status.md 含状态行（期望含 \"- 状态：已完成\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 单节点\n\n- 状态：已完成\n- 暂停：否\n- 任务：写下说明\n- 更新：2026-11-08T22:17:20.020Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03/.orch/instances/INST-001/workspace\n\n## 交接包\n\n- HO-001：已完成\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    },
+    {
+      "text": "Then：status.md 不含 ## 节点 段（期望不含 \"## 节点\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 单节点\n\n- 状态：已完成\n- 暂停：否\n- 任务：写下说明\n- 更新：2026-11-08T22:17:20.020Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03/.orch/instances/INST-001/workspace\n\n## 交接包\n\n- HO-001：已完成\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    },
+    {
+      "text": "机检：stage 目录不存在（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：handoffs 只有引导包（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：引导包号 HO-001（期望 \"HO-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"HO-001\""
+    },
+    {
+      "text": "机检：没有 handoff.rejected 事件（期望不含 \"handoff.rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,run.started,handoff.created,handoff.delivered,session.state,turn.first_event,session.state,session.state,output.submitted,output.submitted,verification.skipped,verification.passed,handoff.consumed,run.completed,run.completed"
+    },
+    {
+      "text": "机检：引导包不参与 schema 校验（state=consumed，无 rejectReason）（期望含 \"consumed|null\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "consumed|null"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --cwd ./demo --task「写下说明」（不带 --template）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写下说明"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 4963,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-11874-1\n任务已投递\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 3s\n交接包 HO-001  已构造   06:17:18\n交接包 HO-001  已投递   06:17:18\n交接包 HO-001  已接受   06:17:18\n交接包 HO-001  已完成   06:17:19\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-03",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 310,
+      "stdout": "核心已停止（pid 11868，运行 4s）\n",
+      "stderr": ""
+    }
+  ]
+}

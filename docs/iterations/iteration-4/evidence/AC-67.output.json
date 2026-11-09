@@ -1,0 +1,117 @@
+{
+  "ac": "AC-67",
+  "title": "核心重启后审批已失效",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：宿主请求 write 动作、实例等待审批",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中\n会话已创建 mock-sess-34092-1\n任务已投递\n审批 APR-001 待处理 · 动作 write\n会话 等待审批：write\n"
+    },
+    {
+      "text": "Given：审批仍为 pending（期望 \"pending\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending\""
+    },
+    {
+      "text": "Then：提示「审批 APR-001 已失效：会话不在运行」（期望含 \"审批 APR-001 已失效：会话不在运行\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "审批 APR-001 已失效：会话不在运行\n"
+    },
+    {
+      "text": "Then：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：审批 state === pending（不假装已放行）（期望 \"pending\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending\""
+    },
+    {
+      "text": "机检：events.jsonl 没有 permission.allowed",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,run.started,handoff.created,handoff.delivered,session.state,turn.first_event,session.state,permission.requested,approval.created,core.stop"
+    },
+    {
+      "text": "机检：实例 rev 在命令前后不变（期望 7）",
+      "ok": true,
+      "blocked": false,
+      "actual": "7"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-67",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 600,
+      "stdout": "核心已停止（pid 34083，运行 2s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001（自动拉起新核心并完成启动对账）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-67",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1297,
+      "stdout": "实例 INST-001 · 已中断 ｜ 停在节点 执行中 / 会话 等待审批\n节点 执行中\n会话 等待审批：write\n交接包 HO-001  已构造   06:48:23\n交接包 HO-001  已投递   06:48:23\n交接包 HO-001  已接受   06:48:23\n审批 APR-001 待处理 · 动作 write\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch approve APR-001 --instance INST-001 --decision allow",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "approve",
+        "APR-001",
+        "--decision",
+        "allow",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-67",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 318,
+      "stdout": "审批 APR-001 已失效：会话不在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-67",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 241,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "ac": "AC-69",
+  "title": "合法复测包通过校验并投递",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：存在复测包",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"id\":\"HO-001\",\"kind\":\"forward\"},{\"id\":\"HO-002\",\"kind\":\"backflow\"},{\"id\":\"HO-003\",\"kind\":\"retest\"}]"
+    },
+    {
+      "text": "机检：该包 edge.kind === retest（期望 \"retest\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"retest\""
+    },
+    {
+      "text": "机检：artifactRefs.input 含 calc.js",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"calc.js\"]"
+    },
+    {
+      "text": "机检：calc.js 文件存在且非空",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-69/demo/calc.js"
+    },
+    {
+      "text": "Then：复测包投递（含 handoff.delivered）",
+      "ok": true,
+      "blocked": false,
+      "actual": "handoff.created,handoff.inboxed,handoff.delivered,turn.first_event,handoff.consumed"
+    },
+    {
+      "text": "Then：测试收到第 2 轮提示",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"node\":\"T-001\",\"round\":1},{\"node\":\"T-002\",\"round\":1},{\"node\":\"T-001\",\"round\":2},{\"node\":\"T-002\",\"round\":2}]"
+    },
+    {
+      "text": "机检：测试 round === 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：events.jsonl 无 handoff.rejected",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,verification.passed,run.completed,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,session.state,session.state,output.submitted,output.submitted,verdict.read,handoff.consumed,verification.failed,verification.failed,handoff.created,backflow.constructed,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,session.state,session.state,output.submitted,output.submitted,verification.passed,handoff.consumed,run.completed,handoff.created,node.dispatch,handoff.inboxed,handoff.delivered,session.state,turn.first_event,session.state,session.state,output.submitted,output.submitted,verdict.read,verification.passed,handoff.consumed,run.completed,run.completed"
+    },
+    {
+      "text": "Then：终端不出现拒绝（期望不含 \"已拒绝（\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-34446-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 9s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 9s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:48:54\n交接包 HO-001  开发→测试  已投递   06:48:56\n交接包 HO-001  开发→测试  已接受   06:48:56\n交接包 HO-001  开发→测试  已完成   06:48:57\n交接包 HO-002  测试→开发（回流）  已构造   06:48:58\n交接包 HO-002  测试→开发（回流）  已投递   06:48:59\n交接包 HO-002  测试→开发（回流）  已接受   06:48:59\n交接包 HO-002  测试→开发（回流）  已完成   06:49:00\n交接包 HO-003  开发→测试（复测）  已构造   06:49:01\n交接包 HO-003  开发→测试（复测）  已投递   06:49:02\n交接包 HO-003  开发→测试（复测）  已接受   06:49:02\n交接包 HO-003  开发→测试（复测）  已完成   06:49:03\n升级 —\n"
+    },
+    {
+      "text": "Then：终端不出现升级（期望不含 \"升级 ESC-\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-34446-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 9s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 9s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:48:54\n交接包 HO-001  开发→测试  已投递   06:48:56\n交接包 HO-001  开发→测试  已接受   06:48:56\n交接包 HO-001  开发→测试  已完成   06:48:57\n交接包 HO-002  测试→开发（回流）  已构造   06:48:58\n交接包 HO-002  测试→开发（回流）  已投递   06:48:59\n交接包 HO-002  测试→开发（回流）  已接受   06:48:59\n交接包 HO-002  测试→开发（回流）  已完成   06:49:00\n交接包 HO-003  开发→测试（复测）  已构造   06:49:01\n交接包 HO-003  开发→测试（复测）  已投递   06:49:02\n交接包 HO-003  开发→测试（复测）  已接受   06:49:02\n交接包 HO-003  开发→测试（复测）  已完成   06:49:03\n升级 —\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop backflow",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-69",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 14744,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-34446-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 2 轮 · 耗时 9s\n节点 T-002 测试 已完成 · 第 2 轮 · 耗时 9s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:48:54\n交接包 HO-001  开发→测试  已投递   06:48:56\n交接包 HO-001  开发→测试  已接受   06:48:56\n交接包 HO-001  开发→测试  已完成   06:48:57\n交接包 HO-002  测试→开发（回流）  已构造   06:48:58\n交接包 HO-002  测试→开发（回流）  已投递   06:48:59\n交接包 HO-002  测试→开发（回流）  已接受   06:48:59\n交接包 HO-002  测试→开发（回流）  已完成   06:49:00\n交接包 HO-003  开发→测试（复测）  已构造   06:49:01\n交接包 HO-003  开发→测试（复测）  已投递   06:49:02\n交接包 HO-003  开发→测试（复测）  已接受   06:49:02\n交接包 HO-003  开发→测试（复测）  已完成   06:49:03\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-69",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 304,
+      "stdout": "核心已停止（pid 34419，运行 14s）\n",
+      "stderr": ""
+    }
+  ]
+}

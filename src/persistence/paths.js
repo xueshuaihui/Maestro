@@ -75,6 +75,36 @@ export function instanceReportsDir(root, id) {
   return path.join(instanceWorkspaceDir(root, id), 'artifacts', 'reports');
 }
 
+/** 公共区：`<workspace>/shared`，所有节点只读、核心与人工可写（I1.4 M-1）。 */
+export function instanceSharedDir(root, id) {
+  return path.join(instanceWorkspaceDir(root, id), 'shared');
+}
+
+/** 阶段区根：`<workspace>/stage`，其下每个图节点一个子目录（I1.4 M-1）。 */
+export function instanceStageRoot(root, id) {
+  return path.join(instanceWorkspaceDir(root, id), 'stage');
+}
+
+/** 单个节点的阶段区：`<workspace>/stage/<nodeId>`。 */
+export function instanceStageDir(root, id, nodeId) {
+  return path.join(instanceStageRoot(root, id), nodeId);
+}
+
+/** 核心维护的人类可读交接棒：`<workspace>/status.md`。 */
+export function instanceStatusPath(root, id) {
+  return path.join(instanceWorkspaceDir(root, id), 'status.md');
+}
+
+/** 持久化信箱根：`<root>/.orch/inbox/<id>`（实例目录之外，I1.4 M-5）。 */
+export function instanceInboxDir(root, id) {
+  return path.join(orchDir(root), 'inbox', id);
+}
+
+/** 单张交接包的信箱文件：`<inbox>/<handoffId>.json`。 */
+export function inboxFilePath(root, id, handoffId) {
+  return path.join(instanceInboxDir(root, id), `${handoffId}.json`);
+}
+
 export function coreMetaPath(root) {
   return path.join(orchDir(root), 'core.json');
 }

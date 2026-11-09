@@ -209,7 +209,10 @@ test('cancel 是通知：无响应，turn 以 stopReason=cancelled 收敛（F1�
     assert.equal((await client.initialize()).ok, true);
     const created = await client.newSession({ cwd });
     const pendingPrompt = client.prompt(created.result.sessionId, 'long task');
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    const toolCallDeadline = Date.now() + 5000;
+    while (!updates.some((u) => u.update?.sessionUpdate === 'tool_call') && Date.now() < toolCallDeadline) {
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
     assert.ok(updates.some((u) => u.update?.sessionUpdate === 'tool_call'));
 
     const cancelled = await client.cancel(created.result.sessionId);

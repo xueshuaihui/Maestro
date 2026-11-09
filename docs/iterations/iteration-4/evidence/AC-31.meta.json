@@ -1,0 +1,32 @@
+{
+  "ac": "AC-31",
+  "title": "审批允许后会话继续",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:38:43.286Z",
+  "finishedAt": "2026-11-08T22:38:50.229Z",
+  "durationMs": 6943,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-31",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-31"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-31",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 10,
+  "notes": []
+}

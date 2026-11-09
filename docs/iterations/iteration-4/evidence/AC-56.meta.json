@@ -1,0 +1,26 @@
+{
+  "ac": "AC-56",
+  "title": "架构纯净与零依赖",
+  "face": "架构检查（静态源码 + 命令）",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:45:19.847Z",
+  "finishedAt": "2026-11-08T22:45:20.747Z",
+  "durationMs": 900,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-56",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-56"
+    }
+  ],
+  "instances": [],
+  "checks": 16,
+  "notes": []
+}

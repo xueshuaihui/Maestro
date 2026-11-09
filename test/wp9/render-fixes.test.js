@@ -337,3 +337,71 @@ test('S-2 越界与绝对路径仍然一律拒绝', () => {
   // 含分隔符的裸路径仍然接受
   assert.deepEqual(extractDeclaredArtifacts('写下 out/a.md'), ['out/a.md']);
 });
+
+// ---------------------------------------------------------------- WP-5 授权断言（只追加、不弱化既有断言）
+
+test('WP-5 status --instance：审批行在升级块之后按审批号逐条列出（AC-36 / A-2 #2）', async () => {
+  const snapshot = {
+    instanceId: 'INST-001',
+    state: 'running',
+    template: 'code-loop',
+    elapsedMs: 5000,
+    nodes: [
+      { nodeId: 'T-001', roleId: 'developer', state: 'done', round: 1 },
+      { nodeId: 'T-002', roleId: 'tester', state: 'running', round: 1 },
+    ],
+    sessions: [{ sessionId: 'sess-1', state: 'waiting_input', pendingPermission: 'write' }],
+    approvals: [
+      { approvalId: 'APR-001', nodeId: 'T-001', state: 'pending', action: 'write' },
+      { approvalId: 'APR-002', nodeId: 'T-001', state: 'approved', action: 'write' },
+      { approvalId: 'APR-003', nodeId: 'T-001', state: 'denied', action: 'write' },
+      { approvalId: 'APR-004', nodeId: 'T-001', state: 'withdrawn', action: 'write' },
+    ],
+    escalations: [],
+    handoffs: [],
+  };
+  const { code, lines } = await runMain(['status', '--instance', 'INST-001'], fakeStatusClient(snapshot));
+  assert.equal(code, 0);
+  const text = lines.join('\n');
+  assert.ok(text.includes('审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write'), text);
+  assert.ok(text.includes('审批 APR-002 已通过 · 节点 T-001 开发 · 动作 write'), text);
+  assert.ok(text.includes('审批 APR-003 已拒绝 · 节点 T-001 开发 · 动作 write'), text);
+  assert.ok(text.includes('审批 APR-004 已作废 · 节点 T-001 开发 · 动作 write'), text);
+  const noneIndex = lines.findIndex((line) => line === '升级 —');
+  const aprIndex = lines.findIndex((line) => line.startsWith('审批 APR-001'));
+  assert.ok(noneIndex >= 0 && aprIndex > noneIndex, text);
+});
+
+test('WP-5 run 暂停收尾：退出 0，只打实例行与恢复提示（A-2 #6 / D-7.9）', async () => {
+  const running = {
+    instanceId: 'INST-001',
+    state: 'running',
+    template: 'code-loop',
+    elapsedMs: 1000,
+    nodes: [{ nodeId: 'T-001', roleId: 'developer', state: 'done', round: 1 }],
+  };
+  const paused = { ...running, paused: true };
+  const client = fakeRunClient({ snapshot: running, wait: { ok: true, result: paused } });
+  const { code, lines } = await runMain(['run', '--cwd', '.', '--task', 't', '--template', 'code-loop'], client);
+  assert.equal(code, 0);
+  assert.deepEqual(lines.slice(-2), [
+    '实例 INST-001 · 运行中（已暂停） · 模板 编码闭环',
+    '下一步：恢复推进 orch workflow resume INST-001',
+  ]);
+});
+
+test('WP-5 run 等待期间新审批立即打印审批行（AC-37 / BR-42）', async () => {
+  const snapshot = {
+    instanceId: 'INST-001',
+    state: 'running',
+    template: 'code-loop',
+    elapsedMs: 1000,
+    nodes: [{ nodeId: 'T-001', roleId: 'developer', state: 'running', round: 1 }],
+    sessions: [{ sessionId: 'sess-1', state: 'waiting_input', pendingPermission: 'write' }],
+    approvals: [{ approvalId: 'APR-001', nodeId: 'T-001', state: 'pending', action: 'write' }],
+  };
+  const client = fakeRunClient({ snapshot, wait: { ok: true, result: { ...snapshot, state: 'completed' } } });
+  const { code, text } = await runMain(['run', '--cwd', '.', '--task', 't', '--template', 'code-loop'], client);
+  assert.equal(code, 0);
+  assert.ok(text.includes('审批 APR-001 待处理 · 节点 T-001 开发 · 动作 write'), text);
+});

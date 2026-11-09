@@ -1,0 +1,14 @@
+{
+  "AC-17/INST-001/HO-001.json": {
+    "handoffId": "HO-001",
+    "instanceId": "INST-001",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "sessionId": "mock-sess-23494-1",
+    "promptText": "写发布说明，产物：release-notes.md\n\n研究笔记：artifacts/reports/research-notes.v1.md\n本轮文档引用：artifacts/docs/release-notes.v1.md\n写入路径：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-17/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\n每一轮交完整文档，不要改写上一版。\n\n工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-17/.orch/instances/INST-001/workspace\n共享区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-17/.orch/instances/INST-001/workspace/shared\n本节点阶段区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-17/.orch/instances/INST-001/workspace/stage/T-002\n上游阶段区（只读）：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-17/.orch/instances/INST-001/workspace/stage/T-001",
+    "createdAt": "2026-11-08T22:33:12.841Z",
+    "deliveryAttempts": 3,
+    "deliveredAt": null,
+    "lastError": "mock-host: upstream model request failed (code 500)"
+  }
+}

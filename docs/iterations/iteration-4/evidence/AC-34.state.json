@@ -1,0 +1,200 @@
+{
+  "instances": [
+    {
+      "__root": "AC-34",
+      "instanceId": "INST-001",
+      "state": {
+        "schemaVersion": 2,
+        "instanceId": "INST-001",
+        "coreGeneration": "gen-b9586ff209090d94",
+        "createdAt": "2026-11-08T22:39:09.603Z",
+        "updatedAt": "2026-11-08T22:39:13.140Z",
+        "state": "interrupted",
+        "stateSince": "2026-11-08T22:39:13.119Z",
+        "template": "single",
+        "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34/demo",
+        "task": "写下说明",
+        "halted": false,
+        "rev": 7,
+        "counters": {
+          "eventSeq": 9,
+          "runCount": 1,
+          "dispatchCount": 1
+        },
+        "hostRaw": {
+          "stopReason": null,
+          "lastError": null,
+          "agentInfo": null
+        },
+        "nodes": [
+          {
+            "nodeId": "T-001",
+            "roleId": "worker",
+            "round": 1,
+            "state": "running",
+            "stateSince": "2026-11-08T22:39:09.604Z",
+            "startedAt": "2026-11-08T22:39:09.604Z",
+            "roundStartedAt": "2026-11-08T22:39:09.604Z",
+            "endedAt": null,
+            "failure": null,
+            "note": "stopped at node running / session waiting_input",
+            "verdict": null,
+            "sessionId": "mock-sess-27591-1",
+            "artifactRefs": []
+          }
+        ],
+        "sessions": [
+          {
+            "sessionId": "mock-sess-27591-1",
+            "nodeId": "T-001",
+            "round": 1,
+            "hostId": null,
+            "state": "waiting_input",
+            "stateSince": "2026-11-08T22:39:10.984Z",
+            "createdAt": "2026-11-08T22:39:10.258Z",
+            "lastEventAt": "2026-11-08T22:39:10.983Z",
+            "toolName": "write",
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34/demo/note.md",
+            "pendingPermission": {
+              "toolCallId": "call_mock_27591_1",
+              "action": "write"
+            },
+            "quarantined": false
+          }
+        ],
+        "handoffs": [
+          {
+            "handoffId": "HO-001",
+            "edge": null,
+            "state": "accepted",
+            "createdAt": "2026-11-08T22:39:10.625Z",
+            "deliveredAt": "2026-11-08T22:39:10.752Z",
+            "acceptedAt": "2026-11-08T22:39:10.973Z",
+            "consumedAt": null,
+            "rejectedAt": null,
+            "rejectReason": null,
+            "wakeConsumedAt": null,
+            "acceptedSignal": "agent_thought_chunk",
+            "ambiguityWindowMs": 221,
+            "defects": [],
+            "note": "stopped at handoff accepted"
+          }
+        ],
+        "escalations": [],
+        "approvals": [
+          {
+            "approvalId": "APR-001",
+            "instanceId": "INST-001",
+            "nodeId": "T-001",
+            "sessionId": "mock-sess-27591-1",
+            "action": "write",
+            "toolCallId": "call_mock_27591_1",
+            "state": "pending",
+            "createdAt": "2026-11-08T22:39:10.984Z",
+            "resolvedAt": null,
+            "resolution": null
+          }
+        ]
+      }
+    },
+    {
+      "__root": "AC-34",
+      "instanceId": "INST-002",
+      "state": {
+        "schemaVersion": 2,
+        "instanceId": "INST-002",
+        "coreGeneration": "gen-b9586ff209090d94",
+        "createdAt": "2026-11-08T22:39:09.603Z",
+        "updatedAt": "2026-11-08T22:39:13.348Z",
+        "state": "interrupted",
+        "stateSince": "2026-11-08T22:39:13.331Z",
+        "template": "single",
+        "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34/demo",
+        "task": "写下说明",
+        "halted": false,
+        "rev": 5,
+        "counters": {
+          "eventSeq": 0,
+          "runCount": 1,
+          "dispatchCount": 1
+        },
+        "hostRaw": {
+          "stopReason": null,
+          "lastError": null,
+          "agentInfo": null
+        },
+        "nodes": [
+          {
+            "nodeId": "T-001",
+            "roleId": "worker",
+            "round": 1,
+            "state": "running",
+            "stateSince": "2026-11-08T22:39:09.604Z",
+            "startedAt": "2026-11-08T22:39:09.604Z",
+            "roundStartedAt": "2026-11-08T22:39:09.604Z",
+            "endedAt": null,
+            "failure": null,
+            "note": "stopped at node running / session waiting_input",
+            "verdict": null,
+            "sessionId": "mock-sess-27591-1",
+            "artifactRefs": []
+          }
+        ],
+        "sessions": [
+          {
+            "sessionId": "mock-sess-27591-1",
+            "nodeId": "T-001",
+            "round": 1,
+            "hostId": null,
+            "state": "waiting_input",
+            "stateSince": "2026-11-08T22:39:10.984Z",
+            "createdAt": "2026-11-08T22:39:10.258Z",
+            "lastEventAt": "2026-11-08T22:39:10.983Z",
+            "toolName": "write",
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-34/demo/note.md",
+            "pendingPermission": {
+              "toolCallId": "call_mock_27591_1",
+              "action": "write"
+            },
+            "quarantined": false
+          }
+        ],
+        "handoffs": [
+          {
+            "handoffId": "HO-001",
+            "edge": null,
+            "state": "accepted",
+            "createdAt": "2026-11-08T22:39:10.625Z",
+            "deliveredAt": "2026-11-08T22:39:10.752Z",
+            "acceptedAt": "2026-11-08T22:39:10.973Z",
+            "consumedAt": null,
+            "rejectedAt": null,
+            "rejectReason": null,
+            "wakeConsumedAt": null,
+            "acceptedSignal": "agent_thought_chunk",
+            "ambiguityWindowMs": 221,
+            "defects": [],
+            "note": "stopped at handoff accepted"
+          }
+        ],
+        "escalations": [],
+        "approvals": [
+          {
+            "approvalId": "APR-001",
+            "instanceId": "INST-002",
+            "nodeId": "T-001",
+            "sessionId": "mock-sess-27591-1",
+            "action": "write",
+            "toolCallId": "call_mock_27591_1",
+            "state": "pending",
+            "createdAt": "2026-11-08T22:39:10.984Z",
+            "resolvedAt": null,
+            "resolution": null
+          }
+        ]
+      }
+    }
+  ]
+}

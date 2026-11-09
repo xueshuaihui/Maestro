@@ -1,0 +1,32 @@
+{
+  "ac": "AC-50",
+  "title": "恢复后从边界继续",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:43:41.559Z",
+  "finishedAt": "2026-11-08T22:43:52.147Z",
+  "durationMs": 10588,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-50",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-50"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-50",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 11,
+  "notes": []
+}

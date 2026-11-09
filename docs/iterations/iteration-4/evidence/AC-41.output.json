@@ -1,0 +1,171 @@
+{
+  "ac": "AC-41",
+  "title": "`instance graph --format json` 稳定可回归",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then：输出可解析为 JSON 对象",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\n  \"graphVersion\": 1,\n  \"instanceId\": \"INST-001\",\n  \"template\": \"code-loop\",\n  \"state\": \"completed\",\n  \"paused\": false,\n  \"nodes\": [\n    {\n      \"nodeId\": \"T-001\",\n      \"title\": \"开发\",\n      \"roleId\": \"developer\",\n      \"state\": \"done\",\n      \"round\": 1\n    },\n    {\n      \"nodeId\": \"T-002\",\n      \""
+    },
+    {
+      "text": "Then：退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：键顺序与附录 A-4 一致（期望 \"[\\\"graphVersion\\\",\\\"instanceId\\\",\\\"template\\\",\\\"state\\\",\\\"paused\\\",\\\"nodes\\\",\\\"edges\\\",\\\"handoffs\\\",\\\"escalations\\\",\\\"approvals\\\",\\\"current\\\"]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"[\\\"graphVersion\\\",\\\"instanceId\\\",\\\"template\\\",\\\"state\\\",\\\"paused\\\",\\\"nodes\\\",\\\"edges\\\",\\\"handoffs\\\",\\\"escalations\\\",\\\"approvals\\\",\\\"current\\\"]\""
+    },
+    {
+      "text": "A-4：graphVersion === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "A-4：instanceId === INST-001（期望 \"INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"INST-001\""
+    },
+    {
+      "text": "A-4：template === code-loop（期望 \"code-loop\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"code-loop\""
+    },
+    {
+      "text": "A-4：state === completed（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "A-4：paused === false（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "A-4：nodes 含节点号/标题/角色/状态/轮次",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"nodeId\":\"T-001\",\"title\":\"开发\",\"roleId\":\"developer\",\"state\":\"done\",\"round\":1},{\"nodeId\":\"T-002\",\"title\":\"测试\",\"roleId\":\"tester\",\"state\":\"done\",\"round\":1}]"
+    },
+    {
+      "text": "A-4：节点 title 保留中文标题（期望 \"开发\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"开发\""
+    },
+    {
+      "text": "A-4：节点 roleId 保留英文标识（期望 \"developer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"developer\""
+    },
+    {
+      "text": "A-4：edges 含来源/目标/方向",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"from\":\"T-001\",\"to\":\"T-002\",\"kind\":\"forward\"},{\"from\":\"T-002\",\"to\":\"T-001\",\"kind\":\"backflow\"},{\"from\":\"T-001\",\"to\":\"T-002\",\"kind\":\"retest\"}]"
+    },
+    {
+      "text": "A-4：边方向覆盖 forward / backflow / retest（期望 \"[\\\"forward\\\",\\\"backflow\\\",\\\"retest\\\"]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"[\\\"forward\\\",\\\"backflow\\\",\\\"retest\\\"]\""
+    },
+    {
+      "text": "A-4：handoffs / escalations / approvals / current 都存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"h\":1,\"e\":0,\"a\":0}"
+    },
+    {
+      "text": "机检：两次执行输出逐字一致（期望 \"{\\n  \\\"graphVersion\\\": 1,\\n  \\\"instanceId\\\": \\\"INST-001\\\",\\n  \\\"template\\\": \\\"code-loop\\\",\\n  \\\"state\\\": \\\"completed\\\",\\n  \\\"paused\\\": false,\\n  \\\"nodes\\\": [\\n    {\\n      \\\"nodeId\\\": \\\"T-001\\\",\\n      \\\"title\\\": \\\"开发\\\",\\n      \\\"roleId\\\": \\\"developer\\\",\\n      \\\"state\\\": \\\"done\\\",\\n      \\\"round\\\": 1\\n    },\\n    {\\n      \\\"nodeId\\\": \\\"T-002\\\",\\n      \\\"title\\\": \\\"测试\\\",\\n      \\\"roleId\\\": \\\"tester\\\",\\n      \\\"state\\\": \\\"done\\\",\\n      \\\"round\\\": 1\\n    }\\n  ],\\n  \\\"edges\\\": [\\n    {\\n      \\\"from\\\": \\\"T-001\\\",\\n      \\\"to\\\": \\\"T-002\\\",\\n      \\\"kind\\\": \\\"forward\\\"\\n    },\\n    {\\n      \\\"from\\\": \\\"T-002\\\",\\n      \\\"to\\\": \\\"T-001\\\",\\n      \\\"kind\\\": \\\"backflow\\\"\\n    },\\n    {\\n      \\\"from\\\": \\\"T-001\\\",\\n      \\\"to\\\": \\\"T-002\\\",\\n      \\\"kind\\\": \\\"retest\\\"\\n    }\\n  ],\\n  \\\"handoffs\\\": [\\n    {\\n      \\\"handoffId\\\": \\\"HO-001\\\",\\n      \\\"from\\\": \\\"T-001\\\",\\n      \\\"to\\\": \\\"T-002\\\",\\n      \\\"kind\\\": \\\"forward\\\",\\n      \\\"state\\\": \\\"consumed\\\",\\n      \\\"round\\\": 1\\n    }\\n  ],\\n  \\\"escalations\\\": [],\\n  \\\"approvals\\\": [],\\n  \\\"current\\\": null\\n}\\n\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"{\\n  \\\"graphVersion\\\": 1,\\n  \\\"instanceId\\\": \\\"INST-001\\\",\\n  \\\"template\\\": \\\"code-loop\\\",\\n  \\\"state\\\": \\\"completed\\\",\\n  \\\"paused\\\": false,\\n  \\\"nodes\\\": [\\n    {\\n      \\\"nodeId\\\": \\\"T-001\\\",\\n      \\\"title\\\": \\\"开发\\\",\\n      \\\"roleId\\\": \\\"developer\\\",\\n      \\\"state\\\": \\\"done\\\",\\n      \\\"round\\\": 1\\n    },\\n    {\\n      \\\"nodeId\\\": \\\"T-002\\\",\\n      \\\"title\\\": \\\"测试\\\",\\n      \\\"roleId\\\": \\\"tester\\\",\\n      \\\"state\\\": \\\"done\\\",\\n      \\\"round\\\": 1\\n    }\\n  ],\\n  \\\"edges\\\": [\\n    {\\n      \\\"from\\\": \\\"T-001\\\",\\n      \\\"to\\\": \\\"T-002\\\",\\n      \\\"kind\\\": \\\"forward\\\"\\n    },\\n    {\\n      \\\"from\\\": \\\"T-002\\\",\\n      \\\"to\\\": \\\"T-001\\\",\\n      \\\"kind\\\": \\\"backflow\\\"\\n    },\\n    {\\n      \\\"from\\\": \\\"T-001\\\",\\n      \\\"to\\\": \\\"T-002\\\",\\n      \\\"kind\\\": \\\"retest\\\"\\n    }\\n  ],\\n  \\\"handoffs\\\": [\\n    {\\n      \\\"handoffId\\\": \\\"HO-001\\\",\\n      \\\"from\\\": \\\"T-001\\\",\\n      \\\"to\\\": \\\"T-002\\\",\\n      \\\"kind\\\": \\\"forward\\\",\\n      \\\"state\\\": \\\"consumed\\\",\\n      \\\"round\\\": 1\\n    }\\n  ],\\n  \\\"escalations\\\": [],\\n  \\\"approvals\\\": [],\\n  \\\"current\\\": null\\n}\\n\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop pass（已完成的编码闭环）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-41",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 8338,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-28818-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:40:55\n交接包 HO-001  开发→测试  已投递   06:40:56\n交接包 HO-001  开发→测试  已接受   06:40:56\n交接包 HO-001  开发→测试  已完成   06:40:57\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch instance graph INST-001 --format json",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "instance",
+        "graph",
+        "INST-001",
+        "--format",
+        "json"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-41",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 301,
+      "stdout": "{\n  \"graphVersion\": 1,\n  \"instanceId\": \"INST-001\",\n  \"template\": \"code-loop\",\n  \"state\": \"completed\",\n  \"paused\": false,\n  \"nodes\": [\n    {\n      \"nodeId\": \"T-001\",\n      \"title\": \"开发\",\n      \"roleId\": \"developer\",\n      \"state\": \"done\",\n      \"round\": 1\n    },\n    {\n      \"nodeId\": \"T-002\",\n      \"title\": \"测试\",\n      \"roleId\": \"tester\",\n      \"state\": \"done\",\n      \"round\": 1\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\"\n    },\n    {\n      \"from\": \"T-002\",\n      \"to\": \"T-001\",\n      \"kind\": \"backflow\"\n    },\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"retest\"\n    }\n  ],\n  \"handoffs\": [\n    {\n      \"handoffId\": \"HO-001\",\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\",\n      \"state\": \"consumed\",\n      \"round\": 1\n    }\n  ],\n  \"escalations\": [],\n  \"approvals\": [],\n  \"current\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch instance graph INST-001 --format json（复跑）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "instance",
+        "graph",
+        "INST-001",
+        "--format",
+        "json"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-41",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 275,
+      "stdout": "{\n  \"graphVersion\": 1,\n  \"instanceId\": \"INST-001\",\n  \"template\": \"code-loop\",\n  \"state\": \"completed\",\n  \"paused\": false,\n  \"nodes\": [\n    {\n      \"nodeId\": \"T-001\",\n      \"title\": \"开发\",\n      \"roleId\": \"developer\",\n      \"state\": \"done\",\n      \"round\": 1\n    },\n    {\n      \"nodeId\": \"T-002\",\n      \"title\": \"测试\",\n      \"roleId\": \"tester\",\n      \"state\": \"done\",\n      \"round\": 1\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\"\n    },\n    {\n      \"from\": \"T-002\",\n      \"to\": \"T-001\",\n      \"kind\": \"backflow\"\n    },\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"retest\"\n    }\n  ],\n  \"handoffs\": [\n    {\n      \"handoffId\": \"HO-001\",\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\",\n      \"state\": \"consumed\",\n      \"round\": 1\n    }\n  ],\n  \"escalations\": [],\n  \"approvals\": [],\n  \"current\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-41",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 315,
+      "stdout": "核心已停止（pid 28790，运行 8s）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js workflow pause INST-001
+# label=orch workflow pause INST-001（第一次） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51 exit=0 463ms
+实例 INST-001 · 运行中（已暂停） · 模板 编码闭环
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run（前台，暂停收尾） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51 exit=0 5656ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-30960-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+实例 INST-001 · 运行中（已暂停） · 模板 编码闭环
+下一步：恢复推进 orch workflow resume INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js workflow pause INST-001
+# label=orch workflow pause INST-001（重复，幂等） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51 exit=0 311ms
+实例 INST-001 · 运行中（已暂停） · 模板 编码闭环
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js workflow resume INST-001
+# label=orch workflow resume INST-001（第一次） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51 exit=0 383ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js workflow resume INST-001
+# label=orch workflow resume INST-001（第二次） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51 exit=0 288ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-51 exit=0 255ms
+核心未在运行
+

@@ -1,0 +1,34 @@
+{
+  "ac": "AC-59",
+  "title": "`status.md` 刷新失败不回滚状态",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:46:41.097Z",
+  "finishedAt": "2026-11-08T22:46:50.724Z",
+  "durationMs": 9627,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-59",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-59"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-59",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 9,
+  "notes": [
+    "需求 AC-59 Then 的「工作区状态写入失败」为事件措辞；产品 labels.js 将其逐字渲染为「状态页写入失败」，事件 reason 仍为 workspace.status_write_failed（A-5 未登记该文案为逐字基线，按机检口径判定）。"
+  ]
+}

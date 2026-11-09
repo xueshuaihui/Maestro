@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-bd251033379656ed",
+  "createdAt": "2026-11-08T22:41:52.414Z",
+  "updatedAt": "2026-11-08T22:41:55.588Z",
+  "state": "interrupted",
+  "stateSince": "2026-11-08T22:41:55.570Z",
+  "template": "single",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44/demo",
+  "task": "写下说明",
+  "halted": false,
+  "rev": 7,
+  "counters": {
+    "eventSeq": 9,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "worker",
+      "round": 1,
+      "state": "running",
+      "stateSince": "2026-11-08T22:41:52.414Z",
+      "startedAt": "2026-11-08T22:41:52.414Z",
+      "roundStartedAt": "2026-11-08T22:41:52.414Z",
+      "endedAt": null,
+      "failure": null,
+      "note": "stopped at node running / session waiting_input",
+      "verdict": null,
+      "sessionId": "mock-sess-29512-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-29512-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "waiting_input",
+      "stateSince": "2026-11-08T22:41:53.765Z",
+      "createdAt": "2026-11-08T22:41:52.991Z",
+      "lastEventAt": "2026-11-08T22:41:53.764Z",
+      "toolName": "write",
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-44/demo/note.md",
+      "pendingPermission": {
+        "toolCallId": "call_mock_29512_1",
+        "action": "write"
+      },
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": null,
+      "state": "accepted",
+      "createdAt": "2026-11-08T22:41:53.378Z",
+      "deliveredAt": "2026-11-08T22:41:53.518Z",
+      "acceptedAt": "2026-11-08T22:41:53.750Z",
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 232,
+      "defects": [],
+      "note": "stopped at handoff accepted"
+    }
+  ],
+  "escalations": [],
+  "approvals": [
+    {
+      "approvalId": "APR-001",
+      "instanceId": "INST-001",
+      "nodeId": "T-001",
+      "sessionId": "mock-sess-29512-1",
+      "action": "write",
+      "toolCallId": "call_mock_29512_1",
+      "state": "pending",
+      "createdAt": "2026-11-08T22:41:53.765Z",
+      "resolvedAt": null,
+      "resolution": null
+    }
+  ]
+}

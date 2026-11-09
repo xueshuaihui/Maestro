@@ -1,0 +1,32 @@
+{
+  "ac": "AC-14",
+  "title": "校验失败时零派发且原因可见",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:20:00.421Z",
+  "finishedAt": "2026-11-08T22:20:09.252Z",
+  "durationMs": 8831,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-14",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-14"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-14",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 20,
+  "notes": []
+}

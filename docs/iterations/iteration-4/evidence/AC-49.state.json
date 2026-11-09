@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-b7982ccfb6be50c0",
+  "createdAt": "2026-11-09T11:58:26.256Z",
+  "updatedAt": "2026-11-09T11:58:31.074Z",
+  "state": "interrupted",
+  "stateSince": "2026-11-09T11:58:31.054Z",
+  "template": "code-loop",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-49/demo",
+  "task": "实现 calc.js，产物：calc.js",
+  "halted": false,
+  "rev": 13,
+  "counters": {
+    "eventSeq": 10,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-09T11:58:30.066Z",
+      "startedAt": "2026-11-09T11:58:27.229Z",
+      "roundStartedAt": "2026-11-09T11:58:27.229Z",
+      "endedAt": "2026-11-09T11:58:30.194Z",
+      "failure": null,
+      "note": "stopped at node done / session idle",
+      "verdict": null,
+      "sessionId": "mock-sess-80726-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-49/demo/calc.js",
+          "declared": true,
+          "exists": true,
+          "bytes": 251,
+          "sha256": null,
+          "verifiedAt": "2026-11-09T11:58:30.056Z"
+        }
+      ]
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 0,
+      "state": "pending",
+      "stateSince": "2026-11-09T11:58:26.256Z",
+      "startedAt": null,
+      "roundStartedAt": null,
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-80726-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-09T11:58:30.225Z",
+      "createdAt": "2026-11-09T11:58:28.036Z",
+      "lastEventAt": "2026-11-09T11:58:28.419Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-49/demo/calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [],
+  "escalations": [],
+  "paused": true
+}

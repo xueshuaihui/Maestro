@@ -62,16 +62,35 @@ function stopCore(root) {
   });
 }
 
-function cleanup(root) {
-  try {
-    stopCore(root);
-  } finally {
-    fs.rmSync(root, { recursive: true, force: true });
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * 核心是 detached 进程：`core stop` 回包后它可能仍在 flush `.orch` 下的日志/管道文件。
+ * 本机的 safe-delete shim 会把文件移入回收站而非直接删除，单次 rmSync 可能与尾随写入
+ * 竞态抛 ENOTEMPTY。显式重试若干次即可收敛（不改任何断言，只加固清理）。
+ */
+async function removeProject(root) {
+  const deadline = Date.now() + 8000;
+  for (;;) {
+    try {
+      fs.rmSync(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+      return;
+    } catch (err) {
+      const transient = err?.code === 'ENOTEMPTY' || err?.code === 'EBUSY' || err?.code === 'EPERM';
+      if (!transient || Date.now() >= deadline) throw err;
+      await sleep(150);
+    }
   }
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+async function cleanup(root) {
+  try {
+    stopCore(root);
+  } finally {
+    await removeProject(root);
+  }
 }
 
 /** 异步起一个 CLI，边跑边累积 stdout（场景 2/3 需要在它运行期间采样）。 */
@@ -136,7 +155,7 @@ test('C-1 端到端：--session-missing → 会话已失效，无未知错误，
     assert.ok(!run.stdout.includes('未知错误'), `stdout:\n${run.stdout}`);
     assert.ok(!run.stderr.includes('未知错误'), `stderr:\n${run.stderr}`);
   } finally {
-    cleanup(root);
+    await cleanup(root);
   }
 });
 
@@ -164,7 +183,7 @@ test('C-2 端到端：tool_running 的 status 会话行含"已运行 Ns"（N>0�
     const code = await run.done;
     assert.equal(code, 0, `stdout:\n${run.stdout}\nstderr:\n${run.stderr}`);
   } finally {
-    cleanup(root);
+    await cleanup(root);
   }
 });
 
@@ -194,7 +213,7 @@ test('C-3 端到端：跑到一半 core stop → 已中断，无未知错误，e
     assert.ok(!run.stdout.includes('未知错误'), `stdout:\n${run.stdout}`);
     assert.ok(!run.stdout.includes('IPC_CLOSED'), `stdout:\n${run.stdout}`);
   } finally {
-    cleanup(root);
+    await cleanup(root);
   }
 });
 
@@ -216,6 +235,6 @@ test('C-5 内部通道只看位置参数：run --cwd core --task serve 不劫持
     // 用法错误发生在连核心之前：不应留下 .orch
     assert.equal(fs.existsSync(path.join(root, '.orch')), false);
   } finally {
-    fs.rmSync(root, { recursive: true, force: true });
+    await removeProject(root);
   }
 });

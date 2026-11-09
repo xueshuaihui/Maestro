@@ -1,0 +1,167 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run code-loop pass（运行中→已完成实例） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 8511ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-32775-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   06:46:33
+交接包 HO-001  开发→测试  已投递   06:46:34
+交接包 HO-001  开发→测试  已接受   06:46:34
+交接包 HO-001  开发→测试  已完成   06:46:36
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001（预热核心，完成启动对账） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 277ms
+实例 INST-001 · 已完成 · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+会话 空闲
+交接包 HO-001  开发→测试  已构造   06:46:33
+交接包 HO-001  开发→测试  已投递   06:46:34
+交接包 HO-001  开发→测试  已接受   06:46:34
+交接包 HO-001  开发→测试  已完成   06:46:36
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status
+# label=orch status cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 298ms
+实例 INST-001 · 已完成 · 模板 编码闭环 · 节点 已完成 · 会话 空闲 · 耗时 5s · 更新 06:46:36
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance status INST-001
+# label=orch instance status INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 319ms
+实例 INST-001 · 已完成 · 模板 编码闭环
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过
+会话 空闲
+交接包 HO-001  开发→测试  已构造   06:46:33
+交接包 HO-001  开发→测试  已投递   06:46:34
+交接包 HO-001  开发→测试  已接受   06:46:34
+交接包 HO-001  开发→测试  已完成   06:46:36
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance log INST-001
+# label=orch instance log INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 317ms
+[#1] 06:46:30  实例 INST-001  已创建 → 运行中  原因 开始运行
+[#2] 06:46:30  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮
+[#3] 06:46:31  会话 mock-sess-32775-1  空闲 → 执行中  原因 会话状态
+[#4] 06:46:32  会话 mock-sess-32775-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#5] 06:46:32  会话 mock-sess-32775-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#6] 06:46:32  会话 mock-sess-32775-1  执行中 → 等待下游  原因 产出已提交
+[#7] 06:46:32  节点 T-001  执行中 → 待校验  原因 产出已提交
+[#8] 06:46:32  节点 T-001  待校验 → 已完成  原因 核对通过
+[#9] 06:46:32  会话 mock-sess-32775-1  等待下游 → 空闲  原因 运行完成
+[#10] 06:46:33  交接包 HO-001  已构造  原因 构造交接
+[#11] 06:46:33  节点 T-002  派发 → 执行中  原因 派发 · 第 1 轮
+[#12] 06:46:34  交接包 HO-001  handoff.inboxed  原因 已入信箱
+[#13] 06:46:34  交接包 HO-001  已构造 → 已投递  原因 交接已投递
+[#14] 06:46:34  会话 mock-sess-32809-1  空闲 → 执行中  原因 会话状态
+[#15] 06:46:34  交接包 HO-001  已投递 → 已接受  原因 首个事件
+[#16] 06:46:35  会话 mock-sess-32809-1  执行中 → 执行中（tool_call）  原因 会话状态
+[#17] 06:46:35  会话 mock-sess-32809-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态
+[#18] 06:46:35  会话 mock-sess-32809-1  执行中 → 等待下游  原因 产出已提交
+[#19] 06:46:35  节点 T-002  执行中 → 待校验  原因 产出已提交
+[#20] 06:46:35  节点 T-002  verdict.read  原因 读取判定
+[#21] 06:46:36  节点 T-002  待校验 → 已完成  原因 核对通过
+[#22] 06:46:36  交接包 HO-001  已接受 → 已完成  原因 产出核对通过
+[#23] 06:46:36  会话 mock-sess-32809-1  等待下游 → 空闲  原因 运行完成
+[#24] 06:46:36  实例 INST-001  运行中 → 已完成  原因 运行完成
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js instance graph INST-001 --format json
+# label=orch instance graph INST-001 --format json cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 274ms
+{
+  "graphVersion": 1,
+  "instanceId": "INST-001",
+  "template": "code-loop",
+  "state": "completed",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": "开发",
+      "roleId": "developer",
+      "state": "done",
+      "round": 1
+    },
+    {
+      "nodeId": "T-002",
+      "title": "测试",
+      "roleId": "tester",
+      "state": "done",
+      "round": 1
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward"
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow"
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest"
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "state": "consumed",
+      "round": 1
+    }
+  ],
+  "escalations": [],
+  "approvals": [],
+  "current": null
+}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff list
+# label=orch handoff list cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 319ms
+交接包 HO-001  实例 INST-001  开发→测试  已完成  06:46:36
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js handoff show HO-001 --instance INST-001
+# label=orch handoff show HO-001 --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 330ms
+交接包 HO-001
+  实例：INST-001
+  方向：开发→测试
+  状态：已完成
+  构造：06:46:33  待投递：—  投递：06:46:34  接受：06:46:34  完成：06:46:36  拒绝：—  过期：—
+  证据：calc.js
+  缺陷：—
+  修改要求：—
+  复测要求：—
+  尝试：1/3
+  最后错误：—
+  信箱：—
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js escalate list
+# label=orch escalate list cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 281ms
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-58 exit=0 339ms
+核心已停止（pid 32755，运行 10s）
+

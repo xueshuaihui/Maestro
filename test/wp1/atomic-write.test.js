@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { copyToBackup, writeJsonAtomic } from '../../src/persistence/atomic-write.js';
+import { copyToBackup, writeJsonAtomic, writeTextAtomic } from '../../src/persistence/atomic-write.js';
 
 const tempDirs = [];
 
@@ -62,6 +62,48 @@ test('writeJsonAtomic 重命名失败时返回 STORE_WRITE_FAILED 且不留下 t
   assert.equal(res.ok, false);
   assert.equal(res.code, 'STORE_WRITE_FAILED');
   assert.equal(typeof res.params.errno, 'string');
+  assert.equal(res.params.path, target);
+
+  const leftovers = (await fs.readdir(dir)).filter((name) => name.includes('.tmp-'));
+  assert.deepEqual(leftovers, []);
+});
+
+test('writeTextAtomic 写入整份文本并回报字节数，且不留下 tmp', async () => {
+  const dir = await makeTempDir();
+  const file = path.join(dir, 'workspace', 'status.md');
+  const text = '# INST-001 编码闭环\n\n- 状态：运行中\n';
+
+  const res = await writeTextAtomic(file, text);
+
+  assert.equal(res.ok, true);
+  assert.equal(res.bytes, Buffer.byteLength(text, 'utf8'));
+  assert.equal(res.updatedAt, null);
+  assert.equal(await fs.readFile(file, 'utf8'), text);
+
+  const leftovers = (await fs.readdir(path.dirname(file))).filter((name) => name.includes('.tmp-'));
+  assert.deepEqual(leftovers, []);
+});
+
+test('writeTextAtomic 整份覆盖旧内容（status.md 不追加）', async () => {
+  const dir = await makeTempDir();
+  const file = path.join(dir, 'status.md');
+
+  await writeTextAtomic(file, 'first\nsecond\n');
+  const second = await writeTextAtomic(file, 'only\n');
+
+  assert.equal(second.ok, true);
+  assert.equal(await fs.readFile(file, 'utf8'), 'only\n');
+});
+
+test('writeTextAtomic 重命名失败时返回 STORE_WRITE_FAILED 且不留下 tmp', async () => {
+  const dir = await makeTempDir();
+  const target = path.join(dir, 'status.md');
+  await fs.mkdir(target);
+
+  const res = await writeTextAtomic(target, '# x\n');
+
+  assert.equal(res.ok, false);
+  assert.equal(res.code, 'STORE_WRITE_FAILED');
   assert.equal(res.params.path, target);
 
   const leftovers = (await fs.readdir(dir)).filter((name) => name.includes('.tmp-'));

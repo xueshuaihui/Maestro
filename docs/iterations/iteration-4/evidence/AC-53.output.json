@@ -1,0 +1,119 @@
+{
+  "ac": "AC-53",
+  "title": "非运行实例不能暂停或恢复",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：实例已完成（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "Then：pause 提示当前状态与不能执行的原因（期望 \"实例 INST-001 当前为已完成，不能暂停\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 当前为已完成，不能暂停\""
+    },
+    {
+      "text": "Then：resume 提示当前状态与不能执行的原因（期望 \"实例 INST-001 当前为已完成，不能恢复\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 当前为已完成，不能恢复\""
+    },
+    {
+      "text": "Then：pause 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then：resume 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：状态不变（state 仍 completed）（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "机检：rev 不变（期望 23）",
+      "ok": true,
+      "blocked": false,
+      "actual": "23"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop pass",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-53",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 8360,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-80838-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   19:58:37\n交接包 HO-001  开发→测试  已投递   19:58:39\n交接包 HO-001  开发→测试  已接受   19:58:39\n交接包 HO-001  开发→测试  已完成   19:58:40\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow pause INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "workflow",
+        "pause",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-53",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 309,
+      "stdout": "实例 INST-001 当前为已完成，不能暂停\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow resume INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "workflow",
+        "resume",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-53",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 276,
+      "stdout": "实例 INST-001 当前为已完成，不能恢复\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-53",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 299,
+      "stdout": "核心已停止（pid 80803，运行 8s）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-fc81917036f13d30",
+  "createdAt": "2026-11-08T22:46:54.255Z",
+  "updatedAt": "2026-11-08T22:46:56.787Z",
+  "state": "cancelled",
+  "stateSince": "2026-11-08T22:46:56.754Z",
+  "template": "single",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-60/demo",
+  "task": "写下说明",
+  "halted": false,
+  "rev": 8,
+  "counters": {
+    "eventSeq": 10,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "worker",
+      "round": 1,
+      "state": "cancelled",
+      "stateSince": "2026-11-08T22:46:56.754Z",
+      "startedAt": "2026-11-08T22:46:54.255Z",
+      "roundStartedAt": "2026-11-08T22:46:54.255Z",
+      "endedAt": "2026-11-08T22:46:56.754Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-33062-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-33062-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": null,
+      "state": "idle",
+      "stateSince": "2026-11-08T22:46:56.754Z",
+      "createdAt": "2026-11-08T22:46:54.883Z",
+      "lastEventAt": "2026-11-08T22:46:55.660Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-60/demo/note.md",
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": null,
+      "state": "rejected",
+      "createdAt": "2026-11-08T22:46:55.270Z",
+      "deliveredAt": "2026-11-08T22:46:55.413Z",
+      "acceptedAt": "2026-11-08T22:46:55.649Z",
+      "consumedAt": null,
+      "rejectedAt": "2026-11-08T22:46:56.754Z",
+      "rejectReason": "withdrawn",
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 236,
+      "defects": [],
+      "note": null
+    }
+  ],
+  "escalations": [],
+  "approvals": [
+    {
+      "approvalId": "APR-001",
+      "instanceId": "INST-001",
+      "nodeId": "T-001",
+      "sessionId": "mock-sess-33062-1",
+      "action": "write",
+      "toolCallId": "call_mock_33062_1",
+      "state": "withdrawn",
+      "createdAt": "2026-11-08T22:46:55.661Z",
+      "resolvedAt": "2026-11-08T22:46:56.754Z",
+      "resolution": null
+    }
+  ],
+  "paused": false
+}

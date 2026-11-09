@@ -1,0 +1,32 @@
+{
+  "ac": "AC-01",
+  "title": "编码闭环启动后出现共享工作区",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:16:47.601Z",
+  "finishedAt": "2026-11-08T22:16:57.698Z",
+  "durationMs": 10097,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-01",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-01"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-01",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 17,
+  "notes": []
+}

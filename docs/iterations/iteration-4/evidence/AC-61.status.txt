@@ -1,0 +1,46 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs --root /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61 --call test.delivery --instance INST-001 --action hold
+# label=call-seam test.delivery --action hold cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61 exit=0 274ms
+{"ok":true,"action":"hold"}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs --root /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61 --call test.delivery --instance INST-001 --action hold
+# label=call-seam test.delivery --action hold（占位复跑，确认幂等） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61 exit=0 198ms
+{"ok":true,"action":"hold"}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cancel --instance INST-001
+# label=orch cancel --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61 exit=0 582ms
+会话 空闲
+会话 空闲
+节点 T-001 研究员 已取消
+节点 T-002 撰写者 已取消
+节点 T-003 审核者 已取消
+交接包 HO-001 已拒绝（已撤回）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs --root /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61 --call test.delivery --instance INST-001 --action release
+# label=call-seam test.delivery --action release cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61 exit=0 201ms
+{"ok":true,"action":"release"}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写发布说明，产物：release-notes.md --template task-loop
+# label=orch run task-loop（前台，投递重试等待点） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61 exit=1 8495ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-80974-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 研究员 待校验（等待下游） · 第 1 轮 · 耗时 2s
+节点 T-002 撰写者 执行中 · 第 1 轮
+节点 T-003 审核者 待执行
+交接包 HO-001  研究员→撰写者  已构造   19:58:49
+交接包 HO-001  研究员→撰写者  待投递 · 重试 1/2   19:58:51
+交接包 HO-001  研究员→撰写者  已投递   19:58:50
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61 exit=0 244ms
+核心未在运行
+

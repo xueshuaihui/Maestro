@@ -1,0 +1,34 @@
+{
+  "ac": "AC-67",
+  "title": "核心重启后审批已失效",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:48:20.437Z",
+  "finishedAt": "2026-11-08T22:48:27.356Z",
+  "durationMs": 6919,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-67",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-67"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-67",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 7,
+  "notes": [
+    "启动对账会推进 rev；按 AC-34/AC-44 的口径，在「新核心已就绪」之后取 rev 作为命令前基线，比较的正是 approve 命令前后。"
+  ]
+}

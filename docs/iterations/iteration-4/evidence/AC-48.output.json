@@ -1,0 +1,192 @@
+{
+  "ac": "AC-48",
+  "title": "交接包找不到或歧义",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then①：提示「未找到交接包 HO-999」（期望 \"未找到交接包 HO-999\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"未找到交接包 HO-999\""
+    },
+    {
+      "text": "Then①：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Given②：两个实例都有一张 HO-001",
+      "ok": true,
+      "blocked": false,
+      "actual": "INST-001,INST-002"
+    },
+    {
+      "text": "Then②：提示「交接包号 HO-001 在多个实例中存在，请加 --instance」（期望 \"交接包号 HO-001 在多个实例中存在，请加 --instance\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"交接包号 HO-001 在多个实例中存在，请加 --instance\""
+    },
+    {
+      "text": "Then②：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检①：没有状态写入（rev 不变）（期望 23）",
+      "ok": true,
+      "blocked": false,
+      "actual": "23"
+    },
+    {
+      "text": "机检②：没有状态写入（所有实例 rev 不变）（期望 \"[23,23]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"[23,23]\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop pass（单实例）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-a",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 8244,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-30386-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:43:10\n交接包 HO-001  开发→测试  已投递   06:43:11\n交接包 HO-001  开发→测试  已接受   06:43:11\n交接包 HO-001  开发→测试  已完成   06:43:13\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch handoff show HO-999 --instance INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "handoff",
+        "show",
+        "HO-999",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-a",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 270,
+      "stdout": "未找到交接包 HO-999\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run code-loop pass（cwd demo1 → INST-001）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo1",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 8004,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-30484-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:43:19\n交接包 HO-001  开发→测试  已投递   06:43:20\n交接包 HO-001  开发→测试  已接受   06:43:20\n交接包 HO-001  开发→测试  已完成   06:43:21\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run code-loop pass（cwd demo2 → INST-002）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo2",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 6782,
+      "stdout": "实例 INST-002 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-30576-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n交接包 HO-001  开发→测试  已构造   06:43:26\n交接包 HO-001  开发→测试  已投递   06:43:27\n交接包 HO-001  开发→测试  已接受   06:43:27\n交接包 HO-001  开发→测试  已完成   06:43:28\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001（预热核心，完成启动对账）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 250,
+      "stdout": "实例 INST-001 · 已完成 · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 3s · 判定 通过\n会话 空闲\n交接包 HO-001  开发→测试  已构造   06:43:19\n交接包 HO-001  开发→测试  已投递   06:43:20\n交接包 HO-001  开发→测试  已接受   06:43:20\n交接包 HO-001  开发→测试  已完成   06:43:21\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch handoff show HO-001（不带 --instance，歧义）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "handoff",
+        "show",
+        "HO-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 299,
+      "stdout": "交接包号 HO-001 在多个实例中存在，请加 --instance\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-a",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 291,
+      "stdout": "核心已停止（pid 30363，运行 24s）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-48-b",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 331,
+      "stdout": "核心已停止（pid 30461，运行 15s）\n",
+      "stderr": ""
+    }
+  ]
+}

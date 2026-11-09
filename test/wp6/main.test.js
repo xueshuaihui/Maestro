@@ -295,7 +295,7 @@ test('main run：挂起收尾退出码 4，末尾正好三行（A-4）', async (
   assert.deepEqual(lines.slice(-3), [
     '实例 INST-001 · 已挂起 · 模板 编码闭环',
     '升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮',
-    '下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001',
+    '下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001',
   ]);
   // 不打印交接包行与等待行
   assert.ok(!lines.join('\n').includes('交接包'), lines.join('\n'));

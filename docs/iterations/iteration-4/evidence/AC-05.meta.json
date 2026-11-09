@@ -1,0 +1,32 @@
+{
+  "ac": "AC-05",
+  "title": "人工修改 `status.md` 会被下一次刷新覆盖",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:17:34.604Z",
+  "finishedAt": "2026-11-08T22:17:44.444Z",
+  "durationMs": 9840,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-05",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-05"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-05",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "checks": 7,
+  "notes": []
+}

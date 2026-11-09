@@ -1,0 +1,269 @@
+{
+  "ac": "AC-28",
+  "title": "不允许的决策被拒绝",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then[handoff_invalid]：提示该升级不支持「通过」（期望含 \"不支持「pass」\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 不支持「pass」；可选：fail|retry\n"
+    },
+    {
+      "text": "Then[handoff_invalid]：给出可选决策 fail|retry（期望含 \"可选：fail|retry\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 不支持「pass」；可选：fail|retry\n"
+    },
+    {
+      "text": "Then[handoff_invalid]：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检[handoff_invalid]：实例仍挂起（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检[handoff_invalid]：升级仍是待处理（期望 \"pending\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending\""
+    },
+    {
+      "text": "机检[handoff_invalid]：节点仍未完成",
+      "ok": true,
+      "blocked": false,
+      "actual": "done,escalated"
+    },
+    {
+      "text": "Then[dispatch_failed]：提示该升级不支持「通过」（期望含 \"不支持「pass」\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 不支持「pass」；可选：fail|retry\n"
+    },
+    {
+      "text": "Then[dispatch_failed]：给出可选决策 fail|retry（期望含 \"可选：fail|retry\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 不支持「pass」；可选：fail|retry\n"
+    },
+    {
+      "text": "Then[dispatch_failed]：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检[dispatch_failed]：实例仍挂起（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检[dispatch_failed]：升级仍是待处理（期望 \"pending\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending\""
+    },
+    {
+      "text": "机检[dispatch_failed]：节点仍未完成",
+      "ok": true,
+      "blocked": false,
+      "actual": "done,escalated"
+    },
+    {
+      "text": "Then[execution_failed]：提示该升级不支持「通过」（期望含 \"不支持「pass」\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 不支持「pass」；可选：fail|retry\n"
+    },
+    {
+      "text": "Then[execution_failed]：给出可选决策 fail|retry（期望含 \"可选：fail|retry\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 不支持「pass」；可选：fail|retry\n"
+    },
+    {
+      "text": "Then[execution_failed]：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检[execution_failed]：实例仍挂起（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检[execution_failed]：升级仍是待处理（期望 \"pending\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending\""
+    },
+    {
+      "text": "机检[execution_failed]：节点仍未完成",
+      "ok": true,
+      "blocked": false,
+      "actual": "done,escalated"
+    },
+    {
+      "text": "Then[delivery_failed]：提示该升级不支持「通过」（期望含 \"不支持「pass」\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 不支持「pass」；可选：fail|retry\n"
+    },
+    {
+      "text": "Then[delivery_failed]：给出可选决策 fail|retry（期望含 \"可选：fail|retry\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 不支持「pass」；可选：fail|retry\n"
+    },
+    {
+      "text": "Then[delivery_failed]：退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检[delivery_failed]：实例仍挂起（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检[delivery_failed]：升级仍是待处理（期望 \"pending\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"pending\""
+    },
+    {
+      "text": "机检[delivery_failed]：节点仍未完成",
+      "ok": true,
+      "blocked": false,
+      "actual": "done,escalated"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop rounds-exceeded（母版 INST-001）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo1",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 14730,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-26118-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch escalate resolve ESC-001 --instance INST-001 --decision pass（handoff_invalid）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "pass",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 497,
+      "stdout": "升级 ESC-001 不支持「pass」；可选：fail|retry\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch escalate resolve ESC-001 --instance INST-002 --decision pass（dispatch_failed）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "pass",
+        "--instance",
+        "INST-002"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 389,
+      "stdout": "升级 ESC-001 不支持「pass」；可选：fail|retry\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch escalate resolve ESC-001 --instance INST-003 --decision pass（execution_failed）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "pass",
+        "--instance",
+        "INST-003"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 388,
+      "stdout": "升级 ESC-001 不支持「pass」；可选：fail|retry\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch escalate resolve ESC-001 --instance INST-004 --decision pass（delivery_failed）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "pass",
+        "--instance",
+        "INST-004"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 380,
+      "stdout": "升级 ESC-001 不支持「pass」；可选：fail|retry\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-28",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 338,
+      "stdout": "核心已停止（pid 26091，运行 16s）\n",
+      "stderr": ""
+    }
+  ]
+}

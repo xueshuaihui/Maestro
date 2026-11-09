@@ -209,7 +209,7 @@ test('rev 单调之后 CAS 判定正确：{rev:3} 命中、{rev:2} 冲突且磁�
   });
   assert.equal(miss.ok, false);
   assert.equal(miss.code, 'STORE_CONFLICT');
-  assert.deepEqual(miss.params.actual, { state: 'running', halted: false, rev: 3 });
+  assert.deepEqual(miss.params.actual, { state: 'running', halted: false, rev: 3, paused: false });
   assert.equal(await sha256(file), before, '冲突不得写盘');
 
   const hit = await store.save('INST-001', validState('INST-001', { state: 'completed' }), {
@@ -270,7 +270,7 @@ test('expectedState 传对象：state / halted / rev 任一不符都冲突且磁
     assert.equal(res.ok, false, `expected=${JSON.stringify(item.expected)} 应冲突`);
     assert.equal(res.code, 'STORE_CONFLICT');
     assert.equal(res.params.expected, item.expected);
-    assert.deepEqual(res.params.actual, { state: 'suspended', halted: false, rev: 1 });
+    assert.deepEqual(res.params.actual, { state: 'suspended', halted: false, rev: 1, paused: false });
     assert.equal(res.params.actual[item.field], item.actual);
     assert.equal(await sha256(file), before, '冲突时磁盘字节不得变化');
   }
@@ -281,6 +281,80 @@ test('expectedState 传对象：state / halted / rev 任一不符都冲突且磁
   });
   assert.equal(ok.ok, true);
   assert.equal(ok.rev, 2);
+});
+
+test('paused 参与 CAS：期望 true 而磁盘 false 时冲突且不写盘', async () => {
+  const { root, store } = await makeStore();
+  await store.save('INST-001', v2State('INST-001'));
+  const file = statePath(root, 'INST-001');
+  const before = await sha256(file);
+
+  const res = await store.save('INST-001', v2State('INST-001', { paused: true }), {
+    expectedState: { paused: true },
+  });
+
+  assert.equal(res.ok, false, '磁盘 paused=false 与期望 paused=true 必须冲突');
+  assert.equal(res.code, 'STORE_CONFLICT');
+  assert.deepEqual(res.params.expected, { paused: true });
+  assert.deepEqual(res.params.actual, { state: 'suspended', halted: false, rev: 1, paused: false });
+  assert.equal(await sha256(file), before, '冲突时磁盘字节不得变化');
+});
+
+test('paused 落盘后可被 { paused: true } 命中，{ paused: false } 则冲突', async () => {
+  const { root, store } = await makeStore();
+  await store.save('INST-001', v2State('INST-001'));
+
+  const on = await store.save('INST-001', v2State('INST-001', { paused: true }), {
+    expectedState: { paused: false },
+  });
+  assert.equal(on.ok, true);
+  assert.equal(
+    JSON.parse(await fs.readFile(statePath(root, 'INST-001'), 'utf8')).paused,
+    true,
+  );
+
+  // 旧快照没有 paused 字段：缺省按 false 比较（D-7.1），因此此处必然冲突。
+  const stale = await store.save('INST-001', v2State('INST-001'), { expectedState: { paused: false } });
+  assert.equal(stale.ok, false);
+  assert.equal(stale.code, 'STORE_CONFLICT');
+});
+
+test('expectedState 传函数：在队列任务内读盘后求值，排队期间的 rev 推进不算冲突', async () => {
+  const { store } = await makeStore();
+  await store.save('INST-001', v2State('INST-001'));
+
+  let seen = null;
+  const first = store.save('INST-001', v2State('INST-001', { state: 'running', task: 'first' }));
+  const second = store.save('INST-001', v2State('INST-001', { state: 'running', task: 'second' }), {
+    expectedState: (disk) => {
+      seen = disk;
+      return { state: disk.state, halted: Boolean(disk.halted), rev: disk.rev ?? 0, paused: Boolean(disk.paused) };
+    },
+  });
+
+  assert.equal((await first).ok, true);
+  const res = await second;
+  assert.equal(res.ok, true, JSON.stringify(res));
+  assert.equal(res.rev, 3);
+  assert.equal(seen.rev, 2, '取值函数拿到的是前一次写入后的磁盘现值');
+});
+
+test('expectedState 函数抛错 → STORE_WRITE_FAILED(EXPECTED_FN)，不当成 CAS 通过', async () => {
+  const { root, store } = await makeStore();
+  await store.save('INST-001', v2State('INST-001'));
+  const file = statePath(root, 'INST-001');
+  const before = await sha256(file);
+
+  const res = await store.save('INST-001', v2State('INST-001', { state: 'running' }), {
+    expectedState: () => {
+      throw new Error('boom');
+    },
+  });
+
+  assert.equal(res.ok, false);
+  assert.equal(res.code, 'STORE_WRITE_FAILED');
+  assert.equal(res.params.errno, 'EXPECTED_FN');
+  assert.equal(await sha256(file), before, '失败不得写盘');
 });
 
 test('expectedState 只比较显式提供了的键（窄条件写）', async () => {
@@ -339,14 +413,46 @@ test('list 对 v2 快照投影 schemaVersion/template/cwd/pendingEscalations', a
       template: 'code-loop',
       cwd: 'D:\\WWW\\Maestro\\demo-code-pass',
       state: 'suspended',
+      paused: false,
       nodeState: 'done',
       sessionState: 'escalated',
       handoffState: 'consumed',
       pendingEscalations: 1,
+      approvals: [],
+      pendingApprovals: 0,
       updatedAt: (await store.load('INST-001')).state.updatedAt,
       readable: true,
     },
   ]);
+});
+
+test('list 投影带 paused 与审批计数（缺省 false / [] / 0）', async () => {
+  const { store } = await makeStore();
+  await store.save(
+    'INST-001',
+    v2State('INST-001', {
+      paused: true,
+      approvals: [
+        { approvalId: 'APR-001', state: 'pending' },
+        { approvalId: 'APR-002', state: 'approved' },
+        { approvalId: 'APR-003', state: 'pending' }
+      ]
+    })
+  );
+
+  const listed = await store.list();
+  const item = listed.items.find((entry) => entry.instanceId === 'INST-001');
+  assert.equal(item.paused, true);
+  assert.equal(item.approvals.length, 3);
+  assert.equal(item.pendingApprovals, 2);
+
+  // 缺省：没有该字段的旧 v2 快照投影为 false / [] / 0。
+  await store.save('INST-002', v2State('INST-002'));
+  const again = await store.list();
+  const plain = again.items.find((entry) => entry.instanceId === 'INST-002');
+  assert.equal(plain.paused, false);
+  assert.deepEqual(plain.approvals, []);
+  assert.equal(plain.pendingApprovals, 0);
 });
 
 test('list 对 v1 快照（legacy 夹具）：template=single、pendingEscalations=0、不回写', async () => {

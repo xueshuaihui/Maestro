@@ -1,0 +1,41 @@
+{
+  "ac": "AC-11",
+  "title": "证据文件不存在或为空被拒绝",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:19:00.360Z",
+  "finishedAt": "2026-11-08T22:19:13.978Z",
+  "durationMs": 13618,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-11-rm",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-11-rm"
+    },
+    {
+      "case": "AC-11-zero",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-11-zero"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-11-rm",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    },
+    {
+      "__root": "AC-11-zero",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 14,
+  "notes": []
+}

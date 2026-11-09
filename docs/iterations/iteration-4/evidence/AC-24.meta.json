@@ -1,0 +1,34 @@
+{
+  "ac": "AC-24",
+  "title": "通过处理中间节点升级 → 下游继续",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T22:36:02.347Z",
+  "finishedAt": "2026-11-08T22:36:12.208Z",
+  "durationMs": 9861,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-24",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-24"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-24",
+      "instanceId": "INST-001",
+      "state": "interrupted"
+    }
+  ],
+  "checks": 11,
+  "notes": [
+    "Given 的「有证据的交接包」由真实产物 calc.js 的已验证 artifactRefs 提供（核心在 pass 后据此构造 HO-001）。实测接缝 --artifact-ref 注入会生成未验证引用而被 handoff-schema 以「缺少证据引用」拒绝，故按需求意图改走真实已验证产物路径；结论仍是核心立即推进测试、校验通过。"
+  ]
+}

@@ -129,6 +129,17 @@ export const DEFECT_LINE = '缺陷 {i}：{summary}（证据 {evidence}）';
 /** Default retest requirement when a verdict carries none. */
 export const DEFAULT_RETEST_REQUIREMENT = '按上方每条缺陷修正后重新提交产物';
 
+/**
+ * A-6「工作区上下文」段的四行文案。该段由 `promptFor` 在正文之后拼接，
+ * **不进 `PROMPT_TEMPLATES`**；`{workspaceAbs}` 由调用方给出，路径分隔符统一为 `/`。
+ */
+export const WORKSPACE_CONTEXT_LINES = Object.freeze({
+  workspace: '工作区：{workspaceAbs}',
+  shared: '共享区（只读）：{workspaceAbs}/shared',
+  stageOwn: '本节点阶段区：{workspaceAbs}/stage/{nodeId}',
+  stageUpstream: '上游阶段区（只读）：{workspaceAbs}/stage/{upstreamId}'
+});
+
 function nodeOf(graph, id) {
   if (!graph || !Array.isArray(graph.nodes)) return null;
   return graph.nodes.find((node) => node.id === id || node.nodeId === id) ?? null;
@@ -137,6 +148,7 @@ function nodeOf(graph, id) {
 /** Single-node graph: identical to I1.1 (node T-001, handoff HO-001, roleId 'worker'). */
 const single = Object.freeze({
   id: 'single',
+  title: '单节点',
   showTemplate: false,
   entry: 'T-001',
   terminal: 'T-001',
@@ -162,6 +174,7 @@ const single = Object.freeze({
 /** Two-node coding loop: build, then verify, then backflow or retest. */
 const codeLoop = Object.freeze({
   id: 'code-loop',
+  title: '编码闭环',
   showTemplate: true,
   entry: 'T-001',
   terminal: 'T-002',
@@ -215,6 +228,7 @@ const codeLoop = Object.freeze({
  */
 const taskLoop = Object.freeze({
   id: 'task-loop',
+  title: '通用任务闭环',
   showTemplate: true,
   entry: 'T-001',
   terminal: 'T-003',
@@ -363,7 +377,7 @@ function defectLines(defects) {
  *          writePath?:string, workspaceDir?:string, reviewPath?:string}} options
  * @returns {string}
  */
-export function promptFor({
+function composePrompt({
   graph = null,
   node = null,
   handoff = null,
@@ -436,4 +450,56 @@ export function promptFor({
   }
   const base = fill(PROMPT_TEMPLATES.forward, { task });
   return target.judge === 'verdict' ? `${base}${VERDICT_REQUIREMENT}` : base;
+}
+
+/** 工作区绝对路径归一为 `/` 分隔、无尾斜杠（A-6 样例的写法）。 */
+function workspaceBase(workspaceDir) {
+  if (typeof workspaceDir !== 'string' || workspaceDir.length === 0) return null;
+  const posix = workspaceDir.replace(/\\/g, '/');
+  const trimmed = posix.replace(/\/+$/, '');
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+/**
+ * A-6「工作区上下文」段。
+ *
+ * 追加条件：本次调用带 `graph` 且 `graph.nodes.length > 1`，并且能取到工作区绝对路径。
+ * 入口节点（无上游交接边）只给前三行；正文已含 `工作区：` 行（审核模板）时只给后三行。
+ * `single` 图只有一个节点，因此天然不追加——判定只看节点数，不按模板名分支。
+ */
+function workspaceContextLines(body, { graph = null, node = null, handoff = null, workspaceDir = null } = {}) {
+  if (!graph || !Array.isArray(graph.nodes) || graph.nodes.length <= 1) return null;
+  const workspaceAbs = workspaceBase(workspaceDir);
+  if (workspaceAbs === null) return null;
+
+  const target = node ?? nodeOf(graph, handoff?.edge?.to);
+  const nodeId = target?.id ?? target?.nodeId ?? null;
+  const upstreamId = handoff?.edge?.from ?? null;
+
+  const lines = [];
+  if (!/^工作区：/m.test(body)) {
+    lines.push(fill(WORKSPACE_CONTEXT_LINES.workspace, { workspaceAbs }));
+  }
+  lines.push(fill(WORKSPACE_CONTEXT_LINES.shared, { workspaceAbs }));
+  if (typeof nodeId === 'string' && nodeId.length > 0) {
+    lines.push(fill(WORKSPACE_CONTEXT_LINES.stageOwn, { workspaceAbs, nodeId }));
+  }
+  if (typeof upstreamId === 'string' && upstreamId.length > 0) {
+    lines.push(fill(WORKSPACE_CONTEXT_LINES.stageUpstream, { workspaceAbs, upstreamId }));
+  }
+  return lines.length > 0 ? lines.join('\n') : null;
+}
+
+/**
+ * 派发提示词的公开入口：模板正文 + （多节点图时）A-6「工作区上下文」段。
+ *
+ * 只传 `node` 不传 `graph` 单元调用时不追加，输出与 I1.2 / I1.3 逐字一致。
+ *
+ * @param {object} [options]  见 `composePrompt`
+ * @returns {string}
+ */
+export function promptFor(options = {}) {
+  const body = composePrompt(options);
+  const context = workspaceContextLines(body, options);
+  return context === null ? body : `${body}\n\n${context}`;
 }

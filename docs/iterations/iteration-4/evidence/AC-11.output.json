@@ -1,0 +1,164 @@
+{
+  "ac": "AC-11",
+  "title": "证据文件不存在或为空被拒绝",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具[删除文件]：投递前 calc.js 存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-11-rm/demo/calc.js"
+    },
+    {
+      "text": "机检[删除文件]：实例挂起 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检[删除文件]：交接包已拒绝（期望 \"rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检[删除文件]：rejectReason = invalid_payload（期望 \"invalid_payload\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"invalid_payload\""
+    },
+    {
+      "text": "机检[删除文件]：reasonCode = handoff_invalid（期望 \"handoff_invalid\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"handoff_invalid\""
+    },
+    {
+      "text": "Then[删除文件]：升级原因指出 calc.js 不存在或为空（期望含 \"calc.js\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-001 内容不合规：证据不可读 calc.js"
+    },
+    {
+      "text": "机检[删除文件]：下游节点 T-002 round 不变（仍为 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "夹具[写成 0 字节]：投递前 calc.js 存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-11-zero/demo/calc.js"
+    },
+    {
+      "text": "机检[写成 0 字节]：实例挂起 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检[写成 0 字节]：交接包已拒绝（期望 \"rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检[写成 0 字节]：rejectReason = invalid_payload（期望 \"invalid_payload\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"invalid_payload\""
+    },
+    {
+      "text": "机检[写成 0 字节]：reasonCode = handoff_invalid（期望 \"handoff_invalid\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"handoff_invalid\""
+    },
+    {
+      "text": "Then[写成 0 字节]：升级原因指出 calc.js 不存在或为空（期望含 \"calc.js\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-001 内容不合规：证据为空 calc.js"
+    },
+    {
+      "text": "机检[写成 0 字节]：下游节点 T-002 round 不变（仍为 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run[删除文件]（放行前台收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-11-rm",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 5357,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-13115-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run[写成 0 字节]（放行前台收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-11-zero",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 5451,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-13177-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-11-rm",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 273,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-11-zero",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 283,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

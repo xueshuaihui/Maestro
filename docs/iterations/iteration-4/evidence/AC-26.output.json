@@ -1,0 +1,148 @@
+{
+  "ac": "AC-26",
+  "title": "重新分配 → 新会话、新一轮、只重跑该节点",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具：pause 命中",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "夹具：接缝注册升级成功",
+      "ok": true,
+      "blocked": false,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "Given：实例 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "Given：测试 round 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：输出「升级 ESC-001 已处理（重新分配）」（期望含 \"升级 ESC-001 已处理（重新分配）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 已处理（重新分配）\n实例 INST-001 · 运行中 · 模板 编码闭环\n"
+    },
+    {
+      "text": "Then：输出当前实例行「实例 INST-001 · 运行中 · 模板 编码闭环」（期望含 \"实例 INST-001 · 运行中 · 模板 编码闭环\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级 ESC-001 已处理（重新分配）\n实例 INST-001 · 运行中 · 模板 编码闭环\n"
+    },
+    {
+      "text": "机检：sessions.length 增加 1（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：目标节点 T-001 round 增加 1（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then：测试没有被重跑（T-002 round 不变，仍 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：旧会话不再是 running",
+      "ok": true,
+      "blocked": false,
+      "actual": "idle,tool_running"
+    }
+  ],
+  "commands": [
+    {
+      "label": "call-seam test.escalate（node T-001）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-26",
+        "--call",
+        "test.escalate",
+        "--instance",
+        "INST-001",
+        "--node",
+        "T-001",
+        "--reason-code",
+        "rounds_exceeded"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-26",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 602,
+      "stdout": "{\"ok\":true,\"escalationId\":\"ESC-001\",\"reused\":false}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（放行后挂起收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-26",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 5370,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-25794-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch escalate resolve ESC-001 --instance INST-001 --decision retry",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "escalate",
+        "resolve",
+        "ESC-001",
+        "--decision",
+        "retry",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-26",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1755,
+      "stdout": "升级 ESC-001 已处理（重新分配）\n实例 INST-001 · 运行中 · 模板 编码闭环\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-26",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 261,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "AC-57-bad/prompt-attempts-mock-sess-31996-1.json": {
+    "attempts": 1
+  },
+  "AC-57-retry/prompt-attempts-mock-sess-32071-1.json": {
+    "attempts": 1
+  },
+  "AC-57-retry/prompt-attempts-mock-sess-32117-1.json": {
+    "attempts": 3
+  },
+  "AC-57-retry/prompt-failures-mock-sess-32117-1.json": {
+    "attempts": 3,
+    "failures": 3
+  },
+  "AC-57-escalation/prompt-attempts-mock-sess-32342-1.json": {
+    "attempts": 1
+  },
+  "AC-57-escalation/prompt-attempts-mock-sess-32365-1.json": {
+    "attempts": 1
+  },
+  "AC-57-escalation/prompt-attempts-mock-sess-32402-1.json": {
+    "attempts": 1
+  },
+  "AC-57-escalation/prompt-attempts-mock-sess-32429-1.json": {
+    "attempts": 1
+  },
+  "AC-57-flow/prompt-attempts-mock-sess-32526-1.json": {
+    "attempts": 1
+  },
+  "AC-57-flow/prompt-attempts-mock-sess-32555-1.json": {
+    "attempts": 1
+  }
+}

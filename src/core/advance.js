@@ -23,7 +23,7 @@ import {
 import { docRef, writePathOf } from './doc-artifact.js';
 import { REVIEW_PATH } from './review.js';
 import { extractProductLines } from './verify-artifact.js';
-import { promptFor } from '../templates/index.js';
+import { DEFAULT_RETEST_REQUIREMENT, DEFAULT_REVISION_REQUIREMENT, promptFor } from '../templates/index.js';
 
 const defaultNow = () => Date.now();
 
@@ -138,15 +138,25 @@ export function buildHandoff({
   revisionRequirement = null,
   handoffs = [],
   handoffId = null,
+  productPolicy = 'declared',
   now = defaultNow
 } = {}) {
+  const isBackflow = edge?.kind === 'backflow';
+  // C-06: never let the engine's own empty default become a validation failure.
+  let revision = revisionRequirement ?? null;
+  let retest = retestRequirement ?? null;
+  if (isBackflow && !revision && !retest) {
+    if (productPolicy === 'doc-single') revision = DEFAULT_REVISION_REQUIREMENT;
+    else retest = DEFAULT_RETEST_REQUIREMENT;
+  }
+  const resolvedEdge = {
+    from: edge?.from ?? null,
+    to: edge?.to ?? null,
+    kind: edge?.kind ?? 'forward'
+  };
   return {
     handoffId: handoffId ?? nextHandoffId(handoffs),
-    edge: {
-      from: edge?.from ?? null,
-      to: edge?.to ?? null,
-      kind: edge?.kind ?? 'forward'
-    },
+    edge: resolvedEdge,
     state: 'created',
     createdAt: isoOf(now),
     deliveredAt: null,
@@ -161,7 +171,17 @@ export function buildHandoff({
     note: null,
     // I1.3 (D-6): which document this handoff carries in / out / replaces.
     artifactRefs: artifactRefs === null ? null : artifactRefs,
-    revisionRequirement: revisionRequirement ?? null
+    revisionRequirement: revision,
+    // WP-4 (D-3.1 / D-9.3): 9 persisted fields, graph-driven packages only.
+    instanceId: instanceId ?? null,
+    round,
+    fromNodeId: resolvedEdge.from,
+    toNodeId: resolvedEdge.to,
+    retestRequirement: retest,
+    deliveryAttempts: 0,
+    pendingAt: null,
+    expiredAt: null,
+    lastError: null
   };
 }
 
@@ -184,6 +204,7 @@ export function buildBackflowHandoff({
   artifactRefs = null,
   handoffs = [],
   handoffId = null,
+  productPolicy = 'declared',
   now = defaultNow
 } = {}) {
   const normalized = normalizeDefects(defects);
@@ -201,6 +222,7 @@ export function buildBackflowHandoff({
     revisionRequirement,
     handoffs,
     handoffId,
+    productPolicy,
     now
   });
   const promptText = promptFor({
@@ -229,7 +251,7 @@ export function buildBackflowHandoff({
  * Wake gate (D-2). Order: pending handoff -> round cap -> target eligibility.
  * @returns {{ok:true, wakeHandoffId:string}|{ok:false, code:string, detail:{code:string}}}
  */
-export function shouldWake({ handoff = null, node = null, maxRounds = null } = {}) {
+export function shouldWake({ handoff = null, node = null, maxRounds = null, extraRounds = 0 } = {}) {
   const reject = (code) => ({ ok: false, code, detail: { code } });
 
   if (!handoff || !handoff.edge) return reject('NO_PENDING_BACKFLOW');
@@ -241,7 +263,9 @@ export function shouldWake({ handoff = null, node = null, maxRounds = null } = {
   }
   if (!node) return reject('TARGET_NOT_ELIGIBLE');
 
-  const limit = Number.isInteger(maxRounds) ? maxRounds : null;
+  // D-6.8: a human `retry` grants exactly one extra round at every wake gate.
+  const extra = Number.isInteger(extraRounds) ? extraRounds : 0;
+  const limit = Number.isInteger(maxRounds) ? maxRounds + extra : null;
   if (limit !== null && roundOf(node) >= limit) return reject('ROUNDS_EXCEEDED');
 
   const eligibleStates = kind === 'retest' ? ['failed'] : ['done', 'failed'];
@@ -254,7 +278,7 @@ export function shouldWake({ handoff = null, node = null, maxRounds = null } = {
  * Snapshot-driven wake gate: find the pending handoff for `edge.to`/`edge.kind`
  * and run the same rules. Used by the engine before a backflow or retest dispatch.
  */
-export function checkWakeGate({ graph = null, state = null, edge = null } = {}) {
+export function checkWakeGate({ graph = null, state = null, edge = null, extraRounds = 0 } = {}) {
   const reject = (code) => ({ ok: false, code, detail: { code } });
   if (!edge) return reject('NO_PENDING_BACKFLOW');
 
@@ -275,7 +299,11 @@ export function checkWakeGate({ graph = null, state = null, edge = null } = {}) 
 
   const limit = graph === null ? null : maxRoundsOf(graph, edge.to);
   const rounded = Number.isFinite(limit) ? limit : null;
-  return shouldWake({ handoff, node, maxRounds: rounded });
+  // The target node's persisted extraRounds (written by a human `retry`) plus
+  // any explicitly passed allowance both count toward the wake gate (D-6.8).
+  const persisted = Number.isInteger(node?.extraRounds) ? node.extraRounds : 0;
+  const explicit = Number.isInteger(extraRounds) ? extraRounds : 0;
+  return shouldWake({ handoff, node, maxRounds: rounded, extraRounds: persisted + explicit });
 }
 
 function escalate(nodeId, round, reason) {
@@ -299,9 +327,15 @@ export function planAdvance({
   fromNodeId = null,
   outcome = null,
   workspaceDir = null,
+  reuseHandoffId = null,
+  extraRounds = 0,
   now = defaultNow
 } = {}) {
   const snap = snapshot ?? state ?? {};
+  /** D-6.8: extraRounds granted by a human `retry` widen every round cap. */
+  const extraOf = (node) =>
+    (Number.isInteger(node?.extraRounds) ? node.extraRounds : 0) +
+    (Number.isInteger(extraRounds) ? extraRounds : 0);
   const nodes = Array.isArray(snap.nodes) ? snap.nodes : [];
   const currentId = fromNodeId ?? latestNodeId(nodes);
   const currentNode = currentId === null ? null : (nodes.find((item) => idOf(item) === currentId) ?? null);
@@ -363,12 +397,30 @@ export function planAdvance({
   const refsForEdge = (targetEdge, round) => {
     const fromSnapshot = nodes.find((item) => idOf(item) === targetEdge.from) ?? null;
     const toSnapshot = nodes.find((item) => idOf(item) === targetEdge.to) ?? null;
+    const fromDef = nodeById(graph, targetEdge.from);
     const toDef = nodeById(graph, targetEdge.to);
     const stem = snap.artifactStem ?? null;
-    const input =
+    // B-01 / C-06: a normal graph-driven package must carry real evidence even
+    // when the source node stored no artifactRefs (declared-but-empty products,
+    // or verified refs that never reached the snapshot). Fall back to the source
+    // node's declared product, then to the task's `产物：` line. A path that
+    // points at a missing file is correctly rejected as EVIDENCE_UNREADABLE by
+    // the D-3 validator in advanceLocked; we only supply the reference here.
+    let input =
       Array.isArray(fromSnapshot?.artifactRefs) && fromSnapshot.artifactRefs.length > 0
         ? [fromSnapshot.artifactRefs[0].ref]
         : [];
+    if (input.length === 0) {
+      const declared = Array.isArray(fromDef?.products) ? fromDef.products : [];
+      let ref = declared.find((item) => typeof item === 'string' && item.length > 0) ?? null;
+      // A single-document graph never falls back to the task line here: the
+      // versioned document lives in the workspace, not next to the task (R3).
+      if (!ref && productPolicy !== 'doc-single') {
+        const parsed = extractProductLines(snap.task ?? '');
+        ref = parsed.ok ? parsed.refs[0] : null;
+      }
+      if (ref) input = [ref];
+    }
 
     if (toDef?.artifactPolicy !== 'versioned-doc') {
       return {
@@ -424,11 +476,26 @@ export function planAdvance({
 
   if (classified === 'verdict-fail') {
     if (!edge || !target) return escalate(currentId, currentRound, 'rounds_exceeded');
-    const limit = maxRoundsOf(graph, currentId);
+    const limit = maxRoundsOf(graph, currentId) + extraOf(currentNode);
     if (Number.isFinite(limit) && currentRound >= limit) {
       return escalate(currentId, currentRound, 'rounds_exceeded');
     }
     const round = roundOf(targetSnapshot) + 1;
+    // D-7.4 step 1: a reusable `created` package skips construction entirely.
+    if (reuseHandoffId) {
+      return {
+        action: 'backflow',
+        nodeId: idOf(target),
+        targetNodeId: idOf(target),
+        edge,
+        round,
+        targetRound: round,
+        reason: 'verdict_fail',
+        handoffDraft: null,
+        reuseHandoffId,
+        promptText: null
+      };
+    }
     // Verdict files feed the coding loop; a review file feeds the document loop. Prefer
     // the explicit argument, then whatever the finished node stored on itself.
     const defects = normalizeDefects(
@@ -454,6 +521,7 @@ export function planAdvance({
       artifactRefs: vars.artifactRefs,
       revisionRequirement,
       handoffs: snap.handoffs ?? [],
+      productPolicy,
       now
     });
     const promptText = promptFor({
@@ -480,6 +548,7 @@ export function planAdvance({
       targetNodeId: idOf(target),
       edge: handoffDraft.edge,
       round,
+      targetRound: round,
       reason: 'verdict_fail',
       handoffDraft,
       promptText
@@ -492,12 +561,26 @@ export function planAdvance({
   }
   if (!edge || !target) return escalate(currentId, currentRound, 'no_edge');
 
-  const limit = maxRoundsOf(graph, idOf(target));
+  const limit = maxRoundsOf(graph, idOf(target)) + extraOf(targetSnapshot);
   if (Number.isFinite(limit) && roundOf(targetSnapshot) >= limit) {
     return escalate(currentId, currentRound, 'rounds_exceeded');
   }
 
   const round = roundOf(targetSnapshot) + 1;
+  if (reuseHandoffId) {
+    return {
+      action: 'dispatch',
+      nodeId: idOf(target),
+      targetNodeId: idOf(target),
+      edge,
+      round,
+      targetRound: round,
+      reason: edge.kind === 'retest' ? 'retest' : 'forward',
+      handoffDraft: null,
+      reuseHandoffId,
+      promptText: null
+    };
+  }
   const products = productsOf(target);
   const vars = promptVarsOf(edge, round);
   const handoffDraft = buildHandoff({
@@ -511,6 +594,7 @@ export function planAdvance({
     defects: [],
     artifactRefs: vars.artifactRefs,
     handoffs: snap.handoffs ?? [],
+    productPolicy,
     now
   });
   const promptText = promptFor({
@@ -536,6 +620,7 @@ export function planAdvance({
     targetNodeId: idOf(target),
     edge: handoffDraft.edge,
     round,
+    targetRound: round,
     reason: edge.kind === 'retest' ? 'retest' : 'forward',
     handoffDraft,
     promptText

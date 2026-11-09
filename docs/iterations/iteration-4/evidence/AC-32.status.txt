@@ -1,0 +1,27 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js approve APR-001 --decision deny --instance INST-001
+# label=orch approve APR-001 --instance INST-001 --decision deny cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-32 exit=0 573ms
+审批 APR-001 已拒绝 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写下说明 --approval hold
+# label=orch run --approval hold（前台，拒绝后收尾） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-32 exit=1 4431ms
+实例 INST-001 · 运行中
+会话已创建 mock-sess-27409-1
+任务已投递
+审批 APR-001 待处理 · 动作 write
+会话 等待审批：write
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 2s
+会话 空闲
+节点 失败 · 审批被拒绝，任务中止于 write
+交接包 HO-001  已构造   06:38:54
+交接包 HO-001  已投递   06:38:54
+交接包 HO-001  已接受   06:38:55
+交接包 HO-001  已拒绝   06:38:56  原因 审批被拒
+审批被拒绝，任务中止于 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-32 exit=0 236ms
+核心未在运行
+

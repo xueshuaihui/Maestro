@@ -1,0 +1,164 @@
+{
+  "instances": [
+    {
+      "__root": "AC-52-abort",
+      "instanceId": "INST-001",
+      "state": {
+        "schemaVersion": 2,
+        "instanceId": "INST-001",
+        "coreGeneration": "gen-9d70b4586a20995d",
+        "createdAt": "2026-11-08T22:44:08.786Z",
+        "updatedAt": "2026-11-08T22:44:12.331Z",
+        "state": "cancelled",
+        "stateSince": "2026-11-08T22:44:12.313Z",
+        "template": "code-loop",
+        "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-abort/demo",
+        "task": "实现 calc.js，产物：calc.js",
+        "halted": false,
+        "rev": 10,
+        "counters": {
+          "eventSeq": 7,
+          "runCount": 1,
+          "dispatchCount": 1
+        },
+        "hostRaw": {
+          "stopReason": null,
+          "lastError": null,
+          "agentInfo": null
+        },
+        "nodes": [
+          {
+            "nodeId": "T-001",
+            "roleId": "developer",
+            "round": 1,
+            "state": "cancelled",
+            "stateSince": "2026-11-08T22:44:12.313Z",
+            "startedAt": "2026-11-08T22:44:09.705Z",
+            "roundStartedAt": "2026-11-08T22:44:09.705Z",
+            "endedAt": "2026-11-08T22:44:12.313Z",
+            "failure": null,
+            "note": null,
+            "verdict": null,
+            "sessionId": "mock-sess-31100-1",
+            "artifactRefs": []
+          },
+          {
+            "nodeId": "T-002",
+            "roleId": "tester",
+            "round": 0,
+            "state": "cancelled",
+            "stateSince": "2026-11-08T22:44:12.313Z",
+            "startedAt": null,
+            "roundStartedAt": null,
+            "endedAt": null,
+            "failure": null,
+            "note": null,
+            "verdict": null,
+            "sessionId": null,
+            "artifactRefs": []
+          }
+        ],
+        "sessions": [
+          {
+            "sessionId": "mock-sess-31100-1",
+            "nodeId": "T-001",
+            "round": 1,
+            "hostId": null,
+            "state": "idle",
+            "stateSince": "2026-11-08T22:44:12.313Z",
+            "createdAt": "2026-11-08T22:44:10.475Z",
+            "lastEventAt": "2026-11-08T22:44:10.873Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-abort/demo/calc.js",
+            "pendingPermission": null,
+            "quarantined": true
+          }
+        ],
+        "handoffs": [],
+        "escalations": [],
+        "paused": false
+      }
+    },
+    {
+      "__root": "AC-52-cancel",
+      "instanceId": "INST-001",
+      "state": {
+        "schemaVersion": 2,
+        "instanceId": "INST-001",
+        "coreGeneration": "gen-8a371dd42635414a",
+        "createdAt": "2026-11-08T22:44:14.585Z",
+        "updatedAt": "2026-11-08T22:44:18.050Z",
+        "state": "cancelled",
+        "stateSince": "2026-11-08T22:44:18.021Z",
+        "template": "code-loop",
+        "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-cancel/demo",
+        "task": "实现 calc.js，产物：calc.js",
+        "halted": false,
+        "rev": 10,
+        "counters": {
+          "eventSeq": 7,
+          "runCount": 1,
+          "dispatchCount": 1
+        },
+        "hostRaw": {
+          "stopReason": null,
+          "lastError": null,
+          "agentInfo": null
+        },
+        "nodes": [
+          {
+            "nodeId": "T-001",
+            "roleId": "developer",
+            "round": 1,
+            "state": "cancelled",
+            "stateSince": "2026-11-08T22:44:18.021Z",
+            "startedAt": "2026-11-08T22:44:15.517Z",
+            "roundStartedAt": "2026-11-08T22:44:15.517Z",
+            "endedAt": "2026-11-08T22:44:18.021Z",
+            "failure": null,
+            "note": null,
+            "verdict": null,
+            "sessionId": "mock-sess-31175-1",
+            "artifactRefs": []
+          },
+          {
+            "nodeId": "T-002",
+            "roleId": "tester",
+            "round": 0,
+            "state": "cancelled",
+            "stateSince": "2026-11-08T22:44:18.021Z",
+            "startedAt": null,
+            "roundStartedAt": null,
+            "endedAt": null,
+            "failure": null,
+            "note": null,
+            "verdict": null,
+            "sessionId": null,
+            "artifactRefs": []
+          }
+        ],
+        "sessions": [
+          {
+            "sessionId": "mock-sess-31175-1",
+            "nodeId": "T-001",
+            "round": 1,
+            "hostId": null,
+            "state": "idle",
+            "stateSince": "2026-11-08T22:44:18.021Z",
+            "createdAt": "2026-11-08T22:44:16.279Z",
+            "lastEventAt": "2026-11-08T22:44:16.679Z",
+            "toolName": null,
+            "turnId": "turn-1",
+            "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-52-cancel/demo/calc.js",
+            "pendingPermission": null,
+            "quarantined": true
+          }
+        ],
+        "handoffs": [],
+        "escalations": [],
+        "paused": false
+      }
+    }
+  ]
+}

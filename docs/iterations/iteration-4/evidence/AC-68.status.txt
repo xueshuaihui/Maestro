@@ -1,0 +1,48 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task 写发布说明，产物：release-notes.md --template task-loop
+# label=orch run task-loop doc-backflow-once cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68 exit=0 17401ms
+实例 INST-001 · 运行中 · 模板 通用任务闭环
+会话已创建 mock-sess-34216-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 2s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 2s · 产物 artifacts/reports/research-notes.v1.md
+节点 T-002 撰写者 已完成 · 第 2 轮 · 耗时 9s · 产物 artifacts/docs/release-notes.v2.md
+节点 T-003 审核者 已完成 · 第 2 轮 · 耗时 9s · 审核 通过
+交接包 HO-001  研究员→撰写者  已构造   06:48:34
+交接包 HO-001  研究员→撰写者  已投递   06:48:35
+交接包 HO-001  研究员→撰写者  已接受   06:48:35
+交接包 HO-001  研究员→撰写者  已完成   06:48:36
+交接包 HO-002  撰写者→审核者  已构造   06:48:37
+交接包 HO-002  撰写者→审核者  已投递   06:48:38
+交接包 HO-002  撰写者→审核者  已接受   06:48:38
+交接包 HO-002  撰写者→审核者  已完成   06:48:39
+交接包 HO-003  审核者→撰写者（回流）  已构造   06:48:40
+交接包 HO-003  审核者→撰写者（回流）  已投递   06:48:41
+交接包 HO-003  审核者→撰写者（回流）  已接受   06:48:42
+交接包 HO-003  审核者→撰写者（回流）  已完成   06:48:43
+交接包 HO-004  撰写者→审核者（复测）  已构造   06:48:43
+交接包 HO-004  撰写者→审核者（复测）  已投递   06:48:44
+交接包 HO-004  撰写者→审核者（复测）  已接受   06:48:45
+交接包 HO-004  撰写者→审核者（复测）  已完成   06:48:46
+升级 —
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-68 exit=0 313ms
+核心已停止（pid 34185，运行 17s）
+

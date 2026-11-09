@@ -1,0 +1,81 @@
+{
+  "ac": "AC-06",
+  "title": "工作区建不出来时发起前停住",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then：终端出现「无法创建工作区：…」（期望含 \"无法创建工作区：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "无法创建工作区：注入故障（workspace_init:fail）\n"
+    },
+    {
+      "text": "Then：退出码 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then：没有留下半个实例目录（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：.orch/instances/INST-001 不存在（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：events.jsonl 没有 node.dispatch（期望不含 \"node.dispatch\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": ""
+    },
+    {
+      "text": "机检：没有会话记录（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop（MAESTRO_FAULT=workspace_init:fail）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-06",
+      "exitCode": 3,
+      "timedOut": false,
+      "durationMs": 1470,
+      "stdout": "无法创建工作区：注入故障（workspace_init:fail）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-06",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 364,
+      "stdout": "核心已停止（pid 12232，运行 1s）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "ac": "AC-20",
+  "title": "信箱写不进去时不投递",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then/机检：实例挂起 suspended（期望 \"suspended\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"suspended\""
+    },
+    {
+      "text": "机检：交接包已拒绝（投递失败）（期望 \"rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检：rejectReason === delivery_failed（期望 \"delivery_failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"delivery_failed\""
+    },
+    {
+      "text": "机检：escalations[0].reasonCode === delivery_failed（期望 \"delivery_failed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"delivery_failed\""
+    },
+    {
+      "text": "机检：.mock/prompts/2.json 的 task 仍为 null（宿主没收到提示）（期望 null）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    },
+    {
+      "text": "机检：目标会话最多 1 个（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：目标会话为 idle（期望 \"idle\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"idle\""
+    },
+    {
+      "text": "机检：目标会话 mock-sess-24141-1 没有 prompt-attempts 文件",
+      "ok": true,
+      "blocked": false,
+      "actual": "prompt-attempts-mock-sess-24096-1.json"
+    },
+    {
+      "text": "Then：宿主没有收到提示（events 无 handoff.delivered）（期望不含 \"handoff.delivered\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "run.started,node.dispatch,session.state,session.state,session.state,output.submitted,output.submitted,verification.passed,run.completed,handoff.created,node.dispatch,handoff.rejected,escalation.created,state.change,state.change,core.suspend"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run code-loop（MAESTRO_FAULT=inbox_write:fail）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-20",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 10711,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-24096-1\n任务已投递\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-20",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 370,
+      "stdout": "核心已停止（pid 24055，运行 9s）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js run --cwd ./demo --task "实现 calc.js，产物：calc.js" --template code-loop
+# label=orch run（test.handoff --mutate no-evidence，放行后前台挂起收尾） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10 exit=4 6049ms
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-12996-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs --root /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10 --call test.handoff --instance INST-001 --node T-001 --mutate no-evidence
+# label=call-seam test.handoff --mutate no-evidence cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10 exit=0 257ms
+{"ok":true,"registered":true,"instanceId":"INST-001","nodeId":"T-001","edgeKind":null,"round":null,"mutate":"no-evidence","snapshot":null}
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001 cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10 exit=0 1195ms
+实例 INST-001 · 已挂起 · 模板 编码闭环
+节点 T-001 开发 已升级 · 第 1 轮
+节点 T-002 测试 待执行
+会话 已升级
+交接包 HO-001  开发→测试  已构造   06:18:56
+交接包 HO-001  开发→测试  已拒绝   06:18:56  原因 内容不合规
+升级 ESC-001 待处理
+  原因：交接包 HO-001 内容不合规：缺少证据引用 
+  节点：T-001 开发 · 第 1 轮
+  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-10 exit=0 313ms
+核心已停止（pid 13040，运行 1s）
+

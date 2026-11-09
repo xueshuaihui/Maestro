@@ -1,0 +1,32 @@
+{
+  "ac": "AC-47",
+  "title": "`handoff show` 展示完整内容",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T11:01:24.209Z",
+  "finishedAt": "2026-11-09T11:01:38.792Z",
+  "durationMs": 14583,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-47",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-47"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-47",
+      "instanceId": "INST-001",
+      "state": "suspended"
+    }
+  ],
+  "checks": 29,
+  "notes": []
+}

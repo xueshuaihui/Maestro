@@ -1,0 +1,25 @@
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-67 exit=0 600ms
+核心已停止（pid 34083，运行 2s）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js status --instance INST-001
+# label=orch status --instance INST-001（自动拉起新核心并完成启动对账） cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-67 exit=0 1297ms
+实例 INST-001 · 已中断 ｜ 停在节点 执行中 / 会话 等待审批
+节点 执行中
+会话 等待审批：write
+交接包 HO-001  已构造   06:48:23
+交接包 HO-001  已投递   06:48:23
+交接包 HO-001  已接受   06:48:23
+审批 APR-001 待处理 · 动作 write
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js approve APR-001 --decision allow --instance INST-001
+# label=orch approve APR-001 --instance INST-001 --decision allow cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-67 exit=1 318ms
+审批 APR-001 已失效：会话不在运行
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js core stop
+# label=orch core stop cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-67 exit=0 241ms
+核心未在运行
+

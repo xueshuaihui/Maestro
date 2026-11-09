@@ -1,0 +1,218 @@
+{
+  "ac": "AC-13",
+  "title": "回流包缺缺陷或修改要求被拒绝",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具[backflow-empty-defects]：接缝注册成功",
+      "ok": true,
+      "blocked": false,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "机检[backflow-empty-defects]：回流包已拒绝（期望 \"rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检[backflow-empty-defects]：rejectReason === 'invalid_payload'（期望 \"invalid_payload\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"invalid_payload\""
+    },
+    {
+      "text": "机检[backflow-empty-defects]：reasonCode === 'handoff_invalid'（期望 \"handoff_invalid\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"handoff_invalid\""
+    },
+    {
+      "text": "Then[backflow-empty-defects]：升级原因指出回流缺少defects（期望含 \"回流缺少defects\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-002 内容不合规：回流缺少defects"
+    },
+    {
+      "text": "机检[backflow-empty-defects]：目标节点（撰写者/开发）没有被派发（sessions 只有 2 个）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检[backflow-empty-defects]：来源节点 escalated（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    },
+    {
+      "text": "夹具[empty-requirements]：接缝注册成功",
+      "ok": true,
+      "blocked": false,
+      "actual": "[object Object]"
+    },
+    {
+      "text": "机检[empty-requirements]：回流包已拒绝（期望 \"rejected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"rejected\""
+    },
+    {
+      "text": "机检[empty-requirements]：rejectReason === 'invalid_payload'（期望 \"invalid_payload\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"invalid_payload\""
+    },
+    {
+      "text": "机检[empty-requirements]：reasonCode === 'handoff_invalid'（期望 \"handoff_invalid\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"handoff_invalid\""
+    },
+    {
+      "text": "Then[empty-requirements]：升级原因指出回流缺少requirements（期望含 \"回流缺少requirements\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "交接包 HO-002 内容不合规：回流缺少requirements"
+    },
+    {
+      "text": "机检[empty-requirements]：目标节点（撰写者/开发）没有被派发（sessions 只有 2 个）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检[empty-requirements]：来源节点 escalated（期望 \"escalated\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalated\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run[backflow-empty-defects]（回流边坏包，前台挂起收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-13-backflow-empty-defects",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 9540,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-13549-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "call-seam test.handoff --mutate backflow-empty-defects --edge-kind backflow --round 2",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-13-backflow-empty-defects",
+        "--call",
+        "test.handoff",
+        "--instance",
+        "INST-001",
+        "--node",
+        "T-002",
+        "--mutate",
+        "backflow-empty-defects",
+        "--edge-kind",
+        "backflow",
+        "--round",
+        "2"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-13-backflow-empty-defects",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 205,
+      "stdout": "{\"ok\":true,\"registered\":true,\"instanceId\":\"INST-001\",\"nodeId\":\"T-002\",\"edgeKind\":\"backflow\",\"round\":2,\"mutate\":\"backflow-empty-defects\",\"snapshot\":null}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run[empty-requirements]（回流边坏包，前台挂起收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-13-empty-requirements",
+      "exitCode": 4,
+      "timedOut": false,
+      "durationMs": 9649,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-13666-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 2s\n会话 执行中 · 已运行 2s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 已升级\n实例 INST-001 · 已挂起 · 模板 编码闭环\n升级 ESC-001 待处理 · 节点 T-002 测试 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "call-seam test.handoff --mutate empty-requirements --edge-kind backflow --round 2",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/test/fixtures/call-seam.mjs",
+        "--root",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-13-empty-requirements",
+        "--call",
+        "test.handoff",
+        "--instance",
+        "INST-001",
+        "--node",
+        "T-002",
+        "--mutate",
+        "empty-requirements",
+        "--edge-kind",
+        "backflow",
+        "--round",
+        "2"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-13-empty-requirements",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 206,
+      "stdout": "{\"ok\":true,\"registered\":true,\"instanceId\":\"INST-001\",\"nodeId\":\"T-002\",\"edgeKind\":\"backflow\",\"round\":2,\"mutate\":\"empty-requirements\",\"snapshot\":null}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-13-backflow-empty-defects",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 254,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-13-empty-requirements",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 264,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}

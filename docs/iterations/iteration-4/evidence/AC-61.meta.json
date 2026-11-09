@@ -1,0 +1,32 @@
+{
+  "ac": "AC-61",
+  "title": "取消时待投递交接包不再重试",
+  "face": "mock 夹具面",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T11:58:43.034Z",
+  "finishedAt": "2026-11-09T11:58:53.166Z",
+  "durationMs": 10132,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-61",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-61"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-61",
+      "instanceId": "INST-001",
+      "state": "cancelled"
+    }
+  ],
+  "checks": 11,
+  "notes": []
+}

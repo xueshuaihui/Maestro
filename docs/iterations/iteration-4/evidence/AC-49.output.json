@@ -1,0 +1,179 @@
+{
+  "ac": "AC-49",
+  "title": "暂停停在下一次派发边界",
+  "grade": "mock 实测",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：项目根出现 .mock/paused（开发产出后停住）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-80726-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n"
+    },
+    {
+      "text": "Then：pause 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：pause 输出实例行「运行中（已暂停）」（期望含 \"实例 INST-001 · 运行中（已暂停） · 模板 编码闭环\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中（已暂停） · 模板 编码闭环\n"
+    },
+    {
+      "text": "Then：前台 orch run 以暂停收尾并退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then：run 收尾只打印实例行与下一步（期望含 \"下一步：恢复推进 orch workflow resume INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-80726-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n实例 INST-001 · 运行中（已暂停） · 模板 编码闭环\n下一步：恢复推进 orch workflow resume INST-001\n"
+    },
+    {
+      "text": "机检：run 收尾不打印节点表（期望不含 \"节点 T-001 开发 已完成\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "会话 空闲|实例 INST-001 · 运行中（已暂停） · 模板 编码闭环|"
+    },
+    {
+      "text": "机检：run 收尾不打印交接包行与升级块（期望不含 \"交接包 HO-\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": " · 模板 编码闭环\n下一步：恢复推进 orch workflow resume INST-001\n"
+    },
+    {
+      "text": "机检：磁盘快照 paused === true（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：磁盘快照 halted === false（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：state 仍为 running（期望 \"running\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"running\""
+    },
+    {
+      "text": "机检：开发节点 T-001 done（期望 \"done\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"done\""
+    },
+    {
+      "text": "机检：counters.dispatchCount 仍为 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：测试 round === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：handoffs 中没有指向测试的包（不存在 created 孤儿包）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    },
+    {
+      "text": "机检：events.jsonl 中开发节点之后没有新的 node.dispatch（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then：status 显示已暂停（期望含 \"运行中（已暂停）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "实例 INST-001 · 运行中（已暂停） · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 3s\n节点 T-002 测试 待执行\n会话 空闲\n升级 —\n"
+    },
+    {
+      "text": "机检：workspace/status.md 含「- 暂停：是」（期望含 \"- 暂停：是\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# INST-001 编码闭环\n\n- 状态：运行中\n- 暂停：是\n- 任务：实现 calc.js，产物：calc.js\n- 当前节点：T-001 开发\n- 更新：2026-11-09T11:58:30.261Z\n- 工作区：/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-49/.orch/instances/INST-001/workspace\n\n## 节点\n\n- T-001 开发：已完成 · 第 1 轮\n- T-002 测试：待执行 · 第 0 轮\n\n## 交接包\n\n- 无\n\n## 升级\n\n- 无\n\n## 审批\n\n- 无\n"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch workflow pause INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "workflow",
+        "pause",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-49",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 454,
+      "stdout": "实例 INST-001 · 运行中（已暂停） · 模板 编码闭环\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（前台，暂停收尾）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "实现 calc.js，产物：calc.js",
+        "--template",
+        "code-loop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-49",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 5613,
+      "stdout": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-80726-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n实例 INST-001 · 运行中（已暂停） · 模板 编码闭环\n下一步：恢复推进 orch workflow resume INST-001\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch status --instance INST-001",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "status",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-49",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 266,
+      "stdout": "实例 INST-001 · 运行中（已暂停） · 模板 编码闭环\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 3s\n节点 T-002 测试 待执行\n会话 空闲\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch core stop",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "core",
+        "stop"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-p4/AC-49",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 239,
+      "stdout": "核心未在运行\n",
+      "stderr": ""
+    }
+  ]
+}
