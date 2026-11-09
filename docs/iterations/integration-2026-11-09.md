@@ -100,3 +100,20 @@ node -e "console.log(Object.keys(require('./package.json').dependencies??{}).len
 # 双 workflow 分流
 node --input-type=module -e "import {parseArgs} from './src/cli/main.js'; console.log(parseArgs(['workflow','pause','I']), parseArgs(['workflow','list']))"
 ```
+
+## 7. 收尾：推送与分支清理（2026-11-09）
+
+| 动作 | 结果 |
+|---|---|
+| 推送 `main` | `git push origin main` → `8af970d..d4b0f94`；`git fetch --all --prune` 后 `rev-list --left-right --count origin/main...main` = `0 0` |
+| 本地分支删除 | `feat/i1.5-role-registry`（`0cd113b`）、`feat/i1.6-assets-workflow`（`1818b45`）、`integrate/i1.4-i1.6`（`d4b0f94`）均用 `git branch -d` 安全删除；删除前 `git branch -r --merged origin/main` 已确认两条功能分支完全合并，无未合并提交 |
+| 远端分支删除 | 两条 `feat/*` 已删除；`git push origin --delete` 遇 `CONNECT tunnel failed, response 502`，改用 REST `DELETE /repos/xueshuaihui/Maestro/git/refs/heads/<branch>`（两条均返回 204），API 分支列表复核只剩 `main` |
+| worktree 清理 | 移除本次新建的 `maestro-integrate`（干净）、`maestro-origin-main`（临时测试产物，强制移除）；保留 `base-i13` / `base-lf` 两个历史 detached worktree |
+| 最终状态 | 本地与 `origin` 均只剩 `main`，HEAD `d4b0f94`；主工作区在 `main` 且 `git status` 干净 |
+
+**网络备用通道（可复用）**：本机 `https_proxy` 指向的 `github.com` CONNECT 隧道会间歇返回 502，
+且代理端口会随进程重启变化、环境变量可能指向已失效端口；但 `api.github.com` 直连
+（`curl --noproxy '*'`）稳定 HTTP 200。需要删远端 ref 或核对远端状态时，可用
+`git credential fill`（helper = `manager`）取 PAT 走 REST API，不必等隧道恢复；
+纯 git 操作（push / fetch / ls-remote）仍必须走 `github.com`，隧道恢复后补一次
+`git fetch --all --prune` 即可对齐本地引用。

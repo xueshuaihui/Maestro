@@ -27,6 +27,7 @@
 - Cursor 只装了 IDE，**没有 `cursor-agent` CLI**（`agent acp` 不可用）。
 - 无 Rust / MSVC / Windows SDK → Tauri 只能 CI 构建；WebView2 运行时可用。Electron 二进制必须走 `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/`。
 - 环境变量 `ELECTRON_RUN_AS_NODE=1` 可能常驻，跑 Electron 前要删。
+- **GitHub 网络备用通道**：`https_proxy=http://127.0.0.1:<port>` 对 `github.com` 的 CONNECT 隧道会间歇 502，且端口随 WorkBuddy 重启变化、环境变量可能指向已失效端口；`api.github.com` 直连（`curl --noproxy '*'`）稳定 HTTP 200。用 `git credential fill`（helper=`manager`）取 PAT，走 REST `GET/DELETE /repos/<owner>/<repo>/git/refs/heads/<branch>` 可核对/删除远端 ref（DELETE 返回 204），无需等隧道恢复；纯 git 操作仍需 `github.com` 隧道恢复后补 `git fetch --all --prune`。
 
 ## 阶段零已锁定的实现约束（阶段一必守）
 1. `load` 后必须 drain-quiet（idle 40ms / cap 400ms），否则 HTTP/SSE 回放帧漏进下一 turn。
