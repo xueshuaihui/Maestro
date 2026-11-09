@@ -1,0 +1,43 @@
+{
+  "role": {
+    "id": "tester",
+    "name": "测试",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "exec",
+    "skills": [
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/tester.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "code-loop",
+    "state": "running",
+    "roleToSessions": {
+      "developer": [
+        "mock-sess-12424-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "tester",
+    "roleInstanceId": "RI-tester",
+    "status": "available",
+    "statusReason": null,
+    "activeSessions": [],
+    "servingNodes": [],
+    "hostIcons": [],
+    "maxConcurrentSessions": 1,
+    "lastAction": {
+      "nodeId": "T-002",
+      "round": 0,
+      "maxRounds": 2,
+      "state": "pending",
+      "stateSince": "2026-11-08T12:21:53.310Z"
+    }
+  }
+}

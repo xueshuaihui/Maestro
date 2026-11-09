@@ -1,0 +1,7 @@
+- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1
+  职责：
+  技能：code-change, test-run
+  工具：—
+  可唤醒：—
+  来源：项目 .orch/roles/lead-dev.yaml
+

@@ -1,0 +1,3 @@
+校验工作流 3 个：1 个不合法
+- 内置 task-loop：唤醒不在白名单内：writer → reviewer（WORKFLOW_WAKE_DENIED）
+

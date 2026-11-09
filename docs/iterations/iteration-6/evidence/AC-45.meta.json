@@ -1,0 +1,46 @@
+{
+  "ac": "AC-45",
+  "title": "只读命令不建 `.orch`、不连核心",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:23:21.156Z",
+  "finishedAt": "2026-11-09T12:23:22.204Z",
+  "durationMs": 1048,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-45",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 4,
+  "notes": [
+    "机检口径：assets/** 指仓库根 assets/（内置资产只读红线 BR-30/BR-01）；清单 = 递归相对路径 + sha256，执行前后逐字比对。"
+  ],
+  "extraFiles": [
+    "AC-45.assets-manifest-before.txt",
+    "AC-45.role-list.txt",
+    "AC-45.role-show-developer.txt",
+    "AC-45.role-validate.txt",
+    "AC-45.skill-list.txt",
+    "AC-45.skill-show-code-change.txt",
+    "AC-45.skill-validate.txt",
+    "AC-45.workflow-list.txt",
+    "AC-45.workflow-show-code-loop.txt",
+    "AC-45.workflow-validate.txt",
+    "AC-45.workflow-diff-code-loop.txt",
+    "AC-45.summaries.txt",
+    "AC-45.assets-manifest-after.txt"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "ac": "AC-44",
+  "title": "三族命令的用法错误矩阵",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:23:13.463Z",
+  "finishedAt": "2026-11-09T12:23:14.605Z",
+  "durationMs": 1142,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-44",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-44"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 62,
+  "notes": [],
+  "extraFiles": [
+    "AC-44.role-bogus.txt",
+    "AC-44.skill-bogus.txt",
+    "AC-44.workflow-bogus.txt",
+    "AC-44.role-list---nope.txt",
+    "AC-44.skill-list---nope.txt",
+    "AC-44.workflow-list---nope.txt",
+    "AC-44.skill-show-x---instance-y.txt",
+    "AC-44.workflow-list---group-x.txt",
+    "AC-44.role-show-x---group-coding.txt",
+    "AC-44.skill-show缺位置参数.txt",
+    "AC-44.workflow-show缺位置参数.txt",
+    "AC-44.role-show缺位置参数.txt"
+  ]
+}

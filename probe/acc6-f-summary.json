@@ -1,0 +1,4885 @@
+{
+  "通过": 65,
+  "不通过": 0,
+  "阻塞": 0,
+  "evidenceFiles": 547,
+  "evidenceCovered": 65,
+  "thinEvidence": [],
+  "perAc": [
+    {
+      "id": "AC-01",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 终端恰好三行（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 行逐字（期望逐字 \"已创建项目角色：.orch/roles/lead-dev.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 行契约行逐字（期望逐字 \"- lead-dev 首席开发 · 编码工程 · code · write · 技能 2 · 并发 1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 行逐字（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role list 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role list 首行 = 角色 17 个（内置 16 · 项目 1）（期望逐字 \"角色 17 个（内置 16 · 项目 1）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：test -f .orch/roles/lead-dev.yaml 为真",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件首行 schema: role/v1（期望逐字 \"schema: role/v1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 max_concurrent_sessions: 1（期望含 \"max_concurrent_sessions: 1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.project === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.total === 17（期望 17）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：lead-dev 的 source === project（期望 \"project\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-02",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "Then 第 1 次退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 次退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 次退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 次输出 = 用法块 25 行 + 原因行（共 26 行）（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 次输出 = 用法块 25 行 + 原因行（共 26 行）（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 次输出 = 用法块 25 行 + 原因行（共 26 行）（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 次原因行（期望逐字 \"  （role create 需要 --name）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 次原因行（期望逐字 \"  （role create 需要 --name）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 次原因行（期望逐字 \"  （role create 需要 --side-effect）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：test -e \"$ROOT/.orch\" 为假（没建文件）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-03",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "Given：预置 lead-dev.yaml 成功（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：文件内容为 summary 为空（summary : ''）（期望含 \"summary : ''\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次输出恰好一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次输出逐字（期望逐字 \"已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第一次后文件 sha256 不变（期望 \"966936a972232c8df8a601300bdf49c67adc34ee12b02e67a2a21d624dd27443\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第一次后 grep -c 另一个名字 = 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次输出恰好三行（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次第 1 行逐字（期望逐字 \"已创建项目角色：.orch/roles/lead-dev.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次契约行的名字变成 另一个名字（期望匹配 /^- lead-dev 另一个名字 · /）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次第 3 行校验通过（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二次后 grep -c 另一个名字 = 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-04",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 10,
+      "checks": [
+        {
+          "text": "Then 退出码 0（缺四个必填不退 2）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 输出恰好三行（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 行逐字（期望逐字 \"已创建项目角色：.orch/roles/lead-dev.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 契约行（中文名默认 开发（派生））（期望逐字 \"- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 行逐字（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 derived_from: developer（期望含 \"derived_from: developer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 skills: [test-run]（继承/覆盖）（期望含 \"skills: [test-run]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 tools: [read, write, edit, bash]（继承/覆盖）（期望含 \"tools: [read, write, edit, bash]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 wake_allow: [tester]（继承/覆盖）（期望含 \"wake_allow: [tester]\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 artifact_type: code（继承/覆盖）（期望含 \"artifact_type: code\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 group: coding（继承/覆盖）（期望含 \"group: coding\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 max_concurrent_sessions: 1（继承/覆盖）（期望含 \"max_concurrent_sessions: 1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show 来源行（期望逐字 \"  来源：项目 .orch/roles/lead-dev.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show 第 7 行 = 派生自：developer（期望逐字 \"  派生自：developer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role 对象仍是 10 个键（期望 10）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role 对象不含派生信息键（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机操：maxConcurrentSessions === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机操：artifactType === code（期望 \"code\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机操：skills === [test-run]（期望 [\"test-run\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：test/wp11/cli-role.test.js 全绿（# fail 0）（期望匹配 /# fail 0\\b/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：wp11 有通过用例（# pass N>0）（期望匹配 /# pass [1-9]\\d*/）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-05",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 11,
+      "checks": [
+        {
+          "text": "Given：派生 lead-dev 建出（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：改前 role.skills = [test-run]（期望 [\"test-run\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "When：role edit 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① role show 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 技能行变成 `  技能：test-run, code-review`（期望逐字 \"  技能：test-run, code-review\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② role list 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② lead-dev 行以 · 技能 2 · 并发 1 结尾",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ role validate 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 校验行 = 全部通过（期望匹配 /全部通过/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：改后 role.skills = [test-run, code-review]（期望 [\"test-run\",\"code-review\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role validate 的 counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-06",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then 第一次退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次 errors 长度 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：codes 全为 ROLE_DERIVE_CYCLE（期望 [\"ROLE_DERIVE_CYCLE\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].file === roles/a1.yaml（按文件名字典序）（期望 \"roles/a1.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细给出环上的角色名（期望含 \"a\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 文本含两条 ROLE_DERIVE_CYCLE（期望匹配 /ROLE_DERIVE_CYCLE/g）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次 errors 长度 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].code === ROLE_DERIVE_MISSING（期望 \"ROLE_DERIVE_MISSING\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].file === roles/b1.yaml（期望 \"roles/b1.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细给出 ghost（期望含 \"ghost\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-07",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 9,
+      "checks": [
+        {
+          "text": "Given：A 里建出 lead-dev（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 导出回一行、退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 导出输出恰好一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 导出行逐字（期望逐字 \"已导出角色 lead-dev 到 exports/lead-dev.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：A 导出的文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：A 导出的文件里含 derived_from: developer（期望含 \"derived_from: developer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 导入退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 导入输出恰好两行（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 导入第 1 行逐字（期望逐字 \"已安装项目角色：.orch/roles/lead-dev.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 导入第 2 行逐字（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then B 的 role list 首行 = 角色 17 个（内置 16 · 项目 1）（期望逐字 \"角色 17 个（内置 16 · 项目 1）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：B 的 lead-dev.yaml 与 A 导出文件 sha256 相同（逐字节）（期望 \"b7ef68f678392b3afeaadf19dd19ed98908952024ba44f218b1a6ecbf3b6e8f7\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：B 的 role validate counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-08",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 第一次退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次输出恰好一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次输出逐字（期望逐字 \"导入被拒：引用的技能不存在：no-such（ROLE_SKILL_NOT_FOUND）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/roles 文件清单在第一次执行前后逐字相同（期望 {\"lead-dev.yaml\":{\"sha256\":\"0d458f7ac2ca06155a1b8c007d178d0a89db018596832f211ee22dd104f29a6f\",\"bytes\":186,\"mtimeIso\":\"2026-11-09T12:22:34.832Z\"}}）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第一次执行后 test -e \"$ROOT/.orch/roles/ghost.yaml\" 为假",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次输出恰好一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次输出逐字（期望逐字 \"已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/roles 文件清单在两次执行前后逐字相同（期望 {\"lead-dev.yaml\":{\"sha256\":\"0d458f7ac2ca06155a1b8c007d178d0a89db018596832f211ee22dd104f29a6f\",\"bytes\":186,\"mtimeIso\":\"2026-11-09T12:22:34.832Z\"}}）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-09",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "Given：lead-dev 建出（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次输出恰好四行（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 行 = 已更新项目角色：…（期望匹配 /^已更新项目角色：\\.orch\\/roles\\/lead-dev\\.yaml$/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 行契约行（产物类型变 document）（期望逐字 \"- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 行校验通过（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 4 行（已按规范格式重写，注释不保留）（期望逐字 \"（已按规范格式重写，注释不保留）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次输出恰好一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次输出逐字（期望逐字 \"内置角色不可编辑：先 orch role create <新角色> --from developer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：grep -c \"artifact_type: document\" = 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：assets/roles/developer.yaml 的 sha256 前后相同（期望 \"4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二次退出码 1（复核）（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-10",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "Given：lead-dev 建出（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第一次输出行数 5（期望 5）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 行逐字（期望逐字 \"对比角色 lead-dev（项目）与基线 developer（内置）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 差异行 1（期望逐字 \"+ derived_from：developer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 差异行 2（期望逐字 \"~ name：开发 → 开发（派生）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 差异行 3（期望逐字 \"~ skills：code-change, test-run → test-run\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 末行逐字 = 差异 3 项（期望逐字 \"差异 3 项\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次输出恰好 2 行（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次末行 = 无差异（期望逐字 \"无差异\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：顶层键恰为 base/target/changes（期望 [\"base\",\"changes\",\"target\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：changes 长度 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：changes 的 kind 集合 = {added, changed}（期望 [\"added\",\"changed\"]）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-11",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好五条错误（期望 5）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.map(code) 排序后与五个专属码逐字相同（期望 [\"ROLE_CONTRACT_UNBOUND\",\"ROLE_DERIVE_CYCLE\",\"ROLE_PERMISSION_MISMATCH\",\"ROLE_SCHEMA_MISSING\",\"ROLE_SKILL_NOT_FOUND\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.assets === 31（16 角色 + 10 技能 + 5 个坏文件）（期望 31）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.roles === 16（期望 16）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.skills === 10（期望 10）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 5（期望 5）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：每条 errors[] 仍只有 6 个键（期望 \"code,detail,field,file,line,scope\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-12",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "自证：workflow solo 合法（校验工作流 4 个）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好两行错误（- 开头）（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 错误行 1 逐字（期望逐字 \"- roles/scout.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 错误行 2 逐字（期望逐字 \"- roles/scribe.yaml：契约不连通：digest 没有去处（ROLE_CONTRACT_UNBOUND）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then notes 两边都不报（错误行 1）（期望不含 \"notes\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then notes 两边都不报（错误行 2）（期望不含 \"notes\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.length === 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.map(code) 全为 ROLE_CONTRACT_UNBOUND（期望 [\"ROLE_CONTRACT_UNBOUND\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].file === roles/scout.yaml（期望 \"roles/scout.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].detail 含 brief（期望含 \"brief\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[1].file === roles/scribe.yaml（期望 \"roles/scribe.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[1].detail 含 digest（期望含 \"digest\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].detail 不含 notes（期望不含 \"notes\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[1].detail 不含 notes（期望不含 \"notes\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-13",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好三条错误（- 开头）（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 条错误明细 = 固定句（副作用等级为 read …）（期望含 \"副作用等级为 read 的角色不能带写工具 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 条错误带原因码 ROLE_PERMISSION_MISMATCH（期望含 \"（ROLE_PERMISSION_MISMATCH）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 条错误明细 = 固定句（副作用等级为 exec …）（期望含 \"副作用等级为 exec 的角色必须带能执行命令的工具 bash\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 条错误带原因码 ROLE_PERMISSION_MISMATCH（期望含 \"（ROLE_PERMISSION_MISMATCH）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 条错误明细 = 固定句（副作用等级为 none …）（期望含 \"副作用等级为 none 的角色不能带任何工具\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 条错误带原因码 ROLE_PERMISSION_MISMATCH（期望含 \"（ROLE_PERMISSION_MISMATCH）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors 长度 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.map(code) 全为 ROLE_PERMISSION_MISMATCH（期望 [\"ROLE_PERMISSION_MISMATCH\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors 按文件名排序（期望 [\"roles/r1.yaml\",\"roles/r2.yaml\",\"roles/r3.yaml\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-14",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好两条错误（- 开头）（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 有 ROLE_WAKE_UNKNOWN 一行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 有 ROLE_WAKE_SELF 一行",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ROLE_WAKE_UNKNOWN 明细含 ghost（期望含 \"ghost\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ROLE_WAKE_SELF 明细含 w2（期望含 \"w2\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：codes 排序后等于 [ROLE_WAKE_SELF, ROLE_WAKE_UNKNOWN]（期望 [\"ROLE_WAKE_SELF\",\"ROLE_WAKE_UNKNOWN\"]）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-15",
+      "verdict": "通过",
+      "face": "回归",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 文本输出恰好一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 该行逐字（期望逐字 \"校验资产 26 个：全部通过（角色 16 · 技能 10）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then JSON counts 仍是 6 键（期望 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then counts.assets === 26（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then counts.roles === 16（期望 16）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then counts.skills === 10（期望 10）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then errors 为空（期望 []）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：与 0cd113b 基线（iteration-5 evidence/AC-12.validate.txt）逐字节 diff 为空",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-16",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 首行 = 技能 10 个（内置 10 · 项目 0）（期望逐字 \"技能 10 个（内置 10 · 项目 0）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 随后 10 行逐字（A-6，id 字典序）（期望 [\"- code-change 代码修改 · 编码工程 · 命令 1\",\"- code-review 代码审查 · 编码工程 · 命令 0\",\"- compliance-check 合规审查 · 业务运营 · 命令 0\",\"- coordination 编排协调 · 通用协调 · 命令 0\",\"- data-analysis 数据分析 · 研究分析 · 命令 1\",\"- doc-draft 文档撰写 · 内容创作 · 命令 0\",\"- doc-review 文档审核 · 内容创作 · 命令 0\",\"- fact-check 事实核查 · 研究分析 · 命令 0\",\"- research-brief 调研笔记 · 研究分析 · 命令 0\",\"- test-run 测试执行 · 编码工程 · 命令 1\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：总行数 11（期望 11）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：顶层键恰为 counts/skills（期望 [\"counts\",\"skills\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts 恰 4 键（total/builtin/project/invalid）（期望 [\"builtin\",\"invalid\",\"project\",\"total\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skills 长度 10（期望 10）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：每个技能对象恰 7 键（期望 \"appliesTo,appliesToLabels,commands,file,id,name,source\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-17",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 行契约行（期望逐字 \"- code-change 代码修改 · 编码工程 · 命令 1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 行摘要（期望匹配 /^  摘要：.+$/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 行命令（期望逐字 \"  命令：node --test\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 4 行适用（期望逐字 \"  适用：编码工程\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 5 行来源（期望逐字 \"  来源：内置 assets/skills/code-change/SKILL.md\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 6 行正文头（期望逐字 \"  正文：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 7 行 = `  ### 工作方法`（期望逐字 \"  ### 工作方法\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：lines.length > 7",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：lines[5] === \"  正文：\"（期望逐字 \"  正文：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：lines[6] === \"  ### 工作方法\"（期望逐字 \"  ### 工作方法\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：顶层键恰为 skill/body（期望 [\"body\",\"skill\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：body 含 ### 工作方法（期望含 \"### 工作方法\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill 对象恰 7 键（期望 7）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-18",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 输出恰好三行（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 行逐字（期望逐字 \"已创建项目技能：.orch/skills/quote/SKILL.md\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 行契约行（期望逐字 \"- quote 引用规范 · 内容创作 · 命令 0\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 行校验通过（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill validate 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then validate 首行 = 校验技能 11 个：全部通过（期望逐字 \"校验技能 11 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件以 --- 开头",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 schema: skill/v1（期望含 \"schema: skill/v1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 id: quote（期望含 \"id: quote\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：正文去掉空白后非空",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：默认正文第 1 行逐字（A-7）（期望含 \"### 工作方法\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：默认正文第 3 行逐字（A-7）（期望含 \"1. 按任务要求完成本技能覆盖的工作，并在结果里写清做了什么。\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill validate counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-19",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 输出恰好三行（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 首行逐字（期望逐字 \"校验技能 12 个：2 个不合法\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 有 half 行（缺 summary，逐字）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 有 empty 行（正文为空，逐字）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：codes 排序后等于 [SKILL_BODY_EMPTY, SKILL_SCHEMA_MISSING]（期望 [\"SKILL_BODY_EMPTY\",\"SKILL_SCHEMA_MISSING\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.assets === 12（期望 12）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-20",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then A 导出退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then A 导出输出恰好一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then A 导出行逐字（期望逐字 \"已导出技能 code-change 到 exports/code-change.md\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：A 导出的文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then B 导入退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then B 导入输出恰好两行（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then B 导入第 1 行逐字（期望逐字 \"已安装项目技能：.orch/skills/code-change/SKILL.md\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then B 导入第 2 行逐字（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then B 的 skill list 首行 = 技能 10 个（内置 9 · 项目 1）（期望逐字 \"技能 10 个（内置 9 · 项目 1）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：B 的 SKILL.md 与 A 导出文件 sha256 相同（逐字节）（期望 \"92db6c207c59de341e4ed09a8cb8d90c7f62018968df0f356a0bb4066fe92194\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：B 的 skill validate counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：B 的 skill validate counts.project === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-21",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 首行 = 工作流 3 个（内置 3 · 项目 0）（期望逐字 \"工作流 3 个（内置 3 · 项目 0）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 随后三行逐字（A-8）（期望 [\"- code-loop 编码闭环 · 2 节点 · 3 边 · 内置\",\"- single 单节点 · 1 节点 · 0 边 · 内置\",\"- task-loop 通用任务闭环 · 3 节点 · 4 边 · 内置\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：总行数 4（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：顶层键恰为 counts/workflows（期望 [\"counts\",\"workflows\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.total === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflows[0] 恰 6 键（期望 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflows[0] 键集合（期望 [\"edgeCount\",\"file\",\"id\",\"name\",\"nodeCount\",\"source\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflows[0].source === builtin（期望 \"builtin\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflows[0].file === null（期望 null）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-22",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then show 全文 9 行逐字（A-8）（期望 [\"- code-loop 编码闭环 · 2 节点 · 3 边 · 内置\",\"  入口：T-001 · 终点：T-002\",\"  节点：\",\"    T-001 开发 · 角色节点 developer · 超时 — · 重试 0\",\"    T-002 测试 · 角色节点 tester · 超时 — · 重试 0\",\"  边：\",\"    T-001 → T-002 正向\",\"    T-002 → T-001 回流 · 轮次上限 2\",\"    T-001 → T-002 复测\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 首行逐字（期望逐字 \"- code-loop 编码闭环 · 2 节点 · 3 边 · 内置\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 边含回流行逐字（期望逐字 \"    T-002 → T-001 回流 · 轮次上限 2\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：nodes 长度 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：每个节点恰 11 键（期望 \"id,inputs,maxRounds,nodeType,outputs,parallelScope,retry,role,scope,timeout,title\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：nodes[0].nodeType === role（期望 \"role\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：edges 长度 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：edges[1].kind === backflow（期望 \"backflow\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-23",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 首行 = 工作流 3 个（内置 2 · 项目 1）（期望逐字 \"工作流 3 个（内置 2 · 项目 1）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then code-loop 条目行逐字（期望逐字 \"- code-loop 编码闭环 · 3 节点 · 4 边 · 项目\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 总行数 4（首行 + 三条目）（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then show 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then show 首行逐字（期望逐字 \"- code-loop 编码闭环 · 3 节点 · 4 边 · 项目\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.builtin === 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.project === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：同名条目 source === project（期望 \"project\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：同名条目 file === .orch/workflows/code-loop.yaml（期望 \".orch/workflows/code-loop.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：show 的 workflow.nodeCount === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：show 的 nodes 长度 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-24",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 该行逐字（期望逐字 \"校验工作流 4 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.assets === 4（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.builtin === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.project === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：nodeType 去重集合（期望 [\"escalate\",\"human\",\"role\",\"subworkflow\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：T-006 多一个 workflow 键且值 code-loop（期望 \"code-loop\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：非 subworkflow 节点不带 workflow 键（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：T-006 键数 = 11 + workflow（期望 12）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-25",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好四行（计数头 + 三条错误）（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细列出四个合法类型（期望含 \"合法取值：role / human / escalate / subworkflow\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then no-title 明细含 title（期望匹配 /缺少必填字段：title/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then no-role 明细含 role（期望匹配 /缺少必填字段：role/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：codes 排序后（期望 [\"WORKFLOW_NODE_FIELD_MISSING\",\"WORKFLOW_NODE_FIELD_MISSING\",\"WORKFLOW_NODE_TYPE_INVALID\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].file === workflows/bad-type.yaml（期望 \"workflows/bad-type.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].code === WORKFLOW_NODE_TYPE_INVALID（期望 \"WORKFLOW_NODE_TYPE_INVALID\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.assets === 6（内置 3 + 项目 3）（期望 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-26",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好三行（计数头 + 两条错误）（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then SUB_UNKNOWN 明细含 ghost（期望含 \"引用的子工作流不存在：ghost\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then SUB_CYCLE 明细含 sub-self（期望含 \"子工作流成环：sub-self\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：codes 排序后（期望 [\"WORKFLOW_SUB_CYCLE\",\"WORKFLOW_SUB_UNKNOWN\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].file 是 sub-ghost（文件名字典序在前）（期望 \"workflows/sub-ghost.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-27",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "Then 校验全部通过、退出 0（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 校验首行含 全部通过（期望含 \"全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then dry-run 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 层行逐字（含 · 汇合：all）（期望含 \"2. 并行组 draft：T-002 撰写A（角色节点 writer）｜ T-003 撰写B（角色节点 editor） · 汇合：all\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then T-002 只出现在一个层行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then T-003 只出现在一个层行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 两个节点同属并行组那一行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：layers[1].parallel === true（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：layers[1].nodes（期望 [\"T-002\",\"T-003\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：不存在第二个含 T-002 的层（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：nodeCount === 6（期望 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：edgeCount === 7（期望 7）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-28",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then dry-run 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 输出含 条件分支： 段（期望匹配 /条件分支：/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 条件段三行逐字（A-10）（期望 [\"- T-004 → T-006 当 人工通过\",\"- T-004 → T-005 当 人工驳回\",\"- T-006 → T-005 当 判定不通过\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：branches 长度 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：每个分支恰 from/to/when 三键（期望 \"from,to,when\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：when 集合（期望 [\"failed\",\"human_approved\",\"human_rejected\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：branches 全文（A-10 序）（期望 [{\"from\":\"T-004\",\"to\":\"T-006\",\"when\":\"human_approved\"},{\"from\":\"T-004\",\"to\":\"T-005\",\"when\":\"human_rejected\"},{\"from\":\"T-006\",\"to\":\"T-005\",\"when\":\"failed\"}]）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-29",
+      "verdict": "通过",
+      "face": "混合",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then 第一个退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 校验工作流 1 个：全部通过（期望逐字 \"校验工作流 1 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二个退出 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_TIMEOUT_INVALID（期望含 \"（WORKFLOW_TIMEOUT_INVALID）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_RETRY_INVALID（期望含 \"（WORKFLOW_RETRY_INVALID）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 预演输出策略行（期望含 \"- T-001 超时 600s · 重试 2\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：policies 含 {nodeId, timeout:600, retry:2}（期望 [{\"nodeId\":\"T-001\",\"timeout\":600,\"retry\":2}]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：policies[] 恰 nodeId/timeout/retry 三键（期望 \"nodeId,retry,timeout\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：timeout 合法范围 1~86400（期望含 \"合法范围：1~86400 的整数\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：retry 合法范围 0~5（期望含 \"合法范围：0~5 的整数\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-30",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "自证：validate doc-fanout 全部通过（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then dry-run 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 输出含 字段映射： 段（期望匹配 /字段映射：/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 映射段两行逐字（A-10）（期望 [\"- T-001.research.notes → T-002.brief\",\"- T-001.research.notes → T-003.brief\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：mappings 长度 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：每个映射恰 from/to/edge 三键（期望 \"edge,from,to\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：mappings[0].from === T-001.research.notes（期望 \"T-001.research.notes\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：mappings 全文（A-10 序）（期望 [{\"from\":\"T-001.research.notes\",\"to\":\"brief\",\"edge\":\"T-001→T-002\"},{\"from\":\"T-001.research.notes\",\"to\":\"brief\",\"edge\":\"T-001→T-003\"}]）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-31",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "夹具自检：T-002 inputs 已改为 [brief, outline]",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_MAPPING_INCOMPLETE（期望含 \"（WORKFLOW_MAPPING_INCOMPLETE）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细为 T-002 的输入 outline 没有来源（期望含 \"T-002 的输入 outline 没有来源\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].code === WORKFLOW_MAPPING_INCOMPLETE（期望 \"WORKFLOW_MAPPING_INCOMPLETE\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].detail 含 outline（期望含 \"outline\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具自检：outline 映射已补上",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 补上映射后退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 补上映射后全部通过（期望含 \"全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：补上后 counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-32",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "夹具自检：T-007 已追加",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_UNREACHABLE（期望含 \"（WORKFLOW_UNREACHABLE）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细含 T-007（期望含 \"节点不可达：T-007\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].code === WORKFLOW_UNREACHABLE（期望 \"WORKFLOW_UNREACHABLE\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].detail 含 T-007（期望含 \"T-007\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-33",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_BACKFLOW_NO_LIMIT（期望含 \"（WORKFLOW_BACKFLOW_NO_LIMIT）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细含 T-002（期望含 \"回流目标缺少轮次上限：T-002\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].code === WORKFLOW_BACKFLOW_NO_LIMIT（期望 \"WORKFLOW_BACKFLOW_NO_LIMIT\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具自检：T-002 已补 max_rounds: 2",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 补上后退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 补上后全部通过（期望含 \"全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：补上后 counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-34",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "夹具自检：两处 scope 均已改为 draft",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一段退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_SCOPE_OVERLAP（期望含 \"（WORKFLOW_SCOPE_OVERLAP）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细同时含 T-002/T-003/draft（期望含 \"并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第一段 errors[0].code（期望 \"WORKFLOW_SCOPE_OVERLAP\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具自检：T-003 的 parallel_scope 已去掉",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二段退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 改报 WORKFLOW_SCOPE_INVALID（期望含 \"（WORKFLOW_SCOPE_INVALID）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二段 errors[0].code（期望 \"WORKFLOW_SCOPE_INVALID\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二段明细（期望含 \"并行组 draft 只有 1 个节点\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-35",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "夹具自检：map.from 已改为 T-003.research.notes",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_VAR_UNKNOWN（期望含 \"（WORKFLOW_VAR_UNKNOWN）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细含 T-003.research.notes（期望含 \"变量引用无法解析：T-003.research.notes\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].code === WORKFLOW_VAR_UNKNOWN（期望 \"WORKFLOW_VAR_UNKNOWN\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].detail 含 T-003.research.notes（期望含 \"T-003.research.notes\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-36",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then 第一段退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_TRANSITION_ILLEGAL（期望含 \"（WORKFLOW_TRANSITION_ILLEGAL）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细含 T-005（期望含 \"升级节点 T-005 不能有正向出边\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第一段 errors[0].code（期望 \"WORKFLOW_TRANSITION_ILLEGAL\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第一段 detail 含 T-005（期望含 \"T-005\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具自检：T-004 两条出边的 when 已去掉",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二段退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 改报 WORKFLOW_TRANSITION_ILLEGAL（期望含 \"（WORKFLOW_TRANSITION_ILLEGAL）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细含 人工条件（期望含 \"人工节点 T-004 的出边必须写人工条件\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二段 errors[0].code（期望 \"WORKFLOW_TRANSITION_ILLEGAL\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二段 detail 含 人工条件（期望含 \"人工条件\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-37",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_WAKE_DENIED（期望含 \"（WORKFLOW_WAKE_DENIED）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细含 writer（期望含 \"writer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 明细含 reviewer（期望含 \"唤醒不在白名单内：writer → reviewer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].code === WORKFLOW_WAKE_DENIED（期望 \"WORKFLOW_WAKE_DENIED\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具自检：下游角色已换成 editor",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 换成 editor 后退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 换成 editor 后全部通过（期望含 \"全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：换成 editor 后 counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-38",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 该行逐字（期望逐字 \"校验工作流 3 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then JSON 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then JSON 顶层恰两键（期望 [\"counts\",\"errors\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts 恰 4 键（期望 [\"assets\",\"builtin\",\"invalid\",\"project\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.assets === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.builtin === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.project === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors 为空数组（期望 []）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文本行数与 counts.invalid 一致（0 条错误行）（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-39",
+      "verdict": "通过",
+      "face": "混合",
+      "evidence": 9,
+      "checks": [
+        {
+          "text": "Given：create fork 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具自检：nodes[0].title 已改为 开发（改）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好三行（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 首行逐字（期望逐字 \"对比工作流 fork（项目）与基线 code-loop（内置）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 差异行逐字（期望逐字 \"~ nodes[0].title：开发 → 开发（改）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 末行逐字（期望逐字 \"差异 1 项\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：顶层键恰 base/target/changes（期望 [\"base\",\"changes\",\"target\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：changes.length === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：changes[0].field === nodes[0].title（期望 \"nodes[0].title\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given：create copy 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then diff copy 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then diff copy 恰两行（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then diff copy 末行 = 无差异（期望逐字 \"无差异\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then diff copy 首行（裁-14①：定义体全等回退到内置基线）（期望逐字 \"对比工作流 copy（项目）与基线 code-loop（内置）\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-40",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 13,
+      "checks": [
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好两行（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 行逐字（期望逐字 \"已创建项目工作流：.orch/workflows/fork.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 行逐字（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then validate 首行（期望逐字 \"校验工作流 4 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then validate 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 schema: workflow/v1（期望含 \"schema: workflow/v1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：文件含 id: fork（期望匹配 /^id: fork$/m）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：两个 - id: T-00 节点（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：三条边（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.project === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次输出逐字（期望逐字 \"已存在同名项目工作流：.orch/workflows/fork.yaml（加 --force 覆盖）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第一次后 grep -c 另一个名字 为 0（AC-40 机检逐字）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第一次后文件不变（期望 \"ddd3549c0a48cb3e3d180d6a0ee93fe7898f0254f2c18680cd10eccef834c625\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次第 1 行逐字（期望逐字 \"已创建项目工作流：.orch/workflows/fork.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次第 2 行逐字（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二次后 grep -c 另一个名字 为 1（AC-40 机检逐字；实测见 blockers D-3）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二次后 counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次恰好一行（创建被拒：<明细>（<原因码>））（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次句式 创建被拒：（期望含 \"创建被拒：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次带原因码收尾（期望匹配 /（WORKFLOW_[A-Z_]+）$/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第三次后目标文件 sha256 与覆盖前相同（期望 \"d3cf60d64caad07d71ba3ea4937bb1029df7db4266a83883bc6a1d506e8e2d6c\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-41",
+      "verdict": "通过",
+      "face": "边界",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Given 自检：执行前 .orch 里是工作流夹具（期望匹配 /workflows\\/doc-fanout\\.yaml/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 末行逐字（期望逐字 \"结论：编排可执行，未启动任何会话\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：test -e .orch/instances 为假",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：test -e .orch/core.json 为假",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch 快照前后逐字相同（含 sha256）（期望 {\"workflows/doc-fanout.yaml\":{\"sha256\":\"bb9c048c546b4d4f9f12fba8d9b4db31df083be5eab71688b0f089c0da39fbf3\",\"bytes\":1202,\"mtimeIso\":\"2026-11-09T12:23:10.717Z\"}}）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：两次 stdout 逐字节相同",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二次退出码同为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-42",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 5,
+      "checks": [
+        {
+          "text": "夹具自检：T-001 的 role 已改为 ghost-role",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 恰好两行（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 行逐字（期望逐字 \"预演被拒：引用的角色不存在：ghost-role（WORKFLOW_ROLE_UNKNOWN）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 行逐字（期望逐字 \"执行 orch workflow validate 查看全部问题\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 没有任何编排计划行（期望不含 \"编排计划\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：stdout 不含 编排计划（期望不含 \"编排计划\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/instances 不存在",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-43",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 5,
+      "checks": [
+        {
+          "text": "Then 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 整块行数 26（25 + 原因行）（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 原因行逐字（期望逐字 \"  （未知的 role 子命令：bogus）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：USAGE_LINES.length === 25（整块前 25 行逐字）（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：USAGE_LINES.slice(0,8) 与 I1.5 基线逐字（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：首行仍是 用法：orch run|status|cancel|core（期望 \"用法：orch run|status|cancel|core\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第 9~25 行是 17 条新子命令（期望 17）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-44",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 16,
+      "checks": [
+        {
+          "text": "Then role bogus 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role bogus 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role bogus 原因行逐字（期望逐字 \"  （未知的 role 子命令：bogus）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role bogus 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role bogus 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill bogus 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill bogus 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill bogus 原因行逐字（期望逐字 \"  （未知的 skill 子命令：bogus）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill bogus 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill bogus 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow bogus 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow bogus 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow bogus 原因行逐字（期望逐字 \"  （未知的 workflow 子命令：bogus）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflow bogus 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflow bogus 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role list --nope 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role list --nope 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role list --nope 原因行逐字（期望逐字 \"  （未知参数：--nope）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role list --nope 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role list --nope 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill list --nope 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill list --nope 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill list --nope 原因行逐字（期望逐字 \"  （未知参数：--nope）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill list --nope 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill list --nope 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow list --nope 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow list --nope 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow list --nope 原因行逐字（期望逐字 \"  （未知参数：--nope）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflow list --nope 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflow list --nope 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill show x --instance y 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill show x --instance y 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill show x --instance y 原因行逐字（期望逐字 \"  （--instance 不适用于 skill show）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill show x --instance y 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill show x --instance y 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow list --group x 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow list --group x 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow list --group x 原因行逐字（期望逐字 \"  （--group 不适用于 workflow list）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflow list --group x 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflow list --group x 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show x --group coding 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show x --group coding 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show x --group coding 原因行逐字（期望逐字 \"  （--group 不适用于 role show）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show x --group coding 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show x --group coding 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill show（缺位置参数） 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill show（缺位置参数） 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill show（缺位置参数） 原因行逐字（期望逐字 \"  （skill show 需要技能 id）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill show（缺位置参数） 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill show（缺位置参数） 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow show（缺位置参数） 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow show（缺位置参数） 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow show（缺位置参数） 原因行逐字（期望逐字 \"  （workflow show 需要工作流 id）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflow show（缺位置参数） 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：workflow show（缺位置参数） 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show（缺位置参数） 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show（缺位置参数） 用法块 25 行 + 原因行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show（缺位置参数） 原因行逐字（期望逐字 \"  （role show 需要角色 id）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show（缺位置参数） 含（的行恰 1 行且即原因行（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show（缺位置参数） 前 25 行 = 用法块（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：十二次退出码均为 2",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：共 12 条命令（期望 12）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-45",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 17,
+      "checks": [
+        {
+          "text": "Given 项目根下不存在 .orch（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 十条只读命令全部退出 0（Given 无坏资产，Then 的 0/1 档取严断 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：执行后 test -e \"$ROOT/.orch\" 为假（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：assets/** sha256 清单执行前后逐字相同（期望 \"roles/arbiter.yaml  9bbd4e51c45d3ec8faccbffdf15198bb9ed521dea8647f9e9393b417b1bd0276\\nroles/code-reviewer.yaml  89ccc6e011c442a9db10891b9db7d7e655f58db6723e4d8371ac4cbd7becf84a\\nroles/compliance-reviewer.yaml  f8877b9d2106b6c6166c45d2bcdce90ddcf728ab20854675960fdb0c77dbe5dd\\nroles/coordinator.yaml  e4dec720bcf607030fe425ec950b4dd17e5fa5656761bd9b0f2eab6773eba6ad\\nroles/data-analyst.yaml  1ea8010e2dd465c0cc1fc94b514997310d0f002f2d1b3f687065dd35a26843b9\\nroles/developer.yaml  4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905\\nroles/editor.yaml  51555a1ed49351f8944c3d2ff9efe278b2c49420436751c0bd92db3dc0eb6525\\nroles/fact-checker.yaml  f95dd9a7bfe9c8ece03cf98743437b0223e8bcb1e714478115577f46e1e2c86e\\nroles/planner.yaml  fd8b418d438e331ee5614c4f4de16a1131de6d1e03bd59f8de6a508c873618b4\\nroles/requirement-clarifier.yaml  b1c1c0f3fe91f0a07735b5335b1effda5b81b0fbeffca9ee9da30b3c96f793eb\\nroles/researcher.yaml  0422905008dc01c2701f6ea4e75024ce9a160e9fb144f694145fae44ee9e150b\\nroles/reviewer.yaml  f06f94ab0a5a569d8c27a114e3059e5a8652b8675d7a5293aaa4aac68ba1fd88\\nroles/summarizer.yaml  671eac167cc4fb698d5b05b10b19fccc262ed8d87811c5a5f4a037cf853695aa\\nroles/tester.yaml  b450e1c6e9e2663bf36323a3cccb0d53016c988a6e3e853aad707d66831883f1\\nroles/worker.yaml  9f2b42983217699482fd6e848b14c672b55a1b20d28cbbf9b3f4e2b341e01eba\\nroles/writer.yaml  51ec7e2980e5f0cf36f9fc5b64c900a747173b5003ff6f6ed3865b7f5c13d771\\nskills/code-change/SKILL.md  92db6c207c59de341e4ed09a8cb8d90c7f62018968df0f356a0bb4066fe92194\\nskills/code-review/SKILL.md  783639b876f0d842b6c3ce4660129669a20967b1ee1217d32d8c9bcf2af02b72\\nskills/compliance-check/SKILL.md  d53f1705c7ee87bccd154d75802a94013d583d562ee20a5ad13147cd694cf824\\nskills/coordination/SKILL.md  213d472ef6ecbd3138d3889daa3a5da7eb3d5d137fd1154175701a78ba74bb82\\nskills/data-analysis/SKILL.md  369460cbb3d582b66d779fd5050ad6838d7fefc783022d087304d9487a110931\\nskills/doc-draft/SKILL.md  029bb8966988948fc47e7c7af760a0649a0bf746b4116a52fd21aa3a1e7e465d\\nskills/doc-review/SKILL.md  4f4845b28fa7e3b4b3702dee86ce3c4443aca972e04e0a83050dcf7133507b64\\nskills/fact-check/SKILL.md  656fa03d6f79cfdd3e63e113e4ba690a7c9fc42c67b1a61f68f057d118a0ae22\\nskills/research-brief/SKILL.md  547cda1ae1d54818ba715761c3e179868c2ac08e5d61efd2e7d4d5aec0d3eaa6\\nskills/test-run/SKILL.md  49de0dd67d65958959e278b224ea67efc0d44375c48fa1a0d049a2200d010487\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-46",
+      "verdict": "通过",
+      "face": "混合",
+      "evidence": 17,
+      "checks": [
+        {
+          "text": "Then role create 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role create --from 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role export --out 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role import 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role edit 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill create 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill export --out 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then skill import 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then workflow create 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 落点存在：.orch/roles/lead-dev.yaml",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 落点存在：.orch/roles/junior-dev.yaml",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 落点存在：.orch/skills/note-taker/SKILL.md",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 落点存在：.orch/skills/code-change/SKILL.md",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 落点存在：.orch/workflows/fork.yaml",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 落点存在：exports/lead-dev.yaml",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 落点存在：exports/code-change.md",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：新增/变更文件全部落在 .orch/**、exports/** 与 fixtures/**（夹具）之内（期望 \"\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：assets/** sha256 清单前后逐字相同（期望 \"roles/arbiter.yaml  9bbd4e51c45d3ec8faccbffdf15198bb9ed521dea8647f9e9393b417b1bd0276\\nroles/code-reviewer.yaml  89ccc6e011c442a9db10891b9db7d7e655f58db6723e4d8371ac4cbd7becf84a\\nroles/compliance-reviewer.yaml  f8877b9d2106b6c6166c45d2bcdce90ddcf728ab20854675960fdb0c77dbe5dd\\nroles/coordinator.yaml  e4dec720bcf607030fe425ec950b4dd17e5fa5656761bd9b0f2eab6773eba6ad\\nroles/data-analyst.yaml  1ea8010e2dd465c0cc1fc94b514997310d0f002f2d1b3f687065dd35a26843b9\\nroles/developer.yaml  4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905\\nroles/editor.yaml  51555a1ed49351f8944c3d2ff9efe278b2c49420436751c0bd92db3dc0eb6525\\nroles/fact-checker.yaml  f95dd9a7bfe9c8ece03cf98743437b0223e8bcb1e714478115577f46e1e2c86e\\nroles/planner.yaml  fd8b418d438e331ee5614c4f4de16a1131de6d1e03bd59f8de6a508c873618b4\\nroles/requirement-clarifier.yaml  b1c1c0f3fe91f0a07735b5335b1effda5b81b0fbeffca9ee9da30b3c96f793eb\\nroles/researcher.yaml  0422905008dc01c2701f6ea4e75024ce9a160e9fb144f694145fae44ee9e150b\\nroles/reviewer.yaml  f06f94ab0a5a569d8c27a114e3059e5a8652b8675d7a5293aaa4aac68ba1fd88\\nroles/summarizer.yaml  671eac167cc4fb698d5b05b10b19fccc262ed8d87811c5a5f4a037cf853695aa\\nroles/tester.yaml  b450e1c6e9e2663bf36323a3cccb0d53016c988a6e3e853aad707d66831883f1\\nroles/worker.yaml  9f2b42983217699482fd6e848b14c672b55a1b20d28cbbf9b3f4e2b341e01eba\\nroles/writer.yaml  51ec7e2980e5f0cf36f9fc5b64c900a747173b5003ff6f6ed3865b7f5c13d771\\nskills/code-change/SKILL.md  92db6c207c59de341e4ed09a8cb8d90c7f62018968df0f356a0bb4066fe92194\\nskills/code-review/SKILL.md  783639b876f0d842b6c3ce4660129669a20967b1ee1217d32d8c9bcf2af02b72\\nskills/compliance-check/SKILL.md  d53f1705c7ee87bccd154d75802a94013d583d562ee20a5ad13147cd694cf824\\nskills/coordination/SKILL.md  213d472ef6ecbd3138d3889daa3a5da7eb3d5d137fd1154175701a78ba74bb82\\nskills/data-analysis/SKILL.md  369460cbb3d582b66d779fd5050ad6838d7fefc783022d087304d9487a110931\\nskills/doc-draft/SKILL.md  029bb8966988948fc47e7c7af760a0649a0bf746b4116a52fd21aa3a1e7e465d\\nskills/doc-review/SKILL.md  4f4845b28fa7e3b4b3702dee86ce3c4443aca972e04e0a83050dcf7133507b64\\nskills/fact-check/SKILL.md  656fa03d6f79cfdd3e63e113e4ba690a7c9fc42c67b1a61f68f057d118a0ae22\\nskills/research-brief/SKILL.md  547cda1ae1d54818ba715761c3e179868c2ac08e5d61efd2e7d4d5aec0d3eaa6\\nskills/test-run/SKILL.md  49de0dd67d65958959e278b224ea67efc0d44375c48fa1a0d049a2200d010487\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：git status --porcelain assets 为空（期望 \"\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/core.json 不存在（期望 false）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-47",
+      "verdict": "通过",
+      "face": "混合",
+      "evidence": 5,
+      "checks": [
+        {
+          "text": "Given doc-fanout.yaml 已写入",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 输出 未知模板：doc-fanout（期望含 \"未知模板：doc-fanout\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/instances 不存在（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/core.json 不存在（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：assets/** 文件字节不变（sha256 清单前后一致）（期望 \"roles/arbiter.yaml  9bbd4e51c45d3ec8faccbffdf15198bb9ed521dea8647f9e9393b417b1bd0276\\nroles/code-reviewer.yaml  89ccc6e011c442a9db10891b9db7d7e655f58db6723e4d8371ac4cbd7becf84a\\nroles/compliance-reviewer.yaml  f8877b9d2106b6c6166c45d2bcdce90ddcf728ab20854675960fdb0c77dbe5dd\\nroles/coordinator.yaml  e4dec720bcf607030fe425ec950b4dd17e5fa5656761bd9b0f2eab6773eba6ad\\nroles/data-analyst.yaml  1ea8010e2dd465c0cc1fc94b514997310d0f002f2d1b3f687065dd35a26843b9\\nroles/developer.yaml  4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905\\nroles/editor.yaml  51555a1ed49351f8944c3d2ff9efe278b2c49420436751c0bd92db3dc0eb6525\\nroles/fact-checker.yaml  f95dd9a7bfe9c8ece03cf98743437b0223e8bcb1e714478115577f46e1e2c86e\\nroles/planner.yaml  fd8b418d438e331ee5614c4f4de16a1131de6d1e03bd59f8de6a508c873618b4\\nroles/requirement-clarifier.yaml  b1c1c0f3fe91f0a07735b5335b1effda5b81b0fbeffca9ee9da30b3c96f793eb\\nroles/researcher.yaml  0422905008dc01c2701f6ea4e75024ce9a160e9fb144f694145fae44ee9e150b\\nroles/reviewer.yaml  f06f94ab0a5a569d8c27a114e3059e5a8652b8675d7a5293aaa4aac68ba1fd88\\nroles/summarizer.yaml  671eac167cc4fb698d5b05b10b19fccc262ed8d87811c5a5f4a037cf853695aa\\nroles/tester.yaml  b450e1c6e9e2663bf36323a3cccb0d53016c988a6e3e853aad707d66831883f1\\nroles/worker.yaml  9f2b42983217699482fd6e848b14c672b55a1b20d28cbbf9b3f4e2b341e01eba\\nroles/writer.yaml  51ec7e2980e5f0cf36f9fc5b64c900a747173b5003ff6f6ed3865b7f5c13d771\\nskills/code-change/SKILL.md  92db6c207c59de341e4ed09a8cb8d90c7f62018968df0f356a0bb4066fe92194\\nskills/code-review/SKILL.md  783639b876f0d842b6c3ce4660129669a20967b1ee1217d32d8c9bcf2af02b72\\nskills/compliance-check/SKILL.md  d53f1705c7ee87bccd154d75802a94013d583d562ee20a5ad13147cd694cf824\\nskills/coordination/SKILL.md  213d472ef6ecbd3138d3889daa3a5da7eb3d5d137fd1154175701a78ba74bb82\\nskills/data-analysis/SKILL.md  369460cbb3d582b66d779fd5050ad6838d7fefc783022d087304d9487a110931\\nskills/doc-draft/SKILL.md  029bb8966988948fc47e7c7af760a0649a0bf746b4116a52fd21aa3a1e7e465d\\nskills/doc-review/SKILL.md  4f4845b28fa7e3b4b3702dee86ce3c4443aca972e04e0a83050dcf7133507b64\\nskills/fact-check/SKILL.md  656fa03d6f79cfdd3e63e113e4ba690a7c9fc42c67b1a61f68f057d118a0ae22\\nskills/research-brief/SKILL.md  547cda1ae1d54818ba715761c3e179868c2ac08e5d61efd2e7d4d5aec0d3eaa6\\nskills/test-run/SKILL.md  49de0dd67d65958959e278b224ea67efc0d44375c48fa1a0d049a2200d010487\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/workflows 文件字节不变（快照前后一致）（期望 \"{\\\"doc-fanout.yaml\\\":{\\\"sha256\\\":\\\"bb9c048c546b4d4f9f12fba8d9b4db31df083be5eab71688b0f089c0da39fbf3\\\",\\\"bytes\\\":1202,\\\"mtimeIso\\\":\\\"2026-11-09T12:23:24.814Z\\\"}}\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-48",
+      "verdict": "通过",
+      "face": "混合",
+      "evidence": 26,
+      "checks": [
+        {
+          "text": "Given 基线代码树挂载成功（git worktree 0cd113b）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given 基线树 bin/orch.js 存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role list 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role list 与 I1.5 基线（AC-01.list.txt）逐字节相同",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show developer 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show developer 与 I1.5 基线（AC-02.show.txt）逐字节相同",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role validate 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role validate 与 I1.5 基线（AC-12.validate.txt，全新根干净校验）逐字节相同",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role list --format json 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role list --format json 与 I1.5 基线（AC-01.payload.json）逐字节相同",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role validate --format json 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role validate --format json 与 I1.5 基线（AC-12.payload.json）逐字节相同",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show developer --format json 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given I1.5 AC-45.output.json 里能抽到 show developer --format json 的 stdout",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show developer --format json 与 I1.5 基线逐字节相同",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show researcher 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show researcher 与 I1.5 基线恰好一行差异（唯一例外：可唤醒行）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show researcher 基线侧的可唤醒行是 D-7b 改动前的值（期望 \"  可唤醒：—\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show researcher 的可唤醒行逐字（D-7b 新值）（期望逐字 \"  可唤醒：writer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show researcher 其余行仍与 I1.5 逐字节相同（差异只有可唤醒行）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show researcher --format json 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show researcher --format json 与 I1.5 基线逐字节相同（toRoleJson 不含 wakeAllow，不受 D-7b 改动影响）（期望 \"{\\n  \\\"role\\\": {\\n    \\\"id\\\": \\\"researcher\\\",\\n    \\\"name\\\": \\\"研究员\\\",\\n    \\\"group\\\": \\\"research\\\",\\n    \\\"groupLabel\\\": \\\"研究分析\\\",\\n    \\\"artifactType\\\": \\\"report\\\",\\n    \\\"sideEffect\\\": \\\"write\\\",\\n    \\\"skills\\\": [\\n      \\\"research-brief\\\"\\n    ],\\n    \\\"maxConcurrentSessions\\\": 1,\\n    \\\"source\\\": \\\"builtin\\\",\\n    \\\"file\\\": \\\"assets/roles/researcher.yaml\\\"\\n  },\\n  \\\"instance\\\": null,\\n  \\\"roleInstance\\\": null\\n}\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show researcher 的 role 对象恰是 toRoleJson 的 10 键且不含 wake/wakeAllow（期望 [\"artifactType\",\"file\",\"group\",\"groupLabel\",\"id\",\"maxConcurrentSessions\",\"name\",\"sideEffect\",\"skills\",\"source\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show writer 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show writer 与 I1.5 基线恰好一行差异（唯一例外：可唤醒行）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show writer 基线侧的可唤醒行是 D-7b 改动前的值（期望 \"  可唤醒：editor\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show writer 的可唤醒行逐字（D-7b 新值）（期望逐字 \"  可唤醒：editor, reviewer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show writer 其余行仍与 I1.5 逐字节相同（差异只有可唤醒行）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then role show writer --format json 退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show writer --format json 与 I1.5 基线逐字节相同（toRoleJson 不含 wakeAllow，不受 D-7b 改动影响）（期望 \"{\\n  \\\"role\\\": {\\n    \\\"id\\\": \\\"writer\\\",\\n    \\\"name\\\": \\\"撰写者\\\",\\n    \\\"group\\\": \\\"writing\\\",\\n    \\\"groupLabel\\\": \\\"内容创作\\\",\\n    \\\"artifactType\\\": \\\"document\\\",\\n    \\\"sideEffect\\\": \\\"write\\\",\\n    \\\"skills\\\": [\\n      \\\"doc-draft\\\"\\n    ],\\n    \\\"maxConcurrentSessions\\\": 2,\\n    \\\"source\\\": \\\"builtin\\\",\\n    \\\"file\\\": \\\"assets/roles/writer.yaml\\\"\\n  },\\n  \\\"instance\\\": null,\\n  \\\"roleInstance\\\": null\\n}\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role show writer 的 role 对象恰是 toRoleJson 的 10 键且不含 wake/wakeAllow（期望 [\"artifactType\",\"file\",\"group\",\"groupLabel\",\"id\",\"maxConcurrentSessions\",\"name\",\"sideEffect\",\"skills\",\"source\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：assets/** 与 0cd113b 有差异的文件恰好两个（期望 \"assets/roles/researcher.yaml,assets/roles/writer.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：researcher.yaml 差异逐字（wake_allow: [] → [writer]）（期望 {\"removed\":[\"wake_allow: []\"],\"added\":[\"wake_allow: [writer]\"]}）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：writer.yaml 差异逐字（wake_allow: [editor] → [editor, reviewer]，基线为块列表）（期望 {\"removed\":[\"wake_allow:\",\"  - editor\"],\"added\":[\"wake_allow: [editor, reviewer]\"]}）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：test/wp11/cli-role.test.js fail === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：test/wp11/cli-role.test.js 全绿（pass === tests 且 tests > 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "And 收尾后没有残留的基线工作树",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-49",
+      "verdict": "通过",
+      "face": "混合",
+      "evidence": 20,
+      "checks": [
+        {
+          "text": "Given 基线代码树挂载成功（git worktree 0cd113b）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given 基线树 bin/orch.js 与驱动存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then single 基线树退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then single 当前退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：single 归一化后与 I1.5 存量基线（AC-19.single-baseline.txt）diff 为空（输出主体）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：single 归一化后与存量基线整输出 diff 为空（含驱动 JSON 行，路径/计时归一化）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：single 0cd113b 树现跑输出与存量基线也 diff 为空（基线出处自证）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：single 的 .mock/prompts task 文本与 0cd113b 基线一致（期望 []）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then code-loop 基线树退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then code-loop 当前退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：code-loop 归一化后与 I1.5 存量基线（AC-19.code-loop-baseline.txt）diff 为空（输出主体）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：code-loop 归一化后与存量基线整输出 diff 为空（含驱动 JSON 行，路径/计时归一化）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：code-loop 0cd113b 树现跑输出与存量基线也 diff 为空（基线出处自证）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：code-loop 的 .mock/prompts task 文本与 0cd113b 基线一致（期望 [\"给 calc.js 补一个 div 函数，让 node --test 全绿。\\n改动写在 calc.js\\n产物：calc.js\",\"给 calc.js 补一个 div 函数，让 node --test 全绿。\\n改动写在 calc.js\\n产物：calc.js\\n\\n完成后把结构化判定写到 out/verdict.json：{\\\"verdict\\\":\\\"pass\\\"|\\\"fail\\\",\\\"defects\\\":[{\\\"summary\\\":\\\"一句话缺陷\\\",\\\"evidence\\\":\\\"证据文件路径\\\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then task-loop 基线树退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then task-loop 当前退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：task-loop 归一化后与 I1.5 存量基线（AC-19.task-loop-baseline.txt）diff 为空（输出主体）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：task-loop 归一化后与存量基线整输出 diff 为空（含驱动 JSON 行，路径/计时归一化）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：task-loop 0cd113b 树现跑输出与存量基线也 diff 为空（基线出处自证）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：task-loop 的 .mock/prompts task 文本与 0cd113b 基线一致（期望 [\"写一篇发布说明，覆盖背景、变更与回滚方案。\\n产物：release-notes.md\\n\\n研究笔记：artifacts/reports/research-notes.v1.md\\n写入路径：C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p6/AC-49/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md\\n只交研究笔记，不写最终文档。\",\"写一篇发布说明，覆盖背景、变更与回滚方案。\\n产物：release-notes.md\\n\\n研究笔记：artifacts/reports/research-notes.v1.md\\n本轮文档引用：artifacts/docs/release-notes.v1.md\\n写入路径：C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p6/AC-49/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\\n每一轮交完整文档，不要改写上一版。\",\"写一篇发布说明，覆盖背景、变更与回滚方案。\\n产物：release-notes.md\\n\\n本轮文档引用：artifacts/docs/release-notes.v1.md\\n工作区：C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\\\\.orch\\\\instances\\\\INST-001\\\\workspace\\n审核文件写入路径：C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\\\\demo-doc\\\\out\\\\review.json\\n只认审核文件：{\\\"decision\\\":\\\"pass\\\"|\\\"reject\\\",\\\"artifact\\\":\\\"artifacts/docs/release-notes.v1.md\\\",\\\"defects\\\":[{\\\"summary\\\":\\\"一句话缺陷\\\",\\\"evidence\\\":\\\"artifacts/docs/release-notes.v1.md#L1\\\"}],\\\"revisionRequirement\\\":\\\"...\\\"}\\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\\n不要修改文档。\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "And 收尾后没有残留的基线工作树",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-50",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 5,
+      "checks": [
+        {
+          "text": "机检：TAP 尾部 summary 行齐全（tests/pass/fail/cancelled/skipped）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：fail === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：cancelled === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：pass === tests（期望 769）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：tests >= 611（下限断言，不写死条数）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-51",
+      "verdict": "通过",
+      "face": "架构检查",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "机检：$COMMON 恰 31 词（D-9「与 I1.5 完全相同的 31 词」）（期望 31）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：$NOCOORD 恰 30 词（去 coordinator）（期望 30）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：$NOCOORD 与 $COMMON 的差异恰是 coordinator（期望 \"coordinator\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 条退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 1 条输出 OK: 扫描 N 个文件…零命中（期望匹配 /^OK: 扫描 \\d+ 个文件，.+零命中$/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 条退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 2 条输出 OK: 扫描 N 个文件…零命中（期望匹配 /^OK: 扫描 \\d+ 个文件，.+零命中$/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 条退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 3 条输出 OK: 扫描 N 个文件…零命中（期望匹配 /^OK: 扫描 \\d+ 个文件，.+零命中$/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 4 条退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第 4 条输出逐字 OK: no CJK（期望 \"OK: no CJK\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-52",
+      "verdict": "通过",
+      "face": "架构检查",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then dependencies 键数量为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：架构检查命令退出 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：架构检查命令输出必须是 0（逐字）（期望 \"0\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-53",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 首行（计数口径与 I1.5 一致：16 角色 + 10 技能 + 3 坏文件）（期望逐字 \"校验资产 29 个：3 个不合法\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 错误行恰好四条且逐字（同文件 p.yaml 多类各一行、顺序由 C-08 固定）（期望 [\"- roles/c1.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）\",\"- roles/d1.yaml：派生链成环：d1（ROLE_DERIVE_CYCLE）\",\"- roles/p1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）\",\"- roles/p1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 输出恰为首行 + 四条错误行（期望 5）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.map(code) 排序后与四个原因码逐字相同（期望 [\"ROLE_CONTRACT_UNBOUND\",\"ROLE_DERIVE_CYCLE\",\"ROLE_PERMISSION_MISMATCH\",\"ROLE_WAKE_UNKNOWN\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.filter(file === roles/p1.yaml).length === 2（同文件两类各一行、互不吞并）（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.assets === 29（期望 29）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-54",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Then orch role create lead-dev --group nope … 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --group nope … 整块行数 26（25 + 原因行）（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --group nope … 前 25 行为 A-12 用法块逐字（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --group nope … 原因行逐字（期望逐字 \"  （role create 的 --group 只接受 通用协调/研究分析/内容创作/编码工程/业务运营）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --group nope … 后 test -e \"$ROOT/.orch\" 为假（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --artifact-type doc … 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --artifact-type doc … 整块行数 26（25 + 原因行）（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --artifact-type doc … 前 25 行为 A-12 用法块逐字（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --artifact-type doc … 原因行逐字（期望逐字 \"  （role create 的 --artifact-type 只接受 code/document/dataset/report）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --artifact-type doc … 后 test -e \"$ROOT/.orch\" 为假（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --side-effect heavy … 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --side-effect heavy … 整块行数 26（25 + 原因行）（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --side-effect heavy … 前 25 行为 A-12 用法块逐字（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --side-effect heavy … 原因行逐字（期望逐字 \"  （role create 的 --side-effect 只接受 none/read/write/exec）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then orch role create lead-dev --side-effect heavy … 后 test -e \"$ROOT/.orch\" 为假（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：--group 原因行逐字（需求原文）（期望逐字 \"  （role create 的 --group 只接受 通用协调/研究分析/内容创作/编码工程/业务运营）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：orch role bogus 输出的用法块行数恒为 25（前 25 行逐字）（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：orch role bogus 整块仍为 25 行用法块 + 1 行原因（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：orch role bogus 后 .orch 仍不存在（期望 false）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-55",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 7,
+      "checks": [
+        {
+          "text": "Then not-role.yaml 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then not-role.yaml 只回一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then not-role.yaml 拒绝行逐字（期望逐字 \"导入被拒：缺少必填字段：schema（ROLE_SCHEMA_MISSING）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then wrong-schema.yaml 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then wrong-schema.yaml 只回一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then wrong-schema.yaml 拒绝行逐字（期望逐字 \"导入被拒：缺少必填字段：schema（ROLE_SCHEMA_MISSING）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：test -e \"$ROOT/.orch/roles/not-role.yaml\" 为假（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：test -e \"$ROOT/.orch/roles/wrong-schema.yaml\" 为假（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：.orch/roles/ 下没有留下任何文件（期望 []）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：role list 的 counts.total === 16（import 只装单个文件，注册表仍是内置 16 角色）（期望 16）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-56",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "Given role create lead-dev 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given lead-dev.yaml 已落盘",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then --set nope=1 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then --set nope=1 整块行数 26（25 行用法块 + 原因行）（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then --set nope=1 前 25 行为 A-12 用法块逐字（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then --set nope=1 原因行逐字（期望逐字 \"  （未知字段：nope）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then --set nope=1 文件内容不变（期望 \"schema: role/v1\\nid: lead-dev\\nname: 首席开发\\ngroup: coding\\nsummary : ''\\nartifact_type: code\\nside_effect: write\\nskills: [code-change, test-run]\\nmax_concurrent_sessions: 1\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then --unset name 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then --unset name 原因行逐字（期望逐字 \"  （role edit 不能删除必填字段：name）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then --unset name 文件内容不变（期望 \"schema: role/v1\\nid: lead-dev\\nname: 首席开发\\ngroup: coding\\nsummary : ''\\nartifact_type: code\\nside_effect: write\\nskills: [code-change, test-run]\\nmax_concurrent_sessions: 1\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次回四行（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次首行逐字（期望逐字 \"已更新项目角色：.orch/roles/lead-dev.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次契约行逐字（A-3）（期望逐字 \"- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次校验行逐字（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次重写注记逐字（期望逐字 \"（已按规范格式重写，注释不保留）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then show 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then show 契约行（产物类型 document）（期望逐字 \"- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then show 职责行变空（冒号后无值，需求原文「职责行变空」）（期望逐字 \"  职责：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：grep -c 'nope:' 为 0（前两次未改动文件）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：grep -c 'artifact_type: document' 为 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：grep -c 'summary:' 为 0（--unset summary 后键被删除）（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-57",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 9,
+      "checks": [
+        {
+          "text": "夹具自检：developer 与 my-role 的 name 均可读",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 首行逐字（期望逐字 \"找不到角色：ghost-id\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 提示行逐字（期望逐字 \"可用角色：执行 orch role list 查看\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 只回一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 逐字（期望逐字 \"缺少对比基线：my-role（用 --against 指定内置角色或文件）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 只回一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 逐字（期望逐字 \"缺少对比基线：my-wf（用 --against 指定内置工作流或文件）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 首行逐字（A-5 句式）（期望逐字 \"对比角色 my-role（项目）与基线 developer（内置）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 恰一条差异行（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 差异行逐字（期望逐字 \"~ name：开发 → 我的角色\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 末行为 差异 N 项 或 无差异（期望匹配 /^(差异 \\d+ 项|无差异)$/）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 末行 N 与 changes.length 一致（期望 \"差异 1 项\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：顶层键恰 base/target/changes（期望 [\"base\",\"changes\",\"target\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：changes 中不存在 field === id 的项（diff 忽略 id）（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：changes[] 每项恰四键 field/kind/base/target（期望 [\"base\",\"field\",\"kind\",\"target\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：name 项 base 等于内置 developer 资产的 name 字段（期望 \"开发\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：name 项 target 等于 my-role.yaml 的 name 字段（期望 \"我的角色\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-58",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 11,
+      "checks": [
+        {
+          "text": "Given 项目技能 quote 已落盘",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 只回一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 逐字（期望逐字 \"导入被拒：内置角色只读：developer（ASSET_READONLY）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 只回一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 逐字（期望逐字 \"创建被拒：内置技能只读：code-change（ASSET_READONLY）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 只回一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 逐字（期望逐字 \"已存在同名项目技能：.orch/skills/quote/SKILL.md（加 --force 覆盖）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 文件不变（期望 \"---\\nschema: skill/v1\\nid: quote\\nname: 引用规范\\nsummary: 给结论配上可核对的出处\\napplies_to: [writing]\\ncommands: []\\n---\\n\\n### 工作方法\\n\\n1. 按任务要求完成本技能覆盖的工作，并在结果里写清做了什么。\\n\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 首行逐字（期望逐字 \"已创建项目技能：.orch/skills/quote/SKILL.md\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 末行为 校验：通过（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：assets/** sha256 清单执行前后逐字相同（四次后一个字节都没变）（期望 \"roles/arbiter.yaml  9bbd4e51c45d3ec8faccbffdf15198bb9ed521dea8647f9e9393b417b1bd0276\\nroles/code-reviewer.yaml  89ccc6e011c442a9db10891b9db7d7e655f58db6723e4d8371ac4cbd7becf84a\\nroles/compliance-reviewer.yaml  f8877b9d2106b6c6166c45d2bcdce90ddcf728ab20854675960fdb0c77dbe5dd\\nroles/coordinator.yaml  e4dec720bcf607030fe425ec950b4dd17e5fa5656761bd9b0f2eab6773eba6ad\\nroles/data-analyst.yaml  1ea8010e2dd465c0cc1fc94b514997310d0f002f2d1b3f687065dd35a26843b9\\nroles/developer.yaml  4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905\\nroles/editor.yaml  51555a1ed49351f8944c3d2ff9efe278b2c49420436751c0bd92db3dc0eb6525\\nroles/fact-checker.yaml  f95dd9a7bfe9c8ece03cf98743437b0223e8bcb1e714478115577f46e1e2c86e\\nroles/planner.yaml  fd8b418d438e331ee5614c4f4de16a1131de6d1e03bd59f8de6a508c873618b4\\nroles/requirement-clarifier.yaml  b1c1c0f3fe91f0a07735b5335b1effda5b81b0fbeffca9ee9da30b3c96f793eb\\nroles/researcher.yaml  0422905008dc01c2701f6ea4e75024ce9a160e9fb144f694145fae44ee9e150b\\nroles/reviewer.yaml  f06f94ab0a5a569d8c27a114e3059e5a8652b8675d7a5293aaa4aac68ba1fd88\\nroles/summarizer.yaml  671eac167cc4fb698d5b05b10b19fccc262ed8d87811c5a5f4a037cf853695aa\\nroles/tester.yaml  b450e1c6e9e2663bf36323a3cccb0d53016c988a6e3e853aad707d66831883f1\\nroles/worker.yaml  9f2b42983217699482fd6e848b14c672b55a1b20d28cbbf9b3f4e2b341e01eba\\nroles/writer.yaml  51ec7e2980e5f0cf36f9fc5b64c900a747173b5003ff6f6ed3865b7f5c13d771\\nskills/code-change/SKILL.md  92db6c207c59de341e4ed09a8cb8d90c7f62018968df0f356a0bb4066fe92194\\nskills/code-review/SKILL.md  783639b876f0d842b6c3ce4660129669a20967b1ee1217d32d8c9bcf2af02b72\\nskills/compliance-check/SKILL.md  d53f1705c7ee87bccd154d75802a94013d583d562ee20a5ad13147cd694cf824\\nskills/coordination/SKILL.md  213d472ef6ecbd3138d3889daa3a5da7eb3d5d137fd1154175701a78ba74bb82\\nskills/data-analysis/SKILL.md  369460cbb3d582b66d779fd5050ad6838d7fefc783022d087304d9487a110931\\nskills/doc-draft/SKILL.md  029bb8966988948fc47e7c7af760a0649a0bf746b4116a52fd21aa3a1e7e465d\\nskills/doc-review/SKILL.md  4f4845b28fa7e3b4b3702dee86ce3c4443aca972e04e0a83050dcf7133507b64\\nskills/fact-check/SKILL.md  656fa03d6f79cfdd3e63e113e4ba690a7c9fc42c67b1a61f68f057d118a0ae22\\nskills/research-brief/SKILL.md  547cda1ae1d54818ba715761c3e179868c2ac08e5d61efd2e7d4d5aec0d3eaa6\\nskills/test-run/SKILL.md  49de0dd67d65958959e278b224ea67efc0d44375c48fa1a0d049a2200d010487\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：git status --porcelain assets 输出为空（期望 \"\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：第二次执行后 test -e \"$ROOT/.orch/skills/code-change/SKILL.md\" 为假（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：--force 只覆盖项目里的同名资产（quote 正文已换成冒名内容）（期望 true）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-59",
+      "verdict": "通过",
+      "face": "用户可见",
+      "evidence": 10,
+      "checks": [
+        {
+          "text": "Then ① 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 首行逐字（期望逐字 \"已创建项目技能：.orch/skills/quote/SKILL.md\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 末行为 校验：通过（期望逐字 \"校验：通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 命令行逐字（期望逐字 \"  命令：node --test\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 适用行含两个分组",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 正文是 body.md 的内容",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 契约行的适用段有两个分组（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 用法块 + 一行取值原因（26 行）（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 前 25 行为 A-12 用法块逐字（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 取值原因行逐字（既有原因码 SKILL_GROUP_INVALID，I1.5 口径）（期望逐字 \"  （适用分组取值非法：nope；合法取值：coordinator / research / writing / coding / ops）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 退出码 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 原因行逐字（期望逐字 \"  （skill create 需要 --summary）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 整块仍为 26 行（期望 26）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 只回一行（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ④ 逐字（期望逐字 \"创建被拒：技能正文为空：quote4（SKILL_BODY_EMPTY）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：quote2 不建文件（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：quote3 不建文件（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：quote4 不建文件（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：grep -c 'node --test' 为 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：skill validate 的 counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-60",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 12,
+      "checks": [
+        {
+          "text": "Then 第一次（task-var）退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一次（task-var）首行逐字（期望逐字 \"校验工作流 1 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：task-var counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次（backflow-target）退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：backflow-target counts.invalid === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：backflow-target errors[0].code（期望 \"WORKFLOW_TRANSITION_ILLEGAL\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次（wake-empty）退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：wake-empty counts.invalid === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：wake-empty errors[0].code（期望 \"WORKFLOW_WAKE_DENIED\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第四次（retest-ok）退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第四次（retest-ok）首行逐字（期望逐字 \"校验工作流 1 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：retest-ok counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二次明细为 {node} 不能成为回流目标（含 回流目标）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：backflow-target errors[0].detail 含 回流目标（期望含 \"回流目标\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第三次报 WORKFLOW_WAKE_DENIED（wake_allow: [] = 不允许主动唤醒任何角色）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：wake-empty errors[0].detail 含 白名单（期望含 \"白名单\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：wake-empty 明细为 唤醒不在白名单内：r-src → developer（期望 \"唤醒不在白名单内：r-src → developer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：retest-ok 的 errors 为空（期望 []）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-61",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 9,
+      "checks": [
+        {
+          "text": "Given 独立项目根无 .orch（只有内置三图）（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given assets/roles/writer.yaml 已读取（原文留存用于还原）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Given assets/roles/researcher.yaml 对齐为 wake_allow: [writer]",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ① 首行逐字（期望逐字 \"校验工作流 3 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ② 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：对齐后 counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：对齐后 counts.assets === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：对齐后 counts.builtin === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：对齐后 errors 为空（期望 []）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "夹具自检：writer.yaml 已临时改为 wake_allow: [editor]",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 首行逐字（期望逐字 \"校验工作流 3 个：1 个不合法\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 变红行恰好一条（期望 2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then ③ 变红行逐字（A-9 的 内置 <id> 句式，内置 前缀参与排序）（期望逐字 \"- 内置 task-loop：唤醒不在白名单内：writer → reviewer（WORKFLOW_WAKE_DENIED）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：改回后 counts.invalid === 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：改回后 errors[0].code === WORKFLOW_WAKE_DENIED（期望 \"WORKFLOW_WAKE_DENIED\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].file 以 内置  开头",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].detail 含 writer → reviewer（期望含 \"writer → reviewer\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "finally：assets/roles/writer.yaml 已逐字节还原（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：git status --porcelain assets 输出为空（期望 \"\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-62",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 6,
+      "checks": [
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_NODE_TYPE_INVALID（明细逐字含 合法取值清单）（期望含 \"节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_NODE_FIELD_MISSING：缺 title 与 workflow 两类（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_SUB_UNKNOWN（明细含 ghost）（期望含 \"引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 报 WORKFLOW_SUB_CYCLE（明细给出 sub-a / sub-b 的环）（期望含 \"子工作流成环：\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then SUB_CYCLE 明细给出 sub-a 与 sub-b 的环",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.map(code) 去重后含 WORKFLOW_NODE_TYPE_INVALID（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.map(code) 去重后含 WORKFLOW_NODE_FIELD_MISSING（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.map(code) 去重后含 WORKFLOW_SUB_UNKNOWN（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.map(code) 去重后含 WORKFLOW_SUB_CYCLE（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].file === workflows/bad-type.yaml（按文件名字典序）（期望 \"workflows/bad-type.yaml\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].detail 含 合法取值清单（期望含 \"合法取值：role / human / escalate / subworkflow\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 6（六份坏文件各计 1）（期望 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.assets === 9（内置 3 + 项目 6）（期望 9）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.builtin === 3（期望 3）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-63",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 11,
+      "checks": [
+        {
+          "text": "Then 校验退出码 0（全量：项目 1 + 内置 3 = 4 个，裁决 AC-63-1）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 校验首行逐字（4 个：全部通过）（期望逐字 \"校验工作流 4 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.assets === 4（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "裁决 AC-63-1 旁证：scoped 校验首行为 1 个口径（期望逐字 \"校验工作流 1 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then dry-run 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 预演全文逐字（A-10；首行 + 11 项原语 + 结论行）（期望 [\"编排计划 doc-fanout · 6 节点 · 7 边 · 1 个并行组 · 1 个子工作流\",\"1. T-001 研究（角色节点 researcher）\",\"2. 并行组 draft：T-002 撰写A（角色节点 writer）｜ T-003 撰写B（角色节点 editor） · 汇合：all\",\"3. T-004 人工确认（人工节点）\",\"4. T-006 代码闭环（子工作流 code-loop · 2 节点）\",\"5. T-005 升级（升级节点）\",\"条件分支：\",\"- T-004 → T-006 当 人工通过\",\"- T-004 → T-005 当 人工驳回\",\"- T-006 → T-005 当 判定不通过\",\"字段映射：\",\"- T-001.research.notes → T-002.brief\",\"- T-001.research.notes → T-003.brief\",\"超时与重试：\",\"- T-001 超时 600s · 重试 2\",\"结论：编排可执行，未启动任何会话\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·顺序（层 1）（期望逐字 \"1. T-001 研究（角色节点 researcher）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·并行 fan-out/fan-in（层 2 并行组一行 + 汇合：all，F-19）（期望逐字 \"2. 并行组 draft：T-002 撰写A（角色节点 writer）｜ T-003 撰写B（角色节点 editor） · 汇合：all\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·条件分支（标题 + 三行）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·人工节点（层 3）（期望逐字 \"3. T-004 人工确认（人工节点）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·子工作流（层 4）（期望逐字 \"4. T-006 代码闭环（子工作流 code-loop · 2 节点）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·升级（层 5）（期望逐字 \"5. T-005 升级（升级节点）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·终止（升级终点：T-005 无正向出边，条件分支与层行均无 T-005 作源）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·超时 / 重试（超时与重试段一行）（期望逐字 \"- T-001 超时 600s · 重试 2\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·字段映射（能力域 2 单列：两行映射）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 末行逐字（期望逐字 \"结论：编排可执行，未启动任何会话\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：预演文本中 1 个子工作流 恰出现 1 次（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：层行 4. T-006 代码闭环（子工作流 code-loop · 2 节点） 存在（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then show code-loop 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "原语·回流循环 + 轮次上限（show 的回边一行）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：dry-run json 顶层恰 8 键（期望 [\"branches\",\"edgeCount\",\"id\",\"layers\",\"mappings\",\"name\",\"nodeCount\",\"policies\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：nodeCount === 6（期望 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：edgeCount === 7（期望 7）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：layers 段齐全（非空数组）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：branches 段齐全（非空数组）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：mappings 段齐全（非空数组）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：policies 段齐全（非空数组）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：branches[] 恰三键 from/to/when 且三行条件分支（期望 [\"T-004 → T-006 human_approved\",\"T-004 → T-005 human_rejected\",\"T-006 → T-005 failed\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：并行组行显示 汇合：all（join 缺省 all 时 fan-in 汇合条件用户可见，F-19）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：show code-loop 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：edges[1].kind === backflow（期望 \"backflow\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：nodes 中存在 maxRounds === 2（期望 true）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-64",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 11,
+      "checks": [
+        {
+          "text": "Then human-end 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then human-end 首行逐字（human / escalate 天然是终态）（期望逐字 \"校验工作流 1 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：human-end counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then escalate-end 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then escalate-end 首行逐字（human / escalate 天然是终态）（期望逐字 \"校验工作流 1 个：全部通过\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：escalate-end counts.invalid === 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then no-end 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then no-end 首行 1 个不合法（期望 \"校验工作流 1 个：1 个不合法\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then no-end 错误行逐字（A-15：节点不可达：{node}）（期望逐字 \"- workflows/no-end.yaml：节点不可达：T-R（WORKFLOW_UNREACHABLE）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：no-end errors[0].code === WORKFLOW_UNREACHABLE（期望 \"WORKFLOW_UNREACHABLE\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：no-end errors[0].detail 含 T-R（期望含 \"T-R\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：show human-end 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：nodes 里 T-H 的 nodeType === human（期望 \"human\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-65",
+      "verdict": "通过",
+      "face": "机检",
+      "evidence": 8,
+      "checks": [
+        {
+          "text": "机检：连续两次 JSON 输出经 sha256 逐字节相同（期望 \"c28ca564e5da6577bd0a2b243a02c5a4a5423f8f4f8ffd87bc45b4b091af35f8\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 退出码 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 首行逐字（期望逐字 \"校验工作流 5 个：2 个不合法\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 随后两行（共三行输出）（期望 3）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第一条逐字（bad-type 在前）（期望逐字 \"- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 第二条逐字（wake.yaml，A-15 明细模板）（期望逐字 \"- workflows/wake.yaml：唤醒不在白名单内：researcher → editor（WORKFLOW_WAKE_DENIED）\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors.map(file + ':' + code) 逐字等于两元素数组（期望 [\"workflows/bad-type.yaml:WORKFLOW_NODE_TYPE_INVALID\",\"workflows/wake.yaml:WORKFLOW_WAKE_DENIED\"]）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：errors[0].code === WORKFLOW_NODE_TYPE_INVALID（期望 \"WORKFLOW_NODE_TYPE_INVALID\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.assets === 5（内置 3 + 项目 2）（期望 5）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检：counts.invalid === 2（期望 2）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    }
+  ]
+}

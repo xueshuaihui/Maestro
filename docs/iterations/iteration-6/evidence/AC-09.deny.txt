@@ -1,0 +1,2 @@
+内置角色不可编辑：先 orch role create <新角色> --from developer
+

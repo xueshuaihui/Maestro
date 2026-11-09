@@ -1,0 +1,15 @@
+schema: role/v1
+id: tester
+name: 测试
+group: coding
+summary: 运行测试并把结果落成报告，不掩盖失败用例
+artifact_type: code
+side_effect: exec
+skills:
+  - test-run
+tools:
+  - read
+  - write
+  - bash
+wake_allow: []
+max_concurrent_sessions: 1

@@ -1,0 +1,3 @@
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft（WORKFLOW_SCOPE_OVERLAP）
+

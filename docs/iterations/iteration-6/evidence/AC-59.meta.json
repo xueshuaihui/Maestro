@@ -1,0 +1,39 @@
+{
+  "ac": "AC-59",
+  "title": "skill create 的 --applies-to / --commands / --body-file 与取值错误口径",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:09.242Z",
+  "finishedAt": "2026-11-09T12:24:09.880Z",
+  "durationMs": 638,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-59",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-59"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 22,
+  "notes": [
+    "裁-17（需求侧 R-14）：When ① 的样例值勘误 writing,review → writing,coding（需求闭集互斥，见文件头注释），Then「适用行含两个分组」语义不变；依据 = AC-59 第二场景预设闭集存在 + AC-54/§2.2.1 五分组逐字文案 + I1.5 SKILL_GROUP_INVALID 基线。"
+  ],
+  "extraFiles": [
+    "AC-59.create-quote.txt",
+    "AC-59.show-quote.txt",
+    "AC-59.create-badgroup.txt",
+    "AC-59.create-nosummary.txt",
+    "AC-59.create-emptybody.txt",
+    "AC-59.validate-payload.json"
+  ]
+}

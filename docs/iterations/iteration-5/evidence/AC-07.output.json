@@ -1,0 +1,110 @@
+{
+  "ac": "AC-07",
+  "title": "产物类型、副作用等级、并发上限越界被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 三条错误（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：三条错误的 code 集合与需求完全一致（顺序按文件名）（期望 [\"ROLE_ARTIFACT_TYPE_INVALID\",\"ROLE_MAX_CONCURRENT_INVALID\",\"ROLE_SIDE_EFFECT_INVALID\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"ROLE_ARTIFACT_TYPE_INVALID\",\"ROLE_MAX_CONCURRENT_INVALID\",\"ROLE_SIDE_EFFECT_INVALID\"]"
+    },
+    {
+      "text": "机检：三份文件的 file 相对路径与文件名顺序一致（期望 [\"roles/bad-artifact.yaml\",\"roles/bad-max.yaml\",\"roles/bad-side-effect.yaml\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"roles/bad-artifact.yaml\",\"roles/bad-max.yaml\",\"roles/bad-side-effect.yaml\"]"
+    },
+    {
+      "text": "机检：并发上限的合法范围是 1~5 的整数（期望 \"并发上限取值非法：9；合法范围：1~5 的整数\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"并发上限取值非法：9；合法范围：1~5 的整数\""
+    },
+    {
+      "text": "机检：counts.invalid === 3（按文件计）（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 A（artifact_type: slides）",
+      "argv": [
+        "(fixture) 写 A（artifact_type: slides）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-07\\.orch\\roles\\bad-artifact.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：写 B（max_concurrent_sessions: 9）",
+      "argv": [
+        "(fixture) 写 B（max_concurrent_sessions: 9）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-07\\.orch\\roles\\bad-max.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：写 C（side_effect: admin）",
+      "argv": [
+        "(fixture) 写 C（side_effect: admin）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-07\\.orch\\roles\\bad-side-effect.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-07",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "校验资产 29 个：3 个不合法\n- roles/bad-artifact.yaml：产物类型取值非法：slides；合法取值：code / document / dataset / report（ROLE_ARTIFACT_TYPE_INVALID）\n- roles/bad-max.yaml：并发上限取值非法：9；合法范围：1~5 的整数（ROLE_MAX_CONCURRENT_INVALID）\n- roles/bad-side-effect.yaml：副作用等级取值非法：admin；合法取值：none / read / write / exec（ROLE_SIDE_EFFECT_INVALID）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-07",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 29,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 3\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_ARTIFACT_TYPE_INVALID\",\n      \"file\": \"roles/bad-artifact.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"artifact_type\",\n      \"line\": null,\n      \"detail\": \"产物类型取值非法：slides；合法取值：code / document / dataset / report\"\n    },\n    {\n      \"code\": \"ROLE_MAX_CONCURRENT_INVALID\",\n      \"file\": \"roles/bad-max.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"max_concurrent_sessions\",\n      \"line\": null,\n      \"detail\": \"并发上限取值非法：9；合法范围：1~5 的整数\"\n    },\n    {\n      \"code\": \"ROLE_SIDE_EFFECT_INVALID\",\n      \"file\": \"roles/bad-side-effect.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"side_effect\",\n      \"line\": null,\n      \"detail\": \"副作用等级取值非法：admin；合法取值：none / read / write / exec\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

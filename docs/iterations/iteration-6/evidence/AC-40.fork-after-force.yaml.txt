@@ -1,0 +1,10 @@
+schema: workflow/v1
+id: fork
+name: 另一个名字
+entry: T-001
+terminal: T-001
+nodes:
+  - id: T-001
+    node_type: human
+    title: T-001
+

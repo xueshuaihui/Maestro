@@ -1,0 +1,94 @@
+{
+  "ac": "AC-19",
+  "title": "技能校验定位到具体文件",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 输出恰好三行（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then 首行逐字（期望逐字 \"校验技能 12 个：2 个不合法\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验技能 12 个：2 个不合法\""
+    },
+    {
+      "text": "Then 有 half 行（缺 summary，逐字）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- skills/empty/SKILL.md：技能正文为空：empty（SKILL_BODY_EMPTY） || - skills/half/SKILL.md：缺少必填字段：summary（SKILL_SCHEMA_MISSING）"
+    },
+    {
+      "text": "Then 有 empty 行（正文为空，逐字）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- skills/empty/SKILL.md：技能正文为空：empty（SKILL_BODY_EMPTY） || - skills/half/SKILL.md：缺少必填字段：summary（SKILL_SCHEMA_MISSING）"
+    },
+    {
+      "text": "机检：codes 排序后等于 [SKILL_BODY_EMPTY, SKILL_SCHEMA_MISSING]（期望 [\"SKILL_BODY_EMPTY\",\"SKILL_SCHEMA_MISSING\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"SKILL_BODY_EMPTY\",\"SKILL_SCHEMA_MISSING\"]"
+    },
+    {
+      "text": "机检：counts.assets === 12（期望 12）",
+      "ok": true,
+      "blocked": false,
+      "actual": "12"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 .orch/skills/half/SKILL.md（缺 summary）与 .orch/skills/empty/SKILL.md（正文只有空行）",
+      "argv": [
+        "(fixture) 预置 .orch/skills/half/SKILL.md（缺 summary）与 .orch/skills/empty/SKILL.md（正文只有空行）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-19",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "校验技能 12 个：2 个不合法\n- skills/empty/SKILL.md：技能正文为空：empty（SKILL_BODY_EMPTY）\n- skills/half/SKILL.md：缺少必填字段：summary（SKILL_SCHEMA_MISSING）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-19",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 117,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 12,\n    \"skills\": 10,\n    \"builtin\": 10,\n    \"project\": 0,\n    \"invalid\": 2\n  },\n  \"errors\": [\n    {\n      \"code\": \"SKILL_BODY_EMPTY\",\n      \"file\": \"skills/empty/SKILL.md\",\n      \"scope\": \"skill\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"技能正文为空：empty\"\n    },\n    {\n      \"code\": \"SKILL_SCHEMA_MISSING\",\n      \"file\": \"skills/half/SKILL.md\",\n      \"scope\": \"skill\",\n      \"field\": \"summary\",\n      \"line\": null,\n      \"detail\": \"缺少必填字段：summary\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

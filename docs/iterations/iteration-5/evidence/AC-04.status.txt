@@ -1,0 +1,33 @@
+$ "(fixture) 写 .orch/roles/no-concurrency.yaml（省略 max_concurrent_sessions）"
+# label=夹具：写 .orch/roles/no-concurrency.yaml（省略 max_concurrent_sessions） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-04\.orch\roles\no-concurrency.yaml
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-04 exit=1 91ms
+校验资产 27 个：1 个不合法
+- roles/no-concurrency.yaml：缺少必填字段：max_concurrent_sessions（ROLE_SCHEMA_MISSING）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-04 exit=1 93ms
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "ROLE_SCHEMA_MISSING",
+      "file": "roles/no-concurrency.yaml",
+      "scope": "role",
+      "field": "max_concurrent_sessions",
+      "line": null,
+      "detail": "缺少必填字段：max_concurrent_sessions"
+    }
+  ]
+}
+

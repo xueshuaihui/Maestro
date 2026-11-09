@@ -1,16 +1,16 @@
 {
   "nfr": "NFR-05",
-  "platform": "darwin",
+  "platform": "win32",
   "node": "v22.22.2",
   "writes": [
     {
       "target": "status.md",
-      "ms": 858.94,
+      "ms": 10.275,
       "bytes": 311
     },
     {
       "target": "inbox/HO-001.json",
-      "ms": 805.627,
+      "ms": 9.912,
       "bytes": 86
     }
   ],

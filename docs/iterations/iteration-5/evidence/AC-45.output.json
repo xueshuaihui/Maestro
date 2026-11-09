@@ -1,0 +1,158 @@
+{
+  "ac": "AC-45",
+  "title": "项目级技能可覆盖内置同名技能",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "前置：内置版全部通过（counts.invalid === 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "前置：内置版 counts.skills === 10（期望 10）",
+      "ok": true,
+      "blocked": false,
+      "actual": "10"
+    },
+    {
+      "text": "Then 校验仍然全部通过（counts.invalid === 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then counts.project === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：覆盖后 counts.skills 仍为 10（同 id 覆盖不增加总数）（期望 10）",
+      "ok": true,
+      "blocked": false,
+      "actual": "10"
+    },
+    {
+      "text": "机检：counts.builtin 为 25（期望 25）",
+      "ok": true,
+      "blocked": false,
+      "actual": "25"
+    },
+    {
+      "text": "机检：counts.assets 仍为 26（期望 26）",
+      "ok": true,
+      "blocked": false,
+      "actual": "26"
+    },
+    {
+      "text": "Then developer 的技能列表仍为 [\"code-change\",\"test-run\"]（期望 [\"code-change\",\"test-run\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"code-change\",\"test-run\"]"
+    },
+    {
+      "text": "Then 引用按 id 解析，不因覆盖而变（技能名仍是 code-change）（期望含 \"code-change\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"code-change\",\"test-run\"]"
+    },
+    {
+      "text": "机检：registry.test.js 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：fail = 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：用例条数 ≥ 20（覆盖合并 / onlyRole / 资产根）",
+      "ok": true,
+      "blocked": false,
+      "actual": "26"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch role validate --format json（内置版基线）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 87,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 26,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：写 .orch/skills/code-change/SKILL.md（name: 代码修改（项目版））",
+      "argv": [
+        "(fixture) 写 .orch/skills/code-change/SKILL.md（name: 代码修改（项目版））"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-45\\.orch\\skills\\code-change\\SKILL.md",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json（覆盖后）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 90,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 26,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 25,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show developer --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "developer",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"developer\",\n    \"name\": \"开发\",\n    \"group\": \"coding\",\n    \"groupLabel\": \"编码工程\",\n    \"artifactType\": \"code\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"code-change\",\n      \"test-run\"\n    ],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"builtin\",\n    \"file\": \"assets/roles/developer.yaml\"\n  },\n  \"instance\": null,\n  \"roleInstance\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "node --test test/wp11/registry.test.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "--test",
+        "test/wp11/registry.test.js"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 382,
+      "stdout": "TAP version 13\n# Subtest: loads a clean tree: six built-in assets, five groups, no errors\nok 1 - loads a clean tree: six built-in assets, five groups, no errors\n  ---\n  duration_ms: 15.8883\n  type: 'test'\n  ...\n# Subtest: RoleDef carries exactly the thirteen contract keys\nok 2 - RoleDef carries exactly the thirteen contract keys\n  ---\n  duration_ms: 2.6233\n  type: 'test'\n  ...\n# Subtest: SkillDef carries the body and the optional arrays as defaults\nok 3 - SkillDef carries the body and the optional arrays as defaults\n  ---\n  duration_ms: 2.362\n  type: 'test'\n  ...\n# Subtest: roles sort by group order then id, not by directory listing order\nok 4 - roles sort by group order then id, not by directory listing order\n  ---\n  duration_ms: 7.5944\n  type: 'test'\n  ...\n# Subtest: a missing project directory is not an error\nok 5 - a missing project directory is not an error\n  ---\n  duration_ms: 1.8385\n  type: 'test'\n  ...\n# Subtest: AC-04: missing max_concurrent_sessions yields exactly one ROLE_SCHEMA_MISSING\nok 6 - AC-04: missing max_concurrent_sessions yields exactly one ROLE_SCHEMA_MISSING\n  ---\n  duration_ms: 3.9177\n  type: 'test'\n  ...\n# Subtest: AC-05: file name writer.yaml declaring wordsmith yields ROLE_ID_MISMATCH\nok 7 - AC-05: file name writer.yaml declaring wordsmith yields ROLE_ID_MISMATCH\n  ---\n  duration_ms: 5.7643\n  type: 'test'\n  ...\n# Subtest: AC-06: group outside the five groups yields ROLE_GROUP_INVALID\nok 8 - AC-06: group outside the five groups yields ROLE_GROUP_INVALID\n  ---\n  duration_ms: 3.954\n  type: 'test'\n  ...\n# Subtest: AC-07: artifact_type / side_effect / max_concurrent_sessions each report their own code\nok 9 - AC-07: artifact_type / side_effect / max_concurrent_sessions each report their own code\n  ---\n  duration_ms: 7.7011\n  type: 'test'\n  ...\n# Subtest: AC-08: an unknown skill reference yields ROLE_SKILL_NOT_FOUND naming the skill\nok 10 - AC-08: an unknown skill reference yields ROLE_SKILL_NOT_FOUND naming the skill\n  ---\n  duration_ms: 4.1113\n  type: 'test'\n  ...\n# Subtest: AC-09: broken indentation reports line 4 and the machine detail key\nok 11 - AC-09: broken indentation reports line 4 and the machine detail key\n  ---\n  duration_ms: 3.9357\n  type: 'test'\n  ...\n# Subtest: AC-13: a skill directory without SKILL.md yields SKILL_FILE_MISSING\nok 12 - AC-13: a skill directory without SKILL.md yields SKILL_FILE_MISSING\n  ---\n  duration_ms: 3.2538\n  type: 'test'\n  ...\n# Subtest: AC-14: one SKILL.md with two defects reports two errors, metadata first\nok 13 - AC-14: one SKILL.md with two defects reports two errors, metadata first\n  ---\n  duration_ms: 4.1116\n  type: 'test'\n  ...\n# Subtest: AC-15: metadata only, empty body yields SKILL_BODY_EMPTY\nok 14 - AC-15: metadata only, empty body yields SKILL_BODY_EMPTY\n  ---\n  duration_ms: 5.777\n  type: 'test'\n  ...\n# Subtest: AC-16: applies_to outside the five groups yields SKILL_GROUP_INVALID\nok 15 - AC-16: applies_to outside the five groups yields SKILL_GROUP_INVALID\n  ---\n  duration_ms: 4.5284\n  type: 'test'\n  ...\n# Subtest: AC-45: a project skill replaces the built-in one without changing totals\nok 16 - AC-45: a project skill replaces the built-in one without changing totals\n  ---\n  duration_ms: 3.9483\n  type: 'test'\n  ...\n# Subtest: a project role replaces the built-in one as a whole file\nok 17 - a project role replaces the built-in one as a whole file\n  ---\n  duration_ms: 4.1699\n  type: 'test'\n  ...\n# Subtest: onlyRole loads one role, loads all skills, and drops skill errors\nok 18 - onlyRole loads one role, loads all skills, and drops skill errors\n  ---\n  duration_ms: 4.4422\n  type: 'test'\n  ...\n# Subtest: onlyRole on a broken role keeps just that file in errors\nok 19 - onlyRole on a broken role keeps just that file in errors\n  ---\n  duration_ms: 5.0155\n  type: 'test'\n  ...\n# Subtest: onlyRole prefers the project copy over the built-in copy\nok 20 - onlyRole prefers the project copy over the built-in copy\n  ---\n  duration_ms: 3.4435\n  type: 'test'\n  ...\n# Subtest: onlyRole on an unknown id returns an empty table without errors\nok 21 - onlyRole on an unknown id returns an empty table without errors\n  ---\n  duration_ms: 1.6768\n  type: 'test'\n  ...\n# Subtest: a missing built-in root yields one REGISTRY_ASSETS_MISSING and stops\nok 22 - a missing built-in root yields one REGISTRY_ASSETS_MISSING and stops\n  ---\n  duration_ms: 4.2681\n  type: 'test'\n  ...\n# Subtest: AC-44: loading leaves bytes, mtimes and the directory tree untouched\nok 23 - AC-44: loading leaves bytes, mtimes and the directory tree untouched\n  ---\n  duration_ms: 12.4621\n  type: 'test'\n  ...\n# Subtest: AC-44: the registry never imports a network module\nok 24 - AC-44: the registry never imports a network module\n  ---\n  duration_ms: 0.7635\n  type: 'test'\n  ...\n# Subtest: AC-43: the registry sources contain no CJK characters\nok 25 - AC-43: the registry sources contain no CJK characters\n  ---\n  duration_ms: 0.5359\n  type: 'test'\n  ...\n# Subtest: asset path helpers point at the documented directories\nok 26 - asset path helpers point at the documented directories\n  ---\n  duration_ms: 0.2467\n  type: 'test'\n  ...\n1..26\n# tests 26\n# suites 0\n# pass 26\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 305.789\n",
+      "stderr": ""
+    }
+  ]
+}

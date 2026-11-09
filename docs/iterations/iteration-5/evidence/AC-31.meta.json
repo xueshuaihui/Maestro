@@ -1,0 +1,36 @@
+{
+  "ac": "AC-31",
+  "title": "角色实例顺序稳定且不重复",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:18.435Z",
+  "finishedAt": "2026-11-08T12:22:20.291Z",
+  "durationMs": 1856,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-31",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-31"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-31",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "events": 36,
+  "eventsNote": null,
+  "checks": 5,
+  "notes": [],
+  "extraFiles": [
+    "AC-31.orders.json"
+  ]
+}

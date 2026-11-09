@@ -1,0 +1,146 @@
+{
+  "counts": {
+    "total": 10,
+    "builtin": 10,
+    "project": 0,
+    "invalid": 0
+  },
+  "skills": [
+    {
+      "id": "code-change",
+      "name": "代码修改",
+      "appliesTo": [
+        "coding"
+      ],
+      "appliesToLabels": [
+        "编码工程"
+      ],
+      "commands": [
+        "node --test"
+      ],
+      "source": "builtin",
+      "file": "assets/skills/code-change/SKILL.md"
+    },
+    {
+      "id": "code-review",
+      "name": "代码审查",
+      "appliesTo": [
+        "coding"
+      ],
+      "appliesToLabels": [
+        "编码工程"
+      ],
+      "commands": [],
+      "source": "builtin",
+      "file": "assets/skills/code-review/SKILL.md"
+    },
+    {
+      "id": "compliance-check",
+      "name": "合规审查",
+      "appliesTo": [
+        "ops"
+      ],
+      "appliesToLabels": [
+        "业务运营"
+      ],
+      "commands": [],
+      "source": "builtin",
+      "file": "assets/skills/compliance-check/SKILL.md"
+    },
+    {
+      "id": "coordination",
+      "name": "编排协调",
+      "appliesTo": [
+        "coordinator"
+      ],
+      "appliesToLabels": [
+        "通用协调"
+      ],
+      "commands": [],
+      "source": "builtin",
+      "file": "assets/skills/coordination/SKILL.md"
+    },
+    {
+      "id": "data-analysis",
+      "name": "数据分析",
+      "appliesTo": [
+        "research"
+      ],
+      "appliesToLabels": [
+        "研究分析"
+      ],
+      "commands": [
+        "node -e \"console.log(1)\""
+      ],
+      "source": "builtin",
+      "file": "assets/skills/data-analysis/SKILL.md"
+    },
+    {
+      "id": "doc-draft",
+      "name": "文档撰写",
+      "appliesTo": [
+        "writing"
+      ],
+      "appliesToLabels": [
+        "内容创作"
+      ],
+      "commands": [],
+      "source": "builtin",
+      "file": "assets/skills/doc-draft/SKILL.md"
+    },
+    {
+      "id": "doc-review",
+      "name": "文档审核",
+      "appliesTo": [
+        "writing"
+      ],
+      "appliesToLabels": [
+        "内容创作"
+      ],
+      "commands": [],
+      "source": "builtin",
+      "file": "assets/skills/doc-review/SKILL.md"
+    },
+    {
+      "id": "fact-check",
+      "name": "事实核查",
+      "appliesTo": [
+        "research"
+      ],
+      "appliesToLabels": [
+        "研究分析"
+      ],
+      "commands": [],
+      "source": "builtin",
+      "file": "assets/skills/fact-check/SKILL.md"
+    },
+    {
+      "id": "research-brief",
+      "name": "调研笔记",
+      "appliesTo": [
+        "research"
+      ],
+      "appliesToLabels": [
+        "研究分析"
+      ],
+      "commands": [],
+      "source": "builtin",
+      "file": "assets/skills/research-brief/SKILL.md"
+    },
+    {
+      "id": "test-run",
+      "name": "测试执行",
+      "appliesTo": [
+        "coding"
+      ],
+      "appliesToLabels": [
+        "编码工程"
+      ],
+      "commands": [
+        "node --test"
+      ],
+      "source": "builtin",
+      "file": "assets/skills/test-run/SKILL.md"
+    }
+  ]
+}

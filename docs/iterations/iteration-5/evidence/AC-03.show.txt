@@ -1,0 +1,7 @@
+- researcher 研究员 · 研究分析 · report · write · 技能 2 · 并发 1
+  职责：按任务收集事实，交出研究笔记（项目版）
+  技能：research-brief, fact-check
+  工具：read, write
+  可唤醒：—
+  来源：项目 .orch/roles/researcher.yaml
+

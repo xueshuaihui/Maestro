@@ -1,0 +1,117 @@
+{
+  "ac": "AC-37",
+  "title": "未知子命令、未知参数、非法 `--format` 都是用法错误",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 第 1 次退出码 2（未知子命令）（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 第 2 次退出码 2（未知参数）（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 第 3 次退出码 2（非法 --format）（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 原因「未知的 role 子命令：bogus」（期望含 \"未知的 role 子命令：bogus\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  （未知的 role 子命令：bogus）\n"
+    },
+    {
+      "text": "Then 原因「未知参数：--nope」（期望含 \"未知参数：--nope\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  （未知参数：--nope）\n"
+    },
+    {
+      "text": "Then 原因「--format 只接受 text 或 json」（期望含 \"--format 只接受 text 或 json\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  （--format 只接受 text 或 json）\n"
+    },
+    {
+      "text": "机检：三条原因各出现一次（未知子命令）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：三条原因各出现一次（未知参数）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：三条原因各出现一次（非法 --format）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：三次都打印了用法块首行",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"用法：orch run|status|cancel|core\",\"用法：orch run|status|cancel|core\",\"用法：orch run|status|cancel|core\"]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch role bogus",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "bogus"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-37",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 88,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  （未知的 role 子命令：bogus）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list --nope",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list",
+        "--nope"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-37",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 90,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  （未知参数：--nope）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list --format yaml",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list",
+        "--format",
+        "yaml"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-37",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 92,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  （--format 只接受 text 或 json）\n",
+      "stderr": ""
+    }
+  ]
+}

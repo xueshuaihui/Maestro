@@ -1,0 +1,4 @@
+已创建项目技能：.orch/skills/quote/SKILL.md
+- quote 引用规范 · 内容创作 · 命令 0
+校验：通过
+

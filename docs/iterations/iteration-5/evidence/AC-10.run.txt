@@ -1,0 +1,2 @@
+注册表不合法：roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）
+

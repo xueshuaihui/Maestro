@@ -1,0 +1,69 @@
+$ "(fixture) 预置 bad-type.yaml（node_type: script）与 wake.yaml（researcher → editor 的 forward 边，源角色白名单 [writer] 不含 editor）；节点上不补 wake_allow"
+# label=夹具：预置 bad-type.yaml（node_type: script）与 wake.yaml（researcher → editor 的 forward 边，源角色白名单 [writer] 不含 editor）；节点上不补 wake_allow cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate --format json
+# label=orch workflow validate --format json（第 1 次） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-65 exit=1 103ms
+{
+  "counts": {
+    "assets": 5,
+    "builtin": 3,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_NODE_TYPE_INVALID",
+      "file": "workflows/bad-type.yaml",
+      "scope": "workflow",
+      "field": "node_type",
+      "line": null,
+      "detail": "节点类型取值非法：script；合法取值：role / human / escalate / subworkflow"
+    },
+    {
+      "code": "WORKFLOW_WAKE_DENIED",
+      "file": "workflows/wake.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "唤醒不在白名单内：researcher → editor"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate --format json
+# label=orch workflow validate --format json（第 2 次） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-65 exit=1 106ms
+{
+  "counts": {
+    "assets": 5,
+    "builtin": 3,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_NODE_TYPE_INVALID",
+      "file": "workflows/bad-type.yaml",
+      "scope": "workflow",
+      "field": "node_type",
+      "line": null,
+      "detail": "节点类型取值非法：script；合法取值：role / human / escalate / subworkflow"
+    },
+    {
+      "code": "WORKFLOW_WAKE_DENIED",
+      "file": "workflows/wake.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "唤醒不在白名单内：researcher → editor"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate
+# label=orch workflow validate（文本） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-65 exit=1 106ms
+校验工作流 5 个：2 个不合法
+- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）
+- workflows/wake.yaml：唤醒不在白名单内：researcher → editor（WORKFLOW_WAKE_DENIED）
+

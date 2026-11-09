@@ -1,0 +1,42 @@
+{
+  "role": {
+    "id": "coordinator",
+    "name": "协调者",
+    "group": "coordinator",
+    "groupLabel": "通用协调",
+    "artifactType": "report",
+    "sideEffect": "none",
+    "skills": [
+      "coordination"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/coordinator.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "code-loop",
+    "state": "running",
+    "roleToSessions": {
+      "developer": [
+        "mock-sess-33112-1",
+        "mock-sess-12772-1"
+      ],
+      "tester": [
+        "mock-sess-8880-1",
+        "mock-sess-33912-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "coordinator",
+    "roleInstanceId": "RI-coordinator",
+    "status": "inactive",
+    "statusReason": null,
+    "activeSessions": [],
+    "servingNodes": [],
+    "hostIcons": [],
+    "maxConcurrentSessions": 1,
+    "lastAction": null
+  }
+}

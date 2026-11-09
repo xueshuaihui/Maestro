@@ -1,0 +1,37 @@
+{
+  "ac": "AC-25",
+  "title": "声明未绑定角色为未参与",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:58.663Z",
+  "finishedAt": "2026-11-08T12:22:00.931Z",
+  "durationMs": 2268,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-25",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-25"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-25",
+      "instanceId": "INST-001",
+      "state": "running"
+    }
+  ],
+  "events": 41,
+  "eventsNote": null,
+  "checks": 8,
+  "notes": [],
+  "extraFiles": [
+    "AC-25.show.txt",
+    "AC-25.payload.json"
+  ]
+}

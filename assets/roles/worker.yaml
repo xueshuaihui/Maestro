@@ -1,0 +1,14 @@
+schema: role/v1
+id: worker
+name: 执行者
+group: coordinator
+summary: 按任务单执行一步操作，交出任务里声明的产物文件
+artifact_type: document
+side_effect: write
+skills: []
+tools:
+  - read
+  - write
+  - edit
+wake_allow: []
+max_concurrent_sessions: 1

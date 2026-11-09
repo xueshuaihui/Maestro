@@ -1,0 +1,223 @@
+{
+  "ac": "AC-05",
+  "title": "派生角色改技能引用后，三处行为同时变化",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：派生 lead-dev 建出（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：改前 role.skills = [test-run]（期望 [\"test-run\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"test-run\"]"
+    },
+    {
+      "text": "When：role edit 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then ① role show 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then ① 技能行变成 `  技能：test-run, code-review`（期望逐字 \"  技能：test-run, code-review\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  技能：test-run, code-review\""
+    },
+    {
+      "text": "Then ② role list 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then ② lead-dev 行以 · 技能 2 · 并发 1 结尾",
+      "ok": true,
+      "blocked": false,
+      "actual": "- lead-dev 开发（派生） · 编码工程 · code · write · 技能 2 · 并发 1"
+    },
+    {
+      "text": "Then ③ role validate 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then ③ 校验行 = 全部通过（期望匹配 /全部通过/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：全部通过（角色 17 · 技能 10）"
+    },
+    {
+      "text": "机检：改后 role.skills = [test-run, code-review]（期望 [\"test-run\",\"code-review\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"test-run\",\"code-review\"]"
+    },
+    {
+      "text": "机检：role validate 的 counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "（Given）orch role create lead-dev --from developer --skills test-run",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--from",
+        "developer",
+        "--skills",
+        "test-run"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 105,
+      "stdout": "已创建项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：预置 lead-dev（--from developer --skills test-run，同 AC-04）",
+      "argv": [
+        "(fixture) 预置 lead-dev（--from developer --skills test-run，同 AC-04）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show lead-dev --format json（改前）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "lead-dev",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"lead-dev\",\n    \"name\": \"开发（派生）\",\n    \"group\": \"coding\",\n    \"groupLabel\": \"编码工程\",\n    \"artifactType\": \"code\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"test-run\"\n    ],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"project\",\n    \"file\": \".orch/roles/lead-dev.yaml\"\n  },\n  \"instance\": null,\n  \"roleInstance\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role edit lead-dev --set skills=test-run,code-review",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "edit",
+        "lead-dev",
+        "--set",
+        "skills=test-run,code-review"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "已更新项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 开发（派生） · 编码工程 · code · write · 技能 2 · 并发 1\n校验：通过\n（已按规范格式重写，注释不保留）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show lead-dev",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "lead-dev"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 93,
+      "stdout": "- lead-dev 开发（派生） · 编码工程 · code · write · 技能 2 · 并发 1\n  职责：按任务修改代码，交出声明的产物文件\n  技能：test-run, code-review\n  工具：read, write, edit, bash\n  可唤醒：tester\n  来源：项目 .orch/roles/lead-dev.yaml\n  派生自：developer\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "角色 17 个（内置 16 · 项目 1）\n- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\n- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\n- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\n- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\n- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\n- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\n- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\n- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\n- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\n- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\n- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n- lead-dev 开发（派生） · 编码工程 · code · write · 技能 2 · 并发 1\n- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\n- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\n- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 103,
+      "stdout": "校验资产 27 个：全部通过（角色 17 · 技能 10）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show lead-dev --format json（改后）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "lead-dev",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"lead-dev\",\n    \"name\": \"开发（派生）\",\n    \"group\": \"coding\",\n    \"groupLabel\": \"编码工程\",\n    \"artifactType\": \"code\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"test-run\",\n      \"code-review\"\n    ],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"project\",\n    \"file\": \".orch/roles/lead-dev.yaml\"\n  },\n  \"instance\": null,\n  \"roleInstance\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 17,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_BACKFLOW_NO_LIMIT",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "回流目标缺少轮次上限：T-002"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "ac": "AC-29",
+  "title": "角色到会话的映射保留全部会话",
+  "face": "夹具",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:10.687Z",
+  "finishedAt": "2026-11-08T12:22:13.092Z",
+  "durationMs": 2405,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-29",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-29"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-29",
+      "instanceId": "INST-001",
+      "state": "running"
+    }
+  ],
+  "events": 41,
+  "eventsNote": null,
+  "checks": 7,
+  "notes": [],
+  "extraFiles": [
+    "AC-29.payload.json",
+    "AC-29.sessions-on-disk.json"
+  ]
+}

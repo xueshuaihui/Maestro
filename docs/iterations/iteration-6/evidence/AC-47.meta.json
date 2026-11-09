@@ -1,0 +1,32 @@
+{
+  "ac": "AC-47",
+  "title": "工作流不能被 `orch run` 实例化（范围边界）",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:23:24.807Z",
+  "finishedAt": "2026-11-09T12:23:24.926Z",
+  "durationMs": 119,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-47",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-47"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 7,
+  "notes": [],
+  "extraFiles": [
+    "AC-47.run.txt"
+  ]
+}

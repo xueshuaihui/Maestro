@@ -1,0 +1,3 @@
+校验资产 27 个：1 个不合法
+- roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）
+

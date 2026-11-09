@@ -1,0 +1,21 @@
+$ "(fixture) 全新项目根（只有内置三张图）"
+# label=夹具：全新项目根（只有内置三张图） cwd=d:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-38
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate
+# label=orch workflow validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-38 exit=0 111ms
+校验工作流 3 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate --format json
+# label=orch workflow validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-38 exit=0 109ms
+{
+  "counts": {
+    "assets": 3,
+    "builtin": 3,
+    "project": 0,
+    "invalid": 0
+  },
+  "errors": []
+}
+

@@ -1,0 +1,10 @@
+{
+  "counts": {
+    "assets": 10,
+    "skills": 10,
+    "builtin": 9,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}

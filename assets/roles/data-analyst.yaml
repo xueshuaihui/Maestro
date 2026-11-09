@@ -1,0 +1,17 @@
+schema: role/v1
+id: data-analyst
+name: 数据分析师
+group: research
+summary: 读取数据、计算指标，把结果落成可复核的数据集
+artifact_type: dataset
+side_effect: write
+skills:
+  - data-analysis
+  - fact-check
+tools:
+  - read
+  - write
+  - bash
+wake_allow:
+  - fact-checker
+max_concurrent_sessions: 2

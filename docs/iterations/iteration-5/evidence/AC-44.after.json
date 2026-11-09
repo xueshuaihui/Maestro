@@ -1,0 +1,152 @@
+{
+  "assets": {
+    "roles/arbiter.yaml": {
+      "sha256": "9bbd4e51c45d3ec8faccbffdf15198bb9ed521dea8647f9e9393b417b1bd0276",
+      "bytes": 265,
+      "mtimeIso": "2026-11-08T10:59:27.076Z"
+    },
+    "roles/code-reviewer.yaml": {
+      "sha256": "89ccc6e011c442a9db10891b9db7d7e655f58db6723e4d8371ac4cbd7becf84a",
+      "bytes": 266,
+      "mtimeIso": "2026-11-08T10:59:27.093Z"
+    },
+    "roles/compliance-reviewer.yaml": {
+      "sha256": "f8877b9d2106b6c6166c45d2bcdce90ddcf728ab20854675960fdb0c77dbe5dd",
+      "bytes": 273,
+      "mtimeIso": "2026-11-08T10:59:27.095Z"
+    },
+    "roles/coordinator.yaml": {
+      "sha256": "e4dec720bcf607030fe425ec950b4dd17e5fa5656761bd9b0f2eab6773eba6ad",
+      "bytes": 298,
+      "mtimeIso": "2026-11-08T10:59:27.077Z"
+    },
+    "roles/data-analyst.yaml": {
+      "sha256": "1ea8010e2dd465c0cc1fc94b514997310d0f002f2d1b3f687065dd35a26843b9",
+      "bytes": 321,
+      "mtimeIso": "2026-11-08T10:59:27.083Z"
+    },
+    "roles/developer.yaml": {
+      "sha256": "4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905",
+      "bytes": 288,
+      "mtimeIso": "2026-11-08T10:59:27.094Z"
+    },
+    "roles/editor.yaml": {
+      "sha256": "51555a1ed49351f8944c3d2ff9efe278b2c49420436751c0bd92db3dc0eb6525",
+      "bytes": 286,
+      "mtimeIso": "2026-11-08T10:59:27.090Z"
+    },
+    "roles/fact-checker.yaml": {
+      "sha256": "f95dd9a7bfe9c8ece03cf98743437b0223e8bcb1e714478115577f46e1e2c86e",
+      "bytes": 265,
+      "mtimeIso": "2026-11-08T10:59:27.087Z"
+    },
+    "roles/planner.yaml": {
+      "sha256": "fd8b418d438e331ee5614c4f4de16a1131de6d1e03bd59f8de6a508c873618b4",
+      "bytes": 295,
+      "mtimeIso": "2026-11-08T10:59:27.078Z"
+    },
+    "roles/requirement-clarifier.yaml": {
+      "sha256": "b1c1c0f3fe91f0a07735b5335b1effda5b81b0fbeffca9ee9da30b3c96f793eb",
+      "bytes": 311,
+      "mtimeIso": "2026-11-08T10:59:27.096Z"
+    },
+    "roles/researcher.yaml": {
+      "sha256": "daea028864fe0245d44c1cea574b097767c6fbb8b754de321a6ddef5a891baba",
+      "bytes": 266,
+      "mtimeIso": "2026-11-08T10:59:27.088Z"
+    },
+    "roles/reviewer.yaml": {
+      "sha256": "f06f94ab0a5a569d8c27a114e3059e5a8652b8675d7a5293aaa4aac68ba1fd88",
+      "bytes": 259,
+      "mtimeIso": "2026-11-08T10:59:27.091Z"
+    },
+    "roles/summarizer.yaml": {
+      "sha256": "671eac167cc4fb698d5b05b10b19fccc262ed8d87811c5a5f4a037cf853695aa",
+      "bytes": 271,
+      "mtimeIso": "2026-11-08T10:59:27.081Z"
+    },
+    "roles/tester.yaml": {
+      "sha256": "b450e1c6e9e2663bf36323a3cccb0d53016c988a6e3e853aad707d66831883f1",
+      "bytes": 260,
+      "mtimeIso": "2026-11-08T10:59:27.095Z"
+    },
+    "roles/worker.yaml": {
+      "sha256": "9f2b42983217699482fd6e848b14c672b55a1b20d28cbbf9b3f4e2b341e01eba",
+      "bytes": 272,
+      "mtimeIso": "2026-11-08T10:59:27.082Z"
+    },
+    "roles/writer.yaml": {
+      "sha256": "e260a9f10b7a49362100671e85111ee78de7094203303622baa13a51d90648ee",
+      "bytes": 269,
+      "mtimeIso": "2026-11-08T10:59:27.092Z"
+    },
+    "skills/code-change/SKILL.md": {
+      "sha256": "92db6c207c59de341e4ed09a8cb8d90c7f62018968df0f356a0bb4066fe92194",
+      "bytes": 379,
+      "mtimeIso": "2026-11-08T10:59:34.055Z"
+    },
+    "skills/code-review/SKILL.md": {
+      "sha256": "783639b876f0d842b6c3ce4660129669a20967b1ee1217d32d8c9bcf2af02b72",
+      "bytes": 394,
+      "mtimeIso": "2026-11-08T10:59:34.065Z"
+    },
+    "skills/compliance-check/SKILL.md": {
+      "sha256": "d53f1705c7ee87bccd154d75802a94013d583d562ee20a5ad13147cd694cf824",
+      "bytes": 362,
+      "mtimeIso": "2026-11-08T10:59:34.069Z"
+    },
+    "skills/coordination/SKILL.md": {
+      "sha256": "213d472ef6ecbd3138d3889daa3a5da7eb3d5d137fd1154175701a78ba74bb82",
+      "bytes": 369,
+      "mtimeIso": "2026-11-08T10:59:34.067Z"
+    },
+    "skills/data-analysis/SKILL.md": {
+      "sha256": "369460cbb3d582b66d779fd5050ad6838d7fefc783022d087304d9487a110931",
+      "bytes": 387,
+      "mtimeIso": "2026-11-08T10:59:34.050Z"
+    },
+    "skills/doc-draft/SKILL.md": {
+      "sha256": "029bb8966988948fc47e7c7af760a0649a0bf746b4116a52fd21aa3a1e7e465d",
+      "bytes": 366,
+      "mtimeIso": "2026-11-08T10:59:34.051Z"
+    },
+    "skills/doc-review/SKILL.md": {
+      "sha256": "4f4845b28fa7e3b4b3702dee86ce3c4443aca972e04e0a83050dcf7133507b64",
+      "bytes": 363,
+      "mtimeIso": "2026-11-08T10:59:34.054Z"
+    },
+    "skills/fact-check/SKILL.md": {
+      "sha256": "656fa03d6f79cfdd3e63e113e4ba690a7c9fc42c67b1a61f68f057d118a0ae22",
+      "bytes": 361,
+      "mtimeIso": "2026-11-08T10:59:34.049Z"
+    },
+    "skills/research-brief/SKILL.md": {
+      "sha256": "547cda1ae1d54818ba715761c3e179868c2ac08e5d61efd2e7d4d5aec0d3eaa6",
+      "bytes": 365,
+      "mtimeIso": "2026-11-08T10:59:34.047Z"
+    },
+    "skills/test-run/SKILL.md": {
+      "sha256": "49de0dd67d65958959e278b224ea67efc0d44375c48fa1a0d049a2200d010487",
+      "bytes": 358,
+      "mtimeIso": "2026-11-08T10:59:34.064Z"
+    }
+  },
+  "orch": {
+    "roles/researcher.yaml": {
+      "sha256": "1d1f2354ca43ce952bf65b5668efd8394253e337f2f09ad4b0342f700e748490",
+      "bytes": 230,
+      "mtimeIso": "2026-11-08T12:22:32.402Z"
+    },
+    "skills/project-extra/SKILL.md": {
+      "sha256": "f334d0f5584a226f314f8ea31720144a6347fa5f92687e31dd02cf071dd66fe7",
+      "bytes": 167,
+      "mtimeIso": "2026-11-08T12:22:32.405Z"
+    }
+  },
+  "dirs": [
+    ".orch",
+    ".orch/roles",
+    ".orch/skills",
+    ".orch/skills/project-extra"
+  ]
+}

@@ -1,0 +1,8 @@
+校验工作流 9 个：6 个不合法
+- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）
+- workflows/esc-no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）
+- workflows/sub-a.yaml：子工作流成环：sub-a → sub-b（WORKFLOW_SUB_CYCLE）
+- workflows/sub-b.yaml：子工作流成环：sub-b → sub-a（WORKFLOW_SUB_CYCLE）
+- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）
+- workflows/sub-no-wf.yaml：节点 T-001 缺少必填字段：workflow（WORKFLOW_NODE_FIELD_MISSING）
+

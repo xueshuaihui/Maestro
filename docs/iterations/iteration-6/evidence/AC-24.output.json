@@ -1,0 +1,136 @@
+{
+  "ac": "AC-24",
+  "title": "四类节点齐备的工作流校验通过",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 恰好一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 该行逐字（期望逐字 \"校验工作流 4 个：全部通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验工作流 4 个：全部通过\""
+    },
+    {
+      "text": "机检：counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：counts.assets === 4（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "机检：counts.builtin === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：counts.project === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：nodeType 去重集合（期望 [\"escalate\",\"human\",\"role\",\"subworkflow\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"escalate\",\"human\",\"role\",\"subworkflow\"]"
+    },
+    {
+      "text": "机检：T-006 多一个 workflow 键且值 code-loop（期望 \"code-loop\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"code-loop\""
+    },
+    {
+      "text": "机检：非 subworkflow 节点不带 workflow 键（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：T-006 键数 = 11 + workflow（期望 12）",
+      "ok": true,
+      "blocked": false,
+      "actual": "12"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置附录 A-1/A-13 的 doc-fanout（writeDocFanout，含 T-001 节点级 wake_allow）",
+      "argv": [
+        "(fixture) 预置附录 A-1/A-13 的 doc-fanout（writeDocFanout，含 T-001 节点级 wake_allow）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "schema: workflow/v1\nid: doc-fanout\nname: 文档并行版\nsummary: 研究后两人并行撰写，汇总后人工确认\nentry: T-001\nterminal: T-006\nnodes:\n  - id: T-001\n    node_type: role\n    role: researcher\n    title: 研究\n    timeout: 600\n    retry: 2\n    wake_allow: [writer, editor]\n    outputs: [research.notes]\n  - id: T-002\n    node_type: role\n    role: writer\n    title: 撰写A\n    parallel_scope: draft\n    scope: draft-a\n    inputs: [brief]\n  - id: T-003\n    node_type: role\n    role: editor\n    title: 撰写B\n    parallel_scope: draft\n    scope: draft-b\n    inputs: [brief]\n  - id: T-004\n    node_type: human\n    title: 人工确认\n  - id: T-005\n    node_type: escalate\n    title: 升级\n  - id: T-006\n    node_type: subworkflow\n    workflow: code-loop\n    title: 代码闭环\nedges:\n  - from: T-001\n    to: T-002\n    map:\n      - from: T-001.research.notes\n        to: brief\n  - from: T-001\n    to: T-003\n    map:\n      - from: T-001.research.notes\n        to: brief\n  - from: T-002\n    to: T-004\n  - from: T-003\n    to: T-004\n  - from: T-004\n    to: T-006\n    when: human_approved\n  - from: T-004\n    to: T-005\n    when: human_rejected\n  - from: T-006\n    to: T-005\n    when: failed\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-24",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 116,
+      "stdout": "校验工作流 4 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-24",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 111,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 4,\n    \"builtin\": 3,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow show doc-fanout --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "show",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-24",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 93,
+      "stdout": "{\n  \"workflow\": {\n    \"id\": \"doc-fanout\",\n    \"name\": \"文档并行版\",\n    \"nodeCount\": 6,\n    \"edgeCount\": 7,\n    \"source\": \"project\",\n    \"file\": \".orch/workflows/doc-fanout.yaml\",\n    \"entry\": \"T-001\",\n    \"terminal\": \"T-006\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"T-001\",\n      \"nodeType\": \"role\",\n      \"role\": \"researcher\",\n      \"title\": \"研究\",\n      \"timeout\": 600,\n      \"retry\": 2,\n      \"maxRounds\": null,\n      \"parallelScope\": null,\n      \"scope\": \"T-001\",\n      \"inputs\": [],\n      \"outputs\": [\n        \"research.notes\"\n      ]\n    },\n    {\n      \"id\": \"T-002\",\n      \"nodeType\": \"role\",\n      \"role\": \"writer\",\n      \"title\": \"撰写A\",\n      \"timeout\": null,\n      \"retry\": 0,\n      \"maxRounds\": null,\n      \"parallelScope\": \"draft\",\n      \"scope\": \"draft-a\",\n      \"inputs\": [\n        \"brief\"\n      ],\n      \"outputs\": []\n    },\n    {\n      \"id\": \"T-003\",\n      \"nodeType\": \"role\",\n      \"role\": \"editor\",\n      \"title\": \"撰写B\",\n      \"timeout\": null,\n      \"retry\": 0,\n      \"maxRounds\": null,\n      \"parallelScope\": \"draft\",\n      \"scope\": \"draft-b\",\n      \"inputs\": [\n        \"brief\"\n      ],\n      \"outputs\": []\n    },\n    {\n      \"id\": \"T-004\",\n      \"nodeType\": \"human\",\n      \"role\": null,\n      \"title\": \"人工确认\",\n      \"timeout\": null,\n      \"retry\": 0,\n      \"maxRounds\": null,\n      \"parallelScope\": null,\n      \"scope\": \"T-004\",\n      \"inputs\": [],\n      \"outputs\": []\n    },\n    {\n      \"id\": \"T-005\",\n      \"nodeType\": \"escalate\",\n      \"role\": null,\n      \"title\": \"升级\",\n      \"timeout\": null,\n      \"retry\": 0,\n      \"maxRounds\": null,\n      \"parallelScope\": null,\n      \"scope\": \"T-005\",\n      \"inputs\": [],\n      \"outputs\": []\n    },\n    {\n      \"id\": \"T-006\",\n      \"nodeType\": \"subworkflow\",\n      \"role\": null,\n      \"title\": \"代码闭环\",\n      \"timeout\": null,\n      \"retry\": 0,\n      \"maxRounds\": null,\n      \"parallelScope\": null,\n      \"scope\": \"T-006\",\n      \"inputs\": [],\n      \"outputs\": [],\n      \"workflow\": \"code-loop\"\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\",\n      \"when\": \"always\",\n      \"map\": [\n        {\n          \"from\": \"T-001.research.notes\",\n          \"to\": \"brief\"\n        }\n      ]\n    },\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-003\",\n      \"kind\": \"forward\",\n      \"when\": \"always\",\n      \"map\": [\n        {\n          \"from\": \"T-001.research.notes\",\n          \"to\": \"brief\"\n        }\n      ]\n    },\n    {\n      \"from\": \"T-002\",\n      \"to\": \"T-004\",\n      \"kind\": \"forward\",\n      \"when\": \"always\",\n      \"map\": []\n    },\n    {\n      \"from\": \"T-003\",\n      \"to\": \"T-004\",\n      \"kind\": \"forward\",\n      \"when\": \"always\",\n      \"map\": []\n    },\n    {\n      \"from\": \"T-004\",\n      \"to\": \"T-006\",\n      \"kind\": \"forward\",\n      \"when\": \"human_approved\",\n      \"map\": []\n    },\n    {\n      \"from\": \"T-004\",\n      \"to\": \"T-005\",\n      \"kind\": \"forward\",\n      \"when\": \"human_rejected\",\n      \"map\": []\n    },\n    {\n      \"from\": \"T-006\",\n      \"to\": \"T-005\",\n      \"kind\": \"forward\",\n      \"when\": \"failed\",\n      \"map\": []\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

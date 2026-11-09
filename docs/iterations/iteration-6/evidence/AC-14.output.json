@@ -1,0 +1,94 @@
+{
+  "ac": "AC-14",
+  "title": "权限闭环：白名单悬空与自唤醒",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 恰好两条错误（- 开头）（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 有 ROLE_WAKE_UNKNOWN 一行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/w1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）"
+    },
+    {
+      "text": "Then 有 ROLE_WAKE_SELF 一行",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/w2.yaml：唤醒白名单不能包含自己：w2（ROLE_WAKE_SELF）"
+    },
+    {
+      "text": "Then ROLE_WAKE_UNKNOWN 明细含 ghost（期望含 \"ghost\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/w1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）"
+    },
+    {
+      "text": "Then ROLE_WAKE_SELF 明细含 w2（期望含 \"w2\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/w2.yaml：唤醒白名单不能包含自己：w2（ROLE_WAKE_SELF）"
+    },
+    {
+      "text": "机检：codes 排序后等于 [ROLE_WAKE_SELF, ROLE_WAKE_UNKNOWN]（期望 [\"ROLE_WAKE_SELF\",\"ROLE_WAKE_UNKNOWN\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"ROLE_WAKE_SELF\",\"ROLE_WAKE_UNKNOWN\"]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 w1（wake_allow: [ghost]）与 w2（wake_allow: [w2]），其余字段合法",
+      "argv": [
+        "(fixture) 预置 w1（wake_allow: [ghost]）与 w2（wake_allow: [w2]），其余字段合法"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-14",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 116,
+      "stdout": "校验资产 28 个：2 个不合法\n- roles/w1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）\n- roles/w2.yaml：唤醒白名单不能包含自己：w2（ROLE_WAKE_SELF）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-14",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 28,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 2,\n    \"invalid\": 2\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_WAKE_UNKNOWN\",\n      \"file\": \"roles/w1.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"wake_allow\",\n      \"line\": null,\n      \"detail\": \"唤醒白名单里的角色不存在：ghost\"\n    },\n    {\n      \"code\": \"ROLE_WAKE_SELF\",\n      \"file\": \"roles/w2.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"wake_allow\",\n      \"line\": null,\n      \"detail\": \"唤醒白名单不能包含自己：w2\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+$ "(fixture) 写 .orch/roles/researcher.yaml"
+# label=夹具：写 .orch/roles/researcher.yaml cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-44\.orch\roles\researcher.yaml
+
+$ "(fixture) 写 .orch/skills/project-extra/SKILL.md"
+# label=夹具：写 .orch/skills/project-extra/SKILL.md cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-44\.orch\skills\project-extra\SKILL.md
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-44 exit=0 104ms
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 11,
+    "builtin": 25,
+    "project": 2,
+    "invalid": 0
+  },
+  "errors": []
+}
+

@@ -1,0 +1,173 @@
+{
+  "ac": "AC-03",
+  "title": "目标已存在时拒绝，`--force` 才覆盖",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：预置 lead-dev.yaml 成功（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Given：文件内容为 summary 为空（summary : ''）（期望含 \"summary : ''\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: role/v1\nid: lead-dev\nname: 首席开发\ngroup: coding\nsummary : ''\nartifact_type: code\nside_effect: write\nskills: [code-change, test-run]\nmax_concurrent_sessions: 1\n"
+    },
+    {
+      "text": "Then 第一次退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第一次输出恰好一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第一次输出逐字（期望逐字 \"已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）\""
+    },
+    {
+      "text": "机检：第一次后文件 sha256 不变（期望 \"966936a972232c8df8a601300bdf49c67adc34ee12b02e67a2a21d624dd27443\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"966936a972232c8df8a601300bdf49c67adc34ee12b02e67a2a21d624dd27443\""
+    },
+    {
+      "text": "机检：第一次后 grep -c 另一个名字 = 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第二次退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第二次输出恰好三行（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then 第二次第 1 行逐字（期望逐字 \"已创建项目角色：.orch/roles/lead-dev.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已创建项目角色：.orch/roles/lead-dev.yaml\""
+    },
+    {
+      "text": "Then 第二次契约行的名字变成 另一个名字（期望匹配 /^- lead-dev 另一个名字 · /）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- lead-dev 另一个名字 · 编码工程 · code · write · 技能 0 · 并发 1"
+    },
+    {
+      "text": "Then 第二次第 3 行校验通过（期望逐字 \"校验：通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验：通过\""
+    },
+    {
+      "text": "机检：第二次后 grep -c 另一个名字 = 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "（Given）orch role create lead-dev --name 首席开发 …（同 AC-01）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--name",
+        "首席开发",
+        "--group",
+        "coding",
+        "--artifact-type",
+        "code",
+        "--side-effect",
+        "write",
+        "--skills",
+        "code-change,test-run"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-03",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "已创建项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 首席开发 · 编码工程 · code · write · 技能 2 · 并发 1\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：预置 .orch/roles/lead-dev.yaml（AC-01 同款命令）",
+      "argv": [
+        "(fixture) 预置 .orch/roles/lead-dev.yaml（AC-01 同款命令）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "sha256=966936a972232c8df8a601300bdf49c67adc34ee12b02e67a2a21d624dd27443",
+      "stderr": ""
+    },
+    {
+      "label": "orch role create lead-dev --name 另一个名字 --group coding --artifact-type code --side-effect write",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--name",
+        "另一个名字",
+        "--group",
+        "coding",
+        "--artifact-type",
+        "code",
+        "--side-effect",
+        "write"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-03",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 95,
+      "stdout": "已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role create lead-dev --name 另一个名字 --group coding --artifact-type code --side-effect write --force",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--name",
+        "另一个名字",
+        "--group",
+        "coding",
+        "--artifact-type",
+        "code",
+        "--side-effect",
+        "write",
+        "--force"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-03",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "已创建项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 另一个名字 · 编码工程 · code · write · 技能 0 · 并发 1\n校验：通过\n",
+      "stderr": ""
+    }
+  ]
+}

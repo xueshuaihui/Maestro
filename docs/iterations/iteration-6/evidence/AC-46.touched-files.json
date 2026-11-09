@@ -1,0 +1,9 @@
+[
+  ".orch/roles/junior-dev.yaml",
+  ".orch/roles/lead-dev.yaml",
+  ".orch/skills/code-change/SKILL.md",
+  ".orch/skills/note-taker/SKILL.md",
+  ".orch/workflows/fork.yaml",
+  "exports/code-change.md",
+  "exports/lead-dev.yaml"
+]

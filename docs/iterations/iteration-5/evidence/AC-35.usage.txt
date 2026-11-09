@@ -1,0 +1,10 @@
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch role list [--group <组>] [--instance <实例号>] [--format text|json]
+  orch role show <角色> [--instance <实例号>] [--format text|json]
+  orch role validate [<角色>] [--format json]
+  （role show 需要角色 id）
+

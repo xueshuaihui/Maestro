@@ -1,0 +1,60 @@
+{
+  "counts": {
+    "total": 3,
+    "builtin": 3,
+    "project": 0,
+    "invalid": 0
+  },
+  "groups": [
+    {
+      "group": "coding",
+      "label": "编码工程",
+      "count": 3
+    }
+  ],
+  "roles": [
+    {
+      "id": "code-reviewer",
+      "name": "代码审查",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "read",
+      "skills": [
+        "code-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/code-reviewer.yaml"
+    },
+    {
+      "id": "developer",
+      "name": "开发",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "write",
+      "skills": [
+        "code-change",
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/developer.yaml"
+    },
+    {
+      "id": "tester",
+      "name": "测试",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "exec",
+      "skills": [
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/tester.yaml"
+    }
+  ]
+}

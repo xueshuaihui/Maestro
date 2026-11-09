@@ -1,0 +1,13 @@
+schema: role/v1
+id: compliance-reviewer
+name: 合规审查者
+group: ops
+summary: 对照合规清单检查交付物，指出需要整改的条款
+artifact_type: report
+side_effect: read
+skills:
+  - compliance-check
+tools:
+  - read
+wake_allow: []
+max_concurrent_sessions: 1

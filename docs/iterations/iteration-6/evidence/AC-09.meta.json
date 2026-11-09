@@ -1,0 +1,34 @@
+{
+  "ac": "AC-09",
+  "title": "就地编辑与内置角色只读",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:22:35.809Z",
+  "finishedAt": "2026-11-09T12:22:36.138Z",
+  "durationMs": 329,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-09",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-09"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 13,
+  "notes": [],
+  "extraFiles": [
+    "AC-09.edit.txt",
+    "AC-09.deny.txt",
+    "AC-09.lead-dev.yaml.txt"
+  ]
+}

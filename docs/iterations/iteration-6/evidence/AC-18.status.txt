@@ -1,0 +1,29 @@
+$ "(fixture) 全新项目根（无 .orch）"
+# label=夹具：全新项目根（无 .orch） cwd=d:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-18
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill create quote --name 引用规范 --summary 给结论配上可核对的出处 --applies-to writing
+# label=orch skill create quote --name 引用规范 --summary 给结论配上可核对的出处 --applies-to writing cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-18 exit=0 103ms
+已创建项目技能：.orch/skills/quote/SKILL.md
+- quote 引用规范 · 内容创作 · 命令 0
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill validate
+# label=orch skill validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-18 exit=0 98ms
+校验技能 11 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill validate --format json
+# label=orch skill validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-18 exit=0 104ms
+{
+  "counts": {
+    "assets": 11,
+    "skills": 11,
+    "builtin": 10,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+

@@ -1,0 +1,11 @@
+---
+schema: skill/v1
+id: quote
+name: 引用规范
+summary: 给结论配上可核对的出处
+applies_to: [writing]
+---
+### 工作方法
+
+1. 按任务要求完成本技能覆盖的工作，并在结果里写清做了什么。
+

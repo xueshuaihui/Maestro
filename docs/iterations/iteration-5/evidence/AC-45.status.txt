@@ -1,0 +1,226 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json（内置版基线） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-45 exit=0 87ms
+{
+  "counts": {
+    "assets": 26,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 0
+  },
+  "errors": []
+}
+
+
+$ "(fixture) 写 .orch/skills/code-change/SKILL.md（name: 代码修改（项目版））"
+# label=夹具：写 .orch/skills/code-change/SKILL.md（name: 代码修改（项目版）） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-45\.orch\skills\code-change\SKILL.md
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json（覆盖后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-45 exit=0 90ms
+{
+  "counts": {
+    "assets": 26,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 25,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show developer --format json
+# label=orch role show developer --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-45 exit=0 100ms
+{
+  "role": {
+    "id": "developer",
+    "name": "开发",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "write",
+    "skills": [
+      "code-change",
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/developer.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe --test test/wp11/registry.test.js
+# label=node --test test/wp11/registry.test.js cwd=D:\WWW\Maestro exit=0 382ms
+TAP version 13
+# Subtest: loads a clean tree: six built-in assets, five groups, no errors
+ok 1 - loads a clean tree: six built-in assets, five groups, no errors
+  ---
+  duration_ms: 15.8883
+  type: 'test'
+  ...
+# Subtest: RoleDef carries exactly the thirteen contract keys
+ok 2 - RoleDef carries exactly the thirteen contract keys
+  ---
+  duration_ms: 2.6233
+  type: 'test'
+  ...
+# Subtest: SkillDef carries the body and the optional arrays as defaults
+ok 3 - SkillDef carries the body and the optional arrays as defaults
+  ---
+  duration_ms: 2.362
+  type: 'test'
+  ...
+# Subtest: roles sort by group order then id, not by directory listing order
+ok 4 - roles sort by group order then id, not by directory listing order
+  ---
+  duration_ms: 7.5944
+  type: 'test'
+  ...
+# Subtest: a missing project directory is not an error
+ok 5 - a missing project directory is not an error
+  ---
+  duration_ms: 1.8385
+  type: 'test'
+  ...
+# Subtest: AC-04: missing max_concurrent_sessions yields exactly one ROLE_SCHEMA_MISSING
+ok 6 - AC-04: missing max_concurrent_sessions yields exactly one ROLE_SCHEMA_MISSING
+  ---
+  duration_ms: 3.9177
+  type: 'test'
+  ...
+# Subtest: AC-05: file name writer.yaml declaring wordsmith yields ROLE_ID_MISMATCH
+ok 7 - AC-05: file name writer.yaml declaring wordsmith yields ROLE_ID_MISMATCH
+  ---
+  duration_ms: 5.7643
+  type: 'test'
+  ...
+# Subtest: AC-06: group outside the five groups yields ROLE_GROUP_INVALID
+ok 8 - AC-06: group outside the five groups yields ROLE_GROUP_INVALID
+  ---
+  duration_ms: 3.954
+  type: 'test'
+  ...
+# Subtest: AC-07: artifact_type / side_effect / max_concurrent_sessions each report their own code
+ok 9 - AC-07: artifact_type / side_effect / max_concurrent_sessions each report their own code
+  ---
+  duration_ms: 7.7011
+  type: 'test'
+  ...
+# Subtest: AC-08: an unknown skill reference yields ROLE_SKILL_NOT_FOUND naming the skill
+ok 10 - AC-08: an unknown skill reference yields ROLE_SKILL_NOT_FOUND naming the skill
+  ---
+  duration_ms: 4.1113
+  type: 'test'
+  ...
+# Subtest: AC-09: broken indentation reports line 4 and the machine detail key
+ok 11 - AC-09: broken indentation reports line 4 and the machine detail key
+  ---
+  duration_ms: 3.9357
+  type: 'test'
+  ...
+# Subtest: AC-13: a skill directory without SKILL.md yields SKILL_FILE_MISSING
+ok 12 - AC-13: a skill directory without SKILL.md yields SKILL_FILE_MISSING
+  ---
+  duration_ms: 3.2538
+  type: 'test'
+  ...
+# Subtest: AC-14: one SKILL.md with two defects reports two errors, metadata first
+ok 13 - AC-14: one SKILL.md with two defects reports two errors, metadata first
+  ---
+  duration_ms: 4.1116
+  type: 'test'
+  ...
+# Subtest: AC-15: metadata only, empty body yields SKILL_BODY_EMPTY
+ok 14 - AC-15: metadata only, empty body yields SKILL_BODY_EMPTY
+  ---
+  duration_ms: 5.777
+  type: 'test'
+  ...
+# Subtest: AC-16: applies_to outside the five groups yields SKILL_GROUP_INVALID
+ok 15 - AC-16: applies_to outside the five groups yields SKILL_GROUP_INVALID
+  ---
+  duration_ms: 4.5284
+  type: 'test'
+  ...
+# Subtest: AC-45: a project skill replaces the built-in one without changing totals
+ok 16 - AC-45: a project skill replaces the built-in one without changing totals
+  ---
+  duration_ms: 3.9483
+  type: 'test'
+  ...
+# Subtest: a project role replaces the built-in one as a whole file
+ok 17 - a project role replaces the built-in one as a whole file
+  ---
+  duration_ms: 4.1699
+  type: 'test'
+  ...
+# Subtest: onlyRole loads one role, loads all skills, and drops skill errors
+ok 18 - onlyRole loads one role, loads all skills, and drops skill errors
+  ---
+  duration_ms: 4.4422
+  type: 'test'
+  ...
+# Subtest: onlyRole on a broken role keeps just that file in errors
+ok 19 - onlyRole on a broken role keeps just that file in errors
+  ---
+  duration_ms: 5.0155
+  type: 'test'
+  ...
+# Subtest: onlyRole prefers the project copy over the built-in copy
+ok 20 - onlyRole prefers the project copy over the built-in copy
+  ---
+  duration_ms: 3.4435
+  type: 'test'
+  ...
+# Subtest: onlyRole on an unknown id returns an empty table without errors
+ok 21 - onlyRole on an unknown id returns an empty table without errors
+  ---
+  duration_ms: 1.6768
+  type: 'test'
+  ...
+# Subtest: a missing built-in root yields one REGISTRY_ASSETS_MISSING and stops
+ok 22 - a missing built-in root yields one REGISTRY_ASSETS_MISSING and stops
+  ---
+  duration_ms: 4.2681
+  type: 'test'
+  ...
+# Subtest: AC-44: loading leaves bytes, mtimes and the directory tree untouched
+ok 23 - AC-44: loading leaves bytes, mtimes and the directory tree untouched
+  ---
+  duration_ms: 12.4621
+  type: 'test'
+  ...
+# Subtest: AC-44: the registry never imports a network module
+ok 24 - AC-44: the registry never imports a network module
+  ---
+  duration_ms: 0.7635
+  type: 'test'
+  ...
+# Subtest: AC-43: the registry sources contain no CJK characters
+ok 25 - AC-43: the registry sources contain no CJK characters
+  ---
+  duration_ms: 0.5359
+  type: 'test'
+  ...
+# Subtest: asset path helpers point at the documented directories
+ok 26 - asset path helpers point at the documented directories
+  ---
+  duration_ms: 0.2467
+  type: 'test'
+  ...
+1..26
+# tests 26
+# suites 0
+# pass 26
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 305.789
+

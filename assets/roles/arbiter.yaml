@@ -1,0 +1,12 @@
+schema: role/v1
+id: arbiter
+name: 裁决者
+group: coordinator
+summary: 在证据冲突或轮次耗尽时给出最终裁决，不修改任何产物
+artifact_type: report
+side_effect: none
+skills:
+  - coordination
+tools: []
+wake_allow: []
+max_concurrent_sessions: 1

@@ -1,0 +1,19 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\test\fixtures\purity-check.mjs --dirs src/core,src/daemon --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check
+# label=node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid "$COMMON" cwd=d:\WWW\Maestro exit=0 93ms
+OK: 扫描 16 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\test\fixtures\purity-check.mjs --dirs src/registry --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check
+# label=node test/fixtures/purity-check.mjs --dirs src/registry --forbid "$NOCOORD" cwd=d:\WWW\Maestro exit=0 85ms
+OK: 扫描 11 个文件，src/registry 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\test\fixtures\purity-check.mjs --files src/cli/roles.js,src/cli/skills.js,src/cli/workflows.js --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check
+# label=node test/fixtures/purity-check.mjs --files src/cli/roles.js,src/cli/skills.js,src/cli/workflows.js --forbid "$COMMON" cwd=d:\WWW\Maestro exit=0 93ms
+OK: 扫描 3 个文件，src/cli/roles.js, src/cli/skills.js, src/cli/workflows.js 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe -e "const fs=require('fs'),p=require('path');const roots=['src/registry','src/cli/roles.js','src/cli/skills.js','src/cli/workflows.js'];const bad=[];const walk=d=>{const st=fs.statSync(d);if(st.isDirectory()){for(const e of fs.readdirSync(d))walk(p.join(d,e));}else if(/[\\u4e00-\\u9fff]/.test(fs.readFileSync(d,'utf8')))bad.push(d);};roots.forEach(walk);if(bad.length){console.log(bad.join('\\n'));process.exit(1);}console.log('OK: no CJK');"
+# label=node -e "<D-9 第 4 条逐字脚本>" cwd=d:\WWW\Maestro exit=0 84ms
+OK: no CJK
+

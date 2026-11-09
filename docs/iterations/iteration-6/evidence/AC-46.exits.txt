@@ -1,0 +1,1 @@
+role create: exit=0；role create --from: exit=0；role export --out: exit=0；role import: exit=0；role edit: exit=0；skill create: exit=0；skill export --out: exit=0；skill import: exit=0；workflow create: exit=0

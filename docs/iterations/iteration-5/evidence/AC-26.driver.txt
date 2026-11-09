@@ -1,0 +1,20 @@
+{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-26","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-26\\demo-code-pass","scenario":"rounds-exceeded","resolvedScenario":"rounds-exceeded","stopAfter":null,"keep":false,"released":false,"target":"exit","exitCode":4,"instanceId":"INST-001","state":"suspended","nodes":[{"nodeId":"T-001","round":2,"state":"done"},{"nodeId":"T-002","round":2,"state":"escalated"}],"handoffs":3,"escalations":[{"escalationId":"ESC-001","reasonCode":"rounds_exceeded"}],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":1550,"checks":[{"name":"state=suspended","ok":true,"detail":"suspended"},{"name":"nodes[1]=escalated round=2","ok":true},{"name":"escalation reason=rounds_exceeded","ok":true,"detail":"rounds_exceeded"}]}
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-31732-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+

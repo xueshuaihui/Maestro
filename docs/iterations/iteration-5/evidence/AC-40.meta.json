@@ -1,0 +1,34 @@
+{
+  "ac": "AC-40",
+  "title": "架构纯净：核心与守护进程零角色字面量",
+  "face": "架构检查",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:29.186Z",
+  "finishedAt": "2026-11-08T12:22:29.896Z",
+  "durationMs": 710,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-40",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-40"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 9,
+  "notes": [],
+  "extraFiles": [
+    "AC-40.engine.txt",
+    "AC-40.registry.txt",
+    "AC-40.roles-js.txt",
+    "AC-40.coordinator-fixed-point.json",
+    "AC-40.coordinator-hit.json"
+  ]
+}

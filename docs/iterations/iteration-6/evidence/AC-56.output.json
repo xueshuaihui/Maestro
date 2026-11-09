@@ -1,0 +1,239 @@
+{
+  "ac": "AC-56",
+  "title": "role edit 的 --set / --unset 用法错误不改动文件",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given role create lead-dev 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Given lead-dev.yaml 已落盘",
+      "ok": true,
+      "blocked": false,
+      "actual": "read ok"
+    },
+    {
+      "text": "Then --set nope=1 退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then --set nope=1 整块行数 26（25 行用法块 + 原因行）（期望 26）",
+      "ok": true,
+      "blocked": false,
+      "actual": "26"
+    },
+    {
+      "text": "Then --set nope=1 前 25 行为 A-12 用法块逐字（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]"
+    },
+    {
+      "text": "Then --set nope=1 原因行逐字（期望逐字 \"  （未知字段：nope）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  （未知字段：nope）\""
+    },
+    {
+      "text": "Then --set nope=1 文件内容不变（期望 \"schema: role/v1\\nid: lead-dev\\nname: 首席开发\\ngroup: coding\\nsummary : ''\\nartifact_type: code\\nside_effect: write\\nskills: [code-change, test-run]\\nmax_concurrent_sessions: 1\\n\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"schema: role/v1\\nid: lead-dev\\nname: 首席开发\\ngroup: coding\\nsummary : ''\\nartifact_type: code\\nside_effect: write\\nskills: [code-change, test-run]\\nmax_concurrent_sessions: 1\\n\""
+    },
+    {
+      "text": "Then --unset name 退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then --unset name 原因行逐字（期望逐字 \"  （role edit 不能删除必填字段：name）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  （role edit 不能删除必填字段：name）\""
+    },
+    {
+      "text": "Then --unset name 文件内容不变（期望 \"schema: role/v1\\nid: lead-dev\\nname: 首席开发\\ngroup: coding\\nsummary : ''\\nartifact_type: code\\nside_effect: write\\nskills: [code-change, test-run]\\nmax_concurrent_sessions: 1\\n\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"schema: role/v1\\nid: lead-dev\\nname: 首席开发\\ngroup: coding\\nsummary : ''\\nartifact_type: code\\nside_effect: write\\nskills: [code-change, test-run]\\nmax_concurrent_sessions: 1\\n\""
+    },
+    {
+      "text": "Then 第三次退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第三次回四行（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "Then 第三次首行逐字（期望逐字 \"已更新项目角色：.orch/roles/lead-dev.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已更新项目角色：.orch/roles/lead-dev.yaml\""
+    },
+    {
+      "text": "Then 第三次契约行逐字（A-3）（期望逐字 \"- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\""
+    },
+    {
+      "text": "Then 第三次校验行逐字（期望逐字 \"校验：通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验：通过\""
+    },
+    {
+      "text": "Then 第三次重写注记逐字（期望逐字 \"（已按规范格式重写，注释不保留）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（已按规范格式重写，注释不保留）\""
+    },
+    {
+      "text": "Then show 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then show 契约行（产物类型 document）（期望逐字 \"- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\""
+    },
+    {
+      "text": "Then show 职责行变空（冒号后无值，需求原文「职责行变空」）（期望逐字 \"  职责：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  职责：\""
+    },
+    {
+      "text": "机检：grep -c 'nope:' 为 0（前两次未改动文件）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：grep -c 'artifact_type: document' 为 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：grep -c 'summary:' 为 0（--unset summary 后键被删除）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch role create lead-dev …",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--name",
+        "首席开发",
+        "--group",
+        "coding",
+        "--artifact-type",
+        "code",
+        "--side-effect",
+        "write",
+        "--skills",
+        "code-change,test-run"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-56",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "已创建项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 首席开发 · 编码工程 · code · write · 技能 2 · 并发 1\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role edit lead-dev --set nope=1",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "edit",
+        "lead-dev",
+        "--set",
+        "nope=1"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-56",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 103,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\n  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\n  orch role export <角色> [--out <文件>]\n  orch role import <文件> [--force]\n  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\n  orch skill list [--group <组>] [--format text|json]\n  orch skill show <技能> [--format text|json]\n  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\n  orch skill validate [<技能>] [--format json]\n  orch skill export <技能> [--out <文件>]\n  orch skill import <文件|目录> [--force]\n  orch workflow list [--format text|json]\n  orch workflow show <工作流> [--format text|json]\n  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\n  orch workflow validate [<工作流>] [--format json]\n  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\n  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\n  （未知字段：nope）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role edit lead-dev --unset name",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "edit",
+        "lead-dev",
+        "--unset",
+        "name"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-56",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\n  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\n  orch role export <角色> [--out <文件>]\n  orch role import <文件> [--force]\n  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\n  orch skill list [--group <组>] [--format text|json]\n  orch skill show <技能> [--format text|json]\n  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\n  orch skill validate [<技能>] [--format json]\n  orch skill export <技能> [--out <文件>]\n  orch skill import <文件|目录> [--force]\n  orch workflow list [--format text|json]\n  orch workflow show <工作流> [--format text|json]\n  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\n  orch workflow validate [<工作流>] [--format json]\n  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\n  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\n  （role edit 不能删除必填字段：name）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role edit lead-dev --set artifact_type=document --unset summary",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "edit",
+        "lead-dev",
+        "--set",
+        "artifact_type=document",
+        "--unset",
+        "summary"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-56",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "已更新项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\n校验：通过\n（已按规范格式重写，注释不保留）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show lead-dev",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "lead-dev"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-56",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\n  职责：\n  技能：code-change, test-run\n  工具：—\n  可唤醒：—\n  来源：项目 .orch/roles/lead-dev.yaml\n",
+      "stderr": ""
+    }
+  ]
+}

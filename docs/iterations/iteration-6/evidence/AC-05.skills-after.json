@@ -1,0 +1,19 @@
+{
+  "role": {
+    "id": "lead-dev",
+    "name": "开发（派生）",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "write",
+    "skills": [
+      "test-run",
+      "code-review"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "project",
+    "file": ".orch/roles/lead-dev.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}

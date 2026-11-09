@@ -1,0 +1,33 @@
+$ "(fixture) 建 .orch/skills/half-done/ 但不放 SKILL.md"
+# label=夹具：建 .orch/skills/half-done/ 但不放 SKILL.md cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-13\.orch\skills\half-done
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-13 exit=1 92ms
+校验资产 27 个：1 个不合法
+- skills/half-done/SKILL.md：技能目录缺少 SKILL.md：half-done（SKILL_FILE_MISSING）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-13 exit=1 94ms
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "SKILL_FILE_MISSING",
+      "file": "skills/half-done/SKILL.md",
+      "scope": "skill",
+      "field": null,
+      "line": null,
+      "detail": "技能目录缺少 SKILL.md：half-done"
+    }
+  ]
+}
+

@@ -1,0 +1,65 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show tester --instance INST-001 --format json
+# label=orch role show tester --instance INST-001 --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-23 exit=0 123ms
+{
+  "role": {
+    "id": "tester",
+    "name": "测试",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "exec",
+    "skills": [
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/tester.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "code-loop",
+    "state": "running",
+    "roleToSessions": {
+      "developer": [
+        "mock-sess-12424-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "tester",
+    "roleInstanceId": "RI-tester",
+    "status": "available",
+    "statusReason": null,
+    "activeSessions": [],
+    "servingNodes": [],
+    "hostIcons": [],
+    "maxConcurrentSessions": 1,
+    "lastAction": {
+      "nodeId": "T-002",
+      "round": 0,
+      "maxRounds": 2,
+      "state": "pending",
+      "stateSince": "2026-11-08T12:21:53.310Z"
+    }
+  }
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\code-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-23 --scenario backflow --keep
+# label=driver --scenario backflow --keep（MAESTRO_TEST_PAUSE=after_output:T-001） cwd=D:\WWW\Maestro exit=13 1521ms
+{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-23","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-23\\demo-code-pass","scenario":"backflow","resolvedScenario":"backflow","stopAfter":null,"keep":true,"released":false,"target":"paused","exitCode":null,"instanceId":"INST-001","state":"running","nodes":[{"nodeId":"T-001","round":1,"state":"review"},{"nodeId":"T-002","round":0,"state":"pending"}],"handoffs":0,"escalations":[],"paused":true,"exhausted":false,"historyLeak":false,"durationMs":553,"checks":[{"name":".mock/paused","ok":true},{"name":"state.json 可读","ok":true}]}
+
+--- stderr ---
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-12424-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+实例 INST-001 · 已中断 ｜ 核心已停止
+Warning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/code-loop-driver.mjs:832
+  const code = await main(process.argv.slice(2));
+               ^

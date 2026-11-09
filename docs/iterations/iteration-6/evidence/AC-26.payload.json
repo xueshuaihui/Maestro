@@ -1,0 +1,26 @@
+{
+  "counts": {
+    "assets": 5,
+    "builtin": 3,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_SUB_UNKNOWN",
+      "file": "workflows/sub-ghost.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "引用的子工作流不存在：ghost"
+    },
+    {
+      "code": "WORKFLOW_SUB_CYCLE",
+      "file": "workflows/sub-self.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "子工作流成环：sub-self"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "counts": {
+    "assets": 5,
+    "builtin": 3,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_NODE_TYPE_INVALID",
+      "file": "workflows/bad-type.yaml",
+      "scope": "workflow",
+      "field": "node_type",
+      "line": null,
+      "detail": "节点类型取值非法：script；合法取值：role / human / escalate / subworkflow"
+    },
+    {
+      "code": "WORKFLOW_WAKE_DENIED",
+      "file": "workflows/wake.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "唤醒不在白名单内：researcher → editor"
+    }
+  ]
+}

@@ -1,0 +1,2519 @@
+TAP version 13
+# Subtest: 注入图的查询函数：入口 / 节点 / 出边 / 终节点 / 轮次上限
+ok 1 - 注入图的查询函数：入口 / 节点 / 出边 / 终节点 / 轮次上限
+  ---
+  duration_ms: 3.4006
+  type: 'test'
+  ...
+# Subtest: planAdvance：顺序推进 → dispatch（目标轮次 = 派发前 +1）
+ok 2 - planAdvance：顺序推进 → dispatch（目标轮次 = 派发前 +1）
+  ---
+  duration_ms: 3.7355
+  type: 'test'
+  ...
+# Subtest: planAdvance：判定不通过且未超上限 → backflow（回开发第 2 轮）
+ok 3 - planAdvance：判定不通过且未超上限 → backflow（回开发第 2 轮）
+  ---
+  duration_ms: 0.7133
+  type: 'test'
+  ...
+# Subtest: planAdvance：第 2 轮仍不通过 → escalate（超上限，不回流）
+ok 4 - planAdvance：第 2 轮仍不通过 → escalate（超上限，不回流）
+  ---
+  duration_ms: 1.3209
+  type: 'test'
+  ...
+# Subtest: planAdvance：终节点完成 → complete
+ok 5 - planAdvance：终节点完成 → complete
+  ---
+  duration_ms: 0.405
+  type: 'test'
+  ...
+# Subtest: planAdvance：halted 优先于一切，且结果可复现、入参不被修改
+ok 6 - planAdvance：halted 优先于一切，且结果可复现、入参不被修改
+  ---
+  duration_ms: 0.358
+  type: 'test'
+  ...
+# Subtest: shouldWake：缺包 / 轮次超限 / 目标不合法三种拒绝
+ok 7 - shouldWake：缺包 / 轮次超限 / 目标不合法三种拒绝
+  ---
+  duration_ms: 0.4044
+  type: 'test'
+  ...
+# Subtest: checkWakeGate：从快照里找到待唤醒包才算通过
+ok 8 - checkWakeGate：从快照里找到待唤醒包才算通过
+  ---
+  duration_ms: 0.4164
+  type: 'test'
+  ...
+# Subtest: buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据
+ok 9 - buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据
+  ---
+  duration_ms: 1.1238
+  type: 'test'
+  ...
+# Subtest: classifyNodeOutcome 与 nextHandoffId
+ok 10 - classifyNodeOutcome 与 nextHandoffId
+  ---
+  duration_ms: 0.7116
+  type: 'test'
+  ...
+# Subtest: src/core 不含编码模板 / 角色字面量（注释也算）
+ok 11 - src/core 不含编码模板 / 角色字面量（注释也算）
+  ---
+  duration_ms: 8.8731
+  type: 'test'
+  ...
+# Subtest: AC-38：src/core + src/daemon 全目录 7 词扫描零命中
+ok 12 - AC-38：src/core + src/daemon 全目录 7 词扫描零命中
+  ---
+  duration_ms: 158.8991
+  type: 'test'
+  ...
+# Subtest: 图查询与推进规划不读文件、不写状态
+ok 13 - 图查询与推进规划不读文件、不写状态
+  ---
+  duration_ms: 0.9568
+  type: 'test'
+  ...
+# Subtest: task-loop 图：入口 / 终节点 / 轮次上限 / 文档策略
+ok 14 - task-loop 图：入口 / 终节点 / 轮次上限 / 文档策略
+  ---
+  duration_ms: 3.4625
+  type: 'test'
+  ...
+# Subtest: task-loop 图：三节点顺序、角色、产物策略与门控
+ok 15 - task-loop 图：三节点顺序、角色、产物策略与门控
+  ---
+  duration_ms: 0.5962
+  type: 'test'
+  ...
+# Subtest: task-loop 图：四条边，不新增 kind
+ok 16 - task-loop 图：四条边，不新增 kind
+  ---
+  duration_ms: 0.2642
+  type: 'test'
+  ...
+# Subtest: 三角色：可派发且指向各自的提示词键
+ok 17 - 三角色：可派发且指向各自的提示词键
+  ---
+  duration_ms: 0.3045
+  type: 'test'
+  ...
+# Subtest: initialNodes：task-loop 三节点初始为 pending/round 0
+ok 18 - initialNodes：task-loop 三节点初始为 pending/round 0
+  ---
+  duration_ms: 0.3861
+  type: 'test'
+  ...
+# Subtest: 研究提示词逐字（D-8 研究段）
+ok 19 - 研究提示词逐字（D-8 研究段）
+  ---
+  duration_ms: 0.5169
+  type: 'test'
+  ...
+# Subtest: 撰写第 1 轮提示词逐字（D-8 撰写段）
+ok 20 - 撰写第 1 轮提示词逐字（D-8 撰写段）
+  ---
+  duration_ms: 0.3722
+  type: 'test'
+  ...
+# Subtest: 撰写回流提示词逐字（D-8 撰写第 2 轮）
+ok 21 - 撰写回流提示词逐字（D-8 撰写第 2 轮）
+  ---
+  duration_ms: 0.3905
+  type: 'test'
+  ...
+# Subtest: 回流提示词缺修改要求时回落默认句
+ok 22 - 回流提示词缺修改要求时回落默认句
+  ---
+  duration_ms: 0.7604
+  type: 'test'
+  ...
+# Subtest: 审核提示词逐字（D-8 审核段，含 schema 行与工作区）
+ok 23 - 审核提示词逐字（D-8 审核段，含 schema 行与工作区）
+  ---
+  duration_ms: 0.6546
+  type: 'test'
+  ...
+# Subtest: schema 里的 JSON 花括号不被当成占位符吞掉
+ok 24 - schema 里的 JSON 花括号不被当成占位符吞掉
+  ---
+  duration_ms: 0.3309
+  type: 'test'
+  ...
+# Subtest: single 提示词逐字不变（I1.1）
+ok 25 - single 提示词逐字不变（I1.1）
+  ---
+  duration_ms: 0.1883
+  type: 'test'
+  ...
+# Subtest: code-loop 的 forward / verify 提示词逐字不变（I1.2）
+ok 26 - code-loop 的 forward / verify 提示词逐字不变（I1.2）
+  ---
+  duration_ms: 0.3373
+  type: 'test'
+  ...
+# Subtest: 代码闭环未被注入新键：模板表只追加不修改
+ok 27 - 代码闭环未被注入新键：模板表只追加不修改
+  ---
+  duration_ms: 0.1174
+  type: 'test'
+  ...
+# Subtest: 既有图对象不因新增 productPolicy 而变形
+ok 28 - 既有图对象不因新增 productPolicy 而变形
+  ---
+  duration_ms: 0.1369
+  type: 'test'
+  ...
+# Subtest: 常量：目录与固定研究笔记引用
+ok 29 - 常量：目录与固定研究笔记引用
+  ---
+  duration_ms: 1.6956
+  type: 'test'
+  ...
+# Subtest: 产物声明：合法文件名 → name / stem
+ok 30 - 产物声明：合法文件名 → name / stem
+  ---
+  duration_ms: 1.74
+  type: 'test'
+  ...
+# Subtest: 产物声明：缺行 / 半角冒号 / 两行 → PRODUCT_LINE_MISSING_TASK_LOOP
+ok 31 - 产物声明：缺行 / 半角冒号 / 两行 → PRODUCT_LINE_MISSING_TASK_LOOP
+  ---
+  duration_ms: 0.3866
+  type: 'test'
+  ...
+# Subtest: 产物声明：AC-23 的五个非法名逐个逐字回显
+ok 32 - 产物声明：AC-23 的五个非法名逐个逐字回显
+  ---
+  duration_ms: 0.3852
+  type: 'test'
+  ...
+# Subtest: 产物声明：空名 / 控制字符 / 只有 .md / 大写 .MD 边界
+ok 33 - 产物声明：空名 / 控制字符 / 只有 .md / 大写 .MD 边界
+  ---
+  duration_ms: 0.3911
+  type: 'test'
+  ...
+# Subtest: 版本引用：唯一拼接点
+ok 34 - 版本引用：唯一拼接点
+  ---
+  duration_ms: 0.4602
+  type: 'test'
+  ...
+# Subtest: resolveNodeProducts：fixed-workspace 原样取图节点产物
+ok 35 - resolveNodeProducts：fixed-workspace 原样取图节点产物
+  ---
+  duration_ms: 0.6343
+  type: 'test'
+  ...
+# Subtest: resolveNodeProducts：versioned-doc 按轮次算 v<n>
+ok 36 - resolveNodeProducts：versioned-doc 按轮次算 v<n>
+  ---
+  duration_ms: 0.4438
+  type: 'test'
+  ...
+# Subtest: resolveNodeProducts：review 节点不解析产物
+ok 37 - resolveNodeProducts：review 节点不解析产物
+  ---
+  duration_ms: 0.5708
+  type: 'test'
+  ...
+# Subtest: resolveNodeProducts：doc-single 下 declared 不回退任务行
+ok 38 - resolveNodeProducts：doc-single 下 declared 不回退任务行
+  ---
+  duration_ms: 0.9398
+  type: 'test'
+  ...
+# Subtest: sha256Of：与一次性哈希一致、缺文件返回 READ_FAILED
+ok 39 - sha256Of：与一次性哈希一致、缺文件返回 READ_FAILED
+  ---
+  duration_ms: 28.8443
+  type: 'test'
+  ...
+# Subtest: verifyPrevious：存在且指纹一致 → ok
+ok 40 - verifyPrevious：存在且指纹一致 → ok
+  ---
+  duration_ms: 22.4261
+  type: 'test'
+  ...
+# Subtest: verifyPrevious：被删除 / 被改写分别报两种原因
+ok 41 - verifyPrevious：被删除 / 被改写分别报两种原因
+  ---
+  duration_ms: 20.7486
+  type: 'test'
+  ...
+# Subtest: NFR-06：工作区三个路径由 paths.js 唯一计算
+ok 42 - NFR-06：工作区三个路径由 paths.js 唯一计算
+  ---
+  duration_ms: 2.7071
+  type: 'test'
+  ...
+# Subtest: --prepare-only 写出 cursor.json 与 .orch/hosts/dsh.json，launch.args 带 --suite task-loop
+ok 43 - --prepare-only 写出 cursor.json 与 .orch/hosts/dsh.json，launch.args 带 --suite task-loop
+  ---
+  duration_ms: 209.6125
+  type: 'test'
+  ...
+# Subtest: 场景 JSON 共 29 个、全部可解析、nodeId 与 round 显式
+ok 44 - 场景 JSON 共 29 个、全部可解析、nodeId 与 round 显式
+  ---
+  duration_ms: 34.4635
+  type: 'test'
+  ...
+# Subtest: --reset 清空 .mock 并把 cursor 归零
+ok 45 - --reset 清空 .mock 并把 cursor 归零
+  ---
+  duration_ms: 434.7472
+  type: 'test'
+  ...
+# Subtest: mock 独立拉起可跑完一步：按「写入路径：」落盘并记 prompts/1.json
+ok 46 - mock 独立拉起可跑完一步：按「写入路径：」落盘并记 prompts/1.json
+  ---
+  duration_ms: 367.0208
+  type: 'test'
+  ...
+# Subtest: 写入路径与 artifact 不匹配时写 .mock/bad-write-path 且不落文件
+ok 47 - 写入路径与 artifact 不匹配时写 .mock/bad-write-path 且不落文件
+  ---
+  duration_ms: 522.4943
+  type: 'test'
+  ...
+# Subtest: NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）
+ok 48 - NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）
+  ---
+  duration_ms: 399.5383
+  type: 'test'
+  ...
+# Subtest: NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）
+ok 49 - NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）
+  ---
+  duration_ms: 749.5262
+  type: 'test'
+  ...
+# Subtest: 步 1：文件不存在 → REVIEW_MISSING / review_missing
+ok 50 - 步 1：文件不存在 → REVIEW_MISSING / review_missing
+  ---
+  duration_ms: 40.241
+  type: 'test'
+  ...
+# Subtest: 步 2：mtime 早于本轮 → REVIEW_STALE / review_stale
+ok 51 - 步 2：mtime 早于本轮 → REVIEW_STALE / review_stale
+  ---
+  duration_ms: 31.0168
+  type: 'test'
+  ...
+# Subtest: 步 3：文件存在但读不出 → unreadable / review_invalid（注入 fs 桩）
+ok 52 - 步 3：文件存在但读不出 → unreadable / review_invalid（注入 fs 桩）
+  ---
+  duration_ms: 0.629
+  type: 'test'
+  ...
+# Subtest: 步 4：不是 JSON → unparsable / review_invalid
+ok 53 - 步 4：不是 JSON → unparsable / review_invalid
+  ---
+  duration_ms: 27.051
+  type: 'test'
+  ...
+# Subtest: 步 5：顶层是数组或 null → schema / review_invalid
+ok 54 - 步 5：顶层是数组或 null → schema / review_invalid
+  ---
+  duration_ms: 67.3972
+  type: 'test'
+  ...
+# Subtest: 步 6：结论非法 → REVIEW_DECISION_INVALID / decision
+ok 55 - 步 6：结论非法 → REVIEW_DECISION_INVALID / decision
+  ---
+  duration_ms: 25.2446
+  type: 'test'
+  ...
+# Subtest: 步 7：没写 artifact → REVIEW_ARTIFACT_MISSING
+ok 56 - 步 7：没写 artifact → REVIEW_ARTIFACT_MISSING
+  ---
+  duration_ms: 26.9829
+  type: 'test'
+  ...
+# Subtest: 步 8：引用了别的文档 → REVIEW_ARTIFACT_MISMATCH，原值逐字回显
+ok 57 - 步 8：引用了别的文档 → REVIEW_ARTIFACT_MISMATCH，原值逐字回显
+  ---
+  duration_ms: 25.9779
+  type: 'test'
+  ...
+# Subtest: 步 9：pass 带缺陷 / reject 无缺陷两种自相矛盾
+ok 58 - 步 9：pass 带缺陷 / reject 无缺陷两种自相矛盾
+  ---
+  duration_ms: 58.6038
+  type: 'test'
+  ...
+# Subtest: 步 10：缺陷缺证据 → REVIEW_DEFECT_SHAPE（整份无效，不回传部分缺陷）
+ok 59 - 步 10：缺陷缺证据 → REVIEW_DEFECT_SHAPE（整份无效，不回传部分缺陷）
+  ---
+  duration_ms: 25.5352
+  type: 'test'
+  ...
+# Subtest: 步 11：证据指向不存在的文件 / 越界 / 绝对路径 → REVIEW_EVIDENCE_UNREADABLE
+ok 60 - 步 11：证据指向不存在的文件 / 越界 / 绝对路径 → REVIEW_EVIDENCE_UNREADABLE
+  ---
+  duration_ms: 101.0473
+  type: 'test'
+  ...
+# Subtest: 成功路径：pass → defectCount 0、默认修改要求
+ok 61 - 成功路径：pass → defectCount 0、默认修改要求
+  ---
+  duration_ms: 26.009
+  type: 'test'
+  ...
+# Subtest: 成功路径：reject → 缺陷原文、\#L 剥离后定位、修改要求取文件里的值
+ok 62 - 成功路径：reject → 缺陷原文、\#L 剥离后定位、修改要求取文件里的值
+  ---
+  duration_ms: 26.5697
+  type: 'test'
+  ...
+# Subtest: 成功路径：未知字段忽略、行号范围与无 \#L 的证据都能定位
+ok 63 - 成功路径：未知字段忽略、行号范围与无 \#L 的证据都能定位
+  ---
+  duration_ms: 26.4681
+  type: 'test'
+  ...
+# Subtest: parseReview 是纯函数：不碰磁盘，expectedArtifact 缺省时跳过步 8
+ok 64 - parseReview 是纯函数：不碰磁盘，expectedArtifact 缺省时跳过步 8
+  ---
+  duration_ms: 0.4196
+  type: 'test'
+  ...
+# Subtest: 步 8 先于步 9/10：同时错时报引用不一致
+ok 65 - 步 8 先于步 9/10：同时错时报引用不一致
+  ---
+  duration_ms: 0.1802
+  type: 'test'
+  ...
+# Subtest: writeJsonAtomic 写入可解析的 JSON 并回报字节数
+ok 66 - writeJsonAtomic 写入可解析的 JSON 并回报字节数
+  ---
+  duration_ms: 32.0857
+  type: 'test'
+  ...
+# Subtest: writeJsonAtomic 覆盖旧内容且目录不存在时自建
+ok 67 - writeJsonAtomic 覆盖旧内容且目录不存在时自建
+  ---
+  duration_ms: 21.9206
+  type: 'test'
+  ...
+# Subtest: writeJsonAtomic 重命名失败时返回 STORE_WRITE_FAILED 且不留下 tmp
+ok 68 - writeJsonAtomic 重命名失败时返回 STORE_WRITE_FAILED 且不留下 tmp
+  ---
+  duration_ms: 246.636
+  type: 'test'
+  ...
+# Subtest: copyToBackup 是复制而不是重命名：原文件原字节仍在
+ok 69 - copyToBackup 是复制而不是重命名：原文件原字节仍在
+  ---
+  duration_ms: 20.8508
+  type: 'test'
+  ...
+# Subtest: copyToBackup 源文件不存在时返回失败码
+ok 70 - copyToBackup 源文件不存在时返回失败码
+  ---
+  duration_ms: 8.1468
+  type: 'test'
+  ...
+# Subtest: emit 先落盘后广播，ts/seq 由总线补齐
+ok 71 - emit 先落盘后广播，ts/seq 由总线补齐
+  ---
+  duration_ms: 23.6658
+  type: 'test'
+  ...
+# Subtest: emit 100 次并发：单实例串行，seq 严格递增且无丢行
+ok 72 - emit 100 次并发：单实例串行，seq 严格递增且无丢行
+  ---
+  duration_ms: 416.7516
+  type: 'test'
+  ...
+# Subtest: emit 落盘失败时不广播，并返回 STORE_WRITE_FAILED
+ok 73 - emit 落盘失败时不广播，并返回 STORE_WRITE_FAILED
+  ---
+  duration_ms: 0.7218
+  type: 'test'
+  ...
+# Subtest: subscribe 支持按实例过滤、取消订阅，订阅者异常不影响 emit
+ok 74 - subscribe 支持按实例过滤、取消订阅，订阅者异常不影响 emit
+  ---
+  duration_ms: 21.6298
+  type: 'test'
+  ...
+# Subtest: replay 返回该实例的全部事件，坏行被跳过
+ok 75 - replay 返回该实例的全部事件，坏行被跳过
+  ---
+  duration_ms: 18.0822
+  type: 'test'
+  ...
+# Subtest: bus.nextSeq 与 store.nextSeq 一致，空实例从 1 开始
+ok 76 - bus.nextSeq 与 store.nextSeq 一致，空实例从 1 开始
+  ---
+  duration_ms: 8.053
+  type: 'test'
+  ...
+# Subtest: emit 缺少 instanceId 时抛 TypeError（进程内参数校验）
+ok 77 - emit 缺少 instanceId 时抛 TypeError（进程内参数校验）
+  ---
+  duration_ms: 2.2979
+  type: 'test'
+  ...
+# Subtest: 旧调用 save(id, state) 行为不变：原子写、updatedAt 刷新、rev 从 1 递增
+ok 78 - 旧调用 save(id, state) 行为不变：原子写、updatedAt 刷新、rev 从 1 递增
+  ---
+  duration_ms: 49.5611
+  type: 'test'
+  ...
+# Subtest: save 缺省 expectedState：load 出来的 rev 能续增，且仍以磁盘现值为准
+ok 79 - save 缺省 expectedState：load 出来的 rev 能续增，且仍以磁盘现值为准
+  ---
+  duration_ms: 23.3647
+  type: 'test'
+  ...
+# Subtest: 无 expectedState 的第 2、3 次写也基于磁盘 rev 递增：磁盘 rev 严格等于 3
+ok 80 - 无 expectedState 的第 2、3 次写也基于磁盘 rev 递增：磁盘 rev 严格等于 3
+  ---
+  duration_ms: 27.4675
+  type: 'test'
+  ...
+# Subtest: 模拟进程重启（新 store 空缓存）：首个无 CAS 写 rev=4，不回 1
+ok 81 - 模拟进程重启（新 store 空缓存）：首个无 CAS 写 rev=4，不回 1
+  ---
+  duration_ms: 37.8938
+  type: 'test'
+  ...
+# Subtest: rev 单调之后 CAS 判定正确：{rev:3} 命中、{rev:2} 冲突且磁盘不变
+ok 82 - rev 单调之后 CAS 判定正确：{rev:3} 命中、{rev:2} 冲突且磁盘不变
+  ---
+  duration_ms: 74.0569
+  type: 'test'
+  ...
+# Subtest: 并发 20 次不带 expectedState 的 save：rev 连续无重复无回退
+ok 83 - 并发 20 次不带 expectedState 的 save：rev 连续无重复无回退
+  ---
+  duration_ms: 230.6571
+  type: 'test'
+  ...
+# Subtest: expectedState 传 string：命中则写、不命中返回 STORE_CONFLICT 且磁盘不变
+ok 84 - expectedState 传 string：命中则写、不命中返回 STORE_CONFLICT 且磁盘不变
+  ---
+  duration_ms: 69.4484
+  type: 'test'
+  ...
+# Subtest: expectedState 传对象：state / halted / rev 任一不符都冲突且磁盘字节不变
+ok 85 - expectedState 传对象：state / halted / rev 任一不符都冲突且磁盘字节不变
+  ---
+  duration_ms: 32.7072
+  type: 'test'
+  ...
+# Subtest: expectedState 只比较显式提供了的键（窄条件写）
+ok 86 - expectedState 只比较显式提供了的键（窄条件写）
+  ---
+  duration_ms: 56.7071
+  type: 'test'
+  ...
+# Subtest: 并发 50 次带 rev 的读改写：无丢更新，rev 严格单调
+ok 87 - 并发 50 次带 rev 的读改写：无丢更新，rev 严格单调
+  ---
+  duration_ms: 2116.4838
+  type: 'test'
+  ...
+# Subtest: list 对 v2 快照投影 schemaVersion/template/cwd/pendingEscalations
+ok 88 - list 对 v2 快照投影 schemaVersion/template/cwd/pendingEscalations
+  ---
+  duration_ms: 12.1766
+  type: 'test'
+  ...
+# Subtest: list 对 v1 快照（legacy 夹具）：template=single、pendingEscalations=0、不回写
+ok 89 - list 对 v1 快照（legacy 夹具）：template=single、pendingEscalations=0、不回写
+  ---
+  duration_ms: 11.2803
+  type: 'test'
+  ...
+# Subtest: list 缺字段的 v2 快照不抛错（数组字段可缺省）
+ok 90 - list 缺字段的 v2 快照不抛错（数组字段可缺省）
+  ---
+  duration_ms: 6.4917
+  type: 'test'
+  ...
+# Subtest: list 遇损坏只标记内存态 readable:false，不写 .corrupt、不产生新文件
+ok 91 - list 遇损坏只标记内存态 readable:false，不写 .corrupt、不产生新文件
+  ---
+  duration_ms: 6.6387
+  type: 'test'
+  ...
+# Subtest: load 对 v1 返回原形状且文件字节 / mtime 不变（AC-20）
+ok 92 - load 对 v1 返回原形状且文件字节 / mtime 不变（AC-20）
+  ---
+  duration_ms: 8.0544
+  type: 'test'
+  ...
+# Subtest: 两份 legacy 夹具的 state/events sha256 与 SHA256SUMS 一致
+ok 93 - 两份 legacy 夹具的 state/events sha256 与 SHA256SUMS 一致
+  ---
+  duration_ms: 2.8199
+  type: 'test'
+  ...
+# Subtest: load 对不存在的实例返回 NOT_FOUND
+ok 94 - load 对不存在的实例返回 NOT_FOUND
+  ---
+  duration_ms: 1.4893
+  type: 'test'
+  ...
+# Subtest: load 遇坏 JSON 返回 STATE_CORRUPT，备份存在且原文件字节未变
+ok 95 - load 遇坏 JSON 返回 STATE_CORRUPT，备份存在且原文件字节未变
+  ---
+  duration_ms: 7.3607
+  type: 'test'
+  ...
+# Subtest: load 缺 schemaVersion / instanceId 同样判为损坏
+ok 96 - load 缺 schemaVersion / instanceId 同样判为损坏
+  ---
+  duration_ms: 23.9894
+  type: 'test'
+  ...
+# Subtest: 损坏之后 save 返回 STORE_WRITE_BLOCKED_CORRUPT，且不覆盖原文件
+ok 97 - 损坏之后 save 返回 STORE_WRITE_BLOCKED_CORRUPT，且不覆盖原文件
+  ---
+  duration_ms: 8.7385
+  type: 'test'
+  ...
+# Subtest: appendEvent 100 次并发：100 行、seq 严格递增、无重号无丢行
+ok 98 - appendEvent 100 次并发：100 行、seq 严格递增、无重号无丢行
+  ---
+  duration_ms: 186.3191
+  type: 'test'
+  ...
+# Subtest: readEvents 跳过坏行并计数，不让整份记录不可读
+ok 99 - readEvents 跳过坏行并计数，不让整份记录不可读
+  ---
+  duration_ms: 6.079
+  type: 'test'
+  ...
+# Subtest: readEvents 对没有事件文件的实例返回空数组
+ok 100 - readEvents 对没有事件文件的实例返回空数组
+  ---
+  duration_ms: 1.8143
+  type: 'test'
+  ...
+# Subtest: list 不返回只有 events.jsonl 的半截实例
+ok 101 - list 不返回只有 events.jsonl 的半截实例
+  ---
+  duration_ms: 17.0286
+  type: 'test'
+  ...
+# Subtest: list 在 .orch/instances 尚不存在时返回空列表
+ok 102 - list 在 .orch/instances 尚不存在时返回空列表
+  ---
+  duration_ms: 1.4058
+  type: 'test'
+  ...
+# Subtest: projectRoot 返回 realpath 归一化后的绝对路径
+ok 103 - projectRoot 返回 realpath 归一化后的绝对路径
+  ---
+  duration_ms: 7.5781
+  type: 'test'
+  ...
+# Subtest: projectRoot 对不存在的路径抛 ENOENT，不静默回退
+ok 104 - projectRoot 对不存在的路径抛 ENOENT，不静默回退
+  ---
+  duration_ms: 1.1613
+  type: 'test'
+  ...
+# Subtest: 布局函数指向 .orch 下的标准位置
+ok 105 - 布局函数指向 .orch 下的标准位置
+  ---
+  duration_ms: 2.8108
+  type: 'test'
+  ...
+# Subtest: ensureLayout 幂等创建 .orch/instances
+ok 106 - ensureLayout 幂等创建 .orch/instances
+  ---
+  duration_ms: 7.0225
+  type: 'test'
+  ...
+# Subtest: pipeName 同项目稳定、不同项目必不同
+ok 107 - pipeName 同项目稳定、不同项目必不同
+  ---
+  duration_ms: 6.9673
+  type: 'test'
+  ...
+# Subtest: pipeName 对 Windows 路径大小写不敏感
+ok 108 - pipeName 对 Windows 路径大小写不敏感
+  ---
+  duration_ms: 3.3871
+  type: 'test'
+  ...
+# Subtest: -32602 with "already in flight" is NODE_BUSY
+ok 109 - -32602 with "already in flight" is NODE_BUSY
+  ---
+  duration_ms: 2.0221
+  type: 'test'
+  ...
+# Subtest: -32602 with any other message is SESSION_INVALID
+ok 110 - -32602 with any other message is SESSION_INVALID
+  ---
+  duration_ms: 0.4064
+  type: 'test'
+  ...
+# Subtest: -32603 keeps the full original text in params.raw
+ok 111 - -32603 keeps the full original text in params.raw
+  ---
+  duration_ms: 0.2088
+  type: 'test'
+  ...
+# Subtest: an unregistered code is UNKNOWN_ERROR and preserves the raw text
+ok 112 - an unregistered code is UNKNOWN_ERROR and preserves the raw text
+  ---
+  duration_ms: 0.1818
+  type: 'test'
+  ...
+# Subtest: sessionKnown === false forces SESSION_INVALID
+ok 113 - sessionKnown === false forces SESSION_INVALID
+  ---
+  duration_ms: 0.4145
+  type: 'test'
+  ...
+# Subtest: -32002 is SESSION_INVALID regardless of wording
+ok 114 - -32002 is SESSION_INVALID regardless of wording
+  ---
+  duration_ms: 0.8303
+  type: 'test'
+  ...
+# Subtest: raw text is never trimmed, rewritten or truncated
+ok 115 - raw text is never trimmed, rewritten or truncated
+  ---
+  duration_ms: 0.5577
+  type: 'test'
+  ...
+# Subtest: preflight stages map onto the four pre-run codes
+ok 116 - preflight stages map onto the four pre-run codes
+  ---
+  duration_ms: 1.5407
+  type: 'test'
+  ...
+# Subtest: isSessionInvalid distinguishes busy from gone
+ok 117 - isSessionInvalid distinguishes busy from gone
+  ---
+  duration_ms: 0.7128
+  type: 'test'
+  ...
+# Subtest: CODES carries the nine documented codes plus two store codes
+ok 118 - CODES carries the nine documented codes plus two store codes
+  ---
+  duration_ms: 0.7456
+  type: 'test'
+  ...
+# Subtest: every code has exactly one labels key
+ok 119 - every code has exactly one labels key
+  ---
+  duration_ms: 0.4202
+  type: 'test'
+  ...
+# Subtest: core files hold no Chinese and no forbidden lowercase tokens
+ok 120 - core files hold no Chinese and no forbidden lowercase tokens
+  ---
+  duration_ms: 2.0188
+  type: 'test'
+  ...
+# Subtest: nine failure texts match requirement 2.6 verbatim
+ok 121 - nine failure texts match requirement 2.6 verbatim
+  ---
+  duration_ms: 2.2601
+  type: 'test'
+  ...
+# Subtest: store-level texts are unchanged
+ok 122 - store-level texts are unchanged
+  ---
+  duration_ms: 0.2992
+  type: 'test'
+  ...
+# Subtest: I1.2 business error texts match requirement D-5 verbatim
+ok 123 - I1.2 business error texts match requirement D-5 verbatim
+  ---
+  duration_ms: 0.324
+  type: 'test'
+  ...
+# Subtest: formatDuration samples
+ok 124 - formatDuration samples
+  ---
+  duration_ms: 0.2804
+  type: 'test'
+  ...
+# Subtest: formatDuration edge values
+ok 125 - formatDuration edge values
+  ---
+  duration_ms: 0.2415
+  type: 'test'
+  ...
+# Subtest: instance labels include suspended
+ok 126 - instance labels include suspended
+  ---
+  duration_ms: 1.1527
+  type: 'test'
+  ...
+# Subtest: node labels include escalated
+ok 127 - node labels include escalated
+  ---
+  duration_ms: 0.2787
+  type: 'test'
+  ...
+# Subtest: session labels match the display table
+ok 128 - session labels match the display table
+  ---
+  duration_ms: 0.2316
+  type: 'test'
+  ...
+# Subtest: handoff labels cover all seven states
+ok 129 - handoff labels cover all seven states
+  ---
+  duration_ms: 0.585
+  type: 'test'
+  ...
+# Subtest: escalation labels match D-5
+ok 130 - escalation labels match D-5
+  ---
+  duration_ms: 0.8179
+  type: 'test'
+  ...
+# Subtest: role labels keep coordinator defined
+ok 131 - role labels keep coordinator defined
+  ---
+  duration_ms: 0.4014
+  type: 'test'
+  ...
+# Subtest: template labels match D-5 (single kept but unused)
+ok 132 - template labels match D-5 (single kept but unused)
+  ---
+  duration_ms: 0.1919
+  type: 'test'
+  ...
+# Subtest: handoff direction: forward has no suffix, backflow / retest append full-width parens
+ok 133 - handoff direction: forward has no suffix, backflow / retest append full-width parens
+  ---
+  duration_ms: 0.2258
+  type: 'test'
+  ...
+# Subtest: node qualifiers and handoff reject reasons match the display table
+ok 134 - node qualifiers and handoff reject reasons match the display table
+  ---
+  duration_ms: 0.2646
+  type: 'test'
+  ...
+# Subtest: layer prefixes include escalation
+ok 135 - layer prefixes include escalation
+  ---
+  duration_ms: 0.1388
+  type: 'test'
+  ...
+# Subtest: reason vocabulary is complete (I1.1 baseline + I1.2 additions)
+ok 136 - reason vocabulary is complete (I1.1 baseline + I1.2 additions)
+  ---
+  duration_ms: 0.1974
+  type: 'test'
+  ...
+# Subtest: event-line fragments match D-5 verbatim
+ok 137 - event-line fragments match D-5 verbatim
+  ---
+  duration_ms: 0.1205
+  type: 'test'
+  ...
+# Subtest: escalation block matches requirement 2.6 / D-5
+ok 138 - escalation block matches requirement 2.6 / D-5
+  ---
+  duration_ms: 0.138
+  type: 'test'
+  ...
+# Subtest: orch run closing lines match appendix A-4
+ok 139 - orch run closing lines match appendix A-4
+  ---
+  duration_ms: 0.1513
+  type: 'test'
+  ...
+# Subtest: I1.3 business error texts match D-5 verbatim
+ok 140 - I1.3 business error texts match D-5 verbatim
+  ---
+  duration_ms: 0.1799
+  type: 'test'
+  ...
+# Subtest: review file wording matches D-5 verbatim (11 entries)
+ok 141 - review file wording matches D-5 verbatim (11 entries)
+  ---
+  duration_ms: 0.1689
+  type: 'test'
+  ...
+# Subtest: product-file wording matches D-5 verbatim (5 entries)
+ok 142 - product-file wording matches D-5 verbatim (5 entries)
+  ---
+  duration_ms: 0.1542
+  type: 'test'
+  ...
+# Subtest: node suffixes are mutually exclusive and only used by doc-single
+ok 143 - node suffixes are mutually exclusive and only used by doc-single
+  ---
+  duration_ms: 0.1488
+  type: 'test'
+  ...
+# Subtest: instance: every in-table edge is allowed and applies
+ok 144 - instance: every in-table edge is allowed and applies
+  ---
+  duration_ms: 4.3307
+  type: 'test'
+  ...
+# Subtest: instance: every out-of-table pair is rejected by can() and apply()
+ok 145 - instance: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 1.5665
+  type: 'test'
+  ...
+# Subtest: instance: terminal states accept nothing
+ok 146 - instance: terminal states accept nothing
+  ---
+  duration_ms: 0.6527
+  type: 'test'
+  ...
+# Subtest: instance: definedOnly() is empty
+ok 147 - instance: definedOnly() is empty
+  ---
+  duration_ms: 0.3268
+  type: 'test'
+  ...
+# Subtest: instance: assert / apply / isTerminal share one verdict
+ok 148 - instance: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.2834
+  type: 'test'
+  ...
+# Subtest: node: every in-table edge is allowed and applies
+ok 149 - node: every in-table edge is allowed and applies
+  ---
+  duration_ms: 1.9687
+  type: 'test'
+  ...
+# Subtest: node: every out-of-table pair is rejected by can() and apply()
+ok 150 - node: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 0.6201
+  type: 'test'
+  ...
+# Subtest: node: terminal states accept nothing
+ok 151 - node: terminal states accept nothing
+  ---
+  duration_ms: 0.1753
+  type: 'test'
+  ...
+# Subtest: node: definedOnly() is empty
+ok 152 - node: definedOnly() is empty
+  ---
+  duration_ms: 0.4511
+  type: 'test'
+  ...
+# Subtest: node: assert / apply / isTerminal share one verdict
+ok 153 - node: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.6475
+  type: 'test'
+  ...
+# Subtest: handoff: every in-table edge is allowed and applies
+ok 154 - handoff: every in-table edge is allowed and applies
+  ---
+  duration_ms: 0.486
+  type: 'test'
+  ...
+# Subtest: handoff: every out-of-table pair is rejected by can() and apply()
+ok 155 - handoff: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 1.6181
+  type: 'test'
+  ...
+# Subtest: handoff: terminal states accept nothing
+ok 156 - handoff: terminal states accept nothing
+  ---
+  duration_ms: 0.1903
+  type: 'test'
+  ...
+# Subtest: handoff: definedOnly() is empty
+ok 157 - handoff: definedOnly() is empty
+  ---
+  duration_ms: 0.1621
+  type: 'test'
+  ...
+# Subtest: handoff: assert / apply / isTerminal share one verdict
+ok 158 - handoff: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.1459
+  type: 'test'
+  ...
+# Subtest: escalation: every in-table edge is allowed and applies
+ok 159 - escalation: every in-table edge is allowed and applies
+  ---
+  duration_ms: 0.2924
+  type: 'test'
+  ...
+# Subtest: escalation: every out-of-table pair is rejected by can() and apply()
+ok 160 - escalation: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 0.2097
+  type: 'test'
+  ...
+# Subtest: escalation: terminal states accept nothing
+ok 161 - escalation: terminal states accept nothing
+  ---
+  duration_ms: 0.1411
+  type: 'test'
+  ...
+# Subtest: escalation: definedOnly() is empty
+ok 162 - escalation: definedOnly() is empty
+  ---
+  duration_ms: 0.1172
+  type: 'test'
+  ...
+# Subtest: escalation: assert / apply / isTerminal share one verdict
+ok 163 - escalation: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.1025
+  type: 'test'
+  ...
+# Subtest: session: every in-table edge is allowed and applies
+ok 164 - session: every in-table edge is allowed and applies
+  ---
+  duration_ms: 0.8354
+  type: 'test'
+  ...
+# Subtest: session: every out-of-table pair is rejected by can() and apply()
+ok 165 - session: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 0.47
+  type: 'test'
+  ...
+# Subtest: session: terminal states accept nothing
+ok 166 - session: terminal states accept nothing
+  ---
+  duration_ms: 0.1094
+  type: 'test'
+  ...
+# Subtest: session: definedOnly() is empty
+ok 167 - session: definedOnly() is empty
+  ---
+  duration_ms: 0.0958
+  type: 'test'
+  ...
+# Subtest: session: assert / apply / isTerminal share one verdict
+ok 168 - session: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.11
+  type: 'test'
+  ...
+# Subtest: node: only cancelled is terminal; done / failed / escalated still have exits
+ok 169 - node: only cancelled is terminal; done / failed / escalated still have exits
+  ---
+  duration_ms: 0.2626
+  type: 'test'
+  ...
+# Subtest: node: escalated has exactly one exit (cancel)
+ok 170 - node: escalated has exactly one exit (cancel)
+  ---
+  duration_ms: 0.3817
+  type: 'test'
+  ...
+# Subtest: node: done is reopened by backflow, failed by retest, and done is never cancelled
+ok 171 - node: done is reopened by backflow, failed by retest, and done is never cancelled
+  ---
+  duration_ms: 0.2254
+  type: 'test'
+  ...
+# Subtest: escalation: pending->voided only
+ok 172 - escalation: pending->voided only
+  ---
+  duration_ms: 0.2665
+  type: 'test'
+  ...
+# Subtest: session: escalated only leaves on cancel (idle)
+ok 173 - session: escalated only leaves on cancel (idle)
+  ---
+  duration_ms: 0.2044
+  type: 'test'
+  ...
+# Subtest: session: every state can be escalated, and idle only starts a turn
+ok 174 - session: every state can be escalated, and idle only starts a turn
+  ---
+  duration_ms: 0.2044
+  type: 'test'
+  ...
+# Subtest: instance: suspended is reachable from running and only leaves on cancel
+ok 175 - instance: suspended is reachable from running and only leaves on cancel
+  ---
+  duration_ms: 0.1734
+  type: 'test'
+  ...
+# Subtest: five constant groups match requirement D-4
+ok 176 - five constant groups match requirement D-4
+  ---
+  duration_ms: 0.1738
+  type: 'test'
+  ...
+# Subtest: explicit out-of-table samples from the acceptance list
+ok 177 - explicit out-of-table samples from the acceptance list
+  ---
+  duration_ms: 0.2362
+  type: 'test'
+  ...
+# Subtest: from === to is ILLEGAL_TRANSITION and emits nothing
+ok 178 - from === to is ILLEGAL_TRANSITION and emits nothing
+  ---
+  duration_ms: 0.3329
+  type: 'test'
+  ...
+# Subtest: rejected apply emits one rejected event with the attempted target
+ok 179 - rejected apply emits one rejected event with the attempted target
+  ---
+  duration_ms: 0.5167
+  type: 'test'
+  ...
+# Subtest: apply awaits an async emit before returning
+ok 180 - apply awaits an async emit before returning
+  ---
+  duration_ms: 35.9946
+  type: 'test'
+  ...
+# Subtest: assert throws IllegalTransitionError carrying from/to/code
+ok 181 - assert throws IllegalTransitionError carrying from/to/code
+  ---
+  duration_ms: 1.2175
+  type: 'test'
+  ...
+# Subtest: can and apply never throw on garbage input
+ok 182 - can and apply never throw on garbage input
+  ---
+  duration_ms: 0.5142
+  type: 'test'
+  ...
+# Subtest: 真实 transport + client 跑通 initialize → newSession → prompt → end_turn，且 tool_call 可观测
+ok 183 - 真实 transport + client 跑通 initialize → newSession → prompt → end_turn，且 tool_call 可观测
+  ---
+  duration_ms: 254.3137
+  type: 'test'
+  ...
+# Subtest: --session-missing：对未知 session prompt 得到 -32602 + unknown session 原文
+ok 184 - --session-missing：对未知 session prompt 得到 -32602 + unknown session 原文
+  ---
+  duration_ms: 252.2062
+  type: 'test'
+  ...
+# Subtest: quietWindow / drain-quiet：建会话后的噪声帧在 newSession 返回前已被收到
+ok 185 - quietWindow / drain-quiet：建会话后的噪声帧在 newSession 返回前已被收到
+  ---
+  duration_ms: 234.8558
+  type: 'test'
+  ...
+# Subtest: permission=ask：回调应答 allow-once → end_turn 且文件落盘
+ok 186 - permission=ask：回调应答 allow-once → end_turn 且文件落盘
+  ---
+  duration_ms: 238.2918
+  type: 'test'
+  ...
+# Subtest: permission=ask：回调应答 reject-once → refusal 且不写文件（AC-18 夹具路径）
+ok 187 - permission=ask：回调应答 reject-once → refusal 且不写文件（AC-18 夹具路径）
+  ---
+  duration_ms: 461.4297
+  type: 'test'
+  ...
+# Subtest: permission=ask：无回调时按默认策略 allow-once 自动应答
+ok 188 - permission=ask：无回调时按默认策略 allow-once 自动应答
+  ---
+  duration_ms: 228.6374
+  type: 'test'
+  ...
+# Subtest: 宿主错误码与原文原样透出（-32603 / -32099）
+ok 189 - 宿主错误码与原文原样透出（-32603 / -32099）
+  ---
+  duration_ms: 466.0886
+  type: 'test'
+  ...
+# Subtest: cancel 是通知：无响应，turn 以 stopReason=cancelled 收敛（F1）
+ok 190 - cancel 是通知：无响应，turn 以 stopReason=cancelled 收敛（F1）
+  ---
+  duration_ms: 448.8782
+  type: 'test'
+  ...
+# Subtest: accepted 只认 turn 内事件：噪声帧先到仍停在 delivered
+ok 191 - accepted 只认 turn 内事件：噪声帧先到仍停在 delivered
+  ---
+  duration_ms: 5.0735
+  type: 'test'
+  ...
+# Subtest: 三种拒绝原因必须可区分（AC-11）
+ok 192 - 三种拒绝原因必须可区分（AC-11）
+  ---
+  duration_ms: 0.6917
+  type: 'test'
+  ...
+# Subtest: 迁移表外一律拒绝，且 accepted 不能先于 delivered
+ok 193 - 迁移表外一律拒绝，且 accepted 不能先于 delivered
+  ---
+  duration_ms: 0.5172
+  type: 'test'
+  ...
+# Subtest: 无 TTL：过期只能由迁移表拒绝，没有任何定时器产生 expired
+ok 194 - 无 TTL：过期只能由迁移表拒绝，没有任何定时器产生 expired
+  ---
+  duration_ms: 42.2123
+  type: 'test'
+  ...
+# Subtest: 默认推导：%LOCALAPPDATA%\\Programs\\DeepSeek Harness，args=[bin,--profile,acp]，显式覆盖 ELECTRON_RUN_AS_NODE
+ok 195 - 默认推导：%LOCALAPPDATA%\\Programs\\DeepSeek Harness，args=[bin,--profile,acp]，显式覆盖 ELECTRON_RUN_AS_NODE
+  ---
+  duration_ms: 2.839
+  type: 'test'
+  ...
+# Subtest: env 覆盖优先级最高（MAESTRO_DSH_EXE / BIN / ARGS）
+ok 196 - env 覆盖优先级最高（MAESTRO_DSH_EXE / BIN / ARGS）
+  ---
+  duration_ms: 0.5291
+  type: 'test'
+  ...
+# Subtest: 配置可指向任意命令（夹具接管 host 的唯一入口）
+ok 197 - 配置可指向任意命令（夹具接管 host 的唯一入口）
+  ---
+  duration_ms: 0.3206
+  type: 'test'
+  ...
+# Subtest: resolveMockLaunch 走同一个 launch 形态
+ok 198 - resolveMockLaunch 走同一个 launch 形态
+  ---
+  duration_ms: 1.7522
+  type: 'test'
+  ...
+# Subtest: probeDshInstalled：路径不存在返回 DSH_SPAWN_FAILED 与「未找到 <path>」
+ok 199 - probeDshInstalled：路径不存在返回 DSH_SPAWN_FAILED 与「未找到 <path>」
+  ---
+  duration_ms: 11.9653
+  type: 'test'
+  ...
+# Subtest: loadHostConfig：无配置文件用默认；transport 非 stdio → HOST_UNSUPPORTED；坏 JSON → HOST_CONFIG_INVALID
+ok 200 - loadHostConfig：无配置文件用默认；transport 非 stdio → HOST_UNSUPPORTED；坏 JSON → HOST_CONFIG_INVALID
+  ---
+  duration_ms: 20.2576
+  type: 'test'
+  ...
+# Subtest: loadHostConfig：配置里的 launch 指向 mock 并成功建会话（AC-15 夹具路径）
+ok 201 - loadHostConfig：配置里的 launch 指向 mock 并成功建会话（AC-15 夹具路径）
+  ---
+  duration_ms: 16.6282
+  type: 'test'
+  ...
+# Subtest: probe --observe session-state：建会话不投递 → idle（AC-15）
+ok 202 - probe --observe session-state：建会话不投递 → idle（AC-15）
+  ---
+  duration_ms: 509.5726
+  type: 'test'
+  ...
+# Subtest: probe --observe session-state：噪声帧不改状态（AC-19 前置）
+ok 203 - probe --observe session-state：噪声帧不改状态（AC-19 前置）
+  ---
+  duration_ms: 627.5848
+  type: 'test'
+  ...
+# Subtest: probe --observe tool-name：工具名可观测（AC-16）
+ok 204 - probe --observe tool-name：工具名可观测（AC-16）
+  ---
+  duration_ms: 468.9526
+  type: 'test'
+  ...
+# Subtest: probe --observe handoff：噪声先到仍为 delivered（AC-19）
+ok 205 - probe --observe handoff：噪声先到仍为 delivered（AC-19）
+  ---
+  duration_ms: 638.2413
+  type: 'test'
+  ...
+# Subtest: 常量：6 状态与两类噪声白名单
+ok 206 - 常量：6 状态与两类噪声白名单
+  ---
+  duration_ms: 2.2215
+  type: 'test'
+  ...
+# Subtest: 6 类 turn 内事件逐判别值映射
+ok 207 - 6 类 turn 内事件逐判别值映射
+  ---
+  duration_ms: 0.6421
+  type: 'test'
+  ...
+# Subtest: 两种噪声帧不改状态、不算进展；未知判别值同理并计数
+ok 208 - 两种噪声帧不改状态、不算进展；未知判别值同理并计数
+  ---
+  duration_ms: 0.4493
+  type: 'test'
+  ...
+# Subtest: isTurnEvent 严格白名单
+ok 209 - isTurnEvent 严格白名单
+  ---
+  duration_ms: 0.2033
+  type: 'test'
+  ...
+# Subtest: onPromptSent / onPromptSettled / onOutputSubmitted / onCancelled / onEscalated
+ok 210 - onPromptSent / onPromptSettled / onOutputSubmitted / onCancelled / onEscalated
+  ---
+  duration_ms: 1.976
+  type: 'test'
+  ...
+# Subtest: onCancelled 之后 turnId 不匹配的 update 被丢弃
+ok 211 - onCancelled 之后 turnId 不匹配的 update 被丢弃
+  ---
+  duration_ms: 0.3998
+  type: 'test'
+  ...
+# Subtest: NDJSON：两行同写 / 半行分片 / 空行 / 末尾无换行 / 坏 JSON 不断连
+ok 212 - NDJSON：两行同写 / 半行分片 / 空行 / 末尾无换行 / 坏 JSON 不断连
+  ---
+  duration_ms: 521.8804
+  type: 'test'
+  ...
+# Subtest: 单行超 maxFrameBytes：onParseError 报 IPC_FRAME_TOO_LARGE 并自动 dispose
+ok 213 - 单行超 maxFrameBytes：onParseError 报 IPC_FRAME_TOO_LARGE 并自动 dispose
+  ---
+  duration_ms: 648.775
+  type: 'test'
+  ...
+# Subtest: spawn 失败：返回 DSH_SPAWN_FAILED 且 cause 有内容
+ok 214 - spawn 失败：返回 DSH_SPAWN_FAILED 且 cause 有内容
+  ---
+  duration_ms: 3.4478
+  type: 'test'
+  ...
+# Subtest: 立即退出：stderr 尾部进入 cause（最多 20 行、去空行）
+ok 215 - 立即退出：stderr 尾部进入 cause（最多 20 行、去空行）
+  ---
+  duration_ms: 200.9212
+  type: 'test'
+  ...
+# Subtest: dispose：忽略 stdin EOF 的子进程也会被终止，不留孤儿
+ok 216 - dispose：忽略 stdin EOF 的子进程也会被终止，不留孤儿
+  ---
+  duration_ms: 421.5631
+  type: 'test'
+  ...
+# Subtest: send 串行化：并发写入不交错，每行都是完整 JSON
+ok 217 - send 串行化：并发写入不交错，每行都是完整 JSON
+  ---
+  duration_ms: 113.2684
+  type: 'test'
+  ...
+# Subtest: single happy path：9 步顺序正确，终态 completed / done / consumed / idle
+ok 218 - single happy path：9 步顺序正确，终态 completed / done / consumed / idle
+  ---
+  duration_ms: 426.8545
+  type: 'test'
+  ...
+# Subtest: NODE_BUSY：同一实例并发发起不建第二个会话
+ok 219 - NODE_BUSY：同一实例并发发起不建第二个会话
+  ---
+  duration_ms: 3338.536
+  type: 'test'
+  ...
+# Subtest: DSH_SPAWN_FAILED：拉起失败后不落 state.json（无半截实例）
+ok 220 - DSH_SPAWN_FAILED：拉起失败后不落 state.json（无半截实例）
+  ---
+  duration_ms: 2533.3285
+  type: 'test'
+  ...
+# Subtest: VERIFY_FAILED：未写产出 → 节点/实例 failed，交接包停在 accepted
+ok 221 - VERIFY_FAILED：未写产出 → 节点/实例 failed，交接包停在 accepted
+  ---
+  duration_ms: 362.8842
+  type: 'test'
+  ...
+# Subtest: cancel：立即落终态（数组结果），不等宿主（turn-delay 10s）
+ok 222 - cancel：立即落终态（数组结果），不等宿主（turn-delay 10s）
+  ---
+  duration_ms: 294.4968
+  type: 'test'
+  ...
+# Subtest: getStatus：派生字段（elapsedMs / sessionStalled / handoffWaitMs）与 NOT_FOUND
+ok 223 - getStatus：派生字段（elapsedMs / sessionStalled / handoffWaitMs）与 NOT_FOUND
+  ---
+  duration_ms: 23.4389
+  type: 'test'
+  ...
+# Subtest: reconcileOnBoot：v2 旧 generation 的运行中实例 → interrupted；v1 保持原样
+ok 224 - reconcileOnBoot：v2 旧 generation 的运行中实例 → interrupted；v1 保持原样
+  ---
+  duration_ms: 38.2741
+  type: 'test'
+  ...
+# Subtest: v1 实例：startRun / cancel 都返回 LEGACY_READ_ONLY
+ok 225 - v1 实例：startRun / cancel 都返回 LEGACY_READ_ONLY
+  ---
+  duration_ms: 30.1746
+  type: 'test'
+  ...
+# Subtest: code-loop 一轮通过：T-001 → T-002 → 实例 completed（AC-03：只有 1 张交接包）
+ok 226 - code-loop 一轮通过：T-001 → T-002 → 实例 completed（AC-03：只有 1 张交接包）
+  ---
+  duration_ms: 177.0499
+  type: 'test'
+  ...
+# Subtest: code-loop 回流：第 1 轮不通过 → 开发第 2 轮 → 复测通过 → completed（3 张交接包）
+ok 227 - code-loop 回流：第 1 轮不通过 → 开发第 2 轮 → 复测通过 → completed（3 张交接包）
+  ---
+  duration_ms: 320.4499
+  type: 'test'
+  ...
+# Subtest: code-loop 上限：第 2 轮仍不通过 → 节点 escalated / 实例 suspended / 3 张包 consumed
+ok 228 - code-loop 上限：第 2 轮仍不通过 → 节点 escalated / 实例 suspended / 3 张包 consumed
+  ---
+  duration_ms: 293.6826
+  type: 'test'
+  ...
+# Subtest: code-loop 取消优先：after_verdict 停住时取消，回流包 created → rejected(withdrawn)
+ok 229 - code-loop 取消优先：after_verdict 停住时取消，回流包 created → rejected(withdrawn)
+  ---
+  duration_ms: 269.5576
+  type: 'test'
+  ...
+# Subtest: code-loop 派发失败：目标会话建不起来 → 目标节点 escalated / 实例 suspended（round 已 +1）
+ok 230 - code-loop 派发失败：目标会话建不起来 → 目标节点 escalated / 实例 suspended（round 已 +1）
+  ---
+  duration_ms: 104.0769
+  type: 'test'
+  ...
+# Subtest: code-loop DIR_BUSY：同目录第二个闭环被拒
+ok 231 - code-loop DIR_BUSY：同目录第二个闭环被拒
+  ---
+  duration_ms: 53.359
+  type: 'test'
+  ...
+# Subtest: code-loop DIR_BUSY：首个实例停在首派 session/new 未返回时，同目录并发发起 2s 内被拒（BLK-C1）
+ok 232 - code-loop DIR_BUSY：首个实例停在首派 session/new 未返回时，同目录并发发起 2s 内被拒（BLK-C1）
+  ---
+  duration_ms: 72.3457
+  type: 'test'
+  ...
+# Subtest: code-loop 发起前拦截：未知模板 / 空任务 / 缺产物行
+ok 233 - code-loop 发起前拦截：未知模板 / 空任务 / 缺产物行
+  ---
+  duration_ms: 2.8326
+  type: 'test'
+  ...
+# Subtest: code-loop 停止推进：升级写入故障 → halted=true，节点保持 review（不假装挂起）
+ok 234 - code-loop 停止推进：升级写入故障 → halted=true，节点保持 review（不假装挂起）
+  ---
+  duration_ms: 238.6641
+  type: 'test'
+  ...
+# Subtest: 接缝：仅 NODE_ENV=test 导出 dispatchToNode / escalateOnce，生产对象没有这两个键
+ok 235 - 接缝：仅 NODE_ENV=test 导出 dispatchToNode / escalateOnce，生产对象没有这两个键
+  ---
+  duration_ms: 5.0133
+  type: 'test'
+  ...
+# Subtest: 接缝 dispatchToNode：无待唤醒回流包 → WAKE_REJECTED(NO_PENDING_BACKFLOW) 且轮次不变
+ok 236 - 接缝 dispatchToNode：无待唤醒回流包 → WAKE_REJECTED(NO_PENDING_BACKFLOW) 且轮次不变
+  ---
+  duration_ms: 130.9975
+  type: 'test'
+  ...
+# Subtest: 接缝 escalateOnce：同 (nodeId, round) 幂等复用 ESC-001
+ok 237 - 接缝 escalateOnce：同 (nodeId, round) 幂等复用 ESC-001
+  ---
+  duration_ms: 255.7622
+  type: 'test'
+  ...
+# Subtest: 会话守卫：进入 escalated 后除取消外任何输入都保持 escalated（C-08 / AC-39）
+ok 238 - 会话守卫：进入 escalated 后除取消外任何输入都保持 escalated（C-08 / AC-39）
+  ---
+  duration_ms: 0.3139
+  type: 'test'
+  ...
+# Subtest: handoffToState 白名单：edge / defects / note / wakeConsumedAt 不被 update 抹掉
+ok 239 - handoffToState 白名单：edge / defects / note / wakeConsumedAt 不被 update 抹掉
+  ---
+  duration_ms: 278.9004
+  type: 'test'
+  ...
+# Subtest: task-loop 门控：下游接受时才 done，且与 handoff accepted 同一次 CAS（rev 只 +1）
+ok 240 - task-loop 门控：下游接受时才 done，且与 handoff accepted 同一次 CAS（rev 只 +1）
+  ---
+  duration_ms: 252.6274
+  type: 'test'
+  ...
+# Subtest: task-loop 子原因两段可见：running→review 写 evidence，核对通过后改 downstream
+ok 241 - task-loop 子原因两段可见：running→review 写 evidence，核对通过后改 downstream
+  ---
+  duration_ms: 218.9037
+  type: 'test'
+  ...
+# Subtest: task-loop 驳回未超限：审核 failed（等待复审）→ 回流带缺陷 → 第 2 轮通过
+ok 242 - task-loop 驳回未超限：审核 failed（等待复审）→ 回流带缺陷 → 第 2 轮通过
+  ---
+  duration_ms: 380.7127
+  type: 'test'
+  ...
+# Subtest: task-loop 派发时刻锁进事件 ts：startedAt / roundStartedAt 与 node.dispatch 逐字相等（AC-35）
+ok 243 - task-loop 派发时刻锁进事件 ts：startedAt / roundStartedAt 与 node.dispatch 逐字相等（AC-35）
+  ---
+  duration_ms: 353.3328
+  type: 'test'
+  ...
+# Subtest: task-loop 核对通过时刻锁进事件 ts：review.evidence_verified 的 ts 与 node.endedAt 严格相等（AC-35）
+ok 244 - task-loop 核对通过时刻锁进事件 ts：review.evidence_verified 的 ts 与 node.endedAt 严格相等（AC-35）
+  ---
+  duration_ms: 357.461
+  type: 'test'
+  ...
+# Subtest: task-loop 第 2 轮仍驳回：停止回流 → 升级挂起，不再派发第 3 次
+ok 245 - task-loop 第 2 轮仍驳回：停止回流 → 升级挂起，不再派发第 3 次
+  ---
+  duration_ms: 382.9952
+  type: 'test'
+  ...
+# Subtest: task-loop 审核文件无效：一律升级，不回流、不写第 2 轮
+ok 246 - task-loop 审核文件无效：一律升级，不回流、不写第 2 轮
+  ---
+  duration_ms: 207.0954
+  type: 'test'
+  ...
+# Subtest: task-loop 审核文件不可解析：同样升级挂起（不回流）
+ok 247 - task-loop 审核文件不可解析：同样升级挂起（不回流）
+  ---
+  duration_ms: 206.1218
+  type: 'test'
+  ...
+# Subtest: task-loop 工作区建不起来：WORKSPACE_INIT_FAILED，且不留半个实例目录（AC-44）
+ok 248 - task-loop 工作区建不起来：WORKSPACE_INIT_FAILED，且不留半个实例目录（AC-44）
+  ---
+  duration_ms: 3.8009
+  type: 'test'
+  ...
+# Subtest: task-loop 产物行不合规：缺行 / 非 md / 多行一律在发起时拒绝
+ok 249 - task-loop 产物行不合规：缺行 / 非 md / 多行一律在发起时拒绝
+  ---
+  duration_ms: 2.4806
+  type: 'test'
+  ...
+# Subtest: task-loop 审核提示词给绝对路径：基址与 readReview 同源，避免宿主写进实例工作区
+ok 250 - task-loop 审核提示词给绝对路径：基址与 readReview 同源，避免宿主写进实例工作区
+  ---
+  duration_ms: 233.9965
+  type: 'test'
+  ...
+# Subtest: extractDeclaredArtifacts：中文引导词后的相对路径
+ok 251 - extractDeclaredArtifacts：中文引导词后的相对路径
+  ---
+  duration_ms: 3.3597
+  type: 'test'
+  ...
+# Subtest: extractDeclaredArtifacts：一条任务里两个产出（带目录 + 裸扩展名）
+ok 252 - extractDeclaredArtifacts：一条任务里两个产出（带目录 + 裸扩展名）
+  ---
+  duration_ms: 0.4741
+  type: 'test'
+  ...
+# Subtest: extractDeclaredArtifacts：没有产出路径时返回空
+ok 253 - extractDeclaredArtifacts：没有产出路径时返回空
+  ---
+  duration_ms: 0.2383
+  type: 'test'
+  ...
+# Subtest: extractDeclaredArtifacts：绝对路径与 .. 越界一律拒绝
+ok 254 - extractDeclaredArtifacts：绝对路径与 .. 越界一律拒绝
+  ---
+  duration_ms: 0.6271
+  type: 'test'
+  ...
+# Subtest: verifyArtifacts：文件存在且非空 → ok
+ok 255 - verifyArtifacts：文件存在且非空 → ok
+  ---
+  duration_ms: 24.7282
+  type: 'test'
+  ...
+# Subtest: verifyArtifacts：缺文件 → MISSING 且文案逐字一致
+ok 256 - verifyArtifacts：缺文件 → MISSING 且文案逐字一致
+  ---
+  duration_ms: 3.9507
+  type: 'test'
+  ...
+# Subtest: verifyArtifacts：空文件 → EMPTY
+ok 257 - verifyArtifacts：空文件 → EMPTY
+  ---
+  duration_ms: 12.6739
+  type: 'test'
+  ...
+# Subtest: verifyArtifacts：未声明 → NO_DECLARATION 且 ok
+ok 258 - verifyArtifacts：未声明 → NO_DECLARATION 且 ok
+  ---
+  duration_ms: 3.6543
+  type: 'test'
+  ...
+# Subtest: verifyArtifacts：observedRefs 只入列不参与判定
+ok 259 - verifyArtifacts：observedRefs 只入列不参与判定
+  ---
+  duration_ms: 14.3455
+  type: 'test'
+  ...
+# Subtest: extractProductLines：全角「产物：」命中
+ok 260 - extractProductLines：全角「产物：」命中
+  ---
+  duration_ms: 1.2508
+  type: 'test'
+  ...
+# Subtest: extractProductLines：半角冒号视为未声明（PRODUCT_LINE_MISSING）
+ok 261 - extractProductLines：半角冒号视为未声明（PRODUCT_LINE_MISSING）
+  ---
+  duration_ms: 0.3424
+  type: 'test'
+  ...
+# Subtest: extractProductLines：一行两个产物；./ 等价；反斜杠规范化
+ok 262 - extractProductLines：一行两个产物；./ 等价；反斜杠规范化
+  ---
+  duration_ms: 0.5142
+  type: 'test'
+  ...
+# Subtest: verifyProducts：声明产物存在且非空 → ok
+ok 263 - verifyProducts：声明产物存在且非空 → ok
+  ---
+  duration_ms: 16.1577
+  type: 'test'
+  ...
+# Subtest: verifyProducts：缺失 / 为空 / 陈旧 三种失败文案逐字
+ok 264 - verifyProducts：缺失 / 为空 / 陈旧 三种失败文案逐字
+  ---
+  duration_ms: 14.4906
+  type: 'test'
+  ...
+# Subtest: readVerdict：合法判定 → ok
+ok 265 - readVerdict：合法判定 → ok
+  ---
+  duration_ms: 12.89
+  type: 'test'
+  ...
+# Subtest: readVerdict ①：文件不存在 → VERDICT_MISSING
+ok 266 - readVerdict ①：文件不存在 → VERDICT_MISSING
+  ---
+  duration_ms: 3.538
+  type: 'test'
+  ...
+# Subtest: readVerdict ②：不是本轮新写 → VERDICT_STALE
+ok 267 - readVerdict ②：不是本轮新写 → VERDICT_STALE
+  ---
+  duration_ms: 9.684
+  type: 'test'
+  ...
+# Subtest: readVerdict ③：JSON 坏 → VERDICT_UNPARSABLE
+ok 268 - readVerdict ③：JSON 坏 → VERDICT_UNPARSABLE
+  ---
+  duration_ms: 10.6689
+  type: 'test'
+  ...
+# Subtest: readVerdict ④：缺 result / 取值非法 → VERDICT_SCHEMA_INVALID
+ok 269 - readVerdict ④：缺 result / 取值非法 → VERDICT_SCHEMA_INVALID
+  ---
+  duration_ms: 14.5454
+  type: 'test'
+  ...
+# Subtest: readVerdict ⑤：fail 但缺陷清单为空 → VERDICT_NO_DEFECTS
+ok 270 - readVerdict ⑤：fail 但缺陷清单为空 → VERDICT_NO_DEFECTS
+  ---
+  duration_ms: 13.4938
+  type: 'test'
+  ...
+# Subtest: readVerdict ⑥：证据打不开 → VERDICT_EVIDENCE_UNREADABLE
+ok 271 - readVerdict ⑥：证据打不开 → VERDICT_EVIDENCE_UNREADABLE
+  ---
+  duration_ms: 12.7718
+  type: 'test'
+  ...
+# Subtest: readVerdict：fail + 缺陷 + 可读证据 → ok 并带证据绝对路径
+ok 272 - readVerdict：fail + 缺陷 + 可读证据 → ok 并带证据绝对路径
+  ---
+  duration_ms: 13.9074
+  type: 'test'
+  ...
+# Subtest: verifyProducts：baseDir 决定解析根，cwd 不变
+ok 273 - verifyProducts：baseDir 决定解析根，cwd 不变
+  ---
+  duration_ms: 16.9254
+  type: 'test'
+  ...
+# Subtest: verifyProducts：sha256 开关关闭时不生成该键
+ok 274 - verifyProducts：sha256 开关关闭时不生成该键
+  ---
+  duration_ms: 15.6662
+  type: 'test'
+  ...
+# Subtest: verifyProducts：缺失 / 空 / 陈旧三条文案与 ARTIFACT_TEXT 逐字一致
+ok 275 - verifyProducts：缺失 / 空 / 陈旧三条文案与 ARTIFACT_TEXT 逐字一致
+  ---
+  duration_ms: 13.9355
+  type: 'test'
+  ...
+# Subtest: encodeFrame：JSON + 换行，可被解码器还原
+ok 276 - encodeFrame：JSON + 换行，可被解码器还原
+  ---
+  duration_ms: 3.1775
+  type: 'test'
+  ...
+# Subtest: 半帧拼接：两次 push 才拼出一帧，半帧不出结果
+ok 277 - 半帧拼接：两次 push 才拼出一帧，半帧不出结果
+  ---
+  duration_ms: 0.4174
+  type: 'test'
+  ...
+# Subtest: 多帧一次到：按 0x0a 全切开，空行跳过
+ok 278 - 多帧一次到：按 0x0a 全切开，空行跳过
+  ---
+  duration_ms: 1.6282
+  type: 'test'
+  ...
+# Subtest: 坏 JSON：产出 IPC_BAD_FRAME 标记帧，且不影响后续合法帧
+ok 279 - 坏 JSON：产出 IPC_BAD_FRAME 标记帧，且不影响后续合法帧
+  ---
+  duration_ms: 1.0487
+  type: 'test'
+  ...
+# Subtest: 非对象 JSON（数组/字面量）同样视为坏帧
+ok 280 - 非对象 JSON（数组/字面量）同样视为坏帧
+  ---
+  duration_ms: 0.6197
+  type: 'test'
+  ...
+# Subtest: 超长帧：返回 IPC_FRAME_TOO_LARGE 标记并丢弃缓冲
+ok 281 - 超长帧：返回 IPC_FRAME_TOO_LARGE 标记并丢弃缓冲
+  ---
+  duration_ms: 0.5718
+  type: 'test'
+  ...
+# Subtest: 无换行的半帧积压超过 maxBytes：也按超限处理
+ok 282 - 无换行的半帧积压超过 maxBytes：也按超限处理
+  ---
+  duration_ms: 0.3832
+  type: 'test'
+  ...
+# Subtest: reset() 丢弃半帧
+ok 283 - reset() 丢弃半帧
+  ---
+  duration_ms: 0.596
+  type: 'test'
+  ...
+# Subtest: validateFrame：三类帧的形状校验
+ok 284 - validateFrame：三类帧的形状校验
+  ---
+  duration_ms: 1.3884
+  type: 'test'
+  ...
+# Subtest: 默认上限是 8 MiB
+ok 285 - 默认上限是 8 MiB
+  ---
+  duration_ms: 0.9282
+  type: 'test'
+  ...
+# Subtest: listen：写 core.json、绑定管道，并完成启动对账
+ok 286 - listen：写 core.json、绑定管道，并完成启动对账
+  ---
+  duration_ms: 42.5421
+  type: 'test'
+  ...
+# Subtest: 重复 listen：活核心占着管道时返回 CORE_ALREADY_RUNNING
+ok 287 - 重复 listen：活核心占着管道时返回 CORE_ALREADY_RUNNING
+  ---
+  duration_ms: 21.747
+  type: 'test'
+  ...
+# Subtest: 未知方法：返回 IPC_BAD_METHOD，服务端不崩且后续请求正常
+ok 288 - 未知方法：返回 IPC_BAD_METHOD，服务端不崩且后续请求正常
+  ---
+  duration_ms: 18.054
+  type: 'test'
+  ...
+# Subtest: 坏帧 / 非法帧不杀连接：发一段垃圾后 ping 仍可用
+ok 289 - 坏帧 / 非法帧不杀连接：发一段垃圾后 ping 仍可用
+  ---
+  duration_ms: 82.6742
+  type: 'test'
+  ...
+# Subtest: instance.subscribe：bus.emit 一条即推 evt 帧，seq 正确
+ok 290 - instance.subscribe：bus.emit 一条即推 evt 帧，seq 正确
+  ---
+  duration_ms: 72.9387
+  type: 'test'
+  ...
+# Subtest: run.start：先回包 {instanceId,nodeId,sessionId}，stream 进展转成 evt
+ok 291 - run.start：先回包 {instanceId,nodeId,sessionId}，stream 进展转成 evt
+  ---
+  duration_ms: 46.2911
+  type: 'test'
+  ...
+# Subtest: instance.get / list / events / cancel 直通 orchestrator
+ok 292 - instance.get / list / events / cancel 直通 orchestrator
+  ---
+  duration_ms: 24.9493
+  type: 'test'
+  ...
+# Subtest: run.start：template / hostId 不再被白名单静默丢弃（C-05）
+ok 293 - run.start：template / hostId 不再被白名单静默丢弃（C-05）
+  ---
+  duration_ms: 15.8134
+  type: 'test'
+  ...
+# Subtest: instance.get：透出 template / cwd / pendingEscalations（C-07）
+ok 294 - instance.get：透出 template / cwd / pendingEscalations（C-07）
+  ---
+  duration_ms: 17.6166
+  type: 'test'
+  ...
+# Subtest: test.dispatch / test.escalate：仅 NODE_ENV=test 挂载，结果原样透传（M-14 / C-14）
+ok 295 - test.dispatch / test.escalate：仅 NODE_ENV=test 挂载，结果原样透传（M-14 / C-14）
+  ---
+  duration_ms: 16.7742
+  type: 'test'
+  ...
+# Subtest: 非 test 环境：test.dispatch / test.escalate 返回 IPC_BAD_METHOD，核心不崩
+ok 296 - 非 test 环境：test.dispatch / test.escalate 返回 IPC_BAD_METHOD，核心不崩
+  ---
+  duration_ms: 18.4106
+  type: 'test'
+  ...
+# Subtest: core.stop：先回包再断连，5s 内收敛，core.json 仍可读
+ok 297 - core.stop：先回包再断连，5s 内收敛，core.json 仍可读
+  ---
+  duration_ms: 127.9767
+  type: 'test'
+  ...
+# Subtest: isAlive：没有核心时为 false，且不拉起任何进程
+ok 298 - isAlive：没有核心时为 false，且不拉起任何进程
+  ---
+  duration_ms: 11.429
+  type: 'test'
+  ...
+# Subtest: connect({ensure:false})：核心没在跑 → CORE_NOT_RUNNING
+ok 299 - connect({ensure:false})：核心没在跑 → CORE_NOT_RUNNING
+  ---
+  duration_ms: 4.3828
+  type: 'test'
+  ...
+# Subtest: 自动拉起：detached 起真进程，ping 拿到 pid/generation，stopCore 清干净
+ok 300 - 自动拉起：detached 起真进程，ping 拿到 pid/generation，stopCore 清干净
+  ---
+  duration_ms: 406.5765
+  type: 'test'
+  ...
+# Subtest: stopCore：核心本来就没在跑时幂等返回 not-running
+ok 301 - stopCore：核心本来就没在跑时幂等返回 not-running
+  ---
+  duration_ms: 2.9165
+  type: 'test'
+  ...
+# Subtest: EACCES：管道无权限 → 直接 CORE_START_FAILED，不反复拉起（R6）
+ok 302 - EACCES：管道无权限 → 直接 CORE_START_FAILED，不反复拉起（R6）
+  ---
+  duration_ms: 2.36
+  type: 'test'
+  ...
+# Subtest: 冷启动超时：CORE_START_FAILED 且带 elapsedMs/cause，不无限轮询
+ok 303 - 冷启动超时：CORE_START_FAILED 且带 elapsedMs/cause，不无限轮询
+  ---
+  duration_ms: 456.0364
+  type: 'test'
+  ...
+# Subtest: --prepare-only 写出 cursor.json 与 .orch/hosts/mock.json，退出码 0
+ok 304 - --prepare-only 写出 cursor.json 与 .orch/hosts/mock.json，退出码 0
+  ---
+  duration_ms: 173.1248
+  type: 'test'
+  ...
+# Subtest: cursor.json 并发消费 20 次不重复
+ok 305 - cursor.json 并发消费 20 次不重复
+  ---
+  duration_ms: 783.7633
+  type: 'test'
+  ...
+# Subtest: mock agent 走真实 stdio + acp 链路按场景写 calc.js 与 verdict.json
+ok 306 - mock agent 走真实 stdio + acp 链路按场景写 calc.js 与 verdict.json
+  ---
+  duration_ms: 682.4899
+  type: 'test'
+  ...
+# Subtest: 场景表齐全（17 个命名场景 + 文档别名）
+ok 307 - 场景表齐全（17 个命名场景 + 文档别名）
+  ---
+  duration_ms: 1.2391
+  type: 'test'
+  ...
+# Subtest: parseArgs：run 需要 --cwd 与 --task
+ok 308 - parseArgs：run 需要 --cwd 与 --task
+  ---
+  duration_ms: 2.4965
+  type: 'test'
+  ...
+# Subtest: parseArgs：status 支持 --instance 与 --events
+ok 309 - parseArgs：status 支持 --instance 与 --events
+  ---
+  duration_ms: 0.3782
+  type: 'test'
+  ...
+# Subtest: parseArgs：cancel 需要 --instance；core 只接受 stop
+ok 310 - parseArgs：cancel 需要 --instance；core 只接受 stop
+  ---
+  duration_ms: 0.2244
+  type: 'test'
+  ...
+# Subtest: parseArgs：未知命令 / 未知参数 / 缺值都是用法错误
+ok 311 - parseArgs：未知命令 / 未知参数 / 缺值都是用法错误
+  ---
+  duration_ms: 0.1917
+  type: 'test'
+  ...
+# Subtest: parseArgs：--key=value 形式可用
+ok 312 - parseArgs：--key=value 形式可用
+  ---
+  duration_ms: 1.0778
+  type: 'test'
+  ...
+# Subtest: exitCodeFor：三类开始前失败是 3，其余是 1
+ok 313 - exitCodeFor：三类开始前失败是 3，其余是 1
+  ---
+  duration_ms: 0.3452
+  type: 'test'
+  ...
+# Subtest: main：用法错误退出码 2，且只打用法摘要（不连核心）
+ok 314 - main：用法错误退出码 2，且只打用法摘要（不连核心）
+  ---
+  duration_ms: 0.9387
+  type: 'test'
+  ...
+# Subtest: main：--cwd 相对当前 shell 目录解析，不作为项目根
+ok 315 - main：--cwd 相对当前 shell 目录解析，不作为项目根
+  ---
+  duration_ms: 1.3414
+  type: 'test'
+  ...
+# Subtest: parseArgs：--template / --host 是合法的 run 参数（M-8）
+ok 316 - parseArgs：--template / --host 是合法的 run 参数（M-8）
+  ---
+  duration_ms: 0.6913
+  type: 'test'
+  ...
+# Subtest: usage：run 行列出 --template / --host
+ok 317 - usage：run 行列出 --template / --host
+  ---
+  duration_ms: 0.7882
+  type: 'test'
+  ...
+# Subtest: exitCodeFor：新增业务错误码一律 1（D-5）
+ok 318 - exitCodeFor：新增业务错误码一律 1（D-5）
+  ---
+  duration_ms: 0.3322
+  type: 'test'
+  ...
+# Subtest: main run：把 --template / --host 透传到 run.start（C-05）
+ok 319 - main run：把 --template / --host 透传到 run.start（C-05）
+  ---
+  duration_ms: 4.4483
+  type: 'test'
+  ...
+# Subtest: main run：不给 --template 时请求体不带 template（缺省 single，I1.1 行为）
+ok 320 - main run：不给 --template 时请求体不带 template（缺省 single，I1.1 行为）
+  ---
+  duration_ms: 0.9657
+  type: 'test'
+  ...
+# Subtest: main run：TEMPLATE_UNKNOWN 逐字文案 + 退出码 1
+ok 321 - main run：TEMPLATE_UNKNOWN 逐字文案 + 退出码 1
+  ---
+  duration_ms: 0.4803
+  type: 'test'
+  ...
+# Subtest: main run：成功结束补一次终态节点行 + 带方向交接包 + 升级 —（A-3）
+ok 322 - main run：成功结束补一次终态节点行 + 带方向交接包 + 升级 —（A-3）
+  ---
+  duration_ms: 0.8623
+  type: 'test'
+  ...
+# Subtest: main run：挂起收尾退出码 4，末尾正好三行（A-4）
+ok 323 - main run：挂起收尾退出码 4，末尾正好三行（A-4）
+  ---
+  duration_ms: 1.1057
+  type: 'test'
+  ...
+# Subtest: main run：停止推进收尾退出码 5，末尾正好四行（A-4）
+ok 324 - main run：停止推进收尾退出码 5，末尾正好四行（A-4）
+  ---
+  duration_ms: 0.9218
+  type: 'test'
+  ...
+# Subtest: main status：code-loop 节点表 / 带方向交接包 / 升级块，--events 带 [\#seq] 与中文原因
+ok 325 - main status：code-loop 节点表 / 带方向交接包 / 升级块，--events 带 [\#seq] 与中文原因
+  ---
+  duration_ms: 1.7711
+  type: 'test'
+  ...
+# Subtest: renderInstanceLine：实例号 + 状态名
+ok 326 - renderInstanceLine：实例号 + 状态名
+  ---
+  duration_ms: 2.5914
+  type: 'test'
+  ...
+# Subtest: renderInterruptedNote：说明停在节点/会话哪一步（AC-12）
+ok 327 - renderInterruptedNote：说明停在节点/会话哪一步（AC-12）
+  ---
+  duration_ms: 0.3559
+  type: 'test'
+  ...
+# Subtest: renderInstanceListRow：实例/状态/节点/会话/耗时/更新时间
+ok 328 - renderInstanceListRow：实例/状态/节点/会话/耗时/更新时间
+  ---
+  duration_ms: 2.0863
+  type: 'test'
+  ...
+# Subtest: renderInstanceUnreadable / renderInstanceMissing：不假装没有这个实例
+ok 329 - renderInstanceUnreadable / renderInstanceMissing：不假装没有这个实例
+  ---
+  duration_ms: 0.3078
+  type: 'test'
+  ...
+# Subtest: renderSessionLine：五个可观测状态各有各的文案
+ok 330 - renderSessionLine：五个可观测状态各有各的文案
+  ---
+  duration_ms: 0.7716
+  type: 'test'
+  ...
+# Subtest: renderSessionLine：pendingPermission 是 {action} 结构时也显示动作名
+ok 331 - renderSessionLine：pendingPermission 是 {action} 结构时也显示动作名
+  ---
+  duration_ms: 0.2535
+  type: 'test'
+  ...
+# Subtest: renderSessionLine：没有 toolName 时退回时长，不出现空括号
+ok 332 - renderSessionLine：没有 toolName 时退回时长，不出现空括号
+  ---
+  duration_ms: 0.4725
+  type: 'test'
+  ...
+# Subtest: renderSessionLine：没有会话返回 null（不打印半截行）
+ok 333 - renderSessionLine：没有会话返回 null（不打印半截行）
+  ---
+  duration_ms: 0.2327
+  type: 'test'
+  ...
+# Subtest: renderSessionStall：仅 sessionStalled 为真时追加“无新事件”
+ok 334 - renderSessionStall：仅 sessionStalled 为真时追加“无新事件”
+  ---
+  duration_ms: 0.634
+  type: 'test'
+  ...
+# Subtest: renderSessionSubmitted：等待下游 + 产出已提交（需求 2.2 第 5 行）
+ok 335 - renderSessionSubmitted：等待下游 + 产出已提交（需求 2.2 第 5 行）
+  ---
+  duration_ms: 0.602
+  type: 'test'
+  ...
+# Subtest: renderSessionCreated / renderTaskSubmitted：需求 2.2 第 2、3 行原文
+ok 336 - renderSessionCreated / renderTaskSubmitted：需求 2.2 第 2、3 行原文
+  ---
+  duration_ms: 0.324
+  type: 'test'
+  ...
+# Subtest: renderNodeLine：完成带耗时、待校验不带、失败带核对原因
+ok 337 - renderNodeLine：完成带耗时、待校验不带、失败带核对原因
+  ---
+  duration_ms: 0.7268
+  type: 'test'
+  ...
+# Subtest: renderNodeFailure：宿主原文 / 审批步骤 / 未知错误各走各的模板
+ok 338 - renderNodeFailure：宿主原文 / 审批步骤 / 未知错误各走各的模板
+  ---
+  duration_ms: 0.2158
+  type: 'test'
+  ...
+# Subtest: renderHandoffLines：四行按时间戳顺序与格式输出
+ok 339 - renderHandoffLines：四行按时间戳顺序与格式输出
+  ---
+  duration_ms: 1.3719
+  type: 'test'
+  ...
+# Subtest: renderHandoffLines：拒绝行带原因，且不会同时出现 consumed 与 rejected
+ok 340 - renderHandoffLines：拒绝行带原因，且不会同时出现 consumed 与 rejected
+  ---
+  duration_ms: 0.4639
+  type: 'test'
+  ...
+# Subtest: renderHandoffWait：已投递 + 未终态才显示等待时长（AC-24 绝不显示已过期）
+ok 341 - renderHandoffWait：已投递 + 未终态才显示等待时长（AC-24 绝不显示已过期）
+  ---
+  duration_ms: 0.3623
+  type: 'test'
+  ...
+# Subtest: renderCancelLines：会话空闲 / 节点已取消 / 交接包已拒绝（已撤回）
+ok 342 - renderCancelLines：会话空闲 / 节点已取消 / 交接包已拒绝（已撤回）
+  ---
+  duration_ms: 0.3708
+  type: 'test'
+  ...
+# Subtest: renderEventLine：时间 + 对象 + 迁移 + 原因
+ok 343 - renderEventLine：时间 + 对象 + 迁移 + 原因
+  ---
+  duration_ms: 0.3559
+  type: 'test'
+  ...
+# Subtest: renderEventLine：备注事件（from/to 为空）用 detail.note
+ok 344 - renderEventLine：备注事件（from/to 为空）用 detail.note
+  ---
+  duration_ms: 0.1805
+  type: 'test'
+  ...
+# Subtest: renderEventLine：同一文案的两个会话状态补上触发事件名
+ok 345 - renderEventLine：同一文案的两个会话状态补上触发事件名
+  ---
+  duration_ms: 0.1563
+  type: 'test'
+  ...
+# Subtest: renderRejectedTransition：拒绝的迁移（AC-26）
+ok 346 - renderRejectedTransition：拒绝的迁移（AC-26）
+  ---
+  duration_ms: 0.197
+  type: 'test'
+  ...
+# Subtest: renderError：九条原文逐字一致（需求 2.6）
+ok 347 - renderError：九条原文逐字一致（需求 2.6）
+  ---
+  duration_ms: 0.4484
+  type: 'test'
+  ...
+# Subtest: renderError：STATE_CORRUPT 逐字一致，带 backupPath 时追加实际路径（AC-13）
+ok 348 - renderError：STATE_CORRUPT 逐字一致，带 backupPath 时追加实际路径（AC-13）
+  ---
+  duration_ms: 0.173
+  type: 'test'
+  ...
+# Subtest: renderError：INSTANCE_TERMINAL 用中文状态名，不暴露英文枚举
+ok 349 - renderError：INSTANCE_TERMINAL 用中文状态名，不暴露英文枚举
+  ---
+  duration_ms: 0.1046
+  type: 'test'
+  ...
+# Subtest: renderError：不认识的失败码透出 code，不显示成 “未知错误：?”
+ok 350 - renderError：不认识的失败码透出 code，不显示成 “未知错误：?”
+  ---
+  duration_ms: 0.0998
+  type: 'test'
+  ...
+# Subtest: renderError：params.raw 含换行时原文不被改写
+ok 351 - renderError：params.raw 含换行时原文不被改写
+  ---
+  duration_ms: 0.1139
+  type: 'test'
+  ...
+# Subtest: renderError：params.raw 超长时不被截断
+ok 352 - renderError：params.raw 超长时不被截断
+  ---
+  duration_ms: 0.1319
+  type: 'test'
+  ...
+# Subtest: A-2 实例行：code-loop 带模板，halted 时“已停止推进”在模板前，single 不带
+ok 353 - A-2 实例行：code-loop 带模板，halted 时“已停止推进”在模板前，single 不带
+  ---
+  duration_ms: 0.4244
+  type: 'test'
+  ...
+# Subtest: A-2 列表行：code-loop 追加模板与“待处理升级 N”，v1/single 不追加（C-07）
+ok 354 - A-2 列表行：code-loop 追加模板与“待处理升级 N”，v1/single 不追加（C-07）
+  ---
+  duration_ms: 0.3987
+  type: 'test'
+  ...
+# Subtest: A-2 节点行：号/角色/状态/轮次/耗时，单空格不对齐；未派发不带轮次与耗时
+ok 355 - A-2 节点行：号/角色/状态/轮次/耗时，单空格不对齐；未派发不带轮次与耗时
+  ---
+  duration_ms: 0.8187
+  type: 'test'
+  ...
+# Subtest: A-2 节点行：判定通过 / 不通过 + 缺陷条数；失败带“等待复测”限定词
+ok 356 - A-2 节点行：判定通过 / 不通过 + 缺陷条数；失败带“等待复测”限定词
+  ---
+  duration_ms: 0.3886
+  type: 'test'
+  ...
+# Subtest: A-2 节点行：升级未记录只挂在升级前的那个节点上；已升级不带限定词
+ok 357 - A-2 节点行：升级未记录只挂在升级前的那个节点上；已升级不带限定词
+  ---
+  duration_ms: 0.5699
+  type: 'test'
+  ...
+# Subtest: renderNodeLines：single 仍是 I1.1 一行，且不带号/角色/轮次
+ok 358 - renderNodeLines：single 仍是 I1.1 一行，且不带号/角色/轮次
+  ---
+  duration_ms: 0.1557
+  type: 'test'
+  ...
+# Subtest: A-2 会话行：六种分支各一行，只渲染当前 1 行
+ok 359 - A-2 会话行：六种分支各一行，只渲染当前 1 行
+  ---
+  duration_ms: 0.3327
+  type: 'test'
+  ...
+# Subtest: A-2 交接包：code-loop 带方向（号/方向/状态各 2 空格），single 无方向
+ok 360 - A-2 交接包：code-loop 带方向（号/方向/状态各 2 空格），single 无方向
+  ---
+  duration_ms: 0.6345
+  type: 'test'
+  ...
+# Subtest: A-2 交接包等待行：code-loop 带方向，single 逐字保留
+ok 361 - A-2 交接包等待行：code-loop 带方向，single 逐字保留
+  ---
+  duration_ms: 0.3097
+  type: 'test'
+  ...
+# Subtest: A-2 升级块：single 不打印；code-loop 无升级打“升级 —”，有升级打 1+4 行
+ok 362 - A-2 升级块：single 不打印；code-loop 无升级打“升级 —”，有升级打 1+4 行
+  ---
+  duration_ms: 0.652
+  type: 'test'
+  ...
+# Subtest: A-4 挂起收尾：正好三行（实例 + 升级摘要 + 下一步），不含节点/交接包行
+ok 363 - A-4 挂起收尾：正好三行（实例 + 升级摘要 + 下一步），不含节点/交接包行
+  ---
+  duration_ms: 0.4398
+  type: 'test'
+  ...
+# Subtest: A-4 停止推进收尾：错误行 + 三行，节点行是唯一状态行且带“升级未记录”
+ok 364 - A-4 停止推进收尾：错误行 + 三行，节点行是唯一状态行且带“升级未记录”
+  ---
+  duration_ms: 0.2836
+  type: 'test'
+  ...
+# Subtest: C-10 事件行：code-loop 加 [\#seq] 与中文原因、task-loop 的 note 行只放中文原因词；single 保持 I1.1 逐字
+ok 365 - C-10 事件行：code-loop 加 [\#seq] 与中文原因、task-loop 的 note 行只放中文原因词；single 保持 I1.1 逐字
+  ---
+  duration_ms: 0.5284
+  type: 'test'
+  ...
+# Subtest: C-10 事件行：node.dispatch 中段固定“派发 → 执行中”、原因带轮次
+ok 366 - C-10 事件行：node.dispatch 中段固定“派发 → 执行中”、原因带轮次
+  ---
+  duration_ms: 0.1756
+  type: 'test'
+  ...
+# Subtest: C-10 事件行：escalation 进入 pending 时中段是“待处理”
+ok 367 - C-10 事件行：escalation 进入 pending 时中段是“待处理”
+  ---
+  duration_ms: 0.2025
+  type: 'test'
+  ...
+# Subtest: C-10 回流事件：行 + 6 空格缩进的缺陷明细与复测要求（AC-24）
+ok 368 - C-10 回流事件：行 + 6 空格缩进的缺陷明细与复测要求（AC-24）
+  ---
+  duration_ms: 0.4196
+  type: 'test'
+  ...
+# Subtest: C-10 rejected：两种模板都保持 I1.1 版式（无 seq、无原因）
+ok 369 - C-10 rejected：两种模板都保持 I1.1 版式（无 seq、无原因）
+  ---
+  duration_ms: 0.2199
+  type: 'test'
+  ...
+# Subtest: renderCancelLines：v2 数组按 会话 → 节点 → 交接包 → 升级 展开
+ok 370 - renderCancelLines：v2 数组按 会话 → 节点 → 交接包 → 升级 展开
+  ---
+  duration_ms: 0.18
+  type: 'test'
+  ...
+# Subtest: C-11 renderError：新占位符 name/instanceId/i/summary/evidence/text 不再残留 {...}
+ok 371 - C-11 renderError：新占位符 name/instanceId/i/summary/evidence/text 不再残留 {...}
+  ---
+  duration_ms: 0.419
+  type: 'test'
+  ...
+# Subtest: task-loop 节点行：三种后缀与「等待下游」限定词逐字
+ok 372 - task-loop 节点行：三种后缀与「等待下游」限定词逐字
+  ---
+  duration_ms: 0.7337
+  type: 'test'
+  ...
+# Subtest: task-loop 节点行：审核通过与驳回的后缀
+ok 373 - task-loop 节点行：审核通过与驳回的后缀
+  ---
+  duration_ms: 0.3961
+  type: 'test'
+  ...
+# Subtest: task-loop 限定词：核对证据与裸「待校验」按 reviewReason 区分
+ok 374 - task-loop 限定词：核对证据与裸「待校验」按 reviewReason 区分
+  ---
+  duration_ms: 0.2496
+  type: 'test'
+  ...
+# Subtest: task-loop 限定词：halted 优先于 note，节点行不带耗时（A-3）
+ok 375 - task-loop 限定词：halted 优先于 note，节点行不带耗时（A-3）
+  ---
+  duration_ms: 0.2374
+  type: 'test'
+  ...
+# Subtest: task-loop 耗时：review(evidence) 与 escalated 不显示，同毫秒钳到 1s
+ok 376 - task-loop 耗时：review(evidence) 与 escalated 不显示，同毫秒钳到 1s
+  ---
+  duration_ms: 0.6916
+  type: 'test'
+  ...
+# Subtest: task-loop 会话行：status 不带后缀，run 流式补「产出已提交」
+ok 377 - task-loop 会话行：status 不带后缀，run 流式补「产出已提交」
+  ---
+  duration_ms: 0.2445
+  type: 'test'
+  ...
+# Subtest: renderInterruptedNote：优先点位停点节点，缺字段时回落 nodes[0]（AC-45）
+ok 378 - renderInterruptedNote：优先点位停点节点，缺字段时回落 nodes[0]（AC-45）
+  ---
+  duration_ms: 0.2806
+  type: 'test'
+  ...
+# Subtest: task-loop A-3 收尾：挂起三行逐字
+ok 379 - task-loop A-3 收尾：挂起三行逐字
+  ---
+  duration_ms: 0.2541
+  type: 'test'
+  ...
+# Subtest: task-loop A-3 收尾：停止推进四行逐字（含节点行不带耗时）
+ok 380 - task-loop A-3 收尾：停止推进四行逐字（含节点行不带耗时）
+  ---
+  duration_ms: 0.2656
+  type: 'test'
+  ...
+# Subtest: factory：<root>/.orch/hosts/dsh.json 的 launch 覆盖生效，能对 mock 宿主建会话
+ok 381 - factory：<root>/.orch/hosts/dsh.json 的 launch 覆盖生效，能对 mock 宿主建会话
+  ---
+  duration_ms: 413.7587
+  type: 'test'
+  ...
+# Subtest: 早返回：turn-delay 3000ms 下 startRun 1s 内 resolve，随后 waitForRun 到 completed
+ok 382 - 早返回：turn-delay 3000ms 下 startRun 1s 内 resolve，随后 waitForRun 到 completed
+  ---
+  duration_ms: 3368.9211
+  type: 'test'
+  ...
+# Subtest: 后台失败：--host-error + 早返回不抛未捕获异常，waitForRun 得到 failed
+ok 383 - 后台失败：--host-error + 早返回不抛未捕获异常，waitForRun 得到 failed
+  ---
+  duration_ms: 459.6336
+  type: 'test'
+  ...
+# Subtest: run.wait：运行中挂起到终态；不存在的实例返回 NOT_RUNNING
+ok 384 - run.wait：运行中挂起到终态；不存在的实例返回 NOT_RUNNING
+  ---
+  duration_ms: 1539.3967
+  type: 'test'
+  ...
+# Subtest: 默认行为未变：startRun 不传 earlyReturn 仍返回终态快照
+ok 385 - 默认行为未变：startRun 不传 earlyReturn 仍返回终态快照
+  ---
+  duration_ms: 351.4058
+  type: 'test'
+  ...
+# Subtest: F-1 策略来自宿主配置：limits.permissionPolicy=reject（env 可覆盖）
+ok 386 - F-1 策略来自宿主配置：limits.permissionPolicy=reject（env 可覆盖）
+  ---
+  duration_ms: 57.8802
+  type: 'test'
+  ...
+# Subtest: F-1 宿主配置驱动：不传显式 policy 时，config=reject 也会走审批被拒
+ok 387 - F-1 宿主配置驱动：不传显式 policy 时，config=reject 也会走审批被拒
+  ---
+  duration_ms: 414.0212
+  type: 'test'
+  ...
+# Subtest: F-1 hold：--permission=ask → 会话 waiting_input 且节点仍 running；cancel 收尾
+ok 388 - F-1 hold：--permission=ask → 会话 waiting_input 且节点仍 running；cancel 收尾
+  ---
+  duration_ms: 313.7946
+  type: 'test'
+  ...
+# Subtest: F-1 reject：--permission=ask → PERMISSION_DENIED，params.step=write
+ok 389 - F-1 reject：--permission=ask → PERMISSION_DENIED，params.step=write
+  ---
+  duration_ms: 348.7464
+  type: 'test'
+  ...
+# Subtest: F-1 allow：--permission=ask 跑完，事件里 waiting_input 有进有出
+ok 390 - F-1 allow：--permission=ask 跑完，事件里 waiting_input 有进有出
+  ---
+  duration_ms: 380.9697
+  type: 'test'
+  ...
+# Subtest: F-2：第二个核心在 EADDRINUSE 退出前不跑对账，第一个核心的 running 实例保持原样
+ok 391 - F-2：第二个核心在 EADDRINUSE 退出前不跑对账，第一个核心的 running 实例保持原样
+  ---
+  duration_ms: 97.5466
+  type: 'test'
+  ...
+# Subtest: F-3 存储层：expectedState 不符 → STORE_CONFLICT 且不写
+ok 392 - F-3 存储层：expectedState 不符 → STORE_CONFLICT 且不写
+  ---
+  duration_ms: 57.3918
+  type: 'test'
+  ...
+# Subtest: F-3 编排层：磁盘被外部改成 interrupted 后，→completed 被拒且留事件
+ok 393 - F-3 编排层：磁盘被外部改成 interrupted 后，→completed 被拒且留事件
+  ---
+  duration_ms: 933.3518
+  type: 'test'
+  ...
+# Subtest: F-4 --host-error：失败收尾后会话必须是 idle（不得停在 thinking）
+ok 394 - F-4 --host-error：失败收尾后会话必须是 idle（不得停在 thinking）
+  ---
+  duration_ms: 348.9432
+  type: 'test'
+  ...
+# Subtest: F-4 --permission=deny：params.step 非空且渲染文案不含 null
+ok 395 - F-4 --permission=deny：params.step 非空且渲染文案不含 null
+  ---
+  duration_ms: 362.5484
+  type: 'test'
+  ...
+# Subtest: F-4 VERIFY_FAILED：节点/实例 failed、会话 idle、交接包停在 accepted
+ok 396 - F-4 VERIFY_FAILED：节点/实例 failed、会话 idle、交接包停在 accepted
+  ---
+  duration_ms: 341.2514
+  type: 'test'
+  ...
+# Subtest: F-6 --session-missing：SESSION_INVALID，且与 NODE_BUSY 不是同一条文案
+ok 397 - F-6 --session-missing：SESSION_INVALID，且与 NODE_BUSY 不是同一条文案
+  ---
+  duration_ms: 295.7774
+  type: 'test'
+  ...
+# Subtest: F-5 probe：--hold-session 下输出的是归一化器的真实观察（无帧 → idle）
+ok 398 - F-5 probe：--hold-session 下输出的是归一化器的真实观察（无帧 → idle）
+  ---
+  duration_ms: 467.8969
+  type: 'test'
+  ...
+# Subtest: F-5 产品：--hold-session 下建会话后不推进，status 会话行仍是 idle
+ok 399 - F-5 产品：--hold-session 下建会话后不推进，status 会话行仍是 idle
+  ---
+  duration_ms: 514.453
+  type: 'test'
+  ...
+# Subtest: C-1 端到端：--session-missing → 会话已失效，无未知错误，exit 1
+ok 400 - C-1 端到端：--session-missing → 会话已失效，无未知错误，exit 1
+  ---
+  duration_ms: 927.8584
+  type: 'test'
+  ...
+# Subtest: C-2 端到端：tool_running 的 status 会话行含"已运行 Ns"（N>0）
+ok 401 - C-2 端到端：tool_running 的 status 会话行含"已运行 Ns"（N>0）
+  ---
+  duration_ms: 4835.5842
+  type: 'test'
+  ...
+# Subtest: C-3 端到端：跑到一半 core stop → 已中断，无未知错误，exit 1
+ok 402 - C-3 端到端：跑到一半 core stop → 已中断，无未知错误，exit 1
+  ---
+  duration_ms: 1698.7635
+  type: 'test'
+  ...
+# Subtest: C-5 内部通道只看位置参数：run --cwd core --task serve 不劫持
+ok 403 - C-5 内部通道只看位置参数：run --cwd core --task serve 不劫持
+  ---
+  duration_ms: 91.1552
+  type: 'test'
+  ...
+# Subtest: C-1 renderNodeFailure：SESSION_INVALID 是"会话已失效"，不是未知错误
+ok 404 - C-1 renderNodeFailure：SESSION_INVALID 是"会话已失效"，不是未知错误
+  ---
+  duration_ms: 2.0667
+  type: 'test'
+  ...
+# Subtest: C-1 renderNodeFailure：NODE_BUSY 走防御分支
+ok 405 - C-1 renderNodeFailure：NODE_BUSY 走防御分支
+  ---
+  duration_ms: 0.3
+  type: 'test'
+  ...
+# Subtest: C-1 run 收尾：SESSION_INVALID 的节点行与失败行都不出现"未知错误"
+ok 406 - C-1 run 收尾：SESSION_INVALID 的节点行与失败行都不出现"未知错误"
+  ---
+  duration_ms: 2.4345
+  type: 'test'
+  ...
+# Subtest: C-2 tool_running 行带工具名与时长，时长随快照变化
+ok 407 - C-2 tool_running 行带工具名与时长，时长随快照变化
+  ---
+  duration_ms: 0.4359
+  type: 'test'
+  ...
+# Subtest: C-2 tool_running 无时长信息时不硬造 0s（工具名段保持 AC-16 原样）
+ok 408 - C-2 tool_running 无时长信息时不硬造 0s（工具名段保持 AC-16 原样）
+  ---
+  duration_ms: 0.224
+  type: 'test'
+  ...
+# Subtest: C-2 status 路径：两次采样的 tool_running 会话行时长递增
+ok 409 - C-2 status 路径：两次采样的 tool_running 会话行时长递增
+  ---
+  duration_ms: 0.9579
+  type: 'test'
+  ...
+# Subtest: C-3 IPC_CLOSED 后以 ensure:false 重连，快照 interrupted → 打停点 note，不报未知错误
+ok 410 - C-3 IPC_CLOSED 后以 ensure:false 重连，快照 interrupted → 打停点 note，不报未知错误
+  ---
+  duration_ms: 1.0513
+  type: 'test'
+  ...
+# Subtest: C-3 重连失败 → "核心已停止"一行（中文来自 labels），仍不报未知错误
+ok 411 - C-3 重连失败 → "核心已停止"一行（中文来自 labels），仍不报未知错误
+  ---
+  duration_ms: 0.6514
+  type: 'test'
+  ...
+# Subtest: C-3 重连成功但取不到快照 → 同样落到"核心已停止"
+ok 412 - C-3 重连成功但取不到快照 → 同样落到"核心已停止"
+  ---
+  duration_ms: 0.8592
+  type: 'test'
+  ...
+# Subtest: C-4 status：sessionStalled 时显示"无新事件"，未静默时不显示
+ok 413 - C-4 status：sessionStalled 时显示"无新事件"，未静默时不显示
+  ---
+  duration_ms: 0.9436
+  type: 'test'
+  ...
+# Subtest: C-7 status：interrupted 只打一行实例信息（带停点），不重复
+ok 414 - C-7 status：interrupted 只打一行实例信息（带停点），不重复
+  ---
+  duration_ms: 0.7161
+  type: 'test'
+  ...
+# Subtest: C-7 run 收尾：interrupted 只出现一次 note，不再重复实例行
+ok 415 - C-7 run 收尾：interrupted 只出现一次 note，不再重复实例行
+  ---
+  duration_ms: 1.4012
+  type: 'test'
+  ...
+# Subtest: S-1 instance.get：STATE_CORRUPT 透出 backupPath（指向 state.json.corrupt）
+ok 416 - S-1 instance.get：STATE_CORRUPT 透出 backupPath（指向 state.json.corrupt）
+  ---
+  duration_ms: 64.9179
+  type: 'test'
+  ...
+# Subtest: S-2 extractDeclaredArtifacts：评审给出的 6 条样例全部成立
+ok 417 - S-2 extractDeclaredArtifacts：评审给出的 6 条样例全部成立
+  ---
+  duration_ms: 2.4626
+  type: 'test'
+  ...
+# Subtest: S-2 越界与绝对路径仍然一律拒绝
+ok 418 - S-2 越界与绝对路径仍然一律拒绝
+  ---
+  duration_ms: 0.5302
+  type: 'test'
+  ...
+1..418
+# tests 418
+# suites 0
+# pass 418
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12628.4009
+

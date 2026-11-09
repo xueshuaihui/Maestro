@@ -1,0 +1,13 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\code-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-10 --scenario pass --prepare-only --reset
+# label=夹具：code-loop 驱动 --prepare-only --reset（配好 mock 宿主） cwd=D:\WWW\Maestro exit=0 89ms
+{"ok":true,"prepareOnly":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-10","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-10\\demo-code-pass","scenario":"pass","resolvedScenario":"pass","cursorPath":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-10\\.mock\\cursor.json","hostPath":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-10\\.orch\\hosts\\mock.json","cursor":{"next":1},"host":{"id":"mock","transport":"stdio","launch":{"command":"C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe","args":["D:\\WWW\\Maestro\\test\\fixtures\\mock-acp-agent.js","--root","C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-10","--scenario","pass"]}}}
+
+
+$ "(fixture) 写 .orch/roles/ghost-skill.yaml（技能不存在）"
+# label=夹具：写 .orch/roles/ghost-skill.yaml（技能不存在） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-10\.orch\roles\ghost-skill.yaml
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd ./demo --task 写下说明 --host mock
+# label=orch run --cwd ./demo --task 写下说明 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-10 exit=3 102ms
+注册表不合法：roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）
+

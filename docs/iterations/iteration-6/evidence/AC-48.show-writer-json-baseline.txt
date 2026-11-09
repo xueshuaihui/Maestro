@@ -1,0 +1,19 @@
+{
+  "role": {
+    "id": "writer",
+    "name": "撰写者",
+    "group": "writing",
+    "groupLabel": "内容创作",
+    "artifactType": "document",
+    "sideEffect": "write",
+    "skills": [
+      "doc-draft"
+    ],
+    "maxConcurrentSessions": 2,
+    "source": "builtin",
+    "file": "assets/roles/writer.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+

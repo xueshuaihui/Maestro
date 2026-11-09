@@ -1,0 +1,248 @@
+$ "(fixture) 预置附录 A-1/A-13 的 doc-fanout（writeDocFanout，含 T-001 节点级 wake_allow）"
+# label=夹具：预置附录 A-1/A-13 的 doc-fanout（writeDocFanout，含 T-001 节点级 wake_allow） cwd=d:\WWW\Maestro exit=0 0ms
+schema: workflow/v1
+id: doc-fanout
+name: 文档并行版
+summary: 研究后两人并行撰写，汇总后人工确认
+entry: T-001
+terminal: T-006
+nodes:
+  - id: T-001
+    node_type: role
+    role: researcher
+    title: 研究
+    timeout: 600
+    retry: 2
+    wake_allow: [writer, editor]
+    outputs: [research.notes]
+  - id: T-002
+    node_type: role
+    role: writer
+    title: 撰写A
+    parallel_scope: draft
+    scope: draft-a
+    inputs: [brief]
+  - id: T-003
+    node_type: role
+    role: editor
+    title: 撰写B
+    parallel_scope: draft
+    scope: draft-b
+    inputs: [brief]
+  - id: T-004
+    node_type: human
+    title: 人工确认
+  - id: T-005
+    node_type: escalate
+    title: 升级
+  - id: T-006
+    node_type: subworkflow
+    workflow: code-loop
+    title: 代码闭环
+edges:
+  - from: T-001
+    to: T-002
+    map:
+      - from: T-001.research.notes
+        to: brief
+  - from: T-001
+    to: T-003
+    map:
+      - from: T-001.research.notes
+        to: brief
+  - from: T-002
+    to: T-004
+  - from: T-003
+    to: T-004
+  - from: T-004
+    to: T-006
+    when: human_approved
+  - from: T-004
+    to: T-005
+    when: human_rejected
+  - from: T-006
+    to: T-005
+    when: failed
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate
+# label=orch workflow validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-24 exit=0 116ms
+校验工作流 4 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate --format json
+# label=orch workflow validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-24 exit=0 111ms
+{
+  "counts": {
+    "assets": 4,
+    "builtin": 3,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow show doc-fanout --format json
+# label=orch workflow show doc-fanout --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-24 exit=0 93ms
+{
+  "workflow": {
+    "id": "doc-fanout",
+    "name": "文档并行版",
+    "nodeCount": 6,
+    "edgeCount": 7,
+    "source": "project",
+    "file": ".orch/workflows/doc-fanout.yaml",
+    "entry": "T-001",
+    "terminal": "T-006"
+  },
+  "nodes": [
+    {
+      "id": "T-001",
+      "nodeType": "role",
+      "role": "researcher",
+      "title": "研究",
+      "timeout": 600,
+      "retry": 2,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-001",
+      "inputs": [],
+      "outputs": [
+        "research.notes"
+      ]
+    },
+    {
+      "id": "T-002",
+      "nodeType": "role",
+      "role": "writer",
+      "title": "撰写A",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": "draft",
+      "scope": "draft-a",
+      "inputs": [
+        "brief"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "T-003",
+      "nodeType": "role",
+      "role": "editor",
+      "title": "撰写B",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": "draft",
+      "scope": "draft-b",
+      "inputs": [
+        "brief"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "T-004",
+      "nodeType": "human",
+      "role": null,
+      "title": "人工确认",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-004",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-005",
+      "nodeType": "escalate",
+      "role": null,
+      "title": "升级",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-005",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-006",
+      "nodeType": "subworkflow",
+      "role": null,
+      "title": "代码闭环",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-006",
+      "inputs": [],
+      "outputs": [],
+      "workflow": "code-loop"
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "when": "always",
+      "map": [
+        {
+          "from": "T-001.research.notes",
+          "to": "brief"
+        }
+      ]
+    },
+    {
+      "from": "T-001",
+      "to": "T-003",
+      "kind": "forward",
+      "when": "always",
+      "map": [
+        {
+          "from": "T-001.research.notes",
+          "to": "brief"
+        }
+      ]
+    },
+    {
+      "from": "T-002",
+      "to": "T-004",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-003",
+      "to": "T-004",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-004",
+      "to": "T-006",
+      "kind": "forward",
+      "when": "human_approved",
+      "map": []
+    },
+    {
+      "from": "T-004",
+      "to": "T-005",
+      "kind": "forward",
+      "when": "human_rejected",
+      "map": []
+    },
+    {
+      "from": "T-006",
+      "to": "T-005",
+      "kind": "forward",
+      "when": "failed",
+      "map": []
+    }
+  ]
+}
+

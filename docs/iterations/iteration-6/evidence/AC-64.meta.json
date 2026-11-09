@@ -1,0 +1,38 @@
+{
+  "ac": "AC-64",
+  "title": "可达性终态定义：human / escalate 也是终点",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:16.190Z",
+  "finishedAt": "2026-11-09T12:24:16.936Z",
+  "durationMs": 746,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-64",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-64"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 13,
+  "notes": [],
+  "extraFiles": [
+    "AC-64.validate-human-end.txt",
+    "AC-64.payload-human-end.json",
+    "AC-64.validate-escalate-end.txt",
+    "AC-64.payload-escalate-end.json",
+    "AC-64.validate-no-end.txt",
+    "AC-64.payload-no-end.json",
+    "AC-64.payload-show-human-end.json"
+  ]
+}

@@ -1,0 +1,33 @@
+$ "(fixture) 写 .orch/roles/ghost-skill.yaml（skills: [no-such-skill]）"
+# label=夹具：写 .orch/roles/ghost-skill.yaml（skills: [no-such-skill]） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-08\.orch\roles\ghost-skill.yaml
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-08 exit=1 95ms
+校验资产 27 个：1 个不合法
+- roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-08 exit=1 94ms
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "ROLE_SKILL_NOT_FOUND",
+      "file": "roles/ghost-skill.yaml",
+      "scope": "role",
+      "field": "skills",
+      "line": null,
+      "detail": "引用的技能不存在：no-such-skill"
+    }
+  ]
+}
+

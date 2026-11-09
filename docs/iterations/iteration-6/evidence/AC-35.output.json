@@ -1,0 +1,107 @@
+{
+  "ac": "AC-35",
+  "title": "变量引用无效",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具自检：map.from 已改为 T-003.research.notes",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 报 WORKFLOW_VAR_UNKNOWN（期望含 \"（WORKFLOW_VAR_UNKNOWN）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：变量引用无法解析：T-003.research.notes（WORKFLOW_VAR_UNKNOWN）\n"
+    },
+    {
+      "text": "Then 明细含 T-003.research.notes（期望含 \"变量引用无法解析：T-003.research.notes\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：变量引用无法解析：T-003.research.notes（WORKFLOW_VAR_UNKNOWN）\n"
+    },
+    {
+      "text": "机检：errors[0].code === WORKFLOW_VAR_UNKNOWN（期望 \"WORKFLOW_VAR_UNKNOWN\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_VAR_UNKNOWN\""
+    },
+    {
+      "text": "机检：errors[0].detail 含 T-003.research.notes（期望含 \"T-003.research.notes\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "变量引用无法解析：T-003.research.notes"
+    },
+    {
+      "text": "机检：counts.invalid === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置附录 A-13 的 doc-fanout（writeDocFanout）",
+      "argv": [
+        "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：把 T-001→T-002 的映射改成 from: T-003.research.notes",
+      "argv": [
+        "(fixture) 把 T-001→T-002 的映射改成 from: T-003.research.notes"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-35",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：变量引用无法解析：T-003.research.notes（WORKFLOW_VAR_UNKNOWN）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-35",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 96,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_VAR_UNKNOWN\",\n      \"file\": \"workflows/doc-fanout.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"变量引用无法解析：T-003.research.notes\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

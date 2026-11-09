@@ -1,0 +1,19 @@
+$ "(fixture) 全新项目根（没有任何实例）"
+# label=夹具：全新项目根（没有任何实例） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-39
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show developer --instance INST-999
+# label=orch role show developer --instance INST-999 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-39 exit=1 212ms
+- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1
+  职责：按任务修改代码，交出声明的产物文件
+  技能：code-change, test-run
+  工具：read, write, edit, bash
+  可唤醒：tester
+  来源：内置 assets/roles/developer.yaml
+找不到实例：INST-999
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop（收尾） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-39 exit=0 202ms
+核心已停止（pid 25396，运行 1s）
+

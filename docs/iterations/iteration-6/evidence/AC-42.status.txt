@@ -1,0 +1,11 @@
+$ "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+# label=夹具：预置附录 A-13 的 doc-fanout（writeDocFanout） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ "(fixture) 把 T-001 的 role 改成不存在的 ghost-role"
+# label=夹具：把 T-001 的 role 改成不存在的 ghost-role cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow dry-run doc-fanout
+# label=orch workflow dry-run doc-fanout cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-42 exit=1 99ms
+预演被拒：引用的角色不存在：ghost-role（WORKFLOW_ROLE_UNKNOWN）
+执行 orch workflow validate 查看全部问题
+

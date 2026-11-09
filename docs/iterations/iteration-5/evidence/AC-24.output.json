@@ -1,0 +1,83 @@
+{
+  "ac": "AC-24",
+  "title": "已完成角色为冷却中",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 夹具：T-001 已 done 且 T-002 正在第 2 轮执行",
+      "ok": true,
+      "blocked": false,
+      "actual": "[[\"T-001\",\"done\",2],[\"T-002\",\"running\",2]]"
+    },
+    {
+      "text": "Then status === 'cooldown'（期望 \"cooldown\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"cooldown\""
+    },
+    {
+      "text": "Then activeSessions 为空（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    },
+    {
+      "text": "Then servingNodes 为空（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    },
+    {
+      "text": "机检：statusReason 为 null（期望 null）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    },
+    {
+      "text": "机检：该实例 state 不是终态（不是 completed / failed / cancelled / interrupted）",
+      "ok": true,
+      "blocked": false,
+      "actual": "running"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch role show developer --instance INST-001 --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "developer",
+        "--instance",
+        "INST-001",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-24",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 124,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"developer\",\n    \"name\": \"开发\",\n    \"group\": \"coding\",\n    \"groupLabel\": \"编码工程\",\n    \"artifactType\": \"code\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"code-change\",\n      \"test-run\"\n    ],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"builtin\",\n    \"file\": \"assets/roles/developer.yaml\"\n  },\n  \"instance\": {\n    \"instanceId\": \"INST-001\",\n    \"template\": \"code-loop\",\n    \"state\": \"running\",\n    \"roleToSessions\": {\n      \"developer\": [\n        \"mock-sess-18056-1\",\n        \"mock-sess-35152-1\"\n      ],\n      \"tester\": [\n        \"mock-sess-27004-1\"\n      ]\n    }\n  },\n  \"roleInstance\": {\n    \"roleId\": \"developer\",\n    \"roleInstanceId\": \"RI-developer\",\n    \"status\": \"cooldown\",\n    \"statusReason\": null,\n    \"activeSessions\": [],\n    \"servingNodes\": [],\n    \"hostIcons\": [],\n    \"maxConcurrentSessions\": 1,\n    \"lastAction\": {\n      \"nodeId\": \"T-001\",\n      \"round\": 2,\n      \"maxRounds\": 2,\n      \"state\": \"done\",\n      \"stateSince\": \"2026-11-08T12:21:56.746Z\"\n    }\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "driver --scenario retest-slow --keep（停在 T-002 第 2 轮执行中）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-24",
+        "--scenario",
+        "retest-slow",
+        "--keep"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 13,
+      "timedOut": false,
+      "durationMs": 2184,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-24\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-24\\\\demo-code-pass\",\"scenario\":\"retest-slow\",\"resolvedScenario\":\"retest-slow\",\"stopAfter\":null,\"keep\":true,\"released\":false,\"target\":\"exit\",\"exitCode\":1,\"instanceId\":\"INST-001\",\"state\":\"running\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":2,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":2,\"state\":\"running\"}],\"handoffs\":3,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":1858,\"checks\":[{\"name\":\"停在暂停/执行点\",\"ok\":true,\"detail\":{\"paused\":false,\"stopped\":false,\"state\":\"running\"}}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-18056-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 调用工具（write） · 已运行 1s\n实例 INST-001 · 已中断 ｜ 核心已停止\nWarning: Detected unsettled top-level await at file:///D:/WWW/Maestro/test/fixtures/code-loop-driver.mjs:832\r\n  const code = await main(process.argv.slice(2));\r\n               ^\r\n\r\n\r\n\r\n"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role create lead-dev --name 首席开发 --group coding --artifact-type code --side-effect write --skills code-change,test-run
+# label=（Given）orch role create lead-dev --name 首席开发 --group coding --artifact-type code --side-effect write --skills code-change,test-run cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-09 exit=0 102ms
+已创建项目角色：.orch/roles/lead-dev.yaml
+- lead-dev 首席开发 · 编码工程 · code · write · 技能 2 · 并发 1
+校验：通过
+
+
+$ "(fixture) 预置 lead-dev（同 AC-01 命令，artifact_type: code）"
+# label=夹具：预置 lead-dev（同 AC-01 命令，artifact_type: code） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role edit lead-dev --set artifact_type=document
+# label=orch role edit lead-dev --set artifact_type=document cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-09 exit=0 100ms
+已更新项目角色：.orch/roles/lead-dev.yaml
+- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1
+校验：通过
+（已按规范格式重写，注释不保留）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role edit developer --set artifact_type=document
+# label=orch role edit developer --set artifact_type=document cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-09 exit=1 112ms
+内置角色不可编辑：先 orch role create <新角色> --from developer
+

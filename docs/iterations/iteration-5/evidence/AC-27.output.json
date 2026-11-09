@@ -1,0 +1,127 @@
+{
+  "ac": "AC-27",
+  "title": "实例结束后角色为已关闭且仍可查",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 机检：single run 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Given 机检：实例 state === completed（期望 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\""
+    },
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 状态显示「已关闭」（期望含 \"已关闭\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  实例 INST-001：已关闭 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/1"
+    },
+    {
+      "text": "Then 活跃会话 0（期望含 \"活跃会话 0\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  实例 INST-001：已关闭 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/1"
+    },
+    {
+      "text": "Then 服务节点 —（期望含 \"服务节点 —\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  实例 INST-001：已关闭 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/1"
+    },
+    {
+      "text": "机检：status === 'retired'（期望 \"retired\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"retired\""
+    },
+    {
+      "text": "机检：roleInstanceId（期望 \"RI-worker\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"RI-worker\""
+    },
+    {
+      "text": "机检：activeSessions 为空（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    },
+    {
+      "text": "机检：servingNodes 为空（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run --cwd ./work --task 「写一段 200 字的产品说明，保存到 out/intro.md」（single）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./work",
+        "--task",
+        "写一段 200 字的产品说明，保存到 out/intro.md",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-27",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 581,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-4512-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   20:22:05\n交接包 HO-001  已投递   20:22:05\n交接包 HO-001  已接受   20:22:05\n交接包 HO-001  已完成   20:22:06\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show worker --instance INST-001",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "worker",
+        "--instance",
+        "INST-001"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-27",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\n  职责：按任务单执行一步操作，交出任务里声明的产物文件\n  技能：—\n  工具：read, write, edit\n  可唤醒：—\n  来源：内置 assets/roles/worker.yaml\n  实例 INST-001：已关闭 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show worker --instance INST-001 --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "worker",
+        "--instance",
+        "INST-001",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-27",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"worker\",\n    \"name\": \"执行者\",\n    \"group\": \"coordinator\",\n    \"groupLabel\": \"通用协调\",\n    \"artifactType\": \"document\",\n    \"sideEffect\": \"write\",\n    \"skills\": [],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"builtin\",\n    \"file\": \"assets/roles/worker.yaml\"\n  },\n  \"instance\": {\n    \"instanceId\": \"INST-001\",\n    \"template\": \"single\",\n    \"state\": \"completed\",\n    \"roleToSessions\": {\n      \"worker\": [\n        \"mock-sess-4512-1\"\n      ]\n    }\n  },\n  \"roleInstance\": {\n    \"roleId\": \"worker\",\n    \"roleInstanceId\": \"RI-worker\",\n    \"status\": \"retired\",\n    \"statusReason\": null,\n    \"activeSessions\": [],\n    \"servingNodes\": [],\n    \"hostIcons\": [],\n    \"maxConcurrentSessions\": 1,\n    \"lastAction\": {\n      \"nodeId\": \"T-001\",\n      \"round\": 1,\n      \"maxRounds\": 1,\n      \"state\": \"done\",\n      \"stateSince\": \"2026-11-08T12:22:06.009Z\"\n    }\n  }\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "instancesDirExists": false,
+  "coreJsonExists": false,
+  "prompts": [],
+  "orchTree": [
+    "hosts/mock.json",
+    "roles/ghost-skill.yaml"
+  ]
+}

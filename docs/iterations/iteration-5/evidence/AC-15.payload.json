@@ -1,0 +1,20 @@
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "SKILL_BODY_EMPTY",
+      "file": "skills/empty-body/SKILL.md",
+      "scope": "skill",
+      "field": null,
+      "line": null,
+      "detail": "技能正文为空：empty-body"
+    }
+  ]
+}

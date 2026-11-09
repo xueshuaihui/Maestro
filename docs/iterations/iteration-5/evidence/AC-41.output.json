@@ -1,0 +1,41 @@
+{
+  "ac": "AC-41",
+  "title": "零运行时依赖",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 键数量为 0（输出必须是 0）（期望 \"0\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"0\""
+    },
+    {
+      "text": "机检：package.json 没有 dependencies 键（或为空对象）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    }
+  ],
+  "commands": [
+    {
+      "label": "node -e \"…Object.keys(p.dependencies ?? {}).length\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "-e",
+        "const p=require('./package.json');console.log(Object.keys(p.dependencies ?? {}).length)"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 84,
+      "stdout": "0\n",
+      "stderr": ""
+    }
+  ]
+}

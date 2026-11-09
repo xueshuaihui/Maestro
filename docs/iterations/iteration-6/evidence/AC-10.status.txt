@@ -1,0 +1,58 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role create lead-dev --from developer --skills test-run
+# label=（Given）orch role create lead-dev --from developer --skills test-run cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-10 exit=0 99ms
+已创建项目角色：.orch/roles/lead-dev.yaml
+- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1
+校验：通过
+
+
+$ "(fixture) 预置 .orch/roles/developer.yaml = assets/roles/developer.yaml 逐字节拷贝（逐字段相同的项目覆盖文件）"
+# label=夹具：预置 .orch/roles/developer.yaml = assets/roles/developer.yaml 逐字节拷贝（逐字段相同的项目覆盖文件） cwd=d:\WWW\Maestro exit=0 0ms
+sha256 源=250B
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role diff lead-dev
+# label=orch role diff lead-dev cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-10 exit=0 100ms
+对比角色 lead-dev（项目）与基线 developer（内置）
++ derived_from：developer
+~ name：开发 → 开发（派生）
+~ skills：code-change, test-run → test-run
+差异 3 项
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role diff developer
+# label=orch role diff developer（逐字段相同的项目覆盖） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-10 exit=0 102ms
+对比角色 developer（项目）与基线 developer（内置）
+无差异
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role diff lead-dev --format json
+# label=orch role diff lead-dev --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-10 exit=0 92ms
+{
+  "base": "developer",
+  "target": "lead-dev",
+  "changes": [
+    {
+      "field": "derived_from",
+      "kind": "added",
+      "base": null,
+      "target": "developer"
+    },
+    {
+      "field": "name",
+      "kind": "changed",
+      "base": "开发",
+      "target": "开发（派生）"
+    },
+    {
+      "field": "skills",
+      "kind": "changed",
+      "base": [
+        "code-change",
+        "test-run"
+      ],
+      "target": [
+        "test-run"
+      ]
+    }
+  ]
+}
+

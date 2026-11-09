@@ -1,0 +1,35 @@
+{
+  "ac": "AC-23",
+  "title": "项目工作流覆盖同名内置",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:22:50.372Z",
+  "finishedAt": "2026-11-09T12:22:50.804Z",
+  "durationMs": 432,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-23",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-23"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 12,
+  "notes": [],
+  "extraFiles": [
+    "AC-23.list.txt",
+    "AC-23.show.txt",
+    "AC-23.payload.json",
+    "AC-23.show-payload.json"
+  ]
+}

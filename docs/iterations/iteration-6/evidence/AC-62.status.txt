@@ -1,0 +1,75 @@
+$ "(fixture) 预置六份坏工作流 bad-type / esc-no-title / sub-no-wf / sub-ghost / sub-a / sub-b（sub-a↔sub-b 跨工作流成环；全部 id 与文件名一致）"
+# label=夹具：预置六份坏工作流 bad-type / esc-no-title / sub-no-wf / sub-ghost / sub-a / sub-b（sub-a↔sub-b 跨工作流成环；全部 id 与文件名一致） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate
+# label=orch workflow validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-62 exit=1 100ms
+校验工作流 9 个：6 个不合法
+- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）
+- workflows/esc-no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）
+- workflows/sub-a.yaml：子工作流成环：sub-a → sub-b（WORKFLOW_SUB_CYCLE）
+- workflows/sub-b.yaml：子工作流成环：sub-b → sub-a（WORKFLOW_SUB_CYCLE）
+- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）
+- workflows/sub-no-wf.yaml：节点 T-001 缺少必填字段：workflow（WORKFLOW_NODE_FIELD_MISSING）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate --format json
+# label=orch workflow validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-62 exit=1 100ms
+{
+  "counts": {
+    "assets": 9,
+    "builtin": 3,
+    "project": 6,
+    "invalid": 6
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_NODE_TYPE_INVALID",
+      "file": "workflows/bad-type.yaml",
+      "scope": "workflow",
+      "field": "node_type",
+      "line": null,
+      "detail": "节点类型取值非法：script；合法取值：role / human / escalate / subworkflow"
+    },
+    {
+      "code": "WORKFLOW_NODE_FIELD_MISSING",
+      "file": "workflows/esc-no-title.yaml",
+      "scope": "workflow",
+      "field": "title",
+      "line": null,
+      "detail": "节点 T-001 缺少必填字段：title"
+    },
+    {
+      "code": "WORKFLOW_SUB_CYCLE",
+      "file": "workflows/sub-a.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "子工作流成环：sub-a → sub-b"
+    },
+    {
+      "code": "WORKFLOW_SUB_CYCLE",
+      "file": "workflows/sub-b.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "子工作流成环：sub-b → sub-a"
+    },
+    {
+      "code": "WORKFLOW_SUB_UNKNOWN",
+      "file": "workflows/sub-ghost.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "引用的子工作流不存在：ghost"
+    },
+    {
+      "code": "WORKFLOW_NODE_FIELD_MISSING",
+      "file": "workflows/sub-no-wf.yaml",
+      "scope": "workflow",
+      "field": "workflow",
+      "line": null,
+      "detail": "节点 T-001 缺少必填字段：workflow"
+    }
+  ]
+}
+

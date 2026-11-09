@@ -1,0 +1,88 @@
+{
+  "ac": "AC-05",
+  "title": "角色 id 与文件名不一致被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 输出含 roles/writer.yaml（期望含 \"roles/writer.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 26 个：1 个不合法\n- roles/writer.yaml：角色 id 与文件名不一致：文件 writer / 声明 wordsmith（ROLE_ID_MISMATCH）\n"
+    },
+    {
+      "text": "Then 原因码 ROLE_ID_MISMATCH（期望含 \"ROLE_ID_MISMATCH\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 26 个：1 个不合法\n- roles/writer.yaml：角色 id 与文件名不一致：文件 writer / 声明 wordsmith（ROLE_ID_MISMATCH）\n"
+    },
+    {
+      "text": "机检：errors[0].code === ROLE_ID_MISMATCH（期望 \"ROLE_ID_MISMATCH\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"ROLE_ID_MISMATCH\""
+    },
+    {
+      "text": "机检：errors[0].detail 同时含 writer 与 wordsmith",
+      "ok": true,
+      "blocked": false,
+      "actual": "角色 id 与文件名不一致：文件 writer / 声明 wordsmith"
+    },
+    {
+      "text": "机检：明细同时给出文件名推出的 id 与内容声明的 id（期望 \"角色 id 与文件名不一致：文件 writer / 声明 wordsmith\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"角色 id 与文件名不一致：文件 writer / 声明 wordsmith\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 .orch/roles/writer.yaml（内容 id: wordsmith）",
+      "argv": [
+        "(fixture) 写 .orch/roles/writer.yaml（内容 id: wordsmith）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-05\\.orch\\roles\\writer.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-05",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 92,
+      "stdout": "校验资产 26 个：1 个不合法\n- roles/writer.yaml：角色 id 与文件名不一致：文件 writer / 声明 wordsmith（ROLE_ID_MISMATCH）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-05",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 26,\n    \"roles\": 15,\n    \"skills\": 10,\n    \"builtin\": 25,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_ID_MISMATCH\",\n      \"file\": \"roles/writer.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"id\",\n      \"line\": null,\n      \"detail\": \"角色 id 与文件名不一致：文件 writer / 声明 wordsmith\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

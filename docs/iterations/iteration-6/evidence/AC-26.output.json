@@ -1,0 +1,94 @@
+{
+  "ac": "AC-26",
+  "title": "子工作流引用必须存在且不得成环",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 恰好三行（计数头 + 两条错误）（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then SUB_UNKNOWN 明细含 ghost（期望含 \"引用的子工作流不存在：ghost\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 5 个：2 个不合法\n- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）\n- workflows/sub-self.yaml：子工作流成环：sub-self（WORKFLOW_SUB_CYCLE）\n"
+    },
+    {
+      "text": "Then SUB_CYCLE 明细含 sub-self（期望含 \"子工作流成环：sub-self\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 5 个：2 个不合法\n- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）\n- workflows/sub-self.yaml：子工作流成环：sub-self（WORKFLOW_SUB_CYCLE）\n"
+    },
+    {
+      "text": "机检：codes 排序后（期望 [\"WORKFLOW_SUB_CYCLE\",\"WORKFLOW_SUB_UNKNOWN\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"WORKFLOW_SUB_CYCLE\",\"WORKFLOW_SUB_UNKNOWN\"]"
+    },
+    {
+      "text": "机检：errors[0].file 是 sub-ghost（文件名字典序在前）（期望 \"workflows/sub-ghost.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"workflows/sub-ghost.yaml\""
+    },
+    {
+      "text": "机检：counts.invalid === 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 sub-ghost.yaml（workflow: ghost）与 sub-self.yaml（workflow: sub-self）",
+      "argv": [
+        "(fixture) 预置 sub-ghost.yaml（workflow: ghost）与 sub-self.yaml（workflow: sub-self）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-26",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "校验工作流 5 个：2 个不合法\n- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）\n- workflows/sub-self.yaml：子工作流成环：sub-self（WORKFLOW_SUB_CYCLE）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-26",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 5,\n    \"builtin\": 3,\n    \"project\": 2,\n    \"invalid\": 2\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_SUB_UNKNOWN\",\n      \"file\": \"workflows/sub-ghost.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"引用的子工作流不存在：ghost\"\n    },\n    {\n      \"code\": \"WORKFLOW_SUB_CYCLE\",\n      \"file\": \"workflows/sub-self.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"子工作流成环：sub-self\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

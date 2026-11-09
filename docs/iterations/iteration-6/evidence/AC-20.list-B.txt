@@ -1,0 +1,12 @@
+技能 10 个（内置 9 · 项目 1）
+- code-change 代码修改 · 编码工程 · 命令 1
+- code-review 代码审查 · 编码工程 · 命令 0
+- compliance-check 合规审查 · 业务运营 · 命令 0
+- coordination 编排协调 · 通用协调 · 命令 0
+- data-analysis 数据分析 · 研究分析 · 命令 1
+- doc-draft 文档撰写 · 内容创作 · 命令 0
+- doc-review 文档审核 · 内容创作 · 命令 0
+- fact-check 事实核查 · 研究分析 · 命令 0
+- research-brief 调研笔记 · 研究分析 · 命令 0
+- test-run 测试执行 · 编码工程 · 命令 1
+

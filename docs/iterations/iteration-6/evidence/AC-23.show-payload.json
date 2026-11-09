@@ -1,0 +1,83 @@
+{
+  "workflow": {
+    "id": "code-loop",
+    "name": "编码闭环",
+    "nodeCount": 3,
+    "edgeCount": 4,
+    "source": "project",
+    "file": ".orch/workflows/code-loop.yaml",
+    "entry": "T-001",
+    "terminal": "T-003"
+  },
+  "nodes": [
+    {
+      "id": "T-001",
+      "nodeType": "role",
+      "role": "developer",
+      "title": "开发",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-001",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-002",
+      "nodeType": "role",
+      "role": "tester",
+      "title": "测试",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": 2,
+      "parallelScope": null,
+      "scope": "T-002",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-003",
+      "nodeType": "role",
+      "role": "tester",
+      "title": "验收",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-003",
+      "inputs": [],
+      "outputs": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-001",
+      "to": "T-003",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-002",
+      "to": "T-003",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-003",
+      "to": "T-002",
+      "kind": "backflow",
+      "when": "failed",
+      "map": []
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+$ "(fixture) 预置四条工作流 task-var / backflow-target / wake-empty / retest-ok + 源角色 r-src（wake_allow: []）；wake-empty 与 retest-ok 节点上都不补 wake_allow：forward 边才受白名单约束（retest 由核心回流触发、不受白名单约束），因此 retest-ok 只留一条 retest 边"
+# label=夹具：预置四条工作流 task-var / backflow-target / wake-empty / retest-ok + 源角色 r-src（wake_allow: []）；wake-empty 与 retest-ok 节点上都不补 wake_allow：forward 边才受白名单约束（retest 由核心回流触发、不受白名单约束），因此 retest-ok 只留一条 retest 边 cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate task-var
+# label=orch workflow validate task-var cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=0 108ms
+校验工作流 1 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate task-var --format json
+# label=orch workflow validate task-var --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=0 110ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate backflow-target
+# label=orch workflow validate backflow-target cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=1 104ms
+校验工作流 1 个：1 个不合法
+- workflows/backflow-target.yaml：T-H 不能成为回流目标（WORKFLOW_TRANSITION_ILLEGAL）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate backflow-target --format json
+# label=orch workflow validate backflow-target --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=1 102ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_TRANSITION_ILLEGAL",
+      "file": "workflows/backflow-target.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "T-H 不能成为回流目标"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate wake-empty
+# label=orch workflow validate wake-empty cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=1 104ms
+校验工作流 1 个：1 个不合法
+- workflows/wake-empty.yaml：唤醒不在白名单内：r-src → developer（WORKFLOW_WAKE_DENIED）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate wake-empty --format json
+# label=orch workflow validate wake-empty --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=1 107ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_WAKE_DENIED",
+      "file": "workflows/wake-empty.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "唤醒不在白名单内：r-src → developer"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate retest-ok
+# label=orch workflow validate retest-ok cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=0 105ms
+校验工作流 1 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate retest-ok --format json
+# label=orch workflow validate retest-ok --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=0 120ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate backflow-target
+# label=orch workflow validate backflow-target（复跑取文本） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=1 102ms
+校验工作流 1 个：1 个不合法
+- workflows/backflow-target.yaml：T-H 不能成为回流目标（WORKFLOW_TRANSITION_ILLEGAL）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate wake-empty
+# label=orch workflow validate wake-empty（复跑取文本） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-60 exit=1 101ms
+校验工作流 1 个：1 个不合法
+- workflows/wake-empty.yaml：唤醒不在白名单内：r-src → developer（WORKFLOW_WAKE_DENIED）
+

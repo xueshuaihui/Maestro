@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_SCOPE_OVERLAP",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft"
+    }
+  ]
+}

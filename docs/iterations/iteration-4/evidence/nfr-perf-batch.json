@@ -1,7 +1,7 @@
 {
   "nfr": "NFR-05",
   "dataset": "50 张交接包 / 1 次信箱索引原子写（整份替换）",
-  "totalMs": 619.755,
+  "totalMs": 7.874,
   "messages": 50,
   "tmpLeftover": 0,
   "note": "确定性结构断言；耗时仅作证据。刻意用单次原子写，避免给全量并行回归叠加 fsync 负载"

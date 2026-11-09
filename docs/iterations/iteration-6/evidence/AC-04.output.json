@@ -1,0 +1,238 @@
+{
+  "ac": "AC-04",
+  "title": "从内置派生：继承、覆盖与「派生自」",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（缺四个必填不退 2）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 输出恰好三行（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then 第 1 行逐字（期望逐字 \"已创建项目角色：.orch/roles/lead-dev.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已创建项目角色：.orch/roles/lead-dev.yaml\""
+    },
+    {
+      "text": "Then 契约行（中文名默认 开发（派生））（期望逐字 \"- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1\""
+    },
+    {
+      "text": "Then 第 3 行逐字（期望逐字 \"校验：通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验：通过\""
+    },
+    {
+      "text": "机检：文件含 derived_from: developer（期望含 \"derived_from: developer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: role/v1\nid: lead-dev\nname: 开发（派生）\ngroup: coding\nsummary: 按任务修改代码，交出声明的产物文件\nartifact_type: code\nside_effect: write\nderived_from: developer\nskills: [test-run]\ntools: [read, write, edit, bash]\nwake_allow: [tester]\nmax_concurrent_sessions: 1\n"
+    },
+    {
+      "text": "机检：文件含 skills: [test-run]（继承/覆盖）（期望含 \"skills: [test-run]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: role/v1\nid: lead-dev\nname: 开发（派生）\ngroup: coding\nsummary: 按任务修改代码，交出声明的产物文件\nartifact_type: code\nside_effect: write\nderived_from: developer\nskills: [test-run]\ntools: [read, write, edit, bash]\nwake_allow: [tester]\nmax_concurrent_sessions: 1\n"
+    },
+    {
+      "text": "机检：文件含 tools: [read, write, edit, bash]（继承/覆盖）（期望含 \"tools: [read, write, edit, bash]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: role/v1\nid: lead-dev\nname: 开发（派生）\ngroup: coding\nsummary: 按任务修改代码，交出声明的产物文件\nartifact_type: code\nside_effect: write\nderived_from: developer\nskills: [test-run]\ntools: [read, write, edit, bash]\nwake_allow: [tester]\nmax_concurrent_sessions: 1\n"
+    },
+    {
+      "text": "机检：文件含 wake_allow: [tester]（继承/覆盖）（期望含 \"wake_allow: [tester]\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: role/v1\nid: lead-dev\nname: 开发（派生）\ngroup: coding\nsummary: 按任务修改代码，交出声明的产物文件\nartifact_type: code\nside_effect: write\nderived_from: developer\nskills: [test-run]\ntools: [read, write, edit, bash]\nwake_allow: [tester]\nmax_concurrent_sessions: 1\n"
+    },
+    {
+      "text": "机检：文件含 artifact_type: code（继承/覆盖）（期望含 \"artifact_type: code\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: role/v1\nid: lead-dev\nname: 开发（派生）\ngroup: coding\nsummary: 按任务修改代码，交出声明的产物文件\nartifact_type: code\nside_effect: write\nderived_from: developer\nskills: [test-run]\ntools: [read, write, edit, bash]\nwake_allow: [tester]\nmax_concurrent_sessions: 1\n"
+    },
+    {
+      "text": "机检：文件含 group: coding（继承/覆盖）（期望含 \"group: coding\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: role/v1\nid: lead-dev\nname: 开发（派生）\ngroup: coding\nsummary: 按任务修改代码，交出声明的产物文件\nartifact_type: code\nside_effect: write\nderived_from: developer\nskills: [test-run]\ntools: [read, write, edit, bash]\nwake_allow: [tester]\nmax_concurrent_sessions: 1\n"
+    },
+    {
+      "text": "机检：文件含 max_concurrent_sessions: 1（继承/覆盖）（期望含 \"max_concurrent_sessions: 1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: role/v1\nid: lead-dev\nname: 开发（派生）\ngroup: coding\nsummary: 按任务修改代码，交出声明的产物文件\nartifact_type: code\nside_effect: write\nderived_from: developer\nskills: [test-run]\ntools: [read, write, edit, bash]\nwake_allow: [tester]\nmax_concurrent_sessions: 1\n"
+    },
+    {
+      "text": "Then role show 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then role show 来源行（期望逐字 \"  来源：项目 .orch/roles/lead-dev.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  来源：项目 .orch/roles/lead-dev.yaml\""
+    },
+    {
+      "text": "Then role show 第 7 行 = 派生自：developer（期望逐字 \"  派生自：developer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  派生自：developer\""
+    },
+    {
+      "text": "机检：role 对象仍是 10 个键（期望 10）",
+      "ok": true,
+      "blocked": false,
+      "actual": "10"
+    },
+    {
+      "text": "机检：role 对象不含派生信息键（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机操：maxConcurrentSessions === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机操：artifactType === code（期望 \"code\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"code\""
+    },
+    {
+      "text": "机操：skills === [test-run]（期望 [\"test-run\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"test-run\"]"
+    },
+    {
+      "text": "机检：test/wp11/cli-role.test.js 全绿（# fail 0）（期望匹配 /# fail 0\\b/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# tests 30\n# suites 0\n# pass 30\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 242.8707"
+    },
+    {
+      "text": "机检：wp11 有通过用例（# pass N>0）（期望匹配 /# pass [1-9]\\d*/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# tests 30\n# suites 0\n# pass 30\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 242.8707"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：全新项目根（无 .orch）",
+      "argv": [
+        "(fixture) 全新项目根（无 .orch）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-04",
+      "stderr": ""
+    },
+    {
+      "label": "orch role create lead-dev --from developer --skills test-run",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--from",
+        "developer",
+        "--skills",
+        "test-run"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-04",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "已创建项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show lead-dev",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "lead-dev"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-04",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 95,
+      "stdout": "- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1\n  职责：按任务修改代码，交出声明的产物文件\n  技能：test-run\n  工具：read, write, edit, bash\n  可唤醒：tester\n  来源：项目 .orch/roles/lead-dev.yaml\n  派生自：developer\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show lead-dev --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "lead-dev",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-04",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 89,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"lead-dev\",\n    \"name\": \"开发（派生）\",\n    \"group\": \"coding\",\n    \"groupLabel\": \"编码工程\",\n    \"artifactType\": \"code\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"test-run\"\n    ],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"project\",\n    \"file\": \".orch/roles/lead-dev.yaml\"\n  },\n  \"instance\": null,\n  \"roleInstance\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-04",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "{\n  \"counts\": {\n    \"total\": 17,\n    \"builtin\": 16,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"groups\": [\n    {\n      \"group\": \"coordinator\",\n      \"label\": \"通用协调\",\n      \"count\": 5\n    },\n    {\n      \"group\": \"research\",\n      \"label\": \"研究分析\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"writing\",\n      \"label\": \"内容创作\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"coding\",\n      \"label\": \"编码工程\",\n      \"count\": 4\n    },\n    {\n      \"group\": \"ops\",\n      \"label\": \"业务运营\",\n      \"count\": 2\n    }\n  ],\n  \"roles\": [\n    {\n      \"id\": \"arbiter\",\n      \"name\": \"裁决者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"none\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/arbiter.yaml\"\n    },\n    {\n      \"id\": \"coordinator\",\n      \"name\": \"协调者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"none\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/coordinator.yaml\"\n    },\n    {\n      \"id\": \"planner\",\n      \"name\": \"规划者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"coordination\",\n        \"research-brief\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/planner.yaml\"\n    },\n    {\n      \"id\": \"summarizer\",\n      \"name\": \"汇总者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/summarizer.yaml\"\n    },\n    {\n      \"id\": \"worker\",\n      \"name\": \"执行者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/worker.yaml\"\n    },\n    {\n      \"id\": \"data-analyst\",\n      \"name\": \"数据分析师\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"dataset\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"data-analysis\",\n        \"fact-check\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/data-analyst.yaml\"\n    },\n    {\n      \"id\": \"fact-checker\",\n      \"name\": \"事实核查员\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"fact-check\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/fact-checker.yaml\"\n    },\n    {\n      \"id\": \"researcher\",\n      \"name\": \"研究员\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"research-brief\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/researcher.yaml\"\n    },\n    {\n      \"id\": \"editor\",\n      \"name\": \"编辑\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\",\n        \"doc-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/editor.yaml\"\n    },\n    {\n      \"id\": \"reviewer\",\n      \"name\": \"审核者\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"doc-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/reviewer.yaml\"\n    },\n    {\n      \"id\": \"writer\",\n      \"name\": \"撰写者\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/writer.yaml\"\n    },\n    {\n      \"id\": \"code-reviewer\",\n      \"name\": \"代码审查\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"code-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/code-reviewer.yaml\"\n    },\n    {\n      \"id\": \"developer\",\n      \"name\": \"开发\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"code-change\",\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/developer.yaml\"\n    },\n    {\n      \"id\": \"lead-dev\",\n      \"name\": \"开发（派生）\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"project\",\n      \"file\": \".orch/roles/lead-dev.yaml\"\n    },\n    {\n      \"id\": \"tester\",\n      \"name\": \"测试\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"exec\",\n      \"skills\": [\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/tester.yaml\"\n    },\n    {\n      \"id\": \"compliance-reviewer\",\n      \"name\": \"合规审查者\",\n      \"group\": \"ops\",\n      \"groupLabel\": \"业务运营\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"compliance-check\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/compliance-reviewer.yaml\"\n    },\n    {\n      \"id\": \"requirement-clarifier\",\n      \"name\": \"需求澄清者\",\n      \"group\": \"ops\",\n      \"groupLabel\": \"业务运营\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\",\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/requirement-clarifier.yaml\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "node --test test/wp11/cli-role.test.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "--test",
+        "--test-concurrency=4",
+        "test/wp11/cli-role.test.js"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 314,
+      "stdout": "TAP version 13\n# Subtest: AC-01: role list prints seventeen lines and exits 0\nok 1 - AC-01: role list prints seventeen lines and exits 0\n  ---\n  duration_ms: 9.4882\n  type: 'test'\n  ...\n# Subtest: AC-02: role show developer is the six documented lines\nok 2 - AC-02: role show developer is the six documented lines\n  ---\n  duration_ms: 2.9908\n  type: 'test'\n  ...\n# Subtest: AC-03: a project role overrides the built-in one and says so\nok 3 - AC-03: a project role overrides the built-in one and says so\n  ---\n  duration_ms: 9.1054\n  type: 'test'\n  ...\n# Subtest: AC-10: an invalid registry stops orch run before the client exists\nok 4 - AC-10: an invalid registry stops orch run before the client exists\n  ---\n  duration_ms: 7.0934\n  type: 'test'\n  ...\n# Subtest: AC-11: a broken asset does not block the list but fails the exit code\nok 5 - AC-11: a broken asset does not block the list but fails the exit code\n  ---\n  duration_ms: 5.9275\n  type: 'test'\n  ...\n# Subtest: A-4: role validate prints one row per bad asset\nok 6 - A-4: role validate prints one row per bad asset\n  ---\n  duration_ms: 9.1214\n  type: 'test'\n  ...\n# Subtest: A-4: a clean tree prints the single success line\nok 7 - A-4: a clean tree prints the single success line\n  ---\n  duration_ms: 5.2709\n  type: 'test'\n  ...\n# Subtest: AC-32: --group lists only that group in text and JSON\nok 8 - AC-32: --group lists only that group in text and JSON\n  ---\n  duration_ms: 5.4547\n  type: 'test'\n  ...\n# Subtest: AC-33: role list JSON has exactly three top-level keys and ten role keys\nok 9 - AC-33: role list JSON has exactly three top-level keys and ten role keys\n  ---\n  duration_ms: 2.5356\n  type: 'test'\n  ...\n# Subtest: AC-34: an unknown role names it and points at role list\nok 10 - AC-34: an unknown role names it and points at role list\n  ---\n  duration_ms: 5.0199\n  type: 'test'\n  ...\n# Subtest: AC-35: role show without an id is a usage error\nok 11 - AC-35: role show without an id is a usage error\n  ---\n  duration_ms: 0.4469\n  type: 'test'\n  ...\n# Subtest: AC-37: unknown subcommand, unknown flag and bad --format are usage errors\nok 12 - AC-37: unknown subcommand, unknown flag and bad --format are usage errors\n  ---\n  duration_ms: 0.302\n  type: 'test'\n  ...\n# Subtest: the usage block has eight lines and keeps the I1.1 first line\nok 13 - the usage block has eight lines and keeps the I1.1 first line\n  ---\n  duration_ms: 0.1598\n  type: 'test'\n  ...\n# Subtest: a flag that belongs to another subcommand is rejected\nok 14 - a flag that belongs to another subcommand is rejected\n  ---\n  duration_ms: 0.2327\n  type: 'test'\n  ...\n# Subtest: role flags leak into other commands as unknown parameters (M-9)\nok 15 - role flags leak into other commands as unknown parameters (M-9)\n  ---\n  duration_ms: 0.1013\n  type: 'test'\n  ...\n# Subtest: parseArgs keeps the old result shape for the four original commands\nok 16 - parseArgs keeps the old result shape for the four original commands\n  ---\n  duration_ms: 0.0708\n  type: 'test'\n  ...\n# Subtest: AC-36: role validate <id> counts one asset and hides other files\nok 17 - AC-36: role validate <id> counts one asset and hides other files\n  ---\n  duration_ms: 9.9653\n  type: 'test'\n  ...\n# Subtest: AC-38: the three read-only commands never create .orch nor a client\nok 18 - AC-38: the three read-only commands never create .orch nor a client\n  ---\n  duration_ms: 7.8844\n  type: 'test'\n  ...\n# Subtest: AC-39: an unknown instance still prints the role contract first\nok 19 - AC-39: an unknown instance still prints the role contract first\n  ---\n  duration_ms: 2.9714\n  type: 'test'\n  ...\n# Subtest: role show --instance appends the instance line (A-3)\nok 20 - role show --instance appends the instance line (A-3)\n  ---\n  duration_ms: 2.9317\n  type: 'test'\n  ...\n# Subtest: role show --instance on a role outside the instance says so\nok 21 - role show --instance on a role outside the instance says so\n  ---\n  duration_ms: 2.4116\n  type: 'test'\n  ...\n# Subtest: role show JSON has three keys and null instance without --instance\nok 22 - role show JSON has three keys and null instance without --instance\n  ---\n  duration_ms: 2.7337\n  type: 'test'\n  ...\n# Subtest: role show --instance JSON exposes the nine-key role instance\nok 23 - role show --instance JSON exposes the nine-key role instance\n  ---\n  duration_ms: 3.4612\n  type: 'test'\n  ...\n# Subtest: role list --instance appends one line per instance role\nok 24 - role list --instance appends one line per instance role\n  ---\n  duration_ms: 2.5915\n  type: 'test'\n  ...\n# Subtest: role list --instance JSON adds a fourth key with roleToSessions\nok 25 - role list --instance JSON adds a fourth key with roleToSessions\n  ---\n  duration_ms: 2.6688\n  type: 'test'\n  ...\n# Subtest: role validate JSON rebuilds six-key errors and leaks no params\nok 26 - role validate JSON rebuilds six-key errors and leaks no params\n  ---\n  duration_ms: 6.5801\n  type: 'test'\n  ...\n# Subtest: every registry error code has a label template\nok 27 - every registry error code has a label template\n  ---\n  duration_ms: 0.1132\n  type: 'test'\n  ...\n# Subtest: detailOf fills every template without leaving a placeholder\nok 28 - detailOf fills every template without leaving a placeholder\n  ---\n  duration_ms: 0.235\n  type: 'test'\n  ...\n# Subtest: firstRegistryDetail returns the A-4 row without the dash prefix\nok 29 - firstRegistryDetail returns the A-4 row without the dash prefix\n  ---\n  duration_ms: 0.072\n  type: 'test'\n  ...\n# Subtest: roleCommand is reachable directly and honours the frozen ctx shape\nok 30 - roleCommand is reachable directly and honours the frozen ctx shape\n  ---\n  duration_ms: 2.2077\n  type: 'test'\n  ...\n1..30\n# tests 30\n# suites 0\n# pass 30\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 242.8707\n",
+      "stderr": ""
+    }
+  ]
+}

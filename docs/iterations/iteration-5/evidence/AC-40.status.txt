@@ -1,0 +1,14 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\purity-check.mjs --dirs src/core,src/daemon --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check
+# label=purity-check --dirs src/core,src/daemon --forbid <31 词> cwd=D:\WWW\Maestro exit=0 89ms
+OK: 扫描 16 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\purity-check.mjs --dirs src/registry --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check
+# label=purity-check --dirs src/registry --forbid <30 词> cwd=D:\WWW\Maestro exit=0 74ms
+OK: 扫描 6 个文件，src/registry 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\purity-check.mjs --files src/cli/roles.js --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check
+# label=purity-check --files src/cli/roles.js --forbid <31 词> cwd=D:\WWW\Maestro exit=0 81ms
+OK: 扫描 1 个文件，src/cli/roles.js 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+

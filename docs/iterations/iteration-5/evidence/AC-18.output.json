@@ -1,0 +1,101 @@
+{
+  "ac": "AC-18",
+  "title": "模板角色全在注册表且中文名一致",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "架构检查：assets.test.js 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "架构检查：fail = 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "架构检查：用例条数 ≥ 2（含两条对照用例）",
+      "ok": true,
+      "blocked": false,
+      "actual": "11"
+    },
+    {
+      "text": "Then 图形/角色表里的 worker 存在于注册表",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then 图形/角色表里的 developer 存在于注册表",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then 图形/角色表里的 tester 存在于注册表",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then 图形/角色表里的 researcher 存在于注册表",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then 图形/角色表里的 writer 存在于注册表",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then 图形/角色表里的 reviewer 存在于注册表",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then 图形/角色表里的 coordinator 存在于注册表",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then 三种模板的节点角色集合全部存在于注册表（缺口为空）（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    },
+    {
+      "text": "Then 6 个既有角色的中文名与 labels.js 的 ROLE_LABEL 逐字一致（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    },
+    {
+      "text": "机检：worker 不在 ROLE_LABEL 里（只有 6 个既有角色在其中）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"developer\",\"tester\",\"coordinator\",\"researcher\",\"writer\",\"reviewer\"]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "node --test test/wp11/assets.test.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "--test",
+        "test/wp11/assets.test.js"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 211,
+      "stdout": "TAP version 13\n# Subtest: AC-12: the whole built-in tree validates with the six-key asset counts\nok 1 - AC-12: the whole built-in tree validates with the six-key asset counts\n  ---\n  duration_ms: 9.6051\n  type: 'test'\n  ...\n# Subtest: AC-17: five groups hold 5 / 3 / 3 / 3 / 2 roles, each group at least two\nok 2 - AC-17: five groups hold 5 / 3 / 3 / 3 / 2 roles, each group at least two\n  ---\n  duration_ms: 5.616\n  type: 'test'\n  ...\n# Subtest: A-1: the sixteen roles match the table row by row, in table order\nok 3 - A-1: the sixteen roles match the table row by row, in table order\n  ---\n  duration_ms: 4.1579\n  type: 'test'\n  ...\n# Subtest: AC-18: the six template role names match ROLE_LABEL verbatim\nok 4 - AC-18: the six template role names match ROLE_LABEL verbatim\n  ---\n  duration_ms: 4.258\n  type: 'test'\n  ...\n# Subtest: worker is the only role without skills\nok 5 - worker is the only role without skills\n  ---\n  duration_ms: 4.2604\n  type: 'test'\n  ...\n# Subtest: ten skills are present, each with at least three working steps\nok 6 - ten skills are present, each with at least three working steps\n  ---\n  duration_ms: 4.9387\n  type: 'test'\n  ...\n# Subtest: every skill is referenced by at least one role\nok 7 - every skill is referenced by at least one role\n  ---\n  duration_ms: 3.8904\n  type: 'test'\n  ...\n# Subtest: A-1: developer.yaml matches the documented sample byte for byte\nok 8 - A-1: developer.yaml matches the documented sample byte for byte\n  ---\n  duration_ms: 0.2757\n  type: 'test'\n  ...\n# Subtest: A-1: code-change/SKILL.md matches the documented sample byte for byte\nok 9 - A-1: code-change/SKILL.md matches the documented sample byte for byte\n  ---\n  duration_ms: 0.4075\n  type: 'test'\n  ...\n# Subtest: asset directory layout: 16 role files and 10 skill directories, nothing else\nok 10 - asset directory layout: 16 role files and 10 skill directories, nothing else\n  ---\n  duration_ms: 0.7845\n  type: 'test'\n  ...\n# Subtest: project assets still win over the shipped ones (AC-03 / AC-45 shape)\nok 11 - project assets still win over the shipped ones (AC-03 / AC-45 shape)\n  ---\n  duration_ms: 13.0924\n  type: 'test'\n  ...\n1..11\n# tests 11\n# suites 0\n# pass 11\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 136.7857\n",
+      "stderr": ""
+    }
+  ]
+}

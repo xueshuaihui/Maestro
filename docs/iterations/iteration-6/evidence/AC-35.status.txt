@@ -1,0 +1,33 @@
+$ "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+# label=夹具：预置附录 A-13 的 doc-fanout（writeDocFanout） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ "(fixture) 把 T-001→T-002 的映射改成 from: T-003.research.notes"
+# label=夹具：把 T-001→T-002 的映射改成 from: T-003.research.notes cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-35 exit=1 102ms
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：变量引用无法解析：T-003.research.notes（WORKFLOW_VAR_UNKNOWN）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-35 exit=1 96ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_VAR_UNKNOWN",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "变量引用无法解析：T-003.research.notes"
+    }
+  ]
+}
+

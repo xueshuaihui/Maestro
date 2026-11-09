@@ -1,0 +1,95 @@
+{
+  "ac": "AC-10",
+  "title": "注册表不合法时发起前停住",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then 终端出现「注册表不合法：」（期望含 \"注册表不合法：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "注册表不合法：roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）\n"
+    },
+    {
+      "text": "Then 加第一条错误明细（A-5 版式，不带 - 前缀）（期望含 \"注册表不合法：roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "注册表不合法：roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）\n"
+    },
+    {
+      "text": "机检：.orch/instances 目录不存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：.orch/core.json 不存在（没有启动核心）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：./demo 下没有 .mock/prompts 帧（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：code-loop 驱动 --prepare-only --reset（配好 mock 宿主）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-10",
+        "--scenario",
+        "pass",
+        "--prepare-only",
+        "--reset"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 89,
+      "stdout": "{\"ok\":true,\"prepareOnly\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-10\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-10\\\\demo-code-pass\",\"scenario\":\"pass\",\"resolvedScenario\":\"pass\",\"cursorPath\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-10\\\\.mock\\\\cursor.json\",\"hostPath\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-10\\\\.orch\\\\hosts\\\\mock.json\",\"cursor\":{\"next\":1},\"host\":{\"id\":\"mock\",\"transport\":\"stdio\",\"launch\":{\"command\":\"C:\\\\Users\\\\xuesh\\\\.workbuddy\\\\binaries\\\\node\\\\versions\\\\22.22.2-6\\\\node.exe\",\"args\":[\"D:\\\\WWW\\\\Maestro\\\\test\\\\fixtures\\\\mock-acp-agent.js\",\"--root\",\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p5\\\\AC-10\",\"--scenario\",\"pass\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：写 .orch/roles/ghost-skill.yaml（技能不存在）",
+      "argv": [
+        "(fixture) 写 .orch/roles/ghost-skill.yaml（技能不存在）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-10\\.orch\\roles\\ghost-skill.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "orch run --cwd ./demo --task 写下说明",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./demo",
+        "--task",
+        "写下说明",
+        "--host",
+        "mock"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-10",
+      "exitCode": 3,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "注册表不合法：roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）\n",
+      "stderr": ""
+    }
+  ]
+}

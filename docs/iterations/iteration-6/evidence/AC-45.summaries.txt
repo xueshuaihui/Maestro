@@ -1,0 +1,10 @@
+role list: exit=0 lines=17
+role show developer: exit=0 lines=6
+role validate: exit=0 lines=1
+skill list: exit=0 lines=11
+skill show code-change: exit=0 lines=10
+skill validate: exit=0 lines=1
+workflow list: exit=0 lines=4
+workflow show code-loop: exit=0 lines=9
+workflow validate: exit=0 lines=1
+workflow diff code-loop: exit=0 lines=2

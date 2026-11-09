@@ -1,0 +1,3 @@
+校验资产 27 个：1 个不合法
+- skills/empty-body/SKILL.md：技能正文为空：empty-body（SKILL_BODY_EMPTY）
+

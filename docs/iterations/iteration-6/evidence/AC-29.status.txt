@@ -1,0 +1,50 @@
+$ "(fixture) 预置 timeout-ok.yaml（timeout 600 / retry 2）与 timeout-bad.yaml（timeout 0 / retry 9）"
+# label=夹具：预置 timeout-ok.yaml（timeout 600 / retry 2）与 timeout-bad.yaml（timeout 0 / retry 9） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate timeout-ok
+# label=orch workflow validate timeout-ok cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-29 exit=0 106ms
+校验工作流 1 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate timeout-bad
+# label=orch workflow validate timeout-bad cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-29 exit=1 100ms
+校验工作流 1 个：1 个不合法
+- workflows/timeout-bad.yaml：超时取值非法：0；合法范围：1~86400 的整数（WORKFLOW_TIMEOUT_INVALID）
+- workflows/timeout-bad.yaml：重试取值非法：9；合法范围：0~5 的整数（WORKFLOW_RETRY_INVALID）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow dry-run timeout-ok
+# label=orch workflow dry-run timeout-ok cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-29 exit=0 101ms
+编排计划 timeout-ok · 1 节点 · 0 边 · 0 个并行组 · 0 个子工作流
+1. T-001 开发（角色节点 developer）
+超时与重试：
+- T-001 超时 600s · 重试 2
+结论：编排可执行，未启动任何会话
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow dry-run timeout-ok --format json
+# label=orch workflow dry-run timeout-ok --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-29 exit=0 102ms
+{
+  "id": "timeout-ok",
+  "name": "超时合法",
+  "nodeCount": 1,
+  "edgeCount": 0,
+  "layers": [
+    {
+      "parallel": false,
+      "nodes": [
+        "T-001"
+      ]
+    }
+  ],
+  "branches": [],
+  "mappings": [],
+  "policies": [
+    {
+      "nodeId": "T-001",
+      "timeout": 600,
+      "retry": 2
+    }
+  ]
+}
+

@@ -1,0 +1,107 @@
+{
+  "ac": "AC-32",
+  "title": "可达性",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具自检：T-007 已追加",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 报 WORKFLOW_UNREACHABLE（期望含 \"（WORKFLOW_UNREACHABLE）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：节点不可达：T-007（WORKFLOW_UNREACHABLE）\n"
+    },
+    {
+      "text": "Then 明细含 T-007（期望含 \"节点不可达：T-007\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：节点不可达：T-007（WORKFLOW_UNREACHABLE）\n"
+    },
+    {
+      "text": "机检：errors[0].code === WORKFLOW_UNREACHABLE（期望 \"WORKFLOW_UNREACHABLE\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_UNREACHABLE\""
+    },
+    {
+      "text": "机检：errors[0].detail 含 T-007（期望含 \"T-007\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点不可达：T-007"
+    },
+    {
+      "text": "机检：counts.invalid === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置附录 A-13 的 doc-fanout（writeDocFanout）",
+      "argv": [
+        "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：追加节点 T-007（node_type: role、role: tester，无任何边指向）",
+      "argv": [
+        "(fixture) 追加节点 T-007（node_type: role、role: tester，无任何边指向）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-32",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：节点不可达：T-007（WORKFLOW_UNREACHABLE）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-32",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_UNREACHABLE\",\n      \"file\": \"workflows/doc-fanout.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"节点不可达：T-007\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

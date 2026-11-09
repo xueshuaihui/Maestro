@@ -1975,7 +1975,11 @@ export function createOrchestrator({
           to: 'completed',
         });
       }
-      await quiesceSession(ctx, 'run.completed');
+      // 成功收尾走 idleSession，与其他图的成功收尾一致（多节点图的成功路径都走它）：
+      // quiesceSession 会把会话置 quarantined=true，而那是「取消/失败后迟到帧一律丢弃」的隔离语义，
+      // 隔离会话按需求 D-5/C-06 要计入活跃会话，终态实例于是会显示「活跃会话 1/1」（AC-27 冲突）。
+      // 迟到帧的丢弃由 ctx.quiescing 保证，与本标志无关。
+      await idleSession(ctx, 'run.completed');
       ctx.node.endedAt = iso();
       await saveLive(ctx);
       await cleanup(ctx);
@@ -2409,7 +2413,7 @@ export function createOrchestrator({
   /**
    * Review node finishing (D-7 / D-3). The review file decides:
    *   pass                      -> done (I1.2 transition reason kept)
-   *   reject, under the cap     -> failed + note `等待复审`, the planner backflows next
+   *   reject, under the cap     -> failed + note `等待复审`, the scheduler backflows next
    *   reject at the cap         -> escalate `rounds_exceeded`
    *   invalid file              -> escalate with the reader's reason code
    */
@@ -2863,7 +2867,7 @@ export function createOrchestrator({
     }
 
     let promptText = plan.promptText;
-    // I1.2 re-assembles the retest prompt here. A `doc-single` graph keeps the planner's
+    // I1.2 re-assembles the retest prompt here. A `doc-single` graph keeps the engine's
     // text instead: it already carries the versioned references, which this block has no
     // way to reproduce (D-8).
     if (handoff.edge?.kind === 'retest' && productPolicyOf(state) !== 'doc-single') {
@@ -4416,7 +4420,7 @@ export function createOrchestrator({
         if (fresh) {
           runGraph = graphForState(fresh);
           // D-7.4 step 1: derive THIS advance's target node + targetRound from
-          // the planner (advance.js: targetRound = target node round + 1),
+          // 推进决策（advance.js: targetRound = target node round + 1）,
           // never reverse-derive the node id from the chosen package.
           const fromNodeId = latestEndedNodeId(fresh);
           const plan = planAdvance({

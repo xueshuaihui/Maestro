@@ -1,0 +1,174 @@
+{
+  "ac": "AC-10",
+  "title": "差异清单与「无差异」",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：lead-dev 建出（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第一次退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：第一次输出行数 5（期望 5）",
+      "ok": true,
+      "blocked": false,
+      "actual": "5"
+    },
+    {
+      "text": "Then 第 1 行逐字（期望逐字 \"对比角色 lead-dev（项目）与基线 developer（内置）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"对比角色 lead-dev（项目）与基线 developer（内置）\""
+    },
+    {
+      "text": "Then 差异行 1（期望逐字 \"+ derived_from：developer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"+ derived_from：developer\""
+    },
+    {
+      "text": "Then 差异行 2（期望逐字 \"~ name：开发 → 开发（派生）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"~ name：开发 → 开发（派生）\""
+    },
+    {
+      "text": "Then 差异行 3（期望逐字 \"~ skills：code-change, test-run → test-run\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"~ skills：code-change, test-run → test-run\""
+    },
+    {
+      "text": "Then 末行逐字 = 差异 3 项（期望逐字 \"差异 3 项\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"差异 3 项\""
+    },
+    {
+      "text": "Then 第二次退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第二次输出恰好 2 行（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 第二次末行 = 无差异（期望逐字 \"无差异\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"无差异\""
+    },
+    {
+      "text": "机检：顶层键恰为 base/target/changes（期望 [\"base\",\"changes\",\"target\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"base\",\"changes\",\"target\"]"
+    },
+    {
+      "text": "机检：changes 长度 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：changes 的 kind 集合 = {added, changed}（期望 [\"added\",\"changed\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"added\",\"changed\"]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "（Given）orch role create lead-dev --from developer --skills test-run",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--from",
+        "developer",
+        "--skills",
+        "test-run"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "已创建项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：预置 .orch/roles/developer.yaml = assets/roles/developer.yaml 逐字节拷贝（逐字段相同的项目覆盖文件）",
+      "argv": [
+        "(fixture) 预置 .orch/roles/developer.yaml = assets/roles/developer.yaml 逐字节拷贝（逐字段相同的项目覆盖文件）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "sha256 源=250B",
+      "stderr": ""
+    },
+    {
+      "label": "orch role diff lead-dev",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "diff",
+        "lead-dev"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "对比角色 lead-dev（项目）与基线 developer（内置）\n+ derived_from：developer\n~ name：开发 → 开发（派生）\n~ skills：code-change, test-run → test-run\n差异 3 项\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role diff developer（逐字段相同的项目覆盖）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "diff",
+        "developer"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "对比角色 developer（项目）与基线 developer（内置）\n无差异\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role diff lead-dev --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "diff",
+        "lead-dev",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 92,
+      "stdout": "{\n  \"base\": \"developer\",\n  \"target\": \"lead-dev\",\n  \"changes\": [\n    {\n      \"field\": \"derived_from\",\n      \"kind\": \"added\",\n      \"base\": null,\n      \"target\": \"developer\"\n    },\n    {\n      \"field\": \"name\",\n      \"kind\": \"changed\",\n      \"base\": \"开发\",\n      \"target\": \"开发（派生）\"\n    },\n    {\n      \"field\": \"skills\",\n      \"kind\": \"changed\",\n      \"base\": [\n        \"code-change\",\n        \"test-run\"\n      ],\n      \"target\": [\n        \"test-run\"\n      ]\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

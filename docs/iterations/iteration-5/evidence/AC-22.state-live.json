@@ -1,0 +1,31 @@
+{
+  "state": "running",
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "state": "done",
+      "round": 1,
+      "sessionId": "mock-sess-15668-1"
+    },
+    {
+      "nodeId": "T-002",
+      "state": "running",
+      "round": 1,
+      "sessionId": "mock-sess-15388-1"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-15668-1",
+      "nodeId": "T-001",
+      "state": "idle",
+      "hostId": "dsh"
+    },
+    {
+      "sessionId": "mock-sess-15388-1",
+      "nodeId": "T-002",
+      "state": "thinking",
+      "hostId": "dsh"
+    }
+  ]
+}

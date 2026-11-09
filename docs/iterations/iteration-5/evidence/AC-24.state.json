@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-562d57e5c96f134b",
+  "createdAt": "2026-11-08T12:21:55.858Z",
+  "updatedAt": "2026-11-08T12:21:57.011Z",
+  "state": "running",
+  "stateSince": "2026-11-08T12:21:56.776Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-24\\demo-code-pass",
+  "task": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 38,
+  "counters": {
+    "eventSeq": 41,
+    "runCount": 1,
+    "dispatchCount": 4
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 2,
+      "state": "done",
+      "stateSince": "2026-11-08T12:21:56.746Z",
+      "startedAt": "2026-11-08T12:21:55.871Z",
+      "roundStartedAt": "2026-11-08T12:21:56.496Z",
+      "endedAt": "2026-11-08T12:21:56.752Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-35152-1",
+      "artifactRefs": []
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 2,
+      "state": "running",
+      "stateSince": "2026-11-08T12:21:56.776Z",
+      "startedAt": "2026-11-08T12:21:56.187Z",
+      "roundStartedAt": "2026-11-08T12:21:56.776Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": {
+        "value": "fail",
+        "defectCount": 2,
+        "verdictPath": "out/verdict.json",
+        "readAt": "2026-11-08T12:21:56.458Z"
+      },
+      "sessionId": "mock-sess-24464-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-18056-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-08T12:21:56.165Z",
+      "createdAt": "2026-11-08T12:21:56.102Z",
+      "lastEventAt": "2026-11-08T12:21:56.110Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-24\\demo-code-pass\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-27004-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-08T12:21:56.472Z",
+      "createdAt": "2026-11-08T12:21:56.409Z",
+      "lastEventAt": "2026-11-08T12:21:56.424Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-24\\demo-code-pass\\out\\test-log.txt",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-35152-1",
+      "nodeId": "T-001",
+      "round": 2,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-08T12:21:56.758Z",
+      "createdAt": "2026-11-08T12:21:56.704Z",
+      "lastEventAt": "2026-11-08T12:21:56.713Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-24\\demo-code-pass\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-24464-1",
+      "nodeId": "T-002",
+      "round": 2,
+      "hostId": "mock",
+      "state": "tool_running",
+      "stateSince": "2026-11-08T12:21:56.995Z",
+      "createdAt": "2026-11-08T12:21:56.988Z",
+      "lastEventAt": "2026-11-08T12:21:56.995Z",
+      "toolName": "write",
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-24\\demo-code-pass\\out\\verdict.json",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-08T12:21:56.179Z",
+      "deliveredAt": "2026-11-08T12:21:56.410Z",
+      "acceptedAt": "2026-11-08T12:21:56.419Z",
+      "consumedAt": "2026-11-08T12:21:56.460Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 9,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null
+    },
+    {
+      "handoffId": "HO-002",
+      "edge": {
+        "from": "T-002",
+        "to": "T-001",
+        "kind": "backflow"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-08T12:21:56.486Z",
+      "deliveredAt": "2026-11-08T12:21:56.704Z",
+      "acceptedAt": "2026-11-08T12:21:56.708Z",
+      "consumedAt": "2026-11-08T12:21:56.752Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": "2026-11-08T12:21:56.487Z",
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 4,
+      "defects": [
+        {
+          "summary": "div 在除数为 0 时返回 Infinity，未抛错",
+          "evidence": "out/test-log.txt"
+        },
+        {
+          "summary": "div 在整除场景存在浮点误差",
+          "evidence": "out/test-log-2.txt"
+        }
+      ],
+      "note": null,
+      "artifactRefs": {
+        "input": [],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null
+    },
+    {
+      "handoffId": "HO-003",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "retest"
+      },
+      "state": "accepted",
+      "createdAt": "2026-11-08T12:21:56.770Z",
+      "deliveredAt": "2026-11-08T12:21:56.988Z",
+      "acceptedAt": "2026-11-08T12:21:56.994Z",
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 6,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null
+    }
+  ],
+  "escalations": []
+}

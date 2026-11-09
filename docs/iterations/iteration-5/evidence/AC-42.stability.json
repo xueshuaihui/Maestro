@@ -1,0 +1,22 @@
+{
+  "green": 1,
+  "attempts": 3,
+  "rate": "1/3",
+  "reds": [
+    {
+      "attempt": 1,
+      "fail": 2,
+      "fails": [
+        "NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）",
+        "NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）"
+      ]
+    },
+    {
+      "attempt": 2,
+      "fail": 1,
+      "fails": [
+        "NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+$ "(fixture) 预置 wake.yaml（T-001 role: writer 节点级 wake_allow: [editor] → T-002 role: reviewer）"
+# label=夹具：预置 wake.yaml（T-001 role: writer 节点级 wake_allow: [editor] → T-002 role: reviewer） cwd=d:\WWW\Maestro exit=0 0ms
+schema: workflow/v1
+id: wake
+name: 唤醒
+entry: T-001
+terminal: T-002
+nodes:
+  - id: T-001
+    node_type: role
+    role: writer
+    title: 上游
+    wake_allow: [editor]
+  - id: T-002
+    node_type: role
+    role: reviewer
+    title: 下游
+edges:
+  - from: T-001
+    to: T-002
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate wake
+# label=orch workflow validate wake cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-37 exit=1 100ms
+校验工作流 1 个：1 个不合法
+- workflows/wake.yaml：唤醒不在白名单内：writer → reviewer（WORKFLOW_WAKE_DENIED）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate wake --format json
+# label=orch workflow validate wake --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-37 exit=1 101ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_WAKE_DENIED",
+      "file": "workflows/wake.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "唤醒不在白名单内：writer → reviewer"
+    }
+  ]
+}
+
+
+$ "(fixture) 把 T-002 的 role 换成 editor（writer 的节点级白名单含 editor）"
+# label=夹具：把 T-002 的 role 换成 editor（writer 的节点级白名单含 editor） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate wake
+# label=orch workflow validate wake（下游换 editor 后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-37 exit=0 99ms
+校验工作流 1 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate wake --format json
+# label=orch workflow validate wake --format json（下游换 editor 后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-37 exit=0 100ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+

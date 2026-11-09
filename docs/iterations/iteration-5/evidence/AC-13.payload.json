@@ -1,0 +1,20 @@
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "SKILL_FILE_MISSING",
+      "file": "skills/half-done/SKILL.md",
+      "scope": "skill",
+      "field": null,
+      "line": null,
+      "detail": "技能目录缺少 SKILL.md：half-done"
+    }
+  ]
+}

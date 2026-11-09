@@ -1,0 +1,6 @@
+校验资产 29 个：3 个不合法
+- roles/c1.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）
+- roles/d1.yaml：派生链成环：d1（ROLE_DERIVE_CYCLE）
+- roles/p1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）
+- roles/p1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）
+

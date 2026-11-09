@@ -1,0 +1,41 @@
+{
+  "role": {
+    "id": "worker",
+    "name": "执行者",
+    "group": "coordinator",
+    "groupLabel": "通用协调",
+    "artifactType": "document",
+    "sideEffect": "write",
+    "skills": [],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/worker.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "single",
+    "state": "completed",
+    "roleToSessions": {
+      "worker": [
+        "mock-sess-4512-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "worker",
+    "roleInstanceId": "RI-worker",
+    "status": "retired",
+    "statusReason": null,
+    "activeSessions": [],
+    "servingNodes": [],
+    "hostIcons": [],
+    "maxConcurrentSessions": 1,
+    "lastAction": {
+      "nodeId": "T-001",
+      "round": 1,
+      "maxRounds": 1,
+      "state": "done",
+      "stateSince": "2026-11-08T12:22:06.009Z"
+    }
+  }
+}

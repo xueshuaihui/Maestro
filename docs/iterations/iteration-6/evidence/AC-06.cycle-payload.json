@@ -1,0 +1,28 @@
+{
+  "counts": {
+    "assets": 28,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "ROLE_DERIVE_CYCLE",
+      "file": "roles/a1.yaml",
+      "scope": "role",
+      "field": "derived_from",
+      "line": null,
+      "detail": "派生链成环：a1 → b1"
+    },
+    {
+      "code": "ROLE_DERIVE_CYCLE",
+      "file": "roles/b1.yaml",
+      "scope": "role",
+      "field": "derived_from",
+      "line": null,
+      "detail": "派生链成环：b1 → a1"
+    }
+  ]
+}

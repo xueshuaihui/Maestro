@@ -1,0 +1,23 @@
+$ "(fixture) 全新项目根（没有任何项目资产、也没有工作流）"
+# label=夹具：全新项目根（没有任何项目资产、也没有工作流） cwd=d:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-15
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-15 exit=0 101ms
+校验资产 26 个：全部通过（角色 16 · 技能 10）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-15 exit=0 105ms
+{
+  "counts": {
+    "assets": 26,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 0
+  },
+  "errors": []
+}
+

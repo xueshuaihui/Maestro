@@ -1,0 +1,41 @@
+$ "(fixture) 预置 .orch/roles/my-role.yaml（除 name 外与 developer 逐字段相同）与 .orch/workflows/my-wf.yaml"
+# label=夹具：预置 .orch/roles/my-role.yaml（除 name 外与 developer 逐字段相同）与 .orch/workflows/my-wf.yaml cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role edit ghost-id --set summary=x
+# label=orch role edit ghost-id --set summary=x cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-57 exit=1 103ms
+找不到角色：ghost-id
+可用角色：执行 orch role list 查看
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role diff my-role
+# label=orch role diff my-role cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-57 exit=1 99ms
+缺少对比基线：my-role（用 --against 指定内置角色或文件）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow diff my-wf
+# label=orch workflow diff my-wf cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-57 exit=1 100ms
+缺少对比基线：my-wf（用 --against 指定内置工作流或文件）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role diff my-role --against developer
+# label=orch role diff my-role --against developer cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-57 exit=0 99ms
+对比角色 my-role（项目）与基线 developer（内置）
+~ name：开发 → 我的角色
+差异 1 项
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role diff my-role --against developer --format json
+# label=orch role diff my-role --against developer --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-57 exit=0 113ms
+{
+  "base": "developer",
+  "target": "my-role",
+  "changes": [
+    {
+      "field": "name",
+      "kind": "changed",
+      "base": "开发",
+      "target": "我的角色"
+    }
+  ]
+}
+

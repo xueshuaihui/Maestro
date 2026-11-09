@@ -1,0 +1,187 @@
+{
+  "ac": "AC-45",
+  "title": "只读命令不建 `.orch`、不连核心",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 项目根下不存在 .orch（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "Then 十条只读命令全部退出 0（Given 无坏资产，Then 的 0/1 档取严断 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "role list: exit=0 lines=17；role show developer: exit=0 lines=6；role validate: exit=0 lines=1；skill list: exit=0 lines=11；skill show code-change: exit=0 lines=10；skill validate: exit=0 lines=1；workflow list: exit=0 lines=4；workflow show code-loop: exit=0 lines=9；workflow validate: exit=0 lines=1；workflow diff code-loop: exit=0 lines=2"
+    },
+    {
+      "text": "机检：执行后 test -e \"$ROOT/.orch\" 为假（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：assets/** sha256 清单执行前后逐字相同（期望 \"roles/arbiter.yaml  9bbd4e51c45d3ec8faccbffdf15198bb9ed521dea8647f9e9393b417b1bd0276\\nroles/code-reviewer.yaml  89ccc6e011c442a9db10891b9db7d7e655f58db6723e4d8371ac4cbd7becf84a\\nroles/compliance-reviewer.yaml  f8877b9d2106b6c6166c45d2bcdce90ddcf728ab20854675960fdb0c77dbe5dd\\nroles/coordinator.yaml  e4dec720bcf607030fe425ec950b4dd17e5fa5656761bd9b0f2eab6773eba6ad\\nroles/data-analyst.yaml  1ea8010e2dd465c0cc1fc94b514997310d0f002f2d1b3f687065dd35a26843b9\\nroles/developer.yaml  4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905\\nroles/editor.yaml  51555a1ed49351f8944c3d2ff9efe278b2c49420436751c0bd92db3dc0eb6525\\nroles/fact-checker.yaml  f95dd9a7bfe9c8ece03cf98743437b0223e8bcb1e714478115577f46e1e2c86e\\nroles/planner.yaml  fd8b418d438e331ee5614c4f4de16a1131de6d1e03bd59f8de6a508c873618b4\\nroles/requirement-clarifier.yaml  b1c1c0f3fe91f0a07735b5335b1effda5b81b0fbeffca9ee9da30b3c96f793eb\\nroles/researcher.yaml  0422905008dc01c2701f6ea4e75024ce9a160e9fb144f694145fae44ee9e150b\\nroles/reviewer.yaml  f06f94ab0a5a569d8c27a114e3059e5a8652b8675d7a5293aaa4aac68ba1fd88\\nroles/summarizer.yaml  671eac167cc4fb698d5b05b10b19fccc262ed8d87811c5a5f4a037cf853695aa\\nroles/tester.yaml  b450e1c6e9e2663bf36323a3cccb0d53016c988a6e3e853aad707d66831883f1\\nroles/worker.yaml  9f2b42983217699482fd6e848b14c672b55a1b20d28cbbf9b3f4e2b341e01eba\\nroles/writer.yaml  51ec7e2980e5f0cf36f9fc5b64c900a747173b5003ff6f6ed3865b7f5c13d771\\nskills/code-change/SKILL.md  92db6c207c59de341e4ed09a8cb8d90c7f62018968df0f356a0bb4066fe92194\\nskills/code-review/SKILL.md  783639b876f0d842b6c3ce4660129669a20967b1ee1217d32d8c9bcf2af02b72\\nskills/compliance-check/SKILL.md  d53f1705c7ee87bccd154d75802a94013d583d562ee20a5ad13147cd694cf824\\nskills/coordination/SKILL.md  213d472ef6ecbd3138d3889daa3a5da7eb3d5d137fd1154175701a78ba74bb82\\nskills/data-analysis/SKILL.md  369460cbb3d582b66d779fd5050ad6838d7fefc783022d087304d9487a110931\\nskills/doc-draft/SKILL.md  029bb8966988948fc47e7c7af760a0649a0bf746b4116a52fd21aa3a1e7e465d\\nskills/doc-review/SKILL.md  4f4845b28fa7e3b4b3702dee86ce3c4443aca972e04e0a83050dcf7133507b64\\nskills/fact-check/SKILL.md  656fa03d6f79cfdd3e63e113e4ba690a7c9fc42c67b1a61f68f057d118a0ae22\\nskills/research-brief/SKILL.md  547cda1ae1d54818ba715761c3e179868c2ac08e5d61efd2e7d4d5aec0d3eaa6\\nskills/test-run/SKILL.md  49de0dd67d65958959e278b224ea67efc0d44375c48fa1a0d049a2200d010487\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"roles/arbiter.yaml  9bbd4e51c45d3ec8faccbffdf15198bb9ed521dea8647f9e9393b417b1bd0276\\nroles/code-reviewer.yaml  89ccc6e011c442a9db10891b9db7d7e655f58db6723e4d8371ac4cbd7becf84a\\nroles/compliance-reviewer.yaml  f8877b9d2106b6c6166c45d2bcdce90ddcf728ab20854675960fdb0c77dbe5dd\\nroles/coordinator.yaml  e4dec720bcf607030fe425ec950b4dd17e5fa5656761bd9b0f2eab6773eba6ad\\nroles/data-analyst.yaml  1ea8010e2dd465c0cc1fc94b514997310d0f002f2d1b3f687065dd35a26843b9\\nroles/developer.yaml  4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905\\nroles/editor.yaml  51555a1ed49351f8944c3d2ff9efe278b2c49420436751c0bd92db3dc0eb6525\\nroles/fact-checker.yaml  f95dd9a7bfe9c8ece03cf98743437b0223e8bcb1e714478115577f46e1e2c86e\\nroles/planner.yaml  fd8b418d438e331ee5614c4f4de16a1131de6d1e03bd59f8de6a508c873618b4\\nroles/requirement-clarifier.yaml  b1c1c0f3fe91f0a07735b5335b1effda5b81b0fbeffca9ee9da30b3c96f793eb\\nroles/researcher.yaml  0422905008dc01c2701f6ea4e75024ce9a160e9fb144f694145fae44ee9e150b\\nroles/reviewer.yaml  f06f94ab0a5a569d8c27a114e3059e5a8652b8675d7a5293aaa4aac68ba1fd88\\nroles/summarizer.yaml  671eac167cc4fb698d5b05b10b19fccc262ed8d87811c5a5f4a037cf853695aa\\nroles/tester.yaml  b450e1c6e9e2663bf36323a3cccb0d53016c988a6e3e853aad707d66831883f1\\nroles/worker.yaml  9f2b42983217699482fd6e848b14c672b55a1b20d28cbbf9b3f4e2b341e01eba\\nroles/writer.yaml  51ec7e2980e5f0cf36f9fc5b64c900a747173b5003ff6f6ed3865b7f5c13d771\\nskills/code-change/SKILL.md  92db6c207c59de341e4ed09a8cb8d90c7f62018968df0f356a0bb4066fe92194\\nskills/code-review/SKILL.md  783639b876f0d842b6c3ce4660129669a20967b1ee1217d32d8c9bcf2af02b72\\nskills/compliance-check/SKILL.md  d53f1705c7ee87bccd154d75802a94013d583d562ee20a5ad13147cd694cf824\\nskills/coordination/SKILL.md  213d472ef6ecbd3138d3889daa3a5da7eb3d5d137fd1154175701a78ba74bb82\\nskills/data-analysis/SKILL.md  369460cbb3d582b66d779fd5050ad6838d7fefc783022d087304d9487a110931\\nskills/doc-draft/SKILL.md  029bb8966988948fc47e7c7af760a0649a0bf746b4116a52fd21aa3a1e7e465d\\nskills/doc-review/SKILL.md  4f4845b28fa7e3b4b3702dee86ce3c4443aca972e04e0a83050dcf7133507b64\\nskills/fact-check/SKILL.md  656fa03d6f79cfdd3e63e113e4ba690a7c9fc42c67b1a61f68f057d118a0ae22\\nskills/research-brief/SKILL.md  547cda1ae1d54818ba715761c3e179868c2ac08e5d61efd2e7d4d5aec0d3eaa6\\nskills/test-run/SKILL.md  49de0dd67d65958959e278b224ea67efc0d44375c48fa1a0d049a2200d010487\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch role list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 93,
+      "stdout": "角色 16 个（内置 16 · 项目 0）\n- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\n- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\n- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\n- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\n- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\n- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\n- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\n- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\n- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\n- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\n- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\n- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\n- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show developer",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "developer"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 91,
+      "stdout": "- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n  职责：按任务修改代码，交出声明的产物文件\n  技能：code-change, test-run\n  工具：read, write, edit, bash\n  可唤醒：tester\n  来源：内置 assets/roles/developer.yaml\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 105,
+      "stdout": "校验资产 26 个：全部通过（角色 16 · 技能 10）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "技能 10 个（内置 10 · 项目 0）\n- code-change 代码修改 · 编码工程 · 命令 1\n- code-review 代码审查 · 编码工程 · 命令 0\n- compliance-check 合规审查 · 业务运营 · 命令 0\n- coordination 编排协调 · 通用协调 · 命令 0\n- data-analysis 数据分析 · 研究分析 · 命令 1\n- doc-draft 文档撰写 · 内容创作 · 命令 0\n- doc-review 文档审核 · 内容创作 · 命令 0\n- fact-check 事实核查 · 研究分析 · 命令 0\n- research-brief 调研笔记 · 研究分析 · 命令 0\n- test-run 测试执行 · 编码工程 · 命令 1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill show code-change",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "show",
+        "code-change"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "- code-change 代码修改 · 编码工程 · 命令 1\n  摘要：定位到要改的文件，做最小改动，并写清改了什么\n  命令：node --test\n  适用：编码工程\n  来源：内置 assets/skills/code-change/SKILL.md\n  正文：\n  ### 工作方法\n  \n  1. 先读任务里「产物：」那一行，确认要改的文件。\n  2. 只改必要位置，不动无关文件。\n  3. 改完说明：改了哪个文件、为什么这样改。\n  \n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "校验技能 10 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 96,
+      "stdout": "工作流 3 个（内置 3 · 项目 0）\n- code-loop 编码闭环 · 2 节点 · 3 边 · 内置\n- single 单节点 · 1 节点 · 0 边 · 内置\n- task-loop 通用任务闭环 · 3 节点 · 4 边 · 内置\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow show code-loop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "show",
+        "code-loop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "- code-loop 编码闭环 · 2 节点 · 3 边 · 内置\n  入口：T-001 · 终点：T-002\n  节点：\n    T-001 开发 · 角色节点 developer · 超时 — · 重试 0\n    T-002 测试 · 角色节点 tester · 超时 — · 重试 0\n  边：\n    T-001 → T-002 正向\n    T-002 → T-001 回流 · 轮次上限 2\n    T-001 → T-002 复测\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "校验工作流 3 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow diff code-loop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "diff",
+        "code-loop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-45",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "对比工作流 code-loop（内置）与基线 code-loop（内置）\n无差异\n",
+      "stderr": ""
+    }
+  ]
+}

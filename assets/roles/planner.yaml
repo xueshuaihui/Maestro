@@ -1,0 +1,15 @@
+schema: role/v1
+id: planner
+name: 规划者
+group: coordinator
+summary: 读需求与已有产物，排出可执行的节点计划与产物清单
+artifact_type: report
+side_effect: read
+skills:
+  - coordination
+  - research-brief
+tools:
+  - read
+wake_allow:
+  - worker
+max_concurrent_sessions: 1

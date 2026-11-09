@@ -1,0 +1,33 @@
+$ "(fixture) 写 .orch/roles/bad-group.yaml（group: marketing）"
+# label=夹具：写 .orch/roles/bad-group.yaml（group: marketing） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-06\.orch\roles\bad-group.yaml
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-06 exit=1 119ms
+校验资产 27 个：1 个不合法
+- roles/bad-group.yaml：分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops（ROLE_GROUP_INVALID）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-06 exit=1 98ms
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "ROLE_GROUP_INVALID",
+      "file": "roles/bad-group.yaml",
+      "scope": "role",
+      "field": "group",
+      "line": null,
+      "detail": "分组取值非法：marketing；合法取值：coordinator / research / writing / coding / ops"
+    }
+  ]
+}
+

@@ -1,0 +1,8 @@
+- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2
+  职责：依据调研结论写出结构完整的文档初稿
+  技能：doc-draft
+  工具：read, write, edit
+  可唤醒：editor
+  来源：内置 assets/roles/writer.yaml
+  实例 INST-001：服务中 · 活跃会话 1/2 · 服务节点 T-002 · 宿主 dsh · 最近 T-002 · 轮次 1/2
+

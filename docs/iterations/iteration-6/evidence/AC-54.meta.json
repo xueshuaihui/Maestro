@@ -1,0 +1,35 @@
+{
+  "ac": "AC-54",
+  "title": "role create 四个必填参数取值非法是用法错误、不建文件",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:03.153Z",
+  "finishedAt": "2026-11-09T12:24:03.533Z",
+  "durationMs": 380,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-54",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-54"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 19,
+  "notes": [],
+  "extraFiles": [
+    "AC-54.orch-role-create-lead-dev---group-nope-….txt",
+    "AC-54.orch-role-create-lead-dev---artifact-type-doc-….txt",
+    "AC-54.orch-role-create-lead-dev---side-effect-heavy-….txt",
+    "AC-54.role-bogus.txt"
+  ]
+}

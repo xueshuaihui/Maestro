@@ -1,0 +1,33 @@
+$ "(fixture) 写 .orch/roles/writer.yaml（内容 id: wordsmith）"
+# label=夹具：写 .orch/roles/writer.yaml（内容 id: wordsmith） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-05\.orch\roles\writer.yaml
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-05 exit=1 92ms
+校验资产 26 个：1 个不合法
+- roles/writer.yaml：角色 id 与文件名不一致：文件 writer / 声明 wordsmith（ROLE_ID_MISMATCH）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-05 exit=1 102ms
+{
+  "counts": {
+    "assets": 26,
+    "roles": 15,
+    "skills": 10,
+    "builtin": 25,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "ROLE_ID_MISMATCH",
+      "file": "roles/writer.yaml",
+      "scope": "role",
+      "field": "id",
+      "line": null,
+      "detail": "角色 id 与文件名不一致：文件 writer / 声明 wordsmith"
+    }
+  ]
+}
+

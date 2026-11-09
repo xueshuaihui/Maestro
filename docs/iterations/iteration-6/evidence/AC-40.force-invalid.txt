@@ -1,0 +1,2 @@
+创建被拒：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）
+

@@ -1,0 +1,4 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe -e "const p=require('./package.json');console.log(Object.keys(p.dependencies ?? {}).length)"
+# label=node -e "const p=require('./package.json');console.log(Object.keys(p.dependencies ?? {}).length)" cwd=d:\WWW\Maestro exit=0 88ms
+0
+

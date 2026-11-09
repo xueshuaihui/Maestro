@@ -1,0 +1,95 @@
+{
+  "ac": "AC-42",
+  "title": "预演对不合法工作流直接拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具自检：T-001 的 role 已改为 ghost-role",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 恰好两行（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 第 1 行逐字（期望逐字 \"预演被拒：引用的角色不存在：ghost-role（WORKFLOW_ROLE_UNKNOWN）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"预演被拒：引用的角色不存在：ghost-role（WORKFLOW_ROLE_UNKNOWN）\""
+    },
+    {
+      "text": "Then 第 2 行逐字（期望逐字 \"执行 orch workflow validate 查看全部问题\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"执行 orch workflow validate 查看全部问题\""
+    },
+    {
+      "text": "Then 没有任何编排计划行（期望不含 \"编排计划\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "预演被拒：引用的角色不存在：ghost-role（WORKFLOW_ROLE_UNKNOWN）\n执行 orch workflow validate 查看全部问题\n"
+    },
+    {
+      "text": "机检：stdout 不含 编排计划（期望不含 \"编排计划\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "预演被拒：引用的角色不存在：ghost-role（WORKFLOW_ROLE_UNKNOWN）\n执行 orch workflow validate 查看全部问题\n"
+    },
+    {
+      "text": "机检：.orch/instances 不存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-42\\.orch\\instances"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置附录 A-13 的 doc-fanout（writeDocFanout）",
+      "argv": [
+        "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：把 T-001 的 role 改成不存在的 ghost-role",
+      "argv": [
+        "(fixture) 把 T-001 的 role 改成不存在的 ghost-role"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow dry-run doc-fanout",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "dry-run",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-42",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "预演被拒：引用的角色不存在：ghost-role（WORKFLOW_ROLE_UNKNOWN）\n执行 orch workflow validate 查看全部问题\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "ac": "AC-13",
+  "title": "权限闭环：工具集与副作用等级对不上",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:22:40.121Z",
+  "finishedAt": "2026-11-09T12:22:40.347Z",
+  "durationMs": 226,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-13",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-13"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 12,
+  "notes": [],
+  "extraFiles": [
+    "AC-13.validate-text.txt",
+    "AC-13.payload.json"
+  ]
+}

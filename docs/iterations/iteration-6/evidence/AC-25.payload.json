@@ -1,0 +1,34 @@
+{
+  "counts": {
+    "assets": 6,
+    "builtin": 3,
+    "project": 3,
+    "invalid": 3
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_NODE_TYPE_INVALID",
+      "file": "workflows/bad-type.yaml",
+      "scope": "workflow",
+      "field": "node_type",
+      "line": null,
+      "detail": "节点类型取值非法：script；合法取值：role / human / escalate / subworkflow"
+    },
+    {
+      "code": "WORKFLOW_NODE_FIELD_MISSING",
+      "file": "workflows/no-role.yaml",
+      "scope": "workflow",
+      "field": "role",
+      "line": null,
+      "detail": "节点 T-001 缺少必填字段：role"
+    },
+    {
+      "code": "WORKFLOW_NODE_FIELD_MISSING",
+      "file": "workflows/no-title.yaml",
+      "scope": "workflow",
+      "field": "title",
+      "line": null,
+      "detail": "节点 T-001 缺少必填字段：title"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "ac": "AC-31",
+  "title": "契约不连通的工作流被拒绝（规划验收）",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:22:58.950Z",
+  "finishedAt": "2026-11-09T12:22:59.383Z",
+  "durationMs": 433,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-31",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-31"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 10,
+  "notes": [],
+  "extraFiles": [
+    "AC-31.validate-broken.txt",
+    "AC-31.payload-broken.json",
+    "AC-31.validate-fixed.txt",
+    "AC-31.payload-fixed.json"
+  ]
+}

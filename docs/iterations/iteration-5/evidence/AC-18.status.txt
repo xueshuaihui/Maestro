@@ -1,0 +1,79 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe --test test/wp11/assets.test.js
+# label=node --test test/wp11/assets.test.js cwd=D:\WWW\Maestro exit=0 211ms
+TAP version 13
+# Subtest: AC-12: the whole built-in tree validates with the six-key asset counts
+ok 1 - AC-12: the whole built-in tree validates with the six-key asset counts
+  ---
+  duration_ms: 9.6051
+  type: 'test'
+  ...
+# Subtest: AC-17: five groups hold 5 / 3 / 3 / 3 / 2 roles, each group at least two
+ok 2 - AC-17: five groups hold 5 / 3 / 3 / 3 / 2 roles, each group at least two
+  ---
+  duration_ms: 5.616
+  type: 'test'
+  ...
+# Subtest: A-1: the sixteen roles match the table row by row, in table order
+ok 3 - A-1: the sixteen roles match the table row by row, in table order
+  ---
+  duration_ms: 4.1579
+  type: 'test'
+  ...
+# Subtest: AC-18: the six template role names match ROLE_LABEL verbatim
+ok 4 - AC-18: the six template role names match ROLE_LABEL verbatim
+  ---
+  duration_ms: 4.258
+  type: 'test'
+  ...
+# Subtest: worker is the only role without skills
+ok 5 - worker is the only role without skills
+  ---
+  duration_ms: 4.2604
+  type: 'test'
+  ...
+# Subtest: ten skills are present, each with at least three working steps
+ok 6 - ten skills are present, each with at least three working steps
+  ---
+  duration_ms: 4.9387
+  type: 'test'
+  ...
+# Subtest: every skill is referenced by at least one role
+ok 7 - every skill is referenced by at least one role
+  ---
+  duration_ms: 3.8904
+  type: 'test'
+  ...
+# Subtest: A-1: developer.yaml matches the documented sample byte for byte
+ok 8 - A-1: developer.yaml matches the documented sample byte for byte
+  ---
+  duration_ms: 0.2757
+  type: 'test'
+  ...
+# Subtest: A-1: code-change/SKILL.md matches the documented sample byte for byte
+ok 9 - A-1: code-change/SKILL.md matches the documented sample byte for byte
+  ---
+  duration_ms: 0.4075
+  type: 'test'
+  ...
+# Subtest: asset directory layout: 16 role files and 10 skill directories, nothing else
+ok 10 - asset directory layout: 16 role files and 10 skill directories, nothing else
+  ---
+  duration_ms: 0.7845
+  type: 'test'
+  ...
+# Subtest: project assets still win over the shipped ones (AC-03 / AC-45 shape)
+ok 11 - project assets still win over the shipped ones (AC-03 / AC-45 shape)
+  ---
+  duration_ms: 13.0924
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 136.7857
+

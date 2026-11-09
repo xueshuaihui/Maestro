@@ -15,8 +15,18 @@ import path from 'node:path';
 
 import { createClient as createDefaultClient } from '../daemon/client.js';
 import { corruptPath } from '../persistence/paths.js';
+import { loadRegistry } from '../registry/index.js';
+import { ARTIFACT_TYPES, GROUPS, SIDE_EFFECTS } from '../registry/role-schema.js';
 import { getGraph } from '../templates/index.js';
+import {
+  GROUP_LABEL,
+  ROLE_CLI_TEXT,
+  ROLE_USAGE_TEXT,
+  SKILL_CLI_TEXT,
+  WORKFLOW_CLI_TEXT,
+} from './labels.js';
 import * as render from './render.js';
+import { firstRegistryDetail, roleCommand } from './roles.js';
 
 /** 会话行刷新间隔（AC-03：时长递增；NFR-02：状态变化 1s 内反映）。 */
 const POLL_INTERVAL_MS = 1000;
@@ -41,6 +51,8 @@ const PREFLIGHT_CODES = new Set([
   'CORE_START_FAILED',
   // 需求 M-9 / C-01：工作区建不起来属于「开始前失败」，与 DSH 起不来同类（退出码 3）
   'WORKSPACE_INIT_FAILED',
+  // I1.5 C-10：注册表不合法也属于「开始前失败」，退出 3，且不连核心
+  'REGISTRY_INVALID',
 ]);
 
 /**
@@ -49,30 +61,378 @@ const PREFLIGHT_CODES = new Set([
  */
 const CONNECTION_LOST_CODES = new Set(['IPC_CLOSED', 'IPC_TIMEOUT', 'IPC_BAD_FRAME', 'CORE_NOT_RUNNING']);
 
+const COMMANDS = new Set(['run', 'status', 'cancel', 'core', 'role', 'skill', 'workflow']);
+const BOOLEAN_FLAGS = new Set(['events', 'force']);
+const VALUE_FLAGS = new Set([
+  'cwd',
+  'task',
+  'instance',
+  'project',
+  'generation',
+  'template',
+  'host',
+  'group',
+  'format',
+  // I1.6 asset families (D-6). Family-scoped: outside `role`/`skill`/`workflow`
+  // they are still rejected as unknown parameters, never silently dropped.
+  'from',
+  'name',
+  'artifact-type',
+  'side-effect',
+  'summary',
+  'skills',
+  'tools',
+  'wake-allow',
+  'max-concurrent',
+  'set',
+  'unset',
+  'out',
+  'against',
+  'body-file',
+  'applies-to',
+  'commands'
+]);
+/** `--set` / `--unset` may repeat (D-6); each occurrence is appended into an array. */
+const REPEATABLE_FLAGS = new Set(['set', 'unset']);
+
+/**
+ * The three asset families (`role` / `skill` / `workflow`, I1.6). Everything else
+ * keeps its I1.5 result shape: no `sub` for run/status/cancel, no `positional`.
+ */
+const FAMILY_SUBS = Object.freeze({
+  role: new Set(['list', 'show', 'validate', 'create', 'edit', 'export', 'import', 'diff']),
+  skill: new Set(['list', 'show', 'create', 'validate', 'export', 'import']),
+  workflow: new Set(['list', 'show', 'create', 'validate', 'diff', 'dry-run'])
+});
+
+/**
+ * D-6: the 18-row per-subcommand flag whitelist. A flag known to the parser but
+ * absent here is `--<key> 不适用于 <族> <子命令>`; an unknown word is still
+ * `未知参数：--<key>` (two different sentences, checked after parsing).
+ */
+const FAMILY_FLAGS = Object.freeze({
+  role: Object.freeze({
+    list: new Set(['group', 'instance', 'format']),
+    show: new Set(['instance', 'format']),
+    validate: new Set(['format']),
+    create: new Set(['from', 'name', 'group', 'artifact-type', 'side-effect', 'summary', 'skills', 'tools', 'wake-allow', 'max-concurrent', 'force']),
+    edit: new Set(['set', 'unset']),
+    export: new Set(['out']),
+    import: new Set(['force']),
+    diff: new Set(['against', 'format'])
+  }),
+  skill: Object.freeze({
+    list: new Set(['group', 'format']),
+    show: new Set(['format']),
+    create: new Set(['name', 'summary', 'applies-to', 'commands', 'body-file', 'force']),
+    validate: new Set(['format']),
+    export: new Set(['out']),
+    import: new Set(['force'])
+  }),
+  workflow: Object.freeze({
+    list: new Set(['format']),
+    show: new Set(['format']),
+    create: new Set(['name', 'from', 'force']),
+    validate: new Set(['format']),
+    diff: new Set(['against', 'format']),
+    'dry-run': new Set(['task', 'format'])
+  })
+});
+
+/** Positional argument rules per D-6: required / optional; anything else rejects it. */
+const REQUIRED_POSITIONAL = Object.freeze({
+  role: new Set(['show', 'create', 'edit', 'export', 'import', 'diff']),
+  skill: new Set(['show', 'create', 'export', 'import']),
+  workflow: new Set(['show', 'create', 'diff', 'dry-run'])
+});
+const OPTIONAL_POSITIONAL = Object.freeze({
+  role: new Set(['validate']),
+  skill: new Set(['validate']),
+  workflow: new Set(['validate'])
+});
+
+/**
+ * Family-scoped flags (M-9 direction preserved from I1.5): outside the three asset
+ * families they stay `未知参数：--<key>` (e.g. `status --group`), so old commands
+ * never silently accept a family flag just because the shared vocabulary grew.
+ */
+const FAMILY_ONLY_FLAGS = new Set([
+  'group',
+  'format',
+  'force',
+  'from',
+  'name',
+  'artifact-type',
+  'side-effect',
+  'summary',
+  'skills',
+  'tools',
+  'wake-allow',
+  'max-concurrent',
+  'set',
+  'unset',
+  'out',
+  'against',
+  'body-file',
+  'applies-to',
+  'commands'
+]);
+
+/** `role create` two-tier required order (D-6 / AC-02): first missing one wins. */
+const ROLE_CREATE_REQUIRED = ['name', 'group', 'artifact-type', 'side-effect'];
+
+/** Dynamic-import wiring for the two families whose modules land in WP-7 / WP-8. */
+const FAMILY_MODULES = Object.freeze({
+  skill: { specifier: './skills.js', exportName: 'skillCommand', notImplemented: SKILL_CLI_TEXT.notImplemented },
+  workflow: { specifier: './workflows.js', exportName: 'workflowCommand', notImplemented: WORKFLOW_CLI_TEXT.notImplemented }
+});
+// I1.4 的 `run --approval` / `--decision` 要在旧命令上放行；不改资产族的任何白名单。
+VALUE_FLAGS.add('approval');
+VALUE_FLAGS.add('decision');
+
+
 /** 顶层命令表（M-9）：旧四条 + 六组新命令。 */
-const COMMANDS = new Set([
+const RUNTIME_COMMANDS = new Set([
   'run', 'status', 'cancel', 'core',
   'instance', 'attach', 'escalate', 'approve', 'handoff', 'workflow',
 ]);
 /** 两层命令表：第一层命令 → 合法子命令（§1.7）。 */
-const SUBS = Object.freeze({
+const RUNTIME_SUBS = Object.freeze({
   core: ['stop'],
   instance: ['status', 'log', 'graph'],
   escalate: ['list', 'resolve'],
   handoff: ['list', 'show'],
   workflow: ['pause', 'resume', 'abort'],
 });
-const BOOLEAN_FLAGS = new Set(['events', 'all']);
-const VALUE_FLAGS = new Set([
+const RUNTIME_BOOLEAN_FLAGS = new Set(['events', 'all']);
+const RUNTIME_VALUE_FLAGS = new Set([
   'cwd', 'task', 'instance', 'project', 'generation', 'template', 'host',
   'format', 'approval', 'decision',
 ]);
 
 /** 取值白名单（AC-64）：校验在解析层完成，非法值退出 2 且不连核心、不写状态。 */
-const FORMAT_VALUES = Object.freeze(['text', 'json']);
-const APPROVAL_VALUES = Object.freeze(['allow', 'reject', 'hold']);
-const ESCALATE_DECISION_VALUES = Object.freeze(['pass', 'fail', 'retry']);
-const APPROVE_DECISION_VALUES = Object.freeze(['allow', 'deny']);
+const RUNTIME_FORMAT_VALUES = Object.freeze(['text', 'json']);
+const RUNTIME_APPROVAL_VALUES = Object.freeze(['allow', 'reject', 'hold']);
+const RUNTIME_ESCALATE_DECISION_VALUES = Object.freeze(['pass', 'fail', 'retry']);
+const RUNTIME_APPROVE_DECISION_VALUES = Object.freeze(['allow', 'deny']);
+
+// ---------------------------------------------------------------- 参数解析
+
+/**
+ * Pure parsing, no IO — usage-error paths are directly unit-testable.
+ * * 集成版：解析按命令字分流到 I1.4 运行时实现 / I1.6 资产实现。
+  */
+/**
+ * Pure parsing, no IO — usage-error paths are directly unit-testable.
+ *
+ * @param {string[]} argv without node and the script path
+ * @returns {{ok:true, command:string, sub:string|null, flags:object} | {ok:false, code:'USAGE', message:string}}
+ *   Family commands (`role`/`skill`/`workflow`) additionally carry `positional`
+ *   (string|null); the four original commands keep their exact I1.5 key set.
+ */
+function parseAssetArgs(argv) {
+  const tokens = Array.isArray(argv) ? [...argv] : [];
+  const command = tokens.shift();
+  if (typeof command !== 'string' || command.length === 0) {
+    return usage('缺少命令');
+  }
+  if (!COMMANDS.has(command)) {
+    return usage(`未知命令：${command}`);
+  }
+  const isFamily = command === 'role' || command === 'skill' || command === 'workflow';
+
+  let sub = null;
+  let positional = null;
+  if (command === 'core') {
+    sub = tokens.shift() ?? null;
+    if (sub === null || sub.startsWith('--')) {
+      return usage('core 需要子命令：stop');
+    }
+  }
+  if (isFamily) {
+    sub = tokens.shift() ?? null;
+    if (sub === null || sub.startsWith('--') || !FAMILY_SUBS[command].has(sub)) {
+      return usage(fillTemplate(unknownSubTemplate(command), { sub: sub ?? '' }));
+    }
+  }
+
+  /** @type {Record<string, string|boolean|string[]>} */
+  const flags = {};
+  for (let i = 0; i < tokens.length; i += 1) {
+    const token = tokens[i];
+    if (typeof token !== 'string' || !token.startsWith('--')) {
+      // Family commands take one optional positional (role id / skill id / file ...);
+      // every other command still accepts none.
+      if (isFamily && positional === null && typeof token === 'string' && token.length > 0) {
+        positional = token;
+        continue;
+      }
+      return usage(`多余的参数：${token}`);
+    }
+
+    const eq = token.indexOf('=');
+    const key = eq >= 0 ? token.slice(2, eq) : token.slice(2);
+    const inline = eq >= 0 ? token.slice(eq + 1) : undefined;
+
+    if (key.length === 0) return usage(`无法识别的参数：${token}`);
+
+    // Family-scoped vocabulary check first (M-9): `--force` and friends must stay
+    // unknown parameters outside the three families, even though `force` is also
+    // a boolean word the parser recognises.
+    if (FAMILY_ONLY_FLAGS.has(key) && !isFamily) {
+      return usage(`未知参数：--${key}`);
+    }
+
+    if (BOOLEAN_FLAGS.has(key)) {
+      if (inline !== undefined) return usage(`--${key} 不接受取值`);
+      flags[key] = true;
+      continue;
+    }
+    if (!VALUE_FLAGS.has(key)) {
+      return usage(`未知参数：--${key}`);
+    }
+
+    const value = inline !== undefined ? inline : tokens[i + 1];
+    if (inline === undefined) {
+      if (value === undefined || (typeof value === 'string' && value.startsWith('--'))) {
+        return usage(`--${key} 需要一个值`);
+      }
+      i += 1;
+    }
+    if (typeof value !== 'string' || value.length === 0) {
+      return usage(`--${key} 需要一个值`);
+    }
+    if (REPEATABLE_FLAGS.has(key)) {
+      // D-6: `--set` / `--unset` accumulate into arrays.
+      const list = Array.isArray(flags[key]) ? flags[key] : [];
+      list.push(value);
+      flags[key] = list;
+    } else {
+      flags[key] = value;
+    }
+  }
+
+  // 并行迭代集成：I1.4 在旧命令上引入 --approval 取值白名单（AC-64），资产族不受影响。
+  if (typeof flags.approval === 'string' && !RUNTIME_APPROVAL_VALUES.includes(flags.approval)) {
+    return usage(`无法识别的参数：--approval=${flags.approval}（${RUNTIME_APPROVAL_VALUES.join('|')}）`);
+  }
+  if (command === 'run') {
+    if (typeof flags.cwd !== 'string') return usage('run 需要 --cwd <目录>');
+    if (typeof flags.task !== 'string') return usage('run 需要 --task <说明>');
+  }
+  if (command === 'cancel' && typeof flags.instance !== 'string') {
+    return usage('cancel 需要 --instance <实例号>');
+  }
+  if (command === 'core' && sub !== 'stop') {
+    return usage(`未知的 core 子命令：${sub}`);
+  }
+  if (isFamily) {
+    // Positional rules come first, then the per-subcommand whitelist, then format
+    // values, then the create-time required/value checks (D-6 order).
+    if (REQUIRED_POSITIONAL[command].has(sub) && positional === null) {
+      return usage(missingPositionalMessage(command, sub));
+    }
+    if (
+      positional !== null &&
+      !REQUIRED_POSITIONAL[command].has(sub) &&
+      !OPTIONAL_POSITIONAL[command].has(sub)
+    ) {
+      // D-6: only the listed subs accept a positional; `list` rejects it outright.
+      return usage(`多余的参数：${positional}`);
+    }
+    const allowed = FAMILY_FLAGS[command][sub];
+    for (const key of Object.keys(flags)) {
+      if (allowed.has(key)) continue;
+      return usage(fillTemplate(flagNotApplicableTemplate(command), { key, sub }));
+    }
+    if (flags.format !== undefined && flags.format !== 'text' && flags.format !== 'json') {
+      return usage(badFormatMessage(command));
+    }
+    const createError = createUsageError(command, sub, flags);
+    if (createError !== null) return usage(createError);
+  }
+
+  // `positional` appears on the three families only: the original four commands
+  // keep their exact result key set.
+  const result = { ok: true, command, sub, flags };
+  if (isFamily) result.positional = positional;
+  return result;
+}
+
+function unknownSubTemplate(command) {
+  if (command === 'skill') return SKILL_CLI_TEXT.usageReason.unknownSub;
+  if (command === 'workflow') return WORKFLOW_CLI_TEXT.usageReason.unknownSub;
+  return ROLE_CLI_TEXT.usageReason.unknownRoleSub;
+}
+
+function flagNotApplicableTemplate(command) {
+  if (command === 'skill') return SKILL_CLI_TEXT.usageReason.flagNotApplicable;
+  if (command === 'workflow') return WORKFLOW_CLI_TEXT.usageReason.flagNotApplicable;
+  return ROLE_CLI_TEXT.usageReason.flagNotApplicable;
+}
+
+function badFormatMessage(command) {
+  if (command === 'skill') return SKILL_CLI_TEXT.usageReason.badFormat;
+  if (command === 'workflow') return WORKFLOW_CLI_TEXT.usageReason.badFormat;
+  return ROLE_CLI_TEXT.usageReason.badFormat;
+}
+
+function missingPositionalMessage(command, sub) {
+  if (command === 'skill') return SKILL_CLI_TEXT.usageReason.missingId[sub] ?? '';
+  if (command === 'workflow') return WORKFLOW_CLI_TEXT.usageReason.missingId[sub] ?? '';
+  if (sub === 'show') return ROLE_CLI_TEXT.usageReason.missingRoleId;
+  return ROLE_USAGE_TEXT.missingId[sub] ?? '';
+}
+
+/**
+ * Create-time usage checks (D-6 / AC-02 / AC-54). Pure argv level, so they live in
+ * `parseArgs` and run before any family module is dispatched:
+ * - `role create` without `--from`: `--name → --group → --artifact-type → --side-effect`
+ *   all required, first missing one reported; with `--from` the four are skippable.
+ *   Value legality (`--group` / `--artifact-type` / `--side-effect`) is checked in
+ *   both tiers whenever the flag is given.
+ * - `skill create`: `--name → --summary` (AC-59 pins the latter sentence verbatim).
+ * - `workflow create`: `--name`.
+ * The `skill create --applies-to` value check stays with WP-7 (`skills.js`).
+ *
+ * @returns {string|null} the usage reason, or null when everything is fine
+ */
+function createUsageError(command, sub, flags) {
+  if (command === 'role' && sub === 'create') {
+    if (flags.from === undefined) {
+      for (const key of ROLE_CREATE_REQUIRED) {
+        if (flags[key] === undefined) {
+          return fillTemplate(ROLE_USAGE_TEXT.requiresFlag, { key });
+        }
+      }
+    }
+    if (flags.group !== undefined && !GROUPS.includes(flags.group)) {
+      return fillTemplate(ROLE_USAGE_TEXT.badGroup, { values: Object.values(GROUP_LABEL).join('/') });
+    }
+    if (flags['artifact-type'] !== undefined && !ARTIFACT_TYPES.includes(flags['artifact-type'])) {
+      return fillTemplate(ROLE_USAGE_TEXT.badArtifactType, { values: ARTIFACT_TYPES.join('/') });
+    }
+    if (flags['side-effect'] !== undefined && !SIDE_EFFECTS.includes(flags['side-effect'])) {
+      return fillTemplate(ROLE_USAGE_TEXT.badSideEffect, { values: SIDE_EFFECTS.join('/') });
+    }
+  }
+  if (command === 'skill' && sub === 'create') {
+    if (flags.name === undefined) return SKILL_CLI_TEXT.usageReason.requiresName;
+    if (flags.summary === undefined) return SKILL_CLI_TEXT.usageReason.requiresSummary;
+  }
+  if (command === 'workflow' && sub === 'create') {
+    if (flags.name === undefined) return WORKFLOW_CLI_TEXT.usageReason.requiresName;
+  }
+  return null;
+}
+
+/** 占位符替换（`{name}`）。只有 role 的用法文案需要它。 */
+function fillTemplate(template, vars) {
+  return String(template).replace(/\{(\w+)\}/g, (match, key) => {
+    const value = vars?.[key];
+    return value === undefined || value === null ? '' : String(value);
+  });
+}
 
 // ---------------------------------------------------------------- 参数解析
 
@@ -82,13 +442,13 @@ const APPROVE_DECISION_VALUES = Object.freeze(['allow', 'deny']);
  * @param {string[]} argv 不含 node 与脚本路径
  * @returns {{ok:true, command:string, sub:string|null, positionals:string[], flags:object} | {ok:false, code:'USAGE', message:string}}
  */
-export function parseArgs(argv) {
+function parseRuntimeArgs(argv) {
   const tokens = Array.isArray(argv) ? [...argv] : [];
   const command = tokens.shift();
   if (typeof command !== 'string' || command.length === 0) {
     return usage('缺少命令');
   }
-  if (!COMMANDS.has(command)) {
+  if (!RUNTIME_COMMANDS.has(command)) {
     return usage(`未知命令：${command}`);
   }
 
@@ -112,12 +472,12 @@ export function parseArgs(argv) {
 
     if (key.length === 0) return usage(`无法识别的参数：${token}`);
 
-    if (BOOLEAN_FLAGS.has(key)) {
+    if (RUNTIME_BOOLEAN_FLAGS.has(key)) {
       if (inline !== undefined) return usage(`--${key} 不接受取值`);
       flags[key] = true;
       continue;
     }
-    if (!VALUE_FLAGS.has(key)) {
+    if (!RUNTIME_VALUE_FLAGS.has(key)) {
       return usage(`未知参数：--${key}`);
     }
 
@@ -136,37 +496,37 @@ export function parseArgs(argv) {
 
   // 两层命令：第一个位置参数是子命令
   let sub = null;
-  if (SUBS[command]) {
+  if (RUNTIME_SUBS[command]) {
     sub = positionals.shift() ?? null;
-    if (sub === null || !SUBS[command].includes(sub)) {
-      return usage(`${command} 需要子命令：${SUBS[command].join('|')}`);
+    if (sub === null || !RUNTIME_SUBS[command].includes(sub)) {
+      return usage(`${command} 需要子命令：${RUNTIME_SUBS[command].join('|')}`);
     }
   }
 
   // 取值校验（AC-64）：失败即用法错误，退出 2，不连核心、不写状态
-  if (typeof flags.format === 'string' && !FORMAT_VALUES.includes(flags.format)) {
-    return usage(`无法识别的参数：--format=${flags.format}（${FORMAT_VALUES.join('|')}）`);
+  if (typeof flags.format === 'string' && !RUNTIME_FORMAT_VALUES.includes(flags.format)) {
+    return usage(`无法识别的参数：--format=${flags.format}（${RUNTIME_FORMAT_VALUES.join('|')}）`);
   }
-  if (typeof flags.approval === 'string' && !APPROVAL_VALUES.includes(flags.approval)) {
-    return usage(`无法识别的参数：--approval=${flags.approval}（${APPROVAL_VALUES.join('|')}）`);
+  if (typeof flags.approval === 'string' && !RUNTIME_APPROVAL_VALUES.includes(flags.approval)) {
+    return usage(`无法识别的参数：--approval=${flags.approval}（${RUNTIME_APPROVAL_VALUES.join('|')}）`);
   }
   if (typeof flags.decision === 'string') {
-    if (command === 'escalate' && !ESCALATE_DECISION_VALUES.includes(flags.decision)) {
-      return usage(`无法识别的参数：--decision=${flags.decision}（${ESCALATE_DECISION_VALUES.join('|')}）`);
+    if (command === 'escalate' && !RUNTIME_ESCALATE_DECISION_VALUES.includes(flags.decision)) {
+      return usage(`无法识别的参数：--decision=${flags.decision}（${RUNTIME_ESCALATE_DECISION_VALUES.join('|')}）`);
     }
-    if (command === 'approve' && !APPROVE_DECISION_VALUES.includes(flags.decision)) {
-      return usage(`无法识别的参数：--decision=${flags.decision}（${APPROVE_DECISION_VALUES.join('|')}）`);
+    if (command === 'approve' && !RUNTIME_APPROVE_DECISION_VALUES.includes(flags.decision)) {
+      return usage(`无法识别的参数：--decision=${flags.decision}（${RUNTIME_APPROVE_DECISION_VALUES.join('|')}）`);
     }
   }
 
   // 位置参数形态（§1.7）：多余 / 缺失都在解析层挡掉
-  const rule = positionalRule(command, sub);
+  const rule = runtimePositionalRule(command, sub);
   if (positionals.length > rule.max) return usage(`多余的参数：${positionals[rule.max]}`);
   if (rule.exact !== undefined && positionals.length !== rule.exact) {
-    return usage(`${describeCommand(command, sub)} 需要一个值`);
+    return usage(`${runtimeDescribeCommand(command, sub)} 需要一个值`);
   }
   if (rule.needsId && positionals.length === 0 && typeof flags.instance !== 'string') {
-    return usage(`${describeCommand(command, sub)} 需要一个值`);
+    return usage(`${runtimeDescribeCommand(command, sub)} 需要一个值`);
   }
 
   if (command === 'run') {
@@ -181,7 +541,7 @@ export function parseArgs(argv) {
 }
 
 /** 各（命令, 子命令）的位置参数规则；`needsId` 允许 `--instance` 作为可替代写法（C-12）。 */
-function positionalRule(command, sub) {
+function runtimePositionalRule(command, sub) {
   switch (command) {
     case 'attach':
       return { max: 1, exact: 1 };
@@ -200,8 +560,23 @@ function positionalRule(command, sub) {
   }
 }
 
-function describeCommand(command, sub) {
+function runtimeDescribeCommand(command, sub) {
   return sub ? `${command} ${sub}` : command;
+}
+
+// ---------------------------------------------------------------- 并行迭代集成层（I1.4 运行时命令 × I1.6 资产命令）
+// I1.4 把 `workflow` 用作运行时控制（pause|resume|abort），I1.6 把同一词用作资产族。
+// 两套 parseArgs 的结果形状互斥（I1.4 有 positionals；I1.6 键集恰好 4 个且带 positional），
+// 因此按命令字分流到各自原版实现，避免任何一侧的逐字验收基线被改写。
+const RUNTIME_COMMAND_WORDS = new Set(['instance', 'attach', 'escalate', 'approve', 'handoff']);
+const RUNTIME_WORKFLOW_SUBS = new Set(['pause', 'resume', 'abort']);
+function isRuntimeArgv(argv) {
+  const args = Array.isArray(argv) ? argv : [];
+  if (RUNTIME_COMMAND_WORDS.has(args[0])) return true;
+  return args[0] === 'workflow' && RUNTIME_WORKFLOW_SUBS.has(args[1]);
+}
+export function parseArgs(argv) {
+  return isRuntimeArgv(argv) ? parseRuntimeArgs(argv) : parseAssetArgs(argv);
 }
 
 function usage(message) {
@@ -249,15 +624,18 @@ export async function main(argv, options = {}) {
   try {
     if (parsed.command === 'run') code = await runCommand(parsed.flags, ctx);
     else if (parsed.command === 'status') code = await statusCommand(parsed.flags, ctx);
-    else if (parsed.command === 'cancel') code = await cancelCommand(parsed.flags, ctx);
-    else if (parsed.command === 'core') code = await coreCommand(parsed.sub, ctx);
-    else if (parsed.command === 'instance') code = await instanceCommand(parsed, ctx);
-    else if (parsed.command === 'attach') code = await attachCommand(parsed, ctx);
-    else if (parsed.command === 'escalate') code = await escalateCommand(parsed, ctx);
-    else if (parsed.command === 'approve') code = await approveCommand(parsed, ctx);
-    else if (parsed.command === 'handoff') code = await handoffCommand(parsed, ctx);
-    else code = await workflowCommand(parsed, ctx);
-  } catch (error) {
+    else if (parsed.command === 'cancel') code = await cancelCommand(parsed.flags, ctx);    else if (parsed.command === 'core') code = await coreCommand(parsed.sub, ctx);
+    else if (isRuntimeArgv(argv)) {
+      if (parsed.command === 'instance') code = await instanceCommand(parsed, ctx);
+      else if (parsed.command === 'attach') code = await attachCommand(parsed, ctx);
+      else if (parsed.command === 'escalate') code = await escalateCommand(parsed, ctx);
+      else if (parsed.command === 'approve') code = await approveCommand(parsed, ctx);
+      else if (parsed.command === 'handoff') code = await handoffCommand(parsed, ctx);
+      else code = await workflowCommand(parsed, ctx);
+    }
+    else if (parsed.command === 'role') code = await roleCommand(parsed, ctx);
+    else if (parsed.command === 'skill') code = await assetFamilyCommand('skill', parsed, ctx);
+    else if (parsed.command === 'workflow') code = await assetFamilyCommand('workflow', parsed, ctx);  } catch (error) {
     // 渲染层与 IPC 都不应该抛；真抛了也不能吞成“成功”。
     ctx.out(render.renderError({ code: 'UNKNOWN_ERROR', params: { raw: error?.message ?? String(error) } }));
     code = EXIT_FAILED;
@@ -265,6 +643,29 @@ export async function main(argv, options = {}) {
 
   await flushStdout();
   return code;
+}
+
+/**
+ * Dispatch one asset-family command through a dynamic import (I1.6). `skills.js`
+ * (WP-7) and `workflows.js` (WP-8) do not exist yet, so a valid parse that reaches
+ * here falls back to a usage-style "not implemented yet" notice (exit 2) — the
+ * `role` family and all four original commands are unaffected (AC-44 / AC-48).
+ * A missing module is the only tolerated failure; any other import error (e.g. a
+ * syntax bug in a landed module) propagates to `main`'s catch as UNKNOWN_ERROR.
+ */
+async function assetFamilyCommand(family, parsed, ctx) {
+  const spec = FAMILY_MODULES[family];
+  let mod;
+  try {
+    mod = await import(spec.specifier);
+  } catch (error) {
+    if (error?.code === 'ERR_MODULE_NOT_FOUND') {
+      ctx.out(render.renderUsage(spec.notImplemented));
+      return EXIT_USAGE;
+    }
+    throw error;
+  }
+  return mod[spec.exportName](parsed, ctx);
 }
 
 function defaultOut(line) {
@@ -348,6 +749,21 @@ function templateOf(snapshot) {
 
 async function runCommand(flags, ctx) {
   const out = ctx.out;
+
+  // C-10：两步预检都在 `createClient` 之前 —— 先建 client 就已经把核心拉起来了，
+  // 「不启动核心」的验收（AC-10）用「一调 createClient 就 assert.fail」的桩来验。
+  // ① 模板名（沿用既有 `getGraph` 判定与 `TEMPLATE_UNKNOWN` 文案）
+  if (typeof flags.template === 'string' && getGraph(flags.template) === null) {
+    out(render.renderError({ code: 'TEMPLATE_UNKNOWN', params: { name: flags.template } }));
+    return exitCodeFor('TEMPLATE_UNKNOWN');
+  }
+  // ② 注册表（明细由 `roles.js` 的同一函数组装，与 A-4 一行同版式、不带 `- `）
+  const registry = loadRegistry({ root: ctx.cwd });
+  if (!registry.ok) {
+    out(render.renderRegistryInvalid(firstRegistryDetail(registry.errors)));
+    return EXIT_PREFLIGHT;
+  }
+
   const client = ctx.createClient(ctx.cwd);
 
   let timer = null;

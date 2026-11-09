@@ -1,0 +1,112 @@
+{
+  "ac": "AC-25",
+  "title": "非法节点类型与类型必填字段被拒",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 恰好四行（计数头 + 三条错误）（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "Then 明细列出四个合法类型（期望含 \"合法取值：role / human / escalate / subworkflow\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 6 个：3 个不合法\n- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n- workflows/no-role.yaml：节点 T-001 缺少必填字段：role（WORKFLOW_NODE_FIELD_MISSING）\n- workflows/no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）\n"
+    },
+    {
+      "text": "Then no-title 明细含 title（期望匹配 /缺少必填字段：title/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 6 个：3 个不合法\n- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n- workflows/no-role.yaml：节点 T-001 缺少必填字段：role（WORKFLOW_NODE_FIELD_MISSING）\n- workflows/no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）\n"
+    },
+    {
+      "text": "Then no-role 明细含 role（期望匹配 /缺少必填字段：role/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 6 个：3 个不合法\n- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n- workflows/no-role.yaml：节点 T-001 缺少必填字段：role（WORKFLOW_NODE_FIELD_MISSING）\n- workflows/no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）\n"
+    },
+    {
+      "text": "机检：codes 排序后（期望 [\"WORKFLOW_NODE_FIELD_MISSING\",\"WORKFLOW_NODE_FIELD_MISSING\",\"WORKFLOW_NODE_TYPE_INVALID\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"WORKFLOW_NODE_FIELD_MISSING\",\"WORKFLOW_NODE_FIELD_MISSING\",\"WORKFLOW_NODE_TYPE_INVALID\"]"
+    },
+    {
+      "text": "机检：errors[0].file === workflows/bad-type.yaml（期望 \"workflows/bad-type.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"workflows/bad-type.yaml\""
+    },
+    {
+      "text": "机检：errors[0].code === WORKFLOW_NODE_TYPE_INVALID（期望 \"WORKFLOW_NODE_TYPE_INVALID\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_NODE_TYPE_INVALID\""
+    },
+    {
+      "text": "机检：counts.assets === 6（内置 3 + 项目 3）（期望 6）",
+      "ok": true,
+      "blocked": false,
+      "actual": "6"
+    },
+    {
+      "text": "机检：counts.invalid === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 bad-type.yaml / no-title.yaml / no-role.yaml（各自单节点、entry=terminal=T-001）",
+      "argv": [
+        "(fixture) 预置 bad-type.yaml / no-title.yaml / no-role.yaml（各自单节点、entry=terminal=T-001）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-25",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 105,
+      "stdout": "校验工作流 6 个：3 个不合法\n- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n- workflows/no-role.yaml：节点 T-001 缺少必填字段：role（WORKFLOW_NODE_FIELD_MISSING）\n- workflows/no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-25",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 110,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 6,\n    \"builtin\": 3,\n    \"project\": 3,\n    \"invalid\": 3\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_NODE_TYPE_INVALID\",\n      \"file\": \"workflows/bad-type.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": \"node_type\",\n      \"line\": null,\n      \"detail\": \"节点类型取值非法：script；合法取值：role / human / escalate / subworkflow\"\n    },\n    {\n      \"code\": \"WORKFLOW_NODE_FIELD_MISSING\",\n      \"file\": \"workflows/no-role.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": \"role\",\n      \"line\": null,\n      \"detail\": \"节点 T-001 缺少必填字段：role\"\n    },\n    {\n      \"code\": \"WORKFLOW_NODE_FIELD_MISSING\",\n      \"file\": \"workflows/no-title.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": \"title\",\n      \"line\": null,\n      \"detail\": \"节点 T-001 缺少必填字段：title\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

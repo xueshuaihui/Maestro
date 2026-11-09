@@ -154,6 +154,8 @@ const single = Object.freeze({
   terminal: 'T-001',
   terminals: Object.freeze(['T-001']),
   maxRounds: Object.freeze({ 'T-001': 1 }),
+  /** Every role this graph admits, declared before any node binds it (I1.5 D-5). */
+  roles: Object.freeze(['worker']),
   nodes: Object.freeze([
     Object.freeze({
       id: 'T-001',
@@ -180,6 +182,11 @@ const codeLoop = Object.freeze({
   terminal: 'T-002',
   terminals: Object.freeze(['T-002']),
   maxRounds: Object.freeze({ 'T-001': 2, 'T-002': 2 }),
+  /**
+   * `coordinator` is declared but never dispatched (D-1): it must appear in the
+   * instance role list as `inactive`, which is exactly what AC-20 checks.
+   */
+  roles: Object.freeze(['developer', 'tester', 'coordinator']),
   nodes: Object.freeze([
     Object.freeze({
       id: 'T-001',
@@ -234,6 +241,7 @@ const taskLoop = Object.freeze({
   terminal: 'T-003',
   terminals: Object.freeze(['T-003']),
   maxRounds: Object.freeze({ 'T-001': 1, 'T-002': 2, 'T-003': 2 }),
+  roles: Object.freeze(['researcher', 'writer', 'reviewer']),
   productPolicy: 'doc-single',
   nodes: Object.freeze([
     Object.freeze({

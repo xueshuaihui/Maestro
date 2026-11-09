@@ -1,0 +1,3 @@
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：回流目标缺少轮次上限：T-002（WORKFLOW_BACKFLOW_NO_LIMIT）
+

@@ -1,0 +1,29 @@
+{
+  "base": "developer",
+  "target": "lead-dev",
+  "changes": [
+    {
+      "field": "derived_from",
+      "kind": "added",
+      "base": null,
+      "target": "developer"
+    },
+    {
+      "field": "name",
+      "kind": "changed",
+      "base": "开发",
+      "target": "开发（派生）"
+    },
+    {
+      "field": "skills",
+      "kind": "changed",
+      "base": [
+        "code-change",
+        "test-run"
+      ],
+      "target": [
+        "test-run"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "ac": "AC-38",
+  "title": "角色命令只读",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "前置：三条命令都成功（list 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "前置：三条命令都成功（show 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "前置：三条命令都成功（validate 0）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：执行后项目根下 .orch 目录不存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：因而不可能存在 .orch/core.json（没有启动核心）",
+      "ok": true,
+      "blocked": false,
+      "actual": "core.json 不存在"
+    },
+    {
+      "text": "机检：也没有写任何文件（项目根下只有 .orch 检查项，其余为空）",
+      "ok": true,
+      "blocked": false,
+      "actual": "project root 未被写入"
+    },
+    {
+      "text": "机检：assets/** 的 sha256 清单前后逐字相同",
+      "ok": true,
+      "blocked": false,
+      "actual": "26 个文件"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：全新项目根（没有 .orch）",
+      "argv": [
+        "(fixture) 全新项目根（没有 .orch）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-38",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-38",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 95,
+      "stdout": "角色 16 个（内置 16 · 项目 0）\n- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\n- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\n- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\n- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\n- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\n- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\n- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\n- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\n- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\n- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\n- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\n- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\n- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show developer",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "developer"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-38",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n  职责：按任务修改代码，交出声明的产物文件\n  技能：code-change, test-run\n  工具：read, write, edit, bash\n  可唤醒：tester\n  来源：内置 assets/roles/developer.yaml\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-38",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 91,
+      "stdout": "校验资产 26 个：全部通过（角色 16 · 技能 10）\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "ac": "AC-09",
+  "title": "就地编辑与内置角色只读",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：lead-dev 建出（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第一次退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第一次输出恰好四行（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "Then 第 1 行 = 已更新项目角色：…（期望匹配 /^已更新项目角色：\\.orch\\/roles\\/lead-dev\\.yaml$/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "已更新项目角色：.orch/roles/lead-dev.yaml"
+    },
+    {
+      "text": "Then 第 2 行契约行（产物类型变 document）（期望逐字 \"- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\""
+    },
+    {
+      "text": "Then 第 3 行校验通过（期望逐字 \"校验：通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验：通过\""
+    },
+    {
+      "text": "Then 第 4 行（已按规范格式重写，注释不保留）（期望逐字 \"（已按规范格式重写，注释不保留）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"（已按规范格式重写，注释不保留）\""
+    },
+    {
+      "text": "Then 第二次退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第二次输出恰好一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第二次输出逐字（期望逐字 \"内置角色不可编辑：先 orch role create <新角色> --from developer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"内置角色不可编辑：先 orch role create <新角色> --from developer\""
+    },
+    {
+      "text": "机检：grep -c \"artifact_type: document\" = 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：assets/roles/developer.yaml 的 sha256 前后相同（期望 \"4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"4925b351c1040765f354cf6e6ba5ed1098a6a7eba256c8070baaeb6bc50fe905\""
+    },
+    {
+      "text": "机检：第二次退出码 1（复核）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ],
+  "commands": [
+    {
+      "label": "（Given）orch role create lead-dev --name 首席开发 --group coding --artifact-type code --side-effect write --skills code-change,test-run",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--name",
+        "首席开发",
+        "--group",
+        "coding",
+        "--artifact-type",
+        "code",
+        "--side-effect",
+        "write",
+        "--skills",
+        "code-change,test-run"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-09",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "已创建项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 首席开发 · 编码工程 · code · write · 技能 2 · 并发 1\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：预置 lead-dev（同 AC-01 命令，artifact_type: code）",
+      "argv": [
+        "(fixture) 预置 lead-dev（同 AC-01 命令，artifact_type: code）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch role edit lead-dev --set artifact_type=document",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "edit",
+        "lead-dev",
+        "--set",
+        "artifact_type=document"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-09",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "已更新项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 首席开发 · 编码工程 · document · write · 技能 2 · 并发 1\n校验：通过\n（已按规范格式重写，注释不保留）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role edit developer --set artifact_type=document",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "edit",
+        "developer",
+        "--set",
+        "artifact_type=document"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-09",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 112,
+      "stdout": "内置角色不可编辑：先 orch role create <新角色> --from developer\n",
+      "stderr": ""
+    }
+  ]
+}

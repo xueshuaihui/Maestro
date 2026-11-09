@@ -1,0 +1,112 @@
+{
+  "ac": "AC-15",
+  "title": "26 个内置资产仍然全通过（I1.5 基线不变）",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 文本输出恰好一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 该行逐字（期望逐字 \"校验资产 26 个：全部通过（角色 16 · 技能 10）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验资产 26 个：全部通过（角色 16 · 技能 10）\""
+    },
+    {
+      "text": "Then JSON counts 仍是 6 键（期望 6）",
+      "ok": true,
+      "blocked": false,
+      "actual": "6"
+    },
+    {
+      "text": "Then counts.assets === 26（期望 26）",
+      "ok": true,
+      "blocked": false,
+      "actual": "26"
+    },
+    {
+      "text": "Then counts.roles === 16（期望 16）",
+      "ok": true,
+      "blocked": false,
+      "actual": "16"
+    },
+    {
+      "text": "Then counts.skills === 10（期望 10）",
+      "ok": true,
+      "blocked": false,
+      "actual": "10"
+    },
+    {
+      "text": "Then counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then errors 为空（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    },
+    {
+      "text": "机检：与 0cd113b 基线（iteration-5 evidence/AC-12.validate.txt）逐字节 diff 为空",
+      "ok": true,
+      "blocked": false,
+      "actual": "diff 为空"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：全新项目根（没有任何项目资产、也没有工作流）",
+      "argv": [
+        "(fixture) 全新项目根（没有任何项目资产、也没有工作流）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-15",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-15",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "校验资产 26 个：全部通过（角色 16 · 技能 10）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-15",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 105,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 26,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    }
+  ]
+}

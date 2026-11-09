@@ -1,0 +1,8 @@
+- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1
+  职责：按任务单执行一步操作，交出任务里声明的产物文件
+  技能：—
+  工具：read, write, edit
+  可唤醒：—
+  来源：内置 assets/roles/worker.yaml
+  实例 INST-001：已关闭 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/1
+

@@ -1,0 +1,24 @@
+$ "(fixture) 预置 developer.yaml（id: developer 的合法角色文件）与项目技能 .orch/skills/quote/SKILL.md"
+# label=夹具：预置 developer.yaml（id: developer 的合法角色文件）与项目技能 .orch/skills/quote/SKILL.md cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role import developer.yaml
+# label=orch role import developer.yaml cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-58 exit=1 119ms
+导入被拒：内置角色只读：developer（ASSET_READONLY）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill create code-change --name 冒名 --summary 占位 --force
+# label=orch skill create code-change --name 冒名 --summary 占位 --force cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-58 exit=1 98ms
+创建被拒：内置技能只读：code-change（ASSET_READONLY）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill create quote --name 冒名 --summary 占位
+# label=orch skill create quote --name 冒名 --summary 占位 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-58 exit=1 124ms
+已存在同名项目技能：.orch/skills/quote/SKILL.md（加 --force 覆盖）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill create quote --name 冒名 --summary 占位 --force
+# label=orch skill create quote --name 冒名 --summary 占位 --force cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-58 exit=0 105ms
+已创建项目技能：.orch/skills/quote/SKILL.md
+- quote 冒名 · — · 命令 0
+校验：通过
+

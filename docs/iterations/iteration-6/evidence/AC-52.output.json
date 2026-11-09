@@ -1,0 +1,41 @@
+{
+  "ac": "AC-52",
+  "title": "零运行时依赖",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then dependencies 键数量为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：架构检查命令退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：架构检查命令输出必须是 0（逐字）（期望 \"0\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"0\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "node -e \"const p=require('./package.json');console.log(Object.keys(p.dependencies ?? {}).length)\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "-e",
+        "const p=require('./package.json');console.log(Object.keys(p.dependencies ?? {}).length)"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 88,
+      "stdout": "0\n",
+      "stderr": ""
+    }
+  ]
+}

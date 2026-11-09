@@ -1,0 +1,19 @@
+角色 16 个（内置 16 · 项目 0）
+- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1
+- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1
+- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1
+- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2
+- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1
+- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2
+- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1
+- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1
+- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1
+- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1
+- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2
+- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1
+- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1
+- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1
+- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1
+- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1
+1 个资产未通过校验，执行 orch role validate 查看
+

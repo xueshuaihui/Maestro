@@ -1,0 +1,46 @@
+$ "(fixture) 预置 scout/scribe 与工作流 solo（T-001→T-002 带 map T-001.notes → notes；T-001 声明 outputs/wake_allow、T-002 声明 inputs，见文件头说明）"
+# label=夹具：预置 scout/scribe 与工作流 solo（T-001→T-002 带 map T-001.notes → notes；T-001 声明 outputs/wake_allow、T-002 声明 inputs，见文件头说明） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate
+# label=（自证）orch workflow validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-12 exit=0 104ms
+校验工作流 4 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-12 exit=1 117ms
+校验资产 28 个：2 个不合法
+- roles/scout.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）
+- roles/scribe.yaml：契约不连通：digest 没有去处（ROLE_CONTRACT_UNBOUND）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-12 exit=1 97ms
+{
+  "counts": {
+    "assets": 28,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "ROLE_CONTRACT_UNBOUND",
+      "file": "roles/scout.yaml",
+      "scope": "role",
+      "field": "inputs",
+      "line": null,
+      "detail": "契约不连通：brief 没有来源"
+    },
+    {
+      "code": "ROLE_CONTRACT_UNBOUND",
+      "file": "roles/scribe.yaml",
+      "scope": "role",
+      "field": "outputs",
+      "line": null,
+      "detail": "契约不连通：digest 没有去处"
+    }
+  ]
+}
+

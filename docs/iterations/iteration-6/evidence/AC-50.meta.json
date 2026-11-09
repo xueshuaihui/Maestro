@@ -1,0 +1,29 @@
+{
+  "ac": "AC-50",
+  "title": "全量测试全绿且不低于 611",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:23:43.907Z",
+  "finishedAt": "2026-11-09T12:23:59.479Z",
+  "durationMs": 15572,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 6,
+  "notes": [
+    "整跑约几分钟：用例限时 600s，runCmd 超时 540s；TAP summary 取 stdout 尾部 `# tests / # pass / # fail` 行。"
+  ],
+  "extraFiles": [
+    "AC-50.tap-tail.txt"
+  ]
+}

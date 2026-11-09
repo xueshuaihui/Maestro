@@ -1,0 +1,33 @@
+[role bogus]
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch role list [--group <组>] [--instance <实例号>] [--format text|json]
+  orch role show <角色> [--instance <实例号>] [--format text|json]
+  orch role validate [<角色>] [--format json]
+  （未知的 role 子命令：bogus）
+
+[role list --nope]
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch role list [--group <组>] [--instance <实例号>] [--format text|json]
+  orch role show <角色> [--instance <实例号>] [--format text|json]
+  orch role validate [<角色>] [--format json]
+  （未知参数：--nope）
+
+[role list --format yaml]
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch role list [--group <组>] [--instance <实例号>] [--format text|json]
+  orch role show <角色> [--instance <实例号>] [--format text|json]
+  orch role validate [<角色>] [--format json]
+  （--format 只接受 text 或 json）
+

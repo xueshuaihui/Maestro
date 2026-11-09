@@ -1,0 +1,4 @@
+校验工作流 5 个：2 个不合法
+- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）
+- workflows/wake.yaml：唤醒不在白名单内：researcher → editor（WORKFLOW_WAKE_DENIED）
+

@@ -1,0 +1,50 @@
+$ "(fixture) 预置 r1（read+write）/ r2（exec+read）/ r3（none+read），其余字段合法"
+# label=夹具：预置 r1（read+write）/ r2（exec+read）/ r3（none+read），其余字段合法 cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-13 exit=1 101ms
+校验资产 29 个：3 个不合法
+- roles/r1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）
+- roles/r2.yaml：副作用等级为 exec 的角色必须带能执行命令的工具 bash（ROLE_PERMISSION_MISMATCH）
+- roles/r3.yaml：副作用等级为 none 的角色不能带任何工具（ROLE_PERMISSION_MISMATCH）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-13 exit=1 98ms
+{
+  "counts": {
+    "assets": 29,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 3,
+    "invalid": 3
+  },
+  "errors": [
+    {
+      "code": "ROLE_PERMISSION_MISMATCH",
+      "file": "roles/r1.yaml",
+      "scope": "role",
+      "field": "tools",
+      "line": null,
+      "detail": "副作用等级为 read 的角色不能带写工具 write"
+    },
+    {
+      "code": "ROLE_PERMISSION_MISMATCH",
+      "file": "roles/r2.yaml",
+      "scope": "role",
+      "field": "tools",
+      "line": null,
+      "detail": "副作用等级为 exec 的角色必须带能执行命令的工具 bash"
+    },
+    {
+      "code": "ROLE_PERMISSION_MISMATCH",
+      "file": "roles/r3.yaml",
+      "scope": "role",
+      "field": "tools",
+      "line": null,
+      "detail": "副作用等级为 none 的角色不能带任何工具"
+    }
+  ]
+}
+

@@ -1,0 +1,35 @@
+{
+  "ac": "AC-41",
+  "title": "预演不启动会话、不建实例（规划验收）",
+  "face": "边界",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:23:10.711Z",
+  "finishedAt": "2026-11-09T12:23:11.002Z",
+  "durationMs": 291,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-41",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-41"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 8,
+  "notes": [],
+  "extraFiles": [
+    "AC-41.snapshot-before.json",
+    "AC-41.dry-run-1.txt",
+    "AC-41.dry-run-2.txt",
+    "AC-41.snapshot-after.json"
+  ]
+}

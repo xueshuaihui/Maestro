@@ -1,0 +1,243 @@
+{
+  "ac": "AC-49",
+  "title": "三条主链逐字回归",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 基线代码树挂载成功（git worktree 0cd113b）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Given 基线树 bin/orch.js 与驱动存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49-baseline"
+    },
+    {
+      "text": "Then single 基线树退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then single 当前退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：single 归一化后与 I1.5 存量基线（AC-19.single-baseline.txt）diff 为空（输出主体）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "机检：single 归一化后与存量基线整输出 diff 为空（含驱动 JSON 行，路径/计时归一化）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "机检：single 0cd113b 树现跑输出与存量基线也 diff 为空（基线出处自证）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "机检：single 的 .mock/prompts task 文本与 0cd113b 基线一致（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    },
+    {
+      "text": "Then code-loop 基线树退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then code-loop 当前退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：code-loop 归一化后与 I1.5 存量基线（AC-19.code-loop-baseline.txt）diff 为空（输出主体）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "机检：code-loop 归一化后与存量基线整输出 diff 为空（含驱动 JSON 行，路径/计时归一化）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "机检：code-loop 0cd113b 树现跑输出与存量基线也 diff 为空（基线出处自证）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "机检：code-loop 的 .mock/prompts task 文本与 0cd113b 基线一致（期望 [\"给 calc.js 补一个 div 函数，让 node --test 全绿。\\n改动写在 calc.js\\n产物：calc.js\",\"给 calc.js 补一个 div 函数，让 node --test 全绿。\\n改动写在 calc.js\\n产物：calc.js\\n\\n完成后把结构化判定写到 out/verdict.json：{\\\"verdict\\\":\\\"pass\\\"|\\\"fail\\\",\\\"defects\\\":[{\\\"summary\\\":\\\"一句话缺陷\\\",\\\"evidence\\\":\\\"证据文件路径\\\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"给 calc.js 补一个 div 函数，让 node --test 全绿。\\n改动写在 calc.js\\n产物：calc.js\",\"给 calc.js 补一个 div 函数，让 node --test 全绿。\\n改动写在 calc.js\\n产物：calc.js\\n\\n完成后把结构化判定写到 out/verdict.json：{\\\"verdict\\\":\\\"pass\\\"|\\\"fail\\\",\\\"defects\\\":[{\\\"summary\\\":\\\"一句话缺陷\\\",\\\"evidence\\\":\\\"证据文件路径\\\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\"]"
+    },
+    {
+      "text": "Then task-loop 基线树退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then task-loop 当前退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：task-loop 归一化后与 I1.5 存量基线（AC-19.task-loop-baseline.txt）diff 为空（输出主体）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "机检：task-loop 归一化后与存量基线整输出 diff 为空（含驱动 JSON 行，路径/计时归一化）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "机检：task-loop 0cd113b 树现跑输出与存量基线也 diff 为空（基线出处自证）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "机检：task-loop 的 .mock/prompts task 文本与 0cd113b 基线一致（期望 [\"写一篇发布说明，覆盖背景、变更与回滚方案。\\n产物：release-notes.md\\n\\n研究笔记：artifacts/reports/research-notes.v1.md\\n写入路径：C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p6/AC-49/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md\\n只交研究笔记，不写最终文档。\",\"写一篇发布说明，覆盖背景、变更与回滚方案。\\n产物：release-notes.md\\n\\n研究笔记：artifacts/reports/research-notes.v1.md\\n本轮文档引用：artifacts/docs/release-notes.v1.md\\n写入路径：C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p6/AC-49/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\\n每一轮交完整文档，不要改写上一版。\",\"写一篇发布说明，覆盖背景、变更与回滚方案。\\n产物：release-notes.md\\n\\n本轮文档引用：artifacts/docs/release-notes.v1.md\\n工作区：C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\\\\.orch\\\\instances\\\\INST-001\\\\workspace\\n审核文件写入路径：C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\\\\demo-doc\\\\out\\\\review.json\\n只认审核文件：{\\\"decision\\\":\\\"pass\\\"|\\\"reject\\\",\\\"artifact\\\":\\\"artifacts/docs/release-notes.v1.md\\\",\\\"defects\\\":[{\\\"summary\\\":\\\"一句话缺陷\\\",\\\"evidence\\\":\\\"artifacts/docs/release-notes.v1.md#L1\\\"}],\\\"revisionRequirement\\\":\\\"...\\\"}\\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\\n不要修改文档。\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"写一篇发布说明，覆盖背景、变更与回滚方案。\\n产物：release-notes.md\\n\\n研究笔记：artifacts/reports/research-notes.v1.md\\n写入路径：C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p6/AC-49/.orch/instances/INST-001/workspace/artifacts/reports/research-notes.v1.md\\n只交研究笔记，不写最终文档。\",\"写一篇发布说明，覆盖背景、变更与回滚方案。\\n产物：release-notes.md\\n\\n研究笔记：artifacts/reports/research-notes.v1.md\\n本轮文档引用：artifacts/docs/release-notes.v1.md\\n写入路径：C:/Users/xuesh/AppData/Local/Temp/maestro-acc-p6/AC-49/.orch/instances/INST-001/workspace/artifacts/docs/release-notes.v1.md\\n每一轮交完整文档，不要改写上一版。\",\"写一篇发布说明，覆盖背景、变更与回滚方案。\\n产物：release-notes.md\\n\\n本轮文档引用：artifacts/docs/release-notes.v1.md\\n工作区：C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\\\\.orch\\\\instances\\\\INST-001\\\\workspace\\n审核文件写入路径：C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\\\\demo-doc\\\\out\\\\review.json\\n只认审核文件：{\\\"decision\\\":\\\"pass\\\"|\\\"reject\\\",\\\"artifact\\\":\\\"artifacts/docs/release-notes.v1.md\\\",\\\"defects\\\":[{\\\"summary\\\":\\\"一句话缺陷\\\",\\\"evidence\\\":\\\"artifacts/docs/release-notes.v1.md#L1\\\"}],\\\"revisionRequirement\\\":\\\"...\\\"}\\n判定为 reject 时至少一条缺陷；判定为 pass 时 defects 必须为空。\\n不要修改文档。\"]"
+    },
+    {
+      "text": "And 收尾后没有残留的基线工作树",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49-baseline"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch run（single，0cd113b 基线树）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49-baseline\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./work",
+        "--task",
+        "写一段 200 字的产品说明，保存到 out/intro.md",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 679,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-30480-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   20:23:33\n交接包 HO-001  已投递   20:23:33\n交接包 HO-001  已接受   20:23:33\n交接包 HO-001  已完成   20:23:33\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（single，当前 HEAD）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "run",
+        "--cwd",
+        "./work",
+        "--task",
+        "写一段 200 字的产品说明，保存到 out/intro.md",
+        "--host",
+        "dsh"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 541,
+      "stdout": "实例 INST-001 · 运行中\n会话已创建 mock-sess-16968-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 已完成 · 耗时 1s\n交接包 HO-001  已构造   20:23:34\n交接包 HO-001  已投递   20:23:34\n交接包 HO-001  已接受   20:23:34\n交接包 HO-001  已完成   20:23:34\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（code-loop，0cd113b 基线树）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49-baseline\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49",
+        "--scenario",
+        "pass"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49-baseline",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1269,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\\\\demo-code-pass\",\"scenario\":\"pass\",\"resolvedScenario\":\"pass\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":0,\"instanceId\":\"INST-001\",\"state\":\"completed\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"done\"}],\"handoffs\":1,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":877,\"checks\":[{\"name\":\"state=completed\",\"ok\":true,\"detail\":\"completed\"},{\"name\":\"两节点 done\",\"ok\":true},{\"name\":\"handoffs=1 forward\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-17748-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过\n交接包 HO-001  开发→测试  已构造   20:23:35\n交接包 HO-001  开发→测试  已投递   20:23:36\n交接包 HO-001  开发→测试  已接受   20:23:36\n交接包 HO-001  开发→测试  已完成   20:23:36\n升级 —\n"
+    },
+    {
+      "label": "orch run（code-loop，当前 HEAD）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\test\\fixtures\\code-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49",
+        "--scenario",
+        "pass"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1246,
+      "stdout": "{\"ok\":true,\"root\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\",\"cwd\":\"C:\\\\Users\\\\xuesh\\\\AppData\\\\Local\\\\Temp\\\\maestro-acc-p6\\\\AC-49\\\\demo-code-pass\",\"scenario\":\"pass\",\"resolvedScenario\":\"pass\",\"stopAfter\":null,\"keep\":false,\"released\":false,\"target\":\"exit\",\"exitCode\":0,\"instanceId\":\"INST-001\",\"state\":\"completed\",\"nodes\":[{\"nodeId\":\"T-001\",\"round\":1,\"state\":\"done\"},{\"nodeId\":\"T-002\",\"round\":1,\"state\":\"done\"}],\"handoffs\":1,\"escalations\":[],\"paused\":false,\"exhausted\":false,\"historyLeak\":false,\"durationMs\":885,\"checks\":[{\"name\":\"state=completed\",\"ok\":true,\"detail\":\"completed\"},{\"name\":\"两节点 done\",\"ok\":true},{\"name\":\"handoffs=1 forward\",\"ok\":true}]}\n",
+      "stderr": "实例 INST-001 · 运行中 · 模板 编码闭环\n会话已创建 mock-sess-26132-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s\n节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过\n交接包 HO-001  开发→测试  已构造   20:23:37\n交接包 HO-001  开发→测试  已投递   20:23:37\n交接包 HO-001  开发→测试  已接受   20:23:37\n交接包 HO-001  开发→测试  已完成   20:23:37\n升级 —\n"
+    },
+    {
+      "label": "orch run（task-loop，0cd113b 基线树）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49-baseline\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49",
+        "--scenario",
+        "doc-pass"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49-baseline",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1693,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-19220-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   20:23:39\n交接包 HO-001  研究员→撰写者  已投递   20:23:39\n交接包 HO-001  研究员→撰写者  已接受   20:23:39\n交接包 HO-001  研究员→撰写者  已完成   20:23:39\n交接包 HO-002  撰写者→审核者  已构造   20:23:39\n交接包 HO-002  撰写者→审核者  已投递   20:23:39\n交接包 HO-002  撰写者→审核者  已接受   20:23:39\n交接包 HO-002  撰写者→审核者  已完成   20:23:39\n升级 —\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch run（task-loop，当前 HEAD）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\test\\fixtures\\task-loop-driver.mjs",
+        "--root",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49",
+        "--scenario",
+        "doc-pass"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1594,
+      "stdout": "实例 INST-001 · 运行中 · 模板 通用任务闭环\n会话已创建 mock-sess-23496-1\n任务已投递\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 执行中 · 已运行 1s\n会话 等待下游 · 产出已提交\n会话 空闲\n节点 T-001 研究员 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/reports/research-notes.v1.md\n节点 T-002 撰写者 已完成 · 第 1 轮 · 耗时 1s · 产物 artifacts/docs/release-notes.v1.md\n节点 T-003 审核者 已完成 · 第 1 轮 · 耗时 1s · 审核 通过\n交接包 HO-001  研究员→撰写者  已构造   20:23:41\n交接包 HO-001  研究员→撰写者  已投递   20:23:41\n交接包 HO-001  研究员→撰写者  已接受   20:23:41\n交接包 HO-001  研究员→撰写者  已完成   20:23:41\n交接包 HO-002  撰写者→审核者  已构造   20:23:41\n交接包 HO-002  撰写者→审核者  已投递   20:23:41\n交接包 HO-002  撰写者→审核者  已接受   20:23:41\n交接包 HO-002  撰写者→审核者  已完成   20:23:41\n升级 —\n",
+      "stderr": ""
+    }
+  ]
+}

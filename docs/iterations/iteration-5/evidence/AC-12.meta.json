@@ -1,0 +1,32 @@
+{
+  "ac": "AC-12",
+  "title": "内置技能全部可解析且无悬空",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:25.715Z",
+  "finishedAt": "2026-11-08T12:21:26.030Z",
+  "durationMs": 315,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-12",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-12"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 7,
+  "notes": [],
+  "extraFiles": [
+    "AC-12.validate.txt",
+    "AC-12.payload.json",
+    "AC-12.skills-union.json"
+  ]
+}

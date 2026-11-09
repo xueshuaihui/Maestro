@@ -1,0 +1,49 @@
+$ "(fixture) 全新项目根（无 .orch）"
+# label=夹具：全新项目根（无 .orch） cwd=d:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-21
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow list
+# label=orch workflow list cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-21 exit=0 94ms
+工作流 3 个（内置 3 · 项目 0）
+- code-loop 编码闭环 · 2 节点 · 3 边 · 内置
+- single 单节点 · 1 节点 · 0 边 · 内置
+- task-loop 通用任务闭环 · 3 节点 · 4 边 · 内置
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow list --format json
+# label=orch workflow list --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-21 exit=0 104ms
+{
+  "counts": {
+    "total": 3,
+    "builtin": 3,
+    "project": 0,
+    "invalid": 0
+  },
+  "workflows": [
+    {
+      "id": "code-loop",
+      "name": "编码闭环",
+      "nodeCount": 2,
+      "edgeCount": 3,
+      "source": "builtin",
+      "file": null
+    },
+    {
+      "id": "single",
+      "name": "单节点",
+      "nodeCount": 1,
+      "edgeCount": 0,
+      "source": "builtin",
+      "file": null
+    },
+    {
+      "id": "task-loop",
+      "name": "通用任务闭环",
+      "nodeCount": 3,
+      "edgeCount": 4,
+      "source": "builtin",
+      "file": null
+    }
+  ]
+}
+

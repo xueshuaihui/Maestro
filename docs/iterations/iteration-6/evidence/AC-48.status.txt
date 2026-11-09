@@ -1,0 +1,693 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role list
+# label=orch role list cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 112ms
+角色 16 个（内置 16 · 项目 0）
+- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1
+- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1
+- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1
+- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2
+- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1
+- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2
+- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1
+- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1
+- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1
+- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1
+- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2
+- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1
+- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1
+- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1
+- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1
+- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role show developer
+# label=orch role show developer cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 111ms
+- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1
+  职责：按任务修改代码，交出声明的产物文件
+  技能：code-change, test-run
+  工具：read, write, edit, bash
+  可唤醒：tester
+  来源：内置 assets/roles/developer.yaml
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 124ms
+校验资产 26 个：全部通过（角色 16 · 技能 10）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role list --format json
+# label=orch role list --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 105ms
+{
+  "counts": {
+    "total": 16,
+    "builtin": 16,
+    "project": 0,
+    "invalid": 0
+  },
+  "groups": [
+    {
+      "group": "coordinator",
+      "label": "通用协调",
+      "count": 5
+    },
+    {
+      "group": "research",
+      "label": "研究分析",
+      "count": 3
+    },
+    {
+      "group": "writing",
+      "label": "内容创作",
+      "count": 3
+    },
+    {
+      "group": "coding",
+      "label": "编码工程",
+      "count": 3
+    },
+    {
+      "group": "ops",
+      "label": "业务运营",
+      "count": 2
+    }
+  ],
+  "roles": [
+    {
+      "id": "arbiter",
+      "name": "裁决者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "none",
+      "skills": [
+        "coordination"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/arbiter.yaml"
+    },
+    {
+      "id": "coordinator",
+      "name": "协调者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "none",
+      "skills": [
+        "coordination"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/coordinator.yaml"
+    },
+    {
+      "id": "planner",
+      "name": "规划者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "coordination",
+        "research-brief"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/planner.yaml"
+    },
+    {
+      "id": "summarizer",
+      "name": "汇总者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "coordination"
+      ],
+      "maxConcurrentSessions": 2,
+      "source": "builtin",
+      "file": "assets/roles/summarizer.yaml"
+    },
+    {
+      "id": "worker",
+      "name": "执行者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/worker.yaml"
+    },
+    {
+      "id": "data-analyst",
+      "name": "数据分析师",
+      "group": "research",
+      "groupLabel": "研究分析",
+      "artifactType": "dataset",
+      "sideEffect": "write",
+      "skills": [
+        "data-analysis",
+        "fact-check"
+      ],
+      "maxConcurrentSessions": 2,
+      "source": "builtin",
+      "file": "assets/roles/data-analyst.yaml"
+    },
+    {
+      "id": "fact-checker",
+      "name": "事实核查员",
+      "group": "research",
+      "groupLabel": "研究分析",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "fact-check"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/fact-checker.yaml"
+    },
+    {
+      "id": "researcher",
+      "name": "研究员",
+      "group": "research",
+      "groupLabel": "研究分析",
+      "artifactType": "report",
+      "sideEffect": "write",
+      "skills": [
+        "research-brief"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/researcher.yaml"
+    },
+    {
+      "id": "editor",
+      "name": "编辑",
+      "group": "writing",
+      "groupLabel": "内容创作",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [
+        "doc-draft",
+        "doc-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/editor.yaml"
+    },
+    {
+      "id": "reviewer",
+      "name": "审核者",
+      "group": "writing",
+      "groupLabel": "内容创作",
+      "artifactType": "document",
+      "sideEffect": "read",
+      "skills": [
+        "doc-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/reviewer.yaml"
+    },
+    {
+      "id": "writer",
+      "name": "撰写者",
+      "group": "writing",
+      "groupLabel": "内容创作",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [
+        "doc-draft"
+      ],
+      "maxConcurrentSessions": 2,
+      "source": "builtin",
+      "file": "assets/roles/writer.yaml"
+    },
+    {
+      "id": "code-reviewer",
+      "name": "代码审查",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "read",
+      "skills": [
+        "code-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/code-reviewer.yaml"
+    },
+    {
+      "id": "developer",
+      "name": "开发",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "write",
+      "skills": [
+        "code-change",
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/developer.yaml"
+    },
+    {
+      "id": "tester",
+      "name": "测试",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "exec",
+      "skills": [
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/tester.yaml"
+    },
+    {
+      "id": "compliance-reviewer",
+      "name": "合规审查者",
+      "group": "ops",
+      "groupLabel": "业务运营",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "compliance-check"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/compliance-reviewer.yaml"
+    },
+    {
+      "id": "requirement-clarifier",
+      "name": "需求澄清者",
+      "group": "ops",
+      "groupLabel": "业务运营",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [
+        "doc-draft",
+        "coordination"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/requirement-clarifier.yaml"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 108ms
+{
+  "counts": {
+    "assets": 26,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 0
+  },
+  "errors": []
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role show developer --format json
+# label=orch role show developer --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 117ms
+{
+  "role": {
+    "id": "developer",
+    "name": "开发",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "write",
+    "skills": [
+      "code-change",
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/developer.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role show researcher
+# label=role show researcher（当前 HEAD） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 107ms
+- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1
+  职责：围绕问题收集资料，写出带出处的调研结论
+  技能：research-brief
+  工具：read, write
+  可唤醒：writer
+  来源：内置 assets/roles/researcher.yaml
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48-baseline\bin\orch.js role show researcher
+# label=role show researcher（0cd113b 基线树） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 159ms
+- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1
+  职责：围绕问题收集资料，写出带出处的调研结论
+  技能：research-brief
+  工具：read, write
+  可唤醒：—
+  来源：内置 assets/roles/researcher.yaml
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role show researcher --format json
+# label=role show researcher --format json（当前 HEAD） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 126ms
+{
+  "role": {
+    "id": "researcher",
+    "name": "研究员",
+    "group": "research",
+    "groupLabel": "研究分析",
+    "artifactType": "report",
+    "sideEffect": "write",
+    "skills": [
+      "research-brief"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/researcher.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48-baseline\bin\orch.js role show researcher --format json
+# label=role show researcher --format json（0cd113b 基线树） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 110ms
+{
+  "role": {
+    "id": "researcher",
+    "name": "研究员",
+    "group": "research",
+    "groupLabel": "研究分析",
+    "artifactType": "report",
+    "sideEffect": "write",
+    "skills": [
+      "research-brief"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/researcher.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role show writer
+# label=role show writer（当前 HEAD） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 97ms
+- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2
+  职责：依据调研结论写出结构完整的文档初稿
+  技能：doc-draft
+  工具：read, write, edit
+  可唤醒：editor, reviewer
+  来源：内置 assets/roles/writer.yaml
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48-baseline\bin\orch.js role show writer
+# label=role show writer（0cd113b 基线树） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 106ms
+- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2
+  职责：依据调研结论写出结构完整的文档初稿
+  技能：doc-draft
+  工具：read, write, edit
+  可唤醒：editor
+  来源：内置 assets/roles/writer.yaml
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role show writer --format json
+# label=role show writer --format json（当前 HEAD） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 91ms
+{
+  "role": {
+    "id": "writer",
+    "name": "撰写者",
+    "group": "writing",
+    "groupLabel": "内容创作",
+    "artifactType": "document",
+    "sideEffect": "write",
+    "skills": [
+      "doc-draft"
+    ],
+    "maxConcurrentSessions": 2,
+    "source": "builtin",
+    "file": "assets/roles/writer.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48-baseline\bin\orch.js role show writer --format json
+# label=role show writer --format json（0cd113b 基线树） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-48 exit=0 126ms
+{
+  "role": {
+    "id": "writer",
+    "name": "撰写者",
+    "group": "writing",
+    "groupLabel": "内容创作",
+    "artifactType": "document",
+    "sideEffect": "write",
+    "skills": [
+      "doc-draft"
+    ],
+    "maxConcurrentSessions": 2,
+    "source": "builtin",
+    "file": "assets/roles/writer.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+
+
+$ git ls-files assets/
+# label=git ls-files assets/ cwd=d:\WWW\Maestro exit=0 34ms
+assets/roles/arbiter.yaml
+assets/roles/code-reviewer.yaml
+assets/roles/compliance-reviewer.yaml
+assets/roles/coordinator.yaml
+assets/roles/data-analyst.yaml
+assets/roles/developer.yaml
+assets/roles/editor.yaml
+assets/roles/fact-checker.yaml
+assets/roles/planner.yaml
+assets/roles/requirement-clarifier.yaml
+assets/roles/researcher.yaml
+assets/roles/reviewer.yaml
+assets/roles/summarizer.yaml
+assets/roles/tester.yaml
+assets/roles/worker.yaml
+assets/roles/writer.yaml
+assets/skills/code-change/SKILL.md
+assets/skills/code-review/SKILL.md
+assets/skills/compliance-check/SKILL.md
+assets/skills/coordination/SKILL.md
+assets/skills/data-analysis/SKILL.md
+assets/skills/doc-draft/SKILL.md
+assets/skills/doc-review/SKILL.md
+assets/skills/fact-check/SKILL.md
+assets/skills/research-brief/SKILL.md
+assets/skills/test-run/SKILL.md
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe --test --test-concurrency=4 test/wp11/cli-role.test.js
+# label=node --test test/wp11/cli-role.test.js cwd=d:\WWW\Maestro exit=0 393ms
+TAP version 13
+# Subtest: AC-01: role list prints seventeen lines and exits 0
+ok 1 - AC-01: role list prints seventeen lines and exits 0
+  ---
+  duration_ms: 9.4099
+  type: 'test'
+  ...
+# Subtest: AC-02: role show developer is the six documented lines
+ok 2 - AC-02: role show developer is the six documented lines
+  ---
+  duration_ms: 4.645
+  type: 'test'
+  ...
+# Subtest: AC-03: a project role overrides the built-in one and says so
+ok 3 - AC-03: a project role overrides the built-in one and says so
+  ---
+  duration_ms: 12.212
+  type: 'test'
+  ...
+# Subtest: AC-10: an invalid registry stops orch run before the client exists
+ok 4 - AC-10: an invalid registry stops orch run before the client exists
+  ---
+  duration_ms: 14.3494
+  type: 'test'
+  ...
+# Subtest: AC-11: a broken asset does not block the list but fails the exit code
+ok 5 - AC-11: a broken asset does not block the list but fails the exit code
+  ---
+  duration_ms: 11.978
+  type: 'test'
+  ...
+# Subtest: A-4: role validate prints one row per bad asset
+ok 6 - A-4: role validate prints one row per bad asset
+  ---
+  duration_ms: 15.929
+  type: 'test'
+  ...
+# Subtest: A-4: a clean tree prints the single success line
+ok 7 - A-4: a clean tree prints the single success line
+  ---
+  duration_ms: 5.7516
+  type: 'test'
+  ...
+# Subtest: AC-32: --group lists only that group in text and JSON
+ok 8 - AC-32: --group lists only that group in text and JSON
+  ---
+  duration_ms: 8.9367
+  type: 'test'
+  ...
+# Subtest: AC-33: role list JSON has exactly three top-level keys and ten role keys
+ok 9 - AC-33: role list JSON has exactly three top-level keys and ten role keys
+  ---
+  duration_ms: 3.6299
+  type: 'test'
+  ...
+# Subtest: AC-34: an unknown role names it and points at role list
+ok 10 - AC-34: an unknown role names it and points at role list
+  ---
+  duration_ms: 4.3206
+  type: 'test'
+  ...
+# Subtest: AC-35: role show without an id is a usage error
+ok 11 - AC-35: role show without an id is a usage error
+  ---
+  duration_ms: 0.6179
+  type: 'test'
+  ...
+# Subtest: AC-37: unknown subcommand, unknown flag and bad --format are usage errors
+ok 12 - AC-37: unknown subcommand, unknown flag and bad --format are usage errors
+  ---
+  duration_ms: 0.5198
+  type: 'test'
+  ...
+# Subtest: the usage block has eight lines and keeps the I1.1 first line
+ok 13 - the usage block has eight lines and keeps the I1.1 first line
+  ---
+  duration_ms: 0.2734
+  type: 'test'
+  ...
+# Subtest: a flag that belongs to another subcommand is rejected
+ok 14 - a flag that belongs to another subcommand is rejected
+  ---
+  duration_ms: 0.4418
+  type: 'test'
+  ...
+# Subtest: role flags leak into other commands as unknown parameters (M-9)
+ok 15 - role flags leak into other commands as unknown parameters (M-9)
+  ---
+  duration_ms: 0.1787
+  type: 'test'
+  ...
+# Subtest: parseArgs keeps the old result shape for the four original commands
+ok 16 - parseArgs keeps the old result shape for the four original commands
+  ---
+  duration_ms: 0.1157
+  type: 'test'
+  ...
+# Subtest: AC-36: role validate <id> counts one asset and hides other files
+ok 17 - AC-36: role validate <id> counts one asset and hides other files
+  ---
+  duration_ms: 13.5583
+  type: 'test'
+  ...
+# Subtest: AC-38: the three read-only commands never create .orch nor a client
+ok 18 - AC-38: the three read-only commands never create .orch nor a client
+  ---
+  duration_ms: 10.9908
+  type: 'test'
+  ...
+# Subtest: AC-39: an unknown instance still prints the role contract first
+ok 19 - AC-39: an unknown instance still prints the role contract first
+  ---
+  duration_ms: 2.6876
+  type: 'test'
+  ...
+# Subtest: role show --instance appends the instance line (A-3)
+ok 20 - role show --instance appends the instance line (A-3)
+  ---
+  duration_ms: 3.394
+  type: 'test'
+  ...
+# Subtest: role show --instance on a role outside the instance says so
+ok 21 - role show --instance on a role outside the instance says so
+  ---
+  duration_ms: 3.7113
+  type: 'test'
+  ...
+# Subtest: role show JSON has three keys and null instance without --instance
+ok 22 - role show JSON has three keys and null instance without --instance
+  ---
+  duration_ms: 3.0588
+  type: 'test'
+  ...
+# Subtest: role show --instance JSON exposes the nine-key role instance
+ok 23 - role show --instance JSON exposes the nine-key role instance
+  ---
+  duration_ms: 2.9753
+  type: 'test'
+  ...
+# Subtest: role list --instance appends one line per instance role
+ok 24 - role list --instance appends one line per instance role
+  ---
+  duration_ms: 2.4468
+  type: 'test'
+  ...
+# Subtest: role list --instance JSON adds a fourth key with roleToSessions
+ok 25 - role list --instance JSON adds a fourth key with roleToSessions
+  ---
+  duration_ms: 2.3917
+  type: 'test'
+  ...
+# Subtest: role validate JSON rebuilds six-key errors and leaks no params
+ok 26 - role validate JSON rebuilds six-key errors and leaks no params
+  ---
+  duration_ms: 14.0778
+  type: 'test'
+  ...
+# Subtest: every registry error code has a label template
+ok 27 - every registry error code has a label template
+  ---
+  duration_ms: 0.3246
+  type: 'test'
+  ...
+# Subtest: detailOf fills every template without leaving a placeholder
+ok 28 - detailOf fills every template without leaving a placeholder
+  ---
+  duration_ms: 0.5796
+  type: 'test'
+  ...
+# Subtest: firstRegistryDetail returns the A-4 row without the dash prefix
+ok 29 - firstRegistryDetail returns the A-4 row without the dash prefix
+  ---
+  duration_ms: 0.0859
+  type: 'test'
+  ...
+# Subtest: roleCommand is reachable directly and honours the frozen ctx shape
+ok 30 - roleCommand is reachable directly and honours the frozen ctx shape
+  ---
+  duration_ms: 3.7531
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 305.6862
+

@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_MAPPING_INCOMPLETE",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "T-002 的输入 outline 没有来源"
+    }
+  ]
+}

@@ -4,8 +4,8 @@
     "events": 100,
     "handoffs": 50
   },
-  "firstLineMs": 3.122,
-  "totalMs": 3.911,
+  "firstLineMs": 2.571,
+  "totalMs": 3.095,
   "handoffLines": 100,
   "eventLines": 100,
   "note": "确定性输出完整性断言；耗时仅作证据落盘，不设 2s 墙钟阈值（避免 §7.2 白名单同类负载红）"

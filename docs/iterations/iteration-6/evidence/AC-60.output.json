@@ -1,0 +1,296 @@
+{
+  "ac": "AC-60",
+  "title": "工作流校验器补充面：变量引用 / 状态转换 / 唤醒权限",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 第一次（task-var）退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第一次（task-var）首行逐字（期望逐字 \"校验工作流 1 个：全部通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验工作流 1 个：全部通过\""
+    },
+    {
+      "text": "机检：task-var counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第二次（backflow-target）退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：backflow-target counts.invalid === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：backflow-target errors[0].code（期望 \"WORKFLOW_TRANSITION_ILLEGAL\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_TRANSITION_ILLEGAL\""
+    },
+    {
+      "text": "Then 第三次（wake-empty）退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：wake-empty counts.invalid === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：wake-empty errors[0].code（期望 \"WORKFLOW_WAKE_DENIED\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_WAKE_DENIED\""
+    },
+    {
+      "text": "Then 第四次（retest-ok）退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第四次（retest-ok）首行逐字（期望逐字 \"校验工作流 1 个：全部通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验工作流 1 个：全部通过\""
+    },
+    {
+      "text": "机检：retest-ok counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第二次明细为 {node} 不能成为回流目标（含 回流目标）（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：backflow-target errors[0].detail 含 回流目标（期望含 \"回流目标\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "T-H 不能成为回流目标"
+    },
+    {
+      "text": "Then 第三次报 WORKFLOW_WAKE_DENIED（wake_allow: [] = 不允许主动唤醒任何角色）（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：wake-empty errors[0].detail 含 白名单（期望含 \"白名单\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "唤醒不在白名单内：r-src → developer"
+    },
+    {
+      "text": "机检：wake-empty 明细为 唤醒不在白名单内：r-src → developer（期望 \"唤醒不在白名单内：r-src → developer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"唤醒不在白名单内：r-src → developer\""
+    },
+    {
+      "text": "机检：retest-ok 的 errors 为空（期望 []）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[]"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置四条工作流 task-var / backflow-target / wake-empty / retest-ok + 源角色 r-src（wake_allow: []）；wake-empty 与 retest-ok 节点上都不补 wake_allow：forward 边才受白名单约束（retest 由核心回流触发、不受白名单约束），因此 retest-ok 只留一条 retest 边",
+      "argv": [
+        "(fixture) 预置四条工作流 task-var / backflow-target / wake-empty / retest-ok + 源角色 r-src（wake_allow: []）；wake-empty 与 retest-ok 节点上都不补 wake_allow：forward 边才受白名单约束（retest 由核心回流触发、不受白名单约束），因此 retest-ok 只留一条 retest 边"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate task-var",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "task-var"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "校验工作流 1 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate task-var --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "task-var",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 110,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate backflow-target",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "backflow-target"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/backflow-target.yaml：T-H 不能成为回流目标（WORKFLOW_TRANSITION_ILLEGAL）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate backflow-target --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "backflow-target",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_TRANSITION_ILLEGAL\",\n      \"file\": \"workflows/backflow-target.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"T-H 不能成为回流目标\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate wake-empty",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "wake-empty"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/wake-empty.yaml：唤醒不在白名单内：r-src → developer（WORKFLOW_WAKE_DENIED）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate wake-empty --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "wake-empty",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 107,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_WAKE_DENIED\",\n      \"file\": \"workflows/wake-empty.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"唤醒不在白名单内：r-src → developer\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate retest-ok",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "retest-ok"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 105,
+      "stdout": "校验工作流 1 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate retest-ok --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "retest-ok",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 120,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate backflow-target（复跑取文本）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "backflow-target"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/backflow-target.yaml：T-H 不能成为回流目标（WORKFLOW_TRANSITION_ILLEGAL）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate wake-empty（复跑取文本）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "wake-empty"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/wake-empty.yaml：唤醒不在白名单内：r-src → developer（WORKFLOW_WAKE_DENIED）\n",
+      "stderr": ""
+    }
+  ]
+}

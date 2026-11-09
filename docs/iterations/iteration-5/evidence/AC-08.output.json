@@ -1,0 +1,88 @@
+{
+  "ac": "AC-08",
+  "title": "引用不存在的技能被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 原因码 ROLE_SKILL_NOT_FOUND（期望含 \"ROLE_SKILL_NOT_FOUND\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：1 个不合法\n- roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）\n"
+    },
+    {
+      "text": "Then 明细指名 no-such-skill（期望含 \"no-such-skill\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：1 个不合法\n- roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）\n"
+    },
+    {
+      "text": "机检：errors[0].code === ROLE_SKILL_NOT_FOUND（期望 \"ROLE_SKILL_NOT_FOUND\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"ROLE_SKILL_NOT_FOUND\""
+    },
+    {
+      "text": "机检：errors[0].detail 含 no-such-skill（期望含 \"no-such-skill\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "引用的技能不存在：no-such-skill"
+    },
+    {
+      "text": "机检：errors[0].field 指出 skills（期望 \"skills\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"skills\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 .orch/roles/ghost-skill.yaml（skills: [no-such-skill]）",
+      "argv": [
+        "(fixture) 写 .orch/roles/ghost-skill.yaml（skills: [no-such-skill]）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-08\\.orch\\roles\\ghost-skill.yaml",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-08",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 95,
+      "stdout": "校验资产 27 个：1 个不合法\n- roles/ghost-skill.yaml：引用的技能不存在：no-such-skill（ROLE_SKILL_NOT_FOUND）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-08",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_SKILL_NOT_FOUND\",\n      \"file\": \"roles/ghost-skill.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"skills\",\n      \"line\": null,\n      \"detail\": \"引用的技能不存在：no-such-skill\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+$ "(fixture) 预置 sub-ghost.yaml（workflow: ghost）与 sub-self.yaml（workflow: sub-self）"
+# label=夹具：预置 sub-ghost.yaml（workflow: ghost）与 sub-self.yaml（workflow: sub-self） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate
+# label=orch workflow validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-26 exit=1 104ms
+校验工作流 5 个：2 个不合法
+- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）
+- workflows/sub-self.yaml：子工作流成环：sub-self（WORKFLOW_SUB_CYCLE）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate --format json
+# label=orch workflow validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-26 exit=1 100ms
+{
+  "counts": {
+    "assets": 5,
+    "builtin": 3,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_SUB_UNKNOWN",
+      "file": "workflows/sub-ghost.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "引用的子工作流不存在：ghost"
+    },
+    {
+      "code": "WORKFLOW_SUB_CYCLE",
+      "file": "workflows/sub-self.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "子工作流成环：sub-self"
+    }
+  ]
+}
+

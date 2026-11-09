@@ -1,0 +1,32 @@
+{
+  "ac": "AC-38",
+  "title": "角色命令只读",
+  "face": "边界",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:26.753Z",
+  "finishedAt": "2026-11-08T12:22:27.054Z",
+  "durationMs": 301,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-38",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-38"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 7,
+  "notes": [],
+  "extraFiles": [
+    "AC-38.assets-before.json",
+    "AC-38.assets-after.json",
+    "AC-38.assets-hashes.txt"
+  ]
+}

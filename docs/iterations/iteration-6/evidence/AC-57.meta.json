@@ -1,0 +1,36 @@
+{
+  "ac": "AC-57",
+  "title": "改不存在的角色与 diff 缺对比基线",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:06.647Z",
+  "finishedAt": "2026-11-09T12:24:07.183Z",
+  "durationMs": 536,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-57",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-57"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 22,
+  "notes": [],
+  "extraFiles": [
+    "AC-57.edit-ghost.txt",
+    "AC-57.diff-role-nobaseline.txt",
+    "AC-57.diff-wf-nobaseline.txt",
+    "AC-57.diff-against-developer.txt",
+    "AC-57.diff-payload.json"
+  ]
+}

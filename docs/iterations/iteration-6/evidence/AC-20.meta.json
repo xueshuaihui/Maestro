@@ -1,0 +1,39 @@
+{
+  "ac": "AC-20",
+  "title": "技能导出再导入",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:22:46.894Z",
+  "finishedAt": "2026-11-09T12:22:47.309Z",
+  "durationMs": 415,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-20-A",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-20-A"
+    },
+    {
+      "case": "AC-20-B",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-20-B"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 12,
+  "notes": [],
+  "extraFiles": [
+    "AC-20.export.txt",
+    "AC-20.import.txt",
+    "AC-20.list-B.txt",
+    "AC-20.validate-B.json"
+  ]
+}

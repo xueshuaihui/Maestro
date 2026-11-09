@@ -1,0 +1,76 @@
+{
+  "ac": "AC-15",
+  "title": "技能正文为空被拒绝",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 原因码 SKILL_BODY_EMPTY（期望含 \"SKILL_BODY_EMPTY\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 27 个：1 个不合法\n- skills/empty-body/SKILL.md：技能正文为空：empty-body（SKILL_BODY_EMPTY）\n"
+    },
+    {
+      "text": "机检：errors[0].code === SKILL_BODY_EMPTY（期望 \"SKILL_BODY_EMPTY\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"SKILL_BODY_EMPTY\""
+    },
+    {
+      "text": "机检：errors[0].file（期望 \"skills/empty-body/SKILL.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"skills/empty-body/SKILL.md\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：写 .orch/skills/empty-body/SKILL.md（正文只有空白行）",
+      "argv": [
+        "(fixture) 写 .orch/skills/empty-body/SKILL.md（正文只有空白行）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-15\\.orch\\skills\\empty-body\\SKILL.md",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-15",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "校验资产 27 个：1 个不合法\n- skills/empty-body/SKILL.md：技能正文为空：empty-body（SKILL_BODY_EMPTY）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-15",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 103,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"SKILL_BODY_EMPTY\",\n      \"file\": \"skills/empty-body/SKILL.md\",\n      \"scope\": \"skill\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"技能正文为空：empty-body\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

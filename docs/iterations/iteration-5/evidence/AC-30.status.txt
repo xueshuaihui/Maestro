@@ -1,0 +1,149 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\test\fixtures\code-loop-driver.mjs --root C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-30 --scenario rounds-exceeded
+# label=driver --scenario rounds-exceeded（T-002 升级 → 实例 suspended） cwd=D:\WWW\Maestro exit=0 1923ms
+{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-30","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-30\\demo-code-pass","scenario":"rounds-exceeded","resolvedScenario":"rounds-exceeded","stopAfter":null,"keep":false,"released":false,"target":"exit","exitCode":4,"instanceId":"INST-001","state":"suspended","nodes":[{"nodeId":"T-001","round":2,"state":"done"},{"nodeId":"T-002","round":2,"state":"escalated"}],"handoffs":3,"escalations":[{"escalationId":"ESC-001","reasonCode":"rounds_exceeded"}],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":1539,"checks":[{"name":"state=suspended","ok":true,"detail":"suspended"},{"name":"nodes[1]=escalated round=2","ok":true},{"name":"escalation reason=rounds_exceeded","ok":true,"detail":"rounds_exceeded"}]}
+
+--- stderr ---
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-32516-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-002 测试 · 第 2 轮
+下一步：查看详情 orch status --instance INST-001 --events；本版本不能继续，要终止请执行 orch cancel --instance INST-001
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show tester --instance INST-001
+# label=orch role show tester --instance INST-001（挂起态，文本） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-30 exit=0 212ms
+- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1
+  职责：运行测试并把结果落成报告，不掩盖失败用例
+  技能：test-run
+  工具：read, write, bash
+  可唤醒：—
+  来源：内置 assets/roles/tester.yaml
+  实例 INST-001：不可用 · 活跃会话 1/1 · 服务节点 — · 宿主 — · 最近 T-002 · 轮次 2/2
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show tester --instance INST-001 --format json
+# label=orch role show tester --instance INST-001 --format json（挂起态） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-30 exit=0 96ms
+{
+  "role": {
+    "id": "tester",
+    "name": "测试",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "exec",
+    "skills": [
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/tester.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "code-loop",
+    "state": "suspended",
+    "roleToSessions": {
+      "developer": [
+        "mock-sess-32516-1",
+        "mock-sess-11020-1"
+      ],
+      "tester": [
+        "mock-sess-19664-1",
+        "mock-sess-21100-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "tester",
+    "roleInstanceId": "RI-tester",
+    "status": "unavailable",
+    "statusReason": "escalated",
+    "activeSessions": [
+      "mock-sess-21100-1"
+    ],
+    "servingNodes": [],
+    "hostIcons": [],
+    "maxConcurrentSessions": 1,
+    "lastAction": {
+      "nodeId": "T-002",
+      "round": 2,
+      "maxRounds": 2,
+      "state": "escalated",
+      "stateSince": "2026-11-08T12:22:15.660Z"
+    }
+  }
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop（先停核心，确保下一次读走磁盘） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-30 exit=0 204ms
+核心已停止（pid 15604，运行 1s）
+
+
+$ "(fixture) 手工改 state.json：T-002 的会话 state=idle、quarantined=false"
+# label=夹具：手工改 state.json：T-002 的会话 state=idle、quarantined=false cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-30\.orch\instances\INST-001\state.json
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role show tester --instance INST-001 --format json
+# label=orch role show tester --instance INST-001 --format json（改完状态后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-30 exit=0 216ms
+{
+  "role": {
+    "id": "tester",
+    "name": "测试",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "exec",
+    "skills": [
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/tester.yaml"
+  },
+  "instance": {
+    "instanceId": "INST-001",
+    "template": "code-loop",
+    "state": "suspended",
+    "roleToSessions": {
+      "developer": [
+        "mock-sess-32516-1",
+        "mock-sess-11020-1"
+      ],
+      "tester": [
+        "mock-sess-19664-1",
+        "mock-sess-21100-1"
+      ]
+    }
+  },
+  "roleInstance": {
+    "roleId": "tester",
+    "roleInstanceId": "RI-tester",
+    "status": "available",
+    "statusReason": null,
+    "activeSessions": [],
+    "servingNodes": [],
+    "hostIcons": [],
+    "maxConcurrentSessions": 1,
+    "lastAction": {
+      "nodeId": "T-002",
+      "round": 2,
+      "maxRounds": 2,
+      "state": "escalated",
+      "stateSince": "2026-11-08T12:22:15.660Z"
+    }
+  }
+}
+

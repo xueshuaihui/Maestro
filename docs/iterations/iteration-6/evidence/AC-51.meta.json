@@ -1,0 +1,32 @@
+{
+  "ac": "AC-51",
+  "title": "架构纯净：无资产名、无游离中文",
+  "face": "架构检查",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:00.251Z",
+  "finishedAt": "2026-11-09T12:24:00.616Z",
+  "durationMs": 365,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 11,
+  "notes": [
+    "四条命令为附录 D-9 逐字副本：1/3 条用 $COMMON（31 词），第 2 条用 $NOCOORD（30 词，去 coordinator）；第 4 条 node -e 的 JS 源逐字照抄、改经 argv 传入以规避 Windows shell 引号转义，扫描语义与词表不变。"
+  ],
+  "extraFiles": [
+    "AC-51.purity-core.txt",
+    "AC-51.purity-registry.txt",
+    "AC-51.purity-cli.txt",
+    "AC-51.no-cjk.txt"
+  ]
+}

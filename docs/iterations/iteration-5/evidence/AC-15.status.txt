@@ -1,0 +1,33 @@
+$ "(fixture) 写 .orch/skills/empty-body/SKILL.md（正文只有空白行）"
+# label=夹具：写 .orch/skills/empty-body/SKILL.md（正文只有空白行） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-15\.orch\skills\empty-body\SKILL.md
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-15 exit=1 98ms
+校验资产 27 个：1 个不合法
+- skills/empty-body/SKILL.md：技能正文为空：empty-body（SKILL_BODY_EMPTY）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-15 exit=1 103ms
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "SKILL_BODY_EMPTY",
+      "file": "skills/empty-body/SKILL.md",
+      "scope": "skill",
+      "field": null,
+      "line": null,
+      "detail": "技能正文为空：empty-body"
+    }
+  ]
+}
+

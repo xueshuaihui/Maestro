@@ -1,0 +1,124 @@
+{
+  "ac": "AC-13",
+  "title": "权限闭环：工具集与副作用等级对不上",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 恰好三条错误（- 开头）（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then 第 1 条错误明细 = 固定句（副作用等级为 read …）（期望含 \"副作用等级为 read 的角色不能带写工具 write\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/r1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）"
+    },
+    {
+      "text": "Then 第 1 条错误带原因码 ROLE_PERMISSION_MISMATCH（期望含 \"（ROLE_PERMISSION_MISMATCH）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/r1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）"
+    },
+    {
+      "text": "Then 第 2 条错误明细 = 固定句（副作用等级为 exec …）（期望含 \"副作用等级为 exec 的角色必须带能执行命令的工具 bash\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/r2.yaml：副作用等级为 exec 的角色必须带能执行命令的工具 bash（ROLE_PERMISSION_MISMATCH）"
+    },
+    {
+      "text": "Then 第 2 条错误带原因码 ROLE_PERMISSION_MISMATCH（期望含 \"（ROLE_PERMISSION_MISMATCH）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/r2.yaml：副作用等级为 exec 的角色必须带能执行命令的工具 bash（ROLE_PERMISSION_MISMATCH）"
+    },
+    {
+      "text": "Then 第 3 条错误明细 = 固定句（副作用等级为 none …）（期望含 \"副作用等级为 none 的角色不能带任何工具\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/r3.yaml：副作用等级为 none 的角色不能带任何工具（ROLE_PERMISSION_MISMATCH）"
+    },
+    {
+      "text": "Then 第 3 条错误带原因码 ROLE_PERMISSION_MISMATCH（期望含 \"（ROLE_PERMISSION_MISMATCH）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/r3.yaml：副作用等级为 none 的角色不能带任何工具（ROLE_PERMISSION_MISMATCH）"
+    },
+    {
+      "text": "机检：errors 长度 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：errors.map(code) 全为 ROLE_PERMISSION_MISMATCH（期望 [\"ROLE_PERMISSION_MISMATCH\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"ROLE_PERMISSION_MISMATCH\"]"
+    },
+    {
+      "text": "机检：errors 按文件名排序（期望 [\"roles/r1.yaml\",\"roles/r2.yaml\",\"roles/r3.yaml\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"roles/r1.yaml\",\"roles/r2.yaml\",\"roles/r3.yaml\"]"
+    },
+    {
+      "text": "机检：counts.invalid === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 r1（read+write）/ r2（exec+read）/ r3（none+read），其余字段合法",
+      "argv": [
+        "(fixture) 预置 r1（read+write）/ r2（exec+read）/ r3（none+read），其余字段合法"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-13",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "校验资产 29 个：3 个不合法\n- roles/r1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）\n- roles/r2.yaml：副作用等级为 exec 的角色必须带能执行命令的工具 bash（ROLE_PERMISSION_MISMATCH）\n- roles/r3.yaml：副作用等级为 none 的角色不能带任何工具（ROLE_PERMISSION_MISMATCH）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-13",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 29,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 3,\n    \"invalid\": 3\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_PERMISSION_MISMATCH\",\n      \"file\": \"roles/r1.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"tools\",\n      \"line\": null,\n      \"detail\": \"副作用等级为 read 的角色不能带写工具 write\"\n    },\n    {\n      \"code\": \"ROLE_PERMISSION_MISMATCH\",\n      \"file\": \"roles/r2.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"tools\",\n      \"line\": null,\n      \"detail\": \"副作用等级为 exec 的角色必须带能执行命令的工具 bash\"\n    },\n    {\n      \"code\": \"ROLE_PERMISSION_MISMATCH\",\n      \"file\": \"roles/r3.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"tools\",\n      \"line\": null,\n      \"detail\": \"副作用等级为 none 的角色不能带任何工具\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

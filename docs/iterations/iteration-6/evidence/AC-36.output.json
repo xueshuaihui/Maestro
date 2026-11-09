@@ -1,0 +1,176 @@
+{
+  "ac": "AC-36",
+  "title": "节点状态转换合法性",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 第一段退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 报 WORKFLOW_TRANSITION_ILLEGAL（期望含 \"（WORKFLOW_TRANSITION_ILLEGAL）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：升级节点 T-005 不能有正向出边（WORKFLOW_TRANSITION_ILLEGAL）\n"
+    },
+    {
+      "text": "Then 明细含 T-005（期望含 \"升级节点 T-005 不能有正向出边\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：升级节点 T-005 不能有正向出边（WORKFLOW_TRANSITION_ILLEGAL）\n"
+    },
+    {
+      "text": "机检：第一段 errors[0].code（期望 \"WORKFLOW_TRANSITION_ILLEGAL\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_TRANSITION_ILLEGAL\""
+    },
+    {
+      "text": "机检：第一段 detail 含 T-005（期望含 \"T-005\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级节点 T-005 不能有正向出边"
+    },
+    {
+      "text": "夹具自检：T-004 两条出边的 when 已去掉",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 第二段退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 改报 WORKFLOW_TRANSITION_ILLEGAL（期望含 \"（WORKFLOW_TRANSITION_ILLEGAL）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：人工节点 T-004 的出边必须写人工条件（WORKFLOW_TRANSITION_ILLEGAL）\n"
+    },
+    {
+      "text": "Then 明细含 人工条件（期望含 \"人工节点 T-004 的出边必须写人工条件\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：人工节点 T-004 的出边必须写人工条件（WORKFLOW_TRANSITION_ILLEGAL）\n"
+    },
+    {
+      "text": "机检：第二段 errors[0].code（期望 \"WORKFLOW_TRANSITION_ILLEGAL\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_TRANSITION_ILLEGAL\""
+    },
+    {
+      "text": "机检：第二段 detail 含 人工条件（期望含 \"人工条件\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "人工节点 T-004 的出边必须写人工条件"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置附录 A-13 的 doc-fanout（writeDocFanout）",
+      "argv": [
+        "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：追加边 T-005 → T-006（forward，升级节点不得有正向出边）",
+      "argv": [
+        "(fixture) 追加边 T-005 → T-006（forward，升级节点不得有正向出边）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout（升级出边）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-36",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 103,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：升级节点 T-005 不能有正向出边（WORKFLOW_TRANSITION_ILLEGAL）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout --format json（升级出边）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-36",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_TRANSITION_ILLEGAL\",\n      \"file\": \"workflows/doc-fanout.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"升级节点 T-005 不能有正向出边\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：去掉 T-004 两条出边的 when（缺省 always，人工节点出边必须写人工条件）",
+      "argv": [
+        "(fixture) 去掉 T-004 两条出边的 when（缺省 always，人工节点出边必须写人工条件）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout（人工出边无条件）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-36",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：人工节点 T-004 的出边必须写人工条件（WORKFLOW_TRANSITION_ILLEGAL）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout --format json（人工出边无条件）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-36",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_TRANSITION_ILLEGAL\",\n      \"file\": \"workflows/doc-fanout.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"人工节点 T-004 的出边必须写人工条件\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

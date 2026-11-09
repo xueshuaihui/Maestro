@@ -1,0 +1,20 @@
+{
+  "counts": {
+    "assets": 26,
+    "roles": 15,
+    "skills": 10,
+    "builtin": 25,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "ROLE_ID_MISMATCH",
+      "file": "roles/writer.yaml",
+      "scope": "role",
+      "field": "id",
+      "line": null,
+      "detail": "角色 id 与文件名不一致：文件 writer / 声明 wordsmith"
+    }
+  ]
+}

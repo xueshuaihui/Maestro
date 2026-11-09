@@ -1,0 +1,104 @@
+{
+  "ac": "AC-32",
+  "title": "`--group` 只列该组",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 首行是「角色 3 个（内置 3 · 项目 0）」（期望逐字 \"角色 3 个（内置 3 · 项目 0）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"角色 3 个（内置 3 · 项目 0）\""
+    },
+    {
+      "text": "Then 随后 3 行都是编码工程组（code-reviewer / developer / tester）（期望 [\"- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\",\"- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\",\"- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\",\"- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\",\"- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\"]"
+    },
+    {
+      "text": "机检：3 行的分组名都是编码工程",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\",\"- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\",\"- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\"]"
+    },
+    {
+      "text": "机检：groups 只有一个元素（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：该元素 count === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：roles 长度 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：counts.total 为 3（--group 时只统计该组）（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：全新项目根（无 .orch）",
+      "argv": [
+        "(fixture) 全新项目根（无 .orch）"
+      ],
+      "cwd": "D:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-32",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list --group coding",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list",
+        "--group",
+        "coding"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-32",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 92,
+      "stdout": "角色 3 个（内置 3 · 项目 0）\n- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\n- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list --group coding --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "D:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list",
+        "--group",
+        "coding",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-32",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 93,
+      "stdout": "{\n  \"counts\": {\n    \"total\": 3,\n    \"builtin\": 3,\n    \"project\": 0,\n    \"invalid\": 0\n  },\n  \"groups\": [\n    {\n      \"group\": \"coding\",\n      \"label\": \"编码工程\",\n      \"count\": 3\n    }\n  ],\n  \"roles\": [\n    {\n      \"id\": \"code-reviewer\",\n      \"name\": \"代码审查\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"code-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/code-reviewer.yaml\"\n    },\n    {\n      \"id\": \"developer\",\n      \"name\": \"开发\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"code-change\",\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/developer.yaml\"\n    },\n    {\n      \"id\": \"tester\",\n      \"name\": \"测试\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"exec\",\n      \"skills\": [\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/tester.yaml\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

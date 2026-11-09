@@ -1,0 +1,40 @@
+$ "(fixture) 预置 .orch/skills/half/SKILL.md（缺 summary）与 .orch/skills/empty/SKILL.md（正文只有空行）"
+# label=夹具：预置 .orch/skills/half/SKILL.md（缺 summary）与 .orch/skills/empty/SKILL.md（正文只有空行） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill validate
+# label=orch skill validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-19 exit=1 97ms
+校验技能 12 个：2 个不合法
+- skills/empty/SKILL.md：技能正文为空：empty（SKILL_BODY_EMPTY）
+- skills/half/SKILL.md：缺少必填字段：summary（SKILL_SCHEMA_MISSING）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill validate --format json
+# label=orch skill validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-19 exit=1 117ms
+{
+  "counts": {
+    "assets": 12,
+    "skills": 10,
+    "builtin": 10,
+    "project": 0,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "SKILL_BODY_EMPTY",
+      "file": "skills/empty/SKILL.md",
+      "scope": "skill",
+      "field": null,
+      "line": null,
+      "detail": "技能正文为空：empty"
+    },
+    {
+      "code": "SKILL_SCHEMA_MISSING",
+      "file": "skills/half/SKILL.md",
+      "scope": "skill",
+      "field": "summary",
+      "line": null,
+      "detail": "缺少必填字段：summary"
+    }
+  ]
+}
+

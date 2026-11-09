@@ -1,0 +1,47 @@
+$ "(fixture) 全新项目根 A 与另一个空项目根 B"
+# label=夹具：全新项目根 A 与另一个空项目根 B cwd=d:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-20-A / C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-20-B
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill export code-change --out exports/code-change.md
+# label=[A] orch skill export code-change --out exports/code-change.md cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-20-A exit=0 99ms
+已导出技能 code-change 到 exports/code-change.md
+
+
+$ "(fixture) 把导出文件拷进 B 根下（code-change.md）"
+# label=夹具：把导出文件拷进 B 根下（code-change.md） cwd=d:\WWW\Maestro exit=0 0ms
+sha256=92db6c207c59de341e4ed09a8cb8d90c7f62018968df0f356a0bb4066fe92194
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill import code-change.md
+# label=[B] orch skill import code-change.md cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-20-B exit=0 100ms
+已安装项目技能：.orch/skills/code-change/SKILL.md
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill list
+# label=[B] orch skill list cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-20-B exit=0 101ms
+技能 10 个（内置 9 · 项目 1）
+- code-change 代码修改 · 编码工程 · 命令 1
+- code-review 代码审查 · 编码工程 · 命令 0
+- compliance-check 合规审查 · 业务运营 · 命令 0
+- coordination 编排协调 · 通用协调 · 命令 0
+- data-analysis 数据分析 · 研究分析 · 命令 1
+- doc-draft 文档撰写 · 内容创作 · 命令 0
+- doc-review 文档审核 · 内容创作 · 命令 0
+- fact-check 事实核查 · 研究分析 · 命令 0
+- research-brief 调研笔记 · 研究分析 · 命令 0
+- test-run 测试执行 · 编码工程 · 命令 1
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill validate --format json
+# label=[B] orch skill validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-20-B exit=0 94ms
+{
+  "counts": {
+    "assets": 10,
+    "skills": 10,
+    "builtin": 9,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+

@@ -1,0 +1,10 @@
+schema: role/v1
+id: lead-dev
+name: 首席开发
+group: coding
+summary : ''
+artifact_type: document
+side_effect: write
+skills: [code-change, test-run]
+max_concurrent_sessions: 1
+

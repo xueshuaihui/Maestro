@@ -1,0 +1,218 @@
+{
+  "ac": "AC-64",
+  "title": "可达性终态定义：human / escalate 也是终点",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then human-end 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then human-end 首行逐字（human / escalate 天然是终态）（期望逐字 \"校验工作流 1 个：全部通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验工作流 1 个：全部通过\""
+    },
+    {
+      "text": "机检：human-end counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then escalate-end 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then escalate-end 首行逐字（human / escalate 天然是终态）（期望逐字 \"校验工作流 1 个：全部通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验工作流 1 个：全部通过\""
+    },
+    {
+      "text": "机检：escalate-end counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then no-end 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then no-end 首行 1 个不合法（期望 \"校验工作流 1 个：1 个不合法\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验工作流 1 个：1 个不合法\""
+    },
+    {
+      "text": "Then no-end 错误行逐字（A-15：节点不可达：{node}）（期望逐字 \"- workflows/no-end.yaml：节点不可达：T-R（WORKFLOW_UNREACHABLE）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- workflows/no-end.yaml：节点不可达：T-R（WORKFLOW_UNREACHABLE）\""
+    },
+    {
+      "text": "机检：no-end errors[0].code === WORKFLOW_UNREACHABLE（期望 \"WORKFLOW_UNREACHABLE\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_UNREACHABLE\""
+    },
+    {
+      "text": "机检：no-end errors[0].detail 含 T-R（期望含 \"T-R\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点不可达：T-R"
+    },
+    {
+      "text": "机检：show human-end 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：nodes 里 T-H 的 nodeType === human（期望 \"human\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"human\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 human-end / escalate-end / no-end 三条工作流（T-001 → T-END 与 → 侧节点；T-H 人工、T-E 升级、T-R 普通 role 无出边且不在 terminal）",
+      "argv": [
+        "(fixture) 预置 human-end / escalate-end / no-end 三条工作流（T-001 → T-END 与 → 侧节点；T-H 人工、T-E 升级、T-R 普通 role 无出边且不在 terminal）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate human-end",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "human-end"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-64",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "校验工作流 1 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate human-end --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "human-end",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-64",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate escalate-end",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "escalate-end"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-64",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "校验工作流 1 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate escalate-end --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "escalate-end",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-64",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate no-end",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "no-end"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-64",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 115,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/no-end.yaml：节点不可达：T-R（WORKFLOW_UNREACHABLE）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate no-end --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "no-end",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-64",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_UNREACHABLE\",\n      \"file\": \"workflows/no-end.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"节点不可达：T-R\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow show human-end --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "show",
+        "human-end",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-64",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "{\n  \"workflow\": {\n    \"id\": \"human-end\",\n    \"name\": \"人工终点\",\n    \"nodeCount\": 3,\n    \"edgeCount\": 2,\n    \"source\": \"project\",\n    \"file\": \".orch/workflows/human-end.yaml\",\n    \"entry\": \"T-001\",\n    \"terminal\": \"T-END\"\n  },\n  \"nodes\": [\n    {\n      \"id\": \"T-001\",\n      \"nodeType\": \"role\",\n      \"role\": \"researcher\",\n      \"title\": \"研究\",\n      \"timeout\": null,\n      \"retry\": 0,\n      \"maxRounds\": null,\n      \"parallelScope\": null,\n      \"scope\": \"T-001\",\n      \"inputs\": [],\n      \"outputs\": []\n    },\n    {\n      \"id\": \"T-END\",\n      \"nodeType\": \"role\",\n      \"role\": \"writer\",\n      \"title\": \"完成\",\n      \"timeout\": null,\n      \"retry\": 0,\n      \"maxRounds\": null,\n      \"parallelScope\": null,\n      \"scope\": \"T-END\",\n      \"inputs\": [],\n      \"outputs\": []\n    },\n    {\n      \"id\": \"T-H\",\n      \"nodeType\": \"human\",\n      \"role\": null,\n      \"title\": \"人工确认\",\n      \"timeout\": null,\n      \"retry\": 0,\n      \"maxRounds\": null,\n      \"parallelScope\": null,\n      \"scope\": \"T-H\",\n      \"inputs\": [],\n      \"outputs\": []\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-END\",\n      \"kind\": \"forward\",\n      \"when\": \"always\",\n      \"map\": []\n    },\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-H\",\n      \"kind\": \"forward\",\n      \"when\": \"always\",\n      \"map\": []\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

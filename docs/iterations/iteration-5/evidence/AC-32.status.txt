@@ -1,0 +1,75 @@
+$ "(fixture) 全新项目根（无 .orch）"
+# label=夹具：全新项目根（无 .orch） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-32
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role list --group coding
+# label=orch role list --group coding cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-32 exit=0 92ms
+角色 3 个（内置 3 · 项目 0）
+- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1
+- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1
+- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js role list --group coding --format json
+# label=orch role list --group coding --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p5\AC-32 exit=0 93ms
+{
+  "counts": {
+    "total": 3,
+    "builtin": 3,
+    "project": 0,
+    "invalid": 0
+  },
+  "groups": [
+    {
+      "group": "coding",
+      "label": "编码工程",
+      "count": 3
+    }
+  ],
+  "roles": [
+    {
+      "id": "code-reviewer",
+      "name": "代码审查",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "read",
+      "skills": [
+        "code-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/code-reviewer.yaml"
+    },
+    {
+      "id": "developer",
+      "name": "开发",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "write",
+      "skills": [
+        "code-change",
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/developer.yaml"
+    },
+    {
+      "id": "tester",
+      "name": "测试",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "exec",
+      "skills": [
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/tester.yaml"
+    }
+  ]
+}
+

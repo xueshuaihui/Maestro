@@ -1,0 +1,16 @@
+{
+  "developer": [
+    "mock-sess-15668-1",
+    "mock-sess-23040-1"
+  ],
+  "tester": [
+    "mock-sess-30780-1",
+    "mock-sess-3572-1"
+  ],
+  "state": [
+    "mock-sess-15668-1",
+    "mock-sess-30780-1",
+    "mock-sess-23040-1",
+    "mock-sess-3572-1"
+  ]
+}

@@ -1,0 +1,43 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow create fork --name 分叉版 --from code-loop
+# label=orch workflow create fork --name 分叉版 --from code-loop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-39 exit=0 113ms
+已创建项目工作流：.orch/workflows/fork.yaml
+校验：通过
+
+
+$ "(fixture) 把 fork.yaml 的 nodes[0].title 从 开发 改为 开发（改）"
+# label=夹具：把 fork.yaml 的 nodes[0].title 从 开发 改为 开发（改） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow diff fork --against code-loop
+# label=orch workflow diff fork --against code-loop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-39 exit=0 106ms
+对比工作流 fork（项目）与基线 code-loop（内置）
+~ nodes[0].title：开发 → 开发（改）
+差异 1 项
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow diff fork --against code-loop --format json
+# label=orch workflow diff fork --against code-loop --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-39 exit=0 98ms
+{
+  "base": "code-loop",
+  "target": "fork",
+  "changes": [
+    {
+      "field": "nodes[0].title",
+      "kind": "changed",
+      "base": "开发",
+      "target": "开发（改）"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow create copy --name 复制版 --from code-loop
+# label=orch workflow create copy --name 复制版 --from code-loop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-39 exit=0 124ms
+已创建项目工作流：.orch/workflows/copy.yaml
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow diff copy
+# label=orch workflow diff copy cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-39 exit=0 108ms
+对比工作流 copy（项目）与基线 code-loop（内置）
+无差异
+

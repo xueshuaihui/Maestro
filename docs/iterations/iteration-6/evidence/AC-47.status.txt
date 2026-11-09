@@ -1,0 +1,7 @@
+$ "(fixture) 写 .orch/workflows/doc-fanout.yaml（A-1 + 裁-15 的 T-001 wake_allow 行，见 _fixtures.mjs）"
+# label=夹具：写 .orch/workflows/doc-fanout.yaml（A-1 + 裁-15 的 T-001 wake_allow 行，见 _fixtures.mjs） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js run --cwd ./demo --task 写下说明 --template doc-fanout
+# label=orch run --cwd ./demo --task 写下说明 --template doc-fanout cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-47 exit=1 102ms
+未知模板：doc-fanout
+

@@ -1,0 +1,30 @@
+{
+  "ac": "AC-37",
+  "title": "未知子命令、未知参数、非法 `--format` 都是用法错误",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:22:25.751Z",
+  "finishedAt": "2026-11-08T12:22:26.028Z",
+  "durationMs": 277,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-37",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-37"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 10,
+  "notes": [],
+  "extraFiles": [
+    "AC-37.three-usage-errors.txt"
+  ]
+}

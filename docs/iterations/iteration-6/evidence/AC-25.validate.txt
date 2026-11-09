@@ -1,0 +1,5 @@
+校验工作流 6 个：3 个不合法
+- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）
+- workflows/no-role.yaml：节点 T-001 缺少必填字段：role（WORKFLOW_NODE_FIELD_MISSING）
+- workflows/no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）
+

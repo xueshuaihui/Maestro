@@ -1,0 +1,3 @@
+校验资产 27 个：1 个不合法
+- roles/no-concurrency.yaml：缺少必填字段：max_concurrent_sessions（ROLE_SCHEMA_MISSING）
+

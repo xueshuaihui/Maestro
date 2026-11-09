@@ -1,0 +1,153 @@
+{
+  "ac": "AC-37",
+  "title": "角色对唤醒权限",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 报 WORKFLOW_WAKE_DENIED（期望含 \"（WORKFLOW_WAKE_DENIED）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/wake.yaml：唤醒不在白名单内：writer → reviewer（WORKFLOW_WAKE_DENIED）\n"
+    },
+    {
+      "text": "Then 明细含 writer（期望含 \"writer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/wake.yaml：唤醒不在白名单内：writer → reviewer（WORKFLOW_WAKE_DENIED）\n"
+    },
+    {
+      "text": "Then 明细含 reviewer（期望含 \"唤醒不在白名单内：writer → reviewer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/wake.yaml：唤醒不在白名单内：writer → reviewer（WORKFLOW_WAKE_DENIED）\n"
+    },
+    {
+      "text": "机检：errors[0].code === WORKFLOW_WAKE_DENIED（期望 \"WORKFLOW_WAKE_DENIED\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_WAKE_DENIED\""
+    },
+    {
+      "text": "夹具自检：下游角色已换成 editor",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 换成 editor 后退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 换成 editor 后全部通过（期望含 \"全部通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：全部通过\n"
+    },
+    {
+      "text": "机检：换成 editor 后 counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 wake.yaml（T-001 role: writer 节点级 wake_allow: [editor] → T-002 role: reviewer）",
+      "argv": [
+        "(fixture) 预置 wake.yaml（T-001 role: writer 节点级 wake_allow: [editor] → T-002 role: reviewer）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "schema: workflow/v1\nid: wake\nname: 唤醒\nentry: T-001\nterminal: T-002\nnodes:\n  - id: T-001\n    node_type: role\n    role: writer\n    title: 上游\n    wake_allow: [editor]\n  - id: T-002\n    node_type: role\n    role: reviewer\n    title: 下游\nedges:\n  - from: T-001\n    to: T-002\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate wake",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "wake"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-37",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/wake.yaml：唤醒不在白名单内：writer → reviewer（WORKFLOW_WAKE_DENIED）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate wake --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "wake",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-37",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_WAKE_DENIED\",\n      \"file\": \"workflows/wake.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"唤醒不在白名单内：writer → reviewer\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：把 T-002 的 role 换成 editor（writer 的节点级白名单含 editor）",
+      "argv": [
+        "(fixture) 把 T-002 的 role 换成 editor（writer 的节点级白名单含 editor）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate wake（下游换 editor 后）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "wake"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-37",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "校验工作流 1 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate wake --format json（下游换 editor 后）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "wake",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-37",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    }
+  ]
+}

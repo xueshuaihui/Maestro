@@ -1,0 +1,31 @@
+{
+  "ac": "AC-09",
+  "title": "YAML 语法错误带行号",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-08T12:21:22.473Z",
+  "finishedAt": "2026-11-08T12:21:22.900Z",
+  "durationMs": 427,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-09",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p5\\AC-09"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 10,
+  "notes": [],
+  "extraFiles": [
+    "AC-09.validate.txt",
+    "AC-09.payload.json"
+  ]
+}

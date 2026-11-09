@@ -1,0 +1,9 @@
+[
+  "src/registry/assets.js",
+  "src/registry/index.js",
+  "src/registry/role-instances.js",
+  "src/registry/role-schema.js",
+  "src/registry/skill-file.js",
+  "src/registry/yaml-lite.js",
+  "src/cli/roles.js"
+]

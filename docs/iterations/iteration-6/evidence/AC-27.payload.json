@@ -1,0 +1,75 @@
+{
+  "id": "doc-fanout",
+  "name": "文档并行版",
+  "nodeCount": 6,
+  "edgeCount": 7,
+  "layers": [
+    {
+      "parallel": false,
+      "nodes": [
+        "T-001"
+      ]
+    },
+    {
+      "parallel": true,
+      "nodes": [
+        "T-002",
+        "T-003"
+      ]
+    },
+    {
+      "parallel": false,
+      "nodes": [
+        "T-004"
+      ]
+    },
+    {
+      "parallel": false,
+      "nodes": [
+        "T-006"
+      ]
+    },
+    {
+      "parallel": false,
+      "nodes": [
+        "T-005"
+      ]
+    }
+  ],
+  "branches": [
+    {
+      "from": "T-004",
+      "to": "T-006",
+      "when": "human_approved"
+    },
+    {
+      "from": "T-004",
+      "to": "T-005",
+      "when": "human_rejected"
+    },
+    {
+      "from": "T-006",
+      "to": "T-005",
+      "when": "failed"
+    }
+  ],
+  "mappings": [
+    {
+      "from": "T-001.research.notes",
+      "to": "brief",
+      "edge": "T-001→T-002"
+    },
+    {
+      "from": "T-001.research.notes",
+      "to": "brief",
+      "edge": "T-001→T-003"
+    }
+  ],
+  "policies": [
+    {
+      "nodeId": "T-001",
+      "timeout": 600,
+      "retry": 2
+    }
+  ]
+}

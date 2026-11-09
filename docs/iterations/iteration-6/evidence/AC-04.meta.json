@@ -1,0 +1,37 @@
+{
+  "ac": "AC-04",
+  "title": "从内置派生：继承、覆盖与「派生自」",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:22:29.238Z",
+  "finishedAt": "2026-11-09T12:22:29.967Z",
+  "durationMs": 729,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-04",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-04"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 22,
+  "notes": [],
+  "extraFiles": [
+    "AC-04.create.txt",
+    "AC-04.lead-dev.yaml.txt",
+    "AC-04.show.txt",
+    "AC-04.show-payload.json",
+    "AC-04.list-payload.json",
+    "AC-04.wp11-test.txt"
+  ]
+}
