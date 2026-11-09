@@ -9,7 +9,7 @@
 | S0 需求生成与评审 | ✅ 通过 | review-round2 总判 PASS（阻断 0 / 建议 0）；F-01/F-02 闭合 | `requirement.md` v2（定稿）、`requirement-understanding.md`、`review-round1..2.md` | PASS |
 | S1 拆分与选型 | ✅ 通过 | 拆分评审 split-review.md（F-01/F-02 阻断 → 修复后自检全绿） | `iteration-7.md`（8 节 + AC→WP 14/14 + 文件零交集；split-review.md） | PASS |
 | S2 实现 | ✅ 收口 | 6 WP 全部合入：WP-1 `e67853b`、WP-2 `e138230`、WP-3 `03bd672`、WP-4 `55ad835`、WP-5 `dcf4fc1`、WP-5b `490ee15`、WP-6 `8a50866`；wp7 测试 31→37 条全绿、purity exit 0、deps 0 | `progress.md` §S2 批次台账；单测证据见各 WP | 待独立评审（R-01） |
-| S3 验收 | ⏳ 未开始 | — | — | — |
+| S3 验收 | 🔄 进行中 | 全量回归门禁 **PASS**：1028 tests / 1019 pass / 8 fail / 1 skipped，失败集合与基线 8 条**逐条一致（差集=0）**；AC-01~14 证据映射见 `acceptance.md` | `/tmp/full-after.txt`、`acceptance.md` | 14/14 有证据；AC-12 端到端 status 探针待补 |
 | S4 终验与收口 | ⏳ 未开始 | — | — | — |
 
 ## 基线（DoR #9，HEAD `3f35bfa`）
@@ -96,3 +96,17 @@
 | WP-6 | `8a50866` | `test/wp7/i17-regression.test.js`（+150，新建） | 6/6 绿：三主链节点行逐字（`single`/`code-loop`/`task-loop`，run 路径无分支回灌）、图结构逐字、doc-single v1/v2 独立、report 追加区、AC-10 角色边界、purity spawn exit 0 + deps 0 | ✅ 通过 |
 
 > 全量回归门禁（失败集合差集 = 0）在 S3/S4 以「全量测试 vs `baseline-failures.txt`」执行，见下方 S3 记录。
+
+## S3 回归门禁（全量，2026-11-10 实跑）
+
+- 命令：`node --test "test/**/*.test.js"`（HEAD `8a50866`）→ **1028 tests / 1019 pass / 8 fail / 1 skipped**。
+- **失败集合（8 条，与 `baseline-failures.txt` 逐条对应，差集 = 0）**：
+  1. NFR-02 readReview p95（= 基线 #1）
+  2. NFR-02 verifyProducts p95（= 基线 #2）
+  3. `core.stop` 5s 收敛（= 基线 #3）
+  4. `cursor.json` 并发消费（= 基线 #4）
+  5. `main --cwd` 相对解析（= 基线 #5）
+  6. task-loop 审核提示词绝对路径（= 基线 #6）
+  7. 早返回 turn-delay 时序（= 基线 #7）
+  8. 自动拉起 detached 真进程（= 基线 #8）
+- 用例数 992 → **1028（+36）**，通过 983 → **1019（+36）**；**无新增失败、无删除既有通过用例**。R-5/AC-11 满足。
