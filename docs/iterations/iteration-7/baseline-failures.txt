@@ -1,0 +1,8 @@
+NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）
+NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）
+core.stop：先回包再断连，5s 内收敛，core.json 仍可读
+cursor.json 并发消费 20 次不重复
+main：--cwd 相对当前 shell 目录解析，不作为项目根
+task-loop 审核提示词给绝对路径：基址与 readReview 同源，避免宿主写进实例工作区
+早返回：turn-delay 3000ms 下 startRun 1s 内 resolve，随后 waitForRun 到 completed
+自动拉起：detached 起真进程，ping 拿到 pid/generation，stopCore 清干净
