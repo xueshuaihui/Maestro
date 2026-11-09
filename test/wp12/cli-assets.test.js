@@ -382,8 +382,9 @@ test('AC-45: family read commands stay read-only', async () => {
   // real read commands now: exit 0 and still never create .orch nor a client.
   assert.equal(await run(['skill', 'list']), 0);
   assert.ok(lines[0].startsWith('技能 10 个（内置 10 · 项目 0）'), lines[0]);
+  const skillLineCount = lines.length;
   assert.equal(await run(['workflow', 'list']), 0);
-  assert.ok(lines[0].startsWith('工作流 3 个（内置 3 · 项目 0）'), lines[0]);
+  assert.ok(lines[skillLineCount].startsWith('工作流 3 个（内置 3 · 项目 0）'), lines[skillLineCount]);
 
   assert.deepEqual(created, []);
   assert.equal(fs.existsSync(path.join(root, '.orch')), false);
