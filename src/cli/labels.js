@@ -673,3 +673,16 @@ export const WORKFLOW_CLI_TEXT = Object.freeze({
     })
   })
 });
+
+/**
+ * （WP-6 越权申报）AC-04 / AC-12 / AC-53 / AC-58 的逐字文案在 WP-5 交付的表中缺失
+ * （`派生自：`、契约 side 的`来源/去处`、`内置角色只读：`）。按 M-6 的字母口径
+ * 「既有表一个键都不加不改」另立新表承载，仅供 WP-6 新代码引用；既有表零改动。
+ */
+export const ROLE_WRITE_SUPPLEMENT = Object.freeze({
+  showDerived: '  派生自：{from}',
+  contractSide: Object.freeze({ source: '来源', destination: '去处' }),
+  builtinReadonly: '内置角色只读：{id}',
+  unknownField: '未知字段：{key}',
+  unsetRequired: 'role edit 不能删除必填字段：{key}'
+});

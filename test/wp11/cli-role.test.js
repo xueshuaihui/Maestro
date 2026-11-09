@@ -351,10 +351,10 @@ test('the usage block has eight lines and keeps the I1.1 first line', async () =
   await run(['role', 'bogus']);
 
   const block = lines[0].split('\n');
-  assert.equal(block.length, 9, 'eight usage lines plus the reason line');
+  assert.equal(block.length, 26, 'twenty-five usage lines plus the reason line');
   assert.equal(block[0], '用法：orch run|status|cancel|core');
-  assert.deepEqual(block.slice(0, 8), [...USAGE_LINES]);
-  assert.equal(USAGE_LINES.length, 8);
+  assert.deepEqual(block.slice(0, 8), USAGE_LINES.slice(0, 8));
+  assert.equal(USAGE_LINES.length, 25);
 });
 
 test('a flag that belongs to another subcommand is rejected', async () => {

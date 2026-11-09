@@ -374,14 +374,14 @@ test('AC-45: the read-only role commands never create .orch nor a client', async
   assert.ok(lines.length > 0);
 });
 
-test('AC-45: family read commands stay read-only (interim: not-implemented exit 2)', async () => {
+test('AC-45: family read commands stay read-only', async () => {
   const root = makeProject();
   const { run, lines, created } = harness({ cwd: root });
 
-  // WP-7 / WP-8 land the real modules; until then the dispatch falls back to a
-  // usage-style notice. Both paths must still never create .orch nor a client.
-  assert.equal(await run(['skill', 'list']), 2);
-  assert.ok(lines.at(-1).endsWith('  （skill 命令尚未实现）'), lines.at(-1));
+  // WP-7 has landed skills.js (exit 0); WP-8 has not landed workflows.js yet
+  // (exit 2 interim). Both paths must still never create .orch nor a client.
+  assert.equal(await run(['skill', 'list']), 0);
+  assert.ok(lines[0].startsWith('技能 10 个（内置 10 · 项目 0）'), lines[0]);
   assert.equal(await run(['workflow', 'list']), 2);
   assert.ok(lines.at(-1).endsWith('  （workflow 命令尚未实现）'), lines.at(-1));
 

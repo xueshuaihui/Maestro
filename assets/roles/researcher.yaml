@@ -10,5 +10,5 @@ skills:
 tools:
   - read
   - write
-wake_allow: []
+wake_allow: [writer]
 max_concurrent_sessions: 1

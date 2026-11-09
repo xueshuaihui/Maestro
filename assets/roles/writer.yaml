@@ -11,6 +11,5 @@ tools:
   - read
   - write
   - edit
-wake_allow:
-  - editor
+wake_allow: [editor, reviewer]
 max_concurrent_sessions: 2
