@@ -47,6 +47,13 @@ import {
   WORKFLOW_CLI_TEXT,
   BACKFLOW_DEFECT_LINE,
   BACKFLOW_RETEST_LINE,
+  CODE_ROLE_BRANCH,
+  MERGE_PENDING,
+  MERGE_MERGING,
+  MERGE_MERGED,
+  MERGE_CONFLICT,
+  ESCALATION_REASON_MERGE_CONFLICT,
+  ESCALATION_REASON_WORKTREE_INIT_FAILED,
   formatDuration,
   formatHandoffDirection,
 } from './labels.js';
@@ -471,11 +478,34 @@ function verdictSuffix(node) {
 }
 
 /**
+ * code 角色节点的「分支名 + 合并状态」片段（AC-12）。仅在节点含 `branch` 字段时追加，
+ * 沿用 `NODE_QUALIFIER` 的全角括号包裹口径；文案一律来自 labels.js 键（`CODE_ROLE_BRANCH` /
+ * `MERGE_*`），本文件零中文硬编码。
+ *
+ * @param {object} node  节点对象（含 `roleId` / `branch` / `mergeStatus`）
+ * @returns {string|null} 形如 `（开发 分支 maestro/INST-001/developer · 已合并）`，无分支时 null
+ */
+function codeBranchFragment(node) {
+  if (!node || typeof node.branch !== 'string' || node.branch.length === 0) return null;
+  const role = roleLabel(node.roleId) ?? '';
+  const branchText = replaceAll(CODE_ROLE_BRANCH, { role, branch: node.branch }).replace(/^\s+/, '');
+  const merge = node?.mergeStatus;
+  const mergeText =
+    merge === 'pending' ? MERGE_PENDING
+    : merge === 'merging' ? MERGE_MERGING
+    : merge === 'merged' ? MERGE_MERGED
+    : merge === 'conflict' ? MERGE_CONFLICT
+    : null;
+  const body = mergeText ? `${branchText} · ${mergeText}` : branchText;
+  return `（${body}）`;
+}
+
+/**
  * `code-loop` 的节点行：
  * `节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1m12s · 判定 通过`
  * 字段间单空格、不对齐；未派发节点不带轮次与耗时（A-2）。
  */
-function renderNodeRow(node, snapshot, template, { forceQualifier = null, noDuration = false } = {}) {
+function renderNodeRow(node, snapshot, template, { forceQualifier = null, noDuration = false, includeBranch = false } = {}) {
   if (!node) return null;
   const label = stateLabel('node', node.state);
   if (!label) return null;
@@ -501,6 +531,13 @@ function renderNodeRow(node, snapshot, template, { forceQualifier = null, noDura
   // `declared` 图沿用 I1.2 的判定后缀；`doc-single` 用产物/审核后缀（互斥）
   const suffix = productPolicy === 'doc-single' ? docSuffix(node, productPolicy) : verdictSuffix(node);
   if (suffix) parts.push(suffix.replace(/^·\s*/, ''));
+
+  // F-03：code 角色的分支/合并状态片段仅在 instance status / graph 视图追加（`includeBranch` 为 true），
+  // `run` 路径传 false，绝不回灌到三主链运行期输出（AC-11 / R-1）。
+  if (includeBranch) {
+    const frag = codeBranchFragment(node);
+    if (frag) parts.push(frag);
+  }
 
   return parts.join(' · ');
 }
@@ -547,7 +584,7 @@ export function renderNodeLine(snapshot) {
 }
 
 /** 节点表：`single` 1 行（I1.1）、`code-loop` 按节点逐行（A-2 第 3 段）。 */
-export function renderNodeLines(snapshot, { template } = {}) {
+export function renderNodeLines(snapshot, { template, includeBranch = false } = {}) {
   const tpl = templateOf(snapshot, template);
   const view = snapshotView(snapshot);
   if (view.nodes.length === 0) return [];
@@ -556,7 +593,7 @@ export function renderNodeLines(snapshot, { template } = {}) {
     return line ? [line] : [];
   }
   const rows = view.nodes
-    .map((node) => renderNodeRow(node, snapshot, tpl))
+    .map((node) => renderNodeRow(node, snapshot, tpl, { includeBranch }))
     .filter((line) => typeof line === 'string' && line.length > 0);
   return rows;
 }
@@ -742,7 +779,7 @@ function roleOfNode(snapshot, nodeId) {
  *   `升级 ESC-001 待处理` + `  原因：…` / `  节点：…` /（缺陷行）/ `  下一步：…`
  * `single` 不打印（连 `升级 —` 也不打）；`code-loop` 无升级时打印 `升级 —`。
  */
-export function renderEscalationBlock(snapshot, { template } = {}) {
+export function renderEscalationBlock(snapshot, { template, includeBranch = false } = {}) {
   const tpl = templateOf(snapshot, template);
   if (tpl === 'single') return [];
   const { escalations } = snapshotView(snapshot);
@@ -753,7 +790,16 @@ export function renderEscalationBlock(snapshot, { template } = {}) {
   for (const escalation of escalations) {
     const state = ESCALATION_LABEL[escalation?.state] ?? escalation?.state ?? '?';
     lines.push(replaceAll(ESCALATION_BLOCK.header, { id: escalation?.escalationId ?? '?', state }));
-    lines.push(replaceAll(ESCALATION_BLOCK.reason, { detail: escalation?.reasonDetail ?? '?' }));
+    // F-03：仅 instance status / graph 视图（`includeBranch` 为 true）把合并类升级原因码映射为 labels.js 中文；
+    // `run` 路径保持默认 false，沿用既有 `reasonDetail`，运行期输出逐字不变。
+    const reasonCode = escalation?.reasonCode;
+    const detail =
+      includeBranch && (reasonCode === 'merge_conflict' || reasonCode === 'worktree_init_failed')
+        ? (reasonCode === 'merge_conflict'
+            ? ESCALATION_REASON_MERGE_CONFLICT
+            : ESCALATION_REASON_WORKTREE_INIT_FAILED)
+        : (escalation?.reasonDetail ?? '?');
+    lines.push(replaceAll(ESCALATION_BLOCK.reason, { detail }));
     lines.push(
       replaceAll(ESCALATION_BLOCK.node, {
         nodeId: escalation?.nodeId ?? '?',
@@ -1226,24 +1272,33 @@ function graphNodes(snapshot, graph) {
   }
   const declared = graph?.nodes ?? [];
   if (declared.length === 0) {
-    return view.nodes.map((node) => ({
-      nodeId: nodeIdOf(node) ?? '?',
-      title: null,
-      roleId: node?.roleId ?? null,
-      state: node?.state ?? 'pending',
-      round: Number.isInteger(node?.round) ? node.round : 0,
-    }));
+    return view.nodes.map((node) => {
+      const out = {
+        nodeId: nodeIdOf(node) ?? '?',
+        title: null,
+        roleId: node?.roleId ?? null,
+        state: node?.state ?? 'pending',
+        round: Number.isInteger(node?.round) ? node.round : 0,
+      };
+      if (typeof node?.branch === 'string' && node.branch.length > 0) out.branch = node.branch;
+      if (typeof node?.mergeStatus === 'string' && node.mergeStatus.length > 0) out.mergeStatus = node.mergeStatus;
+      return out;
+    });
   }
   return declared.map((def, index) => {
     const id = def?.nodeId ?? def?.id ?? null;
     const live = (id && byId.get(id)) ?? view.nodes[index] ?? null;
-    return {
+    const node = {
       nodeId: id ?? '?',
       title: typeof def?.title === 'string' ? def.title : null,
       roleId: def?.roleId ?? live?.roleId ?? null,
       state: live?.state ?? 'pending',
       round: Number.isInteger(live?.round) ? live.round : 0,
     };
+    // AC-12：把 code 角色节点的分支名与合并状态透出到图视图（仅 `orch instance graph`，非 run 路径）。
+    if (typeof live?.branch === 'string' && live.branch.length > 0) node.branch = live.branch;
+    if (typeof live?.mergeStatus === 'string' && live.mergeStatus.length > 0) node.mergeStatus = live.mergeStatus;
+    return node;
   });
 }
 
@@ -1306,6 +1361,7 @@ export function renderGraphJson(snapshot, graph) {
     template: templateOf(snapshot),
     state: snapshot?.state ?? null,
     paused: snapshot?.paused === true,
+    // AC-12：code 角色节点的分支名与合并状态由 `graphNodes` 条件透出（仅 `graph` 视图，非 run 路径）。
     nodes: graphNodes(snapshot, graph),
     edges: graphEdges(graph),
     handoffs: graphHandoffs(snapshot),
@@ -1337,7 +1393,11 @@ export function renderGraphText(snapshot, graph) {
     // A-3：节点号与角色之间用空格，其余字段之间用 ` · `。
     const head = [node.nodeId, role].filter((part) => typeof part === 'string' && part.length > 0).join(' ');
     const rest = [nodeState, `第 ${node.round} 轮`].filter((part) => typeof part === 'string' && part.length > 0).join(' · ');
-    lines.push(rest ? `${head} · ${rest}` : head);
+    let line = rest ? `${head} · ${rest}` : head;
+    // AC-12：code 角色节点追加分支名 + 合并状态片段（`graph` 视图专属，不进 run 路径）。
+    const frag = codeBranchFragment(node);
+    if (frag) line += ` ${frag}`;
+    lines.push(line);
   }
 
   lines.push('边：');

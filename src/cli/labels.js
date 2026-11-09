@@ -599,6 +599,24 @@ export const NODE_TYPE_LABEL = Object.freeze({
 /** 派生角色的默认中文名（BR-05）：`<来源中文名>（派生）`。 */
 export const DERIVED_NAME_TEMPLATE = '{base}（派生）';
 
+// ---------------------------------------------------------------- I1.7 WP-5 新增（仅追加 7 键，既有键零改动；M-6 口径）
+
+/**
+ * AC-12：code 角色「分支名」片段模板。渲染时由调用方经 `{role}` / `{branch}` 占位替换填入
+ * （`replaceAll` / `applyPlaceholders` 白名单），本文件是唯一中文来源。
+ */
+export const CODE_ROLE_BRANCH = '{role} 分支 {branch}';
+
+/** AC-12：合并状态四态（合并待执行 / 合并中 / 已合并 / 冲突待升级）。 */
+export const MERGE_PENDING = '合并待执行';
+export const MERGE_MERGING = '合并中';
+export const MERGE_MERGED = '已合并';
+export const MERGE_CONFLICT = '冲突待升级';
+
+/** AC-08/AC-09/AC-13/AC-14：合并冲突 / worktree 创建失败的升级原因中文（复用 I1.4 升级渲染通道）。 */
+export const ESCALATION_REASON_MERGE_CONFLICT = '合并冲突';
+export const ESCALATION_REASON_WORKTREE_INIT_FAILED = 'worktree/分支创建失败';
+
 /** 共用的 diff 行版式（A-5 / A-11 同一套前缀与计数；两族只差首句模板）。 */
 export const DIFF_TEXT = Object.freeze({
   added: '+ {field}：{value}',

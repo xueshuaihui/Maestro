@@ -10,6 +10,16 @@
  * 依赖方向：无（纯数据 + 纯函数）。
  */
 
+// I1.7 WP-5（AC-12）：code 角色节点的分支名 / 合并状态文案一律取自 labels.js 键，本文件零中文硬编码。
+// 纯净扫描（src/core）约束：import 语句与本文件均不出现 31 禁词；中文文案只在 labels.js。
+import {
+  CODE_ROLE_BRANCH,
+  MERGE_PENDING,
+  MERGE_MERGING,
+  MERGE_MERGED,
+  MERGE_CONFLICT,
+} from '../cli/labels.js';
+
 /** 状态词表：键与 `src/cli/labels.js` 的六张表一一对应。 */
 export const CORE_TEXT = Object.freeze({
   instance: Object.freeze({
@@ -168,6 +178,28 @@ function roundText(round) {
   return `${CORE_TEXT.doc.roundPrefix} ${value} ${CORE_TEXT.doc.roundSuffix}`;
 }
 
+/**
+ * code 角色节点的「分支名 + 合并状态」片段（AC-12）。仅在节点含 `branch` 字段时追加，
+ * 文案来自 labels.js 键（`CODE_ROLE_BRANCH` / `MERGE_*`），本文件零中文硬编码。
+ *
+ * @param {object} node  节点对象（含 `branch` / `mergeStatus`）
+ * @param {string} title 节点标题（图声明里的角色名，作为 `{role}` 占位）
+ * @returns {string|null} 形如 `开发 分支 maestro/INST-001/role · 已合并`，无分支时 null
+ */
+function codeBranchFragment(node, title) {
+  if (!node || typeof node.branch !== 'string' || node.branch.length === 0) return null;
+  const role = typeof title === 'string' && title.length > 0 ? title : '';
+  const branchText = applyPlaceholders(CODE_ROLE_BRANCH, { role, branch: node.branch }).replace(/^\s+/, '');
+  const merge = node?.mergeStatus;
+  const mergeText =
+    merge === 'pending' ? MERGE_PENDING
+    : merge === 'merging' ? MERGE_MERGING
+    : merge === 'merged' ? MERGE_MERGED
+    : merge === 'conflict' ? MERGE_CONFLICT
+    : null;
+  return mergeText ? `${branchText} · ${mergeText}` : branchText;
+}
+
 /** 多节点图：按图声明顺序列出节点行；状态里多出来的节点追加在末尾。 */
 function nodeRows(state, graph) {
   const declared = Array.isArray(graph?.nodes) ? graph.nodes : [];
@@ -178,17 +210,21 @@ function nodeRows(state, graph) {
     if (typeof nodeId !== 'string') continue;
     seen.add(nodeId);
     const node = stateNodeOf(state, nodeId);
-    rows.push(
+    let row =
       `${nodeId} ${def?.title ?? nodeId}：${wordOf(CORE_TEXT.node, node?.state)}` +
-        `${SEP}${roundText(node?.round)}`
-    );
+      `${SEP}${roundText(node?.round)}`;
+    // F-03：仅 `status.md` 视图（`renderStatusDoc` 产出）追加分支/合并状态，绝不进三主链运行期输出。
+    const frag = codeBranchFragment(node, def?.title ?? nodeId);
+    if (frag) row += `${SEP}${frag}`;
+    rows.push(row);
   }
   for (const node of Array.isArray(state?.nodes) ? state.nodes : []) {
     const nodeId = node?.nodeId;
     if (typeof nodeId !== 'string' || seen.has(nodeId)) continue;
-    rows.push(
-      `${nodeId} ${nodeId}：${wordOf(CORE_TEXT.node, node.state)}${SEP}${roundText(node.round)}`
-    );
+    let row = `${nodeId} ${nodeId}：${wordOf(CORE_TEXT.node, node.state)}${SEP}${roundText(node.round)}`;
+    const frag = codeBranchFragment(node, nodeId);
+    if (frag) row += `${SEP}${frag}`;
+    rows.push(row);
   }
   return rows;
 }
