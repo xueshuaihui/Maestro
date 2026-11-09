@@ -97,3 +97,13 @@
      中间态要 `state.live` 抢落盘。
 - **真实面关键前提**：审核提示词必须给**绝对路径**（相对 `out/review.json` + 「工作区」绝对路径会让
   真实模型写进实例工作区，3 次里 2 次挂起）。修复后 313.6s 一次跑通、零人工干预。
+
+## I1.8 实例恢复（进行中，2026-11-10）
+- 分支 `feat/i1.8-instance-recovery`，基线 `3f35bfa`（集成版 main，**不含 I1.7**）。S0 `760b8a1` / S1 `ae89f27` /
+  S2 第 1 批 `41829e0`（WP-1 checkpoint + WP-2 ACP 恢复方言，25/25 用例）。需求 v3：67 AC / 54 BR / 7 WP。
+- **禁止用 I1.5 存量 `0cd113b` 基线判集成版三主链回归**：AC-49 必红（4 条差异来自 I1.4 共享工作区提示词
+  与 task-loop 状态行顺序，即 O-I2），非回归。门禁 ④ 必须挂 `d4b0f94` 重建逐字基线，S2 收口前补证。
+- **已 PASS 的验收证据不得被门禁重跑覆盖**：若 `iteration-6/evidence/AC-49.*` 与
+  `probe/acc6-f-results.jsonl` 被改成「不通过」，恢复 HEAD，原始帧另存本迭代 `evidence/gate-batch1/`。
+- `core.autocrlf=true` 下 `git restore` 后 status 会假报 M（内容 diff 已空）；用
+  `git -c core.autocrlf=false checkout-index -f -- <具体路径>` 刷新，**不可全量 `-a -f`**（会覆盖未提交改动）。
