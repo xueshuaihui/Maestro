@@ -16,7 +16,7 @@
 ## 2. 门禁实跑（复核命令）
 
 ```bash
-node --test "test/**/*.test.js"                       # 1028/1019/8/1（差集=0）
+node --test "test/**/*.test.js"                       # 1028/1019/8/1（差集=0，最终 HEAD `c6d9269` 复跑）
 node --test "test/wp7/*.test.js"                      # 37/37
 node --test test/wp10/doc-artifact.test.js            # 14/14
 node --test "test/templates/**/*.test.js"             # 28/28

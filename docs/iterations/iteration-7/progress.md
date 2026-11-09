@@ -128,3 +128,9 @@
 
 - 退出标准 1~5 **全部满足**；`report.md` / `final-verification.md` 已同步为 **PASS**。
 - 遗留登记（非阻断）：真实 DSH 宿主面 worktree 执行面未验证（预判 B 类）；评审建议 F-02/F-08 及健壮性项；worktree 生命周期清理（U-1）不在本迭代范围。
+
+## S3 回归门禁复跑（最终 HEAD `c6d9269`，2026-11-10 07:26）
+
+- 命令：`node --test "test/**/*.test.js"` → **1028 tests / 1019 pass / 8 fail / 1 skipped**（耗时 3m52s）。
+- **失败集合与基线 `baseline-failures.txt` 8 条逐条一致，差集 = 0**：NFR-02 readReview p95 / NFR-02 verifyProducts p95 / task-loop 审核提示词绝对路径 / `core.stop` 5s 收敛 / 自动拉起 detached 真进程 / `cursor.json` 并发消费 / `main --cwd` 相对解析 / 早返回 turn-delay 时序。
+- 复跑动机：S3 首次全量跑在 `8a50866`，此后 `490ee15`（main.js 接线）、`0fc70a9`（code-isolation/doc-artifact 评审修复）仍有代码改动；为免「门禁数字落后于 HEAD」，在最终 HEAD 重跑并逐条比对 —— 数字与失败集合**完全不变**。
