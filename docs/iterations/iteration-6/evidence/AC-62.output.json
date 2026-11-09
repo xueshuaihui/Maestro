@@ -1,0 +1,142 @@
+{
+  "ac": "AC-62",
+  "title": "node_type 四类取值异常与子工作流引用 / 跨工作流环",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 报 WORKFLOW_NODE_TYPE_INVALID（明细逐字含 合法取值清单）（期望含 \"节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 9 个：6 个不合法\n- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n- workflows/esc-no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）\n- workflows/sub-a.yaml：子工作流成环：sub-a → sub-b（WORKFLOW_SUB_CYCLE）\n- workflows/sub-b.yaml：子工作流成环：sub-b → sub-a（WORKFLOW_SUB_CYCLE）\n- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）\n- workflows/sub-no-wf.yaml：节点 T-001 缺少必填字段：workflow（WORKFLOW_NODE_FIELD_MISSING）\n"
+    },
+    {
+      "text": "Then 报 WORKFLOW_NODE_FIELD_MISSING：缺 title 与 workflow 两类（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then 报 WORKFLOW_SUB_UNKNOWN（明细含 ghost）（期望含 \"引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 9 个：6 个不合法\n- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n- workflows/esc-no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）\n- workflows/sub-a.yaml：子工作流成环：sub-a → sub-b（WORKFLOW_SUB_CYCLE）\n- workflows/sub-b.yaml：子工作流成环：sub-b → sub-a（WORKFLOW_SUB_CYCLE）\n- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）\n- workflows/sub-no-wf.yaml：节点 T-001 缺少必填字段：workflow（WORKFLOW_NODE_FIELD_MISSING）\n"
+    },
+    {
+      "text": "Then 报 WORKFLOW_SUB_CYCLE（明细给出 sub-a / sub-b 的环）（期望含 \"子工作流成环：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 9 个：6 个不合法\n- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n- workflows/esc-no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）\n- workflows/sub-a.yaml：子工作流成环：sub-a → sub-b（WORKFLOW_SUB_CYCLE）\n- workflows/sub-b.yaml：子工作流成环：sub-b → sub-a（WORKFLOW_SUB_CYCLE）\n- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）\n- workflows/sub-no-wf.yaml：节点 T-001 缺少必填字段：workflow（WORKFLOW_NODE_FIELD_MISSING）\n"
+    },
+    {
+      "text": "Then SUB_CYCLE 明细给出 sub-a 与 sub-b 的环",
+      "ok": true,
+      "blocked": false,
+      "actual": "- workflows/sub-a.yaml：子工作流成环：sub-a → sub-b（WORKFLOW_SUB_CYCLE）"
+    },
+    {
+      "text": "机检：errors.map(code) 去重后含 WORKFLOW_NODE_TYPE_INVALID（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：errors.map(code) 去重后含 WORKFLOW_NODE_FIELD_MISSING（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：errors.map(code) 去重后含 WORKFLOW_SUB_UNKNOWN（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：errors.map(code) 去重后含 WORKFLOW_SUB_CYCLE（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：errors[0].file === workflows/bad-type.yaml（按文件名字典序）（期望 \"workflows/bad-type.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"workflows/bad-type.yaml\""
+    },
+    {
+      "text": "机检：errors[0].detail 含 合法取值清单（期望含 \"合法取值：role / human / escalate / subworkflow\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "节点类型取值非法：script；合法取值：role / human / escalate / subworkflow"
+    },
+    {
+      "text": "机检：counts.invalid === 6（六份坏文件各计 1）（期望 6）",
+      "ok": true,
+      "blocked": false,
+      "actual": "6"
+    },
+    {
+      "text": "机检：counts.assets === 9（内置 3 + 项目 6）（期望 9）",
+      "ok": true,
+      "blocked": false,
+      "actual": "9"
+    },
+    {
+      "text": "机检：counts.builtin === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置六份坏工作流 bad-type / esc-no-title / sub-no-wf / sub-ghost / sub-a / sub-b（sub-a↔sub-b 跨工作流成环；全部 id 与文件名一致）",
+      "argv": [
+        "(fixture) 预置六份坏工作流 bad-type / esc-no-title / sub-no-wf / sub-ghost / sub-a / sub-b（sub-a↔sub-b 跨工作流成环；全部 id 与文件名一致）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-62",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "校验工作流 9 个：6 个不合法\n- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n- workflows/esc-no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）\n- workflows/sub-a.yaml：子工作流成环：sub-a → sub-b（WORKFLOW_SUB_CYCLE）\n- workflows/sub-b.yaml：子工作流成环：sub-b → sub-a（WORKFLOW_SUB_CYCLE）\n- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）\n- workflows/sub-no-wf.yaml：节点 T-001 缺少必填字段：workflow（WORKFLOW_NODE_FIELD_MISSING）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-62",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 9,\n    \"builtin\": 3,\n    \"project\": 6,\n    \"invalid\": 6\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_NODE_TYPE_INVALID\",\n      \"file\": \"workflows/bad-type.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": \"node_type\",\n      \"line\": null,\n      \"detail\": \"节点类型取值非法：script；合法取值：role / human / escalate / subworkflow\"\n    },\n    {\n      \"code\": \"WORKFLOW_NODE_FIELD_MISSING\",\n      \"file\": \"workflows/esc-no-title.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": \"title\",\n      \"line\": null,\n      \"detail\": \"节点 T-001 缺少必填字段：title\"\n    },\n    {\n      \"code\": \"WORKFLOW_SUB_CYCLE\",\n      \"file\": \"workflows/sub-a.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"子工作流成环：sub-a → sub-b\"\n    },\n    {\n      \"code\": \"WORKFLOW_SUB_CYCLE\",\n      \"file\": \"workflows/sub-b.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"子工作流成环：sub-b → sub-a\"\n    },\n    {\n      \"code\": \"WORKFLOW_SUB_UNKNOWN\",\n      \"file\": \"workflows/sub-ghost.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"引用的子工作流不存在：ghost\"\n    },\n    {\n      \"code\": \"WORKFLOW_NODE_FIELD_MISSING\",\n      \"file\": \"workflows/sub-no-wf.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": \"workflow\",\n      \"line\": null,\n      \"detail\": \"节点 T-001 缺少必填字段：workflow\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

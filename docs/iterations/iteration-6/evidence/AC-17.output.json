@@ -1,0 +1,138 @@
+{
+  "ac": "AC-17",
+  "title": "技能详情含正文",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第 1 行契约行（期望逐字 \"- code-change 代码修改 · 编码工程 · 命令 1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- code-change 代码修改 · 编码工程 · 命令 1\""
+    },
+    {
+      "text": "Then 第 2 行摘要（期望匹配 /^  摘要：.+$/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "  摘要：定位到要改的文件，做最小改动，并写清改了什么"
+    },
+    {
+      "text": "Then 第 3 行命令（期望逐字 \"  命令：node --test\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  命令：node --test\""
+    },
+    {
+      "text": "Then 第 4 行适用（期望逐字 \"  适用：编码工程\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  适用：编码工程\""
+    },
+    {
+      "text": "Then 第 5 行来源（期望逐字 \"  来源：内置 assets/skills/code-change/SKILL.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  来源：内置 assets/skills/code-change/SKILL.md\""
+    },
+    {
+      "text": "Then 第 6 行正文头（期望逐字 \"  正文：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  正文：\""
+    },
+    {
+      "text": "Then 第 7 行 = `  ### 工作方法`（期望逐字 \"  ### 工作方法\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  ### 工作方法\""
+    },
+    {
+      "text": "机检：lines.length > 7",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 10 行"
+    },
+    {
+      "text": "机检：lines[5] === \"  正文：\"（期望逐字 \"  正文：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  正文：\""
+    },
+    {
+      "text": "机检：lines[6] === \"  ### 工作方法\"（期望逐字 \"  ### 工作方法\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  ### 工作方法\""
+    },
+    {
+      "text": "机检：顶层键恰为 skill/body（期望 [\"body\",\"skill\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"body\",\"skill\"]"
+    },
+    {
+      "text": "机检：body 含 ### 工作方法（期望含 \"### 工作方法\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\n### 工作方法\n\n1. 先读任务里「产物：」那一行，确认要改的文件。\n2. 只改必要位置，不动无关文件。\n3. 改完说明：改了哪个文件、为什么这样改。\n"
+    },
+    {
+      "text": "机检：skill 对象恰 7 键（期望 7）",
+      "ok": true,
+      "blocked": false,
+      "actual": "7"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：全新项目根（无 .orch）",
+      "argv": [
+        "(fixture) 全新项目根（无 .orch）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-17",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill show code-change",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "show",
+        "code-change"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-17",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "- code-change 代码修改 · 编码工程 · 命令 1\n  摘要：定位到要改的文件，做最小改动，并写清改了什么\n  命令：node --test\n  适用：编码工程\n  来源：内置 assets/skills/code-change/SKILL.md\n  正文：\n  ### 工作方法\n  \n  1. 先读任务里「产物：」那一行，确认要改的文件。\n  2. 只改必要位置，不动无关文件。\n  3. 改完说明：改了哪个文件、为什么这样改。\n  \n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill show code-change --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "show",
+        "code-change",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-17",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 102,
+      "stdout": "{\n  \"skill\": {\n    \"id\": \"code-change\",\n    \"name\": \"代码修改\",\n    \"appliesTo\": [\n      \"coding\"\n    ],\n    \"appliesToLabels\": [\n      \"编码工程\"\n    ],\n    \"commands\": [\n      \"node --test\"\n    ],\n    \"source\": \"builtin\",\n    \"file\": \"assets/skills/code-change/SKILL.md\"\n  },\n  \"body\": \"\\n### 工作方法\\n\\n1. 先读任务里「产物：」那一行，确认要改的文件。\\n2. 只改必要位置，不动无关文件。\\n3. 改完说明：改了哪个文件、为什么这样改。\\n\"\n}\n",
+      "stderr": ""
+    }
+  ]
+}

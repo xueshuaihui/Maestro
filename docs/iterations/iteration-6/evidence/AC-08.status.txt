@@ -1,0 +1,13 @@
+$ "(fixture) 预置根下 ghost.yaml（技能 no-such）与 lead-dev.yaml（合法）；.orch/roles/lead-dev.yaml 已存在"
+# label=夹具：预置根下 ghost.yaml（技能 no-such）与 lead-dev.yaml（合法）；.orch/roles/lead-dev.yaml 已存在 cwd=d:\WWW\Maestro exit=0 0ms
+{"lead-dev.yaml":{"sha256":"0d458f7ac2ca06155a1b8c007d178d0a89db018596832f211ee22dd104f29a6f","bytes":186,"mtimeIso":"2026-11-09T12:22:34.832Z"}}
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role import ghost.yaml
+# label=orch role import ghost.yaml cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-08 exit=1 97ms
+导入被拒：引用的技能不存在：no-such（ROLE_SKILL_NOT_FOUND）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role import lead-dev.yaml
+# label=orch role import lead-dev.yaml cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-08 exit=1 112ms
+已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）
+

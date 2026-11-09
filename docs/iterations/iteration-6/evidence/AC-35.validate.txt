@@ -1,0 +1,3 @@
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：变量引用无法解析：T-003.research.notes（WORKFLOW_VAR_UNKNOWN）
+

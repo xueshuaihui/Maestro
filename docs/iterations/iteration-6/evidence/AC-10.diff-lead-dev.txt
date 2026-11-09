@@ -1,0 +1,6 @@
+对比角色 lead-dev（项目）与基线 developer（内置）
++ derived_from：developer
+~ name：开发 → 开发（派生）
+~ skills：code-change, test-run → test-run
+差异 3 项
+

@@ -1,0 +1,129 @@
+{
+  "ac": "AC-65",
+  "title": "校验顺序与错误排序固定（BR-40）",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：连续两次 JSON 输出经 sha256 逐字节相同（期望 \"c28ca564e5da6577bd0a2b243a02c5a4a5423f8f4f8ffd87bc45b4b091af35f8\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"c28ca564e5da6577bd0a2b243a02c5a4a5423f8f4f8ffd87bc45b4b091af35f8\""
+    },
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 首行逐字（期望逐字 \"校验工作流 5 个：2 个不合法\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验工作流 5 个：2 个不合法\""
+    },
+    {
+      "text": "Then 随后两行（共三行输出）（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then 第一条逐字（bad-type 在前）（期望逐字 \"- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\""
+    },
+    {
+      "text": "Then 第二条逐字（wake.yaml，A-15 明细模板）（期望逐字 \"- workflows/wake.yaml：唤醒不在白名单内：researcher → editor（WORKFLOW_WAKE_DENIED）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- workflows/wake.yaml：唤醒不在白名单内：researcher → editor（WORKFLOW_WAKE_DENIED）\""
+    },
+    {
+      "text": "机检：errors.map(file + ':' + code) 逐字等于两元素数组（期望 [\"workflows/bad-type.yaml:WORKFLOW_NODE_TYPE_INVALID\",\"workflows/wake.yaml:WORKFLOW_WAKE_DENIED\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"workflows/bad-type.yaml:WORKFLOW_NODE_TYPE_INVALID\",\"workflows/wake.yaml:WORKFLOW_WAKE_DENIED\"]"
+    },
+    {
+      "text": "机检：errors[0].code === WORKFLOW_NODE_TYPE_INVALID（期望 \"WORKFLOW_NODE_TYPE_INVALID\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_NODE_TYPE_INVALID\""
+    },
+    {
+      "text": "机检：counts.assets === 5（内置 3 + 项目 2）（期望 5）",
+      "ok": true,
+      "blocked": false,
+      "actual": "5"
+    },
+    {
+      "text": "机检：counts.invalid === 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 bad-type.yaml（node_type: script）与 wake.yaml（researcher → editor 的 forward 边，源角色白名单 [writer] 不含 editor）；节点上不补 wake_allow",
+      "argv": [
+        "(fixture) 预置 bad-type.yaml（node_type: script）与 wake.yaml（researcher → editor 的 forward 边，源角色白名单 [writer] 不含 editor）；节点上不补 wake_allow"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate --format json（第 1 次）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-65",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 103,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 5,\n    \"builtin\": 3,\n    \"project\": 2,\n    \"invalid\": 2\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_NODE_TYPE_INVALID\",\n      \"file\": \"workflows/bad-type.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": \"node_type\",\n      \"line\": null,\n      \"detail\": \"节点类型取值非法：script；合法取值：role / human / escalate / subworkflow\"\n    },\n    {\n      \"code\": \"WORKFLOW_WAKE_DENIED\",\n      \"file\": \"workflows/wake.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"唤醒不在白名单内：researcher → editor\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate --format json（第 2 次）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-65",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 5,\n    \"builtin\": 3,\n    \"project\": 2,\n    \"invalid\": 2\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_NODE_TYPE_INVALID\",\n      \"file\": \"workflows/bad-type.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": \"node_type\",\n      \"line\": null,\n      \"detail\": \"节点类型取值非法：script；合法取值：role / human / escalate / subworkflow\"\n    },\n    {\n      \"code\": \"WORKFLOW_WAKE_DENIED\",\n      \"file\": \"workflows/wake.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"唤醒不在白名单内：researcher → editor\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate（文本）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-65",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "校验工作流 5 个：2 个不合法\n- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n- workflows/wake.yaml：唤醒不在白名单内：researcher → editor（WORKFLOW_WAKE_DENIED）\n",
+      "stderr": ""
+    }
+  ]
+}

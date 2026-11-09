@@ -1,0 +1,7 @@
+校验资产 31 个：5 个不合法
+- roles/c1.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）
+- roles/d1.yaml：派生链成环：d1（ROLE_DERIVE_CYCLE）
+- roles/m1.yaml：缺少必填字段：max_concurrent_sessions（ROLE_SCHEMA_MISSING）
+- roles/p1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）
+- roles/s1.yaml：引用的技能不存在：no-such（ROLE_SKILL_NOT_FOUND）
+

@@ -1,0 +1,35 @@
+{
+  "ac": "AC-29",
+  "title": "超时与重试：取值合法可用，越界被拒",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:22:56.678Z",
+  "finishedAt": "2026-11-09T12:22:57.106Z",
+  "durationMs": 428,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-29",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-29"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 10,
+  "notes": [],
+  "extraFiles": [
+    "AC-29.validate-ok.txt",
+    "AC-29.validate-bad.txt",
+    "AC-29.dry-run.txt",
+    "AC-29.payload.json"
+  ]
+}

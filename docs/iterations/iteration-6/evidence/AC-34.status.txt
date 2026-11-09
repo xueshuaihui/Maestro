@@ -1,0 +1,64 @@
+$ "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+# label=夹具：预置附录 A-13 的 doc-fanout（writeDocFanout） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ "(fixture) 把 T-002 与 T-003 的 scope 都改成 draft"
+# label=夹具：把 T-002 与 T-003 的 scope 都改成 draft cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout（scope 重复） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-34 exit=1 97ms
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft（WORKFLOW_SCOPE_OVERLAP）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json（scope 重复） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-34 exit=1 104ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_SCOPE_OVERLAP",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft"
+    }
+  ]
+}
+
+
+$ "(fixture) 去掉 T-003 的 parallel_scope（并行组 draft 只剩 T-002）"
+# label=夹具：去掉 T-003 的 parallel_scope（并行组 draft 只剩 T-002） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout（并行组只剩一个节点） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-34 exit=1 101ms
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：并行组 draft 只有 1 个节点（WORKFLOW_SCOPE_INVALID）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json（并行组只剩一个节点） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-34 exit=1 96ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_SCOPE_INVALID",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "并行组 draft 只有 1 个节点"
+    }
+  ]
+}
+

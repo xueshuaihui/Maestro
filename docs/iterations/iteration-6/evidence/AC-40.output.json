@@ -1,0 +1,296 @@
+{
+  "ac": "AC-40",
+  "title": "从内置工作流生成项目工作流",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 恰好两行（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 第 1 行逐字（期望逐字 \"已创建项目工作流：.orch/workflows/fork.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已创建项目工作流：.orch/workflows/fork.yaml\""
+    },
+    {
+      "text": "Then 第 2 行逐字（期望逐字 \"校验：通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验：通过\""
+    },
+    {
+      "text": "Then validate 首行（期望逐字 \"校验工作流 4 个：全部通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验工作流 4 个：全部通过\""
+    },
+    {
+      "text": "Then validate 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：文件含 schema: workflow/v1（期望含 \"schema: workflow/v1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: workflow/v1\nid: fork\nname: 分叉版\nentry: T-001\nterminal: T-002\nnodes:\n  - id: T-001\n    node_type: role\n    role: developer\n    title: 开发\n    max_rounds: 2\n  - id: T-002\n    node_type: role\n    role: tester\n    title: 测试\n    max_rounds: 2\nedges:\n  - from: T-001\n    to: T-002\n  - from: T-002\n    to: T-001\n    kind: backflow\n  - from: T-001\n    to: T-002\n    kind: retest\n"
+    },
+    {
+      "text": "机检：文件含 id: fork（期望匹配 /^id: fork$/m）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: workflow/v1\nid: fork\nname: 分叉版\nentry: T-001\nterminal: T-002\nnodes:\n  - id: T-001\n    node_type: role\n    role: developer\n    title: 开发\n    max_rounds: 2\n  - id: T-002\n    node_type: role\n    role: tester\n    title: 测试\n    max_rounds: 2\nedges:\n  - from: T-001\n    to: T-002\n  - from: T-002\n    to: T-001\n    kind: backflow\n  - from: T-001\n    to: T-002\n    kind: retest\n"
+    },
+    {
+      "text": "机检：两个 - id: T-00 节点（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：三条边（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：counts.project === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第一次退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第一次输出逐字（期望逐字 \"已存在同名项目工作流：.orch/workflows/fork.yaml（加 --force 覆盖）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已存在同名项目工作流：.orch/workflows/fork.yaml（加 --force 覆盖）\""
+    },
+    {
+      "text": "机检：第一次后 grep -c 另一个名字 为 0（AC-40 机检逐字）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：第一次后文件不变（期望 \"ddd3549c0a48cb3e3d180d6a0ee93fe7898f0254f2c18680cd10eccef834c625\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"ddd3549c0a48cb3e3d180d6a0ee93fe7898f0254f2c18680cd10eccef834c625\""
+    },
+    {
+      "text": "Then 第二次退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第二次第 1 行逐字（期望逐字 \"已创建项目工作流：.orch/workflows/fork.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已创建项目工作流：.orch/workflows/fork.yaml\""
+    },
+    {
+      "text": "Then 第二次第 2 行逐字（期望逐字 \"校验：通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验：通过\""
+    },
+    {
+      "text": "机检：第二次后 grep -c 另一个名字 为 1（AC-40 机检逐字；实测见 blockers D-3）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：第二次后 counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第三次退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第三次恰好一行（创建被拒：<明细>（<原因码>））（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第三次句式 创建被拒：（期望含 \"创建被拒：\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "创建被拒：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）"
+    },
+    {
+      "text": "Then 第三次带原因码收尾（期望匹配 /（WORKFLOW_[A-Z_]+）$/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "创建被拒：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）"
+    },
+    {
+      "text": "机检：第三次后目标文件 sha256 与覆盖前相同（期望 \"d3cf60d64caad07d71ba3ea4937bb1029df7db4266a83883bc6a1d506e8e2d6c\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"d3cf60d64caad07d71ba3ea4937bb1029df7db4266a83883bc6a1d506e8e2d6c\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch workflow create fork --name 分叉版 --from code-loop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "create",
+        "fork",
+        "--name",
+        "分叉版",
+        "--from",
+        "code-loop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-40",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 107,
+      "stdout": "已创建项目工作流：.orch/workflows/fork.yaml\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-40",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "校验工作流 4 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow list --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "list",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-40",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 109,
+      "stdout": "{\n  \"counts\": {\n    \"total\": 4,\n    \"builtin\": 3,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"workflows\": [\n    {\n      \"id\": \"fork\",\n      \"name\": \"分叉版\",\n      \"nodeCount\": 2,\n      \"edgeCount\": 3,\n      \"source\": \"project\",\n      \"file\": \".orch/workflows/fork.yaml\"\n    },\n    {\n      \"id\": \"code-loop\",\n      \"name\": \"编码闭环\",\n      \"nodeCount\": 2,\n      \"edgeCount\": 3,\n      \"source\": \"builtin\",\n      \"file\": null\n    },\n    {\n      \"id\": \"single\",\n      \"name\": \"单节点\",\n      \"nodeCount\": 1,\n      \"edgeCount\": 0,\n      \"source\": \"builtin\",\n      \"file\": null\n    },\n    {\n      \"id\": \"task-loop\",\n      \"name\": \"通用任务闭环\",\n      \"nodeCount\": 3,\n      \"edgeCount\": 4,\n      \"source\": \"builtin\",\n      \"file\": null\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow create fork --name 另一个名字（不带 --force）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "create",
+        "fork",
+        "--name",
+        "另一个名字"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-40",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 103,
+      "stdout": "已存在同名项目工作流：.orch/workflows/fork.yaml（加 --force 覆盖）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow create fork --name 另一个名字 --force",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "create",
+        "fork",
+        "--name",
+        "另一个名字",
+        "--force"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-40",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 113,
+      "stdout": "已创建项目工作流：.orch/workflows/fork.yaml\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate fork --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "fork",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-40",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：把 fork.yaml 换成不合法内容（node_type: script）",
+      "argv": [
+        "(fixture) 把 fork.yaml 换成不合法内容（node_type: script）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "schema: workflow/v1\nid: fork\nname: 坏的\nentry: T-001\nterminal: T-001\nnodes:\n  - id: T-001\n    node_type: script\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow create fork --name 另一个名字 --force（待覆盖内容不合法）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "create",
+        "fork",
+        "--name",
+        "另一个名字",
+        "--force"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-40",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "创建被拒：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）\n",
+      "stderr": ""
+    }
+  ]
+}

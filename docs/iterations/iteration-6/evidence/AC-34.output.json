@@ -1,0 +1,170 @@
+{
+  "ac": "AC-34",
+  "title": "并行组内作用域不得重复",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具自检：两处 scope 均已改为 draft",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 第一段退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 报 WORKFLOW_SCOPE_OVERLAP（期望含 \"（WORKFLOW_SCOPE_OVERLAP）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft（WORKFLOW_SCOPE_OVERLAP）\n"
+    },
+    {
+      "text": "Then 明细同时含 T-002/T-003/draft（期望含 \"并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft（WORKFLOW_SCOPE_OVERLAP）\n"
+    },
+    {
+      "text": "机检：第一段 errors[0].code（期望 \"WORKFLOW_SCOPE_OVERLAP\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_SCOPE_OVERLAP\""
+    },
+    {
+      "text": "夹具自检：T-003 的 parallel_scope 已去掉",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 第二段退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 改报 WORKFLOW_SCOPE_INVALID（期望含 \"（WORKFLOW_SCOPE_INVALID）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：并行组 draft 只有 1 个节点（WORKFLOW_SCOPE_INVALID）\n"
+    },
+    {
+      "text": "机检：第二段 errors[0].code（期望 \"WORKFLOW_SCOPE_INVALID\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_SCOPE_INVALID\""
+    },
+    {
+      "text": "机检：第二段明细（期望含 \"并行组 draft 只有 1 个节点\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "并行组 draft 只有 1 个节点"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置附录 A-13 的 doc-fanout（writeDocFanout）",
+      "argv": [
+        "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：把 T-002 与 T-003 的 scope 都改成 draft",
+      "argv": [
+        "(fixture) 把 T-002 与 T-003 的 scope 都改成 draft"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout（scope 重复）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-34",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft（WORKFLOW_SCOPE_OVERLAP）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout --format json（scope 重复）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-34",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_SCOPE_OVERLAP\",\n      \"file\": \"workflows/doc-fanout.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"并行组 draft 内的 T-002 与 T-003 使用了同一作用域 draft\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：去掉 T-003 的 parallel_scope（并行组 draft 只剩 T-002）",
+      "argv": [
+        "(fixture) 去掉 T-003 的 parallel_scope（并行组 draft 只剩 T-002）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout（并行组只剩一个节点）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-34",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：并行组 draft 只有 1 个节点（WORKFLOW_SCOPE_INVALID）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout --format json（并行组只剩一个节点）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-34",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 96,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_SCOPE_INVALID\",\n      \"file\": \"workflows/doc-fanout.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"并行组 draft 只有 1 个节点\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

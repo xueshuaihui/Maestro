@@ -1,0 +1,139 @@
+$ "(fixture) 预置 human-end / escalate-end / no-end 三条工作流（T-001 → T-END 与 → 侧节点；T-H 人工、T-E 升级、T-R 普通 role 无出边且不在 terminal）"
+# label=夹具：预置 human-end / escalate-end / no-end 三条工作流（T-001 → T-END 与 → 侧节点；T-H 人工、T-E 升级、T-R 普通 role 无出边且不在 terminal） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate human-end
+# label=orch workflow validate human-end cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-64 exit=0 102ms
+校验工作流 1 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate human-end --format json
+# label=orch workflow validate human-end --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-64 exit=0 97ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate escalate-end
+# label=orch workflow validate escalate-end cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-64 exit=0 99ms
+校验工作流 1 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate escalate-end --format json
+# label=orch workflow validate escalate-end --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-64 exit=0 100ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate no-end
+# label=orch workflow validate no-end cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-64 exit=1 115ms
+校验工作流 1 个：1 个不合法
+- workflows/no-end.yaml：节点不可达：T-R（WORKFLOW_UNREACHABLE）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate no-end --format json
+# label=orch workflow validate no-end --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-64 exit=1 106ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_UNREACHABLE",
+      "file": "workflows/no-end.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "节点不可达：T-R"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow show human-end --format json
+# label=orch workflow show human-end --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-64 exit=0 100ms
+{
+  "workflow": {
+    "id": "human-end",
+    "name": "人工终点",
+    "nodeCount": 3,
+    "edgeCount": 2,
+    "source": "project",
+    "file": ".orch/workflows/human-end.yaml",
+    "entry": "T-001",
+    "terminal": "T-END"
+  },
+  "nodes": [
+    {
+      "id": "T-001",
+      "nodeType": "role",
+      "role": "researcher",
+      "title": "研究",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-001",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-END",
+      "nodeType": "role",
+      "role": "writer",
+      "title": "完成",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-END",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-H",
+      "nodeType": "human",
+      "role": null,
+      "title": "人工确认",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-H",
+      "inputs": [],
+      "outputs": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-END",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-001",
+      "to": "T-H",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    }
+  ]
+}
+

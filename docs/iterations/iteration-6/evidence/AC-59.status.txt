@@ -1,0 +1,102 @@
+$ "(fixture) 预置 body.md（一段技能正文）与 empty.md（空文件）"
+# label=夹具：预置 body.md（一段技能正文）与 empty.md（空文件） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill create quote --name 引用规范 --summary 给结论配上可核对的出处 --applies-to writing,coding --commands "node --test" --body-file body.md
+# label=orch skill create quote --name 引用规范 --summary … --applies-to writing,coding --commands "node --test" --body-file body.md cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-59 exit=0 112ms
+已创建项目技能：.orch/skills/quote/SKILL.md
+- quote 引用规范 · 内容创作, 编码工程 · 命令 1
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill show quote
+# label=orch skill show quote cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-59 exit=0 103ms
+- quote 引用规范 · 内容创作, 编码工程 · 命令 1
+  摘要：给结论配上可核对的出处
+  命令：node --test
+  适用：内容创作, 编码工程
+  来源：项目 .orch/skills/quote/SKILL.md
+  正文：
+  ### 自定义正文
+  
+  这是 body.md 的正文内容，用于核对 --body-file 生效。
+  
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill create quote2 --name 坏组 --summary x --applies-to nope
+# label=orch skill create quote2 --name 坏组 --summary x --applies-to nope cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-59 exit=2 106ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch role list [--group <组>] [--instance <实例号>] [--format text|json]
+  orch role show <角色> [--instance <实例号>] [--format text|json]
+  orch role validate [<角色>] [--format json]
+  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]
+  orch role edit <角色> [--set <键=值>]... [--unset <键>]...
+  orch role export <角色> [--out <文件>]
+  orch role import <文件> [--force]
+  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]
+  orch skill list [--group <组>] [--format text|json]
+  orch skill show <技能> [--format text|json]
+  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]
+  orch skill validate [<技能>] [--format json]
+  orch skill export <技能> [--out <文件>]
+  orch skill import <文件|目录> [--force]
+  orch workflow list [--format text|json]
+  orch workflow show <工作流> [--format text|json]
+  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]
+  orch workflow validate [<工作流>] [--format json]
+  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]
+  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]
+  （适用分组取值非法：nope；合法取值：coordinator / research / writing / coding / ops）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill create quote3 --name 缺摘要 --body-file empty.md
+# label=orch skill create quote3 --name 缺摘要 --body-file empty.md cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-59 exit=2 89ms
+用法：orch run|status|cancel|core
+  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]
+  orch status [--instance <实例号>] [--events]
+  orch cancel --instance <实例号>
+  orch core stop
+  orch role list [--group <组>] [--instance <实例号>] [--format text|json]
+  orch role show <角色> [--instance <实例号>] [--format text|json]
+  orch role validate [<角色>] [--format json]
+  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]
+  orch role edit <角色> [--set <键=值>]... [--unset <键>]...
+  orch role export <角色> [--out <文件>]
+  orch role import <文件> [--force]
+  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]
+  orch skill list [--group <组>] [--format text|json]
+  orch skill show <技能> [--format text|json]
+  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]
+  orch skill validate [<技能>] [--format json]
+  orch skill export <技能> [--out <文件>]
+  orch skill import <文件|目录> [--force]
+  orch workflow list [--format text|json]
+  orch workflow show <工作流> [--format text|json]
+  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]
+  orch workflow validate [<工作流>] [--format json]
+  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]
+  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]
+  （skill create 需要 --summary）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill create quote4 --name 空正文 --summary x --body-file empty.md
+# label=orch skill create quote4 --name 空正文 --summary x --body-file empty.md cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-59 exit=1 98ms
+创建被拒：技能正文为空：quote4（SKILL_BODY_EMPTY）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill validate --format json
+# label=orch skill validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-59 exit=0 108ms
+{
+  "counts": {
+    "assets": 11,
+    "skills": 11,
+    "builtin": 10,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+

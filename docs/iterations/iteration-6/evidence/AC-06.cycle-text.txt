@@ -1,0 +1,4 @@
+校验资产 28 个：2 个不合法
+- roles/a1.yaml：派生链成环：a1 → b1（ROLE_DERIVE_CYCLE）
+- roles/b1.yaml：派生链成环：b1 → a1（ROLE_DERIVE_CYCLE）
+

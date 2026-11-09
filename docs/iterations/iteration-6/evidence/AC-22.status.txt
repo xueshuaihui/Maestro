@@ -1,0 +1,83 @@
+$ "(fixture) 全新项目根（无 .orch）"
+# label=夹具：全新项目根（无 .orch） cwd=d:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-22
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow show code-loop
+# label=orch workflow show code-loop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-22 exit=0 104ms
+- code-loop 编码闭环 · 2 节点 · 3 边 · 内置
+  入口：T-001 · 终点：T-002
+  节点：
+    T-001 开发 · 角色节点 developer · 超时 — · 重试 0
+    T-002 测试 · 角色节点 tester · 超时 — · 重试 0
+  边：
+    T-001 → T-002 正向
+    T-002 → T-001 回流 · 轮次上限 2
+    T-001 → T-002 复测
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow show code-loop --format json
+# label=orch workflow show code-loop --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-22 exit=0 100ms
+{
+  "workflow": {
+    "id": "code-loop",
+    "name": "编码闭环",
+    "nodeCount": 2,
+    "edgeCount": 3,
+    "source": "builtin",
+    "file": null,
+    "entry": "T-001",
+    "terminal": "T-002"
+  },
+  "nodes": [
+    {
+      "id": "T-001",
+      "nodeType": "role",
+      "role": "developer",
+      "title": "开发",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": 2,
+      "parallelScope": null,
+      "scope": "T-001",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-002",
+      "nodeType": "role",
+      "role": "tester",
+      "title": "测试",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": 2,
+      "parallelScope": null,
+      "scope": "T-002",
+      "inputs": [],
+      "outputs": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest",
+      "when": "always",
+      "map": []
+    }
+  ]
+}
+

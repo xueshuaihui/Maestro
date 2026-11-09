@@ -1,0 +1,48 @@
+$ "(fixture) 预置 bad-type.yaml / no-title.yaml / no-role.yaml（各自单节点、entry=terminal=T-001）"
+# label=夹具：预置 bad-type.yaml / no-title.yaml / no-role.yaml（各自单节点、entry=terminal=T-001） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate
+# label=orch workflow validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-25 exit=1 105ms
+校验工作流 6 个：3 个不合法
+- workflows/bad-type.yaml：节点类型取值非法：script；合法取值：role / human / escalate / subworkflow（WORKFLOW_NODE_TYPE_INVALID）
+- workflows/no-role.yaml：节点 T-001 缺少必填字段：role（WORKFLOW_NODE_FIELD_MISSING）
+- workflows/no-title.yaml：节点 T-001 缺少必填字段：title（WORKFLOW_NODE_FIELD_MISSING）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate --format json
+# label=orch workflow validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-25 exit=1 110ms
+{
+  "counts": {
+    "assets": 6,
+    "builtin": 3,
+    "project": 3,
+    "invalid": 3
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_NODE_TYPE_INVALID",
+      "file": "workflows/bad-type.yaml",
+      "scope": "workflow",
+      "field": "node_type",
+      "line": null,
+      "detail": "节点类型取值非法：script；合法取值：role / human / escalate / subworkflow"
+    },
+    {
+      "code": "WORKFLOW_NODE_FIELD_MISSING",
+      "file": "workflows/no-role.yaml",
+      "scope": "workflow",
+      "field": "role",
+      "line": null,
+      "detail": "节点 T-001 缺少必填字段：role"
+    },
+    {
+      "code": "WORKFLOW_NODE_FIELD_MISSING",
+      "file": "workflows/no-title.yaml",
+      "scope": "workflow",
+      "field": "title",
+      "line": null,
+      "detail": "节点 T-001 缺少必填字段：title"
+    }
+  ]
+}
+

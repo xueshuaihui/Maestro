@@ -1,0 +1,4 @@
+校验资产 28 个：2 个不合法
+- roles/scout.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）
+- roles/scribe.yaml：契约不连通：digest 没有去处（ROLE_CONTRACT_UNBOUND）
+

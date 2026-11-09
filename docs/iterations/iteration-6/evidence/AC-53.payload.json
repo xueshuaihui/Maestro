@@ -1,0 +1,44 @@
+{
+  "counts": {
+    "assets": 29,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 3,
+    "invalid": 3
+  },
+  "errors": [
+    {
+      "code": "ROLE_CONTRACT_UNBOUND",
+      "file": "roles/c1.yaml",
+      "scope": "role",
+      "field": "inputs",
+      "line": null,
+      "detail": "契约不连通：brief 没有来源"
+    },
+    {
+      "code": "ROLE_DERIVE_CYCLE",
+      "file": "roles/d1.yaml",
+      "scope": "role",
+      "field": "derived_from",
+      "line": null,
+      "detail": "派生链成环：d1"
+    },
+    {
+      "code": "ROLE_PERMISSION_MISMATCH",
+      "file": "roles/p1.yaml",
+      "scope": "role",
+      "field": "tools",
+      "line": null,
+      "detail": "副作用等级为 read 的角色不能带写工具 write"
+    },
+    {
+      "code": "ROLE_WAKE_UNKNOWN",
+      "file": "roles/p1.yaml",
+      "scope": "role",
+      "field": "wake_allow",
+      "line": null,
+      "detail": "唤醒白名单里的角色不存在：ghost"
+    }
+  ]
+}

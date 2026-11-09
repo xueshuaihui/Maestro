@@ -1,0 +1,161 @@
+{
+  "ac": "AC-06",
+  "title": "派生链缺失与成环被拒",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 第一次退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第一次 errors 长度 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：codes 全为 ROLE_DERIVE_CYCLE（期望 [\"ROLE_DERIVE_CYCLE\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"ROLE_DERIVE_CYCLE\"]"
+    },
+    {
+      "text": "机检：errors[0].file === roles/a1.yaml（按文件名字典序）（期望 \"roles/a1.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"roles/a1.yaml\""
+    },
+    {
+      "text": "Then 明细给出环上的角色名（期望含 \"a\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "派生链成环：a1 → b1"
+    },
+    {
+      "text": "Then 文本含两条 ROLE_DERIVE_CYCLE（期望匹配 /ROLE_DERIVE_CYCLE/g）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验资产 28 个：2 个不合法\n- roles/a1.yaml：派生链成环：a1 → b1（ROLE_DERIVE_CYCLE）\n- roles/b1.yaml：派生链成环：b1 → a1（ROLE_DERIVE_CYCLE）\n"
+    },
+    {
+      "text": "Then 第二次退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第二次 errors 长度 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：errors[0].code === ROLE_DERIVE_MISSING（期望 \"ROLE_DERIVE_MISSING\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"ROLE_DERIVE_MISSING\""
+    },
+    {
+      "text": "机检：errors[0].file === roles/b1.yaml（期望 \"roles/b1.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"roles/b1.yaml\""
+    },
+    {
+      "text": "Then 明细给出 ghost（期望含 \"ghost\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "派生来源不存在：ghost"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 .orch/roles/a1.yaml（derived_from: b1）与 b1.yaml（derived_from: a），其余字段合法",
+      "argv": [
+        "(fixture) 预置 .orch/roles/a1.yaml（derived_from: b1）与 b1.yaml（derived_from: a），其余字段合法"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json（第一次：环）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-06",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 111,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 28,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 2,\n    \"invalid\": 2\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_DERIVE_CYCLE\",\n      \"file\": \"roles/a1.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"derived_from\",\n      \"line\": null,\n      \"detail\": \"派生链成环：a1 → b1\"\n    },\n    {\n      \"code\": \"ROLE_DERIVE_CYCLE\",\n      \"file\": \"roles/b1.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"derived_from\",\n      \"line\": null,\n      \"detail\": \"派生链成环：b1 → a1\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate（文本，第一次）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-06",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 103,
+      "stdout": "校验资产 28 个：2 个不合法\n- roles/a1.yaml：派生链成环：a1 → b1（ROLE_DERIVE_CYCLE）\n- roles/b1.yaml：派生链成环：b1 → a1（ROLE_DERIVE_CYCLE）\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：把 b1.yaml 的 derived_from 改成 ghost",
+      "argv": [
+        "(fixture) 把 b1.yaml 的 derived_from 改成 ghost"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json（第二次：ghost）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-06",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 110,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 28,\n    \"roles\": 17,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 2,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_DERIVE_MISSING\",\n      \"file\": \"roles/b1.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"derived_from\",\n      \"line\": null,\n      \"detail\": \"派生来源不存在：ghost\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate（文本，第二次）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-06",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "校验资产 28 个：1 个不合法\n- roles/b1.yaml：派生来源不存在：ghost（ROLE_DERIVE_MISSING）\n",
+      "stderr": ""
+    }
+  ]
+}

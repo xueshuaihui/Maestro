@@ -1,0 +1,33 @@
+{
+  "ac": "AC-35",
+  "title": "变量引用无效",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:23:03.524Z",
+  "finishedAt": "2026-11-09T12:23:03.735Z",
+  "durationMs": 211,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-35",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-35"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 7,
+  "notes": [],
+  "extraFiles": [
+    "AC-35.validate.txt",
+    "AC-35.payload.json"
+  ]
+}

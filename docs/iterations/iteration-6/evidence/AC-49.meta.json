@@ -1,0 +1,55 @@
+{
+  "ac": "AC-49",
+  "title": "三条主链逐字回归",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:23:31.614Z",
+  "finishedAt": "2026-11-09T12:23:42.839Z",
+  "durationMs": 11225,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-49",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-49"
+    }
+  ],
+  "instances": [
+    {
+      "__root": "AC-49",
+      "instanceId": "INST-001",
+      "state": "completed"
+    }
+  ],
+  "events": 36,
+  "eventsNote": null,
+  "checks": 21,
+  "notes": [
+    "基线来源与切取规则见文件头注：I1.5 存量 AC-19 三份 baseline.txt（1490f6d 树产出、驱动零改动故代表 0cd113b）为需求点名基线；0cd113b 工作树现跑三链作交叉验证与 prompts 基线；归一化 = 需求两条（已运行 Ns、HH:mm:ss）+ 夹具侧两条（mock-sess 会话号、耗时 Ns）+ 剔除驱动收尾 JSON 行。",
+    "基线工作树已移除（git worktree remove --force + prune），仓库工作区未被改动。"
+  ],
+  "extraFiles": [
+    "AC-49.single-current.txt",
+    "AC-49.single-baseline-tree.txt",
+    "AC-49.single-diff-vs-stored.txt",
+    "AC-49.single-diff-vs-stored-full.txt",
+    "AC-49.single-diff-baseline-tree-vs-stored.txt",
+    "AC-49.code-loop-current.txt",
+    "AC-49.code-loop-baseline-tree.txt",
+    "AC-49.code-loop-diff-vs-stored.txt",
+    "AC-49.code-loop-diff-vs-stored-full.txt",
+    "AC-49.code-loop-diff-baseline-tree-vs-stored.txt",
+    "AC-49.task-loop-current.txt",
+    "AC-49.task-loop-baseline-tree.txt",
+    "AC-49.task-loop-diff-vs-stored.txt",
+    "AC-49.task-loop-diff-vs-stored-full.txt",
+    "AC-49.task-loop-diff-baseline-tree-vs-stored.txt"
+  ]
+}

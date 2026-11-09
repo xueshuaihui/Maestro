@@ -1,0 +1,136 @@
+{
+  "ac": "AC-02",
+  "title": "从零创建缺必填参数是用法错误",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 第 1 次退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 第 2 次退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 第 3 次退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 第 1 次输出 = 用法块 25 行 + 原因行（共 26 行）（期望 26）",
+      "ok": true,
+      "blocked": false,
+      "actual": "26"
+    },
+    {
+      "text": "Then 第 2 次输出 = 用法块 25 行 + 原因行（共 26 行）（期望 26）",
+      "ok": true,
+      "blocked": false,
+      "actual": "26"
+    },
+    {
+      "text": "Then 第 3 次输出 = 用法块 25 行 + 原因行（共 26 行）（期望 26）",
+      "ok": true,
+      "blocked": false,
+      "actual": "26"
+    },
+    {
+      "text": "Then 第 1 次原因行（期望逐字 \"  （role create 需要 --name）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  （role create 需要 --name）\""
+    },
+    {
+      "text": "Then 第 2 次原因行（期望逐字 \"  （role create 需要 --name）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  （role create 需要 --name）\""
+    },
+    {
+      "text": "Then 第 3 次原因行（期望逐字 \"  （role create 需要 --side-effect）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  （role create 需要 --side-effect）\""
+    },
+    {
+      "text": "机检：test -e \"$ROOT/.orch\" 为假（没建文件）",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-02\\.orch"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：全新项目根（无 .orch）；三条命令都不带 --from",
+      "argv": [
+        "(fixture) 全新项目根（无 .orch）；三条命令都不带 --from"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-02",
+      "stderr": ""
+    },
+    {
+      "label": "orch role create lead-dev",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-02",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 90,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\n  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\n  orch role export <角色> [--out <文件>]\n  orch role import <文件> [--force]\n  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\n  orch skill list [--group <组>] [--format text|json]\n  orch skill show <技能> [--format text|json]\n  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\n  orch skill validate [<技能>] [--format json]\n  orch skill export <技能> [--out <文件>]\n  orch skill import <文件|目录> [--force]\n  orch workflow list [--format text|json]\n  orch workflow show <工作流> [--format text|json]\n  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\n  orch workflow validate [<工作流>] [--format json]\n  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\n  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\n  （role create 需要 --name）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role create lead-dev --group coding",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--group",
+        "coding"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-02",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\n  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\n  orch role export <角色> [--out <文件>]\n  orch role import <文件> [--force]\n  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\n  orch skill list [--group <组>] [--format text|json]\n  orch skill show <技能> [--format text|json]\n  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\n  orch skill validate [<技能>] [--format json]\n  orch skill export <技能> [--out <文件>]\n  orch skill import <文件|目录> [--force]\n  orch workflow list [--format text|json]\n  orch workflow show <工作流> [--format text|json]\n  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\n  orch workflow validate [<工作流>] [--format json]\n  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\n  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\n  （role create 需要 --name）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role create lead-dev --name 首席开发 --group coding --artifact-type code",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--name",
+        "首席开发",
+        "--group",
+        "coding",
+        "--artifact-type",
+        "code"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-02",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 86,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\n  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\n  orch role export <角色> [--out <文件>]\n  orch role import <文件> [--force]\n  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\n  orch skill list [--group <组>] [--format text|json]\n  orch skill show <技能> [--format text|json]\n  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\n  orch skill validate [<技能>] [--format json]\n  orch skill export <技能> [--out <文件>]\n  orch skill import <文件|目录> [--force]\n  orch workflow list [--format text|json]\n  orch workflow show <工作流> [--format text|json]\n  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\n  orch workflow validate [<工作流>] [--format json]\n  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\n  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\n  （role create 需要 --side-effect）\n",
+      "stderr": ""
+    }
+  ]
+}

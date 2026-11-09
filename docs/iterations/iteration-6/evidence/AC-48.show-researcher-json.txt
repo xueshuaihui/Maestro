@@ -1,0 +1,19 @@
+{
+  "role": {
+    "id": "researcher",
+    "name": "研究员",
+    "group": "research",
+    "groupLabel": "研究分析",
+    "artifactType": "report",
+    "sideEffect": "write",
+    "skills": [
+      "research-brief"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/researcher.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+

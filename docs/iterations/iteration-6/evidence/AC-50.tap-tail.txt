@@ -1,0 +1,16 @@
+  ...
+# Subtest: S-2 越界与绝对路径仍然一律拒绝
+ok 769 - S-2 越界与绝对路径仍然一律拒绝
+  ---
+  duration_ms: 0.2871
+  type: 'test'
+  ...
+1..769
+# tests 769
+# suites 0
+# pass 769
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15469.3472

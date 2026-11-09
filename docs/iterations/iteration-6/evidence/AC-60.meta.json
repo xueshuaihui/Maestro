@@ -1,0 +1,39 @@
+{
+  "ac": "AC-60",
+  "title": "工作流校验器补充面：变量引用 / 状态转换 / 唤醒权限",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:10.653Z",
+  "finishedAt": "2026-11-09T12:24:11.753Z",
+  "durationMs": 1100,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-60",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-60"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 18,
+  "notes": [],
+  "extraFiles": [
+    "AC-60.validate-task-var.txt",
+    "AC-60.payload-task-var.json",
+    "AC-60.validate-backflow-target.txt",
+    "AC-60.payload-backflow-target.json",
+    "AC-60.validate-wake-empty.txt",
+    "AC-60.payload-wake-empty.json",
+    "AC-60.validate-retest-ok.txt",
+    "AC-60.payload-retest-ok.json"
+  ]
+}

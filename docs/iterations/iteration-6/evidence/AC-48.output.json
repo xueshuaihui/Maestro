@@ -1,0 +1,494 @@
+{
+  "ac": "AC-48",
+  "title": "I1.5 的 role 三命令逐字不变",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given 基线代码树挂载成功（git worktree 0cd113b）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Given 基线树 bin/orch.js 存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48-baseline"
+    },
+    {
+      "text": "Then role list 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then role list 与 I1.5 基线（AC-01.list.txt）逐字节相同",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "Then role show developer 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then role show developer 与 I1.5 基线（AC-02.show.txt）逐字节相同",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "Then role validate 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then role validate 与 I1.5 基线（AC-12.validate.txt，全新根干净校验）逐字节相同",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "Then role list --format json 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then role list --format json 与 I1.5 基线（AC-01.payload.json）逐字节相同",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "Then role validate --format json 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then role validate --format json 与 I1.5 基线（AC-12.payload.json）逐字节相同",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "Then role show developer --format json 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Given I1.5 AC-45.output.json 里能抽到 show developer --format json 的 stdout",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\n  \"role\": {\n    \"id\": \"developer\",\n    \"name\": \"开发\",\n    \"group\": \"coding\",\n  "
+    },
+    {
+      "text": "Then role show developer --format json 与 I1.5 基线逐字节相同",
+      "ok": true,
+      "blocked": false,
+      "actual": "0 行差异：[]"
+    },
+    {
+      "text": "Then role show researcher 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：role show researcher 与 I1.5 基线恰好一行差异（唯一例外：可唤醒行）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：role show researcher 基线侧的可唤醒行是 D-7b 改动前的值（期望 \"  可唤醒：—\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  可唤醒：—\""
+    },
+    {
+      "text": "Then role show researcher 的可唤醒行逐字（D-7b 新值）（期望逐字 \"  可唤醒：writer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  可唤醒：writer\""
+    },
+    {
+      "text": "Then role show researcher 其余行仍与 I1.5 逐字节相同（差异只有可唤醒行）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1 行差异：[{\"i\":4,\"a\":\"  可唤醒：writer\",\"b\":\"  可唤醒：—\"}]"
+    },
+    {
+      "text": "Then role show researcher --format json 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：role show researcher --format json 与 I1.5 基线逐字节相同（toRoleJson 不含 wakeAllow，不受 D-7b 改动影响）（期望 \"{\\n  \\\"role\\\": {\\n    \\\"id\\\": \\\"researcher\\\",\\n    \\\"name\\\": \\\"研究员\\\",\\n    \\\"group\\\": \\\"research\\\",\\n    \\\"groupLabel\\\": \\\"研究分析\\\",\\n    \\\"artifactType\\\": \\\"report\\\",\\n    \\\"sideEffect\\\": \\\"write\\\",\\n    \\\"skills\\\": [\\n      \\\"research-brief\\\"\\n    ],\\n    \\\"maxConcurrentSessions\\\": 1,\\n    \\\"source\\\": \\\"builtin\\\",\\n    \\\"file\\\": \\\"assets/roles/researcher.yaml\\\"\\n  },\\n  \\\"instance\\\": null,\\n  \\\"roleInstance\\\": null\\n}\\n\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"{\\n  \\\"role\\\": {\\n    \\\"id\\\": \\\"researcher\\\",\\n    \\\"name\\\": \\\"研究员\\\",\\n    \\\"group\\\": \\\"research\\\",\\n    \\\"groupLabel\\\": \\\"研究分析\\\",\\n    \\\"artifactType\\\": \\\"report\\\",\\n    \\\"sideEffect\\\": \\\"write\\\",\\n    \\\"skills\\\": [\\n      \\\"research-brief\\\"\\n    ],\\n    \\\"maxConcurrentSessions\\\": 1,\\n    \\\"source\\\": \\\"builtin\\\",\\n    \\\"file\\\": \\\"assets/roles/researcher.yaml\\\"\\n  },\\n  \\\"instance\\\": null,\\n  \\\"roleInstance\\\": null\\n}\\n\""
+    },
+    {
+      "text": "机检：role show researcher 的 role 对象恰是 toRoleJson 的 10 键且不含 wake/wakeAllow（期望 [\"artifactType\",\"file\",\"group\",\"groupLabel\",\"id\",\"maxConcurrentSessions\",\"name\",\"sideEffect\",\"skills\",\"source\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"artifactType\",\"file\",\"group\",\"groupLabel\",\"id\",\"maxConcurrentSessions\",\"name\",\"sideEffect\",\"skills\",\"source\"]"
+    },
+    {
+      "text": "Then role show writer 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：role show writer 与 I1.5 基线恰好一行差异（唯一例外：可唤醒行）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：role show writer 基线侧的可唤醒行是 D-7b 改动前的值（期望 \"  可唤醒：editor\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  可唤醒：editor\""
+    },
+    {
+      "text": "Then role show writer 的可唤醒行逐字（D-7b 新值）（期望逐字 \"  可唤醒：editor, reviewer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  可唤醒：editor, reviewer\""
+    },
+    {
+      "text": "Then role show writer 其余行仍与 I1.5 逐字节相同（差异只有可唤醒行）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1 行差异：[{\"i\":4,\"a\":\"  可唤醒：editor, reviewer\",\"b\":\"  可唤醒：editor\"}]"
+    },
+    {
+      "text": "Then role show writer --format json 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：role show writer --format json 与 I1.5 基线逐字节相同（toRoleJson 不含 wakeAllow，不受 D-7b 改动影响）（期望 \"{\\n  \\\"role\\\": {\\n    \\\"id\\\": \\\"writer\\\",\\n    \\\"name\\\": \\\"撰写者\\\",\\n    \\\"group\\\": \\\"writing\\\",\\n    \\\"groupLabel\\\": \\\"内容创作\\\",\\n    \\\"artifactType\\\": \\\"document\\\",\\n    \\\"sideEffect\\\": \\\"write\\\",\\n    \\\"skills\\\": [\\n      \\\"doc-draft\\\"\\n    ],\\n    \\\"maxConcurrentSessions\\\": 2,\\n    \\\"source\\\": \\\"builtin\\\",\\n    \\\"file\\\": \\\"assets/roles/writer.yaml\\\"\\n  },\\n  \\\"instance\\\": null,\\n  \\\"roleInstance\\\": null\\n}\\n\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"{\\n  \\\"role\\\": {\\n    \\\"id\\\": \\\"writer\\\",\\n    \\\"name\\\": \\\"撰写者\\\",\\n    \\\"group\\\": \\\"writing\\\",\\n    \\\"groupLabel\\\": \\\"内容创作\\\",\\n    \\\"artifactType\\\": \\\"document\\\",\\n    \\\"sideEffect\\\": \\\"write\\\",\\n    \\\"skills\\\": [\\n      \\\"doc-draft\\\"\\n    ],\\n    \\\"maxConcurrentSessions\\\": 2,\\n    \\\"source\\\": \\\"builtin\\\",\\n    \\\"file\\\": \\\"assets/roles/writer.yaml\\\"\\n  },\\n  \\\"instance\\\": null,\\n  \\\"roleInstance\\\": null\\n}\\n\""
+    },
+    {
+      "text": "机检：role show writer 的 role 对象恰是 toRoleJson 的 10 键且不含 wake/wakeAllow（期望 [\"artifactType\",\"file\",\"group\",\"groupLabel\",\"id\",\"maxConcurrentSessions\",\"name\",\"sideEffect\",\"skills\",\"source\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"artifactType\",\"file\",\"group\",\"groupLabel\",\"id\",\"maxConcurrentSessions\",\"name\",\"sideEffect\",\"skills\",\"source\"]"
+    },
+    {
+      "text": "机检：assets/** 与 0cd113b 有差异的文件恰好两个（期望 \"assets/roles/researcher.yaml,assets/roles/writer.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"assets/roles/researcher.yaml,assets/roles/writer.yaml\""
+    },
+    {
+      "text": "机检：researcher.yaml 差异逐字（wake_allow: [] → [writer]）（期望 {\"removed\":[\"wake_allow: []\"],\"added\":[\"wake_allow: [writer]\"]}）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"removed\":[\"wake_allow: []\"],\"added\":[\"wake_allow: [writer]\"]}"
+    },
+    {
+      "text": "机检：writer.yaml 差异逐字（wake_allow: [editor] → [editor, reviewer]，基线为块列表）（期望 {\"removed\":[\"wake_allow:\",\"  - editor\"],\"added\":[\"wake_allow: [editor, reviewer]\"]}）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"removed\":[\"wake_allow:\",\"  - editor\"],\"added\":[\"wake_allow: [editor, reviewer]\"]}"
+    },
+    {
+      "text": "机检：test/wp11/cli-role.test.js fail === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：test/wp11/cli-role.test.js 全绿（pass === tests 且 tests > 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "tests=30 pass=30 fail=0"
+    },
+    {
+      "text": "And 收尾后没有残留的基线工作树",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48-baseline"
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch role list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 112,
+      "stdout": "角色 16 个（内置 16 · 项目 0）\n- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\n- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\n- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\n- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\n- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\n- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\n- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\n- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\n- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\n- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\n- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\n- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\n- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show developer",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "developer"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 111,
+      "stdout": "- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n  职责：按任务修改代码，交出声明的产物文件\n  技能：code-change, test-run\n  工具：read, write, edit, bash\n  可唤醒：tester\n  来源：内置 assets/roles/developer.yaml\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 124,
+      "stdout": "校验资产 26 个：全部通过（角色 16 · 技能 10）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role list --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 105,
+      "stdout": "{\n  \"counts\": {\n    \"total\": 16,\n    \"builtin\": 16,\n    \"project\": 0,\n    \"invalid\": 0\n  },\n  \"groups\": [\n    {\n      \"group\": \"coordinator\",\n      \"label\": \"通用协调\",\n      \"count\": 5\n    },\n    {\n      \"group\": \"research\",\n      \"label\": \"研究分析\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"writing\",\n      \"label\": \"内容创作\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"coding\",\n      \"label\": \"编码工程\",\n      \"count\": 3\n    },\n    {\n      \"group\": \"ops\",\n      \"label\": \"业务运营\",\n      \"count\": 2\n    }\n  ],\n  \"roles\": [\n    {\n      \"id\": \"arbiter\",\n      \"name\": \"裁决者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"none\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/arbiter.yaml\"\n    },\n    {\n      \"id\": \"coordinator\",\n      \"name\": \"协调者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"none\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/coordinator.yaml\"\n    },\n    {\n      \"id\": \"planner\",\n      \"name\": \"规划者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"coordination\",\n        \"research-brief\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/planner.yaml\"\n    },\n    {\n      \"id\": \"summarizer\",\n      \"name\": \"汇总者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/summarizer.yaml\"\n    },\n    {\n      \"id\": \"worker\",\n      \"name\": \"执行者\",\n      \"group\": \"coordinator\",\n      \"groupLabel\": \"通用协调\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/worker.yaml\"\n    },\n    {\n      \"id\": \"data-analyst\",\n      \"name\": \"数据分析师\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"dataset\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"data-analysis\",\n        \"fact-check\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/data-analyst.yaml\"\n    },\n    {\n      \"id\": \"fact-checker\",\n      \"name\": \"事实核查员\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"fact-check\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/fact-checker.yaml\"\n    },\n    {\n      \"id\": \"researcher\",\n      \"name\": \"研究员\",\n      \"group\": \"research\",\n      \"groupLabel\": \"研究分析\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"research-brief\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/researcher.yaml\"\n    },\n    {\n      \"id\": \"editor\",\n      \"name\": \"编辑\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\",\n        \"doc-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/editor.yaml\"\n    },\n    {\n      \"id\": \"reviewer\",\n      \"name\": \"审核者\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"doc-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/reviewer.yaml\"\n    },\n    {\n      \"id\": \"writer\",\n      \"name\": \"撰写者\",\n      \"group\": \"writing\",\n      \"groupLabel\": \"内容创作\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\"\n      ],\n      \"maxConcurrentSessions\": 2,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/writer.yaml\"\n    },\n    {\n      \"id\": \"code-reviewer\",\n      \"name\": \"代码审查\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"code-review\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/code-reviewer.yaml\"\n    },\n    {\n      \"id\": \"developer\",\n      \"name\": \"开发\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"code-change\",\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/developer.yaml\"\n    },\n    {\n      \"id\": \"tester\",\n      \"name\": \"测试\",\n      \"group\": \"coding\",\n      \"groupLabel\": \"编码工程\",\n      \"artifactType\": \"code\",\n      \"sideEffect\": \"exec\",\n      \"skills\": [\n        \"test-run\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/tester.yaml\"\n    },\n    {\n      \"id\": \"compliance-reviewer\",\n      \"name\": \"合规审查者\",\n      \"group\": \"ops\",\n      \"groupLabel\": \"业务运营\",\n      \"artifactType\": \"report\",\n      \"sideEffect\": \"read\",\n      \"skills\": [\n        \"compliance-check\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/compliance-reviewer.yaml\"\n    },\n    {\n      \"id\": \"requirement-clarifier\",\n      \"name\": \"需求澄清者\",\n      \"group\": \"ops\",\n      \"groupLabel\": \"业务运营\",\n      \"artifactType\": \"document\",\n      \"sideEffect\": \"write\",\n      \"skills\": [\n        \"doc-draft\",\n        \"coordination\"\n      ],\n      \"maxConcurrentSessions\": 1,\n      \"source\": \"builtin\",\n      \"file\": \"assets/roles/requirement-clarifier.yaml\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 26,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 0,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role show developer --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "developer",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 117,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"developer\",\n    \"name\": \"开发\",\n    \"group\": \"coding\",\n    \"groupLabel\": \"编码工程\",\n    \"artifactType\": \"code\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"code-change\",\n      \"test-run\"\n    ],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"builtin\",\n    \"file\": \"assets/roles/developer.yaml\"\n  },\n  \"instance\": null,\n  \"roleInstance\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "role show researcher（当前 HEAD）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "researcher"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 107,
+      "stdout": "- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n  职责：围绕问题收集资料，写出带出处的调研结论\n  技能：research-brief\n  工具：read, write\n  可唤醒：writer\n  来源：内置 assets/roles/researcher.yaml\n",
+      "stderr": ""
+    },
+    {
+      "label": "role show researcher（0cd113b 基线树）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48-baseline\\bin\\orch.js",
+        "role",
+        "show",
+        "researcher"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 159,
+      "stdout": "- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n  职责：围绕问题收集资料，写出带出处的调研结论\n  技能：research-brief\n  工具：read, write\n  可唤醒：—\n  来源：内置 assets/roles/researcher.yaml\n",
+      "stderr": ""
+    },
+    {
+      "label": "role show researcher --format json（当前 HEAD）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "researcher",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 126,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"researcher\",\n    \"name\": \"研究员\",\n    \"group\": \"research\",\n    \"groupLabel\": \"研究分析\",\n    \"artifactType\": \"report\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"research-brief\"\n    ],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"builtin\",\n    \"file\": \"assets/roles/researcher.yaml\"\n  },\n  \"instance\": null,\n  \"roleInstance\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "role show researcher --format json（0cd113b 基线树）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48-baseline\\bin\\orch.js",
+        "role",
+        "show",
+        "researcher",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 110,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"researcher\",\n    \"name\": \"研究员\",\n    \"group\": \"research\",\n    \"groupLabel\": \"研究分析\",\n    \"artifactType\": \"report\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"research-brief\"\n    ],\n    \"maxConcurrentSessions\": 1,\n    \"source\": \"builtin\",\n    \"file\": \"assets/roles/researcher.yaml\"\n  },\n  \"instance\": null,\n  \"roleInstance\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "role show writer（当前 HEAD）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "writer"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n  职责：依据调研结论写出结构完整的文档初稿\n  技能：doc-draft\n  工具：read, write, edit\n  可唤醒：editor, reviewer\n  来源：内置 assets/roles/writer.yaml\n",
+      "stderr": ""
+    },
+    {
+      "label": "role show writer（0cd113b 基线树）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48-baseline\\bin\\orch.js",
+        "role",
+        "show",
+        "writer"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n  职责：依据调研结论写出结构完整的文档初稿\n  技能：doc-draft\n  工具：read, write, edit\n  可唤醒：editor\n  来源：内置 assets/roles/writer.yaml\n",
+      "stderr": ""
+    },
+    {
+      "label": "role show writer --format json（当前 HEAD）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "show",
+        "writer",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 91,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"writer\",\n    \"name\": \"撰写者\",\n    \"group\": \"writing\",\n    \"groupLabel\": \"内容创作\",\n    \"artifactType\": \"document\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"doc-draft\"\n    ],\n    \"maxConcurrentSessions\": 2,\n    \"source\": \"builtin\",\n    \"file\": \"assets/roles/writer.yaml\"\n  },\n  \"instance\": null,\n  \"roleInstance\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "role show writer --format json（0cd113b 基线树）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48-baseline\\bin\\orch.js",
+        "role",
+        "show",
+        "writer",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 126,
+      "stdout": "{\n  \"role\": {\n    \"id\": \"writer\",\n    \"name\": \"撰写者\",\n    \"group\": \"writing\",\n    \"groupLabel\": \"内容创作\",\n    \"artifactType\": \"document\",\n    \"sideEffect\": \"write\",\n    \"skills\": [\n      \"doc-draft\"\n    ],\n    \"maxConcurrentSessions\": 2,\n    \"source\": \"builtin\",\n    \"file\": \"assets/roles/writer.yaml\"\n  },\n  \"instance\": null,\n  \"roleInstance\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "git ls-files assets/",
+      "argv": [
+        "git",
+        "ls-files",
+        "assets/"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 34,
+      "stdout": "assets/roles/arbiter.yaml\nassets/roles/code-reviewer.yaml\nassets/roles/compliance-reviewer.yaml\nassets/roles/coordinator.yaml\nassets/roles/data-analyst.yaml\nassets/roles/developer.yaml\nassets/roles/editor.yaml\nassets/roles/fact-checker.yaml\nassets/roles/planner.yaml\nassets/roles/requirement-clarifier.yaml\nassets/roles/researcher.yaml\nassets/roles/reviewer.yaml\nassets/roles/summarizer.yaml\nassets/roles/tester.yaml\nassets/roles/worker.yaml\nassets/roles/writer.yaml\nassets/skills/code-change/SKILL.md\nassets/skills/code-review/SKILL.md\nassets/skills/compliance-check/SKILL.md\nassets/skills/coordination/SKILL.md\nassets/skills/data-analysis/SKILL.md\nassets/skills/doc-draft/SKILL.md\nassets/skills/doc-review/SKILL.md\nassets/skills/fact-check/SKILL.md\nassets/skills/research-brief/SKILL.md\nassets/skills/test-run/SKILL.md\n",
+      "stderr": ""
+    },
+    {
+      "label": "node --test test/wp11/cli-role.test.js",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "--test",
+        "--test-concurrency=4",
+        "test/wp11/cli-role.test.js"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 393,
+      "stdout": "TAP version 13\n# Subtest: AC-01: role list prints seventeen lines and exits 0\nok 1 - AC-01: role list prints seventeen lines and exits 0\n  ---\n  duration_ms: 9.4099\n  type: 'test'\n  ...\n# Subtest: AC-02: role show developer is the six documented lines\nok 2 - AC-02: role show developer is the six documented lines\n  ---\n  duration_ms: 4.645\n  type: 'test'\n  ...\n# Subtest: AC-03: a project role overrides the built-in one and says so\nok 3 - AC-03: a project role overrides the built-in one and says so\n  ---\n  duration_ms: 12.212\n  type: 'test'\n  ...\n# Subtest: AC-10: an invalid registry stops orch run before the client exists\nok 4 - AC-10: an invalid registry stops orch run before the client exists\n  ---\n  duration_ms: 14.3494\n  type: 'test'\n  ...\n# Subtest: AC-11: a broken asset does not block the list but fails the exit code\nok 5 - AC-11: a broken asset does not block the list but fails the exit code\n  ---\n  duration_ms: 11.978\n  type: 'test'\n  ...\n# Subtest: A-4: role validate prints one row per bad asset\nok 6 - A-4: role validate prints one row per bad asset\n  ---\n  duration_ms: 15.929\n  type: 'test'\n  ...\n# Subtest: A-4: a clean tree prints the single success line\nok 7 - A-4: a clean tree prints the single success line\n  ---\n  duration_ms: 5.7516\n  type: 'test'\n  ...\n# Subtest: AC-32: --group lists only that group in text and JSON\nok 8 - AC-32: --group lists only that group in text and JSON\n  ---\n  duration_ms: 8.9367\n  type: 'test'\n  ...\n# Subtest: AC-33: role list JSON has exactly three top-level keys and ten role keys\nok 9 - AC-33: role list JSON has exactly three top-level keys and ten role keys\n  ---\n  duration_ms: 3.6299\n  type: 'test'\n  ...\n# Subtest: AC-34: an unknown role names it and points at role list\nok 10 - AC-34: an unknown role names it and points at role list\n  ---\n  duration_ms: 4.3206\n  type: 'test'\n  ...\n# Subtest: AC-35: role show without an id is a usage error\nok 11 - AC-35: role show without an id is a usage error\n  ---\n  duration_ms: 0.6179\n  type: 'test'\n  ...\n# Subtest: AC-37: unknown subcommand, unknown flag and bad --format are usage errors\nok 12 - AC-37: unknown subcommand, unknown flag and bad --format are usage errors\n  ---\n  duration_ms: 0.5198\n  type: 'test'\n  ...\n# Subtest: the usage block has eight lines and keeps the I1.1 first line\nok 13 - the usage block has eight lines and keeps the I1.1 first line\n  ---\n  duration_ms: 0.2734\n  type: 'test'\n  ...\n# Subtest: a flag that belongs to another subcommand is rejected\nok 14 - a flag that belongs to another subcommand is rejected\n  ---\n  duration_ms: 0.4418\n  type: 'test'\n  ...\n# Subtest: role flags leak into other commands as unknown parameters (M-9)\nok 15 - role flags leak into other commands as unknown parameters (M-9)\n  ---\n  duration_ms: 0.1787\n  type: 'test'\n  ...\n# Subtest: parseArgs keeps the old result shape for the four original commands\nok 16 - parseArgs keeps the old result shape for the four original commands\n  ---\n  duration_ms: 0.1157\n  type: 'test'\n  ...\n# Subtest: AC-36: role validate <id> counts one asset and hides other files\nok 17 - AC-36: role validate <id> counts one asset and hides other files\n  ---\n  duration_ms: 13.5583\n  type: 'test'\n  ...\n# Subtest: AC-38: the three read-only commands never create .orch nor a client\nok 18 - AC-38: the three read-only commands never create .orch nor a client\n  ---\n  duration_ms: 10.9908\n  type: 'test'\n  ...\n# Subtest: AC-39: an unknown instance still prints the role contract first\nok 19 - AC-39: an unknown instance still prints the role contract first\n  ---\n  duration_ms: 2.6876\n  type: 'test'\n  ...\n# Subtest: role show --instance appends the instance line (A-3)\nok 20 - role show --instance appends the instance line (A-3)\n  ---\n  duration_ms: 3.394\n  type: 'test'\n  ...\n# Subtest: role show --instance on a role outside the instance says so\nok 21 - role show --instance on a role outside the instance says so\n  ---\n  duration_ms: 3.7113\n  type: 'test'\n  ...\n# Subtest: role show JSON has three keys and null instance without --instance\nok 22 - role show JSON has three keys and null instance without --instance\n  ---\n  duration_ms: 3.0588\n  type: 'test'\n  ...\n# Subtest: role show --instance JSON exposes the nine-key role instance\nok 23 - role show --instance JSON exposes the nine-key role instance\n  ---\n  duration_ms: 2.9753\n  type: 'test'\n  ...\n# Subtest: role list --instance appends one line per instance role\nok 24 - role list --instance appends one line per instance role\n  ---\n  duration_ms: 2.4468\n  type: 'test'\n  ...\n# Subtest: role list --instance JSON adds a fourth key with roleToSessions\nok 25 - role list --instance JSON adds a fourth key with roleToSessions\n  ---\n  duration_ms: 2.3917\n  type: 'test'\n  ...\n# Subtest: role validate JSON rebuilds six-key errors and leaks no params\nok 26 - role validate JSON rebuilds six-key errors and leaks no params\n  ---\n  duration_ms: 14.0778\n  type: 'test'\n  ...\n# Subtest: every registry error code has a label template\nok 27 - every registry error code has a label template\n  ---\n  duration_ms: 0.3246\n  type: 'test'\n  ...\n# Subtest: detailOf fills every template without leaving a placeholder\nok 28 - detailOf fills every template without leaving a placeholder\n  ---\n  duration_ms: 0.5796\n  type: 'test'\n  ...\n# Subtest: firstRegistryDetail returns the A-4 row without the dash prefix\nok 29 - firstRegistryDetail returns the A-4 row without the dash prefix\n  ---\n  duration_ms: 0.0859\n  type: 'test'\n  ...\n# Subtest: roleCommand is reachable directly and honours the frozen ctx shape\nok 30 - roleCommand is reachable directly and honours the frozen ctx shape\n  ---\n  duration_ms: 3.7531\n  type: 'test'\n  ...\n1..30\n# tests 30\n# suites 0\n# pass 30\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 305.6862\n",
+      "stderr": ""
+    }
+  ]
+}

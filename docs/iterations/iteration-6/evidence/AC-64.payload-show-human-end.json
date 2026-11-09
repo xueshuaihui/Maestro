@@ -1,0 +1,69 @@
+{
+  "workflow": {
+    "id": "human-end",
+    "name": "人工终点",
+    "nodeCount": 3,
+    "edgeCount": 2,
+    "source": "project",
+    "file": ".orch/workflows/human-end.yaml",
+    "entry": "T-001",
+    "terminal": "T-END"
+  },
+  "nodes": [
+    {
+      "id": "T-001",
+      "nodeType": "role",
+      "role": "researcher",
+      "title": "研究",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-001",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-END",
+      "nodeType": "role",
+      "role": "writer",
+      "title": "完成",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-END",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-H",
+      "nodeType": "human",
+      "role": null,
+      "title": "人工确认",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-H",
+      "inputs": [],
+      "outputs": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-END",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-001",
+      "to": "T-H",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    }
+  ]
+}

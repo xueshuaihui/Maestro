@@ -1,0 +1,184 @@
+$ "(fixture) 预置 .orch/workflows/code-loop.yaml（3 节点 4 边，覆盖同名内置）"
+# label=夹具：预置 .orch/workflows/code-loop.yaml（3 节点 4 边，覆盖同名内置） cwd=d:\WWW\Maestro exit=0 0ms
+schema: workflow/v1
+id: code-loop
+name: 编码闭环
+summary: 项目侧的三节点覆盖版
+entry: T-001
+terminal: T-003
+nodes:
+  - id: T-001
+    node_type: role
+    role: developer
+    title: 开发
+    wake_allow: [tester]
+  - id: T-002
+    node_type: role
+    role: tester
+    title: 测试
+    wake_allow: [tester]
+    max_rounds: 2
+  - id: T-003
+    node_type: role
+    role: tester
+    title: 验收
+edges:
+  - from: T-001
+    to: T-002
+  - from: T-001
+    to: T-003
+  - from: T-002
+    to: T-003
+  - from: T-003
+    to: T-002
+    kind: backflow
+    when: failed
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow list
+# label=orch workflow list cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-23 exit=0 108ms
+工作流 3 个（内置 2 · 项目 1）
+- code-loop 编码闭环 · 3 节点 · 4 边 · 项目
+- single 单节点 · 1 节点 · 0 边 · 内置
+- task-loop 通用任务闭环 · 3 节点 · 4 边 · 内置
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow show code-loop
+# label=orch workflow show code-loop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-23 exit=0 110ms
+- code-loop 编码闭环 · 3 节点 · 4 边 · 项目
+  入口：T-001 · 终点：T-003
+  节点：
+    T-001 开发 · 角色节点 developer · 超时 — · 重试 0
+    T-002 测试 · 角色节点 tester · 超时 — · 重试 0
+    T-003 验收 · 角色节点 tester · 超时 — · 重试 0
+  边：
+    T-001 → T-002 正向
+    T-001 → T-003 正向
+    T-002 → T-003 正向
+    T-003 → T-002 回流 · 轮次上限 2 · 条件 判定不通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow list --format json
+# label=orch workflow list --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-23 exit=0 97ms
+{
+  "counts": {
+    "total": 3,
+    "builtin": 2,
+    "project": 1,
+    "invalid": 0
+  },
+  "workflows": [
+    {
+      "id": "code-loop",
+      "name": "编码闭环",
+      "nodeCount": 3,
+      "edgeCount": 4,
+      "source": "project",
+      "file": ".orch/workflows/code-loop.yaml"
+    },
+    {
+      "id": "single",
+      "name": "单节点",
+      "nodeCount": 1,
+      "edgeCount": 0,
+      "source": "builtin",
+      "file": null
+    },
+    {
+      "id": "task-loop",
+      "name": "通用任务闭环",
+      "nodeCount": 3,
+      "edgeCount": 4,
+      "source": "builtin",
+      "file": null
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow show code-loop --format json
+# label=orch workflow show code-loop --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-23 exit=0 100ms
+{
+  "workflow": {
+    "id": "code-loop",
+    "name": "编码闭环",
+    "nodeCount": 3,
+    "edgeCount": 4,
+    "source": "project",
+    "file": ".orch/workflows/code-loop.yaml",
+    "entry": "T-001",
+    "terminal": "T-003"
+  },
+  "nodes": [
+    {
+      "id": "T-001",
+      "nodeType": "role",
+      "role": "developer",
+      "title": "开发",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-001",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-002",
+      "nodeType": "role",
+      "role": "tester",
+      "title": "测试",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": 2,
+      "parallelScope": null,
+      "scope": "T-002",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-003",
+      "nodeType": "role",
+      "role": "tester",
+      "title": "验收",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-003",
+      "inputs": [],
+      "outputs": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-001",
+      "to": "T-003",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-002",
+      "to": "T-003",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-003",
+      "to": "T-002",
+      "kind": "backflow",
+      "when": "failed",
+      "map": []
+    }
+  ]
+}
+

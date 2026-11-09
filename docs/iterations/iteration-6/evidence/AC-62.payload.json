@@ -1,0 +1,58 @@
+{
+  "counts": {
+    "assets": 9,
+    "builtin": 3,
+    "project": 6,
+    "invalid": 6
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_NODE_TYPE_INVALID",
+      "file": "workflows/bad-type.yaml",
+      "scope": "workflow",
+      "field": "node_type",
+      "line": null,
+      "detail": "节点类型取值非法：script；合法取值：role / human / escalate / subworkflow"
+    },
+    {
+      "code": "WORKFLOW_NODE_FIELD_MISSING",
+      "file": "workflows/esc-no-title.yaml",
+      "scope": "workflow",
+      "field": "title",
+      "line": null,
+      "detail": "节点 T-001 缺少必填字段：title"
+    },
+    {
+      "code": "WORKFLOW_SUB_CYCLE",
+      "file": "workflows/sub-a.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "子工作流成环：sub-a → sub-b"
+    },
+    {
+      "code": "WORKFLOW_SUB_CYCLE",
+      "file": "workflows/sub-b.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "子工作流成环：sub-b → sub-a"
+    },
+    {
+      "code": "WORKFLOW_SUB_UNKNOWN",
+      "file": "workflows/sub-ghost.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "引用的子工作流不存在：ghost"
+    },
+    {
+      "code": "WORKFLOW_NODE_FIELD_MISSING",
+      "file": "workflows/sub-no-wf.yaml",
+      "scope": "workflow",
+      "field": "workflow",
+      "line": null,
+      "detail": "节点 T-001 缺少必填字段：workflow"
+    }
+  ]
+}

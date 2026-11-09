@@ -1,0 +1,38 @@
+{
+  "ac": "AC-58",
+  "title": "内置资产只读：导入 / 创建 / --force 都不动内置",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:07.967Z",
+  "finishedAt": "2026-11-09T12:24:08.490Z",
+  "durationMs": 523,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-58",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-58"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 18,
+  "notes": [],
+  "extraFiles": [
+    "AC-58.assets-manifest-before.txt",
+    "AC-58.import-developer.txt",
+    "AC-58.create-builtin-force.txt",
+    "AC-58.create-project-exists.txt",
+    "AC-58.create-project-force.txt",
+    "AC-58.assets-manifest-after.txt",
+    "AC-58.git-status-assets.txt"
+  ]
+}

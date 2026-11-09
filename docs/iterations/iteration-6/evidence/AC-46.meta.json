@@ -1,0 +1,47 @@
+{
+  "ac": "AC-46",
+  "title": "写命令只写 `.orch`，内置资产一字不动",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:23:22.955Z",
+  "finishedAt": "2026-11-09T12:23:24.063Z",
+  "durationMs": 1108,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-46",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-46"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 20,
+  "notes": [
+    "fixtures/body.md 是验收夹具自放文件（skill create 的 --body-file），单独登记于「新增/变更文件」白名单；产品九条命令的落点全部在 .orch/** 与显式 --out 目录 exports/**。",
+    "role import 用 --force：同一根里 exports/lead-dev.yaml 的 id（lead-dev）与第 1 条已建的项目角色重名，按 BR-08/09 --force 覆盖项目资产；内置 id 的只读拒绝由 AC-58 覆盖。"
+  ],
+  "extraFiles": [
+    "AC-46.assets-manifest-before.txt",
+    "AC-46.exits.txt",
+    "AC-46.role-create.txt",
+    "AC-46.role-create---from.txt",
+    "AC-46.role-export---out.txt",
+    "AC-46.role-import.txt",
+    "AC-46.role-edit.txt",
+    "AC-46.skill-create.txt",
+    "AC-46.skill-export---out.txt",
+    "AC-46.skill-import.txt",
+    "AC-46.workflow-create.txt",
+    "AC-46.touched-files.json",
+    "AC-46.assets-manifest-after.txt"
+  ]
+}

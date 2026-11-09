@@ -1,0 +1,160 @@
+{
+  "workflow": {
+    "id": "doc-fanout",
+    "name": "文档并行版",
+    "nodeCount": 6,
+    "edgeCount": 7,
+    "source": "project",
+    "file": ".orch/workflows/doc-fanout.yaml",
+    "entry": "T-001",
+    "terminal": "T-006"
+  },
+  "nodes": [
+    {
+      "id": "T-001",
+      "nodeType": "role",
+      "role": "researcher",
+      "title": "研究",
+      "timeout": 600,
+      "retry": 2,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-001",
+      "inputs": [],
+      "outputs": [
+        "research.notes"
+      ]
+    },
+    {
+      "id": "T-002",
+      "nodeType": "role",
+      "role": "writer",
+      "title": "撰写A",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": "draft",
+      "scope": "draft-a",
+      "inputs": [
+        "brief"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "T-003",
+      "nodeType": "role",
+      "role": "editor",
+      "title": "撰写B",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": "draft",
+      "scope": "draft-b",
+      "inputs": [
+        "brief"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "T-004",
+      "nodeType": "human",
+      "role": null,
+      "title": "人工确认",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-004",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-005",
+      "nodeType": "escalate",
+      "role": null,
+      "title": "升级",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-005",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-006",
+      "nodeType": "subworkflow",
+      "role": null,
+      "title": "代码闭环",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": null,
+      "parallelScope": null,
+      "scope": "T-006",
+      "inputs": [],
+      "outputs": [],
+      "workflow": "code-loop"
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "when": "always",
+      "map": [
+        {
+          "from": "T-001.research.notes",
+          "to": "brief"
+        }
+      ]
+    },
+    {
+      "from": "T-001",
+      "to": "T-003",
+      "kind": "forward",
+      "when": "always",
+      "map": [
+        {
+          "from": "T-001.research.notes",
+          "to": "brief"
+        }
+      ]
+    },
+    {
+      "from": "T-002",
+      "to": "T-004",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-003",
+      "to": "T-004",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-004",
+      "to": "T-006",
+      "kind": "forward",
+      "when": "human_approved",
+      "map": []
+    },
+    {
+      "from": "T-004",
+      "to": "T-005",
+      "kind": "forward",
+      "when": "human_rejected",
+      "map": []
+    },
+    {
+      "from": "T-006",
+      "to": "T-005",
+      "kind": "forward",
+      "when": "failed",
+      "map": []
+    }
+  ]
+}

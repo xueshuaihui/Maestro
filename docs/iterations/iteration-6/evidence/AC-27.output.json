@@ -1,0 +1,142 @@
+{
+  "ac": "AC-27",
+  "title": "并行 fan-out / fan-in 通过校验并在预演中成组",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 校验全部通过、退出 0（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then 校验首行含 全部通过（期望含 \"全部通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：全部通过\n"
+    },
+    {
+      "text": "Then dry-run 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 层行逐字（含 · 汇合：all）（期望含 \"2. 并行组 draft：T-002 撰写A（角色节点 writer）｜ T-003 撰写B（角色节点 editor） · 汇合：all\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "编排计划 doc-fanout · 6 节点 · 7 边 · 1 个并行组 · 1 个子工作流\n1. T-001 研究（角色节点 researcher）\n2. 并行组 draft：T-002 撰写A（角色节点 writer）｜ T-003 撰写B（角色节点 editor） · 汇合：all\n3. T-004 人工确认（人工节点）\n4. T-006 代码闭环（子工作流 code-loop · 2 节点）\n5. T-005 升级（升级节点）\n条件分支：\n- T-004 → T-006 当 人工通过\n- T-004 → T-005 当 人工驳回\n- T-006 → T-005 当 判定不通过\n字段映射：\n- T-001.research.notes → T-002.brief\n- T-001.research.notes → T-003.brief\n超时与重试：\n- T-001 超时 600s · 重试 2\n结论：编排可执行，未启动任何会话\n"
+    },
+    {
+      "text": "Then T-002 只出现在一个层行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then T-003 只出现在一个层行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 两个节点同属并行组那一行（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：layers[1].parallel === true（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "机检：layers[1].nodes（期望 [\"T-002\",\"T-003\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"T-002\",\"T-003\"]"
+    },
+    {
+      "text": "机检：不存在第二个含 T-002 的层（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：nodeCount === 6（期望 6）",
+      "ok": true,
+      "blocked": false,
+      "actual": "6"
+    },
+    {
+      "text": "机检：edgeCount === 7（期望 7）",
+      "ok": true,
+      "blocked": false,
+      "actual": "7"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置附录 A-13 的 doc-fanout（writeDocFanout）",
+      "argv": [
+        "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-27",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "校验工作流 1 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow dry-run doc-fanout",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "dry-run",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-27",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "编排计划 doc-fanout · 6 节点 · 7 边 · 1 个并行组 · 1 个子工作流\n1. T-001 研究（角色节点 researcher）\n2. 并行组 draft：T-002 撰写A（角色节点 writer）｜ T-003 撰写B（角色节点 editor） · 汇合：all\n3. T-004 人工确认（人工节点）\n4. T-006 代码闭环（子工作流 code-loop · 2 节点）\n5. T-005 升级（升级节点）\n条件分支：\n- T-004 → T-006 当 人工通过\n- T-004 → T-005 当 人工驳回\n- T-006 → T-005 当 判定不通过\n字段映射：\n- T-001.research.notes → T-002.brief\n- T-001.research.notes → T-003.brief\n超时与重试：\n- T-001 超时 600s · 重试 2\n结论：编排可执行，未启动任何会话\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow dry-run doc-fanout --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "dry-run",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-27",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "{\n  \"id\": \"doc-fanout\",\n  \"name\": \"文档并行版\",\n  \"nodeCount\": 6,\n  \"edgeCount\": 7,\n  \"layers\": [\n    {\n      \"parallel\": false,\n      \"nodes\": [\n        \"T-001\"\n      ]\n    },\n    {\n      \"parallel\": true,\n      \"nodes\": [\n        \"T-002\",\n        \"T-003\"\n      ]\n    },\n    {\n      \"parallel\": false,\n      \"nodes\": [\n        \"T-004\"\n      ]\n    },\n    {\n      \"parallel\": false,\n      \"nodes\": [\n        \"T-006\"\n      ]\n    },\n    {\n      \"parallel\": false,\n      \"nodes\": [\n        \"T-005\"\n      ]\n    }\n  ],\n  \"branches\": [\n    {\n      \"from\": \"T-004\",\n      \"to\": \"T-006\",\n      \"when\": \"human_approved\"\n    },\n    {\n      \"from\": \"T-004\",\n      \"to\": \"T-005\",\n      \"when\": \"human_rejected\"\n    },\n    {\n      \"from\": \"T-006\",\n      \"to\": \"T-005\",\n      \"when\": \"failed\"\n    }\n  ],\n  \"mappings\": [\n    {\n      \"from\": \"T-001.research.notes\",\n      \"to\": \"brief\",\n      \"edge\": \"T-001→T-002\"\n    },\n    {\n      \"from\": \"T-001.research.notes\",\n      \"to\": \"brief\",\n      \"edge\": \"T-001→T-003\"\n    }\n  ],\n  \"policies\": [\n    {\n      \"nodeId\": \"T-001\",\n      \"timeout\": 600,\n      \"retry\": 2\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

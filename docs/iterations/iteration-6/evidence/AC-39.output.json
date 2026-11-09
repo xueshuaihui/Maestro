@@ -1,0 +1,204 @@
+{
+  "ac": "AC-39",
+  "title": "工作流差异与「无差异」",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：create fork 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "夹具自检：nodes[0].title 已改为 开发（改）",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 恰好三行（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then 首行逐字（期望逐字 \"对比工作流 fork（项目）与基线 code-loop（内置）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"对比工作流 fork（项目）与基线 code-loop（内置）\""
+    },
+    {
+      "text": "Then 差异行逐字（期望逐字 \"~ nodes[0].title：开发 → 开发（改）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"~ nodes[0].title：开发 → 开发（改）\""
+    },
+    {
+      "text": "Then 末行逐字（期望逐字 \"差异 1 项\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"差异 1 项\""
+    },
+    {
+      "text": "机检：顶层键恰 base/target/changes（期望 [\"base\",\"changes\",\"target\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"base\",\"changes\",\"target\"]"
+    },
+    {
+      "text": "机检：changes.length === 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：changes[0].field === nodes[0].title（期望 \"nodes[0].title\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"nodes[0].title\""
+    },
+    {
+      "text": "Given：create copy 退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then diff copy 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then diff copy 恰两行（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then diff copy 末行 = 无差异（期望逐字 \"无差异\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"无差异\""
+    },
+    {
+      "text": "Then diff copy 首行（裁-14①：定义体全等回退到内置基线）（期望逐字 \"对比工作流 copy（项目）与基线 code-loop（内置）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"对比工作流 copy（项目）与基线 code-loop（内置）\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "orch workflow create fork --name 分叉版 --from code-loop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "create",
+        "fork",
+        "--name",
+        "分叉版",
+        "--from",
+        "code-loop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-39",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 113,
+      "stdout": "已创建项目工作流：.orch/workflows/fork.yaml\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：把 fork.yaml 的 nodes[0].title 从 开发 改为 开发（改）",
+      "argv": [
+        "(fixture) 把 fork.yaml 的 nodes[0].title 从 开发 改为 开发（改）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow diff fork --against code-loop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "diff",
+        "fork",
+        "--against",
+        "code-loop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-39",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "对比工作流 fork（项目）与基线 code-loop（内置）\n~ nodes[0].title：开发 → 开发（改）\n差异 1 项\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow diff fork --against code-loop --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "diff",
+        "fork",
+        "--against",
+        "code-loop",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-39",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "{\n  \"base\": \"code-loop\",\n  \"target\": \"fork\",\n  \"changes\": [\n    {\n      \"field\": \"nodes[0].title\",\n      \"kind\": \"changed\",\n      \"base\": \"开发\",\n      \"target\": \"开发（改）\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow create copy --name 复制版 --from code-loop",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "create",
+        "copy",
+        "--name",
+        "复制版",
+        "--from",
+        "code-loop"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-39",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 124,
+      "stdout": "已创建项目工作流：.orch/workflows/copy.yaml\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow diff copy",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "diff",
+        "copy"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-39",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "对比工作流 copy（项目）与基线 code-loop（内置）\n无差异\n",
+      "stderr": ""
+    }
+  ]
+}

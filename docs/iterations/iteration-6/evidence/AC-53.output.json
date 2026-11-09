@@ -1,0 +1,100 @@
+{
+  "ac": "AC-53",
+  "title": "能力域 1 三项顺延落地：一次 role validate 全数报出且同文件多类各一行",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 首行（计数口径与 I1.5 一致：16 角色 + 10 技能 + 3 坏文件）（期望逐字 \"校验资产 29 个：3 个不合法\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验资产 29 个：3 个不合法\""
+    },
+    {
+      "text": "Then 错误行恰好四条且逐字（同文件 p.yaml 多类各一行、顺序由 C-08 固定）（期望 [\"- roles/c1.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）\",\"- roles/d1.yaml：派生链成环：d1（ROLE_DERIVE_CYCLE）\",\"- roles/p1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）\",\"- roles/p1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"- roles/c1.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）\",\"- roles/d1.yaml：派生链成环：d1（ROLE_DERIVE_CYCLE）\",\"- roles/p1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）\",\"- roles/p1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）\"]"
+    },
+    {
+      "text": "Then 输出恰为首行 + 四条错误行（期望 5）",
+      "ok": true,
+      "blocked": false,
+      "actual": "5"
+    },
+    {
+      "text": "机检：errors.map(code) 排序后与四个原因码逐字相同（期望 [\"ROLE_CONTRACT_UNBOUND\",\"ROLE_DERIVE_CYCLE\",\"ROLE_PERMISSION_MISMATCH\",\"ROLE_WAKE_UNKNOWN\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"ROLE_CONTRACT_UNBOUND\",\"ROLE_DERIVE_CYCLE\",\"ROLE_PERMISSION_MISMATCH\",\"ROLE_WAKE_UNKNOWN\"]"
+    },
+    {
+      "text": "机检：errors.filter(file === roles/p1.yaml).length === 2（同文件两类各一行、互不吞并）（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：counts.invalid === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：counts.assets === 29（期望 29）",
+      "ok": true,
+      "blocked": false,
+      "actual": "29"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置三份坏角色 c1/p1/d1 + 工作流 use-c.yaml（入口 T-001 引用 c1，没有任何边给它 brief）",
+      "argv": [
+        "(fixture) 预置三份坏角色 c1/p1/d1 + 工作流 use-c.yaml（入口 T-001 引用 c1，没有任何边给它 brief）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-53",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "校验资产 29 个：3 个不合法\n- roles/c1.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）\n- roles/d1.yaml：派生链成环：d1（ROLE_DERIVE_CYCLE）\n- roles/p1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）\n- roles/p1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-53",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 29,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 3,\n    \"invalid\": 3\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_CONTRACT_UNBOUND\",\n      \"file\": \"roles/c1.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"inputs\",\n      \"line\": null,\n      \"detail\": \"契约不连通：brief 没有来源\"\n    },\n    {\n      \"code\": \"ROLE_DERIVE_CYCLE\",\n      \"file\": \"roles/d1.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"derived_from\",\n      \"line\": null,\n      \"detail\": \"派生链成环：d1\"\n    },\n    {\n      \"code\": \"ROLE_PERMISSION_MISMATCH\",\n      \"file\": \"roles/p1.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"tools\",\n      \"line\": null,\n      \"detail\": \"副作用等级为 read 的角色不能带写工具 write\"\n    },\n    {\n      \"code\": \"ROLE_WAKE_UNKNOWN\",\n      \"file\": \"roles/p1.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"wake_allow\",\n      \"line\": null,\n      \"detail\": \"唤醒白名单里的角色不存在：ghost\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

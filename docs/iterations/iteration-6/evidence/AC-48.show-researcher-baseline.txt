@@ -1,0 +1,7 @@
+- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1
+  职责：围绕问题收集资料，写出带出处的调研结论
+  技能：research-brief
+  工具：read, write
+  可唤醒：—
+  来源：内置 assets/roles/researcher.yaml
+

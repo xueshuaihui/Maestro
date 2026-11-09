@@ -1,0 +1,170 @@
+{
+  "ac": "AC-31",
+  "title": "契约不连通的工作流被拒绝（规划验收）",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具自检：T-002 inputs 已改为 [brief, outline]",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 报 WORKFLOW_MAPPING_INCOMPLETE（期望含 \"（WORKFLOW_MAPPING_INCOMPLETE）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：T-002 的输入 outline 没有来源（WORKFLOW_MAPPING_INCOMPLETE）\n"
+    },
+    {
+      "text": "Then 明细为 T-002 的输入 outline 没有来源（期望含 \"T-002 的输入 outline 没有来源\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：T-002 的输入 outline 没有来源（WORKFLOW_MAPPING_INCOMPLETE）\n"
+    },
+    {
+      "text": "机检：errors[0].code === WORKFLOW_MAPPING_INCOMPLETE（期望 \"WORKFLOW_MAPPING_INCOMPLETE\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"WORKFLOW_MAPPING_INCOMPLETE\""
+    },
+    {
+      "text": "机检：errors[0].detail 含 outline（期望含 \"outline\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "T-002 的输入 outline 没有来源"
+    },
+    {
+      "text": "夹具自检：outline 映射已补上",
+      "ok": true,
+      "blocked": false,
+      "actual": "replace applied"
+    },
+    {
+      "text": "Then 补上映射后退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 补上映射后全部通过（期望含 \"全部通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "校验工作流 1 个：全部通过\n"
+    },
+    {
+      "text": "机检：补上后 counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置附录 A-13 的 doc-fanout（writeDocFanout）",
+      "argv": [
+        "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：把 T-002.inputs 改成 [brief, outline]（无任何边提供 outline）",
+      "argv": [
+        "(fixture) 把 T-002.inputs 改成 [brief, outline]（无任何边提供 outline）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-31",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "校验工作流 1 个：1 个不合法\n- workflows/doc-fanout.yaml：T-002 的输入 outline 没有来源（WORKFLOW_MAPPING_INCOMPLETE）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-31",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 1\n  },\n  \"errors\": [\n    {\n      \"code\": \"WORKFLOW_MAPPING_INCOMPLETE\",\n      \"file\": \"workflows/doc-fanout.yaml\",\n      \"scope\": \"workflow\",\n      \"field\": null,\n      \"line\": null,\n      \"detail\": \"T-002 的输入 outline 没有来源\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：在 T-001→T-002 的 map 补一条 {from: T-001.research.notes, to: outline}",
+      "argv": [
+        "(fixture) 在 T-001→T-002 的 map 补一条 {from: T-001.research.notes, to: outline}"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout（补映射后）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-31",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 115,
+      "stdout": "校验工作流 1 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow validate doc-fanout --format json（补映射后）",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate",
+        "doc-fanout",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-31",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 1,\n    \"builtin\": 0,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+$ "(fixture) 写 fixtures/body.md（skill create 的 --body-file 夹具，验收侧自放、非产品落盘）"
+# label=夹具：写 fixtures/body.md（skill create 的 --body-file 夹具，验收侧自放、非产品落盘） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role create lead-dev --name 首席开发 --group coding --artifact-type code --side-effect write --skills code-change,test-run
+# label=orch role create lead-dev --name 首席开发 --group coding --artifact-type code --side-effect write --skills code-change,test-run cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-46 exit=0 108ms
+已创建项目角色：.orch/roles/lead-dev.yaml
+- lead-dev 首席开发 · 编码工程 · code · write · 技能 2 · 并发 1
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role create junior-dev --from lead-dev
+# label=orch role create junior-dev --from lead-dev cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-46 exit=0 104ms
+已创建项目角色：.orch/roles/junior-dev.yaml
+- junior-dev 首席开发（派生） · 编码工程 · code · write · 技能 2 · 并发 1
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role export lead-dev --out exports/lead-dev.yaml
+# label=orch role export lead-dev --out exports/lead-dev.yaml cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-46 exit=0 116ms
+已导出角色 lead-dev 到 exports/lead-dev.yaml
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role import exports/lead-dev.yaml --force
+# label=orch role import exports/lead-dev.yaml --force cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-46 exit=0 117ms
+已安装项目角色：.orch/roles/lead-dev.yaml
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role edit junior-dev --set summary=协助开发
+# label=orch role edit junior-dev --set summary=协助开发 cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-46 exit=0 105ms
+已更新项目角色：.orch/roles/junior-dev.yaml
+- junior-dev 首席开发（派生） · 编码工程 · code · write · 技能 2 · 并发 1
+校验：通过
+（已按规范格式重写，注释不保留）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill create note-taker --name 记录员 --summary 记录结论与可核对的出处 --applies-to writing --body-file fixtures/body.md
+# label=orch skill create note-taker --name 记录员 --summary 记录结论与可核对的出处 --applies-to writing --body-file fixtures/body.md cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-46 exit=0 119ms
+已创建项目技能：.orch/skills/note-taker/SKILL.md
+- note-taker 记录员 · 内容创作 · 命令 0
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill export code-change --out exports/code-change.md
+# label=orch skill export code-change --out exports/code-change.md cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-46 exit=0 112ms
+已导出技能 code-change 到 exports/code-change.md
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js skill import exports/code-change.md
+# label=orch skill import exports/code-change.md cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-46 exit=0 105ms
+已安装项目技能：.orch/skills/code-change/SKILL.md
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow create fork --name 分叉版 --from code-loop
+# label=orch workflow create fork --name 分叉版 --from code-loop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-46 exit=0 126ms
+已创建项目工作流：.orch/workflows/fork.yaml
+校验：通过
+
+
+$ git status --porcelain assets
+# label=git status --porcelain assets cwd=d:\WWW\Maestro exit=0 46ms

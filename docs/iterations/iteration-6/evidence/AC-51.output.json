@@ -1,0 +1,140 @@
+{
+  "ac": "AC-51",
+  "title": "架构纯净：无资产名、无游离中文",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "机检：$COMMON 恰 31 词（D-9「与 I1.5 完全相同的 31 词」）（期望 31）",
+      "ok": true,
+      "blocked": false,
+      "actual": "31"
+    },
+    {
+      "text": "机检：$NOCOORD 恰 30 词（去 coordinator）（期望 30）",
+      "ok": true,
+      "blocked": false,
+      "actual": "30"
+    },
+    {
+      "text": "机检：$NOCOORD 与 $COMMON 的差异恰是 coordinator（期望 \"coordinator\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"coordinator\""
+    },
+    {
+      "text": "Then 第 1 条退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第 1 条输出 OK: 扫描 N 个文件…零命中（期望匹配 /^OK: 扫描 \\d+ 个文件，.+零命中$/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "OK: 扫描 16 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中"
+    },
+    {
+      "text": "Then 第 2 条退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第 2 条输出 OK: 扫描 N 个文件…零命中（期望匹配 /^OK: 扫描 \\d+ 个文件，.+零命中$/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "OK: 扫描 11 个文件，src/registry 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中"
+    },
+    {
+      "text": "Then 第 3 条退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第 3 条输出 OK: 扫描 N 个文件…零命中（期望匹配 /^OK: 扫描 \\d+ 个文件，.+零命中$/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "OK: 扫描 3 个文件，src/cli/roles.js, src/cli/skills.js, src/cli/workflows.js 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中"
+    },
+    {
+      "text": "Then 第 4 条退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 第 4 条输出逐字 OK: no CJK（期望 \"OK: no CJK\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"OK: no CJK\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid \"$COMMON\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\test\\fixtures\\purity-check.mjs",
+        "--dirs",
+        "src/core,src/daemon",
+        "--forbid",
+        "task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 93,
+      "stdout": "OK: 扫描 16 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中\n",
+      "stderr": ""
+    },
+    {
+      "label": "node test/fixtures/purity-check.mjs --dirs src/registry --forbid \"$NOCOORD\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\test\\fixtures\\purity-check.mjs",
+        "--dirs",
+        "src/registry",
+        "--forbid",
+        "task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 85,
+      "stdout": "OK: 扫描 11 个文件，src/registry 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中\n",
+      "stderr": ""
+    },
+    {
+      "label": "node test/fixtures/purity-check.mjs --files src/cli/roles.js,src/cli/skills.js,src/cli/workflows.js --forbid \"$COMMON\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\test\\fixtures\\purity-check.mjs",
+        "--files",
+        "src/cli/roles.js,src/cli/skills.js,src/cli/workflows.js",
+        "--forbid",
+        "task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 93,
+      "stdout": "OK: 扫描 3 个文件，src/cli/roles.js, src/cli/skills.js, src/cli/workflows.js 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中\n",
+      "stderr": ""
+    },
+    {
+      "label": "node -e \"<D-9 第 4 条逐字脚本>\"",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "-e",
+        "const fs=require('fs'),p=require('path');const roots=['src/registry','src/cli/roles.js','src/cli/skills.js','src/cli/workflows.js'];const bad=[];const walk=d=>{const st=fs.statSync(d);if(st.isDirectory()){for(const e of fs.readdirSync(d))walk(p.join(d,e));}else if(/[\\u4e00-\\u9fff]/.test(fs.readFileSync(d,'utf8')))bad.push(d);};roots.forEach(walk);if(bad.length){console.log(bad.join('\\n'));process.exit(1);}console.log('OK: no CJK');"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 84,
+      "stdout": "OK: no CJK\n",
+      "stderr": ""
+    }
+  ]
+}

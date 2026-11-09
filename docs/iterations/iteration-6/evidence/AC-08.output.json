@@ -1,0 +1,106 @@
+{
+  "ac": "AC-08",
+  "title": "导入被拒的两种情形都不落盘",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 第一次退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第一次输出恰好一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第一次输出逐字（期望逐字 \"导入被拒：引用的技能不存在：no-such（ROLE_SKILL_NOT_FOUND）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"导入被拒：引用的技能不存在：no-such（ROLE_SKILL_NOT_FOUND）\""
+    },
+    {
+      "text": "机检：.orch/roles 文件清单在第一次执行前后逐字相同（期望 {\"lead-dev.yaml\":{\"sha256\":\"0d458f7ac2ca06155a1b8c007d178d0a89db018596832f211ee22dd104f29a6f\",\"bytes\":186,\"mtimeIso\":\"2026-11-09T12:22:34.832Z\"}}）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"lead-dev.yaml\":{\"sha256\":\"0d458f7ac2ca06155a1b8c007d178d0a89db018596832f211ee22dd104f29a6f\",\"bytes\":186,\"mtimeIso\":\"2026-11-09T12:22:34.832Z\"}}"
+    },
+    {
+      "text": "机检：第一次执行后 test -e \"$ROOT/.orch/roles/ghost.yaml\" 为假",
+      "ok": true,
+      "blocked": false,
+      "actual": "ghost.yaml 不存在"
+    },
+    {
+      "text": "Then 第二次退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第二次输出恰好一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 第二次输出逐字（期望逐字 \"已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）\""
+    },
+    {
+      "text": "机检：.orch/roles 文件清单在两次执行前后逐字相同（期望 {\"lead-dev.yaml\":{\"sha256\":\"0d458f7ac2ca06155a1b8c007d178d0a89db018596832f211ee22dd104f29a6f\",\"bytes\":186,\"mtimeIso\":\"2026-11-09T12:22:34.832Z\"}}）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"lead-dev.yaml\":{\"sha256\":\"0d458f7ac2ca06155a1b8c007d178d0a89db018596832f211ee22dd104f29a6f\",\"bytes\":186,\"mtimeIso\":\"2026-11-09T12:22:34.832Z\"}}"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置根下 ghost.yaml（技能 no-such）与 lead-dev.yaml（合法）；.orch/roles/lead-dev.yaml 已存在",
+      "argv": [
+        "(fixture) 预置根下 ghost.yaml（技能 no-such）与 lead-dev.yaml（合法）；.orch/roles/lead-dev.yaml 已存在"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "{\"lead-dev.yaml\":{\"sha256\":\"0d458f7ac2ca06155a1b8c007d178d0a89db018596832f211ee22dd104f29a6f\",\"bytes\":186,\"mtimeIso\":\"2026-11-09T12:22:34.832Z\"}}",
+      "stderr": ""
+    },
+    {
+      "label": "orch role import ghost.yaml",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "import",
+        "ghost.yaml"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-08",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "导入被拒：引用的技能不存在：no-such（ROLE_SKILL_NOT_FOUND）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role import lead-dev.yaml",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "import",
+        "lead-dev.yaml"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-08",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 112,
+      "stdout": "已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）\n",
+      "stderr": ""
+    }
+  ]
+}

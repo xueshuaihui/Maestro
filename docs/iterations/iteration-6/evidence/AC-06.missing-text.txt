@@ -1,0 +1,3 @@
+校验资产 28 个：1 个不合法
+- roles/b1.yaml：派生来源不存在：ghost（ROLE_DERIVE_MISSING）
+

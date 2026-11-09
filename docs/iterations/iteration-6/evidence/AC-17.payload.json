@@ -1,0 +1,18 @@
+{
+  "skill": {
+    "id": "code-change",
+    "name": "代码修改",
+    "appliesTo": [
+      "coding"
+    ],
+    "appliesToLabels": [
+      "编码工程"
+    ],
+    "commands": [
+      "node --test"
+    ],
+    "source": "builtin",
+    "file": "assets/skills/code-change/SKILL.md"
+  },
+  "body": "\n### 工作方法\n\n1. 先读任务里「产物：」那一行，确认要改的文件。\n2. 只改必要位置，不动无关文件。\n3. 改完说明：改了哪个文件、为什么这样改。\n"
+}

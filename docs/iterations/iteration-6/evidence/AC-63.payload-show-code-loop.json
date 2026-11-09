@@ -1,0 +1,63 @@
+{
+  "workflow": {
+    "id": "code-loop",
+    "name": "编码闭环",
+    "nodeCount": 2,
+    "edgeCount": 3,
+    "source": "builtin",
+    "file": null,
+    "entry": "T-001",
+    "terminal": "T-002"
+  },
+  "nodes": [
+    {
+      "id": "T-001",
+      "nodeType": "role",
+      "role": "developer",
+      "title": "开发",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": 2,
+      "parallelScope": null,
+      "scope": "T-001",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "T-002",
+      "nodeType": "role",
+      "role": "tester",
+      "title": "测试",
+      "timeout": null,
+      "retry": 0,
+      "maxRounds": 2,
+      "parallelScope": null,
+      "scope": "T-002",
+      "inputs": [],
+      "outputs": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow",
+      "when": "always",
+      "map": []
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest",
+      "when": "always",
+      "map": []
+    }
+  ]
+}

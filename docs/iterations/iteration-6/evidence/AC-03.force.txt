@@ -1,0 +1,4 @@
+已创建项目角色：.orch/roles/lead-dev.yaml
+- lead-dev 另一个名字 · 编码工程 · code · write · 技能 0 · 并发 1
+校验：通过
+

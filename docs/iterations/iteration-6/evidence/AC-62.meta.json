@@ -1,0 +1,33 @@
+{
+  "ac": "AC-62",
+  "title": "node_type 四类取值异常与子工作流引用 / 跨工作流环",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:13.677Z",
+  "finishedAt": "2026-11-09T12:24:13.897Z",
+  "durationMs": 220,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-62",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-62"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 15,
+  "notes": [],
+  "extraFiles": [
+    "AC-62.validate-text.txt",
+    "AC-62.payload.json"
+  ]
+}

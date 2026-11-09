@@ -1,0 +1,8 @@
+- lead-dev 开发（派生） · 编码工程 · code · write · 技能 2 · 并发 1
+  职责：按任务修改代码，交出声明的产物文件
+  技能：test-run, code-review
+  工具：read, write, edit, bash
+  可唤醒：tester
+  来源：项目 .orch/roles/lead-dev.yaml
+  派生自：developer
+

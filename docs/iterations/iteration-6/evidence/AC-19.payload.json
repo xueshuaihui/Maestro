@@ -1,0 +1,27 @@
+{
+  "counts": {
+    "assets": 12,
+    "skills": 10,
+    "builtin": 10,
+    "project": 0,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "SKILL_BODY_EMPTY",
+      "file": "skills/empty/SKILL.md",
+      "scope": "skill",
+      "field": null,
+      "line": null,
+      "detail": "技能正文为空：empty"
+    },
+    {
+      "code": "SKILL_SCHEMA_MISSING",
+      "file": "skills/half/SKILL.md",
+      "scope": "skill",
+      "field": "summary",
+      "line": null,
+      "detail": "缺少必填字段：summary"
+    }
+  ]
+}

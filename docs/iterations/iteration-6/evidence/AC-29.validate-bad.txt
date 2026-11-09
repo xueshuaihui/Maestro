@@ -1,0 +1,4 @@
+校验工作流 1 个：1 个不合法
+- workflows/timeout-bad.yaml：超时取值非法：0；合法范围：1~86400 的整数（WORKFLOW_TIMEOUT_INVALID）
+- workflows/timeout-bad.yaml：重试取值非法：9；合法范围：0~5 的整数（WORKFLOW_RETRY_INVALID）
+

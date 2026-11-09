@@ -1,0 +1,5 @@
+已更新项目角色：.orch/roles/lead-dev.yaml
+- lead-dev 开发（派生） · 编码工程 · code · write · 技能 2 · 并发 1
+校验：通过
+（已按规范格式重写，注释不保留）
+

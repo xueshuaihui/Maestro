@@ -1,0 +1,36 @@
+{
+  "ac": "AC-53",
+  "title": "能力域 1 三项顺延落地：一次 role validate 全数报出且同文件多类各一行",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:02.197Z",
+  "finishedAt": "2026-11-09T12:24:02.417Z",
+  "durationMs": 220,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-53",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-53"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 8,
+  "notes": [
+    "裁-16a/R-12（AC-11 先例）：Given 的单字符 id 与 C-01 互斥，本用例按 2 字符 id（c1/p1/d1）取证，Then 的明细语义逐字不变。",
+    "use-c 的 T-001 写节点级 wake_allow: [reviewer]（AC-11/AC-37 先例）：否则该工作流被 WAKE_DENIED 剔出 workflowMap，契约连通检查看不到 c1 的引用、ROLE_CONTRACT_UNBOUND 造不出来。"
+  ],
+  "extraFiles": [
+    "AC-53.validate-text.txt",
+    "AC-53.payload.json"
+  ]
+}

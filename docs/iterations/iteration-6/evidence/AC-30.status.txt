@@ -1,0 +1,106 @@
+$ "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+# label=夹具：预置附录 A-13 的 doc-fanout（writeDocFanout） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-30 exit=0 108ms
+校验工作流 1 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow dry-run doc-fanout
+# label=orch workflow dry-run doc-fanout cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-30 exit=0 111ms
+编排计划 doc-fanout · 6 节点 · 7 边 · 1 个并行组 · 1 个子工作流
+1. T-001 研究（角色节点 researcher）
+2. 并行组 draft：T-002 撰写A（角色节点 writer）｜ T-003 撰写B（角色节点 editor） · 汇合：all
+3. T-004 人工确认（人工节点）
+4. T-006 代码闭环（子工作流 code-loop · 2 节点）
+5. T-005 升级（升级节点）
+条件分支：
+- T-004 → T-006 当 人工通过
+- T-004 → T-005 当 人工驳回
+- T-006 → T-005 当 判定不通过
+字段映射：
+- T-001.research.notes → T-002.brief
+- T-001.research.notes → T-003.brief
+超时与重试：
+- T-001 超时 600s · 重试 2
+结论：编排可执行，未启动任何会话
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow dry-run doc-fanout --format json
+# label=orch workflow dry-run doc-fanout --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-30 exit=0 168ms
+{
+  "id": "doc-fanout",
+  "name": "文档并行版",
+  "nodeCount": 6,
+  "edgeCount": 7,
+  "layers": [
+    {
+      "parallel": false,
+      "nodes": [
+        "T-001"
+      ]
+    },
+    {
+      "parallel": true,
+      "nodes": [
+        "T-002",
+        "T-003"
+      ]
+    },
+    {
+      "parallel": false,
+      "nodes": [
+        "T-004"
+      ]
+    },
+    {
+      "parallel": false,
+      "nodes": [
+        "T-006"
+      ]
+    },
+    {
+      "parallel": false,
+      "nodes": [
+        "T-005"
+      ]
+    }
+  ],
+  "branches": [
+    {
+      "from": "T-004",
+      "to": "T-006",
+      "when": "human_approved"
+    },
+    {
+      "from": "T-004",
+      "to": "T-005",
+      "when": "human_rejected"
+    },
+    {
+      "from": "T-006",
+      "to": "T-005",
+      "when": "failed"
+    }
+  ],
+  "mappings": [
+    {
+      "from": "T-001.research.notes",
+      "to": "brief",
+      "edge": "T-001→T-002"
+    },
+    {
+      "from": "T-001.research.notes",
+      "to": "brief",
+      "edge": "T-001→T-003"
+    }
+  ],
+  "policies": [
+    {
+      "nodeId": "T-001",
+      "timeout": 600,
+      "retry": 2
+    }
+  ]
+}
+

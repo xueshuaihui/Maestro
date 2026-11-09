@@ -1,0 +1,54 @@
+$ "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+# label=夹具：预置附录 A-13 的 doc-fanout（writeDocFanout） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ "(fixture) 把 T-002.inputs 改成 [brief, outline]（无任何边提供 outline）"
+# label=夹具：把 T-002.inputs 改成 [brief, outline]（无任何边提供 outline） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-31 exit=1 100ms
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：T-002 的输入 outline 没有来源（WORKFLOW_MAPPING_INCOMPLETE）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-31 exit=1 100ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_MAPPING_INCOMPLETE",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "T-002 的输入 outline 没有来源"
+    }
+  ]
+}
+
+
+$ "(fixture) 在 T-001→T-002 的 map 补一条 {from: T-001.research.notes, to: outline}"
+# label=夹具：在 T-001→T-002 的 map 补一条 {from: T-001.research.notes, to: outline} cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout（补映射后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-31 exit=0 115ms
+校验工作流 1 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json（补映射后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-31 exit=0 101ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+

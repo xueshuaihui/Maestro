@@ -1,0 +1,41 @@
+$ "(fixture) 预置 w1（wake_allow: [ghost]）与 w2（wake_allow: [w2]），其余字段合法"
+# label=夹具：预置 w1（wake_allow: [ghost]）与 w2（wake_allow: [w2]），其余字段合法 cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-14 exit=1 116ms
+校验资产 28 个：2 个不合法
+- roles/w1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）
+- roles/w2.yaml：唤醒白名单不能包含自己：w2（ROLE_WAKE_SELF）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-14 exit=1 99ms
+{
+  "counts": {
+    "assets": 28,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "ROLE_WAKE_UNKNOWN",
+      "file": "roles/w1.yaml",
+      "scope": "role",
+      "field": "wake_allow",
+      "line": null,
+      "detail": "唤醒白名单里的角色不存在：ghost"
+    },
+    {
+      "code": "ROLE_WAKE_SELF",
+      "file": "roles/w2.yaml",
+      "scope": "role",
+      "field": "wake_allow",
+      "line": null,
+      "detail": "唤醒白名单不能包含自己：w2"
+    }
+  ]
+}
+

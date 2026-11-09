@@ -1,0 +1,28 @@
+{
+  "counts": {
+    "assets": 28,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "ROLE_WAKE_UNKNOWN",
+      "file": "roles/w1.yaml",
+      "scope": "role",
+      "field": "wake_allow",
+      "line": null,
+      "detail": "唤醒白名单里的角色不存在：ghost"
+    },
+    {
+      "code": "ROLE_WAKE_SELF",
+      "file": "roles/w2.yaml",
+      "scope": "role",
+      "field": "wake_allow",
+      "line": null,
+      "detail": "唤醒白名单不能包含自己：w2"
+    }
+  ]
+}

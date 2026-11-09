@@ -1,0 +1,33 @@
+$ "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+# label=夹具：预置附录 A-13 的 doc-fanout（writeDocFanout） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ "(fixture) 追加节点 T-007（node_type: role、role: tester，无任何边指向）"
+# label=夹具：追加节点 T-007（node_type: role、role: tester，无任何边指向） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-32 exit=1 108ms
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：节点不可达：T-007（WORKFLOW_UNREACHABLE）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-32 exit=1 102ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_UNREACHABLE",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "节点不可达：T-007"
+    }
+  ]
+}
+

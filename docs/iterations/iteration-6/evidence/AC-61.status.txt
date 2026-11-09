@@ -1,0 +1,45 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate
+# label=orch workflow validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-61 exit=0 105ms
+校验工作流 3 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate --format json
+# label=orch workflow validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-61 exit=0 100ms
+{
+  "counts": {
+    "assets": 3,
+    "builtin": 3,
+    "project": 0,
+    "invalid": 0
+  },
+  "errors": []
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate
+# label=orch workflow validate（writer wake_allow 改回 [editor] 后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-61 exit=1 107ms
+校验工作流 3 个：1 个不合法
+- 内置 task-loop：唤醒不在白名单内：writer → reviewer（WORKFLOW_WAKE_DENIED）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate --format json
+# label=orch workflow validate --format json（writer 改坏后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-61 exit=1 96ms
+{
+  "counts": {
+    "assets": 3,
+    "builtin": 3,
+    "project": 0,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_WAKE_DENIED",
+      "file": "内置 task-loop",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "唤醒不在白名单内：writer → reviewer"
+    }
+  ]
+}
+

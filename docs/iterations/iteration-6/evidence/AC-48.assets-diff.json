@@ -1,0 +1,32 @@
+[
+  {
+    "file": "assets/roles/researcher.yaml",
+    "diffs": [
+      {
+        "i": 12,
+        "a": "wake_allow: []",
+        "b": "wake_allow: [writer]"
+      }
+    ]
+  },
+  {
+    "file": "assets/roles/writer.yaml",
+    "diffs": [
+      {
+        "i": 13,
+        "a": "wake_allow:",
+        "b": "wake_allow: [editor, reviewer]"
+      },
+      {
+        "i": 14,
+        "a": "  - editor",
+        "b": "max_concurrent_sessions: 2"
+      },
+      {
+        "i": 15,
+        "a": "max_concurrent_sessions: 2",
+        "b": null
+      }
+    ]
+  }
+]

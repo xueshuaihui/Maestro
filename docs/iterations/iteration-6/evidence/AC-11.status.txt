@@ -1,0 +1,68 @@
+$ "(fixture) 预置五份坏角色 m1/s1/c1/p1/d1 + 工作流 use-c1.yaml（c1 只作入口，没有任何边给它 brief）"
+# label=夹具：预置五份坏角色 m1/s1/c1/p1/d1 + 工作流 use-c1.yaml（c1 只作入口，没有任何边给它 brief） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-11 exit=1 101ms
+{
+  "counts": {
+    "assets": 31,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 3,
+    "invalid": 5
+  },
+  "errors": [
+    {
+      "code": "ROLE_CONTRACT_UNBOUND",
+      "file": "roles/c1.yaml",
+      "scope": "role",
+      "field": "inputs",
+      "line": null,
+      "detail": "契约不连通：brief 没有来源"
+    },
+    {
+      "code": "ROLE_DERIVE_CYCLE",
+      "file": "roles/d1.yaml",
+      "scope": "role",
+      "field": "derived_from",
+      "line": null,
+      "detail": "派生链成环：d1"
+    },
+    {
+      "code": "ROLE_SCHEMA_MISSING",
+      "file": "roles/m1.yaml",
+      "scope": "role",
+      "field": "max_concurrent_sessions",
+      "line": null,
+      "detail": "缺少必填字段：max_concurrent_sessions"
+    },
+    {
+      "code": "ROLE_PERMISSION_MISMATCH",
+      "file": "roles/p1.yaml",
+      "scope": "role",
+      "field": "tools",
+      "line": null,
+      "detail": "副作用等级为 read 的角色不能带写工具 write"
+    },
+    {
+      "code": "ROLE_SKILL_NOT_FOUND",
+      "file": "roles/s1.yaml",
+      "scope": "role",
+      "field": "skills",
+      "line": null,
+      "detail": "引用的技能不存在：no-such"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-11 exit=1 97ms
+校验资产 31 个：5 个不合法
+- roles/c1.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）
+- roles/d1.yaml：派生链成环：d1（ROLE_DERIVE_CYCLE）
+- roles/m1.yaml：缺少必填字段：max_concurrent_sessions（ROLE_SCHEMA_MISSING）
+- roles/p1.yaml：副作用等级为 read 的角色不能带写工具 write（ROLE_PERMISSION_MISMATCH）
+- roles/s1.yaml：引用的技能不存在：no-such（ROLE_SKILL_NOT_FOUND）
+

@@ -1,0 +1,4 @@
+校验资产 28 个：2 个不合法
+- roles/w1.yaml：唤醒白名单里的角色不存在：ghost（ROLE_WAKE_UNKNOWN）
+- roles/w2.yaml：唤醒白名单不能包含自己：w2（ROLE_WAKE_SELF）
+

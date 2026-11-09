@@ -1,0 +1,26 @@
+schema: workflow/v1
+id: fork
+name: 分叉版
+entry: T-001
+terminal: T-002
+nodes:
+  - id: T-001
+    node_type: role
+    role: developer
+    title: 开发
+    max_rounds: 2
+  - id: T-002
+    node_type: role
+    role: tester
+    title: 测试
+    max_rounds: 2
+edges:
+  - from: T-001
+    to: T-002
+  - from: T-002
+    to: T-001
+    kind: backflow
+  - from: T-001
+    to: T-002
+    kind: retest
+

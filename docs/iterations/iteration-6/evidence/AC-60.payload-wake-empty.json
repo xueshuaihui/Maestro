@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_WAKE_DENIED",
+      "file": "workflows/wake-empty.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "唤醒不在白名单内：r-src → developer"
+    }
+  ]
+}

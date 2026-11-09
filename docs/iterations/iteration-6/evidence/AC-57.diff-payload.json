@@ -1,0 +1,12 @@
+{
+  "base": "developer",
+  "target": "my-role",
+  "changes": [
+    {
+      "field": "name",
+      "kind": "changed",
+      "base": "开发",
+      "target": "我的角色"
+    }
+  ]
+}

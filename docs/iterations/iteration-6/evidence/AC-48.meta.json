@@ -1,0 +1,56 @@
+{
+  "ac": "AC-48",
+  "title": "I1.5 的 role 三命令逐字不变",
+  "face": "混合",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:23:25.726Z",
+  "finishedAt": "2026-11-09T12:23:30.824Z",
+  "durationMs": 5099,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-48",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-48"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 37,
+  "notes": [
+    "基线来源：① docs/iterations/iteration-5/evidence/ 存量证据（AC-01.list / AC-02.show / AC-12.validate 及对应 payload；AC-45.output.json 抽取 show developer --format json）；② 0cd113b 基线代码树（git worktree）现跑补齐 I1.5 证据缺失的内置 researcher/writer show 文本与三条 show --format json。切取规则：存量 .txt/.json 证据去掉尾随空行后逐行比对（diffLines，行首尾不改）。",
+    "基线工作树已移除（git worktree remove --force + prune），仓库工作区未被改动。"
+  ],
+  "extraFiles": [
+    "AC-48.list.txt",
+    "AC-48.diff-list.txt",
+    "AC-48.show-developer.txt",
+    "AC-48.diff-show-developer.txt",
+    "AC-48.validate.txt",
+    "AC-48.diff-validate.txt",
+    "AC-48.list-json.txt",
+    "AC-48.diff-list-json.txt",
+    "AC-48.validate-json.txt",
+    "AC-48.diff-validate-json.txt",
+    "AC-48.show-developer-json.txt",
+    "AC-48.diff-show-developer-json.txt",
+    "AC-48.show-researcher.txt",
+    "AC-48.show-researcher-baseline.txt",
+    "AC-48.show-researcher-json.txt",
+    "AC-48.show-researcher-json-baseline.txt",
+    "AC-48.show-writer.txt",
+    "AC-48.show-writer-baseline.txt",
+    "AC-48.show-writer-json.txt",
+    "AC-48.show-writer-json-baseline.txt",
+    "AC-48.assets-diff.json",
+    "AC-48.cli-role-test-tap.txt"
+  ]
+}

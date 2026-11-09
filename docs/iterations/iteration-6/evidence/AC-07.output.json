@@ -1,0 +1,195 @@
+{
+  "ac": "AC-07",
+  "title": "导出再导入，角色在另一个项目里可用",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Given：A 里建出 lead-dev（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 导出回一行、退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 导出输出恰好一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 导出行逐字（期望逐字 \"已导出角色 lead-dev 到 exports/lead-dev.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已导出角色 lead-dev 到 exports/lead-dev.yaml\""
+    },
+    {
+      "text": "机检：A 导出的文件存在",
+      "ok": true,
+      "blocked": false,
+      "actual": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-07-A\\exports\\lead-dev.yaml"
+    },
+    {
+      "text": "机检：A 导出的文件里含 derived_from: developer（期望含 \"derived_from: developer\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "schema: role/v1\nid: lead-dev\nname: 开发（派生）\ngroup: coding\nsummary: 按任务修改代码，交出声明的产物文件\nartifact_type: code\nside_effect: write\nderived_from: developer\nskills: [test-run]\ntools: [read, write, edit, bash]\nwake_allow: [tester]\nmax_concurrent_sessions: 1\n"
+    },
+    {
+      "text": "Then 导入退出 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 导入输出恰好两行（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 导入第 1 行逐字（期望逐字 \"已安装项目角色：.orch/roles/lead-dev.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已安装项目角色：.orch/roles/lead-dev.yaml\""
+    },
+    {
+      "text": "Then 导入第 2 行逐字（期望逐字 \"校验：通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验：通过\""
+    },
+    {
+      "text": "Then B 的 role list 首行 = 角色 17 个（内置 16 · 项目 1）（期望逐字 \"角色 17 个（内置 16 · 项目 1）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"角色 17 个（内置 16 · 项目 1）\""
+    },
+    {
+      "text": "机检：B 的 lead-dev.yaml 与 A 导出文件 sha256 相同（逐字节）（期望 \"b7ef68f678392b3afeaadf19dd19ed98908952024ba44f218b1a6ecbf3b6e8f7\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"b7ef68f678392b3afeaadf19dd19ed98908952024ba44f218b1a6ecbf3b6e8f7\""
+    },
+    {
+      "text": "机检：B 的 role validate counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "（Given）[A] orch role create lead-dev --from developer --skills test-run",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "create",
+        "lead-dev",
+        "--from",
+        "developer",
+        "--skills",
+        "test-run"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-07-A",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 121,
+      "stdout": "已创建项目角色：.orch/roles/lead-dev.yaml\n- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：项目根 A 预置 lead-dev（--from developer --skills test-run）；项目根 B 为空",
+      "argv": [
+        "(fixture) 项目根 A 预置 lead-dev（--from developer --skills test-run）；项目根 B 为空"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "[A] orch role export lead-dev --out exports/lead-dev.yaml",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "export",
+        "lead-dev",
+        "--out",
+        "exports/lead-dev.yaml"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-07-A",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 101,
+      "stdout": "已导出角色 lead-dev 到 exports/lead-dev.yaml\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：把 exports/lead-dev.yaml 拷到 B 的根下（lead-dev.yaml）",
+      "argv": [
+        "(fixture) 把 exports/lead-dev.yaml 拷到 B 的根下（lead-dev.yaml）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "sha256=b7ef68f678392b3afeaadf19dd19ed98908952024ba44f218b1a6ecbf3b6e8f7",
+      "stderr": ""
+    },
+    {
+      "label": "[B] orch role import lead-dev.yaml",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "import",
+        "lead-dev.yaml"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-07-B",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "已安装项目角色：.orch/roles/lead-dev.yaml\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "[B] orch role list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-07-B",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 89,
+      "stdout": "角色 17 个（内置 16 · 项目 1）\n- arbiter 裁决者 · 通用协调 · report · none · 技能 1 · 并发 1\n- coordinator 协调者 · 通用协调 · report · none · 技能 1 · 并发 1\n- planner 规划者 · 通用协调 · report · read · 技能 2 · 并发 1\n- summarizer 汇总者 · 通用协调 · report · read · 技能 1 · 并发 2\n- worker 执行者 · 通用协调 · document · write · 技能 0 · 并发 1\n- data-analyst 数据分析师 · 研究分析 · dataset · write · 技能 2 · 并发 2\n- fact-checker 事实核查员 · 研究分析 · report · read · 技能 1 · 并发 1\n- researcher 研究员 · 研究分析 · report · write · 技能 1 · 并发 1\n- editor 编辑 · 内容创作 · document · write · 技能 2 · 并发 1\n- reviewer 审核者 · 内容创作 · document · read · 技能 1 · 并发 1\n- writer 撰写者 · 内容创作 · document · write · 技能 1 · 并发 2\n- code-reviewer 代码审查 · 编码工程 · code · read · 技能 1 · 并发 1\n- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1\n- tester 测试 · 编码工程 · code · exec · 技能 1 · 并发 1\n- compliance-reviewer 合规审查者 · 业务运营 · report · read · 技能 1 · 并发 1\n- requirement-clarifier 需求澄清者 · 业务运营 · document · write · 技能 2 · 并发 1\n",
+      "stderr": ""
+    },
+    {
+      "label": "[B] orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-07-B",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 113,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 27,\n    \"roles\": 17,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    }
+  ]
+}

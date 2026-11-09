@@ -1,0 +1,36 @@
+{
+  "ac": "AC-61",
+  "title": "三条内置工作流回归门禁：invalid=0，资产被改坏时先红",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:12.487Z",
+  "finishedAt": "2026-11-09T12:24:12.952Z",
+  "durationMs": 465,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-61",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-61"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 21,
+  "notes": [],
+  "extraFiles": [
+    "AC-61.validate-ok.txt",
+    "AC-61.payload-ok.json",
+    "AC-61.validate-broken.txt",
+    "AC-61.payload-broken.json",
+    "AC-61.git-status-assets.txt"
+  ]
+}

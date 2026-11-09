@@ -1,0 +1,519 @@
+$ "(fixture) 全新项目根（无 .orch）"
+# label=夹具：全新项目根（无 .orch） cwd=d:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-04
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role create lead-dev --from developer --skills test-run
+# label=orch role create lead-dev --from developer --skills test-run cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-04 exit=0 106ms
+已创建项目角色：.orch/roles/lead-dev.yaml
+- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1
+校验：通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role show lead-dev
+# label=orch role show lead-dev cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-04 exit=0 95ms
+- lead-dev 开发（派生） · 编码工程 · code · write · 技能 1 · 并发 1
+  职责：按任务修改代码，交出声明的产物文件
+  技能：test-run
+  工具：read, write, edit, bash
+  可唤醒：tester
+  来源：项目 .orch/roles/lead-dev.yaml
+  派生自：developer
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role show lead-dev --format json
+# label=orch role show lead-dev --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-04 exit=0 89ms
+{
+  "role": {
+    "id": "lead-dev",
+    "name": "开发（派生）",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "write",
+    "skills": [
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "project",
+    "file": ".orch/roles/lead-dev.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role list --format json
+# label=orch role list --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-04 exit=0 97ms
+{
+  "counts": {
+    "total": 17,
+    "builtin": 16,
+    "project": 1,
+    "invalid": 0
+  },
+  "groups": [
+    {
+      "group": "coordinator",
+      "label": "通用协调",
+      "count": 5
+    },
+    {
+      "group": "research",
+      "label": "研究分析",
+      "count": 3
+    },
+    {
+      "group": "writing",
+      "label": "内容创作",
+      "count": 3
+    },
+    {
+      "group": "coding",
+      "label": "编码工程",
+      "count": 4
+    },
+    {
+      "group": "ops",
+      "label": "业务运营",
+      "count": 2
+    }
+  ],
+  "roles": [
+    {
+      "id": "arbiter",
+      "name": "裁决者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "none",
+      "skills": [
+        "coordination"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/arbiter.yaml"
+    },
+    {
+      "id": "coordinator",
+      "name": "协调者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "none",
+      "skills": [
+        "coordination"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/coordinator.yaml"
+    },
+    {
+      "id": "planner",
+      "name": "规划者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "coordination",
+        "research-brief"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/planner.yaml"
+    },
+    {
+      "id": "summarizer",
+      "name": "汇总者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "coordination"
+      ],
+      "maxConcurrentSessions": 2,
+      "source": "builtin",
+      "file": "assets/roles/summarizer.yaml"
+    },
+    {
+      "id": "worker",
+      "name": "执行者",
+      "group": "coordinator",
+      "groupLabel": "通用协调",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/worker.yaml"
+    },
+    {
+      "id": "data-analyst",
+      "name": "数据分析师",
+      "group": "research",
+      "groupLabel": "研究分析",
+      "artifactType": "dataset",
+      "sideEffect": "write",
+      "skills": [
+        "data-analysis",
+        "fact-check"
+      ],
+      "maxConcurrentSessions": 2,
+      "source": "builtin",
+      "file": "assets/roles/data-analyst.yaml"
+    },
+    {
+      "id": "fact-checker",
+      "name": "事实核查员",
+      "group": "research",
+      "groupLabel": "研究分析",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "fact-check"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/fact-checker.yaml"
+    },
+    {
+      "id": "researcher",
+      "name": "研究员",
+      "group": "research",
+      "groupLabel": "研究分析",
+      "artifactType": "report",
+      "sideEffect": "write",
+      "skills": [
+        "research-brief"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/researcher.yaml"
+    },
+    {
+      "id": "editor",
+      "name": "编辑",
+      "group": "writing",
+      "groupLabel": "内容创作",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [
+        "doc-draft",
+        "doc-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/editor.yaml"
+    },
+    {
+      "id": "reviewer",
+      "name": "审核者",
+      "group": "writing",
+      "groupLabel": "内容创作",
+      "artifactType": "document",
+      "sideEffect": "read",
+      "skills": [
+        "doc-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/reviewer.yaml"
+    },
+    {
+      "id": "writer",
+      "name": "撰写者",
+      "group": "writing",
+      "groupLabel": "内容创作",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [
+        "doc-draft"
+      ],
+      "maxConcurrentSessions": 2,
+      "source": "builtin",
+      "file": "assets/roles/writer.yaml"
+    },
+    {
+      "id": "code-reviewer",
+      "name": "代码审查",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "read",
+      "skills": [
+        "code-review"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/code-reviewer.yaml"
+    },
+    {
+      "id": "developer",
+      "name": "开发",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "write",
+      "skills": [
+        "code-change",
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/developer.yaml"
+    },
+    {
+      "id": "lead-dev",
+      "name": "开发（派生）",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "write",
+      "skills": [
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "project",
+      "file": ".orch/roles/lead-dev.yaml"
+    },
+    {
+      "id": "tester",
+      "name": "测试",
+      "group": "coding",
+      "groupLabel": "编码工程",
+      "artifactType": "code",
+      "sideEffect": "exec",
+      "skills": [
+        "test-run"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/tester.yaml"
+    },
+    {
+      "id": "compliance-reviewer",
+      "name": "合规审查者",
+      "group": "ops",
+      "groupLabel": "业务运营",
+      "artifactType": "report",
+      "sideEffect": "read",
+      "skills": [
+        "compliance-check"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/compliance-reviewer.yaml"
+    },
+    {
+      "id": "requirement-clarifier",
+      "name": "需求澄清者",
+      "group": "ops",
+      "groupLabel": "业务运营",
+      "artifactType": "document",
+      "sideEffect": "write",
+      "skills": [
+        "doc-draft",
+        "coordination"
+      ],
+      "maxConcurrentSessions": 1,
+      "source": "builtin",
+      "file": "assets/roles/requirement-clarifier.yaml"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe --test --test-concurrency=4 test/wp11/cli-role.test.js
+# label=node --test test/wp11/cli-role.test.js cwd=d:\WWW\Maestro exit=0 314ms
+TAP version 13
+# Subtest: AC-01: role list prints seventeen lines and exits 0
+ok 1 - AC-01: role list prints seventeen lines and exits 0
+  ---
+  duration_ms: 9.4882
+  type: 'test'
+  ...
+# Subtest: AC-02: role show developer is the six documented lines
+ok 2 - AC-02: role show developer is the six documented lines
+  ---
+  duration_ms: 2.9908
+  type: 'test'
+  ...
+# Subtest: AC-03: a project role overrides the built-in one and says so
+ok 3 - AC-03: a project role overrides the built-in one and says so
+  ---
+  duration_ms: 9.1054
+  type: 'test'
+  ...
+# Subtest: AC-10: an invalid registry stops orch run before the client exists
+ok 4 - AC-10: an invalid registry stops orch run before the client exists
+  ---
+  duration_ms: 7.0934
+  type: 'test'
+  ...
+# Subtest: AC-11: a broken asset does not block the list but fails the exit code
+ok 5 - AC-11: a broken asset does not block the list but fails the exit code
+  ---
+  duration_ms: 5.9275
+  type: 'test'
+  ...
+# Subtest: A-4: role validate prints one row per bad asset
+ok 6 - A-4: role validate prints one row per bad asset
+  ---
+  duration_ms: 9.1214
+  type: 'test'
+  ...
+# Subtest: A-4: a clean tree prints the single success line
+ok 7 - A-4: a clean tree prints the single success line
+  ---
+  duration_ms: 5.2709
+  type: 'test'
+  ...
+# Subtest: AC-32: --group lists only that group in text and JSON
+ok 8 - AC-32: --group lists only that group in text and JSON
+  ---
+  duration_ms: 5.4547
+  type: 'test'
+  ...
+# Subtest: AC-33: role list JSON has exactly three top-level keys and ten role keys
+ok 9 - AC-33: role list JSON has exactly three top-level keys and ten role keys
+  ---
+  duration_ms: 2.5356
+  type: 'test'
+  ...
+# Subtest: AC-34: an unknown role names it and points at role list
+ok 10 - AC-34: an unknown role names it and points at role list
+  ---
+  duration_ms: 5.0199
+  type: 'test'
+  ...
+# Subtest: AC-35: role show without an id is a usage error
+ok 11 - AC-35: role show without an id is a usage error
+  ---
+  duration_ms: 0.4469
+  type: 'test'
+  ...
+# Subtest: AC-37: unknown subcommand, unknown flag and bad --format are usage errors
+ok 12 - AC-37: unknown subcommand, unknown flag and bad --format are usage errors
+  ---
+  duration_ms: 0.302
+  type: 'test'
+  ...
+# Subtest: the usage block has eight lines and keeps the I1.1 first line
+ok 13 - the usage block has eight lines and keeps the I1.1 first line
+  ---
+  duration_ms: 0.1598
+  type: 'test'
+  ...
+# Subtest: a flag that belongs to another subcommand is rejected
+ok 14 - a flag that belongs to another subcommand is rejected
+  ---
+  duration_ms: 0.2327
+  type: 'test'
+  ...
+# Subtest: role flags leak into other commands as unknown parameters (M-9)
+ok 15 - role flags leak into other commands as unknown parameters (M-9)
+  ---
+  duration_ms: 0.1013
+  type: 'test'
+  ...
+# Subtest: parseArgs keeps the old result shape for the four original commands
+ok 16 - parseArgs keeps the old result shape for the four original commands
+  ---
+  duration_ms: 0.0708
+  type: 'test'
+  ...
+# Subtest: AC-36: role validate <id> counts one asset and hides other files
+ok 17 - AC-36: role validate <id> counts one asset and hides other files
+  ---
+  duration_ms: 9.9653
+  type: 'test'
+  ...
+# Subtest: AC-38: the three read-only commands never create .orch nor a client
+ok 18 - AC-38: the three read-only commands never create .orch nor a client
+  ---
+  duration_ms: 7.8844
+  type: 'test'
+  ...
+# Subtest: AC-39: an unknown instance still prints the role contract first
+ok 19 - AC-39: an unknown instance still prints the role contract first
+  ---
+  duration_ms: 2.9714
+  type: 'test'
+  ...
+# Subtest: role show --instance appends the instance line (A-3)
+ok 20 - role show --instance appends the instance line (A-3)
+  ---
+  duration_ms: 2.9317
+  type: 'test'
+  ...
+# Subtest: role show --instance on a role outside the instance says so
+ok 21 - role show --instance on a role outside the instance says so
+  ---
+  duration_ms: 2.4116
+  type: 'test'
+  ...
+# Subtest: role show JSON has three keys and null instance without --instance
+ok 22 - role show JSON has three keys and null instance without --instance
+  ---
+  duration_ms: 2.7337
+  type: 'test'
+  ...
+# Subtest: role show --instance JSON exposes the nine-key role instance
+ok 23 - role show --instance JSON exposes the nine-key role instance
+  ---
+  duration_ms: 3.4612
+  type: 'test'
+  ...
+# Subtest: role list --instance appends one line per instance role
+ok 24 - role list --instance appends one line per instance role
+  ---
+  duration_ms: 2.5915
+  type: 'test'
+  ...
+# Subtest: role list --instance JSON adds a fourth key with roleToSessions
+ok 25 - role list --instance JSON adds a fourth key with roleToSessions
+  ---
+  duration_ms: 2.6688
+  type: 'test'
+  ...
+# Subtest: role validate JSON rebuilds six-key errors and leaks no params
+ok 26 - role validate JSON rebuilds six-key errors and leaks no params
+  ---
+  duration_ms: 6.5801
+  type: 'test'
+  ...
+# Subtest: every registry error code has a label template
+ok 27 - every registry error code has a label template
+  ---
+  duration_ms: 0.1132
+  type: 'test'
+  ...
+# Subtest: detailOf fills every template without leaving a placeholder
+ok 28 - detailOf fills every template without leaving a placeholder
+  ---
+  duration_ms: 0.235
+  type: 'test'
+  ...
+# Subtest: firstRegistryDetail returns the A-4 row without the dash prefix
+ok 29 - firstRegistryDetail returns the A-4 row without the dash prefix
+  ---
+  duration_ms: 0.072
+  type: 'test'
+  ...
+# Subtest: roleCommand is reachable directly and honours the frozen ctx shape
+ok 30 - roleCommand is reachable directly and honours the frozen ctx shape
+  ---
+  duration_ms: 2.2077
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 242.8707
+

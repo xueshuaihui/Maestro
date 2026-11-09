@@ -1,0 +1,100 @@
+{
+  "ac": "AC-16",
+  "title": "技能清单可列且格式稳定",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 首行 = 技能 10 个（内置 10 · 项目 0）（期望逐字 \"技能 10 个（内置 10 · 项目 0）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"技能 10 个（内置 10 · 项目 0）\""
+    },
+    {
+      "text": "Then 随后 10 行逐字（A-6，id 字典序）（期望 [\"- code-change 代码修改 · 编码工程 · 命令 1\",\"- code-review 代码审查 · 编码工程 · 命令 0\",\"- compliance-check 合规审查 · 业务运营 · 命令 0\",\"- coordination 编排协调 · 通用协调 · 命令 0\",\"- data-analysis 数据分析 · 研究分析 · 命令 1\",\"- doc-draft 文档撰写 · 内容创作 · 命令 0\",\"- doc-review 文档审核 · 内容创作 · 命令 0\",\"- fact-check 事实核查 · 研究分析 · 命令 0\",\"- research-brief 调研笔记 · 研究分析 · 命令 0\",\"- test-run 测试执行 · 编码工程 · 命令 1\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"- code-change 代码修改 · 编码工程 · 命令 1\",\"- code-review 代码审查 · 编码工程 · 命令 0\",\"- compliance-check 合规审查 · 业务运营 · 命令 0\",\"- coordination 编排协调 · 通用协调 · 命令 0\",\"- data-analysis 数据分析 · 研究分析 · 命令 1\",\"- doc-draft 文档撰写 · 内容创作 · 命令 0\",\"- doc-review 文档审核 · 内容创作 · 命令 0\",\"- fact-check 事实核查 · 研究分析 · 命令 0\",\"- research-brief 调研笔记 · 研究分析 · 命令 0\",\"- test-run 测试执行 · 编码工程 · 命令 1\"]"
+    },
+    {
+      "text": "机检：总行数 11（期望 11）",
+      "ok": true,
+      "blocked": false,
+      "actual": "11"
+    },
+    {
+      "text": "机检：顶层键恰为 counts/skills（期望 [\"counts\",\"skills\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"counts\",\"skills\"]"
+    },
+    {
+      "text": "机检：counts 恰 4 键（total/builtin/project/invalid）（期望 [\"builtin\",\"invalid\",\"project\",\"total\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"builtin\",\"invalid\",\"project\",\"total\"]"
+    },
+    {
+      "text": "机检：skills 长度 10（期望 10）",
+      "ok": true,
+      "blocked": false,
+      "actual": "10"
+    },
+    {
+      "text": "机检：每个技能对象恰 7 键（期望 \"appliesTo,appliesToLabels,commands,file,id,name,source\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"appliesTo,appliesToLabels,commands,file,id,name,source\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：全新项目根（无 .orch）",
+      "argv": [
+        "(fixture) 全新项目根（无 .orch）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-16",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-16",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 93,
+      "stdout": "技能 10 个（内置 10 · 项目 0）\n- code-change 代码修改 · 编码工程 · 命令 1\n- code-review 代码审查 · 编码工程 · 命令 0\n- compliance-check 合规审查 · 业务运营 · 命令 0\n- coordination 编排协调 · 通用协调 · 命令 0\n- data-analysis 数据分析 · 研究分析 · 命令 1\n- doc-draft 文档撰写 · 内容创作 · 命令 0\n- doc-review 文档审核 · 内容创作 · 命令 0\n- fact-check 事实核查 · 研究分析 · 命令 0\n- research-brief 调研笔记 · 研究分析 · 命令 0\n- test-run 测试执行 · 编码工程 · 命令 1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill list --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "list",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-16",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 107,
+      "stdout": "{\n  \"counts\": {\n    \"total\": 10,\n    \"builtin\": 10,\n    \"project\": 0,\n    \"invalid\": 0\n  },\n  \"skills\": [\n    {\n      \"id\": \"code-change\",\n      \"name\": \"代码修改\",\n      \"appliesTo\": [\n        \"coding\"\n      ],\n      \"appliesToLabels\": [\n        \"编码工程\"\n      ],\n      \"commands\": [\n        \"node --test\"\n      ],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/code-change/SKILL.md\"\n    },\n    {\n      \"id\": \"code-review\",\n      \"name\": \"代码审查\",\n      \"appliesTo\": [\n        \"coding\"\n      ],\n      \"appliesToLabels\": [\n        \"编码工程\"\n      ],\n      \"commands\": [],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/code-review/SKILL.md\"\n    },\n    {\n      \"id\": \"compliance-check\",\n      \"name\": \"合规审查\",\n      \"appliesTo\": [\n        \"ops\"\n      ],\n      \"appliesToLabels\": [\n        \"业务运营\"\n      ],\n      \"commands\": [],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/compliance-check/SKILL.md\"\n    },\n    {\n      \"id\": \"coordination\",\n      \"name\": \"编排协调\",\n      \"appliesTo\": [\n        \"coordinator\"\n      ],\n      \"appliesToLabels\": [\n        \"通用协调\"\n      ],\n      \"commands\": [],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/coordination/SKILL.md\"\n    },\n    {\n      \"id\": \"data-analysis\",\n      \"name\": \"数据分析\",\n      \"appliesTo\": [\n        \"research\"\n      ],\n      \"appliesToLabels\": [\n        \"研究分析\"\n      ],\n      \"commands\": [\n        \"node -e \\\"console.log(1)\\\"\"\n      ],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/data-analysis/SKILL.md\"\n    },\n    {\n      \"id\": \"doc-draft\",\n      \"name\": \"文档撰写\",\n      \"appliesTo\": [\n        \"writing\"\n      ],\n      \"appliesToLabels\": [\n        \"内容创作\"\n      ],\n      \"commands\": [],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/doc-draft/SKILL.md\"\n    },\n    {\n      \"id\": \"doc-review\",\n      \"name\": \"文档审核\",\n      \"appliesTo\": [\n        \"writing\"\n      ],\n      \"appliesToLabels\": [\n        \"内容创作\"\n      ],\n      \"commands\": [],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/doc-review/SKILL.md\"\n    },\n    {\n      \"id\": \"fact-check\",\n      \"name\": \"事实核查\",\n      \"appliesTo\": [\n        \"research\"\n      ],\n      \"appliesToLabels\": [\n        \"研究分析\"\n      ],\n      \"commands\": [],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/fact-check/SKILL.md\"\n    },\n    {\n      \"id\": \"research-brief\",\n      \"name\": \"调研笔记\",\n      \"appliesTo\": [\n        \"research\"\n      ],\n      \"appliesToLabels\": [\n        \"研究分析\"\n      ],\n      \"commands\": [],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/research-brief/SKILL.md\"\n    },\n    {\n      \"id\": \"test-run\",\n      \"name\": \"测试执行\",\n      \"appliesTo\": [\n        \"coding\"\n      ],\n      \"appliesToLabels\": [\n        \"编码工程\"\n      ],\n      \"commands\": [\n        \"node --test\"\n      ],\n      \"source\": \"builtin\",\n      \"file\": \"assets/skills/test-run/SKILL.md\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+校验工作流 5 个：2 个不合法
+- workflows/sub-ghost.yaml：引用的子工作流不存在：ghost（WORKFLOW_SUB_UNKNOWN）
+- workflows/sub-self.yaml：子工作流成环：sub-self（WORKFLOW_SUB_CYCLE）
+

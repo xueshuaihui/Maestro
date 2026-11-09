@@ -1,0 +1,59 @@
+$ "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+# label=夹具：预置附录 A-13 的 doc-fanout（writeDocFanout） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ "(fixture) 追加边 T-003 → T-002（kind: backflow、when: failed）"
+# label=夹具：追加边 T-003 → T-002（kind: backflow、when: failed） cwd=d:\WWW\Maestro exit=0 0ms
+  - from: T-003
+    to: T-002
+    kind: backflow
+    when: failed
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-33 exit=1 98ms
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：回流目标缺少轮次上限：T-002（WORKFLOW_BACKFLOW_NO_LIMIT）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-33 exit=1 116ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_BACKFLOW_NO_LIMIT",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "回流目标缺少轮次上限：T-002"
+    }
+  ]
+}
+
+
+$ "(fixture) 给 T-002 补上 max_rounds: 2"
+# label=夹具：给 T-002 补上 max_rounds: 2 cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout（补 max_rounds 后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-33 exit=0 103ms
+校验工作流 1 个：全部通过
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json（补 max_rounds 后） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-33 exit=0 101ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 0
+  },
+  "errors": []
+}
+

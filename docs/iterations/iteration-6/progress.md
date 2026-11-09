@@ -52,6 +52,20 @@
 
 **S2 编排统计**：实现 8 包（5 批，7 个 SubAgent，1 次并行轮询协作）+ 整合评审 1 次 + 主控整合修复 3 处；主控裁决 裁-11~裁-15 共 5 条。
 
+## S3 验收（脚手架四件套 + 65 用例）
+
+| 阶段 | 任务 | 执行 Agent | 状态 | 门禁数字 / 证据 | 结论 | 下一步 |
+|---|---|---|---|---|---|---|
+| S3 | 脚手架四件套（lib/common/run/final + `_fixtures.mjs`） | 主控 | 完成 | `probe/acc6-f-*.mjs`；`BASELINE_COMMIT='0cd113b'`；`BATCHES={a:[1,22],b:[23,44],c:[45,65]}` | results.jsonl 追加式、parts 分节、证据 AC-XX.* 命名 | 批次 a |
+| S3 | 批次 a（AC-01~22） | `acc6-batch-a` | 完成 | 22 AC 全过（首轮 19/22；AC-06/10/11 修复后全绿） | D-1（单字符 id）→ 裁-16a | 批次 b |
+| S3 | 批次 b（AC-23~44） | `acc6-batch-b` | 完成 | 22 AC 全过（AC-40 25/25 复跑确认） | D-2 → 裁-16b（builtinRoleObject 产品修复）；D-3 → 裁-16c（缺省形 title=T-001） | 批次 c |
+| S3 | 缺陷修复提交 | 主控 | 完成 | commit `7a46149`；全量 769/769（裁-16b +1 用例） | 裁-16a/b/c 收口 | 批次 c |
+| S3 | 批次 c1（AC-45~52，重面） | `acc6-batch-c1` | 完成 | 8 AC 全过；AC-48 六命令逐字 + D-7b 两行；AC-49 三链归一化 diff 空；AC-50 769/769；AC-51 四扫描 exit 0 | AC-48/49 基线口径裁决 4 条（c.note 登记） | 批次 c2 |
+| S3 | 批次 c2（AC-53~65） | `acc6-batch-c2` | 完成 | 13 AC：12 过 + AC-59 三项阻塞 | AC-53 单字符 id（沿裁-16a）；AC-61 临时改 assets 已还原（git status assets 空） | 裁-17 收口 |
+| S3 | AC-11 夹具改造收口 | 主控 | 完成 | 8/8（id 改 2 字符 + 工作流 `id` 与文件名一致 + T-001 节点级 wake_allow） | 项目工作流 id≠文件名触发 WORKFLOW_ID_MISMATCH 剔出 workflowMap，是 CONTRACT_UNBOUND 不可观测根因 | 全量复跑 |
+| S3 | 裁-17（AC-59 样例值勘误） | 主控 | 完成 | `ac59.mjs` 改 `writing,coding`；复跑 22/22；登记 R-14 | 需求样例 `review` 与五分组闭集互斥，判笔误；产品零改动 | 全量复跑 |
+| S3 | 全量复跑三批 + 重建报告 | 主控 | 完成 | 批 a 22/22 + 批 b 22/22 + 批 c 21/21 = **65/65**；`acc6-f-final.mjs` 重建：**871 条核对项、547 份证据** | acceptance-fixture.md + summary.json 数字一致 | S4 |
+
 ## 主控裁决（详见 `decisions.md`）
 
 | 编号 | 触发点 | 裁决摘要 |
@@ -77,3 +91,5 @@
 | 日期 | 命令 | 结果 |
 |---|---|---|
 | 2026-11-08 | `node --test --test-concurrency=4 "test/**/*.test.js"` | 611/611 通过，基线确认 |
+| 2026-11-09 | 同上（S3 批次 c 内 AC-50 门禁） | 769/769 通过（≥611），fail=0 |
+| 2026-11-09 | `node probe/acc6-f-run.mjs --batch a|b|c` + `node probe/acc6-f-final.mjs` | 65/65 通过、0 不通过、0 阻塞；871 条核对项、547 份证据 |

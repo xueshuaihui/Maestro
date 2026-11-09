@@ -1,0 +1,240 @@
+{
+  "ac": "AC-57",
+  "title": "改不存在的角色与 diff 缺对比基线",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "夹具自检：developer 与 my-role 的 name 均可读",
+      "ok": true,
+      "blocked": false,
+      "actual": "开发 / 我的角色"
+    },
+    {
+      "text": "Then ① 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then ① 首行逐字（期望逐字 \"找不到角色：ghost-id\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"找不到角色：ghost-id\""
+    },
+    {
+      "text": "Then ① 提示行逐字（期望逐字 \"可用角色：执行 orch role list 查看\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"可用角色：执行 orch role list 查看\""
+    },
+    {
+      "text": "Then ② 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then ② 只回一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then ② 逐字（期望逐字 \"缺少对比基线：my-role（用 --against 指定内置角色或文件）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"缺少对比基线：my-role（用 --against 指定内置角色或文件）\""
+    },
+    {
+      "text": "Then ③ 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then ③ 只回一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then ③ 逐字（期望逐字 \"缺少对比基线：my-wf（用 --against 指定内置工作流或文件）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"缺少对比基线：my-wf（用 --against 指定内置工作流或文件）\""
+    },
+    {
+      "text": "Then ④ 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then ④ 首行逐字（A-5 句式）（期望逐字 \"对比角色 my-role（项目）与基线 developer（内置）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"对比角色 my-role（项目）与基线 developer（内置）\""
+    },
+    {
+      "text": "Then ④ 恰一条差异行（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "Then ④ 差异行逐字（期望逐字 \"~ name：开发 → 我的角色\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"~ name：开发 → 我的角色\""
+    },
+    {
+      "text": "Then ④ 末行为 差异 N 项 或 无差异（期望匹配 /^(差异 \\d+ 项|无差异)$/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "差异 1 项"
+    },
+    {
+      "text": "Then ④ 末行 N 与 changes.length 一致（期望 \"差异 1 项\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"差异 1 项\""
+    },
+    {
+      "text": "机检：退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "机检：顶层键恰 base/target/changes（期望 [\"base\",\"changes\",\"target\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"base\",\"changes\",\"target\"]"
+    },
+    {
+      "text": "机检：changes 中不存在 field === id 的项（diff 忽略 id）（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：changes[] 每项恰四键 field/kind/base/target（期望 [\"base\",\"field\",\"kind\",\"target\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"base\",\"field\",\"kind\",\"target\"]"
+    },
+    {
+      "text": "机检：name 项 base 等于内置 developer 资产的 name 字段（期望 \"开发\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"开发\""
+    },
+    {
+      "text": "机检：name 项 target 等于 my-role.yaml 的 name 字段（期望 \"我的角色\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"我的角色\""
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 .orch/roles/my-role.yaml（除 name 外与 developer 逐字段相同）与 .orch/workflows/my-wf.yaml",
+      "argv": [
+        "(fixture) 预置 .orch/roles/my-role.yaml（除 name 外与 developer 逐字段相同）与 .orch/workflows/my-wf.yaml"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch role edit ghost-id --set summary=x",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "edit",
+        "ghost-id",
+        "--set",
+        "summary=x"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-57",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 103,
+      "stdout": "找不到角色：ghost-id\n可用角色：执行 orch role list 查看\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role diff my-role",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "diff",
+        "my-role"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-57",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "缺少对比基线：my-role（用 --against 指定内置角色或文件）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow diff my-wf",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "diff",
+        "my-wf"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-57",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 100,
+      "stdout": "缺少对比基线：my-wf（用 --against 指定内置工作流或文件）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role diff my-role --against developer",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "diff",
+        "my-role",
+        "--against",
+        "developer"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-57",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 99,
+      "stdout": "对比角色 my-role（项目）与基线 developer（内置）\n~ name：开发 → 我的角色\n差异 1 项\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role diff my-role --against developer --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "diff",
+        "my-role",
+        "--against",
+        "developer",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-57",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 113,
+      "stdout": "{\n  \"base\": \"developer\",\n  \"target\": \"my-role\",\n  \"changes\": [\n    {\n      \"field\": \"name\",\n      \"kind\": \"changed\",\n      \"base\": \"开发\",\n      \"target\": \"我的角色\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

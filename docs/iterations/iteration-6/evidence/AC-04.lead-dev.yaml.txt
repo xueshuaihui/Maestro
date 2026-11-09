@@ -1,0 +1,13 @@
+schema: role/v1
+id: lead-dev
+name: 开发（派生）
+group: coding
+summary: 按任务修改代码，交出声明的产物文件
+artifact_type: code
+side_effect: write
+derived_from: developer
+skills: [test-run]
+tools: [read, write, edit, bash]
+wake_allow: [tester]
+max_concurrent_sessions: 1
+

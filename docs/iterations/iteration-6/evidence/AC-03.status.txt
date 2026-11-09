@@ -1,0 +1,22 @@
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role create lead-dev --name 首席开发 --group coding --artifact-type code --side-effect write --skills code-change,test-run
+# label=（Given）orch role create lead-dev --name 首席开发 …（同 AC-01） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-03 exit=0 97ms
+已创建项目角色：.orch/roles/lead-dev.yaml
+- lead-dev 首席开发 · 编码工程 · code · write · 技能 2 · 并发 1
+校验：通过
+
+
+$ "(fixture) 预置 .orch/roles/lead-dev.yaml（AC-01 同款命令）"
+# label=夹具：预置 .orch/roles/lead-dev.yaml（AC-01 同款命令） cwd=d:\WWW\Maestro exit=0 0ms
+sha256=966936a972232c8df8a601300bdf49c67adc34ee12b02e67a2a21d624dd27443
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role create lead-dev --name 另一个名字 --group coding --artifact-type code --side-effect write
+# label=orch role create lead-dev --name 另一个名字 --group coding --artifact-type code --side-effect write cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-03 exit=1 95ms
+已存在同名项目角色：.orch/roles/lead-dev.yaml（加 --force 覆盖）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role create lead-dev --name 另一个名字 --group coding --artifact-type code --side-effect write --force
+# label=orch role create lead-dev --name 另一个名字 --group coding --artifact-type code --side-effect write --force cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-03 exit=0 104ms
+已创建项目角色：.orch/roles/lead-dev.yaml
+- lead-dev 另一个名字 · 编码工程 · code · write · 技能 0 · 并发 1
+校验：通过
+

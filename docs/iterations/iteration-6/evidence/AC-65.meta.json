@@ -1,0 +1,35 @@
+{
+  "ac": "AC-65",
+  "title": "校验顺序与错误排序固定（BR-40）",
+  "face": "机检",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:17.684Z",
+  "finishedAt": "2026-11-09T12:24:18.015Z",
+  "durationMs": 331,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-65",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-65"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 10,
+  "notes": [],
+  "extraFiles": [
+    "AC-65.json-run-1-sha256.txt",
+    "AC-65.json-run-2-sha256.txt",
+    "AC-65.payload.json",
+    "AC-65.validate-text.txt"
+  ]
+}

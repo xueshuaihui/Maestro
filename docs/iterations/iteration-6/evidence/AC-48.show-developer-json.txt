@@ -1,0 +1,20 @@
+{
+  "role": {
+    "id": "developer",
+    "name": "开发",
+    "group": "coding",
+    "groupLabel": "编码工程",
+    "artifactType": "code",
+    "sideEffect": "write",
+    "skills": [
+      "code-change",
+      "test-run"
+    ],
+    "maxConcurrentSessions": 1,
+    "source": "builtin",
+    "file": "assets/roles/developer.yaml"
+  },
+  "instance": null,
+  "roleInstance": null
+}
+

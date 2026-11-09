@@ -1,0 +1,4 @@
+校验技能 12 个：2 个不合法
+- skills/empty/SKILL.md：技能正文为空：empty（SKILL_BODY_EMPTY）
+- skills/half/SKILL.md：缺少必填字段：summary（SKILL_SCHEMA_MISSING）
+

@@ -1,0 +1,3 @@
+校验工作流 1 个：1 个不合法
+- workflows/backflow-target.yaml：T-H 不能成为回流目标（WORKFLOW_TRANSITION_ILLEGAL）
+

@@ -1,0 +1,64 @@
+$ "(fixture) 预置附录 A-13 的 doc-fanout（writeDocFanout）"
+# label=夹具：预置附录 A-13 的 doc-fanout（writeDocFanout） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ "(fixture) 追加边 T-005 → T-006（forward，升级节点不得有正向出边）"
+# label=夹具：追加边 T-005 → T-006（forward，升级节点不得有正向出边） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout（升级出边） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-36 exit=1 103ms
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：升级节点 T-005 不能有正向出边（WORKFLOW_TRANSITION_ILLEGAL）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json（升级出边） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-36 exit=1 101ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_TRANSITION_ILLEGAL",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "升级节点 T-005 不能有正向出边"
+    }
+  ]
+}
+
+
+$ "(fixture) 去掉 T-004 两条出边的 when（缺省 always，人工节点出边必须写人工条件）"
+# label=夹具：去掉 T-004 两条出边的 when（缺省 always，人工节点出边必须写人工条件） cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout
+# label=orch workflow validate doc-fanout（人工出边无条件） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-36 exit=1 94ms
+校验工作流 1 个：1 个不合法
+- workflows/doc-fanout.yaml：人工节点 T-004 的出边必须写人工条件（WORKFLOW_TRANSITION_ILLEGAL）
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js workflow validate doc-fanout --format json
+# label=orch workflow validate doc-fanout --format json（人工出边无条件） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-36 exit=1 104ms
+{
+  "counts": {
+    "assets": 1,
+    "builtin": 0,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "WORKFLOW_TRANSITION_ILLEGAL",
+      "file": "workflows/doc-fanout.yaml",
+      "scope": "workflow",
+      "field": null,
+      "line": null,
+      "detail": "人工节点 T-004 的出边必须写人工条件"
+    }
+  ]
+}
+

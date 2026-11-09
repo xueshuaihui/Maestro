@@ -1,0 +1,157 @@
+{
+  "ac": "AC-12",
+  "title": "契约连通：输入没人给、输出没人要",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "自证：workflow solo 合法（校验工作流 4 个）（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then 恰好两行错误（- 开头）（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then 错误行 1 逐字（期望逐字 \"- roles/scout.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- roles/scout.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）\""
+    },
+    {
+      "text": "Then 错误行 2 逐字（期望逐字 \"- roles/scribe.yaml：契约不连通：digest 没有去处（ROLE_CONTRACT_UNBOUND）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"- roles/scribe.yaml：契约不连通：digest 没有去处（ROLE_CONTRACT_UNBOUND）\""
+    },
+    {
+      "text": "Then notes 两边都不报（错误行 1）（期望不含 \"notes\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/scout.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）"
+    },
+    {
+      "text": "Then notes 两边都不报（错误行 2）（期望不含 \"notes\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "- roles/scribe.yaml：契约不连通：digest 没有去处（ROLE_CONTRACT_UNBOUND）"
+    },
+    {
+      "text": "机检：errors.length === 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "机检：errors.map(code) 全为 ROLE_CONTRACT_UNBOUND（期望 [\"ROLE_CONTRACT_UNBOUND\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"ROLE_CONTRACT_UNBOUND\"]"
+    },
+    {
+      "text": "机检：errors[0].file === roles/scout.yaml（期望 \"roles/scout.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"roles/scout.yaml\""
+    },
+    {
+      "text": "机检：errors[0].detail 含 brief（期望含 \"brief\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "契约不连通：brief 没有来源"
+    },
+    {
+      "text": "机检：errors[1].file === roles/scribe.yaml（期望 \"roles/scribe.yaml\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"roles/scribe.yaml\""
+    },
+    {
+      "text": "机检：errors[1].detail 含 digest（期望含 \"digest\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "契约不连通：digest 没有去处"
+    },
+    {
+      "text": "机检：errors[0].detail 不含 notes（期望不含 \"notes\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "契约不连通：brief 没有来源"
+    },
+    {
+      "text": "机检：errors[1].detail 不含 notes（期望不含 \"notes\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "契约不连通：digest 没有去处"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 scout/scribe 与工作流 solo（T-001→T-002 带 map T-001.notes → notes；T-001 声明 outputs/wake_allow、T-002 声明 inputs，见文件头说明）",
+      "argv": [
+        "(fixture) 预置 scout/scribe 与工作流 solo（T-001→T-002 带 map T-001.notes → notes；T-001 声明 outputs/wake_allow、T-002 声明 inputs，见文件头说明）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "（自证）orch workflow validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-12",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "校验工作流 4 个：全部通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-12",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 117,
+      "stdout": "校验资产 28 个：2 个不合法\n- roles/scout.yaml：契约不连通：brief 没有来源（ROLE_CONTRACT_UNBOUND）\n- roles/scribe.yaml：契约不连通：digest 没有去处（ROLE_CONTRACT_UNBOUND）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch role validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "role",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-12",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 28,\n    \"roles\": 16,\n    \"skills\": 10,\n    \"builtin\": 26,\n    \"project\": 2,\n    \"invalid\": 2\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROLE_CONTRACT_UNBOUND\",\n      \"file\": \"roles/scout.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"inputs\",\n      \"line\": null,\n      \"detail\": \"契约不连通：brief 没有来源\"\n    },\n    {\n      \"code\": \"ROLE_CONTRACT_UNBOUND\",\n      \"file\": \"roles/scribe.yaml\",\n      \"scope\": \"role\",\n      \"field\": \"outputs\",\n      \"line\": null,\n      \"detail\": \"契约不连通：digest 没有去处\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

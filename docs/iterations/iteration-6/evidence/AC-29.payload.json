@@ -1,0 +1,23 @@
+{
+  "id": "timeout-ok",
+  "name": "超时合法",
+  "nodeCount": 1,
+  "edgeCount": 0,
+  "layers": [
+    {
+      "parallel": false,
+      "nodes": [
+        "T-001"
+      ]
+    }
+  ],
+  "branches": [],
+  "mappings": [],
+  "policies": [
+    {
+      "nodeId": "T-001",
+      "timeout": 600,
+      "retry": 2
+    }
+  ]
+}

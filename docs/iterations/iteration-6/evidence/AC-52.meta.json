@@ -1,0 +1,28 @@
+{
+  "ac": "AC-52",
+  "title": "零运行时依赖",
+  "face": "架构检查",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:24:01.384Z",
+  "finishedAt": "2026-11-09T12:24:01.476Z",
+  "durationMs": 92,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 3,
+  "notes": [],
+  "extraFiles": [
+    "AC-52.package-json.json",
+    "AC-52.node-e-out.txt"
+  ]
+}

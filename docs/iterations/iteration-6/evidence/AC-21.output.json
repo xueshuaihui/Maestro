@@ -1,0 +1,112 @@
+{
+  "ac": "AC-21",
+  "title": "内置工作流可列出",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then 首行 = 工作流 3 个（内置 3 · 项目 0）（期望逐字 \"工作流 3 个（内置 3 · 项目 0）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"工作流 3 个（内置 3 · 项目 0）\""
+    },
+    {
+      "text": "Then 随后三行逐字（A-8）（期望 [\"- code-loop 编码闭环 · 2 节点 · 3 边 · 内置\",\"- single 单节点 · 1 节点 · 0 边 · 内置\",\"- task-loop 通用任务闭环 · 3 节点 · 4 边 · 内置\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"- code-loop 编码闭环 · 2 节点 · 3 边 · 内置\",\"- single 单节点 · 1 节点 · 0 边 · 内置\",\"- task-loop 通用任务闭环 · 3 节点 · 4 边 · 内置\"]"
+    },
+    {
+      "text": "机检：总行数 4（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "机检：顶层键恰为 counts/workflows（期望 [\"counts\",\"workflows\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"counts\",\"workflows\"]"
+    },
+    {
+      "text": "机检：counts.total === 3（期望 3）",
+      "ok": true,
+      "blocked": false,
+      "actual": "3"
+    },
+    {
+      "text": "机检：workflows[0] 恰 6 键（期望 6）",
+      "ok": true,
+      "blocked": false,
+      "actual": "6"
+    },
+    {
+      "text": "机检：workflows[0] 键集合（期望 [\"edgeCount\",\"file\",\"id\",\"name\",\"nodeCount\",\"source\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"edgeCount\",\"file\",\"id\",\"name\",\"nodeCount\",\"source\"]"
+    },
+    {
+      "text": "机检：workflows[0].source === builtin（期望 \"builtin\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"builtin\""
+    },
+    {
+      "text": "机检：workflows[0].file === null（期望 null）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：全新项目根（无 .orch）",
+      "argv": [
+        "(fixture) 全新项目根（无 .orch）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-21",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow list",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "list"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-21",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 94,
+      "stdout": "工作流 3 个（内置 3 · 项目 0）\n- code-loop 编码闭环 · 2 节点 · 3 边 · 内置\n- single 单节点 · 1 节点 · 0 边 · 内置\n- task-loop 通用任务闭环 · 3 节点 · 4 边 · 内置\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch workflow list --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "workflow",
+        "list",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-21",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 104,
+      "stdout": "{\n  \"counts\": {\n    \"total\": 3,\n    \"builtin\": 3,\n    \"project\": 0,\n    \"invalid\": 0\n  },\n  \"workflows\": [\n    {\n      \"id\": \"code-loop\",\n      \"name\": \"编码闭环\",\n      \"nodeCount\": 2,\n      \"edgeCount\": 3,\n      \"source\": \"builtin\",\n      \"file\": null\n    },\n    {\n      \"id\": \"single\",\n      \"name\": \"单节点\",\n      \"nodeCount\": 1,\n      \"edgeCount\": 0,\n      \"source\": \"builtin\",\n      \"file\": null\n    },\n    {\n      \"id\": \"task-loop\",\n      \"name\": \"通用任务闭环\",\n      \"nodeCount\": 3,\n      \"edgeCount\": 4,\n      \"source\": \"builtin\",\n      \"file\": null\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

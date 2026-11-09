@@ -1,0 +1,10 @@
+schema: role/v1
+id: lead-dev
+name: 另一个名字
+group: coding
+summary : ''
+artifact_type: code
+side_effect: write
+skills: []
+max_concurrent_sessions: 1
+

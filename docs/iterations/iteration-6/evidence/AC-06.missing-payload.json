@@ -1,0 +1,20 @@
+{
+  "counts": {
+    "assets": 28,
+    "roles": 17,
+    "skills": 10,
+    "builtin": 26,
+    "project": 2,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "ROLE_DERIVE_MISSING",
+      "file": "roles/b1.yaml",
+      "scope": "role",
+      "field": "derived_from",
+      "line": null,
+      "detail": "派生来源不存在：ghost"
+    }
+  ]
+}

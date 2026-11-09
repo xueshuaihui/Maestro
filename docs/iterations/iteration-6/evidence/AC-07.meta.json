@@ -1,0 +1,40 @@
+{
+  "ac": "AC-07",
+  "title": "导出再导入，角色在另一个项目里可用",
+  "face": "用户可见",
+  "verdict": "通过",
+  "startedAt": "2026-11-09T12:22:33.506Z",
+  "finishedAt": "2026-11-09T12:22:34.069Z",
+  "durationMs": 563,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "d:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6",
+  "baselineCommit": "0cd113b",
+  "headCommit": "baf975e",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-07-A",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-07-A"
+    },
+    {
+      "case": "AC-07-B",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-07-B"
+    }
+  ],
+  "instances": [],
+  "events": 0,
+  "eventsNote": "本条 AC 不启核心，没有实例事件；不产出 events.jsonl（空文件无效）",
+  "checks": 13,
+  "notes": [],
+  "extraFiles": [
+    "AC-07.export.txt",
+    "AC-07.exported.yaml.txt",
+    "AC-07.import.txt",
+    "AC-07.list-B.txt",
+    "AC-07.validate-B.json"
+  ]
+}

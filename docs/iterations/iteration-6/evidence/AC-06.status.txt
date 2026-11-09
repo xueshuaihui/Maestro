@@ -1,0 +1,74 @@
+$ "(fixture) 预置 .orch/roles/a1.yaml（derived_from: b1）与 b1.yaml（derived_from: a），其余字段合法"
+# label=夹具：预置 .orch/roles/a1.yaml（derived_from: b1）与 b1.yaml（derived_from: a），其余字段合法 cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json（第一次：环） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-06 exit=1 111ms
+{
+  "counts": {
+    "assets": 28,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "ROLE_DERIVE_CYCLE",
+      "file": "roles/a1.yaml",
+      "scope": "role",
+      "field": "derived_from",
+      "line": null,
+      "detail": "派生链成环：a1 → b1"
+    },
+    {
+      "code": "ROLE_DERIVE_CYCLE",
+      "file": "roles/b1.yaml",
+      "scope": "role",
+      "field": "derived_from",
+      "line": null,
+      "detail": "派生链成环：b1 → a1"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate（文本，第一次） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-06 exit=1 103ms
+校验资产 28 个：2 个不合法
+- roles/a1.yaml：派生链成环：a1 → b1（ROLE_DERIVE_CYCLE）
+- roles/b1.yaml：派生链成环：b1 → a1（ROLE_DERIVE_CYCLE）
+
+
+$ "(fixture) 把 b1.yaml 的 derived_from 改成 ghost"
+# label=夹具：把 b1.yaml 的 derived_from 改成 ghost cwd=d:\WWW\Maestro exit=0 0ms
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate --format json
+# label=orch role validate --format json（第二次：ghost） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-06 exit=1 110ms
+{
+  "counts": {
+    "assets": 28,
+    "roles": 17,
+    "skills": 10,
+    "builtin": 26,
+    "project": 2,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "ROLE_DERIVE_MISSING",
+      "file": "roles/b1.yaml",
+      "scope": "role",
+      "field": "derived_from",
+      "line": null,
+      "detail": "派生来源不存在：ghost"
+    }
+  ]
+}
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe d:\WWW\Maestro\bin\orch.js role validate
+# label=orch role validate（文本，第二次） cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-acc-p6\AC-06 exit=1 98ms
+校验资产 28 个：1 个不合法
+- roles/b1.yaml：派生来源不存在：ghost（ROLE_DERIVE_MISSING）
+

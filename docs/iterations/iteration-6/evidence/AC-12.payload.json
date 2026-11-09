@@ -1,0 +1,28 @@
+{
+  "counts": {
+    "assets": 28,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 26,
+    "project": 2,
+    "invalid": 2
+  },
+  "errors": [
+    {
+      "code": "ROLE_CONTRACT_UNBOUND",
+      "file": "roles/scout.yaml",
+      "scope": "role",
+      "field": "inputs",
+      "line": null,
+      "detail": "契约不连通：brief 没有来源"
+    },
+    {
+      "code": "ROLE_CONTRACT_UNBOUND",
+      "file": "roles/scribe.yaml",
+      "scope": "role",
+      "field": "outputs",
+      "line": null,
+      "detail": "契约不连通：digest 没有去处"
+    }
+  ]
+}

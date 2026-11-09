@@ -1,0 +1,275 @@
+{
+  "ac": "AC-59",
+  "title": "skill create 的 --applies-to / --commands / --body-file 与取值错误口径",
+  "verdict": "通过",
+  "checks": [
+    {
+      "text": "Then ① 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "Then ① 首行逐字（期望逐字 \"已创建项目技能：.orch/skills/quote/SKILL.md\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"已创建项目技能：.orch/skills/quote/SKILL.md\""
+    },
+    {
+      "text": "Then ① 末行为 校验：通过（期望逐字 \"校验：通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"校验：通过\""
+    },
+    {
+      "text": "Then ① 命令行逐字（期望逐字 \"  命令：node --test\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  命令：node --test\""
+    },
+    {
+      "text": "Then ① 适用行含两个分组",
+      "ok": true,
+      "blocked": false,
+      "actual": "  适用：内容创作, 编码工程"
+    },
+    {
+      "text": "Then ① 正文是 body.md 的内容",
+      "ok": true,
+      "blocked": false,
+      "actual": "body content check"
+    },
+    {
+      "text": "Then ① 契约行的适用段有两个分组（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "Then ② 退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then ② 用法块 + 一行取值原因（26 行）（期望 26）",
+      "ok": true,
+      "blocked": false,
+      "actual": "26"
+    },
+    {
+      "text": "Then ② 前 25 行为 A-12 用法块逐字（期望 [\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"用法：orch run|status|cancel|core\",\"  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\",\"  orch status [--instance <实例号>] [--events]\",\"  orch cancel --instance <实例号>\",\"  orch core stop\",\"  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\",\"  orch role show <角色> [--instance <实例号>] [--format text|json]\",\"  orch role validate [<角色>] [--format json]\",\"  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\",\"  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\",\"  orch role export <角色> [--out <文件>]\",\"  orch role import <文件> [--force]\",\"  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\",\"  orch skill list [--group <组>] [--format text|json]\",\"  orch skill show <技能> [--format text|json]\",\"  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\",\"  orch skill validate [<技能>] [--format json]\",\"  orch skill export <技能> [--out <文件>]\",\"  orch skill import <文件|目录> [--force]\",\"  orch workflow list [--format text|json]\",\"  orch workflow show <工作流> [--format text|json]\",\"  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\",\"  orch workflow validate [<工作流>] [--format json]\",\"  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\",\"  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\"]"
+    },
+    {
+      "text": "Then ② 取值原因行逐字（既有原因码 SKILL_GROUP_INVALID，I1.5 口径）（期望逐字 \"  （适用分组取值非法：nope；合法取值：coordinator / research / writing / coding / ops）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  （适用分组取值非法：nope；合法取值：coordinator / research / writing / coding / ops）\""
+    },
+    {
+      "text": "Then ③ 退出码 2（期望 2）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2"
+    },
+    {
+      "text": "Then ③ 原因行逐字（期望逐字 \"  （skill create 需要 --summary）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"  （skill create 需要 --summary）\""
+    },
+    {
+      "text": "Then ③ 整块仍为 26 行（期望 26）",
+      "ok": true,
+      "blocked": false,
+      "actual": "26"
+    },
+    {
+      "text": "Then ④ 退出码 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then ④ 只回一行（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "Then ④ 逐字（期望逐字 \"创建被拒：技能正文为空：quote4（SKILL_BODY_EMPTY）\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"创建被拒：技能正文为空：quote4（SKILL_BODY_EMPTY）\""
+    },
+    {
+      "text": "机检：quote2 不建文件（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：quote3 不建文件（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：quote4 不建文件（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "机检：grep -c 'node --test' 为 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "机检：skill validate 的 counts.invalid === 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    }
+  ],
+  "commands": [
+    {
+      "label": "夹具：预置 body.md（一段技能正文）与 empty.md（空文件）",
+      "argv": [
+        "(fixture) 预置 body.md（一段技能正文）与 empty.md（空文件）"
+      ],
+      "cwd": "d:\\WWW\\Maestro",
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill create quote --name 引用规范 --summary … --applies-to writing,coding --commands \"node --test\" --body-file body.md",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "create",
+        "quote",
+        "--name",
+        "引用规范",
+        "--summary",
+        "给结论配上可核对的出处",
+        "--applies-to",
+        "writing,coding",
+        "--commands",
+        "node --test",
+        "--body-file",
+        "body.md"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-59",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 112,
+      "stdout": "已创建项目技能：.orch/skills/quote/SKILL.md\n- quote 引用规范 · 内容创作, 编码工程 · 命令 1\n校验：通过\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill show quote",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "show",
+        "quote"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-59",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 103,
+      "stdout": "- quote 引用规范 · 内容创作, 编码工程 · 命令 1\n  摘要：给结论配上可核对的出处\n  命令：node --test\n  适用：内容创作, 编码工程\n  来源：项目 .orch/skills/quote/SKILL.md\n  正文：\n  ### 自定义正文\n  \n  这是 body.md 的正文内容，用于核对 --body-file 生效。\n  \n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill create quote2 --name 坏组 --summary x --applies-to nope",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "create",
+        "quote2",
+        "--name",
+        "坏组",
+        "--summary",
+        "x",
+        "--applies-to",
+        "nope"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-59",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 106,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\n  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\n  orch role export <角色> [--out <文件>]\n  orch role import <文件> [--force]\n  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\n  orch skill list [--group <组>] [--format text|json]\n  orch skill show <技能> [--format text|json]\n  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\n  orch skill validate [<技能>] [--format json]\n  orch skill export <技能> [--out <文件>]\n  orch skill import <文件|目录> [--force]\n  orch workflow list [--format text|json]\n  orch workflow show <工作流> [--format text|json]\n  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\n  orch workflow validate [<工作流>] [--format json]\n  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\n  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\n  （适用分组取值非法：nope；合法取值：coordinator / research / writing / coding / ops）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill create quote3 --name 缺摘要 --body-file empty.md",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "create",
+        "quote3",
+        "--name",
+        "缺摘要",
+        "--body-file",
+        "empty.md"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-59",
+      "exitCode": 2,
+      "timedOut": false,
+      "durationMs": 89,
+      "stdout": "用法：orch run|status|cancel|core\n  orch run --cwd <目录> --task <说明> [--instance <实例号>] [--template <名字>] [--host <宿主>]\n  orch status [--instance <实例号>] [--events]\n  orch cancel --instance <实例号>\n  orch core stop\n  orch role list [--group <组>] [--instance <实例号>] [--format text|json]\n  orch role show <角色> [--instance <实例号>] [--format text|json]\n  orch role validate [<角色>] [--format json]\n  orch role create <角色> [--from <角色>] --name <中文名|继承> --group <组|继承> --artifact-type <类型|继承> --side-effect <等级|继承> [--summary <摘要>] [--skills <a,b>] [--tools <a,b>] [--wake-allow <a,b>] [--max-concurrent <1-5>] [--force]\n  orch role edit <角色> [--set <键=值>]... [--unset <键>]...\n  orch role export <角色> [--out <文件>]\n  orch role import <文件> [--force]\n  orch role diff <角色> [--against <内置角色|文件>] [--format text|json]\n  orch skill list [--group <组>] [--format text|json]\n  orch skill show <技能> [--format text|json]\n  orch skill create <技能> --name <中文名> --summary <摘要> [--applies-to <a,b>] [--commands <命令>] [--body-file <文件>] [--force]\n  orch skill validate [<技能>] [--format json]\n  orch skill export <技能> [--out <文件>]\n  orch skill import <文件|目录> [--force]\n  orch workflow list [--format text|json]\n  orch workflow show <工作流> [--format text|json]\n  orch workflow create <工作流> --name <中文名> [--from <工作流>] [--force]\n  orch workflow validate [<工作流>] [--format json]\n  orch workflow diff <工作流> [--against <内置工作流|文件>] [--format text|json]\n  orch workflow dry-run <工作流> [--task <说明>] [--format text|json]\n  （skill create 需要 --summary）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill create quote4 --name 空正文 --summary x --body-file empty.md",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "create",
+        "quote4",
+        "--name",
+        "空正文",
+        "--summary",
+        "x",
+        "--body-file",
+        "empty.md"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-59",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 98,
+      "stdout": "创建被拒：技能正文为空：quote4（SKILL_BODY_EMPTY）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch skill validate --format json",
+      "argv": [
+        "C:\\Users\\xuesh\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+        "d:\\WWW\\Maestro\\bin\\orch.js",
+        "skill",
+        "validate",
+        "--format",
+        "json"
+      ],
+      "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-acc-p6\\AC-59",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 108,
+      "stdout": "{\n  \"counts\": {\n    \"assets\": 11,\n    \"skills\": 11,\n    \"builtin\": 10,\n    \"project\": 1,\n    \"invalid\": 0\n  },\n  \"errors\": []\n}\n",
+      "stderr": ""
+    }
+  ]
+}
