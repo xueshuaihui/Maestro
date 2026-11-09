@@ -21,6 +21,7 @@ import {
   NODE_LABEL,
   ROLE_LABEL,
 } from '../../src/cli/labels.js';
+import { renderNodeLines, renderEscalationBlock } from '../../src/cli/render.js';
 
 const NEW_KEYS = {
   CODE_ROLE_BRANCH,
@@ -74,4 +75,55 @@ test('(b) 既有键内容逐字不变（任取代表）', () => {
   assert.equal(NODE_LABEL.escalated, '已升级');
   assert.equal(ROLE_LABEL.developer, '开发');
   assert.equal(ROLE_LABEL.reviewer, '审核者');
+});
+
+// ---- #G-01 接线：includeBranch 开关只影响 instance status 视图，run 路径逐字不变 ----
+
+const codeNodeSnapshot = {
+  template: 'code-loop',
+  state: 'completed',
+  nodes: [
+    {
+      nodeId: 'T-001',
+      roleId: 'developer',
+      state: 'done',
+      round: 1,
+      branch: 'maestro/INST-001/developer',
+      mergeStatus: 'merged',
+    },
+  ],
+};
+
+test('(c) renderNodeLines：默认（run 路径）不出现分支片段，code-loop 输出逐字不变', () => {
+  const lines = renderNodeLines(codeNodeSnapshot, { template: 'code-loop' });
+  assert.deepEqual(lines, ['节点 T-001 开发 已完成 · 第 1 轮']);
+});
+
+test('(c) renderNodeLines：includeBranch=true 透出分支名与合并状态（instance status 视图）', () => {
+  const lines = renderNodeLines(codeNodeSnapshot, { template: 'code-loop', includeBranch: true });
+  assert.equal(lines.length, 1);
+  assert.ok(lines[0].includes('maestro/INST-001/developer'), '应含分支名');
+  assert.ok(lines[0].includes('已合并'), '应含合并状态中文');
+});
+
+test('(c) renderEscalationBlock：includeBranch 把 merge_conflict 原因码映射为中文', () => {
+  const snapshot = {
+    template: 'code-loop',
+    state: 'suspended',
+    nodes: [{ nodeId: 'T-001', roleId: 'developer', state: 'escalated', round: 1 }],
+    escalations: [
+      {
+        escalationId: 'ESC-001',
+        nodeId: 'T-001',
+        round: 1,
+        reasonCode: 'merge_conflict',
+        reasonDetail: '合并 maestro/INST-001/developer 入集成线时发生冲突',
+        state: 'pending',
+      },
+    ],
+  };
+  const plain = renderEscalationBlock(snapshot, { template: 'code-loop' });
+  const shown = renderEscalationBlock(snapshot, { template: 'code-loop', includeBranch: true });
+  assert.ok(plain.some((line) => line.includes('合并 maestro/INST-001/developer 入集成线时发生冲突')));
+  assert.ok(shown.some((line) => line.includes('合并冲突')));
 });

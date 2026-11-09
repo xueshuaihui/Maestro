@@ -1063,7 +1063,9 @@ async function statusCommand(flags, ctx) {
       out(render.renderInstanceLine(snapshot));
     }
     // 节点表：`single` 1 行（I1.1）、`code-loop` 按 T-001/002 逐行（A-2 第 3 段）
-    for (const line of render.renderNodeLines(snapshot, { template })) out(line);
+    // I1.7 AC-12：instance status 视图透出 code 角色的分支/合并状态（`includeBranch:true`）；
+    // 上方 `run` 收尾路径（renderNodeLines 无此标志）保持逐字不变，绝不回灌运行期输出。
+    for (const line of render.renderNodeLines(snapshot, { template, includeBranch: true })) out(line);
     // 与 `orch run` 同口径：先试"无新事件"，没有静默再回落到普通会话行（AC-23）。
     const sessionLine =
       render.renderSessionStall(snapshot, ctx.now()) ?? render.renderSessionLine(snapshot, ctx.now(), { template });
@@ -1071,7 +1073,7 @@ async function statusCommand(flags, ctx) {
     for (const line of render.renderHandoffLines(snapshot, { template })) out(line);
     const wait = render.renderHandoffWait(snapshot, ctx.now());
     if (wait) out(wait);
-    for (const line of render.renderEscalationBlock(snapshot, { template })) out(line);
+    for (const line of render.renderEscalationBlock(snapshot, { template, includeBranch: true })) out(line);
     // 审批行在升级块之后按审批号逐条列出；无审批记录的旧流程逐字不变（A-2 #2 / AC-36）。
     for (const line of render.renderApprovalLines(snapshot, { template })) out(line);
 
