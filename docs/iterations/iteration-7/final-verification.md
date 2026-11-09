@@ -1,7 +1,7 @@
 # I1.7 终验（S4）
 
 > 判据来源：`iteration-7.md` 「退出标准」5 条 + `requirement.md` AC-01~14。
-> 终验代码 HEAD：`0fc70a9`；基线 HEAD：`3f35bfa`。
+> 终验代码 HEAD：`c6d9269`（AC-12 探针提交）；基线 HEAD：`3f35bfa`。
 
 ## 1. 退出标准逐条
 

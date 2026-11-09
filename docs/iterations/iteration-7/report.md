@@ -17,7 +17,7 @@
 | 6 | `490ee15` | WP-5b：`main.js` 仅 `instance status` 接线 `includeBranch:true`（闭 G-01；+ 3 渲染断言） |
 | 7 | `8a50866` | WP-6：`i17-regression.test.js` 回归守护（+ 6 测试） |
 | 8 | `0fc70a9` | 独立评审 `review-wp2-wp3.md`（PASS）+ 修复 F-01（升级落盘失败不误记已提交）、F-09（移除 `artifactType` 旁路，仅角色表判定） |
-| 9 | 见 `git log`（AC-12 探针） | `probe/i17-ac12-status.mjs` + `evidence/ac12-status/`：端到端 `orch instance status` 实测 15/15 |
+| 9 | `c6d9269` | `probe/i17-ac12-status.mjs` + `evidence/ac12-status/`：端到端 `orch instance status` 实测 15/15 |
 
 ## 2. 门禁数字（实跑）
 
