@@ -151,3 +151,24 @@ function resolveForHash(root) {
     return absolute;
   }
 }
+
+/**
+ * Worktree path for a code-role instance node (I1.7).
+ *
+ * Returns `<workspace>/worktrees/<roleId>`, where `<workspace>` is
+ * `instanceWorkspaceDir(root, id)`. The caller only invokes this for roles
+ * whose `artifact_type === 'code'`; non-code roles never get a worktree.
+ */
+export function instanceCodeWorktreeDir(root, id, roleId) {
+  return path.join(instanceWorkspaceDir(root, id), 'worktrees', roleId);
+}
+
+/**
+ * Dataset snapshot area path (I1.7).
+ *
+ * Returns `<workspace>/artifacts/data`, where `<workspace>` is
+ * `instanceWorkspaceDir(root, id)`.
+ */
+export function instanceDataDir(root, id) {
+  return path.join(instanceWorkspaceDir(root, id), 'artifacts', 'data');
+}
