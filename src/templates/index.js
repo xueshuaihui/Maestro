@@ -29,6 +29,8 @@ export const ROLES = Object.freeze({
     roleId: 'developer',
     labelKey: 'developer',
     dispatchable: true,
+    // I1.7 D-3: this role edits in its own git worktree, never the shared workspace.
+    artifact_type: 'code',
     duty: '按任务修改代码，交出「产物：」一行声明的文件',
     mustDeliver: ['任务里「产物：<路径>」声明的文件'],
     prompt: 'forward'

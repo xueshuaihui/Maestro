@@ -17,6 +17,10 @@ import { createReadStream as createFileReadStream } from 'node:fs';
 import path from 'node:path';
 
 import { ARTIFACT_TEXT } from '../cli/labels.js';
+// I1.7 D-3: the role table carries `artifact_type`; code roles resolve to a worktree
+// no matter what the node-level `artifactPolicy` / `productPolicy` says.
+import { ROLES } from '../templates/index.js';
+import { instanceCodeWorktreeDir } from '../persistence/paths.js';
 
 export const ARTIFACTS_DIR = 'artifacts';
 export const DOCS_DIR = 'artifacts/docs';
@@ -136,7 +140,43 @@ function fail(code, detail = null) {
 export function resolveNodeProducts(def, context = {}) {
   const { node = null, state = null, workspaceDir = null, cwd = null } = context;
   const productPolicy = context.productPolicy ?? 'declared';
-  const policy = def?.artifactPolicy ?? 'declared';
+
+  // I1.7 D-3: a role-level `artifact_type === 'code'` overrides the node-level
+  // policy, so code roles always land in their own worktree. Everything else keeps
+  // reading `def.artifactPolicy` exactly as before (R-6).
+  const roleId = node?.roleId ?? def?.roleId ?? null;
+  const artifactType =
+    def?.artifactType ??
+    context?.artifactType ??
+    (roleId !== null && ROLES[roleId] ? ROLES[roleId].artifact_type : null) ??
+    null;
+  const declaredPolicy = def?.artifactPolicy ?? 'declared';
+  const policy = artifactType === 'code' ? 'code' : declaredPolicy;
+
+  if (policy === 'code') {
+    const products = (Array.isArray(def?.products) ? def.products : []).filter(
+      (item) => typeof item === 'string' && item.length > 0
+    );
+    const instanceId = state?.instanceId ?? context?.instanceId ?? null;
+    const role = typeof roleId === 'string' && roleId.length > 0 ? roleId : null;
+
+    // Prefer the single source of truth when the caller hands in the project root;
+    // otherwise derive it from the already-resolved workspace (identical path).
+    let baseDir = null;
+    if (
+      typeof context?.root === 'string' &&
+      context.root.length > 0 &&
+      typeof instanceId === 'string' &&
+      instanceId.length > 0 &&
+      role !== null
+    ) {
+      baseDir = instanceCodeWorktreeDir(context.root, instanceId, role);
+    } else if (typeof workspaceDir === 'string' && workspaceDir.length > 0 && role !== null) {
+      baseDir = path.join(workspaceDir, 'worktrees', role);
+    }
+    if (baseDir === null) return fail('WORKSPACE_MISSING');
+    return { ok: true, policy: 'code', baseDir, products };
+  }
 
   if (policy === 'review') {
     // The review node only hands in a review file; the caller goes through `readReview()`.
