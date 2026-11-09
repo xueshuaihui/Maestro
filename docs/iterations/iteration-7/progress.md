@@ -10,7 +10,7 @@
 | S1 拆分与选型 | ✅ 通过 | 拆分评审 split-review.md（F-01/F-02 阻断 → 修复后自检全绿） | `iteration-7.md`（8 节 + AC→WP 14/14 + 文件零交集；split-review.md） | PASS |
 | S2 实现 | ✅ 收口 | 6 WP 全部合入：WP-1 `e67853b`、WP-2 `e138230`、WP-3 `03bd672`、WP-4 `55ad835`、WP-5 `dcf4fc1`、WP-5b `490ee15`、WP-6 `8a50866`；wp7 测试 31→37 条全绿、purity exit 0、deps 0 | `progress.md` §S2 批次台账；单测证据见各 WP | 待独立评审（R-01） |
 | S3 验收 | 🔄 进行中 | 全量回归门禁 **PASS**：1028 tests / 1019 pass / 8 fail / 1 skipped，失败集合与基线 8 条**逐条一致（差集=0）**；AC-01~14 证据映射见 `acceptance.md` | `/tmp/full-after.txt`、`acceptance.md` | 14/14 有证据；AC-12 端到端 status 探针待补 |
-| S4 终验与收口 | ⏳ 未开始 | — | — | — |
+| S4 终验与收口 | ✅ 条件收口 | 退出标准 1~5 满足；**Conditional PASS**（AC-12 端到端探针待补）；`report.md` + `final-verification.md` + `index.md` 台账更新 | `report.md`、`final-verification.md` | Conditional PASS |
 
 ## 基线（DoR #9，HEAD `3f35bfa`）
 
@@ -78,7 +78,7 @@
 | 编号 | 类型 | 内容 | 处置 | 状态 |
 |---|---|---|---|---|
 | G-01 | 缺口（WP-5） | `orch instance status` 纯文本视图未透出分支/合并状态（main.js 1066/1074 未传 `includeBranch:true`；950/958 属 run 路径须保持 false） | Batch 3 由接线任务精确改 main.js 两行 + 断言 | 待闭（Batch 3） |
-| R-01 | 流程（评审） | WP-2/WP-3 因 SubAgent 429 由主控代写，缺干净上下文独立评审 | 待频率限制恢复后派独立评审 SubAgent（review-wp2-wp3.md），通过前本批不视为最终合格 | 待补 |
+| R-01 | 流程（评审） | WP-2/WP-3 因 SubAgent 429 由主控代写，缺干净上下文独立评审 | 已派干净上下文评审 Agent 复核：`review-wp2-wp3.md` 总判 **PASS（阻断 0 / 建议 10）**；采纳并修复 F-01（升级落盘失败不再误记已提交）、F-09（移除 `def/context.artifactType` 旁路，仅角色表判定，护 AC-10）；其余建议（F-02 同进程内成立、F-08 取值等价等）记录为已知非阻断。修复后 wp7 37/37、doc-artifact 14/14、purity exit 0 | 已闭 |
 
 ### 批次 3（2 并行，已收口）—— WP-4 + WP-5b（main.js 接线，闭 G-01）
 
