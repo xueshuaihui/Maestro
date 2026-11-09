@@ -342,9 +342,15 @@ export function createMergeQueue({
     let escalationId = null;
     if (typeof commitEscalation === 'function') {
       const committed = await commitEscalation({ instanceId: ref.instanceId, escalation });
-      escalationId = committed?.escalationId ?? escalation?.escalationId ?? null;
+      // Only a committed escalation can be reprocessed later. If the CAS write
+      // failed (ok === false / no id), keep the id empty instead of falling back to
+      // the pre-generated placeholder — that would mark an unpersisted escalation
+      // as committed (review F-01).
+      if (committed && committed.ok !== false && typeof committed.escalationId === 'string') {
+        escalationId = committed.escalationId;
+        processed.set(escalationId, { ...ref });
+      }
     }
-    if (escalationId) processed.set(escalationId, { ...ref });
 
     return {
       ok: false,
