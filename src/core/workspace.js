@@ -26,6 +26,8 @@ import {
 } from '../persistence/paths.js';
 import { writeTextAtomic } from '../persistence/atomic-write.js';
 import { renderStatusDoc } from './status-text.js';
+import { ensureGitRepo } from './code-isolation.js';
+import { ROLES } from '../templates/index.js';
 
 /** 建工作区失败（A-5：退出码 3，`无法创建工作区：{cause}`）。 */
 export const WORKSPACE_INIT_FAILED = 'WORKSPACE_INIT_FAILED';
@@ -90,6 +92,21 @@ export async function prepareWorkspace({ root, instanceId, graph = null, state =
       await fs.mkdir(dir, { recursive: true });
     } catch (error) {
       return initFailed(error, dir);
+    }
+  }
+
+  // I1.7 D-3: a graph with at least one `artifact_type === 'code'` role needs the
+  // workspace to be a git repository. Worktrees themselves are created lazily at
+  // dispatch time, so nothing else is built here. The doc-single branch above is
+  // untouched (R-2).
+  const hasCodeRole = nodes.some((node) => {
+    const roleId = node?.roleId ?? null;
+    return typeof roleId === 'string' && ROLES[roleId]?.artifact_type === 'code';
+  });
+  if (hasCodeRole) {
+    const ensured = await ensureGitRepo(workspaceDir, { fs });
+    if (!ensured.ok) {
+      return initFailed(new Error(ensured.cause ?? ensured.code ?? 'git_init_failed'), workspaceDir);
     }
   }
 

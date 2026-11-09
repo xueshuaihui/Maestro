@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -1532,6 +1533,291 @@ test('task-loop 审核提示词给绝对路径：基址与 readReview 同源，�
     // 回读侧不受影响：review.reviewPath 仍是相对值，会进事件 detail
     const state = (await env.store.load('INST-001')).state;
     assert.equal(state.nodes[2].review.reviewPath, 'out/review.json');
+  } finally {
+    await env.teardown();
+  }
+});
+
+// ------------------------------------------------- I1.7 code worktree 集成（WP-4）
+//
+// 只扩展清单：上面的既有断言一字未改。这里用真实的本地 git 仓库驱动
+// `prepareWorkspace → 派发建 worktree → done 入合并队列 → 冲突升级 → resolve 重投`
+// 这条钩子链；合并顺序/冲突检测/回滚本身由 WP-2 的 `code-isolation` 拥有。
+
+function gitRun(dir, args) {
+  return execFileSync('git', args, {
+    cwd: dir,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim();
+}
+
+function instanceWorkspace(root) {
+  return path.join(root, '.orch', 'instances', 'INST-001', 'workspace');
+}
+
+function developerWorktree(root) {
+  return path.join(instanceWorkspace(root), 'worktrees', 'developer');
+}
+
+/**
+ * 预置 code 图的 git 仓库（在 `startRun` 之前落盘，`prepareWorkspace` 会识别已有
+ * `.git` 并跳过 `git init`）。`integration` 给出时先造一条与开发分支同文件不同内容的
+ * 集成线，用来构造真实冲突；`branch` 给出时预建同名分支，用来构造 worktree 创建失败。
+ */
+function seedCodeRepo(root, { file = 'calc.js', base = 'base\n', integration = null, branch = null } = {}) {
+  const workspace = instanceWorkspace(root);
+  fs.mkdirSync(workspace, { recursive: true });
+  gitRun(workspace, ['init']);
+  gitRun(workspace, ['config', 'user.email', 'code@test']);
+  gitRun(workspace, ['config', 'user.name', 'code']);
+  fs.writeFileSync(path.join(workspace, file), base, 'utf8');
+  gitRun(workspace, ['add', '-A']);
+  gitRun(workspace, ['commit', '-m', 'base']);
+  const initial = gitRun(workspace, ['rev-parse', '--abbrev-ref', 'HEAD']);
+  if (integration !== null) {
+    gitRun(workspace, ['checkout', '-b', 'maestro/INST-001/integration']);
+    fs.writeFileSync(path.join(workspace, file), integration, 'utf8');
+    gitRun(workspace, ['add', '-A']);
+    gitRun(workspace, ['commit', '-m', 'integration-side']);
+    gitRun(workspace, ['checkout', initial]);
+  }
+  if (branch !== null) gitRun(workspace, ['branch', branch]);
+  return workspace;
+}
+
+/**
+ * code 夹具：每一步既能写会话 cwd（核对产物），也能写自己的 worktree 并提交
+ * （合并队列要读分支上的提交）。
+ */
+function makeCodeFactory(script) {
+  let index = 0;
+  const factory = {
+    prompts: [],
+    async create({ cwd }) {
+      const step = script[index] ?? {};
+      const ordinal = index + 1;
+      index += 1;
+      const sessionId = `code-sess-${ordinal}`;
+      let updateCb = () => {};
+      return {
+        sessionId,
+        async initialize() {
+          return { ok: true };
+        },
+        async newSession() {
+          return { ok: true, result: { sessionId } };
+        },
+        async prompt(_sessionId, blocks) {
+          factory.prompts.push({ ordinal, text: blocks?.[0]?.text ?? '' });
+          updateCb({ sessionId, update: { sessionUpdate: 'agent_thought_chunk' } });
+          if (typeof step.writeCwd === 'string') {
+            const target = path.join(cwd, step.writeCwd);
+            fs.mkdirSync(path.dirname(target), { recursive: true });
+            fs.writeFileSync(target, step.content ?? 'module.exports = {};\n', 'utf8');
+          }
+          if (step.worktree) {
+            const dir = step.worktree.dir;
+            fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(path.join(dir, step.worktree.ref), step.worktree.content ?? '', 'utf8');
+            gitRun(dir, ['add', '-A']);
+            gitRun(dir, ['commit', '--allow-empty', '-m', step.worktree.message ?? 'change']);
+          }
+          if (step.verdict) {
+            const target = path.join(cwd, 'out', 'verdict.json');
+            fs.mkdirSync(path.dirname(target), { recursive: true });
+            fs.writeFileSync(target, JSON.stringify(step.verdict), 'utf8');
+          }
+          return { ok: true, result: { stopReason: 'end_turn' } };
+        },
+        async cancel() {
+          return { ok: true };
+        },
+        onUpdate(cb) {
+          updateCb = cb;
+        },
+        async dispose() {},
+      };
+    },
+  };
+  return factory;
+}
+
+async function setupCode(seed) {
+  const root = tmpDir('maestro-wp4-i17-root-');
+  const cwd = tmpDir('maestro-wp4-i17-cwd-');
+  const prepared = seed(root);
+  const factory = makeCodeFactory(prepared.steps());
+  const result = buildOrch({ root, cwd, factory, env: { NODE_ENV: 'test' } });
+  return {
+    ...result,
+    factory,
+    workspace: prepared.workspace,
+    async teardown() {
+      try {
+        await result.orch.dispose();
+      } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+        fs.rmSync(cwd, { recursive: true, force: true });
+      }
+    },
+  };
+}
+
+test('I1.7 worktree：code 节点派发即得独立分支/worktree，done 后 mergeStatus=merged（AC-05/06）', async () => {
+  const env = await setupCode((root) => {
+    seedCodeRepo(root);
+    return {
+      workspace: instanceWorkspace(root),
+      steps: () => [
+        {
+          writeCwd: 'calc.js',
+          worktree: {
+            dir: developerWorktree(root),
+            ref: 'calc.js',
+            content: 'module.exports = { div: (a, b) => a / b };\n',
+          },
+        },
+        { verdict: { verdict: 'pass', defects: [] } },
+      ],
+    };
+  });
+  try {
+    const run = await env.orch.startRun({ cwd: env.cwd, task: CODE_TASK, template: 'code-loop' });
+    assert.equal(run.ok, true, JSON.stringify(run));
+    assert.equal(run.snapshot.state, 'completed');
+
+    const state = (await env.store.load('INST-001')).state;
+    const developer = state.nodes[0];
+    // 派发钩子：分支名与 worktree 目录落位（AC-05 的路径形状）
+    assert.equal(developer.branch, 'maestro/INST-001/developer');
+    assert.equal(developer.mergeStatus, 'merged');
+    assert.equal(fs.existsSync(developerWorktree(env.root)), true, 'worktree 目录必须存在');
+    assert.match(
+      gitRun(env.workspace, ['branch', '--list', 'maestro/INST-001/developer']),
+      /developer/,
+    );
+
+    // 完成钩子：顺序合并后集成线包含该文件改动（AC-06）
+    const merged = gitRun(env.workspace, ['show', 'maestro/INST-001/integration:calc.js']);
+    assert.match(merged, /div/);
+
+    // 非 code 角色不落 worktree 字段（AC-10 的边界在编排侧的表现）
+    assert.equal('mergeStatus' in state.nodes[1], false);
+    assert.equal(fs.existsSync(path.join(instanceWorkspace(env.root), 'worktrees', 'tester')), false);
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('I1.7 worktree：同文件冲突 → mergeStatus=conflict + merge_conflict 升级，双分支保留（AC-08/14）', async () => {
+  const env = await setupCode((root) => {
+    seedCodeRepo(root, { integration: 'integration-side\n' });
+    return {
+      workspace: instanceWorkspace(root),
+      steps: () => [
+        {
+          writeCwd: 'calc.js',
+          worktree: { dir: developerWorktree(root), ref: 'calc.js', content: 'mine\n' },
+        },
+      ],
+    };
+  });
+  try {
+    const run = await env.orch.startRun({ cwd: env.cwd, task: CODE_TASK, template: 'code-loop' });
+    assert.equal(run.ok, true, JSON.stringify(run));
+    assert.equal(run.snapshot.state, 'suspended');
+
+    const state = (await env.store.load('INST-001')).state;
+    assert.equal(state.nodes[0].mergeStatus, 'conflict');
+    assert.equal(state.nodes[0].state, 'escalated');
+    assert.equal(state.escalations.length, 1);
+    assert.equal(state.escalations[0].reasonCode, 'merge_conflict');
+    assert.equal(state.escalations[0].state, 'pending');
+    assert.equal(state.halted, false);
+
+    // 半成品合并已回滚：集成线还是冲突前的内容，双方的 worktree/分支都还在
+    assert.equal(gitRun(env.workspace, ['show', 'maestro/INST-001/integration:calc.js']), 'integration-side');
+    assert.equal(fs.existsSync(developerWorktree(env.root)), true);
+    assert.match(gitRun(env.workspace, ['branch', '--list', 'maestro/INST-001/developer']), /developer/);
+    assert.equal(
+      fs.readFileSync(path.join(developerWorktree(env.root), 'calc.js'), 'utf8'),
+      'mine\n',
+      '开发侧改动不得丢失',
+    );
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('I1.7 worktree：worktree/分支创建失败 → 节点 escalated、实例 suspended、升级 worktree_init_failed（AC-13）', async () => {
+  const env = await setupCode((root) => {
+    seedCodeRepo(root, { branch: 'maestro/INST-001/developer' });
+    return {
+      workspace: instanceWorkspace(root),
+      steps: () => [{ writeCwd: 'calc.js' }],
+    };
+  });
+  try {
+    const run = await env.orch.startRun({ cwd: env.cwd, task: CODE_TASK, template: 'code-loop' });
+    // 实例不崩溃：首派失败按「升级 + 挂起」的终局返回，并带 instanceId
+    assert.equal(run.ok, true, JSON.stringify(run));
+    assert.equal(run.snapshot.state, 'suspended');
+
+    const state = (await env.store.load('INST-001')).state;
+    assert.equal(state.nodes[0].state, 'escalated');
+    assert.equal(state.escalations.length, 1);
+    assert.equal(state.escalations[0].reasonCode, 'worktree_init_failed');
+    assert.equal(state.escalations[0].nodeId, 'T-001');
+    assert.equal(state.sessions.length, 0, '创建失败不应留下会话');
+    assert.equal(fs.existsSync(developerWorktree(env.root)), false);
+  } finally {
+    await env.teardown();
+  }
+});
+
+test('I1.7 escalate resolve：冲突裁决后重投合并，集成线含改动且节点继续推进（AC-09）', async () => {
+  const env = await setupCode((root) => {
+    seedCodeRepo(root, { integration: 'integration-side\n' });
+    return {
+      workspace: instanceWorkspace(root),
+      steps: () => [
+        // 第 1 轮：与集成线撞同一文件 → 冲突升级
+        { writeCwd: 'calc.js', worktree: { dir: developerWorktree(root), ref: 'calc.js', content: 'mine\n' } },
+        // 第 2 轮（retry 重投后）：开发再跑一轮
+        { writeCwd: 'calc.js', worktree: { dir: developerWorktree(root), ref: 'calc.js', content: 'mine\n' } },
+        { verdict: { verdict: 'pass', defects: [] } },
+      ],
+    };
+  });
+  try {
+    const run = await env.orch.startRun({ cwd: env.cwd, task: CODE_TASK, template: 'code-loop' });
+    assert.equal(run.snapshot.state, 'suspended');
+    const before = (await env.store.load('INST-001')).state;
+    assert.equal(before.escalations[0].reasonCode, 'merge_conflict');
+
+    // 人工裁决：集成线采纳开发分支的版本（同一改动 → 再合并无冲突）
+    gitRun(env.workspace, ['checkout', 'maestro/INST-001/integration']);
+    fs.writeFileSync(path.join(env.workspace, 'calc.js'), 'mine\n', 'utf8');
+    gitRun(env.workspace, ['add', '-A']);
+    gitRun(env.workspace, ['commit', '-m', 'resolve']);
+
+    const resolved = await env.orch.resolveEscalation({
+      instanceId: 'INST-001',
+      escalationId: 'ESC-001',
+      decision: 'retry',
+    });
+    assert.equal(resolved.ok, true, JSON.stringify(resolved));
+
+    const waited = await env.orch.waitForRun({ instanceId: 'INST-001', timeoutMs: 20_000 });
+    assert.equal(waited.ok, true, JSON.stringify(waited));
+
+    const after = (await env.store.load('INST-001')).state;
+    assert.equal(after.escalations[0].state, 'resolved');
+    assert.equal(after.nodes[0].state, 'done');
+    assert.equal(after.nodes[0].mergeStatus, 'merged');
+    assert.equal(after.state, 'completed');
+    assert.equal(gitRun(env.workspace, ['show', 'maestro/INST-001/integration:calc.js']), 'mine');
   } finally {
     await env.teardown();
   }

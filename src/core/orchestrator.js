@@ -49,8 +49,10 @@ import {
   writePathOf,
 } from './doc-artifact.js';
 import { buildEscalation, commitEscalation, findPending, markHalted } from './escalation.js';
+import { buildMergeEscalation, createMergeQueue, createWorktree } from './code-isolation.js';
 import { checkWakeGate, classifyNodeOutcome, planAdvance } from './advance.js';
 import {
+  instanceCodeWorktreeDir,
   instanceDir as dirOfInstance,
   instanceDocsDir,
   instanceReportsDir,
@@ -61,6 +63,7 @@ import {
   DEFAULT_RETEST_REQUIREMENT,
   DEFAULT_REVISION_REQUIREMENT,
   GRAPHS,
+  ROLES,
   defaultGraph,
   initialNodes,
   promptFor,
@@ -1561,6 +1564,39 @@ export function createOrchestrator({
     if (isNodeBusyState(node.state)) return { ok: false, action: 'reject', code: 'NODE_BUSY' };
 
     const def = graphNode(runGraph, nodeId);
+
+    // I1.7 hook 1 (D-3/AC-13): a code role edits in its own worktree, so the
+    // worktree must exist before the session starts. The branch/worktree pairing
+    // itself stays in `code-isolation`; this only triggers it and records the
+    // resulting branch on the node (same CAS as the dispatch below).
+    if (isCodeRole(node.roleId)) {
+      const prepared = await prepareCodeWorktree(state, node);
+      if (!prepared.ok) {
+        const escalation = await escalateState({
+          instanceId: state.instanceId,
+          state,
+          node,
+          entry: buildMergeEscalation({
+            nodeId,
+            round: Number.isInteger(node.round) ? node.round + 1 : 1,
+            reasonCode: 'worktree_init_failed',
+            reasonDetail: prepared.cause ?? 'worktree_init_failed',
+            escalations: state.escalations ?? [],
+            now: clock,
+          }),
+          emit,
+        });
+        return {
+          ok: false,
+          action: 'stop',
+          code: escalation.ok ? 'WORKTREE_INIT_FAILED' : 'ESCALATION_WRITE_FAILED',
+          escalation,
+        };
+      }
+      node.branch = prepared.branch;
+      node.mergeStatus = 'pending';
+    }
+
     const fromNodeState = node.state;
     const at = iso();
     node.round = (Number.isInteger(node.round) ? node.round : 0) + 1;
@@ -1799,13 +1835,14 @@ export function createOrchestrator({
     reasonCode,
     reasonDetail,
     defects = [],
+    entry: prebuiltEntry = null,
     pendingHandoff = null,
     overlaySession = null,
     sessionTerminal = 'escalated',
     retryOnConflict = 1,
     emit,
   }) {
-    if (!node) return { ok: false, code: 'ESCALATION_WRITE_FAILED' };
+    if (!node && !prebuiltEntry) return { ok: false, code: 'ESCALATION_WRITE_FAILED' };
     // commitEscalation 的 emit 是同步签名（不允许回滚已提交事务），这里把返回的
     // promise 收集起来，事务结束前统一 await —— 否则调用方一拿到结果就读
     // events.jsonl 会读不到 node/session/instance 三条迁移。
@@ -1815,7 +1852,7 @@ export function createOrchestrator({
       if (maybe && typeof maybe.then === 'function') pending.push(Promise.resolve(maybe).catch(() => {}));
       return maybe;
     };
-    const entry = buildEscalation({
+    const entry = prebuiltEntry ?? buildEscalation({
       instanceId,
       escalations: state?.escalations ?? [],
       nodeId: node.nodeId,
@@ -1863,6 +1900,130 @@ export function createOrchestrator({
       if (disk.ok && state) adoptState(state, disk.state);
     }
     return { ok: false, code: 'ESCALATION_WRITE_FAILED', halted: halted.ok, params: committed.params };
+  }
+
+  // ------------------------------------------------------- I1.7 code-worktree hooks
+  //
+  // Contract-only wiring (D-3 / iteration-7 §2.6). The merge order, conflict
+  // detection, rollback and escalation construction all live in `code-isolation`;
+  // this section only triggers them and projects `branch` / `mergeStatus` back
+  // through the engine's normal snapshot write.
+
+  /** A role is a code role when the role table says so (single source of truth). */
+  function isCodeRole(roleId) {
+    return typeof roleId === 'string' && roleId.length > 0 && ROLES[roleId]?.artifact_type === 'code';
+  }
+
+  async function pathExists(target) {
+    try {
+      await fs.stat(target);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /** One merge queue per instance keeps every merge attempt strictly serialised. */
+  const mergeQueues = new Map();
+
+  function mergeHolderFor(instanceId) {
+    const existing = mergeQueues.get(instanceId);
+    if (existing) return existing;
+    const holder = { instanceId, ctx: null, writes: new Set(), queue: null };
+    holder.queue = createMergeQueue({
+      commitEscalation: ({ instanceId: id, escalation }) => commitQueuedEscalation(id, escalation, holder),
+      getState: () => holder.ctx?.state ?? null,
+      applyStateChange: (change) => applyMergeChange(holder, change),
+      fs,
+    });
+    mergeQueues.set(instanceId, holder);
+    return holder;
+  }
+
+  /**
+   * Project `{nodeId, branch, mergeStatus}` into the live snapshot and persist it
+   * through `saveLive` (the engine's one CAS channel). Bookkeeping conflicts must
+   * never stop the drive, so they land on a throwaway carrier object.
+   */
+  function applyMergeChange(holder, change) {
+    const ctx = holder.ctx;
+    if (!ctx || !change || typeof change !== 'object') return;
+    const node = nodeOf(ctx.state, change.nodeId);
+    if (!node) return;
+    if (typeof change.branch === 'string' && change.branch.length > 0) node.branch = change.branch;
+    if (typeof change.mergeStatus === 'string' && change.mergeStatus.length > 0) {
+      node.mergeStatus = change.mergeStatus;
+    }
+    const carrier = { instanceId: ctx.instanceId, state: ctx.state };
+    const write = saveLive(carrier)
+      .catch(() => {})
+      .finally(() => holder.writes.delete(write));
+    holder.writes.add(write);
+  }
+
+  /** `applyStateChange` is synchronous in the queue; drain its writes before reading. */
+  async function flushMergeWrites(holder) {
+    while (holder.writes.size > 0) {
+      await Promise.allSettled([...holder.writes]);
+    }
+  }
+
+  /** Queue-injected escalation committer: reuses the engine's one-CAS transaction. */
+  async function commitQueuedEscalation(instanceId, escalation, holder) {
+    await flushMergeWrites(holder);
+    return escalateState({
+      instanceId,
+      state: holder.ctx?.state ?? null,
+      node: null,
+      entry: escalation,
+      emit: makeEmitter(instanceId, null),
+    });
+  }
+
+  /**
+   * Hook 1: make sure the code role's worktree exists before the session starts.
+   * Idempotent per role — a retest dispatch reuses the worktree created the first
+   * time (and the branch already recorded on the node).
+   */
+  async function prepareCodeWorktree(state, node) {
+    const instanceId = state.instanceId;
+    const roleId = node.roleId;
+    const workspaceDir = workspaceDirOf(state);
+    if (typeof workspaceDir !== 'string' || workspaceDir.length === 0) {
+      return { ok: false, cause: 'workspace_missing' };
+    }
+    const worktreeDir = instanceCodeWorktreeDir(store.root, instanceId, roleId);
+    const branch =
+      typeof node.branch === 'string' && node.branch.length > 0
+        ? node.branch
+        : `maestro/${instanceId}/${roleId}`;
+    if (await pathExists(worktreeDir)) return { ok: true, branch, worktreeDir };
+    const created = await createWorktree({ workspaceDir, instanceId, roleId, fs });
+    if (!created.ok) {
+      return { ok: false, cause: created.cause ?? created.code ?? 'worktree_init_failed' };
+    }
+    return { ok: true, branch: created.branch, worktreeDir: created.worktreeDir };
+  }
+
+  /**
+   * Hook 2: hand a finished code node to the per-instance merge queue. The queue
+   * itself decides order / conflict / rollback; this only awaits it and drains the
+   * state projections so the snapshot is readable when the caller returns.
+   */
+  async function enqueueCodeMerge(ctx) {
+    const node = ctx.node;
+    if (!isCodeRole(node?.roleId)) return null;
+    const holder = mergeHolderFor(ctx.instanceId);
+    holder.ctx = { instanceId: ctx.instanceId, state: ctx.state };
+    const result = await holder.queue.enqueue({
+      nodeId: node.nodeId,
+      instanceId: ctx.instanceId,
+      roleId: node.roleId,
+      round: Number.isInteger(node.round) ? node.round : 1,
+      workspaceDir: workspaceDirOf(ctx.state),
+    });
+    await flushMergeWrites(holder);
+    return result;
   }
 
   // ---------------------------------------------------------- 单节点收尾（I1.1）
@@ -2406,7 +2567,11 @@ export function createOrchestrator({
     await consumeHandoff(ctx, 'handoff.consumed');
     await idleSession(ctx, 'run.completed');
     await saveLive(ctx);
+    // I1.7 hook 2 (AC-06/08/14): a code node's merge is queued once the node is
+    // done. Order, conflict handling and escalation stay inside the queue.
+    const merged = await enqueueCodeMerge(ctx);
     await cleanup(ctx);
+    if (merged && merged.ok === false) return { kind: 'escalated' };
     return { kind: 'passed' };
   }
 
@@ -4761,6 +4926,28 @@ export function createOrchestrator({
     // Events are broadcast only AFTER the state write (section 2.9 invariant).
     const emit = makeEmitter(id, null);
     for (const event of events) await emit(event);
+
+    // I1.7 hook 3 (AC-09): a merge escalation re-enters the instance's merge queue
+    // after adjudication. A merge that escalates again must not be buried under a
+    // follow-up dispatch, so the caller stops here with the new merge status.
+    if (entry.reasonCode === 'merge_conflict' || entry.reasonCode === 'merge_aborted') {
+      const holder = mergeHolderFor(id);
+      holder.ctx = { instanceId: id, state };
+      const retried = await holder.queue.reprocess(escalationId);
+      await flushMergeWrites(holder);
+      if (retried && (retried.code === 'merge_conflict' || retried.code === 'merge_aborted')) {
+        return {
+          ok: true,
+          escalationId,
+          resolution: decision,
+          state: state.state,
+          instanceId: id,
+          snapshot: snapshotOf(state),
+          dispatched: false,
+          mergeStatus: retried.mergeStatus ?? null,
+        };
+      }
+    }
 
     const hostId = latestSession(state)?.hostId ?? null;
     let outcome;
