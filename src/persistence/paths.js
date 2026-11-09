@@ -48,6 +48,11 @@ export function statePath(root, id) {
   return path.join(instanceDir(root, id), 'state.json');
 }
 
+/** 检查点文件：`<instanceDir>/state/checkpoint.json`（新建 state/ 子目录，与 state.json 同级）。 */
+export function checkpointPath(root, id) {
+  return path.join(instanceDir(root, id), 'state', 'checkpoint.json');
+}
+
 export function eventsPath(root, id) {
   return path.join(instanceDir(root, id), 'events.jsonl');
 }

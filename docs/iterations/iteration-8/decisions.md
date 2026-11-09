@@ -36,3 +36,18 @@
 | 编号 | 触发点 | 依据 | 决定 | 影响面 |
 |---|---|---|---|---|
 | 裁-7 | 拆分评审 S-04：`docs/iterations/iteration-8.md` §8 仍把附录 B-09 表述为「需评审裁决 / 需主控书面确认」，与裁-6「已裁决（不阻塞）」留痕口径有张力 | ① 裁-6 已明确「改判动作只在 S1 评审记录与本台账留痕，**需求正文 v3 一字不改**」——拆分文档属 S1 产物，同步措辞不触需求；② §8 对齐声明须与裁决台账一致，否则实现期会误以为命名仍可选 | **同步 §8 措辞**：改为「已裁决（不阻塞）：按需求 `session_policy` 落地、不改名 `session_reuse`；需求正文 v3 一字不改」，并**如实登记**「附录 B 正文仍写『需评审裁决』（定稿文本不动），以 `decisions.md` 裁-6 为最终口径」。不新增需求条目、不改需求正文 | `docs/iterations/iteration-8.md` §8 两处；`review`/`split-review` 记录；需求正文零改动 |
+
+## 五、S2 第 1 批（WP-1 / WP-2）实现口径确认（裁-8）
+
+> 两个 WP 均无契约偏差，以下为主控对「实现比冻结口径略强 / 多一个可选形态」的书面确认，供 WP-4 接线与 S3 取证遵循；**需求 v3 与拆分文档均不改动**。
+
+| 编号 | 事项 | 主控决定 |
+|---|---|---|
+| 裁-8a | WP-1 `checkpointPath(root,id)` 由 `src/persistence/paths.js:52` 定义、`src/core/checkpoint.js` re-export 同一函数对象 | 符合拆分 §2.2 / D-3「唯一计算点」；多一个别名导出不构成偏差，接受 |
+| 裁-8b | `checkpointId` 实现 = `state.rev` + `writeCheckpoint` 读前值强制 `max(入参, prior+1)` | 比冻结「随每次 `saveState()` 递增」略强，但 `rev` 始终与实例记录一致、正常流程下 `checkpointId===rev`；接受，不为对齐口径删保护 |
+| 裁-8c | `loadCheckpoint` 把 ENOENT 与解析失败一并归 `CHECKPOINT_UNREADABLE`，不另设 `NOT_FOUND` | 需求 D-3 只定义该错误码，AC-05「检查点缺失按实例记录恢复」等价可用；接受 |
+| 裁-8d | 检查点内 `nodes` / `handoffs` 按 D-3 样例投影为 `nodeId` / `handoffId`（非 `id`），`escalations` / `artifactRefs` 原样浅拷贝 | **WP-4 恢复读信封时必须按 D-3 字段名取**，不得按 `state.json` 的 `id` 取；此点写进 WP-4 任务书 |
+| 裁-8e | WP-2 `resumeOrCreate` 增加**可选** `currentPrompt`（冻结的四个必需入参不变，缺省不自动发 prompt），`new` 兜底时由适配层代发当前轮一次 | **裁定 WP-4 接线采用「显式传 `currentPrompt`，由适配层代发一次」，WP-4 不得再自行重发**（否则 AC-21 的 `session/prompt` 变 2 次）；`resume` / `load` 成功后仍按 C-09 由 WP-4 依会话末态决定是否发，适配层一律不发 |
+| 裁-8f | `canResume` / `canLoad` 既是 `normalizeCapabilities` 的布尔出参字段、又是模块级谓词导出；`initialize()` 增一行只读 `lastInitializeResult` 缓存 | 两者并存、初始化返回结构未变；接受，不收敛 |
+
+**真实宿主面**：AC-25/26/27/57 本机无 DSH CLI，按 BR-48 判「阻塞」，WP-2 只做能力归一化与方言回退机检面，未用夹具冒充（留 WP-7 末批取证）。
