@@ -245,3 +245,16 @@ node_type: 全篇 YAML 键统一；artifact_type / nodeType 未被误改        
 | 裁-14 | WP-8 报备的三处自定口径：① `workflow diff <id>` 无 `--against` 时在同名内置之外增加「定义体全等的内置投影」回退（否则 AC-39 第二段「原封不动派生 diff copy → 无差异」不可达，因 workflow/v1 无 derived_from 键）；② `workflow create` 无 `--from` 时取最小合法形（单 `human` 节点天然终点，AC-40 第二/三段依赖该形且需求未给缺省口径）；③ diff 的 map 变更路径按 `edges[i].map[j]` 实现（A-11 写 `nodes[<i>].map[<j>]`，但 map 是边字段，判笔误） | ①② 是让既有 AC 的 Then 可达的最小实现，不新增能力、不与任何 BR 冲突；③ 与 A-11 的节点路径 `nodes[0].title` 一致性更好，AC 机检只钉 `nodes[0].title` 不受影响 | **三项均追认**，登记为需求侧 R-10（A-11 的 map 路径笔误 + `workflow create` 缺省形未定义）；S3/S4 按实现口径取证与披露 | `src/cli/workflows.js`；S3 `ac39/ac40.mjs`；S4 report |
 
 **AC-45 过渡断言终态（非裁决）**：WP-8 落地后 `test/wp12/cli-assets.test.js` 的 AC-45 用例更新为终态——`skill list` 与 `workflow list` 均退 0（首行分别为 `技能 10 个（内置 10 · 项目 0）` / `工作流 3 个（内置 3 · 项目 0）`）、不建 `.orch`、不连 client。该用例是 WP-5 自写过渡断言的三次同步中的最后一次。
+
+## 十三、S2 实现评审处置与整合裁决（裁-15）
+
+S2 实现评审（`impl-review.md`）判 FAIL：阻断 1（P-01）+ 建议 5。处置如下。
+
+| 项 | 处置 | 说明 |
+|---|---|---|
+| P-01（阻断）skill 默认正文英文占位 | **已修** | 按裁-12 通道在 labels.js 新增冻结常量 `SKILL_DEFAULT_BODY`（A-7 三行逐字）与 `SKILL_CLI_TEXT.usageReason.bodyFileMissing`（`正文文件不存在：{file}`），skills.js 切换真实键；skill-assets 断言同步为 A-7 逐字 |
+| P-05（建议）`--body-file` 缺失文案占位 | **已修** | 同上；退出码保持 2（§2.6「语法/取值问题退 2」口径，需求未逐字钉文案） |
+| P-03 branches 按 to 层号 | **登记** | WP-4 报备过、本轮补登记：D-5 原文 `(from 层号, to, when)` 按节点 id 排序与 A-10/§3.4/AC-28 逐字行序矛盾，取「to 节点所在层号」为唯一可满足读法 |
+| P-04 ⑨ 非 role 目标让位 ⑫ | **登记** | AC-60 机检要求 `errors[0]` 是 TRANSITION，⑨ 对 backflow→human 跳过（⑫ 的 `backflowTarget` 接管）；BR-22 字面未区分，S4 披露 |
+| P-06 ⑫ 入口有界回流豁免 | **登记** | BR-25 字面「入口不得回流」会使内置 code-loop（入口声明 `max_rounds: 2`）当场违反 BR-41；按最小实现收口为「入口被回流且未声明 max_rounds 才报 `entryBackflow`」，S4 披露 |
+| 裁-15（P-02，需求侧矛盾） | **裁决** | 实测：A-1 原文 doc-fanout 夹具在 D-3⑬ + D-7b 下报 `WORKFLOW_WAKE_DENIED researcher → editor`，AC-24/27/28/30/31/63 的「全部通过」不可达。依据：**AC-37/AC-60 的 Given 均在节点上声明 `wake_allow`**（节点级声明是需求自身先例），A-1 的节点可选键清单漏列该键属附录笔误。决定：S3 对 doc-fanout 夹具在 T-001 节点补一行节点级 `wake_allow: [writer, editor]`（经实测 `counts.invalid=0` 全绿），语义不变、矛盾消解在数据层；登记**需求侧 R-11**（A-1 可选键清单漏 `wake_allow` + A-13 夹具缺声明与 BR-26 矛盾），S3 证据与 S4 报告披露。同时 WP-3 的「节点级优先于角色资产」机制由报备偏离转为需求先例支撑的实现，正式追认 |

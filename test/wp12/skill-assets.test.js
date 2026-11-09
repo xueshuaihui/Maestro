@@ -237,7 +237,7 @@ test('AC-18: create without --body-file fills the default skeleton (TODO: labels
   const text = fs.readFileSync(path.join(root, '.orch', 'skills', 'quote', 'SKILL.md'), 'utf8');
   const body = text.split(/^---\n/m).slice(2).join('---\n');
   // TODO(labels): swap to the verbatim A-7 skeleton once `labels.js` lands the key.
-  assert.equal(body, '### Work method\n\n1. Complete the work covered by this skill as required by the task, and state clearly what was done.\n');
+  assert.equal(body, '### 工作方法\n\n1. 按任务要求完成本技能覆盖的工作，并在结果里写清做了什么。\n');
 });
 
 test('AC-18: create --commands and --body-file land verbatim (AC-59 happy path)', async () => {

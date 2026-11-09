@@ -28,28 +28,12 @@ import { builtinSkillsDir, projectSkillsDir } from '../registry/assets.js';
 import { serializeSkill, atomicWrite } from '../registry/asset-write.js';
 import * as render from './render.js';
 import { detailOf } from './roles.js';
-import { GROUP_LABEL, REGISTRY_ERROR, SKILL_CLI_TEXT } from './labels.js';
+import { GROUP_LABEL, REGISTRY_ERROR, SKILL_CLI_TEXT, SKILL_DEFAULT_BODY } from './labels.js';
 
 const EXIT_OK = 0;
 const EXIT_FAILED = 1;
 const EXIT_USAGE = 2;
-
-/**
- * TODO(labels): A-7's default body skeleton is a verbatim CJK three-line block
- * (a heading line + blank + one numbered sentence), but `labels.js` (WP-5's file)
- * has no key for it and this file must stay CJK-free (AC-51 / D-9). Until WP-5
- * lands a key (suggested: `SKILL_CLI_TEXT.defaultBody`), an English placeholder
- * keeps the same shape; the key must replace this constant verbatim.
- */
-const DEFAULT_BODY =
-  '### Work method\n\n1. Complete the work covered by this skill as required by the task, and state clearly what was done.\n';
-
-/**
- * TODO(labels): no `labels.js` key exists for a missing `--body-file` value
- * (AC-59 treats it as a usage error, exit 2). English placeholder until WP-5
- * lands one; suggested: `SKILL_CLI_TEXT.usageReason.bodyFileMissing`.
- */
-const BODY_FILE_MISSING = 'body file not found: {file}';
+const DEFAULT_BODY = SKILL_DEFAULT_BODY;
 
 /** `{name}` substitution; absent values become empty strings, never `undefined`. */
 function fill(template, vars) {
@@ -261,8 +245,11 @@ async function createSkill({ registry, flags, out, skillId, cwd }) {
   if (flags['body-file'] !== undefined) {
     const text = readText(path.resolve(cwd, flags['body-file']));
     if (text === null) {
-      // TODO(labels): usage-style reason line for a missing body file (AC-59).
-      out(render.renderUsage(fill(BODY_FILE_MISSING, { file: flags['body-file'] })));
+      out(
+        render.renderUsage(
+          fill(SKILL_CLI_TEXT.usageReason.bodyFileMissing, { file: flags['body-file'] })
+        )
+      );
       return EXIT_USAGE;
     }
     body = text;

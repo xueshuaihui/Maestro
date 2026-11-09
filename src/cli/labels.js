@@ -608,9 +608,15 @@ export const SKILL_CLI_TEXT = Object.freeze({
       create: 'skill create 需要技能 id',
       export: 'skill export 需要技能 id',
       import: 'skill import 需要文件'
-    })
+    }),
+    bodyFileMissing: '正文文件不存在：{file}'
   })
 });
+
+/** `skill create` 不给 `--body-file` 时的默认正文（A-7 逐字；`skills.js` 取用）。 */
+export const SKILL_DEFAULT_BODY = Object.freeze(
+  '### 工作方法\n\n1. 按任务要求完成本技能覆盖的工作，并在结果里写清做了什么。\n'
+);
 
 /** `orch workflow` 六条子命令的全部文案（A-8 ~ A-11 逐字；`workflows.js` / `render.js` 取用）。 */
 export const WORKFLOW_CLI_TEXT = Object.freeze({
