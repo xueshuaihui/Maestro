@@ -1,0 +1,86 @@
+{
+  "probe": "I1.7 AC-12 end-to-end (real core IPC + real CLI status)",
+  "head": "ref: refs/heads/main",
+  "startedAt": "2026-11-09T23:20:44.625Z",
+  "projectRoot": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-ac12-SxkH5Q",
+  "total": 15,
+  "pass": 15,
+  "fail": 0,
+  "results": [
+    {
+      "name": "核心 IPC 往返后退出码为 0（merged）",
+      "ok": true,
+      "detail": "exit=0"
+    },
+    {
+      "name": "已合并实例节点行含分支名",
+      "ok": true,
+      "detail": "节点 T-001 开发 已完成 · 第 1 轮 · 耗时 50s · （开发 分支 maestro/INST-AC12-MERGED/developer · 已合并）"
+    },
+    {
+      "name": "已合并实例节点行含合并状态「已合并」",
+      "ok": true,
+      "detail": "节点 T-001 开发 已完成 · 第 1 轮 · 耗时 50s · （开发 分支 maestro/INST-AC12-MERGED/developer · 已合并）"
+    },
+    {
+      "name": "已合并实例节点行形如 `节点 T-001 开发 … （… 分支 maestro/… · 已合并）`",
+      "ok": true,
+      "detail": "节点 T-001 开发 已完成 · 第 1 轮 · 耗时 50s · （开发 分支 maestro/INST-AC12-MERGED/developer · 已合并）"
+    },
+    {
+      "name": "已合并实例无「未合并」类噪声（mergeStatus 未误判为 conflict）",
+      "ok": true,
+      "detail": "未出现「冲突待升级」"
+    },
+    {
+      "name": "核心 IPC 往返后退出码为 0（conflict）",
+      "ok": true,
+      "detail": "exit=0"
+    },
+    {
+      "name": "冲突实例节点行含分支名",
+      "ok": true,
+      "detail": "节点 T-001 开发 已升级 · 第 1 轮 · （开发 分支 maestro/INST-AC12-CONFLICT/developer · 冲突待升级）"
+    },
+    {
+      "name": "冲突实例节点行合并状态为「冲突待升级」",
+      "ok": true,
+      "detail": "节点 T-001 开发 已升级 · 第 1 轮 · （开发 分支 maestro/INST-AC12-CONFLICT/developer · 冲突待升级）"
+    },
+    {
+      "name": "冲突实例升级块把 reasonCode 映射为中文「合并冲突」",
+      "ok": true,
+      "detail": "  原因：合并冲突"
+    },
+    {
+      "name": "冲突实例保留 escalationId（ESC-AC12-001 可见）",
+      "ok": true,
+      "detail": "升级 ESC-AC12-001 待处理"
+    },
+    {
+      "name": "single 实例退出码为 0",
+      "ok": true,
+      "detail": "exit=0"
+    },
+    {
+      "name": "single 实例输出无分支片段（逐字回归，不回灌 includeBranch）",
+      "ok": true,
+      "detail": "[\"实例 INST-AC12-SINGLE · 已完成\",\"节点 已完成\"]"
+    },
+    {
+      "name": "single 实例节点行逐字为 I1.1 基线（`节点 已完成`，无节点号/角色）",
+      "ok": true,
+      "detail": "节点 已完成"
+    },
+    {
+      "name": "graph 文本视图同样透出分支名（AC-12 第二视图）",
+      "ok": true,
+      "detail": "exit=0 且含分支名"
+    },
+    {
+      "name": "隔离根 core 已停止",
+      "ok": true,
+      "detail": "exit=0"
+    }
+  ]
+}

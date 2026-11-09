@@ -8,9 +8,9 @@
 |---|---|---|---|---|
 | S0 需求生成与评审 | ✅ 通过 | review-round2 总判 PASS（阻断 0 / 建议 0）；F-01/F-02 闭合 | `requirement.md` v2（定稿）、`requirement-understanding.md`、`review-round1..2.md` | PASS |
 | S1 拆分与选型 | ✅ 通过 | 拆分评审 split-review.md（F-01/F-02 阻断 → 修复后自检全绿） | `iteration-7.md`（8 节 + AC→WP 14/14 + 文件零交集；split-review.md） | PASS |
-| S2 实现 | ✅ 收口 | 6 WP 全部合入：WP-1 `e67853b`、WP-2 `e138230`、WP-3 `03bd672`、WP-4 `55ad835`、WP-5 `dcf4fc1`、WP-5b `490ee15`、WP-6 `8a50866`；wp7 测试 31→37 条全绿、purity exit 0、deps 0 | `progress.md` §S2 批次台账；单测证据见各 WP | 待独立评审（R-01） |
-| S3 验收 | 🔄 进行中 | 全量回归门禁 **PASS**：1028 tests / 1019 pass / 8 fail / 1 skipped，失败集合与基线 8 条**逐条一致（差集=0）**；AC-01~14 证据映射见 `acceptance.md` | `/tmp/full-after.txt`、`acceptance.md` | 14/14 有证据；AC-12 端到端 status 探针待补 |
-| S4 终验与收口 | ✅ 条件收口 | 退出标准 1~5 满足；**Conditional PASS**（AC-12 端到端探针待补）；`report.md` + `final-verification.md` + `index.md` 台账更新 | `report.md`、`final-verification.md` | Conditional PASS |
+| S2 实现 | ✅ 收口 | 6 WP 全部合入：WP-1 `e67853b`、WP-2 `e138230`、WP-3 `03bd672`、WP-4 `55ad835`、WP-5 `dcf4fc1`、WP-5b `490ee15`、WP-6 `8a50866`；wp7 测试 31→37 条全绿、purity exit 0、deps 0 | `progress.md` §S2 批次台账；单测证据见各 WP | PASS（独立评审 `review-wp2-wp3.md` 已补，阻断 0） |
+| S3 验收 | ✅ 收口 | 全量回归门禁 **PASS**：1028 tests / 1019 pass / 8 fail / 1 skipped，失败集合与基线 8 条**逐条一致（差集=0）**；AC-12 端到端探针 **15/15** | `acceptance.md`、`evidence/ac12-status/`、`probe/i17-ac12-status.mjs` | **14/14 AC 实测级，AC-12 已闭合** |
+| S4 终验与收口 | ✅ 通过 | 退出标准 1~5 满足；**PASS** | `report.md`、`final-verification.md`、`index.md` 台账更新 | PASS |
 
 ## 基线（DoR #9，HEAD `3f35bfa`）
 
@@ -52,7 +52,7 @@
 | WP-1 | `e67853b` | `src/persistence/paths.js`（+21，仅追加两函数）、`test/wp7/i17-paths.test.js`（+40，新建） | 单测 3/3 绿；purity exit 0；既有 5 函数体零改（断言逐字不变通过） | `instanceCodeWorktreeDir`→`<workspace>/worktrees/<roleId>`、`instanceDataDir`→`<workspace>/artifacts/data` 内存断言 | ✅ 通过 |
 | WP-5 | `dcf4fc1` | `src/cli/labels.js`（+18，仅追加 7 键）、`src/cli/render.js`（+88/-20，`includeBranch` 开关 + graph 透出）、`src/core/status-text.js`（+48/-4，`renderStatusDoc` 追加片段）、`test/wp7/i17-labels.test.js`（+77，新建） | 单测 6/6 绿；purity exit 0（21 文件 task-loop 零命中）；既有键计数/内容逐字不变 | 7 键中文非空、既有键不变；`includeBranch` 默认 false 防回灌三主链；graph 节点行/JSON 默认透出 branch/mergeStatus | ✅ 通过（含 1 缺口，见下） |
 
-**WP-5 缺口（待 Batch 3 闭环，登记为缺陷/缺口台账 #G-01）**：
+**WP-5 缺口（已由 Batch 3 `490ee15` 闭环 + S3 探针实测确认，登记为缺陷/缺口台账 #G-01）**：
 - 现象：`orch instance status` 纯文本视图的分支/合并状态未透出（AC-12 文本视图缺口）。
 - 根因：main.js 不在 WP-5 四文件授权内；`statusCommand`（main.js 第 1066/1074 行）调用 `render.renderNodeLines(snapshot,{template})` / `render.renderEscalationBlock(snapshot,{template})` 未传 `includeBranch:true`。
 - 范围澄清：`run` 前台路径（main.js 第 950/958 行）**必须保持** `includeBranch:false`（F-03，已正确隔离）；graph 视图（main.js 1216/1218）WP-5 已默认透出、无需接线。
@@ -77,7 +77,8 @@
 
 | 编号 | 类型 | 内容 | 处置 | 状态 |
 |---|---|---|---|---|
-| G-01 | 缺口（WP-5） | `orch instance status` 纯文本视图未透出分支/合并状态（main.js 1066/1074 未传 `includeBranch:true`；950/958 属 run 路径须保持 false） | Batch 3 由接线任务精确改 main.js 两行 + 断言 | 待闭（Batch 3） |
+| G-01 | 缺口（WP-5） | `orch instance status` 纯文本视图未透出分支/合并状态（main.js 1066/1074 未传 `includeBranch:true`；950/958 属 run 路径须保持 false） | Batch 3 精确改 main.js 两行（`490ee15`）+ 3 条渲染断言；S3 端到端探针 `i17-ac12-status.mjs` 15/15 进一步证明真实 CLI 输出含分支/合并状态 | 已闭（`490ee15` + 探针实测） |
+| R-02 | 缺口（S3） | AC-12 缺端到端 `orch instance status` 证据（仅渲染层单测） | `probe/i17-ac12-status.mjs`：真实 core IPC + 真实 CLI，15/15，证据 `evidence/ac12-status/` | 已闭 |
 | R-01 | 流程（评审） | WP-2/WP-3 因 SubAgent 429 由主控代写，缺干净上下文独立评审 | 已派干净上下文评审 Agent 复核：`review-wp2-wp3.md` 总判 **PASS（阻断 0 / 建议 10）**；采纳并修复 F-01（升级落盘失败不再误记已提交）、F-09（移除 `def/context.artifactType` 旁路，仅角色表判定，护 AC-10）；其余建议（F-02 同进程内成立、F-08 取值等价等）记录为已知非阻断。修复后 wp7 37/37、doc-artifact 14/14、purity exit 0 | 已闭 |
 
 ### 批次 3（2 并行，已收口）—— WP-4 + WP-5b（main.js 接线，闭 G-01）
@@ -110,3 +111,20 @@
   7. 早返回 turn-delay 时序（= 基线 #7）
   8. 自动拉起 detached 真进程（= 基线 #8）
 - 用例数 992 → **1028（+36）**，通过 983 → **1019（+36）**；**无新增失败、无删除既有通过用例**。R-5/AC-11 满足。
+
+## S3 补充：AC-12 端到端探针（2026-11-10 实跑）
+
+- 脚本：`probe/i17-ac12-status.mjs`（新建）。做法：`os.tmpdir()` 隔离根 → 造 3 个实例快照（已合并 / 冲突升级 / `single` 负控）→ **真实拉起 core**（CLI `ensure:true`，命名管道 IPC）→ 跑真实 `node bin/orch.js instance status <id>` / `instance graph <id>` → 逐条断言 → `core stop` + 删目录。
+- 结果：**15/15 PASS**，证据落 `docs/iterations/iteration-7/evidence/ac12-status/`（`ac12-result.json` + `status-merged.txt` / `status-conflict.txt` / `status-single.txt` / `graph-merged.txt`）。
+- 关键原始输出：
+  - 已合并：`节点 T-001 开发 已完成 · 第 1 轮 · 耗时 50s · （开发 分支 maestro/INST-AC12-MERGED/developer · 已合并）`
+  - 冲突：`节点 T-001 开发 已升级 · 第 1 轮 · （开发 分支 maestro/INST-AC12-CONFLICT/developer · 冲突待升级）`；`升级 ESC-AC12-001 待处理` / `原因：合并冲突`
+  - 负控 `single`：`实例 INST-AC12-SINGLE · 已完成` + `节点 已完成`（无分支/合并片段 → 三主链不回灌）
+  - `instance graph`：同样含 `maestro/INST-AC12-MERGED/developer`
+- 口径：验证「磁盘快照 → core IPC `instance.get` → `shapeSnapshot` → CLI 渲染」；字段**写入**侧由 `i17-code-isolation` 队列 + `orchestrator` 钩子覆盖，两侧合并构成 AC-12 全链。
+- 隔离性：项目根为 `os.tmpdir()`，探针结束即 `core stop` + 递归删除，**不触碰仓库与用户 `~/.dsh`**。
+
+## S4 终验（2026-11-10）
+
+- 退出标准 1~5 **全部满足**；`report.md` / `final-verification.md` 已同步为 **PASS**。
+- 遗留登记（非阻断）：真实 DSH 宿主面 worktree 执行面未验证（预判 B 类）；评审建议 F-02/F-08 及健壮性项；worktree 生命周期清理（U-1）不在本迭代范围。

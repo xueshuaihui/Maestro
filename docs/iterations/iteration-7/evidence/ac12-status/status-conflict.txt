@@ -1,0 +1,6 @@
+实例 INST-AC12-CONFLICT · 已挂起 · 已停止推进 · 模板 编码闭环
+节点 T-001 开发 已升级 · 第 1 轮 · （开发 分支 maestro/INST-AC12-CONFLICT/developer · 冲突待升级）
+升级 ESC-AC12-001 待处理
+  原因：合并冲突
+  节点：T-001 开发 · 第 1 轮
+  下一步：orch escalate list --instance INST-AC12-CONFLICT 查看升级；orch escalate resolve ESC-nnn --instance INST-AC12-CONFLICT --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-AC12-CONFLICT

@@ -17,6 +17,7 @@
 | 6 | `490ee15` | WP-5b：`main.js` 仅 `instance status` 接线 `includeBranch:true`（闭 G-01；+ 3 渲染断言） |
 | 7 | `8a50866` | WP-6：`i17-regression.test.js` 回归守护（+ 6 测试） |
 | 8 | `0fc70a9` | 独立评审 `review-wp2-wp3.md`（PASS）+ 修复 F-01（升级落盘失败不误记已提交）、F-09（移除 `artifactType` 旁路，仅角色表判定） |
+| 9 | 见 `git log`（AC-12 探针） | `probe/i17-ac12-status.mjs` + `evidence/ac12-status/`：端到端 `orch instance status` 实测 15/15 |
 
 ## 2. 门禁数字（实跑）
 
@@ -28,13 +29,13 @@
 ## 3. AC 结果
 
 - **14/14 有证据**，详见 `acceptance.md`。
-- 分级：夹具实测（真实本地 git）5 条、故障注入 2 条、回归实测 1 条、单元/渲染 6 条。
-- **AC-12 为渲染层单元级**：`includeBranch` 真/假对比 + `main.js` 接线已验证；**端到端 `orch instance status` 探针未跑**（S3 唯一遗留，见 `final-verification.md`）。
+- 分级：端到端实测（AC-12：真实 core IPC + 真实 CLI）1 条、夹具实测（真实本地 git）5 条、故障注入 2 条、回归实测 1 条、单元/渲染 5 条。
+- **AC-12 已升级为端到端实测**：`probe/i17-ac12-status.mjs` 在 `os.tmpdir()` 隔离根真实拉起 core，跑真实 `node bin/orch.js instance status`，**15/15**；已合并行含 `（开发 分支 maestro/… · 已合并）`，冲突行含 `冲突待升级` + `原因：合并冲突`，`single` 负控输出逐字为 `节点 已完成`（无分支片段），`instance graph` 同样透出分支名。证据见 `evidence/ac12-status/`。
 
 ## 4. 偏差与遗留（如实登记）
 
 1. **执行方式偏差（R-01，已闭）**：WP-2/WP-3 因平台对并行 SubAgent 返回 429，由主控在 Agent 模式代写；随后派干净上下文评审 Agent，总判 PASS（阻断 0 / 建议 10），采纳 F-01/F-09 修复，其余建议记录为已知非阻断。
-2. **AC-12 端到端探针**：缺一条真实 `orch instance status` 输出证据；渲染层与接线已由单测覆盖。
+2. **【已闭合】AC-12 端到端探针**：已补 `probe/i17-ac12-status.mjs`，实跑 15/15 并落证据（`evidence/ac12-status/`）。探针口径为「磁盘快照 → core IPC → CLI 渲染」；字段**写入**侧由 `i17-code-isolation` 队列 + `orchestrator` 钩子单测覆盖，两侧合起来构成 AC-12 全链。
 3. **评审建议遗留（非阻断）**：F-02 `reprocess` 依赖进程内 `processed` 映射（daemon 内同一进程成立，跨进程不强）；F-08 `code` 分支用 `path.join(workspaceDir,'worktrees',role)` 与 `instanceCodeWorktreeDir` 等价（orchestrator 未传 `root`）；F-03~F-07/F-10 为健壮性/可注入性建议。
 
 ## 5. 风险与后续
