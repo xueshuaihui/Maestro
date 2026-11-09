@@ -961,3 +961,26 @@ test('AC-11: five bad roles yield the five reason codes and the 31/16/10/invalid
   assert.equal(await text.run(['role', 'validate']), 1);
   assert.equal(text.lines[0], '校验资产 31 个：5 个不合法');
 });
+
+// ---------------------------------------------------------------------------
+// D-2: the default diff baseline never resolves through the project override
+// ---------------------------------------------------------------------------
+
+test('D-2: a project override cannot replace the builtin diff baseline', async () => {
+  const builtin = fs.readFileSync(
+    path.join(process.cwd(), 'assets', 'roles', 'developer.yaml'),
+    'utf8'
+  );
+  const root = makeProject({ '.orch/roles/developer.yaml': builtin });
+  const setup = harness({ cwd: root });
+  await setup.run(['role', 'create', 'lead-dev', '--from', 'developer', '--skills', 'test-run']);
+
+  const derived = harness({ cwd: root });
+  assert.equal(await derived.run(['role', 'diff', 'lead-dev']), 0);
+  assert.equal(derived.lines[0], '对比角色 lead-dev（项目）与基线 developer（内置）');
+
+  const override = harness({ cwd: root });
+  assert.equal(await override.run(['role', 'diff', 'developer']), 0);
+  assert.equal(override.lines[0], '对比角色 developer（项目）与基线 developer（内置）');
+  assert.equal(override.lines[override.lines.length - 1], '无差异');
+});

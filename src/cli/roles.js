@@ -25,7 +25,7 @@ import path from 'node:path';
 
 import { loadRegistry } from '../registry/index.js';
 import { buildRoleInstances } from '../registry/role-instances.js';
-import { assetsRoot } from '../registry/assets.js';
+import { assetsRoot, builtinRolesDir } from '../registry/assets.js';
 import { checkRoleContracts } from '../registry/contracts.js';
 import { loadWorkflows } from '../registry/workflows.js';
 import { parseYaml } from '../registry/yaml-lite.js';
@@ -189,6 +189,17 @@ function parseRoleText(text) {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
     ? { ...value }
     : null;
+}
+
+/**
+ * The built-in definition of one role id, read straight from the built-in asset
+ * tree. `roleMap` is project-first, so a project override file hides the built-in
+ * entry from the registry entirely; a diff baseline must never see that override
+ * (AC-10: the baseline is always the built-in definition, labeled builtin).
+ */
+function builtinRoleObject(id) {
+  const text = readTextFile(path.join(builtinRolesDir(), `${id}.yaml`));
+  return text === null ? null : parseRoleText(text);
 }
 
 /**
@@ -1062,26 +1073,18 @@ async function diffRole({ parsed, flags, format, ctx, out, registry }) {
       return EXIT_FAILED;
     }
   } else {
-    // Default baseline: the same-name built-in role; a derived project role falls
-    // back to its `derived_from` source (AC-10 baselines the derive source).
-    const sameName = registry.roleMap.get(id);
-    if (sameName !== undefined && sameName.source === 'builtin') {
-      baseObj = assetObjectOf(sameName, ctx.cwd);
-      baseLabel = id;
-    } else {
-      const from = targetObj.derived_from;
-      const derivedBase =
-        typeof from === 'string' && from.length > 0 ? registry.roleMap.get(from) : undefined;
-      if (derivedBase !== undefined) {
-        baseObj = assetObjectOf(derivedBase, ctx.cwd);
-        baseLabel = from;
-        baseSource = derivedBase.source === 'project' ? 'project' : 'builtin';
-      }
-    }
-    if (baseObj === null) {
-      out(fill(ROLE_WRITE_TEXT.missingBaseline, { id }));
-      return EXIT_FAILED;
-    }
+    // Default baseline (AC-10): a derived role baselines against the built-in
+    // definition of its `derived_from` source; otherwise against the same-name
+    // built-in role (a project override never serves as the baseline). Both read
+    // the built-in asset tree directly, so `baseSource` stays builtin.
+    const from = targetObj.derived_from;
+    const baseId = typeof from === 'string' && from.length > 0 ? from : id;
+    baseObj = builtinRoleObject(baseId);
+    baseLabel = baseObj === null ? null : baseId;
+  }
+  if (baseObj === null) {
+    out(fill(ROLE_WRITE_TEXT.missingBaseline, { id }));
+    return EXIT_FAILED;
   }
 
   const changes = roleDiffChanges(baseObj, targetObj);

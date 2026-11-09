@@ -445,7 +445,9 @@ async function createWorkflow({ collection, flags, out, id, cwd }) {
     };
   } else {
     // Without a derive source the smallest legal shape is one endpoint-only
-    // node titled by `--name` (BR-35: an endpoint node may have no out edges).
+    // node titled by its node id (BR-35: an endpoint node may have no out
+    // edges; AC-40's machine check counts the `--name` value exactly once,
+    // so the title must not repeat the workflow name).
     candidate = {
       schema: WORKFLOW_SCHEMA_VERSION,
       id,
@@ -453,7 +455,7 @@ async function createWorkflow({ collection, flags, out, id, cwd }) {
       summary: null,
       entry: 'T-001',
       terminal: 'T-001',
-      nodes: [{ id: 'T-001', node_type: 'human', title: flags.name }],
+      nodes: [{ id: 'T-001', node_type: 'human', title: 'T-001' }],
       edges: []
     };
   }

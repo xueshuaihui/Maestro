@@ -258,3 +258,13 @@ S2 实现评审（`impl-review.md`）判 FAIL：阻断 1（P-01）+ 建议 5。�
 | P-04 ⑨ 非 role 目标让位 ⑫ | **登记** | AC-60 机检要求 `errors[0]` 是 TRANSITION，⑨ 对 backflow→human 跳过（⑫ 的 `backflowTarget` 接管）；BR-22 字面未区分，S4 披露 |
 | P-06 ⑫ 入口有界回流豁免 | **登记** | BR-25 字面「入口不得回流」会使内置 code-loop（入口声明 `max_rounds: 2`）当场违反 BR-41；按最小实现收口为「入口被回流且未声明 max_rounds 才报 `entryBackflow`」，S4 披露 |
 | 裁-15（P-02，需求侧矛盾） | **裁决** | 实测：A-1 原文 doc-fanout 夹具在 D-3⑬ + D-7b 下报 `WORKFLOW_WAKE_DENIED researcher → editor`，AC-24/27/28/30/31/63 的「全部通过」不可达。依据：**AC-37/AC-60 的 Given 均在节点上声明 `wake_allow`**（节点级声明是需求自身先例），A-1 的节点可选键清单漏列该键属附录笔误。决定：S3 对 doc-fanout 夹具在 T-001 节点补一行节点级 `wake_allow: [writer, editor]`（经实测 `counts.invalid=0` 全绿），语义不变、矛盾消解在数据层；登记**需求侧 R-11**（A-1 可选键清单漏 `wake_allow` + A-13 夹具缺声明与 BR-26 矛盾），S3 证据与 S4 报告披露。同时 WP-3 的「节点级优先于角色资产」机制由报备偏离转为需求先例支撑的实现，正式追认 |
+
+## 十四、S3 验收期缺陷处置（裁-16）
+
+S3 批次 a/b 产出 3 条 blocker（`probe/acc6-f-blockers.md` D-1~D-3），处置如下。
+
+| 编号 | 触发点 | 依据 | 决定 | 影响面 |
+|---|---|---|---|---|
+| 裁-16a（D-1） | AC-06/AC-11 Given 点名单字符角色 id（a/b/m/s/c/p/d），被 C-01（id 长度 2~32）拒绝 → 五专属码不可观测、AC-06 两码不可达 | 需求侧矛盾：C-01 与 AC Given 互斥（同 I1.5 R-7 型）；实现取 C-01 无错。WP-6 在 role-write.test.js 已有「m1/s1/c1/p1/d1 2 字符」先例且五码/计数不受影响 | **S3 用例改用 2 字符 id**（a1/b1、m1/s1/c1/p1/d1），Then 语义不变；登记**需求侧 R-12**（AC-06/AC-11 Given 的单字符 id 与 C-01 互斥 + `ROLE_ID_MISMATCH` 明细「文件 c / 声明 c」文案自相矛盾属低危产品缺陷，留后续迭代修文案）；S4 披露 | `probe/acc6-cases/ac06.mjs`、`ac11.mjs`；S4 report |
+| 裁-16b（D-2） | `role diff` 基线解析走 roleMap（项目优先），被同名项目覆盖文件顶掉：基线标签误标「项目」、覆盖文件 diff 误报 `缺少对比基线` | AC-10 Then 逐字要求 `基线 developer（内置）` 与第二段 `无差异`；AC-10 是 P1 正常路径 | **产品缺陷，已修**：`roles.js` 新增 `builtinRoleObject(id)` 从内置资产树直读（loadRegistry 的 mergeByKey 会把被覆盖内置顶掉，roleMap 侧拿不到），diff 默认基线三态 = derived_from 的内置定义 → 同名内置定义 → `缺少对比基线`；比较口径与 `--against` 分支不变；role-write.test.js 末尾追加 1 块单测（既有断言零改动）。**O-4（登记不修）**：`--against <被覆盖内置 id>` 同根因（roleMap 要求 source==='builtin'），无 AC 依赖该形态，留后续迭代 | `src/cli/roles.js`、`test/wp12/role-write.test.js`；AC-10 复跑 |
+| 裁-16c（D-3） | AC-40 机检 `grep -c '另一个名字'` 为 1，实测 2（`name:` 行 + `title:` 行）——WP-8 缺省形 title=--name 与机检互斥 | AC-40 机检字面优先（裁决优先级 AC > 附录 D > 裁-14② 的推断）：title 不得复现工作流名 | **产品缺陷，已修**：缺省形节点 title 改为节点 id `T-001`（AC-40 三段 Then 不变）；实测 `grep -c`=1；登记**需求侧 R-13**（`workflow create` 缺省形在需求中未定义，AC-40 机检隐含 title≠name） | `src/cli/workflows.js`；AC-40 复跑；S4 披露 |
