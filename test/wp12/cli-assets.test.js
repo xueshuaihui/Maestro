@@ -378,12 +378,12 @@ test('AC-45: family read commands stay read-only', async () => {
   const root = makeProject();
   const { run, lines, created } = harness({ cwd: root });
 
-  // WP-7 has landed skills.js (exit 0); WP-8 has not landed workflows.js yet
-  // (exit 2 interim). Both paths must still never create .orch nor a client.
+  // WP-7 (skills.js) and WP-8 (workflows.js) have landed; both families are
+  // real read commands now: exit 0 and still never create .orch nor a client.
   assert.equal(await run(['skill', 'list']), 0);
   assert.ok(lines[0].startsWith('技能 10 个（内置 10 · 项目 0）'), lines[0]);
-  assert.equal(await run(['workflow', 'list']), 2);
-  assert.ok(lines.at(-1).endsWith('  （workflow 命令尚未实现）'), lines.at(-1));
+  assert.equal(await run(['workflow', 'list']), 0);
+  assert.ok(lines[0].startsWith('工作流 3 个（内置 3 · 项目 0）'), lines[0]);
 
   assert.deepEqual(created, []);
   assert.equal(fs.existsSync(path.join(root, '.orch')), false);

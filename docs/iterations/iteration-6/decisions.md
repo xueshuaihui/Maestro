@@ -236,3 +236,12 @@ node_type: 全篇 YAML 键统一；artifact_type / nodeType 未被误改        
 | 裁-12 | WP-6 报备：为实现 AC-04/12/53/58/56 的逐字文案，向 `src/cli/labels.js` 追加了新冻结表 `ROLE_WRITE_SUPPLEMENT`（13 行）——该表不在 WP-5 的 labels 契约清单内（§2.6），构成「越权追加」 | M-6「既有表一个键都不加不改」**已满足**（既有表零改动，追加的是新表）；labels.js 是中文唯一来源，AC 逐字文案必须落在它里面；若不加表则 WP-6 只能把中文写进 roles.js，违反 C-14/AC-51 | **追认**：`ROLE_WRITE_SUPPLEMENT` 归属登记为「S2 整合期连带新增」，labels.js 的中文唯一来源分层不变；后续 WP-8 若有同类缺口按同一原则处理并逐条登记 | `src/cli/labels.js`；本文件第十一节 |
 
 **AC-45 过渡断言更新（非裁决）**：`test/wp12/cli-assets.test.js` 的「family read commands stay read-only」用例是 WP-5 实现期自写的**过渡断言**（断言 skill/workflow 未实现退 2），不是 I1.5 既有断言、不是 AC 逐字口径。WP-7 落地后按整合事实更新：`skill list` 退 0 且首行 `技能 10 个（内置 10 · 项目 0）`、不建 `.orch`、不连 client；`workflow list` 在 WP-8 落地前仍退 2。WP-8 合入后该断言再同步一次。
+
+## 十二、S2 WP-8 整合裁决（裁-13 ~ 裁-14）
+
+| 编号 | 触发点 | 依据 | 决定 | 影响面 |
+|---|---|---|---|---|
+| 裁-13 | WP-8 报备：AC-24（When 为 `orch workflow validate doc-fanout`，Then 期望 `校验工作流 4 个`、机检 `counts.assets===4`）与 AC-29（When 为 scoped `orch workflow validate timeout-ok`，Then 期望 `校验工作流 1 个`）在 scoped validate 的计数口径上互斥——target-only 满足 AC-29 破 AC-24，宇宙计数反之 | AC-24 的 `4` 恰等于 `3 内置 + doc-fanout 1 项目`，与其 Given（全新项目根只预置 doc-fanout）**在全量 validate 下完全自洽**；scoped validate 读成宇宙计数则 AC-29 应为 5。判 **AC-24 的 When 参数 `doc-fanout` 为笔误**（应为无 id 全量 validate），两 AC 在「scoped=target-only、full=宇宙计数」一个语义下同时成立 | **实现口径**：scoped `workflow validate <id>` 计数只含目标（AC-29 逐字）；full `workflow validate` 计数为宇宙（AC-24 经全量执行成立）。**登记需求侧 R-9**：AC-24 的 When 参数笔误，S3 验收 AC-24 按全量 validate 执行并披露；S4 报告列披露项 | `src/cli/workflows.js`（WP-8 已按此实现）；S3 `ac24.mjs`；S4 report |
+| 裁-14 | WP-8 报备的三处自定口径：① `workflow diff <id>` 无 `--against` 时在同名内置之外增加「定义体全等的内置投影」回退（否则 AC-39 第二段「原封不动派生 diff copy → 无差异」不可达，因 workflow/v1 无 derived_from 键）；② `workflow create` 无 `--from` 时取最小合法形（单 `human` 节点天然终点，AC-40 第二/三段依赖该形且需求未给缺省口径）；③ diff 的 map 变更路径按 `edges[i].map[j]` 实现（A-11 写 `nodes[<i>].map[<j>]`，但 map 是边字段，判笔误） | ①② 是让既有 AC 的 Then 可达的最小实现，不新增能力、不与任何 BR 冲突；③ 与 A-11 的节点路径 `nodes[0].title` 一致性更好，AC 机检只钉 `nodes[0].title` 不受影响 | **三项均追认**，登记为需求侧 R-10（A-11 的 map 路径笔误 + `workflow create` 缺省形未定义）；S3/S4 按实现口径取证与披露 | `src/cli/workflows.js`；S3 `ac39/ac40.mjs`；S4 report |
+
+**AC-45 过渡断言终态（非裁决）**：WP-8 落地后 `test/wp12/cli-assets.test.js` 的 AC-45 用例更新为终态——`skill list` 与 `workflow list` 均退 0（首行分别为 `技能 10 个（内置 10 · 项目 0）` / `工作流 3 个（内置 3 · 项目 0）`）、不建 `.orch`、不连 client。该用例是 WP-5 自写过渡断言的三次同步中的最后一次。
