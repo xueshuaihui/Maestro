@@ -79,3 +79,15 @@
 - **评审独立复算（不采信测试自述）**：三组等值边界注入固定 `now` 全部成立（30000/30001、P90 50000/50001 与样本<5、TTL 900000/900001/899999）；`deriveHandoffIds` 用真实 `buildHandoff` 造冻结窗口，输出 `['HO-001']` / `['HO-001','HO-002']` / `['HO-002']`，`HO-002` 未漏。
 - **主控裁决**：`decisions.md` D-4（`appendSpan` 返回形状）、D-5（`session_crash` 兜底与红档不并列黄码）已留痕，非缺陷；两处不影响任何 AC 判据。`7aae1a2` 提交。
 - **建议 2 条（非阻断）**：F-01 `overlayRunningSpans` 附加 `running:true` 键、F-02 `paths.js:60` 注释措辞 —— 记录，不改判据。
+
+## S2 批次 2（WP-2 + WP-4，已收口）
+
+| WP | commit | 文件 | 门禁（主控独立复跑） | 独立评审 |
+|---|---|---|---|---|
+| WP-2 | `36f3be3` | `src/core/event-bus.js`（emit 链 + replay badLines）、`src/persistence/instance-store.js`（`readTailForChain` 同一次尾读）、`test/wp9/i19-chain.test.js`（7 用例） | `i19-chain` 7/7、wp9 49/49、`wp1/event-bus` 7/7、purity exit 0、deps 0 | `review-wp2-wp4.md` **PASS**（阻断 0 / 建议 3） |
+| WP-4 | `cdb8fc6` | `src/cli/labels.js`（末尾 +90 行 / 23 导出）、`test/wp9/i19-labels.test.js`（14 用例） | `i19-labels` 14/14、`labels-sync`+`cli-assets` 32/32、wp9 49/49 | 同上 |
+
+- **评审独立实跑**：3 条链逐条复算（首条 64 个 0、第 N 条 == 第 N-1 条完整 record 规范化 SHA-256）、monkey-patch 证单次尾读、截断前溯 `seq=3`、整份损坏重起链；A-1~A-14 文案逐字核对 **41/42 一致**，唯一差异为 A-8 `HEALTH_EVENT_LINE` 不含 `{ts}`（A-0 可变值 + D-9 已裁决，判建议 F-01 不阻断）。
+- **主控裁决**：`decisions.md` D-6（`replay` 恒返回数组 + 非枚举 `badLines`，**WP-8 须从 `events.badLines` 取并置入 `result.badLines`**）、D-7（`LAYER_HEALTH.health`）、D-8（`HEALTH_REASON[code]` 单表）、D-9（以 WP-4 实际导出名为冻结契约）。`c57a609` 提交。
+- **转达批次 3/5**：WP-6/WP-8 渲染 `health.changed` 文本行须自行在 `HEALTH_EVENT_LINE` 前拼 `HH:MM:SS` + 2 半角空格；WP-5 的 AC-21 截断夹具须用不可解析半行且独立成行带 `\n`。
+- **已还原**全量测试改写的 3 个 `docs/iterations/iteration-4/evidence/nfr-perf-*.json`，未纳入提交。
