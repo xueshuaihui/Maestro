@@ -790,3 +790,93 @@ export const ROLE_WRITE_SUPPLEMENT = Object.freeze({
   unknownField: '未知字段：{key}',
   unsetRequired: 'role edit 不能删除必填字段：{key}'
 });
+
+// ---------------------------------------------------------------- I1.9 WP-4 新增（只在文件末尾追加；既有键零改动）
+//
+// 中文逐字取需求 v7 附录 A-1~A-14：健康度（A-6 / A-6 附 / A-8）、追踪
+// （A-1~A-5 / A-10 / A-11）、执行摘要（A-4 / A-12 / A-14）、事件跳过行（A-13）。
+// 占位符沿用既有 `{n}` / `{role}` / `{id}` 风格。按本 WP 硬约束，所有新增导出
+// 统一 `Object.freeze`（标量经 Object.freeze 返回原字符串，isFrozen 为 true）。
+// 既有 `LAYER` 是文件前半部分的冻结表、禁止改动，故 `LAYER.health` 的层名
+// 另立 `LAYER_HEALTH` 承载（见回执④）。
+
+/** 四档健康度词（A-0 / A-6；码值与 src/core/health.js 的 HEALTH_LEVELS 一致）。 */
+export const HEALTH_LABEL = Object.freeze({
+  normal: '正常',
+  slow: '慢',
+  attention: '需关注',
+  ended: '已结束'
+});
+
+/** 健康度行模板：无原因 `健康度 {level}`，带原因以 ` · ` 拼接（A-6 / A-6 附）。 */
+export const HEALTH_LINE = Object.freeze({
+  base: '健康度 {level}',
+  withReasons: '健康度 {level} · {reasons}',
+  sep: ' · '
+});
+
+/** 8 原因码 → 中文原因句（A-6 附 8 行逐字；码值与固定顺序见 D-3:968）。 */
+export const HEALTH_REASON = Object.freeze({
+  pending_escalation: '有待处理升级',
+  node_timeout: '节点 {nodeId} 执行超时',
+  session_crash: '会话 {sessionId} 崩溃',
+  role_unavailable: '角色 {role} 不可用',
+  connection_rejected: '连接线 {connection} 已拒绝',
+  connection_expired: '连接线 {connection} 已过期',
+  p90_exceeded: '节点 {nodeId} 执行超过本实例 P90',
+  handoff_ttl_half: '交接包 {handoffId} 待投递超过 TTL 一半'
+});
+
+/** A-8 健康度变化事件文本行（档位取 HEALTH_LABEL、原因取 HEALTH_REASON）。 */
+export const HEALTH_EVENT_LINE = Object.freeze(
+  '{layer} {instanceId}  {from} → {to}  原因 {reasons}'
+);
+
+/** `LAYER.health = '健康度'` 的独立承载（既有 LAYER 冻结表零改动）。 */
+export const LAYER_HEALTH = Object.freeze({ health: '健康度' });
+
+// ---- 追踪：A-1 / A-2 / A-3 / A-5 / A-10 / A-11 ----
+
+export const TRACE_HEADER = Object.freeze('实例 {instanceId} · 追踪 {traceId}');
+export const TRACE_EMPTY_LINE = Object.freeze('实例 {instanceId} · 暂无追踪记录');
+export const TRACE_MISSING_LINE = Object.freeze('实例 {instanceId} · 不存在');
+export const TRACE_SUMMARY = Object.freeze('跨度 {spans} 条 · 回流 {backflows} 次');
+export const TRACE_SPAN = Object.freeze('{start} → {end}  {node}  {result}  交接 {handoffs}');
+export const TRACE_BACKFLOW_HEADER = Object.freeze('回流链');
+export const TRACE_BACKFLOW_ROW = Object.freeze('第 {round} 轮  {from} → {to}  {handoff}  {state}');
+
+/** 三种空形态提示与降级提示（A-9 / A-1 / A-2 / A-5 / A-10 / A-11）。 */
+export const TRACE_EMPTY = Object.freeze('暂无追踪记录');
+export const TRACE_NO_BACKFLOW = Object.freeze('无');
+export const INSTANCE_MISSING = Object.freeze('不存在');
+export const TRACE_RUNNING = Object.freeze('进行中');
+export const TRACE_NO_END = Object.freeze('—');
+export const TRACE_DEGRADED = Object.freeze('追踪记录有 {n} 行不可读，已跳过');
+
+// ---- 执行摘要：A-4 / A-12 / A-14 ----
+
+/** 四要素标签与缺项值（A-4 / A-12 / A-14 逐字）。 */
+export const SUMMARY_LABEL = Object.freeze({
+  command: '命令',
+  exitCode: '退出码',
+  keyOutput: '关键输出',
+  log: '日志',
+  unavailable: '未提供'
+});
+
+/** 关键输出行数带单位（A-0 单位「行」）；缺项由 SUMMARY_LABEL.unavailable 顶替。 */
+export const SUMMARY_OUTPUT_LINES = Object.freeze('{n} 行');
+
+/** A-4 失败摘要行（trace 跨度下方，两空格缩进）。 */
+export const SUMMARY_FAIL_LINE = Object.freeze(
+  '  失败摘要 命令 {command} · 退出码 {exitCode} · 关键输出 {keyOutput} · 日志 {log}'
+);
+
+/** A-12 / A-14 执行摘要行（同一行模板；四项取值与 A-4 一致、缺项 未提供）。 */
+export const SUMMARY_LOG_LINE = Object.freeze(
+  '{ts}  {layer} {sessionId}  执行摘要 命令 {command} · 退出码 {exitCode} · 关键输出 {keyOutput} · 日志 {log}'
+);
+
+// ---- 事件不可读行：A-13 ----
+
+export const EVENTS_SKIPPED = Object.freeze('已跳过 {n} 行不可读记录');
