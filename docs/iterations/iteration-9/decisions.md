@@ -98,6 +98,14 @@
 | 决定 | **接受单表，不追加 8 个别名导出**：`HEALTH_REASON[code]` 是唯一入口；**转达 WP-6**：`renderHealthLine` / `renderHealthEventLine` 遍历 `health.reasons`（已按固定顺序），逐码查表后用 ` · ` 拼接，不得自行硬编码中文或改顺序。A-6 附 8 句逐字基线不变 |
 | 影响面 | WP-6 渲染实现；A-6 附 / A-8 判据不变 |
 
+## D-10 · 摘要四要素的上报载体（WP-5 → WP-7 契约冻结）
+
+| 项 | 内容 |
+| 触发点 | 需求 D-4 L979 / 拆分 §2.14 只钉死开关名 `--fail-tool` / `--fail-tool-no-refs` 与「能上报命令、退出码、输出行数、日志引用」，**未钉死四项挂在 ACP 帧的哪个字段**；`orchestrator.handleUpdate`（`:1183-1230`）当前只从 `tool_call` 读 `title` 与 `rawInput.file_path`，WP-7 需要稳定取值点；批次 3 开工前必须冻结，否则 WP-5 与 WP-7 各自猜形状 |
+| 依据 | `requirement.md` D-4 L975 摘要四项字段名固定为 `command` / `exitCode` / `keyOutputLines` / `logRef`；L978 要求「四项由 `handleUpdate` 读取**原始帧**后缓存」「帧名取 `tool_call` / `tool_call_update` 两个取值」、且 `src/adapter/session-state.js` 本迭代不改；L977 明确 `toolName`（来自 `tool_call.title`，mock 实测 `write`）**不得**冒充 `command`；附录 D 抬头「仅供编码参考，不进入需求判定」，载体字段属实现自由。裁决优先级 `AC Then/And > 附录 A > 附录 D` 在本条无冲突 |
+| 决定 | 冻结载体如下：**`tool_call` 帧新增 `execution: { command }`；`tool_call_update` 完成帧新增 `execution: { exitCode, keyOutputLines?, logRef? }`**。`--fail-tool` 报全四项（`command='node out/run.js'`、`exitCode=1`、`keyOutputLines=3`、`logRef='host-logs/T-001.log'`）；`--fail-tool-no-refs` 只报 `command` + `exitCode`，其余两项**不得出现在帧里**（由 WP-7 存 `null`、WP-6 渲染「未提供」）。`tool_call.title` 恒为既有 `write`（或 `--slow-tool` 值），**不得**塞命令行；`tool_call_update.status` 为 `failed`（非零退出语义），但 `stopReason` 仍按既有『成败只由产出核对裁决』口径保持 `end_turn`，不新增失败码。**转达 WP-7**：在 `handleUpdate` 内按帧名把 `execution` 合并进会话级待写摘要缓存，缺项为 `null`，不得依赖适配器归一化结果；`--fail-tool-no-refs` 的缺失字段不得用工具名/默认值补齐 |
+| 影响面 | WP-5 夹具帧结构与 `test/wp9/i19-fixture.test.js`、WP-7 `handleUpdate` 提取段、AC-04/05/24/26 取证口径；不改需求正文、拆分文档与附录 A 任何逐字基线 |
+
 ## D-9 · `SUMMARY_LOG_LINE` 占位符切分与通配族展开名（WP-4 开放点）
 
 | 项 | 内容 |
@@ -106,3 +114,27 @@
 | 依据 | A-9 只给通配族、未点名成员，归属只要求 `labels.js`；A-12/A-14/A-8 锁定的是**渲染结果逐字**，占位符切分与内部键名属实现自由（附录 D 不进入需求判定）；WP-4 已逐字断言 A-12/A-14/A-13 填充结果 |
 | 决定 | **以 WP-4 实际导出名为冻结契约**（清单见 `review-wp2-wp4.md` 与 `src/cli/labels.js:793-882`），不追加别名、不改键名。**转达 WP-6**：按实际导出名引用，渲染结果必须与 A-1~A-14 逐字一致；若发现缺键，书面报主控裁决，不许在 `render.js` 里补中文硬编码。`SUMMARY_FAIL_LINE` 行首两个半角空格以 A-4 原文为准，WP-6 渲染时逐字核 |
 | 影响面 | WP-6 全部渲染函数；S3 验收的逐字比对；不改附录 A 基线 |
+
+## D-11 · `renderTraceShow` payload 冻结契约（WP-6 → WP-8）
+
+| 项 | 内容 |
+| 触发点 | 拆分 §2.9 只冻结 `renderTraceShow(payload)` 的签名，未冻结 `payload` 形状；WP-8 需从 `instance.trace` RPC 与 `instance.get` 快照组装，形状不冻结会两端各自猜 |
+| 依据 | WP-6 实现回执 §3（逐字段契约）；设计目标是「WP-8 组装成本最低」——payload 必须能由 `instance.trace` 的 `{ traceId, spans, badLines }` 加 `instance.get` 的 state / graph 直接组装，不要求 WP-8 做复杂推导；附录 D 不进入需求判定，payload 属实现自由 |
+| 决定 | **以 WP-6 回报的形状为冻结契约**：`{ instanceId, exists, traceId, spans, backflows, badLines }`。`spans[] = { start_time, end_time\|null, node_id, title\|null, result, handoff_ids[], summary\|null }`；`backflows[] = { round, from, to, handoff, state }`；`spans[].result` / `backflows[].{from,to,state}` 与 `summary` 四项的中文/数据显示值**由 WP-8 组装时从 `labels.js` 既有表与图 title 传入**（`render.js` 零中文硬编码）。语义固定：`exists===false` → A-5；`traceId` 空且 `spans` 空 → A-1；`end_time===null` 为进行中（`—` / `进行中`、**不计入**汇总跨度数）；`badLines>0` 提示行在汇总行**之前**；输出结构恒为「头 → [降级提示] → 汇总 → 空行 → 跨度行（+可选失败摘要）→ 空行 → 回流链标题 → 无 / N 行回流」。**转达 WP-8**：按此形状组装，不得让 `renderTraceShow` 去读盘或写状态 |
+| 影响面 | WP-8 `instance.trace` 的组装与 `trace show` 命令；AC-06/07/08/09/10/22/23 取证；不改附录 A 任何逐字基线 |
+
+## D-12 · 健康度原因句占位符实参来源（WP-6 阻断缺陷，打回修复）
+
+| 项 | 内容 |
+| 触发点 | 主控独立复核发现**实质缺口**：`src/core/health.js` 按需求 D-3 L964 / L969 返回**纯码值数组** `reasons: string[]`（A-8 JSON 示例亦为 `["pending_escalation"]`，WP-3 的 32 个用例已冻结该形状）；但 `labels.js` 的 `HEALTH_REASON` 模板带 `{nodeId}` / `{sessionId}` / `{role}` / `{connection}` / `{handoffId}` 占位符，而 `src/cli/render.js:140-145` 的 `replaceAll` 对缺失变量填**空串**。WP-6 首版 `healthReasonSentences` 只在 `reasons` 元素是 `{code,...实参}` **对象**时才填得进实参，用真实 `computeHealth` 输出时会把 A-6 附的 `节点 T-001 执行超时` 渲染成 `节点  执行超时`。WP-6 的 A-6 附 8 行测试**全部靠测试夹具传对象**通过，未覆盖真实形态，属取证失真；AC-13/14/15 逐字判据会全挂 |
+| 依据 | 优先级 `AC 的 Then/And > 附录 A 输出基线 > 附录 D`：**A-6 附 8 行是用户可见逐字判据**，必须命中；D-3 L964「`reasons` 为固定顺序的原因码数组」与 A-8 JSON「`detail.reasons` 码值数组」都是冻结契约，**不得**把 `reasons` 改成对象数组（会破坏 WP-3 已收口签名、32 个用例与 A-8 JSON）。核心侧不得产出中文（D-6 中文唯一来源 `labels.js`）。因此桥只能由**渲染层从快照既有字段推导实参**完成 |
+| 决定 | ①**纯码值数组不变**：`state.health.reasons` 与 `health.changed.detail.reasons` 恒为 `string[]`，WP-7 不得改成对象数组，WP-3 不改。②**打回 WP-6 修复**：`renderHealthLine(snapshot, now)` 与 `status-text.js` 的 `healthDocLine(state)` 必须实现「按码从快照推导占位符实参」的纯函数，两处规则一致、零中文硬编码（角色中文取 `labels.js` 既有 `ROLE_LABEL`，节点 / 会话 / 交接标识取快照既有字段）。推导表：`node_timeout` / `p90_exceeded` → 首个 `state==='running'` 节点的 `nodeId`；`session_crash` → 首个 `quarantined===true` 会话的 `sessionId`；`role_unavailable` → 首个 `state==='escalated'` 且未隔离会话绑定节点的角色中文；`connection_rejected` / `connection_expired` → 对应状态交接包的 `来源角色→去处角色`（A-6 附形如 `测试→开发`）；`handoff_ttl_half` → 待投递交接包的 `handoffId`；`pending_escalation` 无占位符。**允许**优先读可选的 `health.reasonVars?.[code]`（若 WP-7 提供），缺失时走上述推导。③**必须补真实快照测试**：用「`reasons` 为纯码值数组」的快照逐字覆盖 A-6 附 8 行与多原因并列，不得只靠传对象夹具。④ `renderHealthEventLine(event)` 只有事件对象、无快照：A-8 / AC-16 判据只用 `pending_escalation`（无占位符），保持逐字；带占位符码在事件文本行允许从 `event.detail.reasonVars?.[code]` 取值，缺失时降级，登记为 `report.md` §5 已知边界，不改 A-8 基线 |
+| 影响面 | WP-6 两处渲染函数 + `test/wp9/i19-render.test.js`；WP-7 只需保持纯码值数组（**不增加**必做工作量）；AC-13/14/15/16 与 A-6 附取证；不改需求、拆分、附录 A 任何文字 |
+
+## D-13 · WP-5 三个开放点裁决（批次 3 收口）
+
+| 项 | 内容 |
+| 触发点 | WP-5 回报 OP-2（`host-logs/T-001.log` 归属）、OP-3（新开关与既有分支的组合边界）、OP-4（`test/wp6/loop-fixture.test.js` 1 条失败） |
+| 依据 | OP-2：AC-04 夹具原文「`host-logs/T-001.log` 由夹具预置在项目根、不在实例目录内」；AC-05「`host-logs/` 位于项目根之外」。OP-3：AC-04/05/26 的夹具命令行都不与 `--permission` / `--host-error` / `--hold-session` / `--session-missing` / `--turn-delay-ms` 取消组合，D-4 L979 只要求两个新开关；扩范围会改既有分支，违反「既有 12 开关逐字不变」红线。OP-4：`docs/iterations/iteration-7/baseline-failures.txt` **第 4 行**即 `cursor.json 并发消费 20 次不重复`，D-2 已裁决以「失败集合差集 = 0」判定 |
+| 决定 | ①**OP-2 确认**：日志文件由 S3 验收脚手架在项目根预置，夹具只上报引用字符串、不创建文件、不复制正文，符合 AC-05「实例目录无完整日志副本」。②**OP-3 接受现有组合边界，不扩范围**：新开关只在主 prompt 路径正常完成阶段注入失败帧；既有提前 `return` 分支逐字保留。**转达 S3**：验收脚手架不得把 `--fail-tool*` 与上述开关组合；该边界登记进 `report.md` §5 已知边界。③**OP-4 判非缺陷**：属基线第 4 行既有失败（`cursor.lock` 5s 超时，两次复现稳定），按 D-2 差集口径处理，不放宽断言、不改测试。④ OP-1（转达 WP-7 按 D-10 合并 `execution`）已由 D-10 覆盖，不重复裁决 |
+| 影响面 | S3 验收脚手架构造、`report.md` §5 遗留清单；不改任何代码与需求判据 |
