@@ -68,3 +68,14 @@
 4. WP-7（orchestrator 核心集成，单线大文件）
 5. WP-8（CLI + daemon，单线）
 6. WP-9（回归守护，末批汇合点）
+
+## S2 批次 1（WP-1 + WP-3，已收口）
+
+| WP | commit | 文件 | 门禁（主控独立复跑） | 独立评审 |
+|---|---|---|---|---|
+| WP-1 | `8beb6ca` | `src/persistence/paths.js`（+2 函数，既有函数体零改）、`src/core/trace.js`（新建 185 行）、`test/wp9/i19-trace.test.js`（6 用例） | `i19-trace` 6/6、`test/wp9/**` 28/28、purity exit 0、deps 0 | `review-wp1-wp3.md` **PASS**（阻断 0 / 建议 2） |
+| WP-3 | `42fffd1` | `src/core/health.js`（新建 202 行）、`test/wp12/health.test.js`（32 用例） | `health` 32/32、`test/wp12/**` 190/190、purity exit 0、deps 0 | 同上 |
+
+- **评审独立复算（不采信测试自述）**：三组等值边界注入固定 `now` 全部成立（30000/30001、P90 50000/50001 与样本<5、TTL 900000/900001/899999）；`deriveHandoffIds` 用真实 `buildHandoff` 造冻结窗口，输出 `['HO-001']` / `['HO-001','HO-002']` / `['HO-002']`，`HO-002` 未漏。
+- **主控裁决**：`decisions.md` D-4（`appendSpan` 返回形状）、D-5（`session_crash` 兜底与红档不并列黄码）已留痕，非缺陷；两处不影响任何 AC 判据。`7aae1a2` 提交。
+- **建议 2 条（非阻断）**：F-01 `overlayRunningSpans` 附加 `running:true` 键、F-02 `paths.js:60` 注释措辞 —— 记录，不改判据。
