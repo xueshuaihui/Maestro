@@ -8,8 +8,8 @@
 | 阶段 | 状态 | 门禁数字 | 证据 | 结论 |
 |---|---|---|---|---|
 | S0 需求生成与评审 | ✅ 收口 | 需求 **v7**（1060 行 / 27 AC / 25 BR / 附录 A0~A14 + B1~B5 + C + D1~D11）；**7 轮独立评审**，最终 `review-round7.md` **PASS（阻断 0 / 建议 0）**，规划原文 12/12 覆盖、反向扫描无夹带；DoR 13 条 **12 绿 + 1 口径偏离**（第 9 条按 D-2 裁决沿用「失败集合差集=0」） | `review-round1..7.md`、`requirement-understanding.md`（359 行）、`decisions.md` D-1/D-2/D-3 | S0 Gate 通过，准出 S1 |
-| S1 拆分与选型 | ⏳ 未开始 | — | — | — |
-| S2 实现 | ⏳ 未开始 | — | — | — |
+| S1 拆分与选型 | ✅ 收口 | `iteration-9.md` **r2 / 751 行**；9 WP / 23 负责文件零交集 / **AC→WP 27/27**；`split-review.md` **PASS（阻断 0 / 建议 3）**，3 条建议由 r2 纯增 32 行全闭合 | `iteration-9.md`、`split-review.md`、`b6f646b` | S1 Gate 通过，准出 S2 |
+| S2 实现 | ⏳ 进行中（6 批中 **3 批收口**） | 批次 1~3 的 5 个 WP 契约测试全绿；主控独立复跑 `i19-render`+`status-doc` **40/40**、`wp9/**` **85/85**、`labels-sync`/`cli-assets`/`purity`/`cli-e2e` **45/45**；deps **0** / `USAGE_LINES` **25** / purity **24 文件零命中 exit 0**；4 份独立评审全部 **PASS（阻断 0）** | `8beb6ca`…`3078c83`、`review-wp1-wp3.md` / `review-wp2-wp4.md` / `review-wp5.md` / `review-wp6.md` | 批次 4（WP-7）待开发，批次 5/6 未开始 |
 | S3 验收 | ⏳ 未开始 | — | — | — |
 | S4 终验与收口 | ⏳ 未开始 | — | — | — |
 
@@ -91,3 +91,22 @@
 - **主控裁决**：`decisions.md` D-6（`replay` 恒返回数组 + 非枚举 `badLines`，**WP-8 须从 `events.badLines` 取并置入 `result.badLines`**）、D-7（`LAYER_HEALTH.health`）、D-8（`HEALTH_REASON[code]` 单表）、D-9（以 WP-4 实际导出名为冻结契约）。`c57a609` 提交。
 - **转达批次 3/5**：WP-6/WP-8 渲染 `health.changed` 文本行须自行在 `HEALTH_EVENT_LINE` 前拼 `HH:MM:SS` + 2 半角空格；WP-5 的 AC-21 截断夹具须用不可解析半行且独立成行带 `\n`。
 - **已还原**全量测试改写的 3 个 `docs/iterations/iteration-4/evidence/nfr-perf-*.json`，未纳入提交。
+
+## S2 批次 3（WP-5 + WP-6，已收口）
+
+| WP | commit | 文件 | 门禁（主控独立复跑） | 独立评审 |
+|---|---|---|---|---|
+| WP-5 | `e4b4888` | `test/fixtures/mock-acp-agent.js`（+55/-13，新增全在 `failToolMode` 守卫内）、`test/wp9/i19-fixture.test.js`（8 用例，真实 spawn + NDJSON） | `i19-fixture` **8/8**、`wp9/**` **85/85**、deps **0**；`loop-fixture` 1 条失败经核为基线第 4 行，按 D-2 差集口径判非回归 | `review-wp5.md` **PASS（阻断 0 / 建议 4）** |
+| WP-6 | `efbc658` | `src/cli/render.js`（+243）、`src/core/status-text.js`（+85）、`test/wp9/i19-render.test.js`（28 用例 / 721 行）、`test/wp11/status-doc.test.js`（按 D-8 只改 2 行） | `i19-render`+`status-doc` **40/40**、`wp9/**` **85/85**、`labels-sync`+`cli-assets`+`purity`+`cli-e2e` **45/45**、purity **exit 0 / 24 文件零命中**、deps **0**、`USAGE_LINES` **25** | `review-wp6.md` **PASS（阻断 0 / 建议 4）** |
+
+- **主控独立复核发现 1 个阻断缺陷并打回修复（D-12）**：`computeHealth` 按需求 D-3 L964 返回**纯码值数组** `reasons: string[]`，而 `HEALTH_REASON` 模板带 `{nodeId}` 等占位符、`replaceAll` 缺参填空串；WP-6 首版只在 `reasons` 为 `{code,...实参}` 对象时才填得进，A-6 附 8 行测试**全靠测试夹具传对象**通过，用真实核心输出会渲染成 `节点  执行超时`（双空格），AC-13/14/15 逐字判据会全挂。裁决：**纯码值数组不变**（不改 `health.js` / 事件形状 / A-8 JSON），由**渲染层从快照既有字段推导占位符实参**，并强制补「真实 `computeHealth` 输出 + 真实快照」的逐字用例。修复后主控与评审各自独立复算，A-6 附 8 行逐字全命中、CLI 与 `status.md` 两输出一致。
+- **主控裁决 4 条**（`3078c83`）：
+  - **D-10** 摘要四要素上报载体：`tool_call.execution={command}` + `tool_call_update.execution={exitCode,keyOutputLines?,logRef?}`；`--fail-tool-no-refs` 只报命令+退出码、`title` 恒 `write` 不得冒充命令；`stopReason` 仍 `end_turn`。
+  - **D-11** `renderTraceShow` payload 冻结契约：`{instanceId,exists,traceId,spans,backflows,badLines}`，中文数据串由 WP-8 从 `labels.js` 既有表与图 title 组装。
+  - **D-12** 原因句占位符实参来源（上述阻断缺陷）+「事件文本行无快照」已知边界。
+  - **D-13** WP-5 三个开放点：`host-logs/T-001.log` 归属 S3 脚手架；接受新开关组合边界、不扩范围；`cursor.json 并发消费` 属基线第 4 行、判非缺陷。
+- **评审独立实跑证据**：WP-5 用 `git show HEAD:` 取改动前版本，14 组 argv 完整帧 JSON 逐字 diff = 0、43 项 D-10 字段核对全绿；WP-6 用 13 个既有事件样本做 HEAD 输出 diff = 0、6 个既有函数体零改、`status-doc.test.js` 仅 2 行变更、8 个零改文件确认零改；两份报告均声明未改产品/测试代码、未提交。
+- **转达批次 4 / 5**：
+  - WP-7：①按 **D-10** 在 `handleUpdate` 内按帧名合并 `execution` 到会话级摘要缓存，缺项存 `null`，**不得**用 `toolName` 或默认值补齐；②`state.health.reasons` / `detail.reasons` 恒为**纯码值数组**，不得改对象数组；③如需事件文本行显示带占位符原因的实参，可**可选**提供 `health.reasonVars` / `detail.reasonVars`（WP-6 已支持优先读取），不提供则按 D-12 降级，A-8 不受影响；④AC-04/05/26 的夹具**不得**把 `--fail-tool*` 与 `--permission` / `--host-error` / `--hold-session` 等既有分支组合（D-13）。
+  - WP-8：按 **D-11** payload 形状组装 `trace show`；健康度事件行 `{layer}` 取 `LAYER_HEALTH.health`（D-7）；`HEALTH_EVENT_LINE` 不含 `{ts}`，渲染层自补 `HH:MM:SS` + 2 半角空格（D-9 / F-01）。
+- **建议 8 条（非阻断，记录不改判据）**：WP-5 四条（`--help` 多 1 行、`pickFrames` 末帧健壮性、测试超时兜底、双开关布尔收敛为枚举）；WP-6 四条（事件文本行占位符码需 `reasonVars`、「首个」匹配口径登记、注释中文最严字面口径观察、对象形态兼容用例可收敛为纯码值形态）。D-7/D-8/D-9/D-11/D-12④/D-13 已裁决项不得重新升格为阻断。
