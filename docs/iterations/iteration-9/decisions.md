@@ -70,3 +70,39 @@
 | 依据 | 需求附录 B-4 明确「以『会话被隔离且其节点未成功』近似」，且「被隔离会话不再重复计入角色不可用」；AC-13 六个红条件夹具**全部用只含该条件的实例快照构造**（崩溃夹具为 `quarantined=true` + 绑定节点 `failed`/`escalated`）；BR-24 的降级口径针对追踪记录缺失/单行不可读/缺起止时刻，不针对会话绑定节点不可解析 |
 | 决定 | **保持实现，判为已登记口径而非缺陷**：①B-4 的「近似」本身就是需求自定的口径，真实运行里 `quarantined` 会话多为 `idle` 导致的漏报属该口径的已知边界，记入 `report.md` §5 遗留；②「绑定节点不可解析 → 按 quarantined 命中」是脏数据兜底，AC-13/AC-23 均不构造该形态，不影响取证；③红档短路只返回红码、不并列黄码，与任务书「🟡 无红档时才判」及 BR-10「同一时刻只显示一档」一致。**不采纳**「放宽为仅凭 quarantined 即命中」与「红档并列黄码」两个可选建议——它们会改变 B-4 与四档语义，属放宽判据，违反 §1.2 |
 | 影响面 | `src/core/health.js` 不动；S3 取证按 AC-13 快照夹具；`report.md` §5 需登记该口径边界 |
+
+## D-6 · `replay` 返回形状（WP-2 开放点）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | WP-2 回报：拆分 §6① 字面冻结 `replay → { events, badLines }`，但 `src/daemon/server.js:229-230` 与 `test/wp1/event-bus.test.js:149-153` 强制数组形状，改结构会让既有调用者与 `instance.events` JSON 序列化回归；实现采用「仍返回数组 + 非枚举 `badLines` 属性」 |
+| 依据 | 需求 **D-7 L1006** 原文允许「返回值改为 `{ events, badLines }` **或等价的附带字段**」；D-9「`instance log` 既有事件行格式不动」、AC-03/AC-19 逐字红线；`Object.defineProperty` 非枚举属性对 `length`/`JSON.stringify`/`Object.keys`/`deepEqual`/展开透明（WP-2 已实跑验证，主控复跑 `test/wp1/event-bus.test.js` 7/7 绿） |
+| 决定 | **接受实现，判为契约等价形态**：`replay()` 恒返回事件数组，`badLines` 为数组上的非枚举属性。**转达 WP-8**：`src/daemon/server.js` 的 `instance.events`（D-7 L1031 已授权）必须从 `events.badLines` 取值并显式置入 `result.badLines`；`src/cli/main.js` 的 `instance log` 从 RPC `result.badLines` 读取渲染 `EVENTS_SKIPPED`，**不许**按 `{ events, badLines }` 解构 `replay` 结果，也不许直接透传数组属性（IPC JSON 序列化会丢非枚举字段）。S3 验收 AC-23/25 的取证必须覆盖这条链路 |
+| 影响面 | WP-8 两个文件；AC-23/25 的跳过行提示；不改需求与拆分文档 |
+
+## D-7 · `LAYER.health` 落地为 `LAYER_HEALTH.health`（WP-4 开放点）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | WP-4 回报：需求 D-5 L988 写「`labels.js` 增加 `LAYER.health = '健康度'`」，但既有 `LAYER` 表（`:219-226`）位于文件前半部分且 `Object.freeze`，而本 WP 硬约束「只在文件末尾追加、既有键零改动、前半部分一行不动」；实现另立 `LAYER_HEALTH = Object.freeze({health:'健康度'})` |
+| 依据 | 优先级 `AC Then > 附录 A 输出基线 > 附录 D 实现约束 > 代码现状`：**附录 A-9 表格**把层名「健康度」的归属写作 `CORE_TEXT.doc.health`（`status-text.js` 镜像 `labels.js`），**并未要求 `LAYER.health` 这个字面键名**；A-8 的用户可见判据是文本行 `健康度 INST-001  正常 → 需关注  原因 有待处理升级`，只要渲染逐字命中即可；D 附录抬头明确「仅供编码参考，不进入需求判定」。改冻结表会违反 `USAGE_LINES` 与「既有键零改动」回归红线 |
+| 决定 | **接受 `LAYER_HEALTH.health` 为冻结契约名**，不改既有 `LAYER` 表。**转达 WP-6 / WP-8**：健康度事件行的 `{layer}` 一律从 `LAYER_HEALTH.health` 取；`CORE_TEXT.doc.health` 在 `status-text.js` 侧镜像该值。A-8 逐字输出是唯一判据，键名不是 |
+| 影响面 | WP-6（`render.js` / `status-text.js`）、WP-8 的事件行渲染；不改附录 A 任何基线 |
+
+## D-8 · `HEALTH_REASON_*` 落地为单表 `HEALTH_REASON[code]`（WP-4 开放点）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | WP-4 回报：A-9 / §2.8 用通配族 `HEALTH_REASON_*`，实现按 A-8「码值 → 中文原因、同一张映射表」落地为**单表** `HEALTH_REASON`（8 键，键即 D-3 L968 的 8 个原因码） |
+| 依据 | A-8 明确要求「码值 → 中文原因」映射；D-3 L968 给出 8 码固定顺序；A-6 附 8 条逐字原因句已由 WP-4 测试逐条断言通过（主控复跑 `i19-labels.test.js` 14/14）。通配族是「一组键」的写法，单表属等价形态，且能让固定顺序由 `computeHealth` 的 `reasons` 数组直接驱动渲染 |
+| 决定 | **接受单表，不追加 8 个别名导出**：`HEALTH_REASON[code]` 是唯一入口；**转达 WP-6**：`renderHealthLine` / `renderHealthEventLine` 遍历 `health.reasons`（已按固定顺序），逐码查表后用 ` · ` 拼接，不得自行硬编码中文或改顺序。A-6 附 8 句逐字基线不变 |
+| 影响面 | WP-6 渲染实现；A-6 附 / A-8 判据不变 |
+
+## D-9 · `SUMMARY_LOG_LINE` 占位符切分与通配族展开名（WP-4 开放点）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | WP-4 按 A-1~A-14 逐字基线自行展开 `TRACE_*` / `SUMMARY_*` 通配族为具名导出（`TRACE_HEADER` / `TRACE_SPAN` / `TRACE_BACKFLOW_ROW` / `SUMMARY_LABEL` / `SUMMARY_FAIL_LINE` 等 23 个），`SUMMARY_LOG_LINE` 含 `{ts} {layer} {sessionId}` 前缀占位 |
+| 依据 | A-9 只给通配族、未点名成员，归属只要求 `labels.js`；A-12/A-14/A-8 锁定的是**渲染结果逐字**，占位符切分与内部键名属实现自由（附录 D 不进入需求判定）；WP-4 已逐字断言 A-12/A-14/A-13 填充结果 |
+| 决定 | **以 WP-4 实际导出名为冻结契约**（清单见 `review-wp2-wp4.md` 与 `src/cli/labels.js:793-882`），不追加别名、不改键名。**转达 WP-6**：按实际导出名引用，渲染结果必须与 A-1~A-14 逐字一致；若发现缺键，书面报主控裁决，不许在 `render.js` 里补中文硬编码。`SUMMARY_FAIL_LINE` 行首两个半角空格以 A-4 原文为准，WP-6 渲染时逐字核 |
+| 影响面 | WP-6 全部渲染函数；S3 验收的逐字比对；不改附录 A 基线 |
