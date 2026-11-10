@@ -64,6 +64,8 @@ function parseArgv(argv) {
     holdSession: false,
     slowTool: null,
     writeRef: null,
+    failTool: false,
+    failToolNoRefs: false,
     promptFailures: 0,
     root: null,
     scenario: null,
@@ -161,6 +163,14 @@ function parseArgv(argv) {
       case '--hold-session':
         opts.holdSession = true;
         break;
+      // I1.9/WP-5：两个默认关闭的失败工具开关（无值 flag）。
+      // 同时给出时以 --fail-tool-no-refs 优先（缺项变体），判定见 handlePrompt。
+      case '--fail-tool':
+        opts.failTool = true;
+        break;
+      case '--fail-tool-no-refs':
+        opts.failToolNoRefs = true;
+        break;
       default:
         break;
     }
@@ -176,6 +186,7 @@ const MOCK_USAGE = [
   '      并发自测：node mock-acp-agent.js --root <根> --scenario <场景名> --consume-only',
   '用法（I1.3 场景）：node mock-acp-agent.js --root <根> --suite task-loop --scenario <场景名>',
   '用法（WP-7 计数）：--prompt-failures=<n> 前 n 次 prompt 回 -32603，每次先写 .mock/prompt-attempts-<sessionId>.json',
+  '用法（I1.9/WP-5 失败摘要）：--fail-tool 上报四项；--fail-tool-no-refs 只报命令与退出码（同时给出时后者优先）',
 ].join('\n');
 
 if (opts.help) {
@@ -1023,6 +1034,9 @@ async function handlePrompt(id, params) {
     return;
   }
 
+  // I1.9/WP-5 / D-10：两个失败开关只在本主 prompt 路径生效；--root/--scenario 场景路径零改动。
+  // 两开关同时给出时以 --fail-tool-no-refs 优先（缺项变体）。
+  const failToolMode = opts.failTool || opts.failToolNoRefs;
   const toolName = opts.slowTool || 'write';
   const toolCallId = `call_mock_${process.pid}_${session.turn}`;
   const toolCall = {
@@ -1037,6 +1051,10 @@ async function handlePrompt(id, params) {
       file_path: path.resolve(session.cwd, opts.writeRef),
       content: MOCK_WRITE_CONTENT,
     };
+  }
+  // D-10：失败工具步骤在 tool_call 帧上报 command；title 恒为工具名，绝不把命令行塞进 title。
+  if (failToolMode) {
+    toolCall.execution = { command: 'node out/run.js' };
   }
   notifyUpdate(sessionId, toolCall);
 
@@ -1082,20 +1100,44 @@ async function handlePrompt(id, params) {
     return;
   }
 
-  // 真正落盘（若指定 write-ref）；权限被拒或取消时不会走到这里
-  writeArtifact(session);
+  // 真正落盘（若指定 write-ref）；权限被拒或取消时不会走到这里。
+  // I1.9/WP-5：失败工具步骤跳过落盘（即使给了 --write-ref 也不写），让产出核对失败形成「失败节点」。
+  if (!failToolMode) {
+    writeArtifact(session);
+  }
 
-  notifyUpdate(sessionId, {
-    sessionUpdate: 'tool_call_update',
-    toolCallId,
-    status: 'completed',
-    content: [
-      {
-        type: 'content',
-        content: { type: 'text', text: opts.writeRef ? 'Created file' : 'Tool completed' },
-      },
-    ],
-  });
+  if (failToolMode) {
+    // D-10：失败收尾帧 status='failed' + execution；成败只由核心产出核对裁决，
+    // 因此不新增 stopReason、不抛异常、进程照常 end_turn 退出（见下方 reply）。
+    // --fail-tool-no-refs 优先：缺项变体只报 exitCode，keyOutputLines / logRef 两键不得出现。
+    // host-logs/T-001.log 只是引用字符串，本夹具绝不创建该日志、不复制正文。
+    notifyUpdate(sessionId, {
+      sessionUpdate: 'tool_call_update',
+      toolCallId,
+      status: 'failed',
+      content: [
+        {
+          type: 'content',
+          content: { type: 'text', text: 'Error: command exited with code 1' },
+        },
+      ],
+      execution: opts.failToolNoRefs
+        ? { exitCode: 1 }
+        : { exitCode: 1, keyOutputLines: 3, logRef: 'host-logs/T-001.log' },
+    });
+  } else {
+    notifyUpdate(sessionId, {
+      sessionUpdate: 'tool_call_update',
+      toolCallId,
+      status: 'completed',
+      content: [
+        {
+          type: 'content',
+          content: { type: 'text', text: opts.writeRef ? 'Created file' : 'Tool completed' },
+        },
+      ],
+    });
+  }
 
   notifyUpdate(sessionId, {
     sessionUpdate: 'agent_message_chunk',
