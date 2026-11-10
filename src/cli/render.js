@@ -56,6 +56,28 @@ import {
   ESCALATION_REASON_WORKTREE_INIT_FAILED,
   formatDuration,
   formatHandoffDirection,
+  // I1.9 WP-6：健康度 / 追踪 / 执行摘要 / 事件跳过行的文案键（D-9 实际导出名）。
+  HEALTH_LABEL,
+  HEALTH_LINE,
+  HEALTH_REASON,
+  HEALTH_EVENT_LINE,
+  LAYER_HEALTH,
+  TRACE_HEADER,
+  TRACE_EMPTY_LINE,
+  TRACE_MISSING_LINE,
+  TRACE_SUMMARY,
+  TRACE_SPAN,
+  TRACE_BACKFLOW_HEADER,
+  TRACE_BACKFLOW_ROW,
+  TRACE_NO_BACKFLOW,
+  TRACE_RUNNING,
+  TRACE_NO_END,
+  TRACE_DEGRADED,
+  SUMMARY_LABEL,
+  SUMMARY_OUTPUT_LINES,
+  SUMMARY_FAIL_LINE,
+  SUMMARY_LOG_LINE,
+  EVENTS_SKIPPED,
 } from './labels.js';
 
 const STATE_LABEL = Object.freeze({
@@ -64,6 +86,7 @@ const STATE_LABEL = Object.freeze({
   session: SESSION_LABEL,
   handoff: HANDOFF_LABEL,
   escalation: ESCALATION_LABEL,
+  health: HEALTH_LABEL,
 });
 
 /** 交接包拒绝原因的人话（labels.js 的 `HANDOFF_REJECT_REASON`，D-5）。 */
@@ -986,6 +1009,11 @@ export function renderBackflowDetail(event) {
 
 /** 一行事件 + 可选的缩进明细；`main.js` 的 `--events` 走这里。 */
 export function renderEventLines(event, { template } = {}) {
+  // I1.9 WP-6：只对两种新记录委托专用行渲染；其余事件一律走原逻辑，既有行格式与相对顺序零改。
+  const reason = event?.reason;
+  if (reason === 'execution.summary') return [renderSummaryLogLine(event)];
+  if (reason === 'health.changed') return [renderHealthEventLine(event)];
+
   const line = renderEventLine(event, { template });
   if (!line) return [];
   const tpl = typeof template === 'string' && template.length > 0 ? template : 'single';
@@ -1979,5 +2007,220 @@ export function renderWorkflowDryRun({ plan, nodes, joins }) {
     warnings > 0 ? replaceAll(text.conclusionWarned, { n: warnings }) : text.conclusion,
   );
   return lines;
+}
+
+// ---------------------------------------------------------------- I1.9 WP-6 渲染纯函数（只追加，既有函数零改）
+//
+// 中文全部来自 labels.js 的实际导出名（D-9）；本段不写任何中文字面量。
+// `renderEventLines` 的按 reason 分派分支在函数开头，其余事件行格式 / 相对顺序不动。
+
+/** 档位词：缺 `level` 降级 normal（不抛错）。 */
+function healthLevelWord(health) {
+  const level = typeof health?.level === 'string' && health.level.length > 0 ? health.level : 'normal';
+  return HEALTH_LABEL[level] ?? HEALTH_LABEL.normal;
+}
+
+/**
+ * D-12：按原因码从快照既有字段推导占位符实参（纯函数）。
+ * 主契约为纯码值 `reasons: string[]`；优先读可选 `health.reasonVars?.[code]`（若 WP-7 提供），
+ * 缺失时按推导表取快照字段；找不到匹配对象降级为空串（不抛错、不硬编码中文兜底）。
+ * 角色中文取 labels.js 既有 ROLE_LABEL（节点 roleId → 中文）；`→` 为格式符号（既有 handoffRows 用法）。
+ * 与 src/core/status-text.js 的 deriveHealthReasonVars 规则逐字对应（由 i19-render.test.js 锁定一致）。
+ */
+function deriveHealthReasonVars(snapshot, code) {
+  const health = snapshot?.health ?? {};
+  const provided = health?.reasonVars?.[code];
+  if (provided && typeof provided === 'object') return provided;
+
+  const nodes = Array.isArray(snapshot?.nodes) ? snapshot.nodes : [];
+  const sessions = Array.isArray(snapshot?.sessions) ? snapshot.sessions : [];
+  const handoffs = Array.isArray(snapshot?.handoffs) ? snapshot.handoffs : [];
+  const nodeIdOf = (node) => node?.nodeId ?? node?.id ?? '';
+  const roleWordOf = (id) => {
+    const node = nodes.find((item) => nodeIdOf(item) === id) ?? null;
+    return ROLE_LABEL[node?.roleId] ?? '';
+  };
+  const fromIdOf = (handoff) => handoff?.fromNodeId ?? handoff?.edge?.from ?? '';
+  const toIdOf = (handoff) => handoff?.toNodeId ?? handoff?.edge?.to ?? '';
+  const connectionOf = (handoff) => `${roleWordOf(fromIdOf(handoff))}→${roleWordOf(toIdOf(handoff))}`;
+
+  switch (code) {
+    case 'node_timeout':
+    case 'p90_exceeded': {
+      const node = nodes.find((item) => item?.state === 'running') ?? null;
+      return { nodeId: node ? nodeIdOf(node) : '' };
+    }
+    case 'session_crash': {
+      const session = sessions.find((item) => item?.quarantined === true) ?? null;
+      return { sessionId: session ? (session?.sessionId ?? session?.id ?? '') : '' };
+    }
+    case 'role_unavailable': {
+      const session = sessions.find((item) => item?.state === 'escalated' && item?.quarantined !== true) ?? null;
+      return { role: session ? roleWordOf(session?.nodeId) : '' };
+    }
+    case 'connection_rejected': {
+      const handoff = handoffs.find((item) => item?.state === 'rejected') ?? null;
+      return { connection: handoff ? connectionOf(handoff) : '' };
+    }
+    case 'connection_expired': {
+      const handoff = handoffs.find((item) => item?.state === 'expired') ?? null;
+      return { connection: handoff ? connectionOf(handoff) : '' };
+    }
+    case 'handoff_ttl_half': {
+      const handoff = handoffs.find((item) => item?.state === 'pending') ?? null;
+      return { handoffId: handoff?.handoffId ?? '' };
+    }
+    default:
+      return {};
+  }
+}
+
+/**
+ * 原因句拼接（D-8 / D-12）：遍历 `reasons`（已按 8 码固定顺序），逐码查 HEALTH_REASON 单表，
+ * 用 HEALTH_LINE.sep 拼接；不硬编码中文、不重排、不追加别名。
+ * 主契约：元素为码值字符串，实参由 `varsFor(code)` 从快照推导；对象元素 `{code,...}` 兼容保留（非主契约）。
+ */
+function healthReasonSentences(reasons, varsFor) {
+  const list = Array.isArray(reasons) ? reasons : [];
+  return list
+    .map((reason) => {
+      if (reason && typeof reason === 'object') {
+        const template = HEALTH_REASON[reason.code];
+        return typeof template === 'string' ? replaceAll(template, reason) : '';
+      }
+      const template = HEALTH_REASON[reason];
+      if (typeof template !== 'string') return '';
+      return replaceAll(template, varsFor(reason));
+    })
+    .join(HEALTH_LINE.sep);
+}
+
+/** A-6 四组四档 / A-6 附 8 行原因句：单行 `健康度 …[ · 原因]`；`now` 签名冻结、兼容保留。 */
+export function renderHealthLine(snapshot, now) {
+  void now;
+  const health = snapshot?.health ?? {};
+  const level = healthLevelWord(health);
+  const reasons = healthReasonSentences(health.reasons, (code) => deriveHealthReasonVars(snapshot, code));
+  if (reasons.length === 0) return replaceAll(HEALTH_LINE.base, { level });
+  return replaceAll(HEALTH_LINE.withReasons, { level, reasons });
+}
+
+/**
+ * A-8 健康度变化事件文本行：中文档位（from → to）+ 中文原因（HEALTH_REASON 查表）。
+ * HEALTH_EVENT_LINE 不含 {ts}（F-01），须在行体前自补 `HH:MM:SS` + 两个半角空格。
+ * D-12 ④：事件无快照，带占位符码只允许从 event.detail.reasonVars?.[code] 取值，缺失时降级；
+ * A-8 判据只用 pending_escalation（无占位符），逐字基线不变。
+ */
+export function renderHealthEventLine(event) {
+  const ts = formatClock(event?.ts) ?? '--:--:--';
+  const reasonVars = event?.detail?.reasonVars ?? {};
+  const segment = replaceAll(HEALTH_EVENT_LINE, {
+    layer: LAYER_HEALTH.health,
+    instanceId: event?.objectId ?? '?',
+    from: HEALTH_LABEL[event?.from] ?? event?.from ?? '',
+    to: HEALTH_LABEL[event?.to] ?? event?.to ?? '',
+    reasons: healthReasonSentences(event?.detail?.reasons, (code) => reasonVars[code] ?? {}),
+  });
+  return `${ts}  ${segment}`;
+}
+
+/** 摘要四项 → `{command, exitCode, keyOutput, log}`；缺项（null/undefined）用 SUMMARY_LABEL.unavailable。 */
+function summaryFour(summary) {
+  const unavailable = SUMMARY_LABEL.unavailable;
+  const present = (value) => value !== null && value !== undefined;
+  const command = present(summary?.command) ? String(summary.command) : unavailable;
+  const exitCode = present(summary?.exitCode) ? String(summary.exitCode) : unavailable;
+  const keyOutput = present(summary?.keyOutputLines)
+    ? replaceAll(SUMMARY_OUTPUT_LINES, { n: summary.keyOutputLines })
+    : unavailable;
+  const log = present(summary?.logRef) ? String(summary.logRef) : unavailable;
+  return { command, exitCode, keyOutput, log };
+}
+
+/**
+ * A-12 / A-14 执行摘要行：层名 / 会话号取法与 renderEventLine 保持一致
+ * （LAYER 既有表 + event.objectId）；时刻取 event.ts 经 formatClock；
+ * 取消四项全"未提供"复用同一行模板 SUMMARY_LOG_LINE。
+ */
+export function renderSummaryLogLine(event) {
+  const ts = formatClock(event?.ts) ?? '--:--:--';
+  return replaceAll(SUMMARY_LOG_LINE, {
+    ts,
+    layer: layerName(event?.object),
+    sessionId: event?.objectId ?? '?',
+    ...summaryFour(event?.detail?.summary),
+  });
+}
+
+/** A-13 事件不可读行提示：填 {n}，单独成行、不带时刻前缀。 */
+export function renderEventsSkippedLine(badLines) {
+  return replaceAll(EVENTS_SKIPPED, { n: badLines });
+}
+
+/** 跨度节点列：`graphNode.title ?? nodeId` —— 有 title 输出 `节点号 标题`，无 title 只输出节点号。 */
+function spanNodeColumn(span) {
+  const nodeId = span?.node_id ?? '?';
+  const title = span?.title;
+  return typeof title === 'string' && title.length > 0 ? `${nodeId} ${title}` : nodeId;
+}
+
+/** 一条跨度行（A-2 / A-3 / A-10）；end_time 为 null 时进行中，结束位 `—`、结果位 `进行中`。 */
+function traceSpanLine(span) {
+  const running = span?.end_time === null || span?.end_time === undefined;
+  const start = formatClock(span?.start_time) ?? '--:--:--';
+  const end = running ? TRACE_NO_END : (formatClock(span?.end_time) ?? '--:--:--');
+  const result = running ? TRACE_RUNNING : (span?.result ?? '');
+  const ids = Array.isArray(span?.handoff_ids) ? span.handoff_ids : [];
+  const handoffs = ids.length > 0 ? ids.join(' ') : TRACE_NO_BACKFLOW;
+  return replaceAll(TRACE_SPAN, { start, end, node: spanNodeColumn(span), result, handoffs });
+}
+
+/** A-4 失败摘要行（缩进 2 半角空格由 SUMMARY_FAIL_LINE 模板提供）。 */
+function failSummaryLine(summary) {
+  return replaceAll(SUMMARY_FAIL_LINE, summaryFour(summary));
+}
+
+/**
+ * A-1 / A-2 / A-3 / A-4 / A-5 / A-10 / A-11 `orch trace show` 多行输出。
+ * 消费已组装好的 payload（见交付回执 D-11），不读盘、不写状态、不追加事件。
+ */
+export function renderTraceShow(payload) {
+  const instanceId = payload?.instanceId ?? '?';
+  if (payload?.exists === false) return replaceAll(TRACE_MISSING_LINE, { instanceId });
+
+  const spans = Array.isArray(payload?.spans) ? payload.spans : [];
+  const backflows = Array.isArray(payload?.backflows) ? payload.backflows : [];
+  const badLines = Number(payload?.badLines) || 0;
+  const traceId = payload?.traceId;
+  const hasTrace = (typeof traceId === 'string' && traceId.length > 0) || spans.length > 0;
+  if (!hasTrace) return replaceAll(TRACE_EMPTY_LINE, { instanceId });
+
+  // 进行中跨度不计入"跨度 N 条"（trace.js overlayRunningSpans 的口径）。
+  const landed = spans.filter((span) => span?.end_time !== null && span?.end_time !== undefined).length;
+  const lines = [];
+  lines.push(replaceAll(TRACE_HEADER, { instanceId, traceId }));
+  if (badLines > 0) lines.push(replaceAll(TRACE_DEGRADED, { n: badLines })); // A-11：汇总行之前
+  lines.push(replaceAll(TRACE_SUMMARY, { spans: landed, backflows: backflows.length }));
+  lines.push('');
+  for (const span of spans) {
+    lines.push(traceSpanLine(span));
+    if (span?.summary) lines.push(failSummaryLine(span.summary)); // A-4：失败跨度下方
+  }
+  lines.push('');
+  lines.push(TRACE_BACKFLOW_HEADER);
+  if (backflows.length === 0) {
+    lines.push(TRACE_NO_BACKFLOW);
+  } else {
+    for (const item of backflows) {
+      lines.push(replaceAll(TRACE_BACKFLOW_ROW, {
+        round: item?.round ?? 0,
+        from: item?.from ?? '',
+        to: item?.to ?? '',
+        handoff: item?.handoff ?? '',
+        state: item?.state ?? '',
+      }));
+    }
+  }
+  return lines.join('\n');
 }
 

@@ -18,6 +18,12 @@ import {
   MERGE_MERGING,
   MERGE_MERGED,
   MERGE_CONFLICT,
+  ROLE_LABEL,
+  // I1.9 WP-6：健康度字段名 / 档位 / 原因全部镜像 labels.js，本文件零中文硬编码。
+  LAYER_HEALTH,
+  HEALTH_LABEL,
+  HEALTH_LINE,
+  HEALTH_REASON,
 } from '../cli/labels.js';
 
 /** 状态词表：键与 `src/cli/labels.js` 的六张表一一对应。 */
@@ -71,6 +77,7 @@ export const CORE_TEXT = Object.freeze({
   /** `status.md` 的字段名与段名（A-1）。 */
   doc: Object.freeze({
     status: '状态',
+    health: LAYER_HEALTH.health,
     paused: '暂停',
     task: '任务',
     currentNode: '当前节点',
@@ -150,6 +157,83 @@ export function handoffInvalidDetail(code, params = {}) {
 /** `是` / `否`。 */
 export function yesNo(flag) {
   return flag === true ? CORE_TEXT.doc.yes : CORE_TEXT.doc.no;
+}
+
+/**
+ * D-12：按原因码从快照既有字段推导占位符实参（纯函数）。
+ * 与 src/cli/render.js 的 deriveHealthReasonVars 规则逐字对应（由 i19-render.test.js 锁定一致）。
+ * 角色中文取 labels.js 既有 ROLE_LABEL（节点 roleId → 中文）；`→` 为格式符号（既有 handoffRows 用法）。
+ * 找不到匹配对象降级为空串（不抛错、不硬编码中文兜底）。
+ */
+function deriveHealthReasonVars(state, code) {
+  const health = state?.health ?? {};
+  const provided = health?.reasonVars?.[code];
+  if (provided && typeof provided === 'object') return provided;
+
+  const nodes = Array.isArray(state?.nodes) ? state.nodes : [];
+  const sessions = Array.isArray(state?.sessions) ? state.sessions : [];
+  const handoffs = Array.isArray(state?.handoffs) ? state.handoffs : [];
+  const nodeIdOf = (node) => node?.nodeId ?? node?.id ?? '';
+  const roleWordOf = (id) => {
+    const node = nodes.find((item) => nodeIdOf(item) === id) ?? null;
+    return ROLE_LABEL[node?.roleId] ?? '';
+  };
+  const fromIdOf = (handoff) => handoff?.fromNodeId ?? handoff?.edge?.from ?? '';
+  const toIdOf = (handoff) => handoff?.toNodeId ?? handoff?.edge?.to ?? '';
+  const connectionOf = (handoff) => `${roleWordOf(fromIdOf(handoff))}→${roleWordOf(toIdOf(handoff))}`;
+
+  switch (code) {
+    case 'node_timeout':
+    case 'p90_exceeded': {
+      const node = nodes.find((item) => item?.state === 'running') ?? null;
+      return { nodeId: node ? nodeIdOf(node) : '' };
+    }
+    case 'session_crash': {
+      const session = sessions.find((item) => item?.quarantined === true) ?? null;
+      return { sessionId: session ? (session?.sessionId ?? session?.id ?? '') : '' };
+    }
+    case 'role_unavailable': {
+      const session = sessions.find((item) => item?.state === 'escalated' && item?.quarantined !== true) ?? null;
+      return { role: session ? roleWordOf(session?.nodeId) : '' };
+    }
+    case 'connection_rejected': {
+      const handoff = handoffs.find((item) => item?.state === 'rejected') ?? null;
+      return { connection: handoff ? connectionOf(handoff) : '' };
+    }
+    case 'connection_expired': {
+      const handoff = handoffs.find((item) => item?.state === 'expired') ?? null;
+      return { connection: handoff ? connectionOf(handoff) : '' };
+    }
+    case 'handoff_ttl_half': {
+      const handoff = handoffs.find((item) => item?.state === 'pending') ?? null;
+      return { handoffId: handoff?.handoffId ?? '' };
+    }
+    default:
+      return {};
+  }
+}
+
+/**
+ * A-7 健康度行：档位取 HEALTH_LABEL（缺 level 降级 normal），
+ * 原因句遍历 reasons 逐码查 HEALTH_REASON 单表、用 HEALTH_LINE.sep 拼接，
+ * 与 CLI 健康度行同表同序（D-8 / D-12）。本函数零中文硬编码。
+ */
+function healthDocLine(state) {
+  const health = state?.health ?? {};
+  const level = typeof health?.level === 'string' && health.level.length > 0 ? health.level : 'normal';
+  const word = HEALTH_LABEL[level] ?? HEALTH_LABEL.normal;
+  const reasons = Array.isArray(health?.reasons) ? health.reasons : [];
+  if (reasons.length === 0) return word;
+  const sentences = reasons.map((reason) => {
+    if (reason && typeof reason === 'object') {
+      const template = HEALTH_REASON[reason.code];
+      return typeof template === 'string' ? applyPlaceholders(template, reason) : '';
+    }
+    const template = HEALTH_REASON[reason];
+    if (typeof template !== 'string') return '';
+    return applyPlaceholders(template, deriveHealthReasonVars(state, reason));
+  });
+  return `${word}${HEALTH_LINE.sep}${sentences.join(HEALTH_LINE.sep)}`;
 }
 
 const SEP = ' · ';
@@ -317,6 +401,7 @@ export function renderStatusDoc(state, graph = null, options = {}) {
   const lines = [];
   lines.push(`# ${instanceId}${title ? ` ${title}` : ''}`, '');
   lines.push(`- ${CORE_TEXT.doc.status}：${wordOf(CORE_TEXT.instance, state?.state)}`);
+  lines.push(`- ${CORE_TEXT.doc.health}：${healthDocLine(state)}`);
   lines.push(`- ${CORE_TEXT.doc.paused}：${yesNo(paused)}`);
   lines.push(`- ${CORE_TEXT.doc.task}：${typeof state?.task === 'string' ? state.task : ''}`);
   if (multi) {
