@@ -57,6 +57,16 @@ export function corruptPath(root, id) {
   return path.join(instanceDir(root, id), 'state.json.corrupt');
 }
 
+/** Directory holding the per-instance state files (`<instanceDir>/state`). */
+export function instanceStateDir(root, id) {
+  return path.join(instanceDir(root, id), 'state');
+}
+
+/** Append-only trace log for one instance (`<state>/traces.jsonl`). */
+export function instanceTracesPath(root, id) {
+  return path.join(instanceStateDir(root, id), 'traces.jsonl');
+}
+
 /**
  * 实例工作区（I1.3）。`task-loop` 的研究笔记与文档版本都落在这里，
  * 相对引用（`artifacts/docs/x.v1.md`）一律相对它解析。
