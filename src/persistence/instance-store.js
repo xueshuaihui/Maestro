@@ -8,6 +8,7 @@
  */
 import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
+import { createHash } from 'node:crypto';
 import {
   corruptPath,
   eventsPath,
@@ -39,6 +40,29 @@ function readFailed(err, filePath) {
 
 function hasOwn(value, key) {
   return Object.prototype.hasOwnProperty.call(value, key);
+}
+
+// 审计链固定起点：64 个 0（D-1 L940）。
+const ZERO_HASH = '0'.repeat(64);
+
+/**
+ * 规范化 JSON 序列化（D-1 L941）：递归按键名排序、无多余空白，产出 UTF-8 串。
+ * 对「前一条完整记录」做规范化后再 SHA-256，**不对原始行字节直接哈希** ——
+ * 字段写入顺序不同、内容相同的记录会得到同一个指纹。
+ */
+function canonicalize(value) {
+  if (value === null || typeof value !== 'object') {
+    return JSON.stringify(value) ?? 'null';
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(canonicalize).join(',')}]`;
+  }
+  const keys = Object.keys(value).sort();
+  return `{${keys.map((k) => `${JSON.stringify(k)}:${canonicalize(value[k])}`).join(',')}}`;
+}
+
+function hashRecord(record) {
+  return createHash('sha256').update(canonicalize(record), 'utf8').digest('hex');
 }
 
 /**
@@ -398,7 +422,44 @@ export function createStore({ root } = {}) {
     return 1;
   }
 
-  return { root, load, save, appendEvent, readEvents, list, markCorrupt, nextSeq };
+  /**
+   * 审计链尾读（WP-2 / §2.4）：**同一次文件尾读取**同时得到下一条可用序号与
+   * 上一条完整记录的规范化 SHA-256 指纹，禁止先取序号再取指纹两次读（D-1 L942）。
+   * 序号沿用既有 `nextSeq`「末行坏则前溯」容错口径；末行截断/损坏继续向前找，
+   * 历史记录缺指纹字段时按原解析对象哈希（不回填、不改字节）；整份不可解析时
+   * 按固定起点重起链（BR-25）。既有 appendEvent / doAppend / nextSeq / readEvents
+   * 函数体一律不动，本方法不新增第二条序号来源。
+   */
+  function readTailForChain(id) {
+    let text;
+    try {
+      text = fsSync.readFileSync(eventsPath(root, id), 'utf8');
+    } catch {
+      // 文件缺失 / 读失败与空文件一样按固定起点起链，与 nextSeq 容错一致。
+      return { seq: 1, prevHash: ZERO_HASH, corruptAll: false };
+    }
+
+    const lines = text.split('\n');
+    let sawLine = false;
+    for (let i = lines.length - 1; i >= 0; i -= 1) {
+      const line = lines[i].trim();
+      if (line === '') continue;
+      sawLine = true;
+      let ev;
+      try {
+        ev = JSON.parse(line);
+      } catch {
+        // 末行可能被强杀截断或本行损坏：继续向前找（同 nextSeq 口径）。
+        continue;
+      }
+      if (!Number.isInteger(ev?.seq)) continue; // 无可读序号，继续前溯
+      return { seq: ev.seq + 1, prevHash: hashRecord(ev), corruptAll: false };
+    }
+    // 没有任何可续接的可解析记录：整份不可解析时按固定起点重起链（BR-25）。
+    return { seq: 1, prevHash: ZERO_HASH, corruptAll: sawLine };
+  }
+
+  return { root, load, save, appendEvent, readEvents, list, markCorrupt, nextSeq, readTailForChain };
 }
 
 /**

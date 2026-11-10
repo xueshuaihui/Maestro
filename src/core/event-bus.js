@@ -9,6 +9,9 @@
  *
  * 注：`replay` 是拆分文档 §2.10 冻结的方法名，方法名沿用契约（不计入核心禁词）。
  */
+// 审计链固定起点：首条事件 `prev_event_hash` 为 64 个 0（D-1 L940）。
+const ZERO_HASH = '0'.repeat(64);
+
 export function createEventBus({ store, clock } = {}) {
   if (!store || typeof store.appendEvent !== 'function' || typeof store.nextSeq !== 'function') {
     throw new TypeError('createEventBus: 需要一个实现 appendEvent/nextSeq 的 store');
@@ -88,11 +91,24 @@ export function createEventBus({ store, clock } = {}) {
     }
 
     return enqueue(instanceId, async () => {
-      // 1) 序号从 events.jsonl 末行恢复，保证重启后不重号。
-      const seq = await store.nextSeq(instanceId);
+      // 1) 审计链尾读：序号与上一条指纹来自 `readTailForChain` 的**同一次尾读**
+      //    （D-1 L942 / §7 R-6），禁止先取序号再取指纹两次读。序号口径沿用
+      //    既有 `nextSeq`，不改单调性。单实例串行队列内执行，不引入第二条序号来源。
+      //    store 未实现 `readTailForChain`（例如测试注入的 mock store）时降级到
+      //    既有 `nextSeq` + 64 个 `0` 固定起点，不抛错、不让既有测试变红。
+      let seq;
+      let prevHash;
+      if (typeof store.readTailForChain === 'function') {
+        const tail = await store.readTailForChain(instanceId);
+        seq = tail.seq;
+        prevHash = tail.prevHash ?? ZERO_HASH;
+      } else {
+        seq = await store.nextSeq(instanceId);
+        prevHash = ZERO_HASH;
+      }
       // 2) 时间戳统一 ISO-8601 UTC 毫秒，不自拼格式；调用方给了就用调用方的。
       const ts = normalizeTs(tsHint) ?? new Date(nowMs()).toISOString();
-      const record = { ...rest, seq, ts };
+      const record = { ...rest, seq, ts, prev_event_hash: prevHash };
 
       // 3) 先落盘。
       const appended = await store.appendEvent(instanceId, record);
@@ -118,7 +134,19 @@ export function createEventBus({ store, clock } = {}) {
       err.params = read?.params;
       throw err;
     }
-    return read.events;
+    // 仍返回事件数组：既有调用者（server.js `instance.events`、既有测试）拿到的
+    // 形状不变。把 `readEvents` 已统计的 `badLines` 作为数组上的附带字段透出给
+    // 下游（WP-8 的 `instance log` 跳过行提示），值与读取层同源、不另算。
+    // 非枚举属性：对 length / JSON.stringify / Object.keys / 深比较 / 展开透明，
+    // 因此既有数组断言与 daemon 的 JSON 序列化逐字不回归。
+    const events = read.events;
+    Object.defineProperty(events, 'badLines', {
+      value: read.badLines,
+      enumerable: false,
+      configurable: true,
+      writable: true,
+    });
+    return events;
   }
 
   /** 启动时从 events.jsonl 末行恢复的下一个序号。 */
