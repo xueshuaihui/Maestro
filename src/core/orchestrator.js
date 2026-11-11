@@ -70,6 +70,8 @@ import {
 } from '../templates/index.js';
 import { validateHandoff } from './handoff-schema.js';
 import { CORE_TEXT, applyPlaceholders, handoffInvalidDetail } from './status-text.js';
+import { computeHealth } from './health.js';
+import * as trace from './trace.js';
 import { buildInboxMessage, writeInbox, patchInbox } from './inbox.js';
 import {
   prepareWorkspace as prepareWorkspaceDir,
@@ -445,12 +447,100 @@ export function createOrchestrator({
     if (state?.counters) {
       state.counters.eventSeq = Math.max(0, store.nextSeq(instanceId) - 1);
     }
+    // Health is recomputed only on the read path (getStatus) with the real wall
+    // clock. The write path merely keeps the existing metadata on the snapshot
+    // and fills the per-instance timeout default when it is absent. No disk
+    // read and no health computation happen here, so a save adds no extra
+    // async suspension and keeps the frozen baseline scheduling.
+    if (!state.health || typeof state.health !== 'object') {
+      state.health = { nodeTimeoutMs: 30000 };
+    } else if (!Number.isFinite(state.health.nodeTimeoutMs)) {
+      state.health.nodeTimeoutMs = 30000;
+    }
     const pending = opts ? store.save(instanceId, state, opts) : store.save(instanceId, state);
     const saved = await pending;
     // C-02: every successful snapshot write rewrites status.md atomically.
     // A refresh failure only emits an event and never rolls the state back (AC-59).
     if (saved?.ok) await refreshWorkspaceStatus(instanceId, state);
     return saved;
+  }
+
+  /** Keys of sessions whose round summary has already been emitted. */
+  const summaryWritten = new Set();
+
+  /**
+   * Shared helper for the single per-session execution.summary event. All three
+   * session finalizers call this; the session object literal lives here only,
+   * so the count of session-scoped emit sites stays within the frozen limit.
+   * A failed emit never changes in-memory state and never blocks finalizing.
+   */
+  async function writeExecutionSummary({ emit, instanceId, sessionId, nodeId, round, draft, ts }) {
+    const key = `${instanceId}\u0000${sessionId}`;
+    if (summaryWritten.has(key)) return;
+    const source = draft ?? {};
+    const event = {
+      object: 'session',
+      objectId: sessionId,
+      result: 'note',
+      reason: 'execution.summary',
+      detail: {
+        nodeId: nodeId ?? null,
+        round: round ?? null,
+        summary: {
+          command: source.command ?? null,
+          exitCode: source.exitCode ?? null,
+          keyOutputLines: source.keyOutputLines ?? null,
+          logRef: source.logRef ?? null,
+        },
+      },
+    };
+    // The ts hint is optional: callers that hold the exact state-change moment
+    // pass it, otherwise the bus samples its own clock so the event chain stays
+    // monotonic (a hint older than the preceding event would read as a rollback).
+    if (typeof ts === 'string' && ts.length > 0) event.ts = ts;
+    let result;
+    try {
+      result = await emit(event);
+    } catch {
+      return;
+    }
+    if (result && result.ok !== false) summaryWritten.add(key);
+  }
+
+  /**
+   * Append the landed span for one finished node round. The per-instance trace
+   * id comes from the instance state created before the first dispatch, and
+   * only falls back to the first already-landed span (or a fresh one) when the
+   * state carries no usable id. Only the seven contracted fields are written;
+   * handoff ids are never stored.
+   * A failed append is non-blocking and never printed, so runtime output stays
+   * verbatim; the returned code stays available to the caller for observation.
+   */
+  async function appendNodeSpan(ctx) {
+    const node = ctx?.node;
+    if (!node || ctx.spanWritten) return null;
+    if (node.state === 'running' || !node.endedAt) return null;
+    if (typeof store.root !== 'string' || store.root.length === 0) return null;
+    ctx.spanWritten = true;
+    const { spans } = await trace.readTraces(store.root, ctx.instanceId);
+    const firstId = spans.length > 0 ? spans[0]?.trace_id : null;
+    const stateId = typeof ctx.state?.traceId === 'string' ? ctx.state.traceId : '';
+    const traceId = stateId.length > 0
+      ? stateId
+      : (typeof firstId === 'string' && firstId.length > 0
+        ? firstId
+        : trace.newTraceId());
+    const span = {
+      trace_id: traceId,
+      instance_id: ctx.instanceId,
+      node_id: node.nodeId ?? null,
+      round: node.round ?? null,
+      start_time: node.roundStartedAt ?? node.startedAt ?? null,
+      end_time: node.endedAt ?? null,
+      status: node.state,
+    };
+    const result = await trace.appendSpan(store.root, ctx.instanceId, span);
+    return result ?? null;
   }
 
   function expectedOf(state) {
@@ -753,6 +843,8 @@ export function createOrchestrator({
       sessions: [],
       handoffs: [],
       escalations: [],
+      health: { nodeTimeoutMs: 30000 },
+      traceId: trace.newTraceId(),
     });
   }
 
@@ -1188,6 +1280,24 @@ export function createOrchestrator({
     const name = update?.sessionUpdate;
     const before = session.state;
 
+    // Cache the four summary fields from the raw frames only. Nothing here is
+    // persisted on the session; a session finalizer flushes the cache later.
+    // Missing fields stay null, and the tool name is never used as a command.
+    const execution = update?.execution;
+    if ((name === 'tool_call' || name === 'tool_call_update') &&
+        execution && typeof execution === 'object') {
+      const draft = ctx.summaryDraft ?? (ctx.summaryDraft = {
+        command: null, exitCode: null, keyOutputLines: null, logRef: null,
+      });
+      if (name === 'tool_call') {
+        if (execution.command !== undefined) draft.command = execution.command;
+      } else {
+        if (execution.exitCode !== undefined) draft.exitCode = execution.exitCode;
+        if (execution.keyOutputLines !== undefined) draft.keyOutputLines = execution.keyOutputLines;
+        if (execution.logRef !== undefined) draft.logRef = execution.logRef;
+      }
+    }
+
     const reduced = normalizer.reduce(session, update, {
       sessionId: ctx.sessionId,
       turnId: session.turnId,
@@ -1301,10 +1411,20 @@ export function createOrchestrator({
       });
     }
     session.state = 'idle';
-    session.stateSince = iso();
+    const at = iso();
+    session.stateSince = at;
     session.toolName = null;
     session.pendingPermission = null;
     session.quarantined = true;
+    await writeExecutionSummary({
+      emit: ctx.emit,
+      instanceId: ctx.instanceId,
+      sessionId: ctx.sessionId,
+      nodeId: ctx.nodeId ?? null,
+      round: ctx.node?.round ?? session.round ?? null,
+      draft: ctx.summaryDraft,
+      ts: at,
+    });
   }
 
   /** 正常结束后让会话回到 idle（不隔离，保留后续状态读取）。 */
@@ -1330,9 +1450,19 @@ export function createOrchestrator({
       });
     }
     session.state = 'idle';
-    session.stateSince = iso();
+    const at = iso();
+    session.stateSince = at;
     session.toolName = null;
     session.pendingPermission = null;
+    await writeExecutionSummary({
+      emit: ctx.emit,
+      instanceId: ctx.instanceId,
+      sessionId: ctx.sessionId,
+      nodeId: ctx.nodeId ?? null,
+      round: ctx.node?.round ?? session.round ?? null,
+      draft: ctx.summaryDraft,
+      ts: at,
+    });
   }
 
   // ------------------------------------------------------------------ 派发
@@ -2142,6 +2272,7 @@ export function createOrchestrator({
       // 迟到帧的丢弃由 ctx.quiescing 保证，与本标志无关。
       await idleSession(ctx, 'run.completed');
       ctx.node.endedAt = iso();
+      await appendNodeSpan(ctx);
       await saveLive(ctx);
       await cleanup(ctx);
       return {
@@ -2162,6 +2293,7 @@ export function createOrchestrator({
       ref: failure.ref ?? null,
       message: failure.message,
     });
+    await appendNodeSpan(ctx);
     await transition('instance', 'failed', 'verification.failed');
     if (ctx.handoff) ctx.handoff.note = 'verification_failed';
     await quiesceSession(ctx, 'run.failed');
@@ -2196,6 +2328,7 @@ export function createOrchestrator({
     await transition('node', 'failed', 'run.failed', { code, message: params.raw ?? params.step ?? null });
     await transition('instance', 'failed', 'run.failed');
     ctx.node.endedAt = iso();
+    await appendNodeSpan(ctx);
 
     const rejectReason =
       code === CODES.PERMISSION_DENIED
@@ -2564,6 +2697,7 @@ export function createOrchestrator({
 
     await makeTransitioner(ctx)('node', 'done', 'verification.passed');
     node.endedAt = iso();
+    await appendNodeSpan(ctx);
     await consumeHandoff(ctx, 'handoff.consumed');
     await idleSession(ctx, 'run.completed');
     await saveLive(ctx);
@@ -2703,6 +2837,7 @@ export function createOrchestrator({
     });
     await makeTransitioner(ctx)('node', 'done', 'verification.passed');
     node.endedAt = iso();
+    await appendNodeSpan(ctx);
     await consumeHandoff(ctx, 'handoff.consumed');
     await idleSession(ctx, 'run.completed');
     await saveLive(ctx);
@@ -2803,6 +2938,7 @@ export function createOrchestrator({
 
     await makeTransitioner(ctx)('node', 'done', 'verification.passed');
     node.endedAt = iso();
+    await appendNodeSpan(ctx);
     await consumeHandoff(ctx, 'handoff.consumed');
     await idleSession(ctx, 'run.completed');
     await saveLive(ctx);
@@ -3227,6 +3363,13 @@ export function createOrchestrator({
       }
     }
     if (ctx.adapter) await disposeAdapter(ctx.adapter);
+    // Land this round's span before the drive loop reaches its stop point or
+    // advances. A failed append is non-blocking (see appendNodeSpan).
+    try {
+      await appendNodeSpan(ctx);
+    } catch {
+      // a span append must never block finalizing
+    }
   }
 
   async function failRunUnexpected(ctx, error) {
@@ -3244,6 +3387,7 @@ export function createOrchestrator({
           await transition('instance', 'failed', 'run.failed');
         }
         if (ctx.node) ctx.node.endedAt = iso();
+        await appendNodeSpan(ctx);
         await quiesceSession(ctx, 'run.failed');
         await saveLive(ctx);
       }
@@ -3822,6 +3966,7 @@ export function createOrchestrator({
       const events = [];
       const cancelledNodes = [];
       const cancelledSessions = [];
+      const summaryTargets = [];
       const cancelledHandoffs = [];
       const cancelledEscalations = [];
 
@@ -3853,6 +3998,7 @@ export function createOrchestrator({
           detail: null,
         });
         cancelledSessions.push(session);
+        summaryTargets.push(session);
       }
 
       for (const node of work.nodes) {
@@ -3950,6 +4096,18 @@ export function createOrchestrator({
       }
 
       for (const event of events) await emit(event);
+      // One execution.summary per cancelled session, with all four values
+      // missing on the cancel path (no cache is treated as a full cache miss).
+      for (const session of summaryTargets) {
+        await writeExecutionSummary({
+          emit,
+          instanceId,
+          sessionId: session.sessionId,
+          nodeId: session.nodeId ?? null,
+          round: session.round ?? null,
+          draft: null,
+        });
+      }
       if (ctx) {
         ctx.state = work;
         ctx.finished = true;
@@ -4047,7 +4205,67 @@ export function createOrchestrator({
     }
     const live = activeRuns.get(instanceId);
     const liveState = live?.currentCtx?.state;
-    return { ok: true, snapshot: snapshotOf(liveState ?? loaded.state) };
+
+    // A progress poll (instance.get during an active run, including the final
+    // status lookup inside waitForRun) must add no async IO: the disk read and
+    // the first-write CAS used to shift short-lived session states out of the
+    // CLI polling window (AC-03). runWaiters marks that whole window, while
+    // liveState covers the driving run. Health is recomputed on the status read
+    // path (no live run, no waiter), which keeps the first write, the narrow
+    // CAS and the health.changed event.
+    if (liveState || runWaiters.has(instanceId)) {
+      return { ok: true, snapshot: snapshotOf(liveState ?? loaded.state) };
+    }
+
+    // Recompute health at read time with the real wall clock. Only a missing
+    // level (first write) or a level change triggers one narrow CAS write.
+    const at = Date.now();
+    const atIso = new Date(at).toISOString();
+    let landedSpans = [];
+    if (typeof store.root === 'string' && store.root.length > 0) {
+      landedSpans = (await trace.readTraces(store.root, instanceId)).spans;
+    }
+    const healthState = loaded.state;
+    const computed = computeHealth({
+      state: healthState,
+      graph: graphForState(healthState),
+      traces: landedSpans,
+      now: at,
+    });
+    const previousHealth = healthState?.health ?? {};
+    const prevLevel = typeof previousHealth.level === 'string' ? previousHealth.level : null;
+    const nodeTimeoutMs = Number.isFinite(previousHealth.nodeTimeoutMs)
+      ? previousHealth.nodeTimeoutMs
+      : 30000;
+    const nextHealth = {
+      level: computed.level,
+      reasons: computed.reasons,
+      computedAt: atIso,
+      nodeTimeoutMs,
+    };
+    const firstWrite = prevLevel === null;
+    const changed = prevLevel !== null && prevLevel !== computed.level;
+
+    if (firstWrite || changed) {
+      healthState.health = { ...nextHealth };
+      const saved = await saveState(instanceId, healthState, { expectedState: expectedOf(healthState) });
+      if (saved?.ok && changed) {
+        const writtenTs = healthState.health?.computedAt ?? atIso;
+        await makeEmitter(instanceId, null)({
+          object: 'health',
+          objectId: instanceId,
+          from: prevLevel,
+          to: computed.level,
+          result: 'applied',
+          reason: 'health.changed',
+          detail: { reasons: computed.reasons },
+          ts: writtenTs,
+        });
+      }
+    }
+
+    const readState = liveState ?? loaded.state;
+    return { ok: true, snapshot: snapshotOf({ ...readState, health: { ...nextHealth } }) };
   }
 
   function listInstances() {
