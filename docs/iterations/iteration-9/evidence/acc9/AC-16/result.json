@@ -1,0 +1,124 @@
+{
+  "ac": "AC-16",
+  "generatedAt": "2026-11-11T19:56:20.523Z",
+  "title": "规划验收②：健康度在实例状态变化后正确更新并进事件日志",
+  "fixture": "快照先读 normal，只追加一条 pending 升级后二次读取 -> attention",
+  "passed": true,
+  "total": 21,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "先起核心",
+      "ok": true,
+      "detail": "实例 INST-001 · 不存在"
+    },
+    {
+      "name": "首次查看：正常",
+      "ok": true,
+      "detail": "actual=\"健康度 正常\" expected=\"健康度 正常\""
+    },
+    {
+      "name": "首次补写不追加 health.changed",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "首次查看已写回 level=normal",
+      "ok": true,
+      "detail": "actual=\"normal\" expected=\"normal\""
+    },
+    {
+      "name": "二次查看：需关注（单原因逐字）",
+      "ok": true,
+      "detail": "actual=\"健康度 需关注 · 有待处理升级\" expected=\"健康度 需关注 · 有待处理升级\""
+    },
+    {
+      "name": "档位变化事件恰 1 条",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "变化事件 from=normal",
+      "ok": true,
+      "detail": "actual=\"normal\" expected=\"normal\""
+    },
+    {
+      "name": "变化事件 to=attention",
+      "ok": true,
+      "detail": "actual=\"attention\" expected=\"attention\""
+    },
+    {
+      "name": "变化事件 object=health",
+      "ok": true,
+      "detail": "actual=\"health\" expected=\"health\""
+    },
+    {
+      "name": "变化事件 objectId=INST-001",
+      "ok": true,
+      "detail": "actual=\"INST-001\" expected=\"INST-001\""
+    },
+    {
+      "name": "detail.reasons=[pending_escalation]",
+      "ok": true,
+      "detail": "actual=\"[\\\"pending_escalation\\\"]\" expected=\"[\\\"pending_escalation\\\"]\""
+    },
+    {
+      "name": "事件 seq 接在链尾（before+1）",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "prev_event_hash 为 64 位十六进制",
+      "ok": true,
+      "detail": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "文本视图健康度行逐字（A-8）",
+      "ok": true,
+      "detail": "03:56:12  健康度 INST-001  正常 → 需关注  原因 有待处理升级"
+    },
+    {
+      "name": "JSON 可检索同一条 health.changed",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "JSON detail.reasons 含 pending_escalation",
+      "ok": true,
+      "detail": "actual=\"[\\\"pending_escalation\\\"]\" expected=\"[\\\"pending_escalation\\\"]\""
+    },
+    {
+      "name": "三次查看仍同档",
+      "ok": true,
+      "detail": "actual=\"健康度 需关注 · 有待处理升级\" expected=\"健康度 需关注 · 有待处理升级\""
+    },
+    {
+      "name": "同档位再查不追加事件",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "真实场景首次查看：需关注（有待处理升级）",
+      "ok": true,
+      "detail": "actual=\"健康度 需关注 · 有待处理升级\" expected=\"健康度 需关注 · 有待处理升级\""
+    },
+    {
+      "name": "真实场景 health.changed=0（首次补写在 run 收尾完成）",
+      "ok": true,
+      "detail": "count=0, run 前 level=attention"
+    },
+    {
+      "name": "真实场景再次查看同档、不追加事件",
+      "ok": true,
+      "detail": "events=5"
+    }
+  ],
+  "keyEvidence": [
+    "status-first.txt",
+    "status-second.txt",
+    "log-text.txt",
+    "real-task-loop-driver.txt",
+    "real-status.txt"
+  ],
+  "note": "快照受控变化恰 1 条 health.changed；真实 dispatch-fail-first 为 0 条（首次补写已在 run 收尾完成）。若任务书要求真实场景也必须恰 1 条，需主控裁决（与 BR-15 冲突）。"
+}

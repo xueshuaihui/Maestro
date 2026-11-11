@@ -1,0 +1,127 @@
+{
+  "ac": "AC-24",
+  "generatedAt": "2026-11-11T20:00:58.763Z",
+  "title": "会话的审计粒度：逐条状态不进主审计，摘要回答“为什么结束”",
+  "fixture": "--fail-tool 真实失败节点 + 预置逐条会话记录的遗留实例",
+  "passed": true,
+  "total": 22,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "失败节点 run 退出码 1",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "instance log 文本 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "A-12 摘要行逐字（会话号/时刻随夹具）",
+      "ok": true,
+      "detail": "04:00:53  会话 mock-sess-30733-1  执行摘要 命令 node out/run.js · 退出码 1 · 关键输出 3 行 · 日志 host-logs/T-001.log"
+    },
+    {
+      "name": "instance log json exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "execution.summary 恰 1 条（每会话 1 条）",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "摘要条数 = 会话数",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "摘要 object=session",
+      "ok": true,
+      "detail": "actual=\"session\" expected=\"session\""
+    },
+    {
+      "name": "摘要 result=note",
+      "ok": true,
+      "detail": "actual=\"note\" expected=\"note\""
+    },
+    {
+      "name": "摘要 detail.nodeId=T-001",
+      "ok": true,
+      "detail": "actual=\"T-001\" expected=\"T-001\""
+    },
+    {
+      "name": "摘要四项与夹具一致",
+      "ok": true,
+      "detail": "actual=\"{\\\"command\\\":\\\"node out/run.js\\\",\\\"exitCode\\\":1,\\\"keyOutputLines\\\":3,\\\"logRef\\\":\\\"host-logs/T-001.log\\\"}\" expected=\"{\\\"command\\\":\\\"node out/run.js\\\",\\\"exitCode\\\":1,\\\"keyOutputLines\\\":3,\\\"logRef\\\":\\\"host-logs/T-001.log\\\"}\""
+    },
+    {
+      "name": "除摘要外无新增会话级事件类型",
+      "ok": true,
+      "detail": "session.state,output.submitted,run.failed,execution.summary"
+    },
+    {
+      "name": "摘要事件仍在会话级原因集合内",
+      "ok": true,
+      "detail": "session.state,output.submitted,run.failed,execution.summary"
+    },
+    {
+      "name": "完整日志未复制进实例目录",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "legacy 先起核心",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "遗留实例 log exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "遗留实例事件字节哈希不变",
+      "ok": true,
+      "detail": "actual=\"ce1780f1c89054ba7753b7d86bdf821a9106059631b5da7ff2c41bed95893515\" expected=\"ce1780f1c89054ba7753b7d86bdf821a9106059631b5da7ff2c41bed95893515\""
+    },
+    {
+      "name": "遗留实例事件文本不变",
+      "ok": true,
+      "detail": "actual=\"{\\\"object\\\":\\\"session\\\",\\\"objectId\\\":\\\"mock-sess-100-1\\\",\\\"from\\\":\\\"idle\\\",\\\"to\\\":\\\"thinking\\\",\\\"result\\\":\\\"applied\\\",\\\"reason\\\":\\\"session.state\\\",\\\"seq\\\":1,\\\"ts\\\":\\\"2026-11-11T02:00:00.000Z\\\"}\\n{\\\"object\\\":\\\"session\\\",\\\"objectId\\\":\\\"mock-sess-100-1\\\",\\\"from\\\":\\\"thinking\\\",\\\"to\\\":\\\"tool_running\\\",\\\"result\\\":\\\"applied\\\",\\\"reason\\\":\\\"session.state\\\",\\\"seq\\\":2,\\\"ts\\\":\\\"2026-11-11T02:00:00.000Z\\\"}\\n{\\\"object\\\":\\\"session\\\",\\\"objectId\\\":\\\"mock-sess-100-1\\\",\\\"from\\\":\\\"tool_running\\\",\\\"to\\\":\\\"idle\\\",\\\"result\\\":\\\"applied\\\",\\\"reason\\\":\\\"run.completed\\\",\\\"seq\\\":3,\\\"ts\\\":\\\"2026-11-11T02:00:00.000Z\\\"}\\n\" expected=\"{\\\"object\\\":\\\"session\\\",\\\"objectId\\\":\\\"mock-sess-100-1\\\",\\\"from\\\":\\\"idle\\\",\\\"to\\\":\\\"thinking\\\",\\\"result\\\":\\\"applied\\\",\\\"reason\\\":\\\"session.state\\\",\\\"seq\\\":1,\\\"ts\\\":\\\"2026-11-11T02:00:00.000Z\\\"}\\n{\\\"object\\\":\\\"session\\\",\\\"objectId\\\":\\\"mock-sess-100-1\\\",\\\"from\\\":\\\"thinking\\\",\\\"to\\\":\\\"tool_running\\\",\\\"result\\\":\\\"applied\\\",\\\"reason\\\":\\\"session.state\\\",\\\"seq\\\":2,\\\"ts\\\":\\\"2026-11-11T02:00:00.000Z\\\"}\\n{\\\"object\\\":\\\"session\\\",\\\"objectId\\\":\\\"mock-sess-100-1\\\",\\\"from\\\":\\\"tool_running\\\",\\\"to\\\":\\\"idle\\\",\\\"result\\\":\\\"applied\\\",\\\"reason\\\":\\\"run.completed\\\",\\\"seq\\\":3,\\\"ts\\\":\\\"2026-11-11T02:00:00.000Z\\\"}\\n\""
+    },
+    {
+      "name": "遗留逐条会话记录仍可读",
+      "ok": true,
+      "detail": "10:00:00  会话 mock-sess-100-1  空闲 → 执行中  原因 session.state\n10:00:00  会话 mock-sess-100-1  执行中  原因 session.state\n10:00:00  会话 mock-sess-100-1  执行中 → 空闲  原因 run.completed\n"
+    },
+    {
+      "name": "grep -c \"object: 'session'\" src/core/orchestrator.js = 13",
+      "ok": true,
+      "detail": "actual=13 expected=13"
+    },
+    {
+      "name": "src/core 合计 14（orchestrator 13 + escalation 1）",
+      "ok": true,
+      "detail": "actual=14 expected=14"
+    },
+    {
+      "name": "escalation.js 存量 1 处",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "src/daemon 合计 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    }
+  ],
+  "keyEvidence": [
+    "log-text.txt",
+    "log.json",
+    "legacy-log.txt",
+    "object-session-counts.json"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "graphVersion": 1,
+  "instanceId": "INST-001",
+  "template": "code-loop",
+  "state": "suspended",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": "开发",
+      "roleId": "developer",
+      "state": "escalated",
+      "round": 1,
+      "branch": "maestro/INST-001/developer",
+      "mergeStatus": "merged"
+    },
+    {
+      "nodeId": "T-002",
+      "title": "测试",
+      "roleId": "tester",
+      "state": "pending",
+      "round": 0
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward"
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow"
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest"
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "state": "rejected",
+      "round": 1
+    }
+  ],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-001",
+      "round": 1,
+      "reasonCode": "handoff_invalid",
+      "reasonDetail": "交接包 HO-001 内容不合规：证据不可读 calc.js",
+      "defects": [],
+      "state": "pending",
+      "createdAt": "2026-11-11T19:56:49.708Z",
+      "resolvedAt": null,
+      "resolution": null,
+      "voidedAt": null
+    }
+  ],
+  "approvals": [],
+  "current": null
+}

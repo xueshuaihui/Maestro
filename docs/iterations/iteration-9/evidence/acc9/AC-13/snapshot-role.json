@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-acc9-health",
+  "createdAt": "2026-11-11T18:05:58.332Z",
+  "updatedAt": "2026-11-11T18:05:58.332Z",
+  "state": "running",
+  "stateSince": "2026-11-11T18:05:58.332Z",
+  "template": "code-loop",
+  "cwd": ".",
+  "task": "x",
+  "halted": false,
+  "rev": 0,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "review",
+      "startedAt": "2026-11-11T18:05:58.332Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-22345-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "escalated",
+      "quarantined": false
+    }
+  ],
+  "handoffs": [],
+  "escalations": [],
+  "health": {
+    "nodeTimeoutMs": 300000
+  }
+}

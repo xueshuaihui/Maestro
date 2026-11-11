@@ -1,0 +1,37 @@
+{
+  "ac": "AC-03",
+  "at": "2026-11-11T20:20:00Z",
+  "primaryThen": {
+    "name": "三条主链运行输出逐字不变（A-0 归一化后 diff = 0）",
+    "ok": true,
+    "detail": {
+      "single": "3/3 对",
+      "code-loop": "3/3 对",
+      "task-loop": "6/6 对（会话 已升级 出现率 6/6 vs 基线 6/6；另 10 对采样 base 8/10 · cur 7/10）"
+    }
+  },
+  "machineCheck": {
+    "name": "全量测试失败集合与 docs/iterations/iteration-7/baseline-failures.txt 差集 = 0，测试条数只增不减",
+    "ok": false,
+    "suite": { "tests": 1154, "pass": 1143, "fail": 10, "skipped": 1 },
+    "baselineCount": 8,
+    "extraFailures": [
+      {
+        "test": "test/wp11/rpc.test.js:346 AC-57",
+        "deterministic": true,
+        "symptom": "events.jsonl 行数应为 8，实际 9",
+        "cause": "第 9 条是对象 execution.summary（object=session, objectId=sess-001, result=note, 四项 null）——I1.9 / BR-04 要求「取消也是会话收尾，必须留一条摘要」",
+        "evidence": ["ac57-events.json", "rpc-test-solo.log", "rpc-test-baseline-tree.log（基线树 322fb5e 8/8 通过）"]
+      },
+      {
+        "test": "test/wp9/cli-e2e.test.js:176 C-2",
+        "deterministic": false,
+        "symptom": "status 采样落在 4s tool_running 窗口之后（输出已运行 10s），缺少「调用工具（write）」",
+        "cause": "全量并行负载下 CLI 启动/连接变慢导致采样越窗",
+        "evidence": ["cli-e2e-solo.log（单文件 4/4 通过）"]
+      }
+    ]
+  },
+  "verdict": "FAIL",
+  "reason": "AC-03 Then（三主链逐字）通过，但机检「失败集合差集 = 0」不成立（8 条基线 + 2 条新增，其中 1 条确定性）。根因是既有测试 test/wp11/rpc.test.js 的硬编码 8 条事件期望与 I1.9 新增的取消摘要冲突，需主控裁决修测试期望还是收紧实现。"
+}

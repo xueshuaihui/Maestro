@@ -1,0 +1,85 @@
+{
+  "ac": "AC-01",
+  "at": "2026-11-11T19:50:53.082Z",
+  "task": "写一份说明",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-01",
+  "checks": [
+    {
+      "name": "run 退出码 0",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "stderr": ""
+      }
+    },
+    {
+      "name": "运行中抓到 events.jsonl 非空副本",
+      "ok": true,
+      "detail": {
+        "attempt": 0,
+        "capturedLines": 2,
+        "finalLines": 16,
+        "capturedAt": "2026-11-11T19:50:52.476Z"
+      }
+    },
+    {
+      "name": "追加后旧行前缀字节完全一致",
+      "ok": true,
+      "detail": {
+        "capturedBytes": 565,
+        "finalBytes": 4963
+      }
+    },
+    {
+      "name": "instance log --format json 退出码 0",
+      "ok": true,
+      "detail": {
+        "exitCode": 0
+      }
+    },
+    {
+      "name": "seq 严格递增且无空洞",
+      "ok": true,
+      "detail": {
+        "seqs": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      }
+    },
+    {
+      "name": "抓取副本中的序号是终态序号的前缀（旧记录未被改写/重排）",
+      "ok": true,
+      "detail": {
+        "capturedSeq": [
+          1,
+          2
+        ],
+        "head": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "name": "抓取时的旧记录与终态同位置记录规范化哈希逐一相等",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "pass": true
+}

@@ -1,0 +1,208 @@
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "created",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 1,
+    "ts": "2026-11-11T20:43:13.509Z",
+    "prev_event_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 2,
+    "ts": "2026-11-11T20:43:13.524Z",
+    "prev_event_hash": "ff95ec00b46519bcab8a0e39f5d5f6c04e10ca23b531327818c5ca09122b36c4"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": "created",
+    "result": "applied",
+    "reason": "handoff.created",
+    "detail": null,
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 3,
+    "ts": "2026-11-11T20:43:13.586Z",
+    "prev_event_hash": "99fdb8180e8e6929e62e8ab7cafd99326ea7fdebb58e16ee43a31f46132de508"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "created",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794429793695
+    },
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 4,
+    "ts": "2026-11-11T20:43:13.701Z",
+    "prev_event_hash": "99adb15810e8c87cbecdb2a75bc5264943747636eadc8c1a6f09d5b1d7eeff6d"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-85976-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 5,
+    "ts": "2026-11-11T20:43:13.802Z",
+    "prev_event_hash": "ee5834a20ddb32e9bb99195d3d482fdbc0030bdb5b71f6d66a662af33a603fa8"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "accepted",
+    "result": "applied",
+    "reason": "turn.first_event",
+    "detail": {
+      "event": "agent_thought_chunk",
+      "ambiguityWindowMs": 100
+    },
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 6,
+    "ts": "2026-11-11T20:43:13.830Z",
+    "prev_event_hash": "f4610e6995d068b34545165902248e5f5fde43e06086932065ba691cbeeccb72"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-85976-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 7,
+    "ts": "2026-11-11T20:43:13.993Z",
+    "prev_event_hash": "771caaba812e8b561a440bacb6c760cde777252198833f9b3bfb881978eba1ae"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-85976-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 8,
+    "ts": "2026-11-11T20:43:14.111Z",
+    "prev_event_hash": "5be5bd211c81f09c36bd87704678d271d895ccdeb6801c52b349149b79b09071"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-85976-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 9,
+    "ts": "2026-11-11T20:43:14.244Z",
+    "prev_event_hash": "61a5ca701afcebed3c3ee0b6d41bd4825c43cc1872989f1ee34cd0f4c4ac180f"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 10,
+    "ts": "2026-11-11T20:43:14.374Z",
+    "prev_event_hash": "2a7cb9d88bae06958fa3f907bd48449123a5f86b38edc7699248550d7e4ef115"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "review",
+    "to": "failed",
+    "result": "applied",
+    "reason": "verification.failed",
+    "detail": {
+      "code": "MISSING",
+      "ref": "out/run.js",
+      "message": "未找到声明的产出 out/run.js"
+    },
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 11,
+    "ts": "2026-11-11T20:43:14.607Z",
+    "prev_event_hash": "a4ff9950ed57b5c5f8faeeba81b7ce7b5f038f7bfcb33ba86fc5974981c40273"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "running",
+    "to": "failed",
+    "result": "applied",
+    "reason": "verification.failed",
+    "detail": null,
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 12,
+    "ts": "2026-11-11T20:43:14.824Z",
+    "prev_event_hash": "0b339712b2dbc7bd7043e9b79f6877a8d83dcf0b97a8eeaed4969a1afcdcd561"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-85976-1",
+    "from": "waiting_dependency",
+    "to": "idle",
+    "result": "applied",
+    "reason": "run.failed",
+    "detail": null,
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 13,
+    "ts": "2026-11-11T20:43:14.839Z",
+    "prev_event_hash": "a1d5ba4c7544a70078c808e1c31b40e6ceaf1ee6959baa3ce3b8ff0ac1a2700d"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-85976-1",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "execution.summary",
+    "detail": {
+      "nodeId": "T-001",
+      "round": 1,
+      "summary": {
+        "command": "node out/run.js",
+        "exitCode": 1,
+        "keyOutputLines": 3,
+        "logRef": "host-logs/T-001.log"
+      }
+    },
+    "gen": "gen-1cf37f7ce426ceb1",
+    "seq": 14,
+    "ts": "2026-11-11T20:43:14.858Z",
+    "prev_event_hash": "40e18f8b6f3dde6cd8b055b24ad235dae75b653458d2766f7b3410f72dcb39f5"
+  }
+]

@@ -1,0 +1,5195 @@
+TAP version 13
+# Subtest: 注入图的查询函数：入口 / 节点 / 出边 / 终节点 / 轮次上限
+ok 1 - 注入图的查询函数：入口 / 节点 / 出边 / 终节点 / 轮次上限
+  ---
+  duration_ms: 2.717405
+  type: 'test'
+  ...
+# Subtest: planAdvance：顺序推进 → dispatch（目标轮次 = 派发前 +1）
+ok 2 - planAdvance：顺序推进 → dispatch（目标轮次 = 派发前 +1）
+  ---
+  duration_ms: 2.890507
+  type: 'test'
+  ...
+# Subtest: planAdvance：判定不通过且未超上限 → backflow（回开发第 2 轮）
+ok 3 - planAdvance：判定不通过且未超上限 → backflow（回开发第 2 轮）
+  ---
+  duration_ms: 0.560497
+  type: 'test'
+  ...
+# Subtest: planAdvance：第 2 轮仍不通过 → escalate（超上限，不回流）
+ok 4 - planAdvance：第 2 轮仍不通过 → escalate（超上限，不回流）
+  ---
+  duration_ms: 0.210616
+  type: 'test'
+  ...
+# Subtest: planAdvance：终节点完成 → complete
+ok 5 - planAdvance：终节点完成 → complete
+  ---
+  duration_ms: 0.33339
+  type: 'test'
+  ...
+# Subtest: planAdvance：halted 优先于一切，且结果可复现、入参不被修改
+ok 6 - planAdvance：halted 优先于一切，且结果可复现、入参不被修改
+  ---
+  duration_ms: 0.23292
+  type: 'test'
+  ...
+# Subtest: shouldWake：缺包 / 轮次超限 / 目标不合法三种拒绝
+ok 7 - shouldWake：缺包 / 轮次超限 / 目标不合法三种拒绝
+  ---
+  duration_ms: 0.322463
+  type: 'test'
+  ...
+# Subtest: checkWakeGate：从快照里找到待唤醒包才算通过
+ok 8 - checkWakeGate：从快照里找到待唤醒包才算通过
+  ---
+  duration_ms: 0.410152
+  type: 'test'
+  ...
+# Subtest: buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据
+ok 9 - buildHandoff / buildBackflowHandoff：D-6 字段齐全且缺陷带证据
+  ---
+  duration_ms: 0.906802
+  type: 'test'
+  ...
+# Subtest: classifyNodeOutcome 与 nextHandoffId
+ok 10 - classifyNodeOutcome 与 nextHandoffId
+  ---
+  duration_ms: 0.506975
+  type: 'test'
+  ...
+# Subtest: src/core 不含编码模板 / 角色字面量（注释也算）
+ok 11 - src/core 不含编码模板 / 角色字面量（注释也算）
+  ---
+  duration_ms: 1050.711527
+  type: 'test'
+  ...
+# Subtest: AC-38：src/core + src/daemon 全目录 7 词扫描零命中
+ok 12 - AC-38：src/core + src/daemon 全目录 7 词扫描零命中
+  ---
+  duration_ms: 1689.871688
+  type: 'test'
+  ...
+# Subtest: 图查询与推进规划不读文件、不写状态
+ok 13 - 图查询与推进规划不读文件、不写状态
+  ---
+  duration_ms: 114.136263
+  type: 'test'
+  ...
+# Subtest: task-loop 图：入口 / 终节点 / 轮次上限 / 文档策略
+ok 14 - task-loop 图：入口 / 终节点 / 轮次上限 / 文档策略
+  ---
+  duration_ms: 1.729921
+  type: 'test'
+  ...
+# Subtest: task-loop 图：三节点顺序、角色、产物策略与门控
+ok 15 - task-loop 图：三节点顺序、角色、产物策略与门控
+  ---
+  duration_ms: 0.633005
+  type: 'test'
+  ...
+# Subtest: task-loop 图：四条边，不新增 kind
+ok 16 - task-loop 图：四条边，不新增 kind
+  ---
+  duration_ms: 0.263122
+  type: 'test'
+  ...
+# Subtest: 三角色：可派发且指向各自的提示词键
+ok 17 - 三角色：可派发且指向各自的提示词键
+  ---
+  duration_ms: 0.239998
+  type: 'test'
+  ...
+# Subtest: initialNodes：task-loop 三节点初始为 pending/round 0
+ok 18 - initialNodes：task-loop 三节点初始为 pending/round 0
+  ---
+  duration_ms: 0.315974
+  type: 'test'
+  ...
+# Subtest: 研究提示词逐字（D-8 研究段）
+ok 19 - 研究提示词逐字（D-8 研究段）
+  ---
+  duration_ms: 0.469265
+  type: 'test'
+  ...
+# Subtest: 撰写第 1 轮提示词逐字（D-8 撰写段）
+ok 20 - 撰写第 1 轮提示词逐字（D-8 撰写段）
+  ---
+  duration_ms: 0.254318
+  type: 'test'
+  ...
+# Subtest: 撰写回流提示词逐字（D-8 撰写第 2 轮）
+ok 21 - 撰写回流提示词逐字（D-8 撰写第 2 轮）
+  ---
+  duration_ms: 0.42083
+  type: 'test'
+  ...
+# Subtest: 回流提示词缺修改要求时回落默认句
+ok 22 - 回流提示词缺修改要求时回落默认句
+  ---
+  duration_ms: 0.471319
+  type: 'test'
+  ...
+# Subtest: 审核提示词逐字（D-8 审核段，含 schema 行与工作区）
+ok 23 - 审核提示词逐字（D-8 审核段，含 schema 行与工作区）
+  ---
+  duration_ms: 0.44968
+  type: 'test'
+  ...
+# Subtest: schema 里的 JSON 花括号不被当成占位符吞掉
+ok 24 - schema 里的 JSON 花括号不被当成占位符吞掉
+  ---
+  duration_ms: 0.215874
+  type: 'test'
+  ...
+# Subtest: single 提示词逐字不变（I1.1）
+ok 25 - single 提示词逐字不变（I1.1）
+  ---
+  duration_ms: 0.129403
+  type: 'test'
+  ...
+# Subtest: code-loop 的 forward / verify 提示词逐字不变（I1.2）
+ok 26 - code-loop 的 forward / verify 提示词逐字不变（I1.2）
+  ---
+  duration_ms: 0.318785
+  type: 'test'
+  ...
+# Subtest: 代码闭环未被注入新键：模板表只追加不修改
+ok 27 - 代码闭环未被注入新键：模板表只追加不修改
+  ---
+  duration_ms: 0.094101
+  type: 'test'
+  ...
+# Subtest: 既有图对象不因新增 productPolicy 而变形
+ok 28 - 既有图对象不因新增 productPolicy 而变形
+  ---
+  duration_ms: 0.108959
+  type: 'test'
+  ...
+# Subtest: writeJsonAtomic 写入可解析的 JSON 并回报字节数
+ok 29 - writeJsonAtomic 写入可解析的 JSON 并回报字节数
+  ---
+  duration_ms: 438.961869
+  type: 'test'
+  ...
+# Subtest: writeJsonAtomic 覆盖旧内容且目录不存在时自建
+ok 30 - writeJsonAtomic 覆盖旧内容且目录不存在时自建
+  ---
+  duration_ms: 1128.634876
+  type: 'test'
+  ...
+# Subtest: writeJsonAtomic 重命名失败时返回 STORE_WRITE_FAILED 且不留下 tmp
+ok 31 - writeJsonAtomic 重命名失败时返回 STORE_WRITE_FAILED 且不留下 tmp
+  ---
+  duration_ms: 449.996611
+  type: 'test'
+  ...
+# Subtest: writeTextAtomic 写入整份文本并回报字节数，且不留下 tmp
+ok 32 - writeTextAtomic 写入整份文本并回报字节数，且不留下 tmp
+  ---
+  duration_ms: 398.536479
+  type: 'test'
+  ...
+# Subtest: writeTextAtomic 整份覆盖旧内容（status.md 不追加）
+ok 33 - writeTextAtomic 整份覆盖旧内容（status.md 不追加）
+  ---
+  duration_ms: 761.953839
+  type: 'test'
+  ...
+# Subtest: writeTextAtomic 重命名失败时返回 STORE_WRITE_FAILED 且不留下 tmp
+ok 34 - writeTextAtomic 重命名失败时返回 STORE_WRITE_FAILED 且不留下 tmp
+  ---
+  duration_ms: 572.147358
+  type: 'test'
+  ...
+# Subtest: copyToBackup 是复制而不是重命名：原文件原字节仍在
+ok 35 - copyToBackup 是复制而不是重命名：原文件原字节仍在
+  ---
+  duration_ms: 519.999928
+  type: 'test'
+  ...
+# Subtest: copyToBackup 源文件不存在时返回失败码
+ok 36 - copyToBackup 源文件不存在时返回失败码
+  ---
+  duration_ms: 281.215148
+  type: 'test'
+  ...
+# Subtest: emit 先落盘后广播，ts/seq 由总线补齐
+ok 37 - emit 先落盘后广播，ts/seq 由总线补齐
+  ---
+  duration_ms: 611.931181
+  type: 'test'
+  ...
+# Subtest: emit 100 次并发：单实例串行，seq 严格递增且无丢行
+ok 38 - emit 100 次并发：单实例串行，seq 严格递增且无丢行
+  ---
+  duration_ms: 15247.175272
+  type: 'test'
+  ...
+# Subtest: emit 落盘失败时不广播，并返回 STORE_WRITE_FAILED
+ok 39 - emit 落盘失败时不广播，并返回 STORE_WRITE_FAILED
+  ---
+  duration_ms: 0.38574
+  type: 'test'
+  ...
+# Subtest: subscribe 支持按实例过滤、取消订阅，订阅者异常不影响 emit
+ok 40 - subscribe 支持按实例过滤、取消订阅，订阅者异常不影响 emit
+  ---
+  duration_ms: 845.498497
+  type: 'test'
+  ...
+# Subtest: replay 返回该实例的全部事件，坏行被跳过
+ok 41 - replay 返回该实例的全部事件，坏行被跳过
+  ---
+  duration_ms: 762.052684
+  type: 'test'
+  ...
+# Subtest: bus.nextSeq 与 store.nextSeq 一致，空实例从 1 开始
+ok 42 - bus.nextSeq 与 store.nextSeq 一致，空实例从 1 开始
+  ---
+  duration_ms: 562.782295
+  type: 'test'
+  ...
+# Subtest: emit 缺少 instanceId 时抛 TypeError（进程内参数校验）
+ok 43 - emit 缺少 instanceId 时抛 TypeError（进程内参数校验）
+  ---
+  duration_ms: 2.008232
+  type: 'test'
+  ...
+# Subtest: 旧调用 save(id, state) 行为不变：原子写、updatedAt 刷新、rev 从 1 递增
+ok 44 - 旧调用 save(id, state) 行为不变：原子写、updatedAt 刷新、rev 从 1 递增
+  ---
+  duration_ms: 1516.403841
+  type: 'test'
+  ...
+# Subtest: save 缺省 expectedState：load 出来的 rev 能续增，且仍以磁盘现值为准
+ok 45 - save 缺省 expectedState：load 出来的 rev 能续增，且仍以磁盘现值为准
+  ---
+  duration_ms: 1146.297124
+  type: 'test'
+  ...
+# Subtest: 无 expectedState 的第 2、3 次写也基于磁盘 rev 递增：磁盘 rev 严格等于 3
+ok 46 - 无 expectedState 的第 2、3 次写也基于磁盘 rev 递增：磁盘 rev 严格等于 3
+  ---
+  duration_ms: 1471.504695
+  type: 'test'
+  ...
+# Subtest: 模拟进程重启（新 store 空缓存）：首个无 CAS 写 rev=4，不回 1
+ok 47 - 模拟进程重启（新 store 空缓存）：首个无 CAS 写 rev=4，不回 1
+  ---
+  duration_ms: 1756.542544
+  type: 'test'
+  ...
+# Subtest: rev 单调之后 CAS 判定正确：{rev:3} 命中、{rev:2} 冲突且磁盘不变
+ok 48 - rev 单调之后 CAS 判定正确：{rev:3} 命中、{rev:2} 冲突且磁盘不变
+  ---
+  duration_ms: 2283.749329
+  type: 'test'
+  ...
+# Subtest: 并发 20 次不带 expectedState 的 save：rev 连续无重复无回退
+ok 49 - 并发 20 次不带 expectedState 的 save：rev 连续无重复无回退
+  ---
+  duration_ms: 8638.097714
+  type: 'test'
+  ...
+# Subtest: expectedState 传 string：命中则写、不命中返回 STORE_CONFLICT 且磁盘不变
+ok 50 - expectedState 传 string：命中则写、不命中返回 STORE_CONFLICT 且磁盘不变
+  ---
+  duration_ms: 1229.498609
+  type: 'test'
+  ...
+# Subtest: expectedState 传对象：state / halted / rev 任一不符都冲突且磁盘字节不变
+ok 51 - expectedState 传对象：state / halted / rev 任一不符都冲突且磁盘字节不变
+  ---
+  duration_ms: 1625.174934
+  type: 'test'
+  ...
+# Subtest: paused 参与 CAS：期望 true 而磁盘 false 时冲突且不写盘
+ok 52 - paused 参与 CAS：期望 true 而磁盘 false 时冲突且不写盘
+  ---
+  duration_ms: 707.250291
+  type: 'test'
+  ...
+# Subtest: paused 落盘后可被 { paused: true } 命中，{ paused: false } 则冲突
+ok 53 - paused 落盘后可被 { paused: true } 命中，{ paused: false } 则冲突
+  ---
+  duration_ms: 1150.181021
+  type: 'test'
+  ...
+# Subtest: expectedState 传函数：在队列任务内读盘后求值，排队期间的 rev 推进不算冲突
+ok 54 - expectedState 传函数：在队列任务内读盘后求值，排队期间的 rev 推进不算冲突
+  ---
+  duration_ms: 1254.306553
+  type: 'test'
+  ...
+# Subtest: expectedState 函数抛错 → STORE_WRITE_FAILED(EXPECTED_FN)，不当成 CAS 通过
+ok 55 - expectedState 函数抛错 → STORE_WRITE_FAILED(EXPECTED_FN)，不当成 CAS 通过
+  ---
+  duration_ms: 746.896895
+  type: 'test'
+  ...
+# Subtest: expectedState 只比较显式提供了的键（窄条件写）
+ok 56 - expectedState 只比较显式提供了的键（窄条件写）
+  ---
+  duration_ms: 955.055131
+  type: 'test'
+  ...
+# Subtest: 并发 50 次带 rev 的读改写：无丢更新，rev 严格单调
+ok 57 - 并发 50 次带 rev 的读改写：无丢更新，rev 严格单调
+  ---
+  duration_ms: 128154.610068
+  type: 'test'
+  ...
+# Subtest: list 对 v2 快照投影 schemaVersion/template/cwd/pendingEscalations
+ok 58 - list 对 v2 快照投影 schemaVersion/template/cwd/pendingEscalations
+  ---
+  duration_ms: 743.768134
+  type: 'test'
+  ...
+# Subtest: list 投影带 paused 与审批计数（缺省 false / [] / 0）
+ok 59 - list 投影带 paused 与审批计数（缺省 false / [] / 0）
+  ---
+  duration_ms: 1077.363216
+  type: 'test'
+  ...
+# Subtest: list 对 v1 快照（legacy 夹具）：template=single、pendingEscalations=0、不回写
+ok 60 - list 对 v1 快照（legacy 夹具）：template=single、pendingEscalations=0、不回写
+  ---
+  duration_ms: 508.663037
+  type: 'test'
+  ...
+# Subtest: list 缺字段的 v2 快照不抛错（数组字段可缺省）
+ok 61 - list 缺字段的 v2 快照不抛错（数组字段可缺省）
+  ---
+  duration_ms: 354.872273
+  type: 'test'
+  ...
+# Subtest: list 遇损坏只标记内存态 readable:false，不写 .corrupt、不产生新文件
+ok 62 - list 遇损坏只标记内存态 readable:false，不写 .corrupt、不产生新文件
+  ---
+  duration_ms: 343.624782
+  type: 'test'
+  ...
+# Subtest: load 对 v1 返回原形状且文件字节 / mtime 不变（AC-20）
+ok 63 - load 对 v1 返回原形状且文件字节 / mtime 不变（AC-20）
+  ---
+  duration_ms: 618.735364
+  type: 'test'
+  ...
+# Subtest: 两份 legacy 夹具的 state/events sha256 与 SHA256SUMS 一致
+ok 64 - 两份 legacy 夹具的 state/events sha256 与 SHA256SUMS 一致
+  ---
+  duration_ms: 310.641698
+  type: 'test'
+  ...
+# Subtest: load 对不存在的实例返回 NOT_FOUND
+ok 65 - load 对不存在的实例返回 NOT_FOUND
+  ---
+  duration_ms: 91.59895
+  type: 'test'
+  ...
+# Subtest: load 遇坏 JSON 返回 STATE_CORRUPT，备份存在且原文件字节未变
+ok 66 - load 遇坏 JSON 返回 STATE_CORRUPT，备份存在且原文件字节未变
+  ---
+  duration_ms: 761.820876
+  type: 'test'
+  ...
+# Subtest: load 缺 schemaVersion / instanceId 同样判为损坏
+ok 67 - load 缺 schemaVersion / instanceId 同样判为损坏
+  ---
+  duration_ms: 2048.629601
+  type: 'test'
+  ...
+# Subtest: 损坏之后 save 返回 STORE_WRITE_BLOCKED_CORRUPT，且不覆盖原文件
+ok 68 - 损坏之后 save 返回 STORE_WRITE_BLOCKED_CORRUPT，且不覆盖原文件
+  ---
+  duration_ms: 730.715117
+  type: 'test'
+  ...
+# Subtest: appendEvent 100 次并发：100 行、seq 严格递增、无重号无丢行
+ok 69 - appendEvent 100 次并发：100 行、seq 严格递增、无重号无丢行
+  ---
+  duration_ms: 7949.240854
+  type: 'test'
+  ...
+# Subtest: readEvents 跳过坏行并计数，不让整份记录不可读
+ok 70 - readEvents 跳过坏行并计数，不让整份记录不可读
+  ---
+  duration_ms: 338.340996
+  type: 'test'
+  ...
+# Subtest: readEvents 对没有事件文件的实例返回空数组
+ok 71 - readEvents 对没有事件文件的实例返回空数组
+  ---
+  duration_ms: 158.372687
+  type: 'test'
+  ...
+# Subtest: list 不返回只有 events.jsonl 的半截实例
+ok 72 - list 不返回只有 events.jsonl 的半截实例
+  ---
+  duration_ms: 863.748536
+  type: 'test'
+  ...
+# Subtest: list 在 .orch/instances 尚不存在时返回空列表
+ok 73 - list 在 .orch/instances 尚不存在时返回空列表
+  ---
+  duration_ms: 1.415334
+  type: 'test'
+  ...
+# Subtest: projectRoot 返回 realpath 归一化后的绝对路径
+ok 74 - projectRoot 返回 realpath 归一化后的绝对路径
+  ---
+  duration_ms: 5.315909
+  type: 'test'
+  ...
+# Subtest: projectRoot 对不存在的路径抛 ENOENT，不静默回退
+ok 75 - projectRoot 对不存在的路径抛 ENOENT，不静默回退
+  ---
+  duration_ms: 0.669834
+  type: 'test'
+  ...
+# Subtest: 布局函数指向 .orch 下的标准位置
+ok 76 - 布局函数指向 .orch 下的标准位置
+  ---
+  duration_ms: 1.533984
+  type: 'test'
+  ...
+# Subtest: 工作区三层可见域与信箱路径（I1.4 M-1 / M-5）
+ok 77 - 工作区三层可见域与信箱路径（I1.4 M-1 / M-5）
+  ---
+  duration_ms: 0.860125
+  type: 'test'
+  ...
+# Subtest: ensureLayout 幂等创建 .orch/instances
+ok 78 - ensureLayout 幂等创建 .orch/instances
+  ---
+  duration_ms: 197.301387
+  type: 'test'
+  ...
+# Subtest: pipeName 同项目稳定、不同项目必不同
+ok 79 - pipeName 同项目稳定、不同项目必不同
+  ---
+  duration_ms: 1.220445
+  type: 'test'
+  ...
+# Subtest: pipeName 对 Windows 路径大小写不敏感
+ok 80 - pipeName 对 Windows 路径大小写不敏感 # SKIP
+  ---
+  duration_ms: 0.227824
+  type: 'test'
+  ...
+# Subtest: 常量：目录与固定研究笔记引用
+ok 81 - 常量：目录与固定研究笔记引用
+  ---
+  duration_ms: 1.156332
+  type: 'test'
+  ...
+# Subtest: 产物声明：合法文件名 → name / stem
+ok 82 - 产物声明：合法文件名 → name / stem
+  ---
+  duration_ms: 1.328859
+  type: 'test'
+  ...
+# Subtest: 产物声明：缺行 / 半角冒号 / 两行 → PRODUCT_LINE_MISSING_TASK_LOOP
+ok 83 - 产物声明：缺行 / 半角冒号 / 两行 → PRODUCT_LINE_MISSING_TASK_LOOP
+  ---
+  duration_ms: 0.233982
+  type: 'test'
+  ...
+# Subtest: 产物声明：AC-23 的五个非法名逐个逐字回显
+ok 84 - 产物声明：AC-23 的五个非法名逐个逐字回显
+  ---
+  duration_ms: 0.303201
+  type: 'test'
+  ...
+# Subtest: 产物声明：空名 / 控制字符 / 只有 .md / 大写 .MD 边界
+ok 85 - 产物声明：空名 / 控制字符 / 只有 .md / 大写 .MD 边界
+  ---
+  duration_ms: 0.18642
+  type: 'test'
+  ...
+# Subtest: 版本引用：唯一拼接点
+ok 86 - 版本引用：唯一拼接点
+  ---
+  duration_ms: 0.260151
+  type: 'test'
+  ...
+# Subtest: resolveNodeProducts：fixed-workspace 原样取图节点产物
+ok 87 - resolveNodeProducts：fixed-workspace 原样取图节点产物
+  ---
+  duration_ms: 0.48025
+  type: 'test'
+  ...
+# Subtest: resolveNodeProducts：versioned-doc 按轮次算 v<n>
+ok 88 - resolveNodeProducts：versioned-doc 按轮次算 v<n>
+  ---
+  duration_ms: 0.27998
+  type: 'test'
+  ...
+# Subtest: resolveNodeProducts：review 节点不解析产物
+ok 89 - resolveNodeProducts：review 节点不解析产物
+  ---
+  duration_ms: 0.414231
+  type: 'test'
+  ...
+# Subtest: resolveNodeProducts：doc-single 下 declared 不回退任务行
+ok 90 - resolveNodeProducts：doc-single 下 declared 不回退任务行
+  ---
+  duration_ms: 0.593078
+  type: 'test'
+  ...
+# Subtest: sha256Of：与一次性哈希一致、缺文件返回 READ_FAILED
+ok 91 - sha256Of：与一次性哈希一致、缺文件返回 READ_FAILED
+  ---
+  duration_ms: 782.026742
+  type: 'test'
+  ...
+# Subtest: verifyPrevious：存在且指纹一致 → ok
+ok 92 - verifyPrevious：存在且指纹一致 → ok
+  ---
+  duration_ms: 470.484837
+  type: 'test'
+  ...
+# Subtest: verifyPrevious：被删除 / 被改写分别报两种原因
+ok 93 - verifyPrevious：被删除 / 被改写分别报两种原因
+  ---
+  duration_ms: 650.660635
+  type: 'test'
+  ...
+# Subtest: NFR-06：工作区三个路径由 paths.js 唯一计算
+ok 94 - NFR-06：工作区三个路径由 paths.js 唯一计算
+  ---
+  duration_ms: 0.585552
+  type: 'test'
+  ...
+# Subtest: --prepare-only 写出 cursor.json 与 .orch/hosts/dsh.json，launch.args 带 --suite task-loop
+ok 95 - --prepare-only 写出 cursor.json 与 .orch/hosts/dsh.json，launch.args 带 --suite task-loop
+  ---
+  duration_ms: 1234.924648
+  type: 'test'
+  ...
+# Subtest: 场景 JSON 共 29 个、全部可解析、nodeId 与 round 显式
+ok 96 - 场景 JSON 共 29 个、全部可解析、nodeId 与 round 显式
+  ---
+  duration_ms: 3491.86403
+  type: 'test'
+  ...
+# Subtest: --reset 清空 .mock 并把 cursor 归零
+ok 97 - --reset 清空 .mock 并把 cursor 归零
+  ---
+  duration_ms: 2998.970244
+  type: 'test'
+  ...
+# Subtest: mock 独立拉起可跑完一步：按「写入路径：」落盘并记 prompts/1.json
+ok 98 - mock 独立拉起可跑完一步：按「写入路径：」落盘并记 prompts/1.json
+  ---
+  duration_ms: 3353.649104
+  type: 'test'
+  ...
+# Subtest: 写入路径与 artifact 不匹配时写 .mock/bad-write-path 且不落文件
+ok 99 - 写入路径与 artifact 不匹配时写 .mock/bad-write-path 且不落文件
+  ---
+  duration_ms: 3370.088911
+  type: 'test'
+  ...
+# Subtest: NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）
+not ok 100 - NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）
+  ---
+  duration_ms: 1822.517661
+  type: 'test'
+  location: '/Users/xuesh/www/Maestro/test/wp10/perf.test.js:38:1'
+  failureType: 'testCodeFailure'
+  error: 'readReview p95=116.37ms 超过 50ms（1MB）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Users/xuesh/www/Maestro/test/wp10/perf.test.js:90:14)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）
+not ok 101 - NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）
+  ---
+  duration_ms: 3152.477123
+  type: 'test'
+  location: '/Users/xuesh/www/Maestro/test/wp10/perf.test.js:97:1'
+  failureType: 'testCodeFailure'
+  error: 'verifyProducts(sha256) p95=145.81ms 超过 50ms（1MB）'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Users/xuesh/www/Maestro/test/wp10/perf.test.js:132:14)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 步 1：文件不存在 → REVIEW_MISSING / review_missing
+ok 102 - 步 1：文件不存在 → REVIEW_MISSING / review_missing
+  ---
+  duration_ms: 318.286219
+  type: 'test'
+  ...
+# Subtest: 步 2：mtime 早于本轮 → REVIEW_STALE / review_stale
+ok 103 - 步 2：mtime 早于本轮 → REVIEW_STALE / review_stale
+  ---
+  duration_ms: 712.690419
+  type: 'test'
+  ...
+# Subtest: 步 3：文件存在但读不出 → unreadable / review_invalid（注入 fs 桩）
+ok 104 - 步 3：文件存在但读不出 → unreadable / review_invalid（注入 fs 桩）
+  ---
+  duration_ms: 0.832315
+  type: 'test'
+  ...
+# Subtest: 步 4：不是 JSON → unparsable / review_invalid
+ok 105 - 步 4：不是 JSON → unparsable / review_invalid
+  ---
+  duration_ms: 591.084454
+  type: 'test'
+  ...
+# Subtest: 步 5：顶层是数组或 null → schema / review_invalid
+ok 106 - 步 5：顶层是数组或 null → schema / review_invalid
+  ---
+  duration_ms: 1920.701388
+  type: 'test'
+  ...
+# Subtest: 步 6：结论非法 → REVIEW_DECISION_INVALID / decision
+ok 107 - 步 6：结论非法 → REVIEW_DECISION_INVALID / decision
+  ---
+  duration_ms: 596.0533
+  type: 'test'
+  ...
+# Subtest: 步 7：没写 artifact → REVIEW_ARTIFACT_MISSING
+ok 108 - 步 7：没写 artifact → REVIEW_ARTIFACT_MISSING
+  ---
+  duration_ms: 637.681538
+  type: 'test'
+  ...
+# Subtest: 步 8：引用了别的文档 → REVIEW_ARTIFACT_MISMATCH，原值逐字回显
+ok 109 - 步 8：引用了别的文档 → REVIEW_ARTIFACT_MISMATCH，原值逐字回显
+  ---
+  duration_ms: 572.621144
+  type: 'test'
+  ...
+# Subtest: 步 9：pass 带缺陷 / reject 无缺陷两种自相矛盾
+ok 110 - 步 9：pass 带缺陷 / reject 无缺陷两种自相矛盾
+  ---
+  duration_ms: 1266.270616
+  type: 'test'
+  ...
+# Subtest: 步 10：缺陷缺证据 → REVIEW_DEFECT_SHAPE（整份无效，不回传部分缺陷）
+ok 111 - 步 10：缺陷缺证据 → REVIEW_DEFECT_SHAPE（整份无效，不回传部分缺陷）
+  ---
+  duration_ms: 642.502464
+  type: 'test'
+  ...
+# Subtest: 步 11：证据指向不存在的文件 / 越界 / 绝对路径 → REVIEW_EVIDENCE_UNREADABLE
+ok 112 - 步 11：证据指向不存在的文件 / 越界 / 绝对路径 → REVIEW_EVIDENCE_UNREADABLE
+  ---
+  duration_ms: 2500.771388
+  type: 'test'
+  ...
+# Subtest: 成功路径：pass → defectCount 0、默认修改要求
+ok 113 - 成功路径：pass → defectCount 0、默认修改要求
+  ---
+  duration_ms: 616.648521
+  type: 'test'
+  ...
+# Subtest: 成功路径：reject → 缺陷原文、\#L 剥离后定位、修改要求取文件里的值
+ok 114 - 成功路径：reject → 缺陷原文、\#L 剥离后定位、修改要求取文件里的值
+  ---
+  duration_ms: 682.056251
+  type: 'test'
+  ...
+# Subtest: 成功路径：未知字段忽略、行号范围与无 \#L 的证据都能定位
+ok 115 - 成功路径：未知字段忽略、行号范围与无 \#L 的证据都能定位
+  ---
+  duration_ms: 543.024745
+  type: 'test'
+  ...
+# Subtest: parseReview 是纯函数：不碰磁盘，expectedArtifact 缺省时跳过步 8
+ok 116 - parseReview 是纯函数：不碰磁盘，expectedArtifact 缺省时跳过步 8
+  ---
+  duration_ms: 0.33433
+  type: 'test'
+  ...
+# Subtest: 步 8 先于步 9/10：同时错时报引用不一致
+ok 117 - 步 8 先于步 9/10：同时错时报引用不一致
+  ---
+  duration_ms: 0.138086
+  type: 'test'
+  ...
+# Subtest: nextApprovalId：APR-nnn 实例内递增、不复用，忽略脏数据
+ok 118 - nextApprovalId：APR-nnn 实例内递增、不复用，忽略脏数据
+  ---
+  duration_ms: 1.299319
+  type: 'test'
+  ...
+# Subtest: buildApproval：完整字段且初始 pending（D-5.3）
+ok 119 - buildApproval：完整字段且初始 pending（D-5.3）
+  ---
+  duration_ms: 2.19127
+  type: 'test'
+  ...
+# Subtest: findApproval / pendingForSession：按 id 取行、按会话取待处理行
+ok 120 - findApproval / pendingForSession：按 id 取行、按会话取待处理行
+  ---
+  duration_ms: 0.286051
+  type: 'test'
+  ...
+# Subtest: decideApproval：allow/deny 迁移，非 pending 与非法决策拒绝
+ok 121 - decideApproval：allow/deny 迁移，非 pending 与非法决策拒绝
+  ---
+  duration_ms: 0.330346
+  type: 'test'
+  ...
+# Subtest: withdrawPending：全部 pending → withdrawn，返回被改行，非 pending 不动
+ok 122 - withdrawPending：全部 pending → withdrawn，返回被改行，非 pending 不动
+  ---
+  duration_ms: 0.370838
+  type: 'test'
+  ...
+# Subtest: approvalSessionCheck：无内存 respond（核心重启）→ APPROVAL_SESSION_GONE（AC-67 / D-5.9）
+ok 123 - approvalSessionCheck：无内存 respond（核心重启）→ APPROVAL_SESSION_GONE（AC-67 / D-5.9）
+  ---
+  duration_ms: 0.202312
+  type: 'test'
+  ...
+# Subtest: listApprovals：投影带 instanceId，可按 sessionId 过滤
+ok 124 - listApprovals：投影带 instanceId，可按 sessionId 过滤
+  ---
+  duration_ms: 724.878792
+  type: 'test'
+  ...
+# Subtest: resolveApproval：核心重启无 respond → APPROVAL_SESSION_GONE 且审批仍 pending（AC-67）
+ok 125 - resolveApproval：核心重启无 respond → APPROVAL_SESSION_GONE 且审批仍 pending（AC-67）
+  ---
+  duration_ms: 590.334843
+  type: 'test'
+  ...
+# Subtest: resolveApproval：非法 decision / 不存在的 id / 非 pending 均被拒绝
+ok 126 - resolveApproval：非法 decision / 不存在的 id / 非 pending 均被拒绝
+  ---
+  duration_ms: 604.542298
+  type: 'test'
+  ...
+# Subtest: snapshotOf：approvals / pendingApprovals 追加在 paused 之后，既有派生字段顺序不变（D-9.1 / M-10）
+ok 127 - snapshotOf：approvals / pendingApprovals 追加在 paused 之后，既有派生字段顺序不变（D-9.1 / M-10）
+  ---
+  duration_ms: 1524.987464
+  type: 'test'
+  ...
+# Subtest: snapshotOf：存在一条 pending 审批时 pendingApprovals === 1
+ok 128 - snapshotOf：存在一条 pending 审批时 pendingApprovals === 1
+  ---
+  duration_ms: 1643.939972
+  type: 'test'
+  ...
+# Subtest: cancel：待处理审批 withdrawn、paused 清零，与终态同一次 CAS（AC-35 / AC-60 / D-5.8）
+ok 129 - cancel：待处理审批 withdrawn、paused 清零，与终态同一次 CAS（AC-35 / AC-60 / D-5.8）
+  ---
+  duration_ms: 2382.870751
+  type: 'test'
+  ...
+# Subtest: AC-12: the whole built-in tree validates with the six-key asset counts
+ok 130 - AC-12: the whole built-in tree validates with the six-key asset counts
+  ---
+  duration_ms: 1585.237287
+  type: 'test'
+  ...
+# Subtest: AC-17: five groups hold 5 / 3 / 3 / 3 / 2 roles, each group at least two
+ok 131 - AC-17: five groups hold 5 / 3 / 3 / 3 / 2 roles, each group at least two
+  ---
+  duration_ms: 1587.659763
+  type: 'test'
+  ...
+# Subtest: A-1: the sixteen roles match the table row by row, in table order
+ok 132 - A-1: the sixteen roles match the table row by row, in table order
+  ---
+  duration_ms: 1369.8766
+  type: 'test'
+  ...
+# Subtest: AC-18: the six template role names match ROLE_LABEL verbatim
+ok 133 - AC-18: the six template role names match ROLE_LABEL verbatim
+  ---
+  duration_ms: 1419.11895
+  type: 'test'
+  ...
+# Subtest: worker is the only role without skills
+ok 134 - worker is the only role without skills
+  ---
+  duration_ms: 1584.342759
+  type: 'test'
+  ...
+# Subtest: ten skills are present, each with at least three working steps
+ok 135 - ten skills are present, each with at least three working steps
+  ---
+  duration_ms: 1945.026562
+  type: 'test'
+  ...
+# Subtest: every skill is referenced by at least one role
+ok 136 - every skill is referenced by at least one role
+  ---
+  duration_ms: 1439.616545
+  type: 'test'
+  ...
+# Subtest: A-1: developer.yaml matches the documented sample byte for byte
+ok 137 - A-1: developer.yaml matches the documented sample byte for byte
+  ---
+  duration_ms: 76.151439
+  type: 'test'
+  ...
+# Subtest: A-1: code-change/SKILL.md matches the documented sample byte for byte
+ok 138 - A-1: code-change/SKILL.md matches the documented sample byte for byte
+  ---
+  duration_ms: 77.838068
+  type: 'test'
+  ...
+# Subtest: asset directory layout: 16 role files and 10 skill directories, nothing else
+ok 139 - asset directory layout: 16 role files and 10 skill directories, nothing else
+  ---
+  duration_ms: 1.540996
+  type: 'test'
+  ...
+# Subtest: project assets still win over the shipped ones (AC-03 / AC-45 shape)
+ok 140 - project assets still win over the shipped ones (AC-03 / AC-45 shape)
+  ---
+  duration_ms: 1805.995477
+  type: 'test'
+  ...
+# Subtest: parseArgs：两层命令 + 子命令 + 位置参数 + 新 flag
+ok 141 - parseArgs：两层命令 + 子命令 + 位置参数 + 新 flag
+  ---
+  duration_ms: 2.816741
+  type: 'test'
+  ...
+# Subtest: parseArgs：--instance 可替代位置参数（C-12）
+ok 142 - parseArgs：--instance 可替代位置参数（C-12）
+  ---
+  duration_ms: 0.388277
+  type: 'test'
+  ...
+# Subtest: parseArgs：旧命令与旧参数逐字兼容
+ok 143 - parseArgs：旧命令与旧参数逐字兼容
+  ---
+  duration_ms: 0.648953
+  type: 'test'
+  ...
+# Subtest: parseArgs：未知命令 / 多余参数 / 缺子命令 / 缺编号 → 用法错误
+ok 144 - parseArgs：未知命令 / 多余参数 / 缺子命令 / 缺编号 → 用法错误
+  ---
+  duration_ms: 0.482289
+  type: 'test'
+  ...
+# Subtest: 未知命令退出码 2，且不连核心
+ok 145 - 未知命令退出码 2，且不连核心
+  ---
+  duration_ms: 0.716622
+  type: 'test'
+  ...
+# Subtest: exitCodeFor：命令级错误码一律 1、用法 2、预检 3
+ok 146 - exitCodeFor：命令级错误码一律 1、用法 2、预检 3
+  ---
+  duration_ms: 0.20456
+  type: 'test'
+  ...
+# Subtest: AC-64：四条非法参数退出 2、含允许值说明、不连核心、不写状态
+ok 147 - AC-64：四条非法参数退出 2、含允许值说明、不连核心、不写状态
+  ---
+  duration_ms: 0.492201
+  type: 'test'
+  ...
+# Subtest: AC-64：合法取值组合在解析层放行
+ok 148 - AC-64：合法取值组合在解析层放行
+  ---
+  duration_ms: 0.191284
+  type: 'test'
+  ...
+# Subtest: AC-38：instance status 与 status --instance 逐字一致（含不存在分支）
+ok 149 - AC-38：instance status 与 status --instance 逐字一致（含不存在分支）
+  ---
+  duration_ms: 4.761701
+  type: 'test'
+  ...
+# Subtest: instance status：升级块之后按审批号逐条列出审批（AC-36）
+ok 150 - instance status：升级块之后按审批号逐条列出审批（AC-36）
+  ---
+  duration_ms: 1.052855
+  type: 'test'
+  ...
+# Subtest: instance log：文本按 seq 顺序、json 为原始数组、空事件打印 事件 —
+ok 151 - instance log：文本按 seq 顺序、json 为原始数组、空事件打印 事件 —
+  ---
+  duration_ms: 1.323485
+  type: 'test'
+  ...
+# Subtest: instance graph：text 结构 / json 字段，且都是只读（字段细节见 graph-view.test.js）
+ok 152 - instance graph：text 结构 / json 字段，且都是只读（字段细节见 graph-view.test.js）
+  ---
+  duration_ms: 2.293806
+  type: 'test'
+  ...
+# Subtest: AC-21/22：escalate list 默认待处理 / --instance 过滤 / --all 放开 / 组合 / 空态
+ok 153 - AC-21/22：escalate list 默认待处理 / --instance 过滤 / --all 放开 / 组合 / 空态
+  ---
+  duration_ms: 1.608897
+  type: 'test'
+  ...
+# Subtest: escalate resolve：成功打印结果行 + 当前实例行，退出 0 / 再次挂起退出 4
+ok 154 - escalate resolve：成功打印结果行 + 当前实例行，退出 0 / 再次挂起退出 4
+  ---
+  duration_ms: 0.877591
+  type: 'test'
+  ...
+# Subtest: escalate resolve：COMMAND_ERROR 命令级错误（不存在 / 歧义 / 已处理 / 决策不允许）
+ok 155 - escalate resolve：COMMAND_ERROR 命令级错误（不存在 / 歧义 / 已处理 / 决策不允许）
+  ---
+  duration_ms: 0.710854
+  type: 'test'
+  ...
+# Subtest: approve：成功打印审批结果行，allow=已通过 / deny=已拒绝
+ok 156 - approve：成功打印审批结果行，allow=已通过 / deny=已拒绝
+  ---
+  duration_ms: 0.608465
+  type: 'test'
+  ...
+# Subtest: approve：不存在 / 歧义 / 会话失效都复用 COMMAND_ERROR，退出 1
+ok 157 - approve：不存在 / 歧义 / 会话失效都复用 COMMAND_ERROR，退出 1
+  ---
+  duration_ms: 0.413245
+  type: 'test'
+  ...
+# Subtest: AC-46：handoff list 跨实例稳定排序 / --instance 过滤 / 空态
+ok 158 - AC-46：handoff list 跨实例稳定排序 / --instance 过滤 / 空态
+  ---
+  duration_ms: 0.880475
+  type: 'test'
+  ...
+# Subtest: AC-47/48/70：handoff show 完整字段 / 唯一编号省略 --instance / 找不到 / 歧义
+ok 159 - AC-47/48/70：handoff show 完整字段 / 唯一编号省略 --instance / 找不到 / 歧义
+  ---
+  duration_ms: 0.910148
+  type: 'test'
+  ...
+# Subtest: workflow pause/resume：打印当前实例行，暂停带（已暂停），退出 0
+ok 160 - workflow pause/resume：打印当前实例行，暂停带（已暂停），退出 0
+  ---
+  duration_ms: 0.610772
+  type: 'test'
+  ...
+# Subtest: workflow abort：与 cancel 一致的结果行；不适用动作复用 INSTANCE_NOT_*
+ok 161 - workflow abort：与 cancel 一致的结果行；不适用动作复用 INSTANCE_NOT_*
+  ---
+  duration_ms: 0.759101
+  type: 'test'
+  ...
+# Subtest: A-3/AC-44：attach 首屏 + 待审批行 + 事件跟随 + Ctrl-C 脱离，全程只读
+ok 162 - A-3/AC-44：attach 首屏 + 待审批行 + 事件跟随 + Ctrl-C 脱离，全程只读
+  ---
+  duration_ms: 1.018512
+  type: 'test'
+  ...
+# Subtest: A-3/AC-45：attach 找不到会话 → 未找到会话 + 退出 1，且无状态写入
+ok 163 - A-3/AC-45：attach 找不到会话 → 未找到会话 + 退出 1，且无状态写入
+  ---
+  duration_ms: 0.311612
+  type: 'test'
+  ...
+# Subtest: A-3：attach 首屏最多 20 条事件且只取该会话
+ok 164 - A-3：attach 首屏最多 20 条事件且只取该会话
+  ---
+  duration_ms: 0.898749
+  type: 'test'
+  ...
+# Subtest: single 逐字红线：无新能力时不打印任何新段，paused 是纯后缀
+ok 165 - single 逐字红线：无新能力时不打印任何新段，paused 是纯后缀
+  ---
+  duration_ms: 0.200109
+  type: 'test'
+  ...
+# Subtest: 暂停后缀插入条件：仅 paused === true 时插入
+ok 166 - 暂停后缀插入条件：仅 paused === true 时插入
+  ---
+  duration_ms: 0.388224
+  type: 'test'
+  ...
+# Subtest: 列表行：无暂停/无审批时逐字不变；有审批计数仅 >0 时追加
+ok 167 - 列表行：无暂停/无审批时逐字不变；有审批计数仅 >0 时追加
+  ---
+  duration_ms: 0.258982
+  type: 'test'
+  ...
+# Subtest: 前台 run 遇暂停：退出 0，收尾正好实例行 + 恢复提示（A-2 \#6）
+ok 168 - 前台 run 遇暂停：退出 0，收尾正好实例行 + 恢复提示（A-2 \#6）
+  ---
+  duration_ms: 1494.804611
+  type: 'test'
+  ...
+# Subtest: AC-37：run 等待期间出现待审批立即打印审批行，且 --approval 透传为 approvalPolicy
+ok 169 - AC-37：run 等待期间出现待审批立即打印审批行，且 --approval 透传为 approvalPolicy
+  ---
+  duration_ms: 1471.17489
+  type: 'test'
+  ...
+# Subtest: COMMAND_ERROR：14 条命令级文案全部来自 labels.js，renderCommandError 不另造中文
+ok 170 - COMMAND_ERROR：14 条命令级文案全部来自 labels.js，renderCommandError 不另造中文
+  ---
+  duration_ms: 0.378924
+  type: 'test'
+  ...
+# Subtest: A-3 逐字：escalate list 单行（requirement.md:1202）
+ok 171 - A-3 逐字：escalate list 单行（requirement.md:1202）
+  ---
+  duration_ms: 0.242342
+  type: 'test'
+  ...
+# Subtest: A-3 逐字：escalate resolve 结果行 + 实例行（requirement.md:1220-1221）
+ok 172 - A-3 逐字：escalate resolve 结果行 + 实例行（requirement.md:1220-1221）
+  ---
+  duration_ms: 0.358973
+  type: 'test'
+  ...
+# Subtest: A-3 逐字：handoff list 两行（requirement.md:1241-1242）
+ok 173 - A-3 逐字：handoff list 两行（requirement.md:1241-1242）
+  ---
+  duration_ms: 0.290547
+  type: 'test'
+  ...
+# Subtest: A-3 逐字：handoff show 完整 12 行（requirement.md:1256-1267）
+ok 174 - A-3 逐字：handoff show 完整 12 行（requirement.md:1256-1267）
+  ---
+  duration_ms: 0.378508
+  type: 'test'
+  ...
+# Subtest: A-3 逐字：approve allow / deny 单行（requirement.md:1229 / 1235）
+ok 175 - A-3 逐字：approve allow / deny 单行（requirement.md:1229 / 1235）
+  ---
+  duration_ms: 0.300165
+  type: 'test'
+  ...
+# Subtest: A-3 逐字：attach 无事件时首屏 + 待审批行 + 脱离行（requirement.md:1275-1282）
+ok 176 - A-3 逐字：attach 无事件时首屏 + 待审批行 + 脱离行（requirement.md:1275-1282）
+  ---
+  duration_ms: 0.401582
+  type: 'test'
+  ...
+# Subtest: AC-01: role list prints seventeen lines and exits 0
+ok 177 - AC-01: role list prints seventeen lines and exits 0
+  ---
+  duration_ms: 1532.207652
+  type: 'test'
+  ...
+# Subtest: AC-02: role show developer is the six documented lines
+ok 178 - AC-02: role show developer is the six documented lines
+  ---
+  duration_ms: 1539.505891
+  type: 'test'
+  ...
+# Subtest: AC-03: a project role overrides the built-in one and says so
+ok 179 - AC-03: a project role overrides the built-in one and says so
+  ---
+  duration_ms: 3211.548972
+  type: 'test'
+  ...
+# Subtest: AC-10: an invalid registry stops orch run before the client exists
+ok 180 - AC-10: an invalid registry stops orch run before the client exists
+  ---
+  duration_ms: 1807.439504
+  type: 'test'
+  ...
+# Subtest: AC-11: a broken asset does not block the list but fails the exit code
+ok 181 - AC-11: a broken asset does not block the list but fails the exit code
+  ---
+  duration_ms: 1780.195047
+  type: 'test'
+  ...
+# Subtest: A-4: role validate prints one row per bad asset
+ok 182 - A-4: role validate prints one row per bad asset
+  ---
+  duration_ms: 2434.176269
+  type: 'test'
+  ...
+# Subtest: A-4: a clean tree prints the single success line
+ok 183 - A-4: a clean tree prints the single success line
+  ---
+  duration_ms: 2370.169652
+  type: 'test'
+  ...
+# Subtest: AC-32: --group lists only that group in text and JSON
+ok 184 - AC-32: --group lists only that group in text and JSON
+  ---
+  duration_ms: 2751.147605
+  type: 'test'
+  ...
+# Subtest: AC-33: role list JSON has exactly three top-level keys and ten role keys
+ok 185 - AC-33: role list JSON has exactly three top-level keys and ten role keys
+  ---
+  duration_ms: 1515.278098
+  type: 'test'
+  ...
+# Subtest: AC-34: an unknown role names it and points at role list
+ok 186 - AC-34: an unknown role names it and points at role list
+  ---
+  duration_ms: 1468.030987
+  type: 'test'
+  ...
+# Subtest: AC-35: role show without an id is a usage error
+ok 187 - AC-35: role show without an id is a usage error
+  ---
+  duration_ms: 0.452867
+  type: 'test'
+  ...
+# Subtest: AC-37: unknown subcommand, unknown flag and bad --format are usage errors
+ok 188 - AC-37: unknown subcommand, unknown flag and bad --format are usage errors
+  ---
+  duration_ms: 0.388853
+  type: 'test'
+  ...
+# Subtest: the usage block has eight lines and keeps the I1.1 first line
+ok 189 - the usage block has eight lines and keeps the I1.1 first line
+  ---
+  duration_ms: 0.220361
+  type: 'test'
+  ...
+# Subtest: a flag that belongs to another subcommand is rejected
+ok 190 - a flag that belongs to another subcommand is rejected
+  ---
+  duration_ms: 0.33692
+  type: 'test'
+  ...
+# Subtest: role flags leak into other commands as unknown parameters (M-9)
+ok 191 - role flags leak into other commands as unknown parameters (M-9)
+  ---
+  duration_ms: 0.477481
+  type: 'test'
+  ...
+# Subtest: parseArgs keeps the old result shape for the four original commands
+ok 192 - parseArgs keeps the old result shape for the four original commands
+  ---
+  duration_ms: 0.130794
+  type: 'test'
+  ...
+# Subtest: AC-36: role validate <id> counts one asset and hides other files
+ok 193 - AC-36: role validate <id> counts one asset and hides other files
+  ---
+  duration_ms: 7254.765677
+  type: 'test'
+  ...
+# Subtest: AC-38: the three read-only commands never create .orch nor a client
+ok 194 - AC-38: the three read-only commands never create .orch nor a client
+  ---
+  duration_ms: 5417.387286
+  type: 'test'
+  ...
+# Subtest: AC-39: an unknown instance still prints the role contract first
+ok 195 - AC-39: an unknown instance still prints the role contract first
+  ---
+  duration_ms: 1801.783092
+  type: 'test'
+  ...
+# Subtest: role show --instance appends the instance line (A-3)
+ok 196 - role show --instance appends the instance line (A-3)
+  ---
+  duration_ms: 1799.358239
+  type: 'test'
+  ...
+# Subtest: role show --instance on a role outside the instance says so
+ok 197 - role show --instance on a role outside the instance says so
+  ---
+  duration_ms: 1671.640282
+  type: 'test'
+  ...
+# Subtest: role show JSON has three keys and null instance without --instance
+ok 198 - role show JSON has three keys and null instance without --instance
+  ---
+  duration_ms: 1839.982067
+  type: 'test'
+  ...
+# Subtest: role show --instance JSON exposes the nine-key role instance
+ok 199 - role show --instance JSON exposes the nine-key role instance
+  ---
+  duration_ms: 2247.982676
+  type: 'test'
+  ...
+# Subtest: role list --instance appends one line per instance role
+ok 200 - role list --instance appends one line per instance role
+  ---
+  duration_ms: 1403.873075
+  type: 'test'
+  ...
+# Subtest: role list --instance JSON adds a fourth key with roleToSessions
+ok 201 - role list --instance JSON adds a fourth key with roleToSessions
+  ---
+  duration_ms: 1644.452234
+  type: 'test'
+  ...
+# Subtest: role validate JSON rebuilds six-key errors and leaks no params
+ok 202 - role validate JSON rebuilds six-key errors and leaks no params
+  ---
+  duration_ms: 2765.153273
+  type: 'test'
+  ...
+# Subtest: every registry error code has a label template
+ok 203 - every registry error code has a label template
+  ---
+  duration_ms: 0.167592
+  type: 'test'
+  ...
+# Subtest: detailOf fills every template without leaving a placeholder
+ok 204 - detailOf fills every template without leaving a placeholder
+  ---
+  duration_ms: 0.346
+  type: 'test'
+  ...
+# Subtest: firstRegistryDetail returns the A-4 row without the dash prefix
+ok 205 - firstRegistryDetail returns the A-4 row without the dash prefix
+  ---
+  duration_ms: 0.166334
+  type: 'test'
+  ...
+# Subtest: roleCommand is reachable directly and honours the frozen ctx shape
+ok 206 - roleCommand is reachable directly and honours the frozen ctx shape
+  ---
+  duration_ms: 1698.725662
+  type: 'test'
+  ...
+# Subtest: 首投失败二次成功：deliveryAttempts=2、信箱 deliveredAt 落盘、事件含 delivered→pending→delivered
+ok 207 - 首投失败二次成功：deliveryAttempts=2、信箱 deliveredAt 落盘、事件含 delivered→pending→delivered
+  ---
+  duration_ms: 31566.547931
+  type: 'test'
+  ...
+# Subtest: 三次失败 expired：3 次投递、expiredAt、delivery_failed 升级、事件序 inboxed→delivered→pending→expired
+ok 208 - 三次失败 expired：3 次投递、expiredAt、delivery_failed 升级、事件序 inboxed→delivered→pending→expired
+  ---
+  duration_ms: 34082.168633
+  type: 'test'
+  ...
+# Subtest: 取消中重试：hold 挂住重试后 cancel 清定时器，不再有迟到投递
+ok 209 - 取消中重试：hold 挂住重试后 cancel 清定时器，不再有迟到投递
+  ---
+  duration_ms: 20336.552154
+  type: 'test'
+  ...
+# Subtest: inbox_write:fail：不投递、不建信箱、包 rejected/delivery_failed 与升级同一次 CAS
+ok 210 - inbox_write:fail：不投递、不建信箱、包 rejected/delivery_failed 与升级同一次 CAS
+  ---
+  duration_ms: 26251.727381
+  type: 'test'
+  ...
+# Subtest: 单节点不重试：引导包不进信箱/重试、失败一次即止、9 字段不落到引导包
+ok 211 - 单节点不重试：引导包不进信箱/重试、失败一次即止、9 字段不落到引导包
+  ---
+  duration_ms: 12072.566874
+  type: 'test'
+  ...
+# Subtest: delivered→pending 回落：每次失败各发一条 handoff.pending，信箱 lastError 与尝试数同步
+ok 212 - delivered→pending 回落：每次失败各发一条 handoff.pending，信箱 lastError 与尝试数同步
+  ---
+  duration_ms: 28412.186486
+  type: 'test'
+  ...
+# Subtest: D-3 HANDOFF_FIELD_MISSING：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+ok 213 - D-3 HANDOFF_FIELD_MISSING：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+  ---
+  duration_ms: 12175.697665
+  type: 'test'
+  ...
+# Subtest: D-3 HANDOFF_EDGE_INVALID：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+ok 214 - D-3 HANDOFF_EDGE_INVALID：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+  ---
+  duration_ms: 9926.549552
+  type: 'test'
+  ...
+# Subtest: D-3 HANDOFF_EVIDENCE_MISSING：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+ok 215 - D-3 HANDOFF_EVIDENCE_MISSING：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+  ---
+  duration_ms: 13477.073198
+  type: 'test'
+  ...
+# Subtest: D-3 HANDOFF_EVIDENCE_UNREADABLE：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+ok 216 - D-3 HANDOFF_EVIDENCE_UNREADABLE：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+  ---
+  duration_ms: 12219.696744
+  type: 'test'
+  ...
+# Subtest: D-3 HANDOFF_EVIDENCE_EMPTY：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+ok 217 - D-3 HANDOFF_EVIDENCE_EMPTY：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+  ---
+  duration_ms: 12118.148883
+  type: 'test'
+  ...
+# Subtest: D-3 HANDOFF_EVIDENCE_ESCAPE：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+ok 218 - D-3 HANDOFF_EVIDENCE_ESCAPE：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+  ---
+  duration_ms: 11562.686128
+  type: 'test'
+  ...
+# Subtest: D-3 HANDOFF_HASH_MISMATCH：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+ok 219 - D-3 HANDOFF_HASH_MISMATCH：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+  ---
+  duration_ms: 11942.176946
+  type: 'test'
+  ...
+# Subtest: D-3 HANDOFF_BACKFLOW_INCOMPLETE：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+ok 220 - D-3 HANDOFF_BACKFLOW_INCOMPLETE：坏包零派发 / handoff_invalid 一次 CAS 拒绝
+  ---
+  duration_ms: 11169.778577
+  type: 'test'
+  ...
+# Subtest: D-6.6 / D-6.8：retry 在裁决 CAS 写入 extraRounds+1，且不重复计数（extraOf = 1）
+ok 221 - D-6.6 / D-6.8：retry 在裁决 CAS 写入 extraRounds+1，且不重复计数（extraOf = 1）
+  ---
+  duration_ms: 4879.608331
+  type: 'test'
+  ...
+# Subtest: retry 把裁决落盘后再派发：事件先落盘再广播（escalation.resolved 在 node.dispatch 之前）
+ok 222 - retry 把裁决落盘后再派发：事件先落盘再广播（escalation.resolved 在 node.dispatch 之前）
+  ---
+  duration_ms: 4355.781926
+  type: 'test'
+  ...
+# Subtest: D-6.5：fail → 节点 failed / 实例 failed / 不再推进
+ok 223 - D-6.5：fail → 节点 failed / 实例 failed / 不再推进
+  ---
+  duration_ms: 2656.223567
+  type: 'test'
+  ...
+# Subtest: D-6.4：终节点 pass（rounds_exceeded）→ 节点 done / 实例 completed
+ok 224 - D-6.4：终节点 pass（rounds_exceeded）→ 节点 done / 实例 completed
+  ---
+  duration_ms: 2271.075918
+  type: 'test'
+  ...
+# Subtest: D-6.3 / BR-19：仅 rounds_exceeded 允许 pass，其他原因与非法决策被拒且 rev 不变
+ok 225 - D-6.3 / BR-19：仅 rounds_exceeded 允许 pass，其他原因与非法决策被拒且 rev 不变
+  ---
+  duration_ms: 814.844977
+  type: 'test'
+  ...
+# Subtest: D-7.4 ③ / AC-49：driveGraph 遇 paused → 不派发、不落盘，以 paused 快照（exit 0）收尾
+ok 226 - D-7.4 ③ / AC-49：driveGraph 遇 paused → 不派发、不落盘，以 paused 快照（exit 0）收尾
+  ---
+  duration_ms: 18273.61191
+  type: 'test'
+  ...
+# Subtest: verdict-fail：未 retry 时 round=2 立即升级（防"改宽了所有人"）
+ok 227 - verdict-fail：未 retry 时 round=2 立即升级（防"改宽了所有人"）
+  ---
+  duration_ms: 2.48793
+  type: 'test'
+  ...
+# Subtest: verdict-fail：retry(extraRounds=1) 后 round=2 仍可回流派发一轮
+ok 228 - verdict-fail：retry(extraRounds=1) 后 round=2 仍可回流派发一轮
+  ---
+  duration_ms: 2.999209
+  type: 'test'
+  ...
+# Subtest: verdict-fail：retry 后直到 round=3 才升级
+ok 229 - verdict-fail：retry 后直到 round=3 才升级
+  ---
+  duration_ms: 0.352412
+  type: 'test'
+  ...
+# Subtest: passed 前进：目标节点未 retry 时 round=2 升级；retry 后仍可派发
+ok 230 - passed 前进：目标节点未 retry 时 round=2 升级；retry 后仍可派发
+  ---
+  duration_ms: 0.653031
+  type: 'test'
+  ...
+# Subtest: shouldWake：extraRounds 放宽唤醒门限，round=2 可唤醒、round=3 仍拒绝
+ok 231 - shouldWake：extraRounds 放宽唤醒门限，round=2 可唤醒、round=3 仍拒绝
+  ---
+  duration_ms: 1.26274
+  type: 'test'
+  ...
+# Subtest: checkWakeGate：目标节点持久化的 extraRounds 与显式值都生效
+ok 232 - checkWakeGate：目标节点持久化的 extraRounds 与显式值都生效
+  ---
+  duration_ms: 0.477121
+  type: 'test'
+  ...
+# Subtest: finishGraphNode 可观测输出：未 retry 时 round=2 升级 rounds_exceeded
+ok 233 - finishGraphNode 可观测输出：未 retry 时 round=2 升级 rounds_exceeded
+  ---
+  duration_ms: 57213.748554
+  type: 'test'
+  ...
+# Subtest: finishGraphNode 可观测输出：retry(extraRounds=1) 后能派发到 round=3 才收口
+ok 234 - finishGraphNode 可观测输出：retry(extraRounds=1) 后能派发到 round=3 才收口
+  ---
+  duration_ms: 92918.999595
+  type: 'test'
+  ...
+# Subtest: promptFailures:2 -> attempts 依次 1/2/3，前 2 次 -32603 第 3 次 end_turn
+ok 235 - promptFailures:2 -> attempts 依次 1/2/3，前 2 次 -32603 第 3 次 end_turn
+  ---
+  duration_ms: 1651.11696
+  type: 'test'
+  ...
+# Subtest: --host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）
+ok 236 - --host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）
+  ---
+  duration_ms: 740.457549
+  type: 'test'
+  ...
+# Subtest: call-seam.mjs --help 打印新用法并 exit 0
+ok 237 - call-seam.mjs --help 打印新用法并 exit 0
+  ---
+  duration_ms: 695.176834
+  type: 'test'
+  ...
+# Subtest: 3 个新 --call 形态（test.handoff / test.delivery / test.delivery.whenHeld）dry-run 可构造
+ok 238 - 3 个新 --call 形态（test.handoff / test.delivery / test.delivery.whenHeld）dry-run 可构造
+  ---
+  duration_ms: 1561.811161
+  type: 'test'
+  ...
+# Subtest: call-seam 参数逐字对齐 server.js payload（8 个 mutate / reasonCode / artifactRefs）
+ok 239 - call-seam 参数逐字对齐 server.js payload（8 个 mutate / reasonCode / artifactRefs）
+  ---
+  duration_ms: 5091.980835
+  type: 'test'
+  ...
+# Subtest: 未知 --call / 未知参数给明确非零退出，不静默忽略
+ok 240 - 未知 --call / 未知参数给明确非零退出，不静默忽略
+  ---
+  duration_ms: 1137.494396
+  type: 'test'
+  ...
+# Subtest: A-4：固定键顺序恰好 11 键，元素形状与图声明一致
+ok 241 - A-4：固定键顺序恰好 11 键，元素形状与图声明一致
+  ---
+  duration_ms: 3.937179
+  type: 'test'
+  ...
+# Subtest: §1.9：不输出 rev / generatedAt / updatedAt 或任何 now() 派生字段
+ok 242 - §1.9：不输出 rev / generatedAt / updatedAt 或任何 now() 派生字段
+  ---
+  duration_ms: 0.567171
+  type: 'test'
+  ...
+# Subtest: AC-41：同一快照两次执行逐字一致（可作为回归基线）
+ok 243 - AC-41：同一快照两次执行逐字一致（可作为回归基线）
+  ---
+  duration_ms: 1.695446
+  type: 'test'
+  ...
+# Subtest: AC-41/BR-43：快照数组顺序打乱不影响输出（handoffs/escalations/approvals 稳定升序）
+ok 244 - AC-41/BR-43：快照数组顺序打乱不影响输出（handoffs/escalations/approvals 稳定升序）
+  ---
+  duration_ms: 1.020787
+  type: 'test'
+  ...
+# Subtest: current：无活动节点为 null；运行节点带 sessionId；interruptedNodeId 优先
+ok 245 - current：无活动节点为 null；运行节点带 sessionId；interruptedNodeId 优先
+  ---
+  duration_ms: 0.675712
+  type: 'test'
+  ...
+# Subtest: AC-43：paused / escalations / approvals 在 json 中原样反映
+ok 246 - AC-43：paused / escalations / approvals 在 json 中原样反映
+  ---
+  duration_ms: 0.354546
+  type: 'test'
+  ...
+# Subtest: AC-55：旧格式 v1 / single 实例的 template 为 single，边为空
+ok 247 - AC-55：旧格式 v1 / single 实例的 template 为 single，边为空
+  ---
+  duration_ms: 0.698127
+  type: 'test'
+  ...
+# Subtest: A-3/AC-42：graph text 首行/节点行/边段落/升级审批摘要逐字
+ok 248 - A-3/AC-42：graph text 首行/节点行/边段落/升级审批摘要逐字
+  ---
+  duration_ms: 0.325932
+  type: 'test'
+  ...
+# Subtest: A-3/AC-42：暂停时 text 首行带（已暂停），经 main() 输出一致
+ok 249 - A-3/AC-42：暂停时 text 首行带（已暂停），经 main() 输出一致
+  ---
+  duration_ms: 0.739601
+  type: 'test'
+  ...
+# Subtest: AC-58：instance graph json/text 都严格只读，不调用任何写 RPC
+ok 250 - AC-58：instance graph json/text 都严格只读，不调用任何写 RPC
+  ---
+  duration_ms: 1.02381
+  type: 'test'
+  ...
+# Subtest: instance graph：实例不存在沿用 I1.1 的 实例 X · 不存在 与退出码 1
+ok 251 - instance graph：实例不存在沿用 I1.1 的 实例 X · 不存在 与退出码 1
+  ---
+  duration_ms: 0.507062
+  type: 'test'
+  ...
+# Subtest: 合法 forward 包通过校验（ok:true）
+ok 252 - 合法 forward 包通过校验（ok:true）
+  ---
+  duration_ms: 406.836162
+  type: 'test'
+  ...
+# Subtest: edge === null 直接跳过校验（single 引导包）
+ok 253 - edge === null 直接跳过校验（single 引导包）
+  ---
+  duration_ms: 378.532859
+  type: 'test'
+  ...
+# Subtest: HANDOFF_FIELD_MISSING：缺 toNodeId
+ok 254 - HANDOFF_FIELD_MISSING：缺 toNodeId
+  ---
+  duration_ms: 392.623223
+  type: 'test'
+  ...
+# Subtest: HANDOFF_EDGE_INVALID：edge.kind 非法
+ok 255 - HANDOFF_EDGE_INVALID：edge.kind 非法
+  ---
+  duration_ms: 381.894562
+  type: 'test'
+  ...
+# Subtest: HANDOFF_EDGE_INVALID：fromNodeId 与 edge.from 不一致
+ok 256 - HANDOFF_EDGE_INVALID：fromNodeId 与 edge.from 不一致
+  ---
+  duration_ms: 394.667694
+  type: 'test'
+  ...
+# Subtest: HANDOFF_EVIDENCE_MISSING：证据集合为空
+ok 257 - HANDOFF_EVIDENCE_MISSING：证据集合为空
+  ---
+  duration_ms: 437.587317
+  type: 'test'
+  ...
+# Subtest: HANDOFF_EVIDENCE_UNREADABLE：证据文件不存在
+ok 258 - HANDOFF_EVIDENCE_UNREADABLE：证据文件不存在
+  ---
+  duration_ms: 403.031821
+  type: 'test'
+  ...
+# Subtest: HANDOFF_EVIDENCE_EMPTY：0 字节证据
+ok 259 - HANDOFF_EVIDENCE_EMPTY：0 字节证据
+  ---
+  duration_ms: 536.401941
+  type: 'test'
+  ...
+# Subtest: HANDOFF_EVIDENCE_UNREADABLE：目录当证据（非普通文件）
+ok 260 - HANDOFF_EVIDENCE_UNREADABLE：目录当证据（非普通文件）
+  ---
+  duration_ms: 483.427664
+  type: 'test'
+  ...
+# Subtest: HANDOFF_EVIDENCE_ESCAPE：../ 越界（外部文件真实存在仍拒绝）
+ok 261 - HANDOFF_EVIDENCE_ESCAPE：../ 越界（外部文件真实存在仍拒绝）
+  ---
+  duration_ms: 711.550688
+  type: 'test'
+  ...
+# Subtest: HANDOFF_EVIDENCE_ESCAPE：绝对路径逃逸
+ok 262 - HANDOFF_EVIDENCE_ESCAPE：绝对路径逃逸
+  ---
+  duration_ms: 571.906196
+  type: 'test'
+  ...
+# Subtest: HANDOFF_EVIDENCE_ESCAPE：符号链接绕过
+ok 263 - HANDOFF_EVIDENCE_ESCAPE：符号链接绕过
+  ---
+  duration_ms: 901.133325
+  type: 'test'
+  ...
+# Subtest: HANDOFF_HASH_MISMATCH：previous.sha256 与文件不符
+ok 264 - HANDOFF_HASH_MISMATCH：previous.sha256 与文件不符
+  ---
+  duration_ms: 557.069775
+  type: 'test'
+  ...
+# Subtest: HANDOFF_BACKFLOW_INCOMPLETE：回流 defects 为空（证据集合非空才走到第 6 步）
+ok 265 - HANDOFF_BACKFLOW_INCOMPLETE：回流 defects 为空（证据集合非空才走到第 6 步）
+  ---
+  duration_ms: 354.423133
+  type: 'test'
+  ...
+# Subtest: HANDOFF_BACKFLOW_INCOMPLETE：修改/复测要求皆空
+ok 266 - HANDOFF_BACKFLOW_INCOMPLETE：修改/复测要求皆空
+  ---
+  duration_ms: 449.024028
+  type: 'test'
+  ...
+# Subtest: 顺序：缺字段 + 缺证据 -> 先报 HANDOFF_FIELD_MISSING
+ok 267 - 顺序：缺字段 + 缺证据 -> 先报 HANDOFF_FIELD_MISSING
+  ---
+  duration_ms: 370.854904
+  type: 'test'
+  ...
+# Subtest: 顺序：边非法 + 缺证据 -> 先报 HANDOFF_EDGE_INVALID
+ok 268 - 顺序：边非法 + 缺证据 -> 先报 HANDOFF_EDGE_INVALID
+  ---
+  duration_ms: 395.881084
+  type: 'test'
+  ...
+# Subtest: 顺序：证据越界 + 回流不完整 -> 先报证据越界
+ok 269 - 顺序：证据越界 + 回流不完整 -> 先报证据越界
+  ---
+  duration_ms: 701.114126
+  type: 'test'
+  ...
+# Subtest: 顺序：回流 defects 空且无证据 -> 先报 HANDOFF_EVIDENCE_MISSING
+ok 270 - 顺序：回流 defects 空且无证据 -> 先报 HANDOFF_EVIDENCE_MISSING
+  ---
+  duration_ms: 395.49346
+  type: 'test'
+  ...
+# Subtest: stripLineSuffix 剥离 \#L<n> 与 \#L<n>-L<m>
+ok 271 - stripLineSuffix 剥离 \#L<n> 与 \#L<n>-L<m>
+  ---
+  duration_ms: 0.275772
+  type: 'test'
+  ...
+# Subtest: 缺陷证据 \#L12-L20 先剥离再解析 -> 合法回流包通过
+ok 272 - 缺陷证据 \#L12-L20 先剥离再解析 -> 合法回流包通过
+  ---
+  duration_ms: 426.593569
+  type: 'test'
+  ...
+# Subtest: input 引用不剥离 \#L 后缀（找不到带后缀文件 -> UNREADABLE）
+ok 273 - input 引用不剥离 \#L 后缀（找不到带后缀文件 -> UNREADABLE）
+  ---
+  duration_ms: 352.783679
+  type: 'test'
+  ...
+# Subtest: previous.ref 不剥离 \#L 后缀
+ok 274 - previous.ref 不剥离 \#L 后缀
+  ---
+  duration_ms: 482.420098
+  type: 'test'
+  ...
+# Subtest: previous.sha256 一致 -> 通过
+ok 275 - previous.sha256 一致 -> 通过
+  ---
+  duration_ms: 672.0337
+  type: 'test'
+  ...
+# Subtest: previous.sha256 缺省 -> 跳过哈希校验，通过
+ok 276 - previous.sha256 缺省 -> 跳过哈希校验，通过
+  ---
+  duration_ms: 465.391389
+  type: 'test'
+  ...
+# Subtest: artifacts/ 前缀按工作区相对解析
+ok 277 - artifacts/ 前缀按工作区相对解析
+  ---
+  duration_ms: 615.818514
+  type: 'test'
+  ...
+# Subtest: 工作区内的绝对路径 -> 通过
+ok 278 - 工作区内的绝对路径 -> 通过
+  ---
+  duration_ms: 647.16226
+  type: 'test'
+  ...
+# Subtest: 基准分支 A：versioned-doc 来源节点 -> 工作区基准
+ok 279 - 基准分支 A：versioned-doc 来源节点 -> 工作区基准
+  ---
+  duration_ms: 1020.666131
+  type: 'test'
+  ...
+# Subtest: 基准分支 B：declared 来源节点 -> 任务目录基准（同名文件只在 ws -> UNREADABLE）
+ok 280 - 基准分支 B：declared 来源节点 -> 任务目录基准（同名文件只在 ws -> UNREADABLE）
+  ---
+  duration_ms: 732.902019
+  type: 'test'
+  ...
+# Subtest: 基准按 graph 节点的 artifactPolicy 选（sourceNode 为 nodeId，不按模板名/角色名）
+ok 281 - 基准按 graph 节点的 artifactPolicy 选（sourceNode 为 nodeId，不按模板名/角色名）
+  ---
+  duration_ms: 657.050833
+  type: 'test'
+  ...
+# Subtest: resolveEvidenceRef 纯路径判定（越界 / artifacts / policy）
+ok 282 - resolveEvidenceRef 纯路径判定（越界 / artifacts / policy）
+  ---
+  duration_ms: 0.253962
+  type: 'test'
+  ...
+# Subtest: evidenceRefsOf 提取 input / previous / defect 且不剥离后缀
+ok 283 - evidenceRefsOf 提取 input / previous / defect 且不剥离后缀
+  ---
+  duration_ms: 0.721974
+  type: 'test'
+  ...
+# Subtest: 可注入 fs：stat 结果决定通过，且不产生任何写
+ok 284 - 可注入 fs：stat 结果决定通过，且不产生任何写
+  ---
+  duration_ms: 0.223271
+  type: 'test'
+  ...
+# Subtest: 失败返回含机读码 + 可展示 detail（复用 handoffInvalidDetail）
+ok 285 - 失败返回含机读码 + 可展示 detail（复用 handoffInvalidDetail）
+  ---
+  duration_ms: 423.02654
+  type: 'test'
+  ...
+# Subtest: 字面量锚定：顺序首码 HANDOFF_FIELD_MISSING 的码值
+ok 286 - 字面量锚定：顺序首码 HANDOFF_FIELD_MISSING 的码值
+  ---
+  duration_ms: 510.403663
+  type: 'test'
+  ...
+# Subtest: 字面量锚定：证据首码 HANDOFF_EVIDENCE_MISSING 的码值
+ok 287 - 字面量锚定：证据首码 HANDOFF_EVIDENCE_MISSING 的码值
+  ---
+  duration_ms: 433.744433
+  type: 'test'
+  ...
+# Subtest: 字面量锚定：哈希码 HANDOFF_HASH_MISMATCH 的码值
+ok 288 - 字面量锚定：哈希码 HANDOFF_HASH_MISMATCH 的码值
+  ---
+  duration_ms: 2866.962608
+  type: 'test'
+  ...
+# Subtest: buildInboxMessage：固定 10 键、默认值
+ok 289 - buildInboxMessage：固定 10 键、默认值
+  ---
+  duration_ms: 2.047644
+  type: 'test'
+  ...
+# Subtest: writeInbox：先落盘再返回可投递，内容与 C-08 一致
+ok 290 - writeInbox：先落盘再返回可投递，内容与 C-08 一致
+  ---
+  duration_ms: 454.884641
+  type: 'test'
+  ...
+# Subtest: 原子替换：注入写失败 -> INBOX_WRITE_FAILED、不可投递、无半文件
+ok 291 - 原子替换：注入写失败 -> INBOX_WRITE_FAILED、不可投递、无半文件
+  ---
+  duration_ms: 1.349857
+  type: 'test'
+  ...
+# Subtest: fault=inbox_write:fail：明确失败、不可投递、不写盘
+ok 292 - fault=inbox_write:fail：明确失败、不可投递、不写盘
+  ---
+  duration_ms: 1.070918
+  type: 'test'
+  ...
+# Subtest: 原子替换：写失败后既有信箱文件保持完整、无 .tmp 残留
+ok 293 - 原子替换：写失败后既有信箱文件保持完整、无 .tmp 残留
+  ---
+  duration_ms: 463.463279
+  type: 'test'
+  ...
+# Subtest: 同一 handoffId 重复写幂等（不产生第二份）
+ok 294 - 同一 handoffId 重复写幂等（不产生第二份）
+  ---
+  duration_ms: 810.27196
+  type: 'test'
+  ...
+# Subtest: listInbox：按 handoffId 稳定升序
+ok 295 - listInbox：按 handoffId 稳定升序
+  ---
+  duration_ms: 1268.521829
+  type: 'test'
+  ...
+# Subtest: listInbox：信箱目录不存在返回空列表
+ok 296 - listInbox：信箱目录不存在返回空列表
+  ---
+  duration_ms: 2.070889
+  type: 'test'
+  ...
+# Subtest: readInbox：不存在返回明确 INBOX_NOT_FOUND
+ok 297 - readInbox：不存在返回明确 INBOX_NOT_FOUND
+  ---
+  duration_ms: 106.63382
+  type: 'test'
+  ...
+# Subtest: readInbox：损坏 JSON 返回字面量 INBOX_CORRUPT，params 含 path
+ok 298 - readInbox：损坏 JSON 返回字面量 INBOX_CORRUPT，params 含 path
+  ---
+  duration_ms: 355.004066
+  type: 'test'
+  ...
+# Subtest: patchInbox：损坏 JSON 返回字面量 INBOX_CORRUPT，params 含 path
+ok 299 - patchInbox：损坏 JSON 返回字面量 INBOX_CORRUPT，params 含 path
+  ---
+  duration_ms: 353.587283
+  type: 'test'
+  ...
+# Subtest: patchInbox：标记已投递且 10 键不增不减（丢弃非信箱字段）
+ok 300 - patchInbox：标记已投递且 10 键不增不减（丢弃非信箱字段）
+  ---
+  duration_ms: 1048.272468
+  type: 'test'
+  ...
+# Subtest: patchInbox：文件不存在返回 INBOX_NOT_FOUND
+ok 301 - patchInbox：文件不存在返回 INBOX_NOT_FOUND
+  ---
+  duration_ms: 115.935399
+  type: 'test'
+  ...
+# Subtest: removeInbox：删除后读不到、列出为空
+ok 302 - removeInbox：删除后读不到、列出为空
+  ---
+  duration_ms: 549.513337
+  type: 'test'
+  ...
+# Subtest: 映射关系：CORE_TEXT 的六张状态表与 labels.js 六个导出一一对应
+ok 303 - 映射关系：CORE_TEXT 的六张状态表与 labels.js 六个导出一一对应
+  ---
+  duration_ms: 2.686451
+  type: 'test'
+  ...
+# Subtest: 两侧取同一批键：六张表的键集合逐表一致（缺键/多键即失败）
+ok 304 - 两侧取同一批键：六张表的键集合逐表一致（缺键/多键即失败）
+  ---
+  duration_ms: 0.365943
+  type: 'test'
+  ...
+# Subtest: 逐词交叉比对（CORE_TEXT 到 labels）：每个状态键文案逐字一致
+ok 305 - 逐词交叉比对（CORE_TEXT 到 labels）：每个状态键文案逐字一致
+  ---
+  duration_ms: 0.255712
+  type: 'test'
+  ...
+# Subtest: 逐词交叉比对（labels 到 CORE_TEXT）：反向同样逐字一致
+ok 306 - 逐词交叉比对（labels 到 CORE_TEXT）：反向同样逐字一致
+  ---
+  duration_ms: 0.248062
+  type: 'test'
+  ...
+# Subtest: 六张状态表整对象深比较，且每个文案为非空中文字符串（BR-35 / D-11.3）
+ok 307 - 六张状态表整对象深比较，且每个文案为非空中文字符串（BR-35 / D-11.3）
+  ---
+  duration_ms: 0.46051
+  type: 'test'
+  ...
+# Subtest: D-7.2 队列内取 expected：排队期间 rev 变化不产生假冲突
+ok 308 - D-7.2 队列内取 expected：排队期间 rev 变化不产生假冲突
+  ---
+  duration_ms: 1717.085028
+  type: 'test'
+  ...
+# Subtest: D-7.2 暂停写先于派发 CAS → STORE_CONFLICT 且无会话 / 无 node.dispatch
+ok 309 - D-7.2 暂停写先于派发 CAS → STORE_CONFLICT 且无会话 / 无 node.dispatch
+  ---
+  duration_ms: 1517.481741
+  type: 'test'
+  ...
+# Subtest: pause 幂等 / 业务前置：二次 pause 不写盘不发事件；非 running 拒绝且 rev 不变（AC-51 / AC-53）
+ok 310 - pause 幂等 / 业务前置：二次 pause 不写盘不发事件；非 running 拒绝且 rev 不变（AC-51 / AC-53）
+  ---
+  duration_ms: 2222.582782
+  type: 'test'
+  ...
+# Subtest: resume：一次 CAS 写 paused=false 并发 workflow.resumed；再次 resume 幂等
+ok 311 - resume：一次 CAS 写 paused=false 并发 workflow.resumed；再次 resume 幂等
+  ---
+  duration_ms: 2776.546154
+  type: 'test'
+  ...
+# Subtest: NFR-05: status.md / 信箱原子写（强杀残留 tmp 不影响目标文件）
+ok 312 - NFR-05: status.md / 信箱原子写（强杀残留 tmp 不影响目标文件）
+  ---
+  duration_ms: 2028.778463
+  type: 'test'
+  ...
+# Subtest: NFR-05: 50 张交接包规模的信箱原子写（整份替换、无半截 JSON）
+ok 313 - NFR-05: 50 张交接包规模的信箱原子写（整份替换、无半截 JSON）
+  ---
+  duration_ms: 910.917994
+  type: 'test'
+  ...
+# Subtest: NFR-01: 100 事件 / 50 包数据集下渲染输出完整（首行可即时产出）
+ok 314 - NFR-01: 100 事件 / 50 包数据集下渲染输出完整（首行可即时产出）
+  ---
+  duration_ms: 57.512473
+  type: 'test'
+  ...
+# Subtest: A-6 追加段逐字对齐需求样例：四行文案 + 路径格式（空一行 + 4 行）
+ok 315 - A-6 追加段逐字对齐需求样例：四行文案 + 路径格式（空一行 + 4 行）
+  ---
+  duration_ms: 3.529046
+  type: 'test'
+  ...
+# Subtest: A-6 入口节点（无上游交接包）：只追加前三行，逐字
+ok 316 - A-6 入口节点（无上游交接包）：只追加前三行，逐字
+  ---
+  duration_ms: 0.383203
+  type: 'test'
+  ...
+# Subtest: A-6 非入口且只传 handoff：由 graph 解析目标节点，四行逐字
+ok 317 - A-6 非入口且只传 handoff：由 graph 解析目标节点，四行逐字
+  ---
+  duration_ms: 0.334381
+  type: 'test'
+  ...
+# Subtest: A-6 审核模板正文已含工作区行：不重复该行，只追加后三行
+ok 318 - A-6 审核模板正文已含工作区行：不重复该行，只追加后三行
+  ---
+  duration_ms: 0.244558
+  type: 'test'
+  ...
+# Subtest: single 图只有 1 个节点：不追加，提示词逐字不变（I1.1 / A-6:1390）
+ok 319 - single 图只有 1 个节点：不追加，提示词逐字不变（I1.1 / A-6:1390）
+  ---
+  duration_ms: 0.27952
+  type: 'test'
+  ...
+# Subtest: 只传 node、不带 graph：不追加，输出与 I1.2 / I1.3 逐字一致
+ok 320 - 只传 node、不带 graph：不追加，输出与 I1.2 / I1.3 逐字一致
+  ---
+  duration_ms: 0.245958
+  type: 'test'
+  ...
+# Subtest: graph 多节点但 workspaceDir 为空或缺失：不追加
+ok 321 - graph 多节点但 workspaceDir 为空或缺失：不追加
+  ---
+  duration_ms: 0.320283
+  type: 'test'
+  ...
+# Subtest: A-6 段不进 PROMPT_TEMPLATES：模板表一字未改（A-6:1394）
+ok 322 - A-6 段不进 PROMPT_TEMPLATES：模板表一字未改（A-6:1394）
+  ---
+  duration_ms: 0.34559
+  type: 'test'
+  ...
+# Subtest: A-6 路径格式：尾斜杠与反斜杠归一为 / 分隔的绝对路径
+ok 323 - A-6 路径格式：尾斜杠与反斜杠归一为 / 分隔的绝对路径
+  ---
+  duration_ms: 0.676673
+  type: 'test'
+  ...
+# Subtest: A-6 生产派发路径必须带 graph 与非空 workspaceDir（A-6:1392 / AC-07 机检）
+ok 324 - A-6 生产派发路径必须带 graph 与非空 workspaceDir（A-6:1392 / AC-07 机检）
+  ---
+  duration_ms: 123.680939
+  type: 'test'
+  ...
+# Subtest: A-6 豁免证据：buildBackflowHandoff 的 promptText 不进入生产派发
+ok 325 - A-6 豁免证据：buildBackflowHandoff 的 promptText 不进入生产派发
+  ---
+  duration_ms: 2866.645102
+  type: 'test'
+  ...
+# Subtest: AC-40 \#1: src/core,src/daemon is free of the 31 forbidden words
+ok 326 - AC-40 \#1: src/core,src/daemon is free of the 31 forbidden words
+  ---
+  duration_ms: 1644.262621
+  type: 'test'
+  ...
+# Subtest: AC-40 \#2: src/registry is free of the 30 forbidden words
+ok 327 - AC-40 \#2: src/registry is free of the 30 forbidden words
+  ---
+  duration_ms: 831.716622
+  type: 'test'
+  ...
+# Subtest: AC-40 \#3: src/cli/roles.js alone is free of the 31 forbidden words
+ok 328 - AC-40 \#3: src/cli/roles.js alone is free of the 31 forbidden words
+  ---
+  duration_ms: 305.620002
+  type: 'test'
+  ...
+# Subtest: AC-40 pin: coordinator appears exactly once in src/registry, on the GROUPS line
+ok 329 - AC-40 pin: coordinator appears exactly once in src/registry, on the GROUPS line
+  ---
+  duration_ms: 912.806132
+  type: 'test'
+  ...
+# Subtest: AC-43: src/registry and src/cli/roles.js hold no CJK character
+ok 330 - AC-43: src/registry and src/cli/roles.js hold no CJK character
+  ---
+  duration_ms: 718.939711
+  type: 'test'
+  ...
+# Subtest: AC-41: package.json has no runtime dependency
+ok 331 - AC-41: package.json has no runtime dependency
+  ---
+  duration_ms: 119.496376
+  type: 'test'
+  ...
+# Subtest: --files scans exactly the listed files and ignores --dirs
+ok 332 - --files scans exactly the listed files and ignores --dirs
+  ---
+  duration_ms: 256.124013
+  type: 'test'
+  ...
+# Subtest: --files on a missing path exits 2 instead of reporting a clean tree
+ok 333 - --files on a missing path exits 2 instead of reporting a clean tree
+  ---
+  duration_ms: 186.155072
+  type: 'test'
+  ...
+# Subtest: without --files the default scope is unchanged
+ok 334 - without --files the default scope is unchanged
+  ---
+  duration_ms: 1655.849396
+  type: 'test'
+  ...
+# Subtest: loads a clean tree: six built-in assets, five groups, no errors
+ok 335 - loads a clean tree: six built-in assets, five groups, no errors
+  ---
+  duration_ms: 1726.694224
+  type: 'test'
+  ...
+# Subtest: RoleDef carries exactly the thirteen contract keys
+ok 336 - RoleDef carries exactly the thirteen contract keys
+  ---
+  duration_ms: 370.425399
+  type: 'test'
+  ...
+# Subtest: SkillDef carries the body and the optional arrays as defaults
+ok 337 - SkillDef carries the body and the optional arrays as defaults
+  ---
+  duration_ms: 394.773585
+  type: 'test'
+  ...
+# Subtest: roles sort by group order then id, not by directory listing order
+ok 338 - roles sort by group order then id, not by directory listing order
+  ---
+  duration_ms: 980.63414
+  type: 'test'
+  ...
+# Subtest: a missing project directory is not an error
+ok 339 - a missing project directory is not an error
+  ---
+  duration_ms: 349.884019
+  type: 'test'
+  ...
+# Subtest: AC-04: missing max_concurrent_sessions yields exactly one ROLE_SCHEMA_MISSING
+ok 340 - AC-04: missing max_concurrent_sessions yields exactly one ROLE_SCHEMA_MISSING
+  ---
+  duration_ms: 674.667016
+  type: 'test'
+  ...
+# Subtest: AC-05: file name writer.yaml declaring wordsmith yields ROLE_ID_MISMATCH
+ok 341 - AC-05: file name writer.yaml declaring wordsmith yields ROLE_ID_MISMATCH
+  ---
+  duration_ms: 645.249748
+  type: 'test'
+  ...
+# Subtest: AC-06: group outside the five groups yields ROLE_GROUP_INVALID
+ok 342 - AC-06: group outside the five groups yields ROLE_GROUP_INVALID
+  ---
+  duration_ms: 663.837326
+  type: 'test'
+  ...
+# Subtest: AC-07: artifact_type / side_effect / max_concurrent_sessions each report their own code
+ok 343 - AC-07: artifact_type / side_effect / max_concurrent_sessions each report their own code
+  ---
+  duration_ms: 1631.88403
+  type: 'test'
+  ...
+# Subtest: AC-08: an unknown skill reference yields ROLE_SKILL_NOT_FOUND naming the skill
+ok 344 - AC-08: an unknown skill reference yields ROLE_SKILL_NOT_FOUND naming the skill
+  ---
+  duration_ms: 840.126759
+  type: 'test'
+  ...
+# Subtest: AC-09: broken indentation reports line 4 and the machine detail key
+ok 345 - AC-09: broken indentation reports line 4 and the machine detail key
+  ---
+  duration_ms: 822.265502
+  type: 'test'
+  ...
+# Subtest: AC-13: a skill directory without SKILL.md yields SKILL_FILE_MISSING
+ok 346 - AC-13: a skill directory without SKILL.md yields SKILL_FILE_MISSING
+  ---
+  duration_ms: 552.431865
+  type: 'test'
+  ...
+# Subtest: AC-14: one SKILL.md with two defects reports two errors, metadata first
+ok 347 - AC-14: one SKILL.md with two defects reports two errors, metadata first
+  ---
+  duration_ms: 2975.514185
+  type: 'test'
+  ...
+# Subtest: AC-15: metadata only, empty body yields SKILL_BODY_EMPTY
+ok 348 - AC-15: metadata only, empty body yields SKILL_BODY_EMPTY
+  ---
+  duration_ms: 725.27822
+  type: 'test'
+  ...
+# Subtest: AC-16: applies_to outside the five groups yields SKILL_GROUP_INVALID
+ok 349 - AC-16: applies_to outside the five groups yields SKILL_GROUP_INVALID
+  ---
+  duration_ms: 750.759822
+  type: 'test'
+  ...
+# Subtest: AC-45: a project skill replaces the built-in one without changing totals
+ok 350 - AC-45: a project skill replaces the built-in one without changing totals
+  ---
+  duration_ms: 639.090929
+  type: 'test'
+  ...
+# Subtest: a project role replaces the built-in one as a whole file
+ok 351 - a project role replaces the built-in one as a whole file
+  ---
+  duration_ms: 621.122389
+  type: 'test'
+  ...
+# Subtest: onlyRole loads one role, loads all skills, and drops skill errors
+ok 352 - onlyRole loads one role, loads all skills, and drops skill errors
+  ---
+  duration_ms: 729.585984
+  type: 'test'
+  ...
+# Subtest: onlyRole on a broken role keeps just that file in errors
+ok 353 - onlyRole on a broken role keeps just that file in errors
+  ---
+  duration_ms: 984.559538
+  type: 'test'
+  ...
+# Subtest: onlyRole prefers the project copy over the built-in copy
+ok 354 - onlyRole prefers the project copy over the built-in copy
+  ---
+  duration_ms: 758.304837
+  type: 'test'
+  ...
+# Subtest: onlyRole on an unknown id returns an empty table without errors
+ok 355 - onlyRole on an unknown id returns an empty table without errors
+  ---
+  duration_ms: 354.440641
+  type: 'test'
+  ...
+# Subtest: a missing built-in root yields one REGISTRY_ASSETS_MISSING and stops
+ok 356 - a missing built-in root yields one REGISTRY_ASSETS_MISSING and stops
+  ---
+  duration_ms: 330.91958
+  type: 'test'
+  ...
+# Subtest: AC-44: loading leaves bytes, mtimes and the directory tree untouched
+ok 357 - AC-44: loading leaves bytes, mtimes and the directory tree untouched
+  ---
+  duration_ms: 4523.682114
+  type: 'test'
+  ...
+# Subtest: AC-44: the registry never imports a network module
+ok 358 - AC-44: the registry never imports a network module
+  ---
+  duration_ms: 706.332164
+  type: 'test'
+  ...
+# Subtest: AC-43: the registry sources contain no CJK characters
+ok 359 - AC-43: the registry sources contain no CJK characters
+  ---
+  duration_ms: 764.967388
+  type: 'test'
+  ...
+# Subtest: asset path helpers point at the documented directories
+ok 360 - asset path helpers point at the documented directories
+  ---
+  duration_ms: 0.294952
+  type: 'test'
+  ...
+# Subtest: B-01 竞态：派发已提交但包仍残留 created，resume 不产生第二张包 / 不重复派发 / dispatchCount 不增加 / 无重复会话
+ok 361 - B-01 竞态：派发已提交但包仍残留 created，resume 不产生第二张包 / 不重复派发 / dispatchCount 不增加 / 无重复会话
+  ---
+  duration_ms: 1707.789279
+  type: 'test'
+  ...
+# Subtest: B-01 负例 1：toNodeId !== 目标节点时不复用
+ok 362 - B-01 负例 1：toNodeId !== 目标节点时不复用
+  ---
+  duration_ms: 2118.508249
+  type: 'test'
+  ...
+# Subtest: B-01 负例 2：round !== targetRound 时不复用
+ok 363 - B-01 负例 2：round !== targetRound 时不复用
+  ---
+  duration_ms: 1991.719128
+  type: 'test'
+  ...
+# Subtest: B-01 负例 3：该轮已有已开始会话时不复用（旧轮次会话不算）
+ok 364 - B-01 负例 3：该轮已有已开始会话时不复用（旧轮次会话不算）
+  ---
+  duration_ms: 3888.886137
+  type: 'test'
+  ...
+# Subtest: B-01 正例：三重门控全部成立时仍复用同一张 created 包派发一次
+ok 365 - B-01 正例：三重门控全部成立时仍复用同一张 created 包派发一次
+  ---
+  duration_ms: 2719.363931
+  type: 'test'
+  ...
+# Subtest: F-1: role validate <unknown id> is "role not found", exit 1
+ok 366 - F-1: role validate <unknown id> is "role not found", exit 1
+  ---
+  duration_ms: 1422.07345
+  type: 'test'
+  ...
+# Subtest: F-1: an existing role still validates normally (AC-36 shape unchanged)
+ok 367 - F-1: an existing role still validates normally (AC-36 shape unchanged)
+  ---
+  duration_ms: 4515.297249
+  type: 'test'
+  ...
+# Subtest: F-1: show <unknown id> keeps its BR-25 wording
+ok 368 - F-1: show <unknown id> keeps its BR-25 wording
+  ---
+  duration_ms: 3776.588859
+  type: 'test'
+  ...
+# Subtest: F-2: list rejects a positional role id
+ok 369 - F-2: list rejects a positional role id
+  ---
+  duration_ms: 0.514629
+  type: 'test'
+  ...
+# Subtest: F-2: globally known flags are not silently ignored by role subcommands
+ok 370 - F-2: globally known flags are not silently ignored by role subcommands
+  ---
+  duration_ms: 1.971358
+  type: 'test'
+  ...
+# Subtest: F-2: AC-37 wording and legal flag combinations are unchanged
+ok 371 - F-2: AC-37 wording and legal flag combinations are unchanged
+  ---
+  duration_ms: 1475.535065
+  type: 'test'
+  ...
+# Subtest: F-2: parseArgs keeps the original shape for non-role commands
+ok 372 - F-2: parseArgs keeps the original shape for non-role commands
+  ---
+  duration_ms: 0.759985
+  type: 'test'
+  ...
+# Subtest: F-3: an unregistered graph role is visible in the text list with its note
+ok 373 - F-3: an unregistered graph role is visible in the text list with its note
+  ---
+  duration_ms: 3107.981772
+  type: 'test'
+  ...
+# Subtest: F-4: role-instances.js has no dependency on src/core
+ok 374 - F-4: role-instances.js has no dependency on src/core
+  ---
+  duration_ms: 52.70531
+  type: 'test'
+  ...
+# Subtest: F-5: same file + same reason code is reported once; different codes stay
+ok 375 - F-5: same file + same reason code is reported once; different codes stay
+  ---
+  duration_ms: 954.426736
+  type: 'test'
+  ...
+# Subtest: F-6 (dismissed): roleToSessions keeps the AC-29 creation order
+ok 376 - F-6 (dismissed): roleToSessions keeps the AC-29 creation order
+  ---
+  duration_ms: 0.34655
+  type: 'test'
+  ...
+# Subtest: F-7: a missing maxRounds does not leave a dangling slash
+ok 377 - F-7: a missing maxRounds does not leave a dangling slash
+  ---
+  duration_ms: 0.275372
+  type: 'test'
+  ...
+# Subtest: a role instance carries exactly the nine contract keys
+ok 378 - a role instance carries exactly the nine contract keys
+  ---
+  duration_ms: 1768.7337
+  type: 'test'
+  ...
+# Subtest: AC-21: task-loop exposes three distinct roles in group-then-id order
+ok 379 - AC-21: task-loop exposes three distinct roles in group-then-id order
+  ---
+  duration_ms: 0.347912
+  type: 'test'
+  ...
+# Subtest: AC-31: two consecutive projections return the same order
+ok 380 - AC-31: two consecutive projections return the same order
+  ---
+  duration_ms: 0.685578
+  type: 'test'
+  ...
+# Subtest: an unregistered role sorts last, reports unknown-role and has no cap
+ok 381 - an unregistered role sorts last, reports unknown-role and has no cap
+  ---
+  duration_ms: 0.235695
+  type: 'test'
+  ...
+# Subtest: a declared but unbound known role is inactive and has no session key
+ok 382 - a declared but unbound known role is inactive and has no session key
+  ---
+  duration_ms: 0.324864
+  type: 'test'
+  ...
+# Subtest: every built-in graph declares its roles; single still lists worker
+ok 383 - every built-in graph declares its roles; single still lists worker
+  ---
+  duration_ms: 0.271888
+  type: 'test'
+  ...
+# Subtest: AC-22: a serving node makes the role busy and lists its session and host
+ok 384 - AC-22: a serving node makes the role busy and lists its session and host
+  ---
+  duration_ms: 0.311141
+  type: 'test'
+  ...
+# Subtest: a review-state node also counts as serving
+ok 385 - a review-state node also counts as serving
+  ---
+  duration_ms: 0.187695
+  type: 'test'
+  ...
+# Subtest: AC-23: a pending node with no session is available
+ok 386 - AC-23: a pending node with no session is available
+  ---
+  duration_ms: 0.495394
+  type: 'test'
+  ...
+# Subtest: AC-24: a finished node with nothing serving is cooling down
+ok 387 - AC-24: a finished node with nothing serving is cooling down
+  ---
+  duration_ms: 0.491574
+  type: 'test'
+  ...
+# Subtest: AC-26: an escalated session makes the role unavailable with reason escalated
+ok 388 - AC-26: an escalated session makes the role unavailable with reason escalated
+  ---
+  duration_ms: 0.244179
+  type: 'test'
+  ...
+# Subtest: a quarantined session reports reason quarantined (D-9 unit-test branch)
+ok 389 - a quarantined session reports reason quarantined (D-9 unit-test branch)
+  ---
+  duration_ms: 0.183504
+  type: 'test'
+  ...
+# Subtest: AC-27: a terminal instance retires every role
+ok 390 - AC-27: a terminal instance retires every role
+  ---
+  duration_ms: 0.21991
+  type: 'test'
+  ...
+# Subtest: suspended is not terminal
+ok 391 - suspended is not terminal
+  ---
+  duration_ms: 0.132819
+  type: 'test'
+  ...
+# Subtest: decideStatus follows the documented precedence, first hit wins
+ok 392 - decideStatus follows the documented precedence, first hit wins
+  ---
+  duration_ms: 0.468283
+  type: 'test'
+  ...
+# Subtest: decideStatus prefers escalated over quarantined when both appear
+ok 393 - decideStatus prefers escalated over quarantined when both appear
+  ---
+  duration_ms: 0.135026
+  type: 'test'
+  ...
+# Subtest: AC-28: the cap comes from the registry, not from the snapshot
+ok 394 - AC-28: the cap comes from the registry, not from the snapshot
+  ---
+  duration_ms: 0.308236
+  type: 'test'
+  ...
+# Subtest: AC-29: roleToSessions keeps every session, including idle ones, by creation order
+ok 395 - AC-29: roleToSessions keeps every session, including idle ones, by creation order
+  ---
+  duration_ms: 0.318831
+  type: 'test'
+  ...
+# Subtest: hostIcons de-duplicates in serving order and skips null hosts
+ok 396 - hostIcons de-duplicates in serving order and skips null hosts
+  ---
+  duration_ms: 0.227939
+  type: 'test'
+  ...
+# Subtest: lastAction breaks a stateSince tie on the smaller nodeId
+ok 397 - lastAction breaks a stateSince tie on the smaller nodeId
+  ---
+  duration_ms: 0.176449
+  type: 'test'
+  ...
+# Subtest: lastAction is null when the role binds no node
+ok 398 - lastAction is null when the role binds no node
+  ---
+  duration_ms: 0.131215
+  type: 'test'
+  ...
+# Subtest: AC-30: the projection is derived, it never mutates its input
+ok 399 - AC-30: the projection is derived, it never mutates its input
+  ---
+  duration_ms: 0.282455
+  type: 'test'
+  ...
+# Subtest: an empty input yields an empty projection instead of throwing
+ok 400 - an empty input yields an empty projection instead of throwing
+  ---
+  duration_ms: 0.176372
+  type: 'test'
+  ...
+# Subtest: a graph without a roles field falls back to the node role ids
+ok 401 - a graph without a roles field falls back to the node role ids
+  ---
+  duration_ms: 0.172104
+  type: 'test'
+  ...
+# Subtest: the same role bound twice still produces one instance
+ok 402 - the same role bound twice still produces one instance
+  ---
+  duration_ms: 0.1769
+  type: 'test'
+  ...
+# Subtest: exposes the closed value sets in the documented order
+ok 403 - exposes the closed value sets in the documented order
+  ---
+  duration_ms: 1.834852
+  type: 'test'
+  ...
+# Subtest: freezes every exported value set
+ok 404 - freezes every exported value set
+  ---
+  duration_ms: 0.26245
+  type: 'test'
+  ...
+# Subtest: declares nine required role keys and five optional ones
+ok 405 - declares nine required role keys and five optional ones
+  ---
+  duration_ms: 0.126402
+  type: 'test'
+  ...
+# Subtest: declares the id pattern and its length window
+ok 406 - declares the id pattern and its length window
+  ---
+  duration_ms: 0.174014
+  type: 'test'
+  ...
+# Subtest: declares the concurrency window as 1..5
+ok 407 - declares the concurrency window as 1..5
+  ---
+  duration_ms: 0.125174
+  type: 'test'
+  ...
+# Subtest: accepts a fully valid role with no errors
+ok 408 - accepts a fully valid role with no errors
+  ---
+  duration_ms: 0.437851
+  type: 'test'
+  ...
+# Subtest: accepts a role without any optional key
+ok 409 - accepts a role without any optional key
+  ---
+  duration_ms: 0.132596
+  type: 'test'
+  ...
+# Subtest: reports exactly one error when max_concurrent_sessions is missing
+ok 410 - reports exactly one error when max_concurrent_sessions is missing
+  ---
+  duration_ms: 0.155766
+  type: 'test'
+  ...
+# Subtest: reports exactly one error when skills is missing
+ok 411 - reports exactly one error when skills is missing
+  ---
+  duration_ms: 0.426085
+  type: 'test'
+  ...
+# Subtest: lists every missing required key in declaration order
+ok 412 - lists every missing required key in declaration order
+  ---
+  duration_ms: 0.507957
+  type: 'test'
+  ...
+# Subtest: rejects a wrong schema version through the schema code
+ok 413 - rejects a wrong schema version through the schema code
+  ---
+  duration_ms: 0.217497
+  type: 'test'
+  ...
+# Subtest: rejects an id that differs from the file name
+ok 414 - rejects an id that differs from the file name
+  ---
+  duration_ms: 0.135994
+  type: 'test'
+  ...
+# Subtest: rejects an id with an illegal character
+ok 415 - rejects an id with an illegal character
+  ---
+  duration_ms: 0.112081
+  type: 'test'
+  ...
+# Subtest: rejects an id shorter than the minimum length
+ok 416 - rejects an id shorter than the minimum length
+  ---
+  duration_ms: 0.097048
+  type: 'test'
+  ...
+# Subtest: rejects an id longer than the maximum length
+ok 417 - rejects an id longer than the maximum length
+  ---
+  duration_ms: 0.101982
+  type: 'test'
+  ...
+# Subtest: rejects an unknown group and keeps the raw value
+ok 418 - rejects an unknown group and keeps the raw value
+  ---
+  duration_ms: 0.109408
+  type: 'test'
+  ...
+# Subtest: rejects an unknown artifact type
+ok 419 - rejects an unknown artifact type
+  ---
+  duration_ms: 0.104535
+  type: 'test'
+  ...
+# Subtest: rejects an unknown side effect
+ok 420 - rejects an unknown side effect
+  ---
+  duration_ms: 0.090991
+  type: 'test'
+  ...
+# Subtest: rejects a concurrency value outside 1..5
+ok 421 - rejects a concurrency value outside 1..5
+  ---
+  duration_ms: 0.134121
+  type: 'test'
+  ...
+# Subtest: rejects a non-integer concurrency value
+ok 422 - rejects a non-integer concurrency value
+  ---
+  duration_ms: 0.13154
+  type: 'test'
+  ...
+# Subtest: rejects skills that are not a string array
+ok 423 - rejects skills that are not a string array
+  ---
+  duration_ms: 0.124912
+  type: 'test'
+  ...
+# Subtest: rejects a non-string name or summary
+ok 424 - rejects a non-string name or summary
+  ---
+  duration_ms: 0.136431
+  type: 'test'
+  ...
+# Subtest: rejects a non-boolean dispatchable
+ok 425 - rejects a non-boolean dispatchable
+  ---
+  duration_ms: 0.109178
+  type: 'test'
+  ...
+# Subtest: accepts every optional key when well typed
+ok 426 - accepts every optional key when well typed
+  ---
+  duration_ms: 0.114016
+  type: 'test'
+  ...
+# Subtest: orders field errors the way D-3 requires
+ok 427 - orders field errors the way D-3 requires
+  ---
+  duration_ms: 0.118987
+  type: 'test'
+  ...
+# Subtest: treats a non-object role payload as missing schema
+ok 428 - treats a non-object role payload as missing schema
+  ---
+  duration_ms: 0.078884
+  type: 'test'
+  ...
+# Subtest: accepts a fully valid skill metadata block
+ok 429 - accepts a fully valid skill metadata block
+  ---
+  duration_ms: 0.217364
+  type: 'test'
+  ...
+# Subtest: accepts a skill without optional keys
+ok 430 - accepts a skill without optional keys
+  ---
+  duration_ms: 0.918073
+  type: 'test'
+  ...
+# Subtest: reports a missing summary for a skill
+ok 431 - reports a missing summary for a skill
+  ---
+  duration_ms: 0.128603
+  type: 'test'
+  ...
+# Subtest: reports a skill id that differs from the directory name
+ok 432 - reports a skill id that differs from the directory name
+  ---
+  duration_ms: 0.117256
+  type: 'test'
+  ...
+# Subtest: reports both skill defects of the AC-14 fixture in order
+ok 433 - reports both skill defects of the AC-14 fixture in order
+  ---
+  duration_ms: 0.225587
+  type: 'test'
+  ...
+# Subtest: rejects an applies_to value outside the group set
+ok 434 - rejects an applies_to value outside the group set
+  ---
+  duration_ms: 0.123071
+  type: 'test'
+  ...
+# Subtest: accepts several valid applies_to values
+ok 435 - accepts several valid applies_to values
+  ---
+  duration_ms: 0.09245
+  type: 'test'
+  ...
+# Subtest: rejects a wrong skill schema version
+ok 436 - rejects a wrong skill schema version
+  ---
+  duration_ms: 0.092068
+  type: 'test'
+  ...
+# Subtest: rejects commands that are not a string array
+ok 437 - rejects commands that are not a string array
+  ---
+  duration_ms: 0.092464
+  type: 'test'
+  ...
+# Subtest: reports every required skill key when metadata is empty
+ok 438 - reports every required skill key when metadata is empty
+  ---
+  duration_ms: 0.104338
+  type: 'test'
+  ...
+# Subtest: 6 个生命周期 RPC 注册并转发正确参数，结果原样放在 result
+ok 439 - 6 个生命周期 RPC 注册并转发正确参数，结果原样放在 result
+  ---
+  duration_ms: 516.430822
+  type: 'test'
+  ...
+# Subtest: 参数边界校验：缺必填字段 → IPC_BAD_PARAMS，编排层语义码原样透传
+ok 440 - 参数边界校验：缺必填字段 → IPC_BAD_PARAMS，编排层语义码原样透传
+  ---
+  duration_ms: 534.583513
+  type: 'test'
+  ...
+# Subtest: 生命周期 RPC 不随 NODE_ENV 门控：production 下仍可用
+ok 441 - 生命周期 RPC 不随 NODE_ENV 门控：production 下仍可用
+  ---
+  duration_ms: 517.632151
+  type: 'test'
+  ...
+# Subtest: run.start 白名单透传 approvalPolicy（D-5.2 / G9），非法取值在边界拒绝
+ok 442 - run.start 白名单透传 approvalPolicy（D-5.2 / G9），非法取值在边界拒绝
+  ---
+  duration_ms: 510.448433
+  type: 'test'
+  ...
+# Subtest: run.start 不传 approvalPolicy 时沿用宿主配置，不调用 setApprovalPolicy
+ok 443 - run.start 不传 approvalPolicy 时沿用宿主配置，不调用 setApprovalPolicy
+  ---
+  duration_ms: 551.999597
+  type: 'test'
+  ...
+# Subtest: 3 个接缝仅 NODE_ENV=test 挂载：test.handoff / test.delivery / test.escalate
+ok 444 - 3 个接缝仅 NODE_ENV=test 挂载：test.handoff / test.delivery / test.escalate
+  ---
+  duration_ms: 552.534121
+  type: 'test'
+  ...
+# Subtest: production 下 3 个接缝一律 IPC_BAD_METHOD，核心不崩
+ok 445 - production 下 3 个接缝一律 IPC_BAD_METHOD，核心不崩
+  ---
+  duration_ms: 625.587684
+  type: 'test'
+  ...
+# Subtest: AC-57：校验/审批/暂停/恢复 流程的 reason 序列与 detail 落盘并可复盘（行为断言）
+ok 446 - AC-57：校验/审批/暂停/恢复 流程的 reason 序列与 detail 落盘并可复盘（行为断言）
+  ---
+  duration_ms: 4399.353165
+  type: 'test'
+  ...
+# Subtest: splits front matter and body
+ok 447 - splits front matter and body
+  ---
+  duration_ms: 2.752315
+  type: 'test'
+  ...
+# Subtest: reports missing front matter on line 1
+ok 448 - reports missing front matter on line 1
+  ---
+  duration_ms: 0.344375
+  type: 'test'
+  ...
+# Subtest: reports missing closing separator on line 1
+ok 449 - reports missing closing separator on line 1
+  ---
+  duration_ms: 0.171017
+  type: 'test'
+  ...
+# Subtest: reports an empty file as missing front matter
+ok 450 - reports an empty file as missing front matter
+  ---
+  duration_ms: 0.17756
+  type: 'test'
+  ...
+# Subtest: accepts a separator line with surrounding spaces
+ok 451 - accepts a separator line with surrounding spaces
+  ---
+  duration_ms: 0.400964
+  type: 'test'
+  ...
+# Subtest: keeps internal blank lines of the body
+ok 452 - keeps internal blank lines of the body
+  ---
+  duration_ms: 0.224556
+  type: 'test'
+  ...
+# Subtest: returns an empty body when nothing follows the separator
+ok 453 - returns an empty body when nothing follows the separator
+  ---
+  duration_ms: 0.233963
+  type: 'test'
+  ...
+# Subtest: offsets a YAML error by the front matter start line
+ok 454 - offsets a YAML error by the front matter start line
+  ---
+  duration_ms: 0.35477
+  type: 'test'
+  ...
+# Subtest: offsets an indentation error by the front matter start line
+ok 455 - offsets an indentation error by the front matter start line
+  ---
+  duration_ms: 0.441135
+  type: 'test'
+  ...
+# Subtest: reports an unsupported token inside the metadata block
+ok 456 - reports an unsupported token inside the metadata block
+  ---
+  duration_ms: 0.441201
+  type: 'test'
+  ...
+# Subtest: parses a CRLF file
+ok 457 - parses a CRLF file
+  ---
+  duration_ms: 0.192217
+  type: 'test'
+  ...
+# Subtest: does not judge an empty body as a business error
+ok 458 - does not judge an empty body as a business error
+  ---
+  duration_ms: 0.112263
+  type: 'test'
+  ...
+# Subtest: returns the metadata block as a plain object
+ok 459 - returns the metadata block as a plain object
+  ---
+  duration_ms: 0.329193
+  type: 'test'
+  ...
+# Subtest: 编码闭环 status.md 逐行对齐 A-1
+ok 460 - 编码闭环 status.md 逐行对齐 A-1
+  ---
+  duration_ms: 3.318981
+  type: 'test'
+  ...
+# Subtest: single 版式：无 \#\# 节点 段、无"当前节点"行、交接包只有引导包
+ok 461 - single 版式：无 \#\# 节点 段、无"当前节点"行、交接包只有引导包
+  ---
+  duration_ms: 0.342588
+  type: 'test'
+  ...
+# Subtest: 暂停时 - 暂停：是
+ok 462 - 暂停时 - 暂停：是
+  ---
+  duration_ms: 0.298453
+  type: 'test'
+  ...
+# Subtest: 有升级 / 审批时按 A-1 的两行样例
+ok 463 - 有升级 / 审批时按 A-1 的两行样例
+  ---
+  duration_ms: 0.408744
+  type: 'test'
+  ...
+# Subtest: 同一实例刷新两次：后一次整份覆盖（人工改过的行不留）
+ok 464 - 同一实例刷新两次：后一次整份覆盖（人工改过的行不留）
+  ---
+  duration_ms: 1123.825303
+  type: 'test'
+  ...
+# Subtest: prepareWorkspace：所有实例建 shared + status.md，多节点按图建 stage
+ok 465 - prepareWorkspace：所有实例建 shared + status.md，多节点按图建 stage
+  ---
+  duration_ms: 1191.211019
+  type: 'test'
+  ...
+# Subtest: prepareWorkspace：single 不建 stage，doc-single 预建 artifacts/{docs,reports}
+ok 466 - prepareWorkspace：single 不建 stage，doc-single 预建 artifacts/{docs,reports}
+  ---
+  duration_ms: 1978.068909
+  type: 'test'
+  ...
+# Subtest: prepareWorkspace 幂等：重复调用不报错、不删已有内容
+ok 467 - prepareWorkspace 幂等：重复调用不报错、不删已有内容
+  ---
+  duration_ms: 2212.349247
+  type: 'test'
+  ...
+# Subtest: prepareWorkspace 失败映射为 WORKSPACE_INIT_FAILED
+ok 468 - prepareWorkspace 失败映射为 WORKSPACE_INIT_FAILED
+  ---
+  duration_ms: 1.648964
+  type: 'test'
+  ...
+# Subtest: status.md 写失败：WORKSPACE_STATUS_WRITE_FAILED，refresh 只发事件不回滚
+ok 469 - status.md 写失败：WORKSPACE_STATUS_WRITE_FAILED，refresh 只发事件不回滚
+  ---
+  duration_ms: 1.008784
+  type: 'test'
+  ...
+# Subtest: handoffInvalidDetail：码机读、文案单源
+ok 470 - handoffInvalidDetail：码机读、文案单源
+  ---
+  duration_ms: 0.391312
+  type: 'test'
+  ...
+# Subtest: status-text.js 不含模板名 / 角色名字面量（含注释）
+ok 471 - status-text.js 不含模板名 / 角色名字面量（含注释）
+  ---
+  duration_ms: 65.681428
+  type: 'test'
+  ...
+# Subtest: parses a flat mapping with string, integer and boolean scalars
+ok 472 - parses a flat mapping with string, integer and boolean scalars
+  ---
+  duration_ms: 3.973541
+  type: 'test'
+  ...
+# Subtest: keeps UTF-8 scalars as-is
+ok 473 - keeps UTF-8 scalars as-is
+  ---
+  duration_ms: 0.361907
+  type: 'test'
+  ...
+# Subtest: supports single and double quoted scalars
+ok 474 - supports single and double quoted scalars
+  ---
+  duration_ms: 0.316005
+  type: 'test'
+  ...
+# Subtest: keeps a hash inside quotes and cuts a hash after whitespace
+ok 475 - keeps a hash inside quotes and cuts a hash after whitespace
+  ---
+  duration_ms: 0.311144
+  type: 'test'
+  ...
+# Subtest: skips whole-line comments and counts them in line numbers
+ok 476 - skips whole-line comments and counts them in line numbers
+  ---
+  duration_ms: 0.342502
+  type: 'test'
+  ...
+# Subtest: returns an empty object for whitespace-only input
+ok 477 - returns an empty object for whitespace-only input
+  ---
+  duration_ms: 0.138399
+  type: 'test'
+  ...
+# Subtest: parses an inline sequence of strings
+ok 478 - parses an inline sequence of strings
+  ---
+  duration_ms: 0.337119
+  type: 'test'
+  ...
+# Subtest: parses an empty inline sequence
+ok 479 - parses an empty inline sequence
+  ---
+  duration_ms: 0.144776
+  type: 'test'
+  ...
+# Subtest: parses an inline sequence with quoted items containing commas
+ok 480 - parses an inline sequence with quoted items containing commas
+  ---
+  duration_ms: 0.457236
+  type: 'test'
+  ...
+# Subtest: parses a block sequence of scalars
+ok 481 - parses a block sequence of scalars
+  ---
+  duration_ms: 0.64784
+  type: 'test'
+  ...
+# Subtest: parses nested mappings two spaces at a time
+ok 482 - parses nested mappings two spaces at a time
+  ---
+  duration_ms: 0.287254
+  type: 'test'
+  ...
+# Subtest: treats a key without content as null
+ok 483 - treats a key without content as null
+  ---
+  duration_ms: 0.131005
+  type: 'test'
+  ...
+# Subtest: reads explicit null and tilde as null
+ok 484 - reads explicit null and tilde as null
+  ---
+  duration_ms: 0.118787
+  type: 'test'
+  ...
+# Subtest: rejects a duplicate key with its line and key
+ok 485 - rejects a duplicate key with its line and key
+  ---
+  duration_ms: 0.15503
+  type: 'test'
+  ...
+# Subtest: rejects tab indentation
+ok 486 - rejects tab indentation
+  ---
+  duration_ms: 0.12106
+  type: 'test'
+  ...
+# Subtest: rejects an odd indentation width
+ok 487 - rejects an odd indentation width
+  ---
+  duration_ms: 0.10718
+  type: 'test'
+  ...
+# Subtest: rejects a block scalar marker
+ok 488 - rejects a block scalar marker
+  ---
+  duration_ms: 0.116867
+  type: 'test'
+  ...
+# Subtest: rejects a folded scalar marker
+ok 489 - rejects a folded scalar marker
+  ---
+  duration_ms: 0.11244
+  type: 'test'
+  ...
+# Subtest: rejects an anchor
+ok 490 - rejects an anchor
+  ---
+  duration_ms: 0.107517
+  type: 'test'
+  ...
+# Subtest: rejects an alias
+ok 491 - rejects an alias
+  ---
+  duration_ms: 0.1039
+  type: 'test'
+  ...
+# Subtest: rejects an inline mapping
+ok 492 - rejects an inline mapping
+  ---
+  duration_ms: 0.124765
+  type: 'test'
+  ...
+# Subtest: rejects the merge key
+ok 493 - rejects the merge key
+  ---
+  duration_ms: 0.116132
+  type: 'test'
+  ...
+# Subtest: rejects a document separator line
+ok 494 - rejects a document separator line
+  ---
+  duration_ms: 0.107639
+  type: 'test'
+  ...
+# Subtest: rejects two indentation widths at the same level
+ok 495 - rejects two indentation widths at the same level
+  ---
+  duration_ms: 0.110597
+  type: 'test'
+  ...
+# Subtest: rejects a nested line after a scalar value
+ok 496 - rejects a nested line after a scalar value
+  ---
+  duration_ms: 0.10195
+  type: 'test'
+  ...
+# Subtest: rejects a sequence item whose key has no value
+ok 497 - rejects a sequence item whose key has no value
+  ---
+  duration_ms: 0.178046
+  type: 'test'
+  ...
+# Subtest: reports the AC-09 fixture shape at line 4
+ok 498 - reports the AC-09 fixture shape at line 4
+  ---
+  duration_ms: 0.151387
+  type: 'test'
+  ...
+# Subtest: rejects a file that starts indented
+ok 499 - rejects a file that starts indented
+  ---
+  duration_ms: 0.110406
+  type: 'test'
+  ...
+# Subtest: rejects a line without a key separator
+ok 500 - rejects a line without a key separator
+  ---
+  duration_ms: 0.174533
+  type: 'test'
+  ...
+# Subtest: handles CRLF line endings
+ok 501 - handles CRLF line endings
+  ---
+  duration_ms: 1.174387
+  type: 'test'
+  ...
+# Subtest: stops at the first error only
+ok 502 - stops at the first error only
+  ---
+  duration_ms: 0.137488
+  type: 'test'
+  ...
+# Subtest: AC-43: USAGE_LINES is the 25 A-12 lines with the first 8 byte-identical to I1.5
+ok 503 - AC-43: USAGE_LINES is the 25 A-12 lines with the first 8 byte-identical to I1.5
+  ---
+  duration_ms: 1.883406
+  type: 'test'
+  ...
+# Subtest: AC-43: a usage error prints 25 lines plus one reason line and exits 2
+ok 504 - AC-43: a usage error prints 25 lines plus one reason line and exits 2
+  ---
+  duration_ms: 1.333888
+  type: 'test'
+  ...
+# Subtest: renderUsage without a reason stays exactly 25 lines
+ok 505 - renderUsage without a reason stays exactly 25 lines
+  ---
+  duration_ms: 0.171759
+  type: 'test'
+  ...
+# Subtest: AC-44: the twelve usage errors all exit 2 with their own reason line
+ok 506 - AC-44: the twelve usage errors all exit 2 with their own reason line
+  ---
+  duration_ms: 1.688617
+  type: 'test'
+  ...
+# Subtest: AC-02: role create without --from reports the first missing required flag
+ok 507 - AC-02: role create without --from reports the first missing required flag
+  ---
+  duration_ms: 1.062306
+  type: 'test'
+  ...
+# Subtest: AC-54: illegal role create values are usage errors listing the legal ones
+ok 508 - AC-54: illegal role create values are usage errors listing the legal ones
+  ---
+  duration_ms: 0.692464
+  type: 'test'
+  ...
+# Subtest: AC-04/BR-38: with --from the four required flags are skippable at parse level
+ok 509 - AC-04/BR-38: with --from the four required flags are skippable at parse level
+  ---
+  duration_ms: 0.308825
+  type: 'test'
+  ...
+# Subtest: AC-56 groundwork: --set / --unset parse into arrays (D-6 repeatable flags)
+ok 510 - AC-56 groundwork: --set / --unset parse into arrays (D-6 repeatable flags)
+  ---
+  duration_ms: 0.196504
+  type: 'test'
+  ...
+# Subtest: D-6: every whitelist entry parses cleanly
+ok 511 - D-6: every whitelist entry parses cleanly
+  ---
+  duration_ms: 1.047418
+  type: 'test'
+  ...
+# Subtest: D-6: a known flag on the wrong subcommand is flagged as not applicable
+ok 512 - D-6: a known flag on the wrong subcommand is flagged as not applicable
+  ---
+  duration_ms: 0.541666
+  type: 'test'
+  ...
+# Subtest: M-9: --force outside the three families is still an unknown parameter
+ok 513 - M-9: --force outside the three families is still an unknown parameter
+  ---
+  duration_ms: 0.247386
+  type: 'test'
+  ...
+# Subtest: old commands keep their exact parse result key set
+ok 514 - old commands keep their exact parse result key set
+  ---
+  duration_ms: 0.145411
+  type: 'test'
+  ...
+# Subtest: AC-45: the read-only role commands never create .orch nor a client
+ok 515 - AC-45: the read-only role commands never create .orch nor a client
+  ---
+  duration_ms: 6057.773923
+  type: 'test'
+  ...
+# Subtest: AC-45: family read commands stay read-only
+ok 516 - AC-45: family read commands stay read-only
+  ---
+  duration_ms: 3879.907549
+  type: 'test'
+  ...
+# Subtest: AC-47: run still rejects unknown templates with exit 1 before any client
+ok 517 - AC-47: run still rejects unknown templates with exit 1 before any client
+  ---
+  duration_ms: 1.022254
+  type: 'test'
+  ...
+# Subtest: exitCodeFor keeps the I1.5 mapping for preflight and usage codes
+ok 518 - exitCodeFor keeps the I1.5 mapping for preflight and usage codes
+  ---
+  duration_ms: 0.470334
+  type: 'test'
+  ...
+# Subtest: AC-52: package.json declares zero runtime dependencies
+ok 519 - AC-52: package.json declares zero runtime dependencies
+  ---
+  duration_ms: 144.195782
+  type: 'test'
+  ...
+# Subtest: A-5: renderRoleDiff prints the header, change rows and the count
+ok 520 - A-5: renderRoleDiff prints the header, change rows and the count
+  ---
+  duration_ms: 0.541395
+  type: 'test'
+  ...
+# Subtest: A-5: empty arrays, null values and the no-difference tail use the dash
+ok 521 - A-5: empty arrays, null values and the no-difference tail use the dash
+  ---
+  duration_ms: 0.180344
+  type: 'test'
+  ...
+# Subtest: A-11: renderWorkflowDiff prints the field-path change line
+ok 522 - A-11: renderWorkflowDiff prints the field-path change line
+  ---
+  duration_ms: 0.172052
+  type: 'test'
+  ...
+# Subtest: A-6: renderSkillList prints the header, rows and invalid tail
+ok 523 - A-6: renderSkillList prints the header, rows and invalid tail
+  ---
+  duration_ms: 0.122985
+  type: 'test'
+  ...
+# Subtest: A-6: renderSkillShow indents the body and skips leading blank lines
+ok 524 - A-6: renderSkillShow indents the body and skips leading blank lines
+  ---
+  duration_ms: 0.213382
+  type: 'test'
+  ...
+# Subtest: A-7/A-9: skill and workflow validate render the one-line all-pass form
+ok 525 - A-7/A-9: skill and workflow validate render the one-line all-pass form
+  ---
+  duration_ms: 0.247726
+  type: 'test'
+  ...
+# Subtest: A-8: renderWorkflowList and renderWorkflowShow print the built-in baselines
+ok 526 - A-8: renderWorkflowList and renderWorkflowShow print the built-in baselines
+  ---
+  duration_ms: 0.452543
+  type: 'test'
+  ...
+# Subtest: A-9: a broken built-in workflow keeps the 内置 prefix in its row
+ok 527 - A-9: a broken built-in workflow keeps the 内置 prefix in its row
+  ---
+  duration_ms: 0.12097
+  type: 'test'
+  ...
+# Subtest: A-10: renderWorkflowDryRun prints the doc-fanout plan verbatim
+ok 528 - A-10: renderWorkflowDryRun prints the doc-fanout plan verbatim
+  ---
+  duration_ms: 0.557806
+  type: 'test'
+  ...
+# Subtest: A-10: warnings switch the conclusion line
+ok 529 - A-10: warnings switch the conclusion line
+  ---
+  duration_ms: 0.227779
+  type: 'test'
+  ...
+# Subtest: exports: 4 levels + 8 reason codes verbatim, frozen tables, fixed order
+ok 530 - exports: 4 levels + 8 reason codes verbatim, frozen tables, fixed order
+  ---
+  duration_ms: 2.387778
+  type: 'test'
+  ...
+# Subtest: node timeout: now - startedAt = 30000 (exact) -> NOT node_timeout
+ok 531 - node timeout: now - startedAt = 30000 (exact) -> NOT node_timeout
+  ---
+  duration_ms: 0.628501
+  type: 'test'
+  ...
+# Subtest: node timeout: now - startedAt = 30001 -> node_timeout
+ok 532 - node timeout: now - startedAt = 30001 -> node_timeout
+  ---
+  duration_ms: 0.17131
+  type: 'test'
+  ...
+# Subtest: node timeout: missing health.nodeTimeoutMs falls back to 30000
+ok 533 - node timeout: missing health.nodeTimeoutMs falls back to 30000
+  ---
+  duration_ms: 0.235248
+  type: 'test'
+  ...
+# Subtest: P90: 5 samples -> P90 = 50000; node duration = 50000 (exact) -> NOT p90_exceeded
+ok 534 - P90: 5 samples -> P90 = 50000; node duration = 50000 (exact) -> NOT p90_exceeded
+  ---
+  duration_ms: 0.33545
+  type: 'test'
+  ...
+# Subtest: P90: node duration = 50001 -> p90_exceeded
+ok 535 - P90: node duration = 50001 -> p90_exceeded
+  ---
+  duration_ms: 0.273368
+  type: 'test'
+  ...
+# Subtest: P90: 4 samples (< 5) -> p90_exceeded never triggers even with a long node
+ok 536 - P90: 4 samples (< 5) -> p90_exceeded never triggers even with a long node
+  ---
+  duration_ms: 0.248725
+  type: 'test'
+  ...
+# Subtest: P90: spans missing start_time / end_time are not samples (AC-23 notime)
+ok 537 - P90: spans missing start_time / end_time are not samples (AC-23 notime)
+  ---
+  duration_ms: 0.259794
+  type: 'test'
+  ...
+# Subtest: TTL: now - pendingAt = 900000 (exact) -> NOT handoff_ttl_half
+ok 538 - TTL: now - pendingAt = 900000 (exact) -> NOT handoff_ttl_half
+  ---
+  duration_ms: 0.46855
+  type: 'test'
+  ...
+# Subtest: TTL: now - pendingAt = 900001 -> handoff_ttl_half
+ok 539 - TTL: now - pendingAt = 900001 -> handoff_ttl_half
+  ---
+  duration_ms: 0.494113
+  type: 'test'
+  ...
+# Subtest: TTL: now - pendingAt = 899999 -> NOT handoff_ttl_half
+ok 540 - TTL: now - pendingAt = 899999 -> NOT handoff_ttl_half
+  ---
+  duration_ms: 0.24176
+  type: 'test'
+  ...
+# Subtest: TTL: pending packet with no pendingAt / createdAt does not participate
+ok 541 - TTL: pending packet with no pendingAt / createdAt does not participate
+  ---
+  duration_ms: 0.14334
+  type: 'test'
+  ...
+# Subtest: TTL: createdAt is used when pendingAt is missing (B-3 fallback)
+ok 542 - TTL: createdAt is used when pendingAt is missing (B-3 fallback)
+  ---
+  duration_ms: 0.13093
+  type: 'test'
+  ...
+# Subtest: terminal priority: completed with timeout node + escalation + rejected handoff -> ended
+ok 543 - terminal priority: completed with timeout node + escalation + rejected handoff -> ended
+  ---
+  duration_ms: 0.120908
+  type: 'test'
+  ...
+# Subtest: terminal priority: all four terminal states -> ended
+ok 544 - terminal priority: all four terminal states -> ended
+  ---
+  duration_ms: 0.14774
+  type: 'test'
+  ...
+# Subtest: four levels: normal when there is no anomaly
+ok 545 - four levels: normal when there is no anomaly
+  ---
+  duration_ms: 0.113488
+  type: 'test'
+  ...
+# Subtest: four levels: attention on a single pending escalation
+ok 546 - four levels: attention on a single pending escalation
+  ---
+  duration_ms: 0.138224
+  type: 'test'
+  ...
+# Subtest: four levels: slow on a single TTL-exceeded pending handoff
+ok 547 - four levels: slow on a single TTL-exceeded pending handoff
+  ---
+  duration_ms: 0.127323
+  type: 'test'
+  ...
+# Subtest: four levels: ended on a terminal instance
+ok 548 - four levels: ended on a terminal instance
+  ---
+  duration_ms: 0.095893
+  type: 'test'
+  ...
+# Subtest: multiple reasons: all six red conditions -> reasons in fixed order
+ok 549 - multiple reasons: all six red conditions -> reasons in fixed order
+  ---
+  duration_ms: 0.216728
+  type: 'test'
+  ...
+# Subtest: red dominates yellow: red + two yellow signals -> attention, yellow codes omitted
+ok 550 - red dominates yellow: red + two yellow signals -> attention, yellow codes omitted
+  ---
+  duration_ms: 0.152126
+  type: 'test'
+  ...
+# Subtest: two yellow conditions -> reasons in fixed order
+ok 551 - two yellow conditions -> reasons in fixed order
+  ---
+  duration_ms: 0.159586
+  type: 'test'
+  ...
+# Subtest: session_crash: quarantined session bound to a failed node
+ok 552 - session_crash: quarantined session bound to a failed node
+  ---
+  duration_ms: 0.128726
+  type: 'test'
+  ...
+# Subtest: role_unavailable: escalated session (not quarantined)
+ok 553 - role_unavailable: escalated session (not quarantined)
+  ---
+  duration_ms: 0.226342
+  type: 'test'
+  ...
+# Subtest: quarantined + escalated session counted only as session_crash (no double count)
+ok 554 - quarantined + escalated session counted only as session_crash (no double count)
+  ---
+  duration_ms: 0.129134
+  type: 'test'
+  ...
+# Subtest: connection_rejected / connection_expired each map to their own code
+ok 555 - connection_rejected / connection_expired each map to their own code
+  ---
+  duration_ms: 0.129285
+  type: 'test'
+  ...
+# Subtest: AC-14 premise: nodeTimeoutMs = 300000 keeps a 70s node out of the red tier
+ok 556 - AC-14 premise: nodeTimeoutMs = 300000 keeps a 70s node out of the red tier
+  ---
+  duration_ms: 1.460593
+  type: 'test'
+  ...
+# Subtest: ISO string timestamps are accepted (startedAt / pendingAt)
+ok 557 - ISO string timestamps are accepted (startedAt / pendingAt)
+  ---
+  duration_ms: 1.543909
+  type: 'test'
+  ...
+# Subtest: defaults: graph = null and traces = [] do not throw
+ok 558 - defaults: graph = null and traces = [] do not throw
+  ---
+  duration_ms: 0.239631
+  type: 'test'
+  ...
+# Subtest: defaults: no-argument call returns a valid shape
+ok 559 - defaults: no-argument call returns a valid shape
+  ---
+  duration_ms: 0.150057
+  type: 'test'
+  ...
+# Subtest: pure: does not mutate any argument (frozen inputs)
+ok 560 - pure: does not mutate any argument (frozen inputs)
+  ---
+  duration_ms: 0.261812
+  type: 'test'
+  ...
+# Subtest: level is always one of the four frozen values
+ok 561 - level is always one of the four frozen values
+  ---
+  duration_ms: 0.159063
+  type: 'test'
+  ...
+# Subtest: ROLE_TOOL_UNKNOWN: first invalid tool value is reported once per file
+ok 562 - ROLE_TOOL_UNKNOWN: first invalid tool value is reported once per file
+  ---
+  duration_ms: 2.585957
+  type: 'test'
+  ...
+# Subtest: ROLE_TOOL_UNKNOWN: the four legal tool values stay silent
+ok 563 - ROLE_TOOL_UNKNOWN: the four legal tool values stay silent
+  ---
+  duration_ms: 0.35934
+  type: 'test'
+  ...
+# Subtest: ROLE_PERMISSION_MISMATCH: read role with a write tool
+ok 564 - ROLE_PERMISSION_MISMATCH: read role with a write tool
+  ---
+  duration_ms: 0.195794
+  type: 'test'
+  ...
+# Subtest: ROLE_PERMISSION_MISMATCH: edit counts as a write tool for read roles
+ok 565 - ROLE_PERMISSION_MISMATCH: edit counts as a write tool for read roles
+  ---
+  duration_ms: 0.167561
+  type: 'test'
+  ...
+# Subtest: ROLE_PERMISSION_MISMATCH: exec role without a command tool
+ok 566 - ROLE_PERMISSION_MISMATCH: exec role without a command tool
+  ---
+  duration_ms: 0.277039
+  type: 'test'
+  ...
+# Subtest: ROLE_PERMISSION_MISMATCH: exec role with bash passes
+ok 567 - ROLE_PERMISSION_MISMATCH: exec role with bash passes
+  ---
+  duration_ms: 0.349495
+  type: 'test'
+  ...
+# Subtest: ROLE_PERMISSION_MISMATCH: none role must not carry any tool
+ok 568 - ROLE_PERMISSION_MISMATCH: none role must not carry any tool
+  ---
+  duration_ms: 0.200465
+  type: 'test'
+  ...
+# Subtest: ROLE_PERMISSION_MISMATCH: none role without tools passes
+ok 569 - ROLE_PERMISSION_MISMATCH: none role without tools passes
+  ---
+  duration_ms: 0.240078
+  type: 'test'
+  ...
+# Subtest: ROLE_PERMISSION_MISMATCH: reason keys align with the CLI label table
+ok 570 - ROLE_PERMISSION_MISMATCH: reason keys align with the CLI label table
+  ---
+  duration_ms: 0.481552
+  type: 'test'
+  ...
+# Subtest: ROLE_WAKE_UNKNOWN: a wake entry outside the role set is reported
+ok 571 - ROLE_WAKE_UNKNOWN: a wake entry outside the role set is reported
+  ---
+  duration_ms: 0.6658
+  type: 'test'
+  ...
+# Subtest: ROLE_WAKE_SELF: the whitelist must not contain the role itself
+ok 572 - ROLE_WAKE_SELF: the whitelist must not contain the role itself
+  ---
+  duration_ms: 0.359436
+  type: 'test'
+  ...
+# Subtest: ROLE_WAKE_UNKNOWN: known targets pass and empty lists stay silent
+ok 573 - ROLE_WAKE_UNKNOWN: known targets pass and empty lists stay silent
+  ---
+  duration_ms: 0.159358
+  type: 'test'
+  ...
+# Subtest: ROLE_DERIVE_MISSING: a derive target outside the role set is reported
+ok 574 - ROLE_DERIVE_MISSING: a derive target outside the role set is reported
+  ---
+  duration_ms: 0.151288
+  type: 'test'
+  ...
+# Subtest: ROLE_DERIVE_CYCLE: self-derivation closes a one-step chain
+ok 575 - ROLE_DERIVE_CYCLE: self-derivation closes a one-step chain
+  ---
+  duration_ms: 0.14955
+  type: 'test'
+  ...
+# Subtest: ROLE_DERIVE_CYCLE: every member reports the cycle rotated to itself
+ok 576 - ROLE_DERIVE_CYCLE: every member reports the cycle rotated to itself
+  ---
+  duration_ms: 0.286753
+  type: 'test'
+  ...
+# Subtest: ROLE_DERIVE_CYCLE: an acyclic derive chain stays silent
+ok 577 - ROLE_DERIVE_CYCLE: an acyclic derive chain stays silent
+  ---
+  duration_ms: 0.196892
+  type: 'test'
+  ...
+# Subtest: ROLE_CONTRACT_UNBOUND: unbound input and unbound output, field by field
+ok 578 - ROLE_CONTRACT_UNBOUND: unbound input and unbound output, field by field
+  ---
+  duration_ms: 0.558228
+  type: 'test'
+  ...
+# Subtest: ROLE_CONTRACT_UNBOUND: upstream outputs bind an input without a map
+ok 579 - ROLE_CONTRACT_UNBOUND: upstream outputs bind an input without a map
+  ---
+  duration_ms: 0.171596
+  type: 'test'
+  ...
+# Subtest: ROLE_CONTRACT_UNBOUND: a map.to entry binds an input without upstream outputs
+ok 580 - ROLE_CONTRACT_UNBOUND: a map.to entry binds an input without upstream outputs
+  ---
+  duration_ms: 0.153696
+  type: 'test'
+  ...
+# Subtest: ROLE_CONTRACT_UNBOUND: downstream inputs bind an output without a map
+ok 581 - ROLE_CONTRACT_UNBOUND: downstream inputs bind an output without a map
+  ---
+  duration_ms: 0.189889
+  type: 'test'
+  ...
+# Subtest: ROLE_CONTRACT_UNBOUND: roles without any referencing workflow are skipped
+ok 582 - ROLE_CONTRACT_UNBOUND: roles without any referencing workflow are skipped
+  ---
+  duration_ms: 0.143488
+  type: 'test'
+  ...
+# Subtest: ROLE_CONTRACT_UNBOUND: only the first unbound field per file is reported
+ok 583 - ROLE_CONTRACT_UNBOUND: only the first unbound field per file is reported
+  ---
+  duration_ms: 0.156946
+  type: 'test'
+  ...
+# Subtest: C-08 order: steps 8..11 run in the fixed order inside one file
+ok 584 - C-08 order: steps 8..11 run in the fixed order inside one file
+  ---
+  duration_ms: 0.183297
+  type: 'test'
+  ...
+# Subtest: C-08 order: issues are grouped by file in dictionary order
+ok 585 - C-08 order: issues are grouped by file in dictionary order
+  ---
+  duration_ms: 0.146648
+  type: 'test'
+  ...
+# Subtest: AC-53 shape: one file can carry two different codes in check order
+ok 586 - AC-53 shape: one file can carry two different codes in check order
+  ---
+  duration_ms: 0.206527
+  type: 'test'
+  ...
+# Subtest: AC-11 scope: the contract layer contributes exactly its three files
+ok 587 - AC-11 scope: the contract layer contributes exactly its three files
+  ---
+  duration_ms: 0.350267
+  type: 'test'
+  ...
+# Subtest: input tolerance: missing arguments and odd shapes never throw
+ok 588 - input tolerance: missing arguments and odd shapes never throw
+  ---
+  duration_ms: 0.118027
+  type: 'test'
+  ...
+# Subtest: workflows tolerance: Map and plain-object collections both work
+ok 589 - workflows tolerance: Map and plain-object collections both work
+  ---
+  duration_ms: 0.32159
+  type: 'test'
+  ...
+# Subtest: fully valid referenced roles produce no issues at all
+ok 590 - fully valid referenced roles produce no issues at all
+  ---
+  duration_ms: 0.195948
+  type: 'test'
+  ...
+# Subtest: AC-48: role list and role show developer / researcher / writer keep the I1.5 text, with only the two D-7b wake lines new
+ok 591 - AC-48: role list and role show developer / researcher / writer keep the I1.5 text, with only the two D-7b wake lines new
+  ---
+  duration_ms: 9959.090675
+  type: 'test'
+  ...
+# Subtest: AC-48: the JSON forms carry the 10-key toRoleJson payload and no wake field
+ok 592 - AC-48: the JSON forms carry the 10-key toRoleJson payload and no wake field
+  ---
+  duration_ms: 13720.739949
+  type: 'test'
+  ...
+# Subtest: serializeRole: C-07 key order, inline arrays and absent optional keys
+ok 593 - serializeRole: C-07 key order, inline arrays and absent optional keys
+  ---
+  duration_ms: 0.732025
+  type: 'test'
+  ...
+# Subtest: serializeRole: quoting, empty arrays and the summary : '' trick
+ok 594 - serializeRole: quoting, empty arrays and the summary : '' trick
+  ---
+  duration_ms: 0.247423
+  type: 'test'
+  ...
+# Subtest: serializeRole: camelCase aliases are accepted and numbers render bare
+ok 595 - serializeRole: camelCase aliases are accepted and numbers render bare
+  ---
+  duration_ms: 0.279561
+  type: 'test'
+  ...
+# Subtest: serializeSkill: front matter order and a single trailing newline on the body
+ok 596 - serializeSkill: front matter order and a single trailing newline on the body
+  ---
+  duration_ms: 0.374486
+  type: 'test'
+  ...
+# Subtest: serializeWorkflow: block-sequence nodes and edges, edge defaults omitted
+ok 597 - serializeWorkflow: block-sequence nodes and edges, edge defaults omitted
+  ---
+  duration_ms: 0.612825
+  type: 'test'
+  ...
+# Subtest: atomicWrite: lands the text, creates the parent directory and leaves no .tmp
+ok 598 - atomicWrite: lands the text, creates the parent directory and leaves no .tmp
+  ---
+  duration_ms: 744.233391
+  type: 'test'
+  ...
+# Subtest: atomicWrite: a failure keeps the target untouched and cleans the temp file
+ok 599 - atomicWrite: a failure keeps the target untouched and cleans the temp file
+  ---
+  duration_ms: 505.911477
+  type: 'test'
+  ...
+# Subtest: AC-01: create prints exactly three lines and registers the project role
+ok 600 - AC-01: create prints exactly three lines and registers the project role
+  ---
+  duration_ms: 6473.662323
+  type: 'test'
+  ...
+# Subtest: AC-02: create without the required flags prints the usage block plus one reason line and exits 2
+ok 601 - AC-02: create without the required flags prints the usage block plus one reason line and exits 2
+  ---
+  duration_ms: 0.889178
+  type: 'test'
+  ...
+# Subtest: AC-03: an existing target is refused until --force overwrites it
+ok 602 - AC-03: an existing target is refused until --force overwrites it
+  ---
+  duration_ms: 8620.554763
+  type: 'test'
+  ...
+# Subtest: AC-04: --from derive inherits everything, defaults the name to 开发（派生） and adds the derive line
+ok 603 - AC-04: --from derive inherits everything, defaults the name to 开发（派生） and adds the derive line
+  ---
+  duration_ms: 8641.941953
+  type: 'test'
+  ...
+# Subtest: AC-05: editing the skill list updates show, list and validate together
+ok 604 - AC-05: editing the skill list updates show, list and validate together
+  ---
+  duration_ms: 22800.034934
+  type: 'test'
+  ...
+# Subtest: AC-09: project roles edit in place while builtin roles are read-only
+ok 605 - AC-09: project roles edit in place while builtin roles are read-only
+  ---
+  duration_ms: 11551.885669
+  type: 'test'
+  ...
+# Subtest: AC-56: --set / --unset usage errors leave the file untouched; unsetting summary keeps it loadable
+ok 606 - AC-56: --set / --unset usage errors leave the file untouched; unsetting summary keeps it loadable
+  ---
+  duration_ms: 14121.575794
+  type: 'test'
+  ...
+# Subtest: AC-07: an exported role installs byte-identically into another project
+ok 607 - AC-07: an exported role installs byte-identically into another project
+  ---
+  duration_ms: 13162.758177
+  type: 'test'
+  ...
+# Subtest: AC-08: imports that fail validation or hit an existing target never land
+ok 608 - AC-08: imports that fail validation or hit an existing target never land
+  ---
+  duration_ms: 9010.89073
+  type: 'test'
+  ...
+# Subtest: AC-55: non-role files are refused with the schema message and never land
+ok 609 - AC-55: non-role files are refused with the schema message and never land
+  ---
+  duration_ms: 4453.716547
+  type: 'test'
+  ...
+# Subtest: AC-58: importing a file that claims a builtin id is refused and assets stay untouched
+ok 610 - AC-58: importing a file that claims a builtin id is refused and assets stay untouched
+  ---
+  duration_ms: 2213.484542
+  type: 'test'
+  ...
+# Subtest: AC-10: diff against the default builtin baseline lists the three changed rows
+ok 611 - AC-10: diff against the default builtin baseline lists the three changed rows
+  ---
+  duration_ms: 5339.735961
+  type: 'test'
+  ...
+# Subtest: AC-10: a field-identical copy reports 无差异 and the JSON has no id row
+ok 612 - AC-10: a field-identical copy reports 无差异 and the JSON has no id row
+  ---
+  duration_ms: 2742.163026
+  type: 'test'
+  ...
+# Subtest: AC-57: editing a missing role and diffing without a baseline are refused
+ok 613 - AC-57: editing a missing role and diffing without a baseline are refused
+  ---
+  duration_ms: 4359.153999
+  type: 'test'
+  ...
+# Subtest: AC-11: five bad roles yield the five reason codes and the 31/16/10/invalid-5 counters
+ok 614 - AC-11: five bad roles yield the five reason codes and the 31/16/10/invalid-5 counters
+  ---
+  duration_ms: 3884.773179
+  type: 'test'
+  ...
+# Subtest: D-2: a project override cannot replace the builtin diff baseline
+ok 615 - D-2: a project override cannot replace the builtin diff baseline
+  ---
+  duration_ms: 5331.282468
+  type: 'test'
+  ...
+# Subtest: AC-16: skill list prints the count header and ten id-sorted rows
+ok 616 - AC-16: skill list prints the count header and ten id-sorted rows
+  ---
+  duration_ms: 1847.096294
+  type: 'test'
+  ...
+# Subtest: AC-16: skill list --format json has exactly two top-level keys
+ok 617 - AC-16: skill list --format json has exactly two top-level keys
+  ---
+  duration_ms: 1762.63679
+  type: 'test'
+  ...
+# Subtest: AC-16: skill list --group filters by applies-to; a bad group exits 2
+ok 618 - AC-16: skill list --group filters by applies-to; a bad group exits 2
+  ---
+  duration_ms: 3834.589162
+  type: 'test'
+  ...
+# Subtest: AC-17: skill show prints six metadata lines then the indented body
+ok 619 - AC-17: skill show prints six metadata lines then the indented body
+  ---
+  duration_ms: 1690.309052
+  type: 'test'
+  ...
+# Subtest: AC-17: skill show --format json has exactly skill and body
+ok 620 - AC-17: skill show --format json has exactly skill and body
+  ---
+  duration_ms: 1586.796084
+  type: 'test'
+  ...
+# Subtest: AC-17: skill show of a project skill reports the project source
+ok 621 - AC-17: skill show of a project skill reports the project source
+  ---
+  duration_ms: 1933.997887
+  type: 'test'
+  ...
+# Subtest: AC-17: skill show of an unknown id exits 1
+ok 622 - AC-17: skill show of an unknown id exits 1
+  ---
+  duration_ms: 1721.504535
+  type: 'test'
+  ...
+# Subtest: AC-18: skill create prints three lines and lands a valid SKILL.md
+ok 623 - AC-18: skill create prints three lines and lands a valid SKILL.md
+  ---
+  duration_ms: 8317.848975
+  type: 'test'
+  ...
+# Subtest: AC-18: create without --body-file fills the default skeleton (TODO: labels key)
+ok 624 - AC-18: create without --body-file fills the default skeleton (TODO: labels key)
+  ---
+  duration_ms: 2330.104218
+  type: 'test'
+  ...
+# Subtest: AC-18: create --commands and --body-file land verbatim (AC-59 happy path)
+ok 625 - AC-18: create --commands and --body-file land verbatim (AC-59 happy path)
+  ---
+  duration_ms: 7560.621377
+  type: 'test'
+  ...
+# Subtest: AC-19: two broken skills are reported with the two skill-only codes
+ok 626 - AC-19: two broken skills are reported with the two skill-only codes
+  ---
+  duration_ms: 4220.511066
+  type: 'test'
+  ...
+# Subtest: AC-20: export --out then import into another root is byte-identical
+ok 627 - AC-20: export --out then import into another root is byte-identical
+  ---
+  duration_ms: 9060.203589
+  type: 'test'
+  ...
+# Subtest: AC-20: export without --out prints the SKILL.md body to stdout
+ok 628 - AC-20: export without --out prints the SKILL.md body to stdout
+  ---
+  duration_ms: 1429.046702
+  type: 'test'
+  ...
+# Subtest: AC-20: export of an unknown id exits 1; import of a missing file exits 1
+ok 629 - AC-20: export of an unknown id exits 1; import of a missing file exits 1
+  ---
+  duration_ms: 3014.009269
+  type: 'test'
+  ...
+# Subtest: AC-20: import rejects a file without front matter and an empty body
+ok 630 - AC-20: import rejects a file without front matter and an empty body
+  ---
+  duration_ms: 11780.36317
+  type: 'test'
+  ...
+# Subtest: AC-58: create on a built-in id is refused even with --force
+ok 631 - AC-58: create on a built-in id is refused even with --force
+  ---
+  duration_ms: 8789.773367
+  type: 'test'
+  ...
+# Subtest: AC-58: project twin refuses without --force and is overwritten with it
+ok 632 - AC-58: project twin refuses without --force and is overwritten with it
+  ---
+  duration_ms: 14047.802347
+  type: 'test'
+  ...
+# Subtest: AC-59: bad --applies-to group exits 2 with the usage block, nothing lands
+ok 633 - AC-59: bad --applies-to group exits 2 with the usage block, nothing lands
+  ---
+  duration_ms: 1429.867386
+  type: 'test'
+  ...
+# Subtest: AC-59: missing --summary is caught in parseArgs, exit 2 before any file
+ok 634 - AC-59: missing --summary is caught in parseArgs, exit 2 before any file
+  ---
+  duration_ms: 181.153396
+  type: 'test'
+  ...
+# Subtest: AC-59: an empty body file is an asset problem, exit 1 and nothing lands
+ok 635 - AC-59: an empty body file is an asset problem, exit 1 and nothing lands
+  ---
+  duration_ms: 2094.620403
+  type: 'test'
+  ...
+# Subtest: AC-45: read-only skill commands never create .orch nor a client
+ok 636 - AC-45: read-only skill commands never create .orch nor a client
+  ---
+  duration_ms: 6957.493349
+  type: 'test'
+  ...
+# Subtest: AC-46: write commands only land under .orch, never touch assets
+ok 637 - AC-46: write commands only land under .orch, never touch assets
+  ---
+  duration_ms: 12888.340019
+  type: 'test'
+  ...
+# Subtest: plan shape: exactly the frozen 8 top-level keys on the A-13 fixture
+ok 638 - plan shape: exactly the frozen 8 top-level keys on the A-13 fixture
+  ---
+  duration_ms: 4.405398
+  type: 'test'
+  ...
+# Subtest: AC-27: the parallel group occupies one layer, one record (§3.4 sample)
+ok 639 - AC-27: the parallel group occupies one layer, one record (§3.4 sample)
+  ---
+  duration_ms: 0.932249
+  type: 'test'
+  ...
+# Subtest: AC-28: three conditional branches, {from,to,when} 3 keys, A-10 order
+ok 640 - AC-28: three conditional branches, {from,to,when} 3 keys, A-10 order
+  ---
+  duration_ms: 0.517945
+  type: 'test'
+  ...
+# Subtest: AC-30: two field mappings, 3 keys, first `from` verbatim (§3.4 sample)
+ok 641 - AC-30: two field mappings, 3 keys, first `from` verbatim (§3.4 sample)
+  ---
+  duration_ms: 0.563213
+  type: 'test'
+  ...
+# Subtest: AC-29: policies carry the timeout/retry node as {nodeId,timeout,retry}
+ok 642 - AC-29: policies carry the timeout/retry node as {nodeId,timeout,retry}
+  ---
+  duration_ms: 0.442607
+  type: 'test'
+  ...
+# Subtest: AC-41 root: two calls on the same input are byte-identical; task has no slot
+ok 643 - AC-41 root: two calls on the same input are byte-identical; task has no slot
+  ---
+  duration_ms: 1.134993
+  type: 'test'
+  ...
+# Subtest: AC-63: the 11-primitive memory face on the doc-fanout plan
+ok 644 - AC-63: the 11-primitive memory face on the doc-fanout plan
+  ---
+  duration_ms: 0.614935
+  type: 'test'
+  ...
+# Subtest: AC-63: backflow/retest edges are counted but never lift a layer (D-5 step 1)
+ok 645 - AC-63: backflow/retest edges are counted but never lift a layer (D-5 step 1)
+  ---
+  duration_ms: 0.40255
+  type: 'test'
+  ...
+# Subtest: layers align with the renderer `joins` index contract (WP-8 wiring)
+ok 646 - layers align with the renderer `joins` index contract (WP-8 wiring)
+  ---
+  duration_ms: 2.155549
+  type: 'test'
+  ...
+# Subtest: AC-27~30 text anchors: plan + renderer nodes/joins reproduce A-10 verbatim
+ok 647 - AC-27~30 text anchors: plan + renderer nodes/joins reproduce A-10 verbatim
+  ---
+  duration_ms: 1.157753
+  type: 'test'
+  ...
+# Subtest: contract-compat: empty and null workflows yield the 8-key empty plan
+ok 648 - contract-compat: empty and null workflows yield the 8-key empty plan
+  ---
+  duration_ms: 0.290287
+  type: 'test'
+  ...
+# Subtest: contract-compat: camelCase node keys feed the same plan (loader-side freedom)
+ok 649 - contract-compat: camelCase node keys feed the same plan (loader-side freedom)
+  ---
+  duration_ms: 0.672896
+  type: 'test'
+  ...
+# Subtest: WORKFLOW_REASONS holds the 19 A-15 codes verbatim, frozen, name equals value
+ok 650 - WORKFLOW_REASONS holds the 19 A-15 codes verbatim, frozen, name equals value
+  ---
+  duration_ms: 2.227951
+  type: 'test'
+  ...
+# Subtest: closed value sets and numeric ranges are frozen and verbatim
+ok 651 - closed value sets and numeric ranges are frozen and verbatim
+  ---
+  duration_ms: 0.437281
+  type: 'test'
+  ...
+# Subtest: a shape-valid workflow with all four node types returns no issues (AC-24 / AC-63 shape part)
+ok 652 - a shape-valid workflow with all four node types returns no issues (AC-24 / AC-63 shape part)
+  ---
+  duration_ms: 0.885277
+  type: 'test'
+  ...
+# Subtest: each type-required field missing yields WORKFLOW_NODE_FIELD_MISSING (AC-25 / AC-62 shape part)
+ok 653 - each type-required field missing yields WORKFLOW_NODE_FIELD_MISSING (AC-25 / AC-62 shape part)
+  ---
+  duration_ms: 0.347602
+  type: 'test'
+  ...
+# Subtest: an unknown node_type yields WORKFLOW_NODE_TYPE_INVALID with {value} params (AC-25)
+ok 654 - an unknown node_type yields WORKFLOW_NODE_TYPE_INVALID with {value} params (AC-25)
+  ---
+  duration_ms: 0.178191
+  type: 'test'
+  ...
+# Subtest: a missing node_type or id is a field-missing issue, not a type-invalid one
+ok 655 - a missing node_type or id is a field-missing issue, not a type-invalid one
+  ---
+  duration_ms: 0.169412
+  type: 'test'
+  ...
+# Subtest: timeout boundaries: 1 and 86400 are valid, 0 / 86401 / non-integers are rejected (AC-29)
+ok 656 - timeout boundaries: 1 and 86400 are valid, 0 / 86401 / non-integers are rejected (AC-29)
+  ---
+  duration_ms: 0.347162
+  type: 'test'
+  ...
+# Subtest: retry boundaries: 0 and 5 are valid, -1 / 6 / non-integers are rejected (AC-29)
+ok 657 - retry boundaries: 0 and 5 are valid, -1 / 6 / non-integers are rejected (AC-29)
+  ---
+  duration_ms: 0.232984
+  type: 'test'
+  ...
+# Subtest: max_rounds boundaries: 1 and 9 are valid, out-of-range values report the generic edge code
+ok 658 - max_rounds boundaries: 1 and 9 are valid, out-of-range values report the generic edge code
+  ---
+  duration_ms: 0.475889
+  type: 'test'
+  ...
+# Subtest: malformed optional node keys report field issues; well-formed ones pass
+ok 659 - malformed optional node keys report field issues; well-formed ones pass
+  ---
+  duration_ms: 0.498487
+  type: 'test'
+  ...
+# Subtest: missing required top-level keys report WORKFLOW_SCHEMA_MISSING per key
+ok 660 - missing required top-level keys report WORKFLOW_SCHEMA_MISSING per key
+  ---
+  duration_ms: 0.250431
+  type: 'test'
+  ...
+# Subtest: wrong schema value, empty or non-array nodes and non-array edges are schema issues
+ok 661 - wrong schema value, empty or non-array nodes and non-array edges are schema issues
+  ---
+  duration_ms: 0.515184
+  type: 'test'
+  ...
+# Subtest: non-string name / summary / entry / terminal values are schema issues
+ok 662 - non-string name / summary / entry / terminal values are schema issues
+  ---
+  duration_ms: 0.347815
+  type: 'test'
+  ...
+# Subtest: id charset violations and file-name mismatch report WORKFLOW_ID_MISMATCH
+ok 663 - id charset violations and file-name mismatch report WORKFLOW_ID_MISMATCH
+  ---
+  duration_ms: 0.584028
+  type: 'test'
+  ...
+# Subtest: duplicate node ids report WORKFLOW_NODE_DUPLICATE once per id
+ok 664 - duplicate node ids report WORKFLOW_NODE_DUPLICATE once per id
+  ---
+  duration_ms: 0.239113
+  type: 'test'
+  ...
+# Subtest: undeclared top-level keys are tolerated (only A-1 keys are judged)
+ok 665 - undeclared top-level keys are tolerated (only A-1 keys are judged)
+  ---
+  duration_ms: 0.192888
+  type: 'test'
+  ...
+# Subtest: edges: missing endpoints, bad kind / when / join and malformed map report WORKFLOW_EDGE_INVALID
+ok 666 - edges: missing endpoints, bad kind / when / join and malformed map report WORKFLOW_EDGE_INVALID
+  ---
+  duration_ms: 0.266533
+  type: 'test'
+  ...
+# Subtest: per-node and per-edge issues are aggregated by checkWorkflowShape in document order
+ok 667 - per-node and per-edge issues are aggregated by checkWorkflowShape in document order
+  ---
+  duration_ms: 0.183904
+  type: 'test'
+  ...
+# Subtest: every returned issue follows the {code, field, params} convention
+ok 668 - every returned issue follows the {code, field, params} convention
+  ---
+  duration_ms: 0.285736
+  type: 'test'
+  ...
+# Subtest: WORKFLOW_CHECK_ORDER is the frozen 13-step C-09 order
+ok 669 - WORKFLOW_CHECK_ORDER is the frozen 13-step C-09 order
+  ---
+  duration_ms: 1.102349
+  type: 'test'
+  ...
+# Subtest: counts carry exactly 4 keys; errors carry exactly 6 keys with scope workflow (AC-38)
+ok 670 - counts carry exactly 4 keys; errors carry exactly 6 keys with scope workflow (AC-38)
+  ---
+  duration_ms: 771.56514
+  type: 'test'
+  ...
+# Subtest: shape steps 2-5 and 7 delegate to checkWorkflowShape in file order (AC-25)
+ok 671 - shape steps 2-5 and 7 delegate to checkWorkflowShape in file order (AC-25)
+  ---
+  duration_ms: 1090.339473
+  type: 'test'
+  ...
+# Subtest: step 6: unknown role, unknown subworkflow, self cycle and cross-file cycle (AC-26 / AC-62)
+ok 672 - step 6: unknown role, unknown subworkflow, self cycle and cross-file cycle (AC-26 / AC-62)
+  ---
+  duration_ms: 1309.209934
+  type: 'test'
+  ...
+# Subtest: step 8: a node nobody points at is unreachable (AC-32)
+ok 673 - step 8: a node nobody points at is unreachable (AC-32)
+  ---
+  duration_ms: 498.128012
+  type: 'test'
+  ...
+# Subtest: step 8 / AC-64: human and escalate nodes are terminal states, a plain role dead end is not
+ok 674 - step 8 / AC-64: human and escalate nodes are terminal states, a plain role dead end is not
+  ---
+  duration_ms: 1138.642417
+  type: 'test'
+  ...
+# Subtest: step 9: a backflow target without max_rounds is rejected, then fixed (AC-33)
+ok 675 - step 9: a backflow target without max_rounds is rejected, then fixed (AC-33)
+  ---
+  duration_ms: 1410.30882
+  type: 'test'
+  ...
+# Subtest: step 10: duplicate scopes report overlap, a one-node group reports invalid (AC-34)
+ok 676 - step 10: duplicate scopes report overlap, a one-node group reports invalid (AC-34)
+  ---
+  duration_ms: 718.763938
+  type: 'test'
+  ...
+# Subtest: step 11: task inputs are legal, a non-upstream prefix and an unknown target field are not (AC-35 / AC-60)
+ok 677 - step 11: task inputs are legal, a non-upstream prefix and an unknown target field are not (AC-35 / AC-60)
+  ---
+  duration_ms: 1077.33366
+  type: 'test'
+  ...
+# Subtest: step 11: an input without any source reports mapping incompleteness (AC-31)
+ok 678 - step 11: an input without any source reports mapping incompleteness (AC-31)
+  ---
+  duration_ms: 340.6751
+  type: 'test'
+  ...
+# Subtest: step 12: escalate forward out edge and human edges without human conditions (AC-36)
+ok 679 - step 12: escalate forward out edge and human edges without human conditions (AC-36)
+  ---
+  duration_ms: 724.340787
+  type: 'test'
+  ...
+# Subtest: step 12 / AC-60: a backflow edge may not target a human node
+ok 680 - step 12 / AC-60: a backflow edge may not target a human node
+  ---
+  duration_ms: 370.644955
+  type: 'test'
+  ...
+# Subtest: step 13: the node-level wake_allow decides (AC-37); empty allow denies; retest is exempt (AC-60)
+ok 681 - step 13: the node-level wake_allow decides (AC-37); empty allow denies; retest is exempt (AC-60)
+  ---
+  duration_ms: 1288.682351
+  type: 'test'
+  ...
+# Subtest: step 13 / AC-61 gate: the three built-in graphs validate clean with the aligned roles
+ok 682 - step 13 / AC-61 gate: the three built-in graphs validate clean with the aligned roles
+  ---
+  duration_ms: 0.68161
+  type: 'test'
+  ...
+# Subtest: AC-65: two runs are byte-identical and the error order is file-then-step
+ok 683 - AC-65: two runs are byte-identical and the error order is file-then-step
+  ---
+  duration_ms: 688.758449
+  type: 'test'
+  ...
+# Subtest: inside one file the errors follow the C-09 step order (BR-40)
+ok 684 - inside one file the errors follow the C-09 step order (BR-40)
+  ---
+  duration_ms: 354.847521
+  type: 'test'
+  ...
+# Subtest: D-2: inline mappings, block scalars, anchors, document separators and tabs are rejected
+ok 685 - D-2: inline mappings, block scalars, anchors, document separators and tabs are rejected
+  ---
+  duration_ms: 2761.832879
+  type: 'test'
+  ...
+# Subtest: D-2: a subset-conformant file parses and validates cleanly
+ok 686 - D-2: a subset-conformant file parses and validates cleanly
+  ---
+  duration_ms: 326.736349
+  type: 'test'
+  ...
+# Subtest: C-10: the projection turns GRAPHS into three read-only workflow/v1 shapes
+ok 687 - C-10: the projection turns GRAPHS into three read-only workflow/v1 shapes
+  ---
+  duration_ms: 0.395957
+  type: 'test'
+  ...
+# Subtest: C-10: a null graph title falls back to the injected role display name, else stays null
+ok 688 - C-10: a null graph title falls back to the injected role display name, else stays null
+  ---
+  duration_ms: 0.254818
+  type: 'test'
+  ...
+# Subtest: C-10: the workflow display name is injected data, falling back to the graph id
+ok 689 - C-10: the workflow display name is injected data, falling back to the graph id
+  ---
+  duration_ms: 0.241279
+  type: 'test'
+  ...
+# Subtest: BR-18 / AC-23: a same-id project workflow overrides the built-in as a whole
+ok 690 - BR-18 / AC-23: a same-id project workflow overrides the built-in as a whole
+  ---
+  duration_ms: 343.384221
+  type: 'test'
+  ...
+# Subtest: BR-18: the merge counts an unparseable project file in assets and invalid
+ok 691 - BR-18: the merge counts an unparseable project file in assets and invalid
+  ---
+  duration_ms: 362.740161
+  type: 'test'
+  ...
+# Subtest: a missing .orch/workflows directory is skipped silently (D-3 step 2)
+ok 692 - a missing .orch/workflows directory is skipped silently (D-3 step 2)
+  ---
+  duration_ms: 0.678854
+  type: 'test'
+  ...
+# Subtest: -32602 with "already in flight" is NODE_BUSY
+ok 693 - -32602 with "already in flight" is NODE_BUSY
+  ---
+  duration_ms: 1.487607
+  type: 'test'
+  ...
+# Subtest: -32602 with any other message is SESSION_INVALID
+ok 694 - -32602 with any other message is SESSION_INVALID
+  ---
+  duration_ms: 0.330756
+  type: 'test'
+  ...
+# Subtest: -32603 keeps the full original text in params.raw
+ok 695 - -32603 keeps the full original text in params.raw
+  ---
+  duration_ms: 0.150173
+  type: 'test'
+  ...
+# Subtest: an unregistered code is UNKNOWN_ERROR and preserves the raw text
+ok 696 - an unregistered code is UNKNOWN_ERROR and preserves the raw text
+  ---
+  duration_ms: 0.152576
+  type: 'test'
+  ...
+# Subtest: sessionKnown === false forces SESSION_INVALID
+ok 697 - sessionKnown === false forces SESSION_INVALID
+  ---
+  duration_ms: 1.05142
+  type: 'test'
+  ...
+# Subtest: -32002 is SESSION_INVALID regardless of wording
+ok 698 - -32002 is SESSION_INVALID regardless of wording
+  ---
+  duration_ms: 0.143459
+  type: 'test'
+  ...
+# Subtest: raw text is never trimmed, rewritten or truncated
+ok 699 - raw text is never trimmed, rewritten or truncated
+  ---
+  duration_ms: 0.135889
+  type: 'test'
+  ...
+# Subtest: preflight stages map onto the four pre-run codes
+ok 700 - preflight stages map onto the four pre-run codes
+  ---
+  duration_ms: 0.824842
+  type: 'test'
+  ...
+# Subtest: isSessionInvalid distinguishes busy from gone
+ok 701 - isSessionInvalid distinguishes busy from gone
+  ---
+  duration_ms: 0.390687
+  type: 'test'
+  ...
+# Subtest: CODES carries the nine documented codes plus two store codes
+ok 702 - CODES carries the nine documented codes plus two store codes
+  ---
+  duration_ms: 0.421474
+  type: 'test'
+  ...
+# Subtest: every code has exactly one labels key
+ok 703 - every code has exactly one labels key
+  ---
+  duration_ms: 0.221524
+  type: 'test'
+  ...
+# Subtest: core files hold no Chinese and no forbidden lowercase tokens
+ok 704 - core files hold no Chinese and no forbidden lowercase tokens
+  ---
+  duration_ms: 141.983586
+  type: 'test'
+  ...
+# Subtest: nine failure texts match requirement 2.6 verbatim
+ok 705 - nine failure texts match requirement 2.6 verbatim
+  ---
+  duration_ms: 1.413718
+  type: 'test'
+  ...
+# Subtest: store-level texts are unchanged
+ok 706 - store-level texts are unchanged
+  ---
+  duration_ms: 0.228103
+  type: 'test'
+  ...
+# Subtest: I1.2 business error texts match requirement D-5 verbatim
+ok 707 - I1.2 business error texts match requirement D-5 verbatim
+  ---
+  duration_ms: 0.140923
+  type: 'test'
+  ...
+# Subtest: formatDuration samples
+ok 708 - formatDuration samples
+  ---
+  duration_ms: 0.167235
+  type: 'test'
+  ...
+# Subtest: formatDuration edge values
+ok 709 - formatDuration edge values
+  ---
+  duration_ms: 0.155435
+  type: 'test'
+  ...
+# Subtest: instance labels include suspended
+ok 710 - instance labels include suspended
+  ---
+  duration_ms: 0.751057
+  type: 'test'
+  ...
+# Subtest: node labels include escalated
+ok 711 - node labels include escalated
+  ---
+  duration_ms: 0.142461
+  type: 'test'
+  ...
+# Subtest: session labels match the display table
+ok 712 - session labels match the display table
+  ---
+  duration_ms: 0.132256
+  type: 'test'
+  ...
+# Subtest: handoff labels cover all seven states
+ok 713 - handoff labels cover all seven states
+  ---
+  duration_ms: 0.401354
+  type: 'test'
+  ...
+# Subtest: escalation labels match D-5
+ok 714 - escalation labels match D-5
+  ---
+  duration_ms: 0.413651
+  type: 'test'
+  ...
+# Subtest: approval labels match D-8 / M-7
+ok 715 - approval labels match D-8 / M-7
+  ---
+  duration_ms: 0.187788
+  type: 'test'
+  ...
+# Subtest: role labels keep coordinator defined
+ok 716 - role labels keep coordinator defined
+  ---
+  duration_ms: 0.127673
+  type: 'test'
+  ...
+# Subtest: template labels match D-5 (single kept but unused)
+ok 717 - template labels match D-5 (single kept but unused)
+  ---
+  duration_ms: 0.149269
+  type: 'test'
+  ...
+# Subtest: handoff direction: forward has no suffix, backflow / retest append full-width parens
+ok 718 - handoff direction: forward has no suffix, backflow / retest append full-width parens
+  ---
+  duration_ms: 0.146372
+  type: 'test'
+  ...
+# Subtest: node qualifiers and handoff reject reasons match the display table
+ok 719 - node qualifiers and handoff reject reasons match the display table
+  ---
+  duration_ms: 0.102657
+  type: 'test'
+  ...
+# Subtest: layer prefixes include escalation and approval
+ok 720 - layer prefixes include escalation and approval
+  ---
+  duration_ms: 0.090834
+  type: 'test'
+  ...
+# Subtest: reason vocabulary is complete (I1.1 baseline + I1.2 additions)
+ok 721 - reason vocabulary is complete (I1.1 baseline + I1.2 additions)
+  ---
+  duration_ms: 0.149632
+  type: 'test'
+  ...
+# Subtest: event-line fragments match D-5 verbatim
+ok 722 - event-line fragments match D-5 verbatim
+  ---
+  duration_ms: 0.078172
+  type: 'test'
+  ...
+# Subtest: escalation block matches requirement 2.6 / D-5
+ok 723 - escalation block matches requirement 2.6 / D-5
+  ---
+  duration_ms: 0.090392
+  type: 'test'
+  ...
+# Subtest: orch run closing lines match appendix A-4
+ok 724 - orch run closing lines match appendix A-4
+  ---
+  duration_ms: 0.083241
+  type: 'test'
+  ...
+# Subtest: workflow action words match D-8
+ok 725 - workflow action words match D-8
+  ---
+  duration_ms: 0.078762
+  type: 'test'
+  ...
+# Subtest: I1.4 row fragments match A-2 / D-8
+ok 726 - I1.4 row fragments match A-2 / D-8
+  ---
+  duration_ms: 0.076315
+  type: 'test'
+  ...
+# Subtest: I1.4 generic error texts match A-5
+ok 727 - I1.4 generic error texts match A-5
+  ---
+  duration_ms: 0.076788
+  type: 'test'
+  ...
+# Subtest: A-5 command-level error texts (14 codes, verbatim)
+ok 728 - A-5 command-level error texts (14 codes, verbatim)
+  ---
+  duration_ms: 0.101267
+  type: 'test'
+  ...
+# Subtest: A-5 command-level texts render with their placeholders filled
+ok 729 - A-5 command-level texts render with their placeholders filled
+  ---
+  duration_ms: 1.520668
+  type: 'test'
+  ...
+# Subtest: I1.3 business error texts match D-5 verbatim
+ok 730 - I1.3 business error texts match D-5 verbatim
+  ---
+  duration_ms: 0.113927
+  type: 'test'
+  ...
+# Subtest: review file wording matches D-5 verbatim (11 entries)
+ok 731 - review file wording matches D-5 verbatim (11 entries)
+  ---
+  duration_ms: 0.147535
+  type: 'test'
+  ...
+# Subtest: product-file wording matches D-5 verbatim (5 entries)
+ok 732 - product-file wording matches D-5 verbatim (5 entries)
+  ---
+  duration_ms: 0.15448
+  type: 'test'
+  ...
+# Subtest: node suffixes are mutually exclusive and only used by doc-single
+ok 733 - node suffixes are mutually exclusive and only used by doc-single
+  ---
+  duration_ms: 0.119548
+  type: 'test'
+  ...
+# Subtest: instance: every in-table edge is allowed and applies
+ok 734 - instance: every in-table edge is allowed and applies
+  ---
+  duration_ms: 2.857575
+  type: 'test'
+  ...
+# Subtest: instance: every out-of-table pair is rejected by can() and apply()
+ok 735 - instance: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 1.048954
+  type: 'test'
+  ...
+# Subtest: instance: terminal states accept nothing
+ok 736 - instance: terminal states accept nothing
+  ---
+  duration_ms: 0.289831
+  type: 'test'
+  ...
+# Subtest: instance: definedOnly() is empty
+ok 737 - instance: definedOnly() is empty
+  ---
+  duration_ms: 0.157013
+  type: 'test'
+  ...
+# Subtest: instance: assert / apply / isTerminal share one verdict
+ok 738 - instance: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.169187
+  type: 'test'
+  ...
+# Subtest: node: every in-table edge is allowed and applies
+ok 739 - node: every in-table edge is allowed and applies
+  ---
+  duration_ms: 1.583529
+  type: 'test'
+  ...
+# Subtest: node: every out-of-table pair is rejected by can() and apply()
+ok 740 - node: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 0.47208
+  type: 'test'
+  ...
+# Subtest: node: terminal states accept nothing
+ok 741 - node: terminal states accept nothing
+  ---
+  duration_ms: 0.101356
+  type: 'test'
+  ...
+# Subtest: node: definedOnly() is empty
+ok 742 - node: definedOnly() is empty
+  ---
+  duration_ms: 0.328992
+  type: 'test'
+  ...
+# Subtest: node: assert / apply / isTerminal share one verdict
+ok 743 - node: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.370722
+  type: 'test'
+  ...
+# Subtest: handoff: every in-table edge is allowed and applies
+ok 744 - handoff: every in-table edge is allowed and applies
+  ---
+  duration_ms: 0.373314
+  type: 'test'
+  ...
+# Subtest: handoff: every out-of-table pair is rejected by can() and apply()
+ok 745 - handoff: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 0.585677
+  type: 'test'
+  ...
+# Subtest: handoff: terminal states accept nothing
+ok 746 - handoff: terminal states accept nothing
+  ---
+  duration_ms: 0.078219
+  type: 'test'
+  ...
+# Subtest: handoff: definedOnly() is empty
+ok 747 - handoff: definedOnly() is empty
+  ---
+  duration_ms: 0.083596
+  type: 'test'
+  ...
+# Subtest: handoff: assert / apply / isTerminal share one verdict
+ok 748 - handoff: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.073889
+  type: 'test'
+  ...
+# Subtest: escalation: every in-table edge is allowed and applies
+ok 749 - escalation: every in-table edge is allowed and applies
+  ---
+  duration_ms: 0.139552
+  type: 'test'
+  ...
+# Subtest: escalation: every out-of-table pair is rejected by can() and apply()
+ok 750 - escalation: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 0.164173
+  type: 'test'
+  ...
+# Subtest: escalation: terminal states accept nothing
+ok 751 - escalation: terminal states accept nothing
+  ---
+  duration_ms: 0.071643
+  type: 'test'
+  ...
+# Subtest: escalation: definedOnly() is empty
+ok 752 - escalation: definedOnly() is empty
+  ---
+  duration_ms: 0.066971
+  type: 'test'
+  ...
+# Subtest: escalation: assert / apply / isTerminal share one verdict
+ok 753 - escalation: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.068261
+  type: 'test'
+  ...
+# Subtest: approval: every in-table edge is allowed and applies
+ok 754 - approval: every in-table edge is allowed and applies
+  ---
+  duration_ms: 0.14882
+  type: 'test'
+  ...
+# Subtest: approval: every out-of-table pair is rejected by can() and apply()
+ok 755 - approval: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 0.307813
+  type: 'test'
+  ...
+# Subtest: approval: terminal states accept nothing
+ok 756 - approval: terminal states accept nothing
+  ---
+  duration_ms: 0.07926
+  type: 'test'
+  ...
+# Subtest: approval: definedOnly() is empty
+ok 757 - approval: definedOnly() is empty
+  ---
+  duration_ms: 0.067962
+  type: 'test'
+  ...
+# Subtest: approval: assert / apply / isTerminal share one verdict
+ok 758 - approval: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.066587
+  type: 'test'
+  ...
+# Subtest: session: every in-table edge is allowed and applies
+ok 759 - session: every in-table edge is allowed and applies
+  ---
+  duration_ms: 0.447582
+  type: 'test'
+  ...
+# Subtest: session: every out-of-table pair is rejected by can() and apply()
+ok 760 - session: every out-of-table pair is rejected by can() and apply()
+  ---
+  duration_ms: 0.361133
+  type: 'test'
+  ...
+# Subtest: session: terminal states accept nothing
+ok 761 - session: terminal states accept nothing
+  ---
+  duration_ms: 0.068025
+  type: 'test'
+  ...
+# Subtest: session: definedOnly() is empty
+ok 762 - session: definedOnly() is empty
+  ---
+  duration_ms: 0.067734
+  type: 'test'
+  ...
+# Subtest: session: assert / apply / isTerminal share one verdict
+ok 763 - session: assert / apply / isTerminal share one verdict
+  ---
+  duration_ms: 0.067223
+  type: 'test'
+  ...
+# Subtest: node: only cancelled is terminal; done / failed / escalated still have exits
+ok 764 - node: only cancelled is terminal; done / failed / escalated still have exits
+  ---
+  duration_ms: 0.173915
+  type: 'test'
+  ...
+# Subtest: node: cancel is still the only terminal edge; adjudication exits exist (D-2)
+ok 765 - node: cancel is still the only terminal edge; adjudication exits exist (D-2)
+  ---
+  duration_ms: 0.273029
+  type: 'test'
+  ...
+# Subtest: node: done is reopened by backflow, failed by retest, and done is never cancelled
+ok 766 - node: done is reopened by backflow, failed by retest, and done is never cancelled
+  ---
+  duration_ms: 0.227314
+  type: 'test'
+  ...
+# Subtest: escalation: pending->voided only
+ok 767 - escalation: pending->voided only
+  ---
+  duration_ms: 0.227752
+  type: 'test'
+  ...
+# Subtest: escalation: resolved is terminal and only reachable from pending (D-2)
+ok 768 - escalation: resolved is terminal and only reachable from pending (D-2)
+  ---
+  duration_ms: 0.202521
+  type: 'test'
+  ...
+# Subtest: session: escalated only leaves on cancel (idle)
+ok 769 - session: escalated only leaves on cancel (idle)
+  ---
+  duration_ms: 0.150535
+  type: 'test'
+  ...
+# Subtest: session: every state can be escalated, and idle only starts a turn
+ok 770 - session: every state can be escalated, and idle only starts a turn
+  ---
+  duration_ms: 0.322459
+  type: 'test'
+  ...
+# Subtest: instance: suspended is reachable from running and leaves via adjudication or cancel
+ok 771 - instance: suspended is reachable from running and leaves via adjudication or cancel
+  ---
+  duration_ms: 0.149504
+  type: 'test'
+  ...
+# Subtest: five constant groups match requirement D-4
+ok 772 - five constant groups match requirement D-4
+  ---
+  duration_ms: 1.171835
+  type: 'test'
+  ...
+# Subtest: explicit out-of-table samples from the acceptance list
+ok 773 - explicit out-of-table samples from the acceptance list
+  ---
+  duration_ms: 0.224196
+  type: 'test'
+  ...
+# Subtest: from === to is ILLEGAL_TRANSITION and emits nothing
+ok 774 - from === to is ILLEGAL_TRANSITION and emits nothing
+  ---
+  duration_ms: 0.156173
+  type: 'test'
+  ...
+# Subtest: rejected apply emits one rejected event with the attempted target
+ok 775 - rejected apply emits one rejected event with the attempted target
+  ---
+  duration_ms: 0.271111
+  type: 'test'
+  ...
+# Subtest: apply awaits an async emit before returning
+ok 776 - apply awaits an async emit before returning
+  ---
+  duration_ms: 20.516469
+  type: 'test'
+  ...
+# Subtest: assert throws IllegalTransitionError carrying from/to/code
+ok 777 - assert throws IllegalTransitionError carrying from/to/code
+  ---
+  duration_ms: 0.816597
+  type: 'test'
+  ...
+# Subtest: can and apply never throw on garbage input
+ok 778 - can and apply never throw on garbage input
+  ---
+  duration_ms: 0.310832
+  type: 'test'
+  ...
+# Subtest: 真实 transport + client 跑通 initialize → newSession → prompt → end_turn，且 tool_call 可观测
+ok 779 - 真实 transport + client 跑通 initialize → newSession → prompt → end_turn，且 tool_call 可观测
+  ---
+  duration_ms: 1218.611641
+  type: 'test'
+  ...
+# Subtest: --session-missing：对未知 session prompt 得到 -32602 + unknown session 原文
+ok 780 - --session-missing：对未知 session prompt 得到 -32602 + unknown session 原文
+  ---
+  duration_ms: 522.464238
+  type: 'test'
+  ...
+# Subtest: quietWindow / drain-quiet：建会话后的噪声帧在 newSession 返回前已被收到
+ok 781 - quietWindow / drain-quiet：建会话后的噪声帧在 newSession 返回前已被收到
+  ---
+  duration_ms: 523.610524
+  type: 'test'
+  ...
+# Subtest: permission=ask：回调应答 allow-once → end_turn 且文件落盘
+ok 782 - permission=ask：回调应答 allow-once → end_turn 且文件落盘
+  ---
+  duration_ms: 1719.577688
+  type: 'test'
+  ...
+# Subtest: permission=ask：回调应答 reject-once → refusal 且不写文件（AC-18 夹具路径）
+ok 783 - permission=ask：回调应答 reject-once → refusal 且不写文件（AC-18 夹具路径）
+  ---
+  duration_ms: 759.608069
+  type: 'test'
+  ...
+# Subtest: permission=ask：无回调时按默认策略 allow-once 自动应答
+ok 784 - permission=ask：无回调时按默认策略 allow-once 自动应答
+  ---
+  duration_ms: 834.025284
+  type: 'test'
+  ...
+# Subtest: 宿主错误码与原文原样透出（-32603 / -32099）
+ok 785 - 宿主错误码与原文原样透出（-32603 / -32099）
+  ---
+  duration_ms: 1646.150772
+  type: 'test'
+  ...
+# Subtest: cancel 是通知：无响应，turn 以 stopReason=cancelled 收敛（F1）
+ok 786 - cancel 是通知：无响应，turn 以 stopReason=cancelled 收敛（F1）
+  ---
+  duration_ms: 822.337655
+  type: 'test'
+  ...
+# Subtest: accepted 只认 turn 内事件：噪声帧先到仍停在 delivered
+ok 787 - accepted 只认 turn 内事件：噪声帧先到仍停在 delivered
+  ---
+  duration_ms: 3.504016
+  type: 'test'
+  ...
+# Subtest: 拒绝原因必须可区分（AC-11；I1.4 增内容不合规与投递失败）
+ok 788 - 拒绝原因必须可区分（AC-11；I1.4 增内容不合规与投递失败）
+  ---
+  duration_ms: 1.599189
+  type: 'test'
+  ...
+# Subtest: 迁移表外一律拒绝，且 accepted 不能先于 delivered
+ok 789 - 迁移表外一律拒绝，且 accepted 不能先于 delivered
+  ---
+  duration_ms: 0.327572
+  type: 'test'
+  ...
+# Subtest: 无 TTL：过期只能由迁移表拒绝，没有任何定时器产生 expired
+ok 790 - 无 TTL：过期只能由迁移表拒绝，没有任何定时器产生 expired
+  ---
+  duration_ms: 32.055635
+  type: 'test'
+  ...
+# Subtest: created 可以直接拒绝（校验失败 / 信箱写失败），不发 delivered
+ok 791 - created 可以直接拒绝（校验失败 / 信箱写失败），不发 delivered
+  ---
+  duration_ms: 0.554145
+  type: 'test'
+  ...
+# Subtest: delivered → pending 回落：写 pendingAt / deliveryAttempts / lastError
+ok 792 - delivered → pending 回落：写 pendingAt / deliveryAttempts / lastError
+  ---
+  duration_ms: 0.32199
+  type: 'test'
+  ...
+# Subtest: pending → delivered（重试成功）：attempt 写入尝试数并保留投递时间
+ok 793 - pending → delivered（重试成功）：attempt 写入尝试数并保留投递时间
+  ---
+  duration_ms: 0.230947
+  type: 'test'
+  ...
+# Subtest: pending → expired：3 次尝试耗尽写 expiredAt 与最后错误
+ok 794 - pending → expired：3 次尝试耗尽写 expiredAt 与最后错误
+  ---
+  duration_ms: 0.386574
+  type: 'test'
+  ...
+# Subtest: delivered 未传 attempt 时不改尝试数（旧调用兼容）
+ok 795 - delivered 未传 attempt 时不改尝试数（旧调用兼容）
+  ---
+  duration_ms: 0.385858
+  type: 'test'
+  ...
+# Subtest: 默认推导：%LOCALAPPDATA%\\Programs\\DeepSeek Harness，args=[bin,--profile,acp]，显式覆盖 ELECTRON_RUN_AS_NODE
+ok 796 - 默认推导：%LOCALAPPDATA%\\Programs\\DeepSeek Harness，args=[bin,--profile,acp]，显式覆盖 ELECTRON_RUN_AS_NODE
+  ---
+  duration_ms: 1.995481
+  type: 'test'
+  ...
+# Subtest: env 覆盖优先级最高（MAESTRO_DSH_EXE / BIN / ARGS）
+ok 797 - env 覆盖优先级最高（MAESTRO_DSH_EXE / BIN / ARGS）
+  ---
+  duration_ms: 0.419933
+  type: 'test'
+  ...
+# Subtest: 配置可指向任意命令（夹具接管 host 的唯一入口）
+ok 798 - 配置可指向任意命令（夹具接管 host 的唯一入口）
+  ---
+  duration_ms: 0.202845
+  type: 'test'
+  ...
+# Subtest: resolveMockLaunch 走同一个 launch 形态
+ok 799 - resolveMockLaunch 走同一个 launch 形态
+  ---
+  duration_ms: 1.054702
+  type: 'test'
+  ...
+# Subtest: probeDshInstalled：路径不存在返回 DSH_SPAWN_FAILED 与「未找到 <path>」
+ok 800 - probeDshInstalled：路径不存在返回 DSH_SPAWN_FAILED 与「未找到 <path>」
+  ---
+  duration_ms: 5.518912
+  type: 'test'
+  ...
+# Subtest: loadHostConfig：无配置文件用默认；transport 非 stdio → HOST_UNSUPPORTED；坏 JSON → HOST_CONFIG_INVALID
+ok 801 - loadHostConfig：无配置文件用默认；transport 非 stdio → HOST_UNSUPPORTED；坏 JSON → HOST_CONFIG_INVALID
+  ---
+  duration_ms: 617.979942
+  type: 'test'
+  ...
+# Subtest: loadHostConfig：配置里的 launch 指向 mock 并成功建会话（AC-15 夹具路径）
+ok 802 - loadHostConfig：配置里的 launch 指向 mock 并成功建会话（AC-15 夹具路径）
+  ---
+  duration_ms: 805.179264
+  type: 'test'
+  ...
+# Subtest: probe --observe session-state：建会话不投递 → idle（AC-15）
+ok 803 - probe --observe session-state：建会话不投递 → idle（AC-15）
+  ---
+  duration_ms: 2019.125654
+  type: 'test'
+  ...
+# Subtest: probe --observe session-state：噪声帧不改状态（AC-19 前置）
+ok 804 - probe --observe session-state：噪声帧不改状态（AC-19 前置）
+  ---
+  duration_ms: 1432.249211
+  type: 'test'
+  ...
+# Subtest: probe --observe tool-name：工具名可观测（AC-16）
+ok 805 - probe --observe tool-name：工具名可观测（AC-16）
+  ---
+  duration_ms: 1665.072796
+  type: 'test'
+  ...
+# Subtest: probe --observe handoff：噪声先到仍为 delivered（AC-19）
+ok 806 - probe --observe handoff：噪声先到仍为 delivered（AC-19）
+  ---
+  duration_ms: 1876.694099
+  type: 'test'
+  ...
+# Subtest: 常量：6 状态与两类噪声白名单
+ok 807 - 常量：6 状态与两类噪声白名单
+  ---
+  duration_ms: 1.604316
+  type: 'test'
+  ...
+# Subtest: 6 类 turn 内事件逐判别值映射
+ok 808 - 6 类 turn 内事件逐判别值映射
+  ---
+  duration_ms: 0.4632
+  type: 'test'
+  ...
+# Subtest: 两种噪声帧不改状态、不算进展；未知判别值同理并计数
+ok 809 - 两种噪声帧不改状态、不算进展；未知判别值同理并计数
+  ---
+  duration_ms: 0.3506
+  type: 'test'
+  ...
+# Subtest: isTurnEvent 严格白名单
+ok 810 - isTurnEvent 严格白名单
+  ---
+  duration_ms: 0.171225
+  type: 'test'
+  ...
+# Subtest: onPromptSent / onPromptSettled / onOutputSubmitted / onCancelled / onEscalated
+ok 811 - onPromptSent / onPromptSettled / onOutputSubmitted / onCancelled / onEscalated
+  ---
+  duration_ms: 0.392336
+  type: 'test'
+  ...
+# Subtest: onCancelled 之后 turnId 不匹配的 update 被丢弃
+ok 812 - onCancelled 之后 turnId 不匹配的 update 被丢弃
+  ---
+  duration_ms: 0.235393
+  type: 'test'
+  ...
+# Subtest: NDJSON：两行同写 / 半行分片 / 空行 / 末尾无换行 / 坏 JSON 不断连
+ok 813 - NDJSON：两行同写 / 半行分片 / 空行 / 末尾无换行 / 坏 JSON 不断连
+  ---
+  duration_ms: 450.777011
+  type: 'test'
+  ...
+# Subtest: 单行超 maxFrameBytes：onParseError 报 IPC_FRAME_TOO_LARGE 并自动 dispose
+ok 814 - 单行超 maxFrameBytes：onParseError 报 IPC_FRAME_TOO_LARGE 并自动 dispose
+  ---
+  duration_ms: 592.433142
+  type: 'test'
+  ...
+# Subtest: spawn 失败：返回 DSH_SPAWN_FAILED 且 cause 有内容
+ok 815 - spawn 失败：返回 DSH_SPAWN_FAILED 且 cause 有内容
+  ---
+  duration_ms: 2.426473
+  type: 'test'
+  ...
+# Subtest: 立即退出：stderr 尾部进入 cause（最多 20 行、去空行）
+ok 816 - 立即退出：stderr 尾部进入 cause（最多 20 行、去空行）
+  ---
+  duration_ms: 113.682799
+  type: 'test'
+  ...
+# Subtest: dispose：忽略 stdin EOF 的子进程也会被终止，不留孤儿
+ok 817 - dispose：忽略 stdin EOF 的子进程也会被终止，不留孤儿
+  ---
+  duration_ms: 366.919347
+  type: 'test'
+  ...
+# Subtest: send 串行化：并发写入不交错，每行都是完整 JSON
+ok 818 - send 串行化：并发写入不交错，每行都是完整 JSON
+  ---
+  duration_ms: 108.186025
+  type: 'test'
+  ...
+# Subtest: single happy path：9 步顺序正确，终态 completed / done / consumed / idle
+ok 819 - single happy path：9 步顺序正确，终态 completed / done / consumed / idle
+  ---
+  duration_ms: 19737.293477
+  type: 'test'
+  ...
+# Subtest: NODE_BUSY：同一实例并发发起不建第二个会话
+ok 820 - NODE_BUSY：同一实例并发发起不建第二个会话
+  ---
+  duration_ms: 15206.837378
+  type: 'test'
+  ...
+# Subtest: DSH_SPAWN_FAILED：拉起失败后不落 state.json（无半截实例）
+ok 821 - DSH_SPAWN_FAILED：拉起失败后不落 state.json（无半截实例）
+  ---
+  duration_ms: 3344.18335
+  type: 'test'
+  ...
+# Subtest: VERIFY_FAILED：未写产出 → 节点/实例 failed，交接包停在 accepted
+ok 822 - VERIFY_FAILED：未写产出 → 节点/实例 failed，交接包停在 accepted
+  ---
+  duration_ms: 22269.057386
+  type: 'test'
+  ...
+# Subtest: cancel：立即落终态（数组结果），不等宿主（turn-delay 10s）
+not ok 823 - cancel：立即落终态（数组结果），不等宿主（turn-delay 10s）
+  ---
+  duration_ms: 7951.957623
+  type: 'test'
+  location: '/Users/xuesh/www/Maestro/test/wp4/orchestrator.test.js:390:1'
+  failureType: 'testCodeFailure'
+  error: 'cancel 应快速返回，实际 3607ms'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Users/xuesh/www/Maestro/test/wp4/orchestrator.test.js:400:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: getStatus：派生字段（elapsedMs / sessionStalled / handoffWaitMs）与 NOT_FOUND
+ok 824 - getStatus：派生字段（elapsedMs / sessionStalled / handoffWaitMs）与 NOT_FOUND
+  ---
+  duration_ms: 4141.82693
+  type: 'test'
+  ...
+# Subtest: reconcileOnBoot：v2 旧 generation 的运行中实例 → interrupted；v1 保持原样
+ok 825 - reconcileOnBoot：v2 旧 generation 的运行中实例 → interrupted；v1 保持原样
+  ---
+  duration_ms: 2673.856258
+  type: 'test'
+  ...
+# Subtest: v1 实例：startRun / cancel 都返回 LEGACY_READ_ONLY
+ok 826 - v1 实例：startRun / cancel 都返回 LEGACY_READ_ONLY
+  ---
+  duration_ms: 636.460238
+  type: 'test'
+  ...
+# Subtest: code-loop 一轮通过：T-001 → T-002 → 实例 completed（AC-03：只有 1 张交接包）
+ok 827 - code-loop 一轮通过：T-001 → T-002 → 实例 completed（AC-03：只有 1 张交接包）
+  ---
+  duration_ms: 28683.554757
+  type: 'test'
+  ...
+# Subtest: code-loop 回流：第 1 轮不通过 → 开发第 2 轮 → 复测通过 → completed（3 张交接包）
+ok 828 - code-loop 回流：第 1 轮不通过 → 开发第 2 轮 → 复测通过 → completed（3 张交接包）
+  ---
+  duration_ms: 41861.86996
+  type: 'test'
+  ...
+# Subtest: code-loop 上限：第 2 轮仍不通过 → 节点 escalated / 实例 suspended / 3 张包 consumed
+ok 829 - code-loop 上限：第 2 轮仍不通过 → 节点 escalated / 实例 suspended / 3 张包 consumed
+  ---
+  duration_ms: 40577.080882
+  type: 'test'
+  ...
+# Subtest: code-loop 取消优先：after_verdict 停住时取消，回流包 created → rejected(withdrawn)
+not ok 830 - code-loop 取消优先：after_verdict 停住时取消，回流包 created → rejected(withdrawn)
+  ---
+  duration_ms: 19693.803601
+  type: 'test'
+  location: '/Users/xuesh/www/Maestro/test/wp4/orchestrator.test.js:820:1'
+  failureType: 'testCodeFailure'
+  error: 'waitFor 超时'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    waitFor (file:///Users/xuesh/www/Maestro/test/wp4/orchestrator.test.js:38:38)
+    async TestContext.<anonymous> (file:///Users/xuesh/www/Maestro/test/wp4/orchestrator.test.js:833:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: code-loop 派发失败：目标会话建不起来 → 目标节点 escalated / 实例 suspended（round 已 +1）
+ok 831 - code-loop 派发失败：目标会话建不起来 → 目标节点 escalated / 实例 suspended（round 已 +1）
+  ---
+  duration_ms: 11265.35544
+  type: 'test'
+  ...
+# Subtest: code-loop DIR_BUSY：同目录第二个闭环被拒
+ok 832 - code-loop DIR_BUSY：同目录第二个闭环被拒
+  ---
+  duration_ms: 4687.340743
+  type: 'test'
+  ...
+# Subtest: code-loop DIR_BUSY：首个实例停在首派 session/new 未返回时，同目录并发发起 2s 内被拒（BLK-C1）
+ok 833 - code-loop DIR_BUSY：首个实例停在首派 session/new 未返回时，同目录并发发起 2s 内被拒（BLK-C1）
+  ---
+  duration_ms: 4340.880776
+  type: 'test'
+  ...
+# Subtest: code-loop 发起前拦截：未知模板 / 空任务 / 缺产物行
+ok 834 - code-loop 发起前拦截：未知模板 / 空任务 / 缺产物行
+  ---
+  duration_ms: 1.938673
+  type: 'test'
+  ...
+# Subtest: code-loop 停止推进：升级写入故障 → halted=true，节点保持 review（不假装挂起）
+ok 835 - code-loop 停止推进：升级写入故障 → halted=true，节点保持 review（不假装挂起）
+  ---
+  duration_ms: 32265.719604
+  type: 'test'
+  ...
+# Subtest: 接缝：仅 NODE_ENV=test 导出 dispatchToNode / escalateOnce，生产对象没有这两个键
+ok 836 - 接缝：仅 NODE_ENV=test 导出 dispatchToNode / escalateOnce，生产对象没有这两个键
+  ---
+  duration_ms: 1.704896
+  type: 'test'
+  ...
+# Subtest: 接缝 dispatchToNode：无待唤醒回流包 → WAKE_REJECTED(NO_PENDING_BACKFLOW) 且轮次不变
+ok 837 - 接缝 dispatchToNode：无待唤醒回流包 → WAKE_REJECTED(NO_PENDING_BACKFLOW) 且轮次不变
+  ---
+  duration_ms: 16685.417713
+  type: 'test'
+  ...
+# Subtest: 接缝 escalateOnce：同 (nodeId, round) 幂等复用 ESC-001
+ok 838 - 接缝 escalateOnce：同 (nodeId, round) 幂等复用 ESC-001
+  ---
+  duration_ms: 24772.893724
+  type: 'test'
+  ...
+# Subtest: 会话守卫：进入 escalated 后除取消外任何输入都保持 escalated（C-08 / AC-39）
+ok 839 - 会话守卫：进入 escalated 后除取消外任何输入都保持 escalated（C-08 / AC-39）
+  ---
+  duration_ms: 0.377814
+  type: 'test'
+  ...
+# Subtest: handoffToState 白名单：edge / defects / note / wakeConsumedAt 不被 update 抹掉
+ok 840 - handoffToState 白名单：edge / defects / note / wakeConsumedAt 不被 update 抹掉
+  ---
+  duration_ms: 12994.347369
+  type: 'test'
+  ...
+# Subtest: task-loop 门控：下游接受时才 done，且与 handoff accepted 同一次 CAS（rev 只 +1）
+ok 841 - task-loop 门控：下游接受时才 done，且与 handoff accepted 同一次 CAS（rev 只 +1）
+  ---
+  duration_ms: 4797.917913
+  type: 'test'
+  ...
+# Subtest: task-loop 子原因两段可见：running→review 写 evidence，核对通过后改 downstream
+ok 842 - task-loop 子原因两段可见：running→review 写 evidence，核对通过后改 downstream
+  ---
+  duration_ms: 13973.149057
+  type: 'test'
+  ...
+# Subtest: task-loop 驳回未超限：审核 failed（等待复审）→ 回流带缺陷 → 第 2 轮通过
+ok 843 - task-loop 驳回未超限：审核 failed（等待复审）→ 回流带缺陷 → 第 2 轮通过
+  ---
+  duration_ms: 26826.543713
+  type: 'test'
+  ...
+# Subtest: task-loop 派发时刻锁进事件 ts：startedAt / roundStartedAt 与 node.dispatch 逐字相等（AC-35）
+ok 844 - task-loop 派发时刻锁进事件 ts：startedAt / roundStartedAt 与 node.dispatch 逐字相等（AC-35）
+  ---
+  duration_ms: 23692.253336
+  type: 'test'
+  ...
+# Subtest: task-loop 核对通过时刻锁进事件 ts：review.evidence_verified 的 ts 与 node.endedAt 严格相等（AC-35）
+ok 845 - task-loop 核对通过时刻锁进事件 ts：review.evidence_verified 的 ts 与 node.endedAt 严格相等（AC-35）
+  ---
+  duration_ms: 22557.907729
+  type: 'test'
+  ...
+# Subtest: task-loop 第 2 轮仍驳回：停止回流 → 升级挂起，不再派发第 3 次
+ok 846 - task-loop 第 2 轮仍驳回：停止回流 → 升级挂起，不再派发第 3 次
+  ---
+  duration_ms: 21222.040673
+  type: 'test'
+  ...
+# Subtest: task-loop 审核文件无效：一律升级，不回流、不写第 2 轮
+ok 847 - task-loop 审核文件无效：一律升级，不回流、不写第 2 轮
+  ---
+  duration_ms: 9915.011672
+  type: 'test'
+  ...
+# Subtest: task-loop 审核文件不可解析：同样升级挂起（不回流）
+ok 848 - task-loop 审核文件不可解析：同样升级挂起（不回流）
+  ---
+  duration_ms: 6822.67047
+  type: 'test'
+  ...
+# Subtest: task-loop 工作区建不起来：WORKSPACE_INIT_FAILED，且不留半个实例目录（AC-44）
+ok 849 - task-loop 工作区建不起来：WORKSPACE_INIT_FAILED，且不留半个实例目录（AC-44）
+  ---
+  duration_ms: 3.272479
+  type: 'test'
+  ...
+# Subtest: task-loop 产物行不合规：缺行 / 非 md / 多行一律在发起时拒绝
+ok 850 - task-loop 产物行不合规：缺行 / 非 md / 多行一律在发起时拒绝
+  ---
+  duration_ms: 1.125441
+  type: 'test'
+  ...
+# Subtest: task-loop 审核提示词给绝对路径：基址与 readReview 同源，避免宿主写进实例工作区
+not ok 851 - task-loop 审核提示词给绝对路径：基址与 readReview 同源，避免宿主写进实例工作区
+  ---
+  duration_ms: 5070.10821
+  type: 'test'
+  location: '/Users/xuesh/www/Maestro/test/wp4/orchestrator.test.js:1513:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + '/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-wp4-doc-cwd-BSi9Q4/out/review.json'
+    - '/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-wp4-doc-cwd-BSi9Q4/out/review.json'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-wp4-doc-cwd-BSi9Q4/out/review.json'
+  actual: '/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-wp4-doc-cwd-BSi9Q4/out/review.json'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/xuesh/www/Maestro/test/wp4/orchestrator.test.js:1528:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: I1.7 worktree：code 节点派发即得独立分支/worktree，done 后 mergeStatus=merged（AC-05/06）
+ok 852 - I1.7 worktree：code 节点派发即得独立分支/worktree，done 后 mergeStatus=merged（AC-05/06）
+  ---
+  duration_ms: 7906.672149
+  type: 'test'
+  ...
+# Subtest: I1.7 worktree：同文件冲突 → mergeStatus=conflict + merge_conflict 升级，双分支保留（AC-08/14）
+ok 853 - I1.7 worktree：同文件冲突 → mergeStatus=conflict + merge_conflict 升级，双分支保留（AC-08/14）
+  ---
+  duration_ms: 9365.184482
+  type: 'test'
+  ...
+# Subtest: I1.7 worktree：worktree/分支创建失败 → 节点 escalated、实例 suspended、升级 worktree_init_failed（AC-13）
+ok 854 - I1.7 worktree：worktree/分支创建失败 → 节点 escalated、实例 suspended、升级 worktree_init_failed（AC-13）
+  ---
+  duration_ms: 3461.444162
+  type: 'test'
+  ...
+# Subtest: I1.7 escalate resolve：冲突裁决后重投合并，集成线含改动且节点继续推进（AC-09）
+ok 855 - I1.7 escalate resolve：冲突裁决后重投合并，集成线含改动且节点继续推进（AC-09）
+  ---
+  duration_ms: 21068.771922
+  type: 'test'
+  ...

@@ -1,0 +1,30 @@
+{
+  "graphVersion": 1,
+  "instanceId": "INST-001",
+  "template": "single",
+  "state": "completed",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": null,
+      "roleId": "worker",
+      "state": "done",
+      "round": 1
+    }
+  ],
+  "edges": [],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "from": null,
+      "to": null,
+      "kind": "forward",
+      "state": "consumed",
+      "round": 0
+    }
+  ],
+  "escalations": [],
+  "approvals": [],
+  "current": null
+}

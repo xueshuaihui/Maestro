@@ -1,0 +1,10 @@
+exit=0
+实例 INST-001 · 已挂起 · 模板 通用任务闭环
+健康度 需关注 · 有待处理升级
+节点 T-001 研究员 已升级 · 第 1 轮
+节点 T-002 撰写者 待执行
+节点 T-003 审核者 待执行
+升级 ESC-001 待处理
+  原因：派遣失败：目标会话不可用
+  节点：T-001 研究员 · 第 1 轮
+  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001

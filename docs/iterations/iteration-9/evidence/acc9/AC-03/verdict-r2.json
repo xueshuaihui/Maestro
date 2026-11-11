@@ -1,0 +1,32 @@
+{
+  "ac": "AC-03",
+  "at": "2026-11-11T21:16:16Z",
+  "run": "full-suite-r2",
+  "head": "40eb704 + 工作树修复（D-25 / D-26 / D-27）",
+  "command": "NODE_ENV=test node --test \"test/**/*.test.js\"",
+  "totals": { "tests": 1157, "pass": 1147, "fail": 9, "skipped": 1, "cancelled": 0 },
+  "baseline": {
+    "file": "docs/iterations/iteration-7/baseline-failures.txt",
+    "count": 8,
+    "matched": 8
+  },
+  "extraFailures": [
+    {
+      "test": "C-2 端到端：tool_running 的 status 会话行含\"已运行 Ns\"（N>0）",
+      "file": "test/wp9/cli-e2e.test.js:164",
+      "classification": "负载敏感 flake",
+      "evidence": "单文件复跑 4/4 通过（AC-03/cli-e2e-solo-r2.log）",
+      "disposition": "D-2 允许：不计入差集"
+    }
+  ],
+  "resolved": [
+    {
+      "test": "AC-57：校验/审批/暂停/恢复 流程的 reason 序列与 detail 落盘并可复盘（行为断言）",
+      "file": "test/wp11/rpc.test.js:346",
+      "fix": "D-27 期望扩到 9 条（新增 execution.summary）",
+      "evidence": "单文件复跑 8/8 通过（AC-03/rpc-test-solo-r2.log）"
+    }
+  ],
+  "diffFromBaseline": 0,
+  "pass": true
+}

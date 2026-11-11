@@ -1,0 +1,113 @@
+{
+  "ac": "AC-23",
+  "generatedAt": "2026-11-11T20:00:49.927Z",
+  "title": "追踪异常：文件缺失、单行损坏、缺时间字段都降级且可见",
+  "fixture": "三个快照夹具（先起核心再写快照）",
+  "passed": true,
+  "total": 19,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "missing 先起核心",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "missing trace exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "missing 显示 A-1",
+      "ok": true,
+      "detail": "actual=\"实例 INST-001 · 暂无追踪记录\\n\" expected=\"实例 INST-001 · 暂无追踪记录\\n\""
+    },
+    {
+      "name": "missing 无堆栈",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "missing status exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "missing 健康度照常给出（正常）",
+      "ok": true,
+      "detail": "actual=\"健康度 正常\" expected=\"健康度 正常\""
+    },
+    {
+      "name": "badline 先起核心",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "badline trace exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "badline 跳过提示在汇总行之前（A-11）",
+      "ok": true,
+      "detail": "actual=\"追踪记录有 1 行不可读，已跳过\" expected=\"追踪记录有 1 行不可读，已跳过\""
+    },
+    {
+      "name": "badline 正常跨度 2 条",
+      "ok": true,
+      "detail": "actual=\"跨度 2 条 · 回流 0 次\" expected=\"跨度 2 条 · 回流 0 次\""
+    },
+    {
+      "name": "badline 列出 2 条跨度",
+      "ok": true,
+      "detail": "实例 INST-001 · 追踪 TRC-0000aaaa\n追踪记录有 1 行不可读，已跳过\n跨度 2 条 · 回流 0 次\n\n10:00:00 → 10:00:10  T-001  已完成  交接 无\n10:00:10 → 10:00:30  T-002  已完成  交接 无\n\n回流链\n无\n"
+    },
+    {
+      "name": "badline 无堆栈",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "badline status exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "badline 健康度正常",
+      "ok": true,
+      "detail": "actual=\"健康度 正常\" expected=\"健康度 正常\""
+    },
+    {
+      "name": "notime 先起核心",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "notime trace exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "notime 无堆栈",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "notime status exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "notime 不误判为慢",
+      "ok": true,
+      "detail": "健康度 正常"
+    }
+  ],
+  "keyEvidence": [
+    "missing-trace.txt",
+    "badline-trace.txt",
+    "notime-trace.txt",
+    "*-status.txt"
+  ],
+  "note": "missing 夹具采用 D-23 的历史空号形态（无 traceId + 无追踪文件），才能落到 A-1；当前代码实例删除追踪文件会因 state.traceId 存在而显示 0 条跨度头（非 A-1），该分支不属本 AC 夹具。"
+}

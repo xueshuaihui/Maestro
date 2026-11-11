@@ -1,0 +1,9 @@
+exit=0
+实例 INST-001 · 运行中 · 模板 编码闭环
+健康度 需关注 · 有待处理升级
+节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s
+节点 T-002 测试 待执行
+升级 ESC-001 待处理
+  原因：?
+  节点：T-002 测试 · 第 0 轮
+  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001

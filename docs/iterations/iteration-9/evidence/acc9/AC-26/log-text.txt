@@ -1,0 +1,13 @@
+exit=0
+04:02:24  实例 INST-001  已创建 → 运行中  原因 run.started
+04:02:24  节点 T-001  待执行 → 执行中  原因 run.started
+04:02:24  交接包 HO-001  已构造  原因 handoff.created
+04:02:24  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
+04:02:24  会话 mock-sess-33274-1  空闲 → 执行中  原因 session.state
+04:02:24  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
+04:02:24  会话 mock-sess-33274-1  执行中 → 执行中（tool_call）  原因 session.state
+04:02:25  会话 mock-sess-33274-1  执行中 → 空闲  原因 run.cancelled
+04:02:25  节点 T-001  执行中 → 已取消  原因 run.cancelled
+04:02:25  交接包 HO-001  已接受 → 已拒绝  原因 handoff.rejected
+04:02:25  实例 INST-001  运行中 → 已取消  原因 run.cancelled
+04:02:25  会话 mock-sess-33274-1  执行摘要 命令 未提供 · 退出码 未提供 · 关键输出 未提供 · 日志 未提供

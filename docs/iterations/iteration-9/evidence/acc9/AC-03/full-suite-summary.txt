@@ -1,0 +1,25 @@
+# 全量测试汇总（HEAD 40eb704, NODE_ENV=test, node --test "test/**/*.test.js"）
+# tests 1154
+# pass 1143
+# fail 10
+# cancelled 0
+# skipped 1
+# todo 0
+
+# 失败项（10 条）
+not ok 100 - NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）
+not ok 101 - NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）
+not ok 446 - AC-57：校验/审批/暂停/恢复 流程的 reason 序列与 detail 落盘并可复盘（行为断言）
+not ok 851 - task-loop 审核提示词给绝对路径：基址与 readReview 同源，避免宿主写进实例工作区
+not ok 902 - core.stop：先回包再断连，5s 内收敛，core.json 仍可读
+not ok 905 - 自动拉起：detached 起真进程，ping 拿到 pid/generation，stopCore 清干净
+not ok 910 - cursor.json 并发消费 20 次不重复
+not ok 920 - main：--cwd 相对当前 shell 目录解析，不作为项目根
+not ok 1019 - 早返回：turn-delay 3000ms 下 startRun 1s 内 resolve，随后 waitForRun 到 completed
+not ok 1040 - C-2 端到端：tool_running 的 status 会话行含"已运行 Ns"（N>0）
+
+# 与 baseline-failures.txt 对账
+基线 8 条：NFR-02 readReview p95 / NFR-02 verifyProducts p95 / core.stop 5s / cursor.json 并发 / main --cwd / task-loop 绝对路径 / 早返回 turn-delay / 自动拉起 detached
+本次命中基线 8 条全部在内；新增 2 条：
+  - not ok 446 test/wp11/rpc.test.js:346 AC-57（确定性，磁盘事件 9 vs 期望 8，多出 execution.summary）
+  - not ok 1040 test/wp9/cli-e2e.test.js:176 C-2（单文件复跑 4/4 通过 → 负载敏感 flake）

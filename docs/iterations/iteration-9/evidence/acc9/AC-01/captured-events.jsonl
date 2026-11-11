@@ -1,0 +1,2 @@
+{"object":"instance","objectId":"INST-001","from":"created","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-5fac20a0d1e09b01","seq":1,"ts":"2026-11-11T19:50:50.658Z","prev_event_hash":"0000000000000000000000000000000000000000000000000000000000000000"}
+{"object":"node","objectId":"T-001","from":"pending","to":"running","result":"applied","reason":"run.started","detail":null,"gen":"gen-5fac20a0d1e09b01","seq":2,"ts":"2026-11-11T19:50:50.676Z","prev_event_hash":"d558d8551440a98461c79283ff4e6a95dc91ffb6e9c9aa893cf76c0fdb3b56d6"}

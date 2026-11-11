@@ -1,0 +1,118 @@
+{
+  "ac": "AC-21",
+  "generatedAt": "2026-11-11T19:59:57.719Z",
+  "title": "事件链的历史兼容：旧记录无标记、末行被截断仍能续链",
+  "fixture": "3 条无反指纹旧记录（seq 1~3）；truncated 追加 1 条截断半行",
+  "passed": true,
+  "total": 20,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "legacy 先起核心",
+      "ok": true,
+      "detail": "实例 INST-001 · 不存在"
+    },
+    {
+      "name": "legacy 先起核心",
+      "ok": true,
+      "detail": "实例 INST-001 · 不存在"
+    },
+    {
+      "name": "legacy run exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "旧 3 行字节原样保留（新文件以旧字节为前缀）",
+      "ok": true,
+      "detail": "8b0290b045c7e8161e46dce85746d36d78014a6a8a18c4f883dd1a787e7d2a9d"
+    },
+    {
+      "name": "旧 3 行字节哈希不变",
+      "ok": true,
+      "detail": "actual=\"8b0290b045c7e8161e46dce85746d36d78014a6a8a18c4f883dd1a787e7d2a9d\" expected=\"8b0290b045c7e8161e46dce85746d36d78014a6a8a18c4f883dd1a787e7d2a9d\""
+    },
+    {
+      "name": "旧记录条数 3",
+      "ok": true,
+      "detail": "actual=3 expected=3"
+    },
+    {
+      "name": "新记录 seq 从 4 起连续",
+      "ok": true,
+      "detail": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19"
+    },
+    {
+      "name": "新首条 prev_event_hash = 旧第 3 条规范化 sha256",
+      "ok": true,
+      "detail": "actual=\"fd345617924337b96fc591fd6a857e2468aade5fe2b3995c430c39f9760fc90f\" expected=\"fd345617924337b96fc591fd6a857e2468aade5fe2b3995c430c39f9760fc90f\""
+    },
+    {
+      "name": "legacy log exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "legacy 无不可读行提示",
+      "ok": true,
+      "detail": "ndoff.consumed\n03:59:49  实例 INST-001  运行中 → 已完成  原因 run.completed\n03:59:49  会话 mock-sess-29640-1  等待下游 → 空闲  原因 run.completed\n03:59:49  会话 mock-sess-29640-1  执行摘要 命令 未提供 · 退出码 未提供 · 关键输出 未提供 · 日志 未提供\n"
+    },
+    {
+      "name": "legacy json exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "truncated 先起核心",
+      "ok": true,
+      "detail": "实例 INST-001 · 不存在"
+    },
+    {
+      "name": "truncated run exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "旧 4 行（3 好 + 1 半行）字节原样保留",
+      "ok": true,
+      "detail": "2b059e44a6db533377c5254d5e3d7128bb87ea8d1bc891a67d492b55c2dea2ca"
+    },
+    {
+      "name": "truncated 旧字节哈希不变",
+      "ok": true,
+      "detail": "actual=\"2b059e44a6db533377c5254d5e3d7128bb87ea8d1bc891a67d492b55c2dea2ca\" expected=\"2b059e44a6db533377c5254d5e3d7128bb87ea8d1bc891a67d492b55c2dea2ca\""
+    },
+    {
+      "name": "truncated 新记录 seq 从 4 起连续",
+      "ok": true,
+      "detail": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19"
+    },
+    {
+      "name": "truncated 新首条 prev_event_hash = 旧第 3 条规范化 sha256",
+      "ok": true,
+      "detail": "actual=\"fd345617924337b96fc591fd6a857e2468aade5fe2b3995c430c39f9760fc90f\" expected=\"fd345617924337b96fc591fd6a857e2468aade5fe2b3995c430c39f9760fc90f\""
+    },
+    {
+      "name": "truncated log exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "truncated 文本视图末行为 A-13（N=1）",
+      "ok": true,
+      "detail": "已跳过 1 行不可读记录"
+    },
+    {
+      "name": "truncated json exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    }
+  ],
+  "keyEvidence": [
+    "legacy-run.txt",
+    "legacy-log.txt",
+    "truncated-run.txt",
+    "truncated-log.txt"
+  ],
+  "note": "truncated 夹具按 AC 机检口径构造为「3 条完整旧记录 + 第 4 条截断半行（带行尾 \\n）」：这样才能同时满足 seq 从 4、prev=旧第 3 条、badLines=1 三条判据。"
+}

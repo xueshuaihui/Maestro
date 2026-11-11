@@ -1,0 +1,234 @@
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "created",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 1,
+    "ts": "2026-11-11T19:50:55.995Z",
+    "prev_event_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "pending",
+    "to": "running",
+    "result": "applied",
+    "reason": "run.started",
+    "detail": null,
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 2,
+    "ts": "2026-11-11T19:50:56.011Z",
+    "prev_event_hash": "3b430c97f88c68b4f814385b8f78bfa03d318aebe81d5c799ff20494aaa23a9c"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": "created",
+    "result": "applied",
+    "reason": "handoff.created",
+    "detail": null,
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 3,
+    "ts": "2026-11-11T19:50:56.044Z",
+    "prev_event_hash": "783b39d5ffb1d2f3f0a7a0aecfb878cd4babee815a8cd3820d5e0709721fedfc"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "created",
+    "to": "delivered",
+    "result": "applied",
+    "reason": "handoff.delivered",
+    "detail": {
+      "atMs": 1794426656156
+    },
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 4,
+    "ts": "2026-11-11T19:50:56.163Z",
+    "prev_event_hash": "c18439bbffb3c2accd3ed261e056d4fcd5262bc3a5b348d98a746272b5ff3b3d"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-19635-1",
+    "from": "idle",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_thought_chunk"
+    },
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 5,
+    "ts": "2026-11-11T19:50:56.227Z",
+    "prev_event_hash": "f8292239c19076c6a830b9b72f603d5812d659478989d64450b0d10d74c9dcd2"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "accepted",
+    "result": "applied",
+    "reason": "turn.first_event",
+    "detail": {
+      "event": "agent_thought_chunk",
+      "ambiguityWindowMs": 64
+    },
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 6,
+    "ts": "2026-11-11T19:50:56.257Z",
+    "prev_event_hash": "7a5987cbeb4cbd55bc20460ae9bf67086e04548f08580740db55a327be9ff7be"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-19635-1",
+    "from": "thinking",
+    "to": "tool_running",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "tool_call"
+    },
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 7,
+    "ts": "2026-11-11T19:50:57.261Z",
+    "prev_event_hash": "695e677d73cb37dc08f3bb491f71c92fc4d59988e3cd118f9b5ffe1660148936"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-19635-1",
+    "from": "tool_running",
+    "to": "thinking",
+    "result": "applied",
+    "reason": "session.state",
+    "detail": {
+      "event": "agent_message_chunk"
+    },
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 8,
+    "ts": "2026-11-11T19:50:57.414Z",
+    "prev_event_hash": "eb8d118066a6950303e03992c9fde3dd88ae0219c5f872bbb3cb1fda7d7828b5"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-19635-1",
+    "from": "thinking",
+    "to": "waiting_dependency",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 9,
+    "ts": "2026-11-11T19:50:57.545Z",
+    "prev_event_hash": "3801eb600710b4ab47f066453570d8a38a19d8e7abb6b721f03a2c45e60bd46a"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "review",
+    "result": "applied",
+    "reason": "output.submitted",
+    "detail": null,
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 10,
+    "ts": "2026-11-11T19:50:57.694Z",
+    "prev_event_hash": "5703bef45376c790f53b37260dfda02a4a2452fff7f9c5aeac9a27ca4ec0580e"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "verification.skipped",
+    "detail": {
+      "note": "未声明产出，跳过存在性检查"
+    },
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 11,
+    "ts": "2026-11-11T19:50:57.849Z",
+    "prev_event_hash": "102645350f4d098c96f90afed80675119b2637a2e10827b8dbb8c1323870d895"
+  },
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "review",
+    "to": "done",
+    "result": "applied",
+    "reason": "verification.passed",
+    "detail": null,
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 12,
+    "ts": "2026-11-11T19:50:57.981Z",
+    "prev_event_hash": "88a73f09d2793051e2ca3fd2351a47262e6652cc2be97e332c97498f8f9cce7d"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "accepted",
+    "to": "consumed",
+    "result": "applied",
+    "reason": "handoff.consumed",
+    "detail": {
+      "atMs": 1794426657991
+    },
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 13,
+    "ts": "2026-11-11T19:50:57.997Z",
+    "prev_event_hash": "129f700b97dc8fbea79e00cc1ae62d1e05f65a9b2a51f13d8c12816a638d0ede"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": "running",
+    "to": "completed",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 14,
+    "ts": "2026-11-11T19:50:58.150Z",
+    "prev_event_hash": "24fb1ef0cf68622cb09a512c48411313f2ca1b247200b04b5c33a2ec8669cc6f"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-19635-1",
+    "from": "waiting_dependency",
+    "to": "idle",
+    "result": "applied",
+    "reason": "run.completed",
+    "detail": null,
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 15,
+    "ts": "2026-11-11T19:50:58.168Z",
+    "prev_event_hash": "a9dbc41cd70b10940df815a0eb378e2e318c83e5bc4481d65d727ab7a63ea9dc"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-19635-1",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "execution.summary",
+    "detail": {
+      "nodeId": "T-001",
+      "round": 1,
+      "summary": {
+        "command": null,
+        "exitCode": null,
+        "keyOutputLines": null,
+        "logRef": null
+      }
+    },
+    "gen": "gen-c6390c29e974aaed",
+    "seq": 16,
+    "ts": "2026-11-11T19:50:58.193Z",
+    "prev_event_hash": "d788bd05e6a8fcae1f8e767d182df66e8c054cd63dfac84ecba2d920edb63eac"
+  }
+]

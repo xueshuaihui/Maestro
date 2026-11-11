@@ -1,0 +1,190 @@
+{
+  "at": "2026-11-11T20:17:03.304Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9-ac57-UGvjYX",
+  "steps": [
+    {
+      "step": "pause",
+      "ok": true
+    },
+    {
+      "step": "resume",
+      "ok": true
+    },
+    {
+      "step": "cancel",
+      "ok": true
+    }
+  ],
+  "diskCount": 9,
+  "expectedCount": 8,
+  "diskReasons": [
+    "workflow.paused",
+    "workflow.resumed",
+    "run.cancelled",
+    "run.cancelled",
+    "handoff.rejected",
+    "escalation.voided",
+    "approval.withdrawn",
+    "run.cancelled",
+    "execution.summary"
+  ],
+  "expectedReasons": [
+    "workflow.paused",
+    "workflow.resumed",
+    "run.cancelled",
+    "run.cancelled",
+    "handoff.rejected",
+    "escalation.voided",
+    "approval.withdrawn",
+    "run.cancelled"
+  ],
+  "extraEvents": [
+    {
+      "object": "session",
+      "objectId": "sess-001",
+      "from": null,
+      "to": null,
+      "result": "note",
+      "reason": "execution.summary",
+      "detail": {
+        "nodeId": "T-001",
+        "round": null,
+        "summary": {
+          "command": null,
+          "exitCode": null,
+          "keyOutputLines": null,
+          "logRef": null
+        }
+      },
+      "gen": "gen-1",
+      "seq": 9,
+      "ts": "2026-11-11T20:17:03.289Z",
+      "prev_event_hash": "dd661fdc8aafbe55101d24374f567841805c699568dfb559df4644672bb3ea66"
+    }
+  ],
+  "allEvents": [
+    {
+      "seq": 1,
+      "object": "instance",
+      "objectId": "INST-AC57",
+      "reason": "workflow.paused",
+      "result": "applied",
+      "detail": {
+        "paused": true
+      }
+    },
+    {
+      "seq": 2,
+      "object": "instance",
+      "objectId": "INST-AC57",
+      "reason": "workflow.resumed",
+      "result": "applied",
+      "detail": {
+        "paused": false
+      }
+    },
+    {
+      "seq": 3,
+      "object": "session",
+      "objectId": "sess-001",
+      "reason": "run.cancelled",
+      "result": "applied",
+      "detail": null
+    },
+    {
+      "seq": 4,
+      "object": "node",
+      "objectId": "T-001",
+      "reason": "run.cancelled",
+      "result": "applied",
+      "detail": null
+    },
+    {
+      "seq": 5,
+      "object": "handoff",
+      "objectId": "HO-001",
+      "reason": "handoff.rejected",
+      "result": "applied",
+      "detail": {
+        "reason": "withdrawn"
+      }
+    },
+    {
+      "seq": 6,
+      "object": "escalation",
+      "objectId": "ESC-001",
+      "reason": "escalation.voided",
+      "result": "applied",
+      "detail": {
+        "escalationId": "ESC-001"
+      }
+    },
+    {
+      "seq": 7,
+      "object": "approval",
+      "objectId": "APR-001",
+      "reason": "approval.withdrawn",
+      "result": "applied",
+      "detail": {
+        "approvalId": "APR-001"
+      }
+    },
+    {
+      "seq": 8,
+      "object": "instance",
+      "objectId": "INST-AC57",
+      "reason": "run.cancelled",
+      "result": "applied",
+      "detail": null
+    },
+    {
+      "seq": 9,
+      "object": "session",
+      "objectId": "sess-001",
+      "reason": "execution.summary",
+      "result": "note",
+      "detail": {
+        "nodeId": "T-001",
+        "round": null,
+        "summary": {
+          "command": null,
+          "exitCode": null,
+          "keyOutputLines": null,
+          "logRef": null
+        }
+      }
+    }
+  ],
+  "repeats": [
+    {
+      "round": 0,
+      "count": 9,
+      "reasons": [
+        "workflow.paused",
+        "workflow.resumed",
+        "run.cancelled",
+        "run.cancelled",
+        "handoff.rejected",
+        "escalation.voided",
+        "approval.withdrawn",
+        "run.cancelled",
+        "execution.summary"
+      ]
+    },
+    {
+      "round": 1,
+      "count": 9,
+      "reasons": [
+        "workflow.paused",
+        "workflow.resumed",
+        "run.cancelled",
+        "run.cancelled",
+        "handoff.rejected",
+        "escalation.voided",
+        "approval.withdrawn",
+        "run.cancelled",
+        "execution.summary"
+      ]
+    }
+  ]
+}

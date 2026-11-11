@@ -1,0 +1,75 @@
+{
+  "ac": "AC-15",
+  "generatedAt": "2026-11-11T19:56:09.677Z",
+  "title": "健康度 🟡 连接线待投递超过 TTL 50%",
+  "fixture": "三个 code-loop 实例，每个只放一条 pending 交接包",
+  "passed": true,
+  "total": 12,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "先起核心：INST-001 不存在",
+      "ok": true,
+      "detail": "实例 INST-001 · 不存在"
+    },
+    {
+      "name": "INST-001 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "INST-001 14:55 不命中 -> 正常",
+      "ok": true,
+      "detail": "actual=\"健康度 正常\" expected=\"健康度 正常\""
+    },
+    {
+      "name": "INST-002 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "INST-002 15:05 命中 -> 慢（单原因逐字）",
+      "ok": true,
+      "detail": "actual=\"健康度 慢 · 交接包 HO-001 待投递超过 TTL 一半\" expected=\"健康度 慢 · 交接包 HO-001 待投递超过 TTL 一半\""
+    },
+    {
+      "name": "INST-003 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "INST-003 无起算时间不命中 -> 正常",
+      "ok": true,
+      "detail": "actual=\"健康度 正常\" expected=\"健康度 正常\""
+    },
+    {
+      "name": "INST-002 状态不变（仍 pending）",
+      "ok": true,
+      "detail": "健康度只读时间，不改交接包状态"
+    },
+    {
+      "name": "单元级 TTL 等值边界用例文件全绿",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "单元用例存在：TTL: now - pendingAt = 900000 (exact) -> NOT handoff_ttl_half",
+      "ok": true,
+      "detail": "TTL: now - pendingAt = 900000 (exact) -> NOT handoff_ttl_half"
+    },
+    {
+      "name": "单元用例存在：TTL: now - pendingAt = 900001 -> handoff_ttl_half",
+      "ok": true,
+      "detail": "TTL: now - pendingAt = 900001 -> handoff_ttl_half"
+    },
+    {
+      "name": "单元用例存在：TTL: now - pendingAt = 899999 -> NOT handoff_ttl_half",
+      "ok": true,
+      "detail": "TTL: now - pendingAt = 899999 -> NOT handoff_ttl_half"
+    }
+  ],
+  "keyEvidence": [
+    "status-INST-001.txt / status-INST-002.txt / status-INST-003.txt",
+    "unit-health.log"
+  ]
+}

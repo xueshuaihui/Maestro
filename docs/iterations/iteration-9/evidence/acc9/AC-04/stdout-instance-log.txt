@@ -1,0 +1,14 @@
+03:59:32  实例 INST-001  已创建 → 运行中  原因 run.started
+03:59:32  节点 T-001  待执行 → 执行中  原因 run.started
+03:59:32  交接包 HO-001  已构造  原因 handoff.created
+03:59:32  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
+03:59:32  会话 mock-sess-29425-1  空闲 → 执行中  原因 session.state
+03:59:32  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
+03:59:32  会话 mock-sess-29425-1  执行中 → 执行中（tool_call）  原因 session.state
+03:59:32  会话 mock-sess-29425-1  执行中 → 执行中（agent_message_chunk）  原因 session.state
+03:59:32  会话 mock-sess-29425-1  执行中 → 等待下游  原因 output.submitted
+03:59:32  节点 T-001  执行中 → 待校验  原因 output.submitted
+03:59:33  节点 T-001  待校验 → 失败  原因 verification.failed
+03:59:33  实例 INST-001  运行中 → 失败  原因 verification.failed
+03:59:33  会话 mock-sess-29425-1  等待下游 → 空闲  原因 run.failed
+03:59:33  会话 mock-sess-29425-1  执行摘要 命令 node out/run.js · 退出码 1 · 关键输出 3 行 · 日志 host-logs/T-001.log

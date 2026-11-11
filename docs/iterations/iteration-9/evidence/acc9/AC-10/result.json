@@ -1,0 +1,63 @@
+{
+  "ac": "AC-10",
+  "at": "2026-11-11T20:19:47.971Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-10",
+  "checks": [
+    {
+      "name": "driver pass 跑完（exit 0）",
+      "ok": true,
+      "detail": {
+        "exitCode": 0
+      }
+    },
+    {
+      "name": "三次 trace show 退出码均 0、stderr 为空",
+      "ok": true,
+      "detail": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "三次 stdout 字节一致",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "state.json sha256 不变",
+      "ok": true,
+      "detail": {
+        "before": "3aa71f45bd6089684a6e2def918a057d6bd8f5a5600d1e325a0facee8c071654",
+        "after": "3aa71f45bd6089684a6e2def918a057d6bd8f5a5600d1e325a0facee8c071654"
+      }
+    },
+    {
+      "name": "events.jsonl sha256 不变",
+      "ok": true,
+      "detail": {
+        "before": "6025c6123355e8cba1e6a475247cbec208a4b4229562051f56eee57d31917001",
+        "after": "6025c6123355e8cba1e6a475247cbec208a4b4229562051f56eee57d31917001"
+      }
+    },
+    {
+      "name": "traces.jsonl sha256 不变（追踪只读不追写）",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "节点/会话/交接包/升级/健康度深比较相等",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "事件条数不增加",
+      "ok": true,
+      "detail": {
+        "before": 26,
+        "after": 26
+      }
+    }
+  ],
+  "pass": true
+}

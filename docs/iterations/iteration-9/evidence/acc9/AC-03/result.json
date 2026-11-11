@@ -1,0 +1,261 @@
+{
+  "ac": "AC-03",
+  "at": "2026-11-11T19:56:37.915Z",
+  "baselineTree": "/tmp/acc9-baseline",
+  "head": {
+    "repo": "40eb704",
+    "baseline": "322fb5e"
+  },
+  "chains": {
+    "single": {
+      "pairs": 3,
+      "diffs": [
+        [],
+        [],
+        []
+      ],
+      "exitCodes": {
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "cur": [
+          0,
+          0,
+          0
+        ]
+      },
+      "upgradeHits": {
+        "base": 0,
+        "cur": 0
+      }
+    },
+    "code-loop": {
+      "pairs": 3,
+      "diffs": [
+        [],
+        [],
+        []
+      ],
+      "exitCodes": {
+        "base": [
+          4,
+          4,
+          4
+        ],
+        "cur": [
+          4,
+          4,
+          4
+        ]
+      },
+      "upgradeHits": {
+        "base": 3,
+        "cur": 3
+      }
+    },
+    "task-loop": {
+      "pairs": 6,
+      "diffs": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "exitCodes": {
+        "base": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "cur": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      "upgradeHits": {
+        "base": 6,
+        "cur": 6
+      }
+    }
+  },
+  "checks": [
+    {
+      "name": "基线 worktree 存在且 HEAD = 322fb5e",
+      "ok": true,
+      "detail": {
+        "tree": "/tmp/acc9-baseline"
+      }
+    },
+    {
+      "name": "当前树 HEAD = 40eb704、基线树 HEAD = 322fb5e",
+      "ok": true,
+      "detail": {
+        "repo": "40eb704",
+        "baseline": "322fb5e"
+      }
+    },
+    {
+      "name": "single：每对 A-0 归一化后逐字 diff 为 0（3/3 对）",
+      "ok": true,
+      "detail": {
+        "diffs": [
+          {
+            "pair": 0,
+            "diff": []
+          },
+          {
+            "pair": 1,
+            "diff": []
+          },
+          {
+            "pair": 2,
+            "diff": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "single：退出码与基线一致（期望 0）",
+      "ok": true,
+      "detail": {
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "cur": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "single：当前树输出不含健康度/追踪/执行摘要等新增可见词",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "code-loop：每对 A-0 归一化后逐字 diff 为 0（3/3 对）",
+      "ok": true,
+      "detail": {
+        "diffs": [
+          {
+            "pair": 0,
+            "diff": []
+          },
+          {
+            "pair": 1,
+            "diff": []
+          },
+          {
+            "pair": 2,
+            "diff": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "code-loop：退出码与基线一致（期望 4）",
+      "ok": true,
+      "detail": {
+        "base": [
+          4,
+          4,
+          4
+        ],
+        "cur": [
+          4,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "name": "code-loop：当前树输出不含健康度/追踪/执行摘要等新增可见词",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "task-loop：当前出现率不低于基线（会话 已升级 6/6 vs 基线 6/6）",
+      "ok": true,
+      "detail": {
+        "baseUpgradeHits": 6,
+        "curUpgradeHits": 6,
+        "pairs": 6
+      }
+    },
+    {
+      "name": "task-loop：双方都出现「会话 已升级」的对照逐字 diff 为 0（6 对）",
+      "ok": true,
+      "detail": {
+        "compared": 6,
+        "diffs": [
+          {
+            "pair": 0,
+            "diff": []
+          },
+          {
+            "pair": 1,
+            "diff": []
+          },
+          {
+            "pair": 2,
+            "diff": []
+          },
+          {
+            "pair": 3,
+            "diff": []
+          },
+          {
+            "pair": 4,
+            "diff": []
+          },
+          {
+            "pair": 5,
+            "diff": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "task-loop：退出码与基线一致（期望 4）",
+      "ok": true,
+      "detail": {
+        "base": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "cur": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "name": "task-loop：当前树输出不含健康度/追踪/执行摘要等新增可见词",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "pass": true
+}

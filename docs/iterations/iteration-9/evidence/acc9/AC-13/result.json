@@ -1,0 +1,248 @@
+{
+  "ac": "AC-13",
+  "at": "2026-11-11T20:06:05.718Z",
+  "results": [
+    {
+      "name": "pending",
+      "expect": "健康度 需关注 · 有待处理升级",
+      "ok": true,
+      "healthLines": [
+        "健康度 需关注 · 有待处理升级"
+      ],
+      "exitCode": 0,
+      "started": true
+    },
+    {
+      "name": "timeout",
+      "expect": "健康度 需关注 · 节点 T-001 执行超时",
+      "ok": true,
+      "healthLines": [
+        "健康度 需关注 · 节点 T-001 执行超时"
+      ],
+      "exitCode": 0,
+      "started": true
+    },
+    {
+      "name": "crash",
+      "expect": "健康度 需关注 · 会话 mock-sess-12345-1 崩溃",
+      "ok": true,
+      "healthLines": [
+        "健康度 需关注 · 会话 mock-sess-12345-1 崩溃"
+      ],
+      "exitCode": 0,
+      "started": true
+    },
+    {
+      "name": "role",
+      "expect": "健康度 需关注 · 角色 开发 不可用",
+      "ok": true,
+      "healthLines": [
+        "健康度 需关注 · 角色 开发 不可用"
+      ],
+      "exitCode": 0,
+      "started": true
+    },
+    {
+      "name": "conn-rejected",
+      "expect": "健康度 需关注 · 连接线 测试→开发 已拒绝",
+      "ok": true,
+      "healthLines": [
+        "健康度 需关注 · 连接线 测试→开发 已拒绝"
+      ],
+      "exitCode": 0,
+      "started": true
+    },
+    {
+      "name": "conn-expired",
+      "expect": "健康度 需关注 · 连接线 测试→开发 已过期",
+      "ok": true,
+      "healthLines": [
+        "健康度 需关注 · 连接线 测试→开发 已过期"
+      ],
+      "exitCode": 0,
+      "started": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "pending：健康度行逐字为「健康度 需关注 · 有待处理升级」",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "healthLines": [
+          "健康度 需关注 · 有待处理升级"
+        ],
+        "expected": "健康度 需关注 · 有待处理升级",
+        "lines": [
+          "实例 INST-001 · 运行中 · 模板 编码闭环",
+          "健康度 需关注 · 有待处理升级",
+          "节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s",
+          "升级 ESC-001 待处理",
+          "  原因：?",
+          "  节点：T-001 开发 · 第 0 轮",
+          "  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001"
+        ]
+      }
+    },
+    {
+      "name": "timeout：健康度行逐字为「健康度 需关注 · 节点 T-001 执行超时」",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "healthLines": [
+          "健康度 需关注 · 节点 T-001 执行超时"
+        ],
+        "expected": "健康度 需关注 · 节点 T-001 执行超时",
+        "lines": [
+          "实例 INST-001 · 运行中 · 模板 编码闭环",
+          "健康度 需关注 · 节点 T-001 执行超时",
+          "节点 T-001 开发 执行中 · 第 1 轮",
+          "升级 —"
+        ]
+      }
+    },
+    {
+      "name": "crash：健康度行逐字为「健康度 需关注 · 会话 mock-sess-12345-1 崩溃」",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "healthLines": [
+          "健康度 需关注 · 会话 mock-sess-12345-1 崩溃"
+        ],
+        "expected": "健康度 需关注 · 会话 mock-sess-12345-1 崩溃",
+        "lines": [
+          "实例 INST-001 · 运行中 · 模板 编码闭环",
+          "健康度 需关注 · 会话 mock-sess-12345-1 崩溃",
+          "节点 T-001 开发 失败（等待复测） · 第 1 轮",
+          "会话 空闲",
+          "升级 —"
+        ]
+      }
+    },
+    {
+      "name": "role：健康度行逐字为「健康度 需关注 · 角色 开发 不可用」",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "healthLines": [
+          "健康度 需关注 · 角色 开发 不可用"
+        ],
+        "expected": "健康度 需关注 · 角色 开发 不可用",
+        "lines": [
+          "实例 INST-001 · 运行中 · 模板 编码闭环",
+          "健康度 需关注 · 角色 开发 不可用",
+          "节点 T-001 开发 待校验 · 第 1 轮",
+          "会话 已升级",
+          "升级 —"
+        ]
+      }
+    },
+    {
+      "name": "conn-rejected：健康度行逐字为「健康度 需关注 · 连接线 测试→开发 已拒绝」",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "healthLines": [
+          "健康度 需关注 · 连接线 测试→开发 已拒绝"
+        ],
+        "expected": "健康度 需关注 · 连接线 测试→开发 已拒绝",
+        "lines": [
+          "实例 INST-001 · 运行中 · 模板 编码闭环",
+          "健康度 需关注 · 连接线 测试→开发 已拒绝",
+          "节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s",
+          "节点 T-002 测试 已完成 · 第 1 轮 · 耗时 2s",
+          "交接包 HO-001  测试→开发  已构造   04:06:01",
+          "升级 —"
+        ]
+      }
+    },
+    {
+      "name": "conn-expired：健康度行逐字为「健康度 需关注 · 连接线 测试→开发 已过期」",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "healthLines": [
+          "健康度 需关注 · 连接线 测试→开发 已过期"
+        ],
+        "expected": "健康度 需关注 · 连接线 测试→开发 已过期",
+        "lines": [
+          "实例 INST-001 · 运行中 · 模板 编码闭环",
+          "健康度 需关注 · 连接线 测试→开发 已过期",
+          "节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s",
+          "节点 T-002 测试 已完成 · 第 1 轮 · 耗时 2s",
+          "交接包 HO-001  测试→开发  已构造   04:06:04",
+          "升级 —"
+        ]
+      }
+    },
+    {
+      "name": "六个夹具全部「需关注」一档（每次只显示一档）",
+      "ok": true,
+      "detail": {
+        "results": [
+          {
+            "name": "pending",
+            "expect": "健康度 需关注 · 有待处理升级",
+            "ok": true,
+            "healthLines": [
+              "健康度 需关注 · 有待处理升级"
+            ],
+            "exitCode": 0,
+            "started": true
+          },
+          {
+            "name": "timeout",
+            "expect": "健康度 需关注 · 节点 T-001 执行超时",
+            "ok": true,
+            "healthLines": [
+              "健康度 需关注 · 节点 T-001 执行超时"
+            ],
+            "exitCode": 0,
+            "started": true
+          },
+          {
+            "name": "crash",
+            "expect": "健康度 需关注 · 会话 mock-sess-12345-1 崩溃",
+            "ok": true,
+            "healthLines": [
+              "健康度 需关注 · 会话 mock-sess-12345-1 崩溃"
+            ],
+            "exitCode": 0,
+            "started": true
+          },
+          {
+            "name": "role",
+            "expect": "健康度 需关注 · 角色 开发 不可用",
+            "ok": true,
+            "healthLines": [
+              "健康度 需关注 · 角色 开发 不可用"
+            ],
+            "exitCode": 0,
+            "started": true
+          },
+          {
+            "name": "conn-rejected",
+            "expect": "健康度 需关注 · 连接线 测试→开发 已拒绝",
+            "ok": true,
+            "healthLines": [
+              "健康度 需关注 · 连接线 测试→开发 已拒绝"
+            ],
+            "exitCode": 0,
+            "started": true
+          },
+          {
+            "name": "conn-expired",
+            "expect": "健康度 需关注 · 连接线 测试→开发 已过期",
+            "ok": true,
+            "healthLines": [
+              "健康度 需关注 · 连接线 测试→开发 已过期"
+            ],
+            "exitCode": 0,
+            "started": true
+          }
+        ]
+      }
+    }
+  ],
+  "pass": true
+}

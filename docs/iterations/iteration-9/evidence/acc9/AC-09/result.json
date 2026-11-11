@@ -1,0 +1,62 @@
+{
+  "ac": "AC-09",
+  "at": "2026-11-11T20:19:36.268Z",
+  "checks": [
+    {
+      "name": "空实例夹具：核心已在空根拉起（instance status 返回「不存在」）",
+      "ok": true,
+      "detail": {
+        "exitCode": 1,
+        "stdout": "实例 INST-001 · 不存在\n"
+      }
+    },
+    {
+      "name": "空追踪逐字为 A-1 且退出码 0",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "stdout": "实例 INST-001 · 暂无追踪记录\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "单节点实例跑完（run 退出码 0）",
+      "ok": true,
+      "detail": {
+        "exitCode": 0
+      }
+    },
+    {
+      "name": "单节点逐字为 A-2：首行 = 实例 + 追踪号",
+      "ok": true,
+      "detail": {
+        "head": "实例 INST-001 · 追踪 TRC-53db8e5d"
+      }
+    },
+    {
+      "name": "单节点逐字为 A-2：跨度 1 条 · 回流 0 次 / 一条跨度 / 回流链 + 无",
+      "ok": true,
+      "detail": {
+        "lines": [
+          "实例 INST-001 · 追踪 TRC-53db8e5d",
+          "跨度 1 条 · 回流 0 次",
+          "",
+          "04:19:32 → 04:19:34  T-001  已完成  交接 HO-001",
+          "",
+          "回流链",
+          "无"
+        ]
+      }
+    },
+    {
+      "name": "实例不存在逐字为 A-5、退出码 1、无堆栈",
+      "ok": true,
+      "detail": {
+        "exitCode": 1,
+        "stdout": "实例 INST-999 · 不存在\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "pass": true
+}

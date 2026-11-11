@@ -1,0 +1,119 @@
+{
+  "ac": "AC-06",
+  "at": "2026-11-11T20:19:03.893Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-06",
+  "checks": [
+    {
+      "name": "driver pass 场景跑完（exit 0）且实例 completed",
+      "ok": true,
+      "detail": {
+        "drv": 0,
+        "state": "completed"
+      }
+    },
+    {
+      "name": "追迹文件落在 state/traces.jsonl（不在实例根目录）",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "跨度恰 2 条、按时间排序、两条都已结束",
+      "ok": true,
+      "detail": {
+        "spans": [
+          {
+            "trace_id": "TRC-bb10e193",
+            "instance_id": "INST-001",
+            "node_id": "T-001",
+            "round": 1,
+            "start_time": "2026-11-11T20:18:57.909Z",
+            "end_time": "2026-11-11T20:18:59.232Z",
+            "status": "done"
+          },
+          {
+            "trace_id": "TRC-bb10e193",
+            "instance_id": "INST-001",
+            "node_id": "T-002",
+            "round": 1,
+            "start_time": "2026-11-11T20:18:59.866Z",
+            "end_time": "2026-11-11T20:19:01.499Z",
+            "status": "done"
+          }
+        ]
+      }
+    },
+    {
+      "name": "每行跨度恰 7 字段（不含 handoff_ids 落盘）",
+      "ok": true,
+      "detail": {
+        "keys": [
+          [
+            "end_time",
+            "instance_id",
+            "node_id",
+            "round",
+            "start_time",
+            "status",
+            "trace_id"
+          ],
+          [
+            "end_time",
+            "instance_id",
+            "node_id",
+            "round",
+            "start_time",
+            "status",
+            "trace_id"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "同一实例跨度共用一个追踪号，且与 state.traceId 一致",
+      "ok": true,
+      "detail": {
+        "traceId": "TRC-bb10e193",
+        "spanIds": [
+          "TRC-bb10e193",
+          "TRC-bb10e193"
+        ]
+      }
+    },
+    {
+      "name": "trace show 退出码 0，首行为实例号 + 追踪号",
+      "ok": true,
+      "detail": {
+        "head": "实例 INST-001 · 追踪 TRC-bb10e193"
+      }
+    },
+    {
+      "name": "汇总行为「跨度 2 条 · 回流 0 次」",
+      "ok": true,
+      "detail": {
+        "got": "跨度 2 条 · 回流 0 次"
+      }
+    },
+    {
+      "name": "两条跨度行含节点标题、结果与关联交接包",
+      "ok": true,
+      "detail": {
+        "lines": [
+          "实例 INST-001 · 追踪 TRC-bb10e193",
+          "跨度 2 条 · 回流 0 次",
+          "",
+          "04:18:57 → 04:18:59  T-001 开发  已完成  交接 HO-001",
+          "04:18:59 → 04:19:01  T-002 测试  已完成  交接 HO-001",
+          "",
+          "回流链",
+          "无"
+        ]
+      }
+    },
+    {
+      "name": "handoff_ids 与状态里的交接包一致（两条都归 HO-001）",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "pass": true
+}

@@ -1,0 +1,7 @@
+$ node -p "Object.keys(require('./package.json').dependencies||{}).length"
+0
+
+$ node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid <31 词>
+OK: 扫描 24 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+EXIT=0
+at=2026-11-11T20:08:44Z

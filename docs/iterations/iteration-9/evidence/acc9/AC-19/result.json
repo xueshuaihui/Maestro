@@ -1,0 +1,116 @@
+{
+  "ac": "AC-19",
+  "generatedAt": "2026-11-11T19:57:00.866Z",
+  "title": "既有状态输出不回归：只允许新增一行健康度",
+  "fixture": "真实 single / code-loop，与 322fb5e 基线工作树对照",
+  "passed": true,
+  "total": 18,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "git worktree add 322fb5e exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "single run 退出码一致",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "single 健康度行恰 1 行",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "single 健康度行紧跟实例状态行（index=1）",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "single 删健康度行后与 322fb5e 基线逐字一致",
+      "ok": true,
+      "detail": "cur=[\"实例 INST-001 · 已完成\",\"节点 已完成 · 耗时 Ns\",\"会话 空闲\",\"交接包 HO-001  已构造   TIME\",\"交接包 HO-001  已投递   TIME\",\"交接包 HO-001  已接受   TIME\",\"交接包 HO-001  已完成   TIME\"]\nbase=[\"实例 INST-001 · 已完成\",\"节点 已完成 · 耗时 Ns\",\"会话 空闲\",\"交接包 HO-001  已构造   TIME\",\"交接包 HO-001  已投递   TIME\",\"交接包 HO-001  已接受   TIME\",\"交接包 HO-001  已完成   TIME\"]"
+    },
+    {
+      "name": "single graph 文本逐字一致",
+      "ok": true,
+      "detail": "实例 INST-001 · 单节点 · 已完成\nT-001 worker · 已完成 · 第 1 轮\n边：\n  无\n"
+    },
+    {
+      "name": "single graph 文本无健康度/health 字段",
+      "ok": true,
+      "detail": "实例 INST-001 · 单节点 · 已完成\nT-001 worker · 已完成 · 第 1 轮\n边：\n  无\n"
+    },
+    {
+      "name": "single graph JSON 逐字一致",
+      "ok": true,
+      "detail": "{\n  \"graphVersion\": 1,\n  \"instanceId\": \"INST-001\",\n  \"template\": \"single\",\n  \"state\": \"completed\",\n  \"paused\": false,\n  \"nodes\": [\n    {\n      \"nodeId\": \"T-001\",\n      \"title\": null,\n      \"roleId\": \"worker\",\n      \"state\": \"done\",\n      \"round\": 1\n    }\n  ],\n  \"edges\": [],\n  \"handoffs\": [\n    {\n      \"handoffId\": \"HO-001\",\n      \"from\": null,\n      \"to\": null,\n      \"kind\": \"forward\",\n      \"stat"
+    },
+    {
+      "name": "single graph JSON 无健康度/health",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "code-loop run 退出码一致",
+      "ok": true,
+      "detail": "actual=4 expected=4"
+    },
+    {
+      "name": "code-loop 健康度行恰 1 行",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "code-loop 健康度行紧跟实例状态行（index=1）",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "code-loop 删健康度行后与 322fb5e 基线逐字一致",
+      "ok": true,
+      "detail": "cur=[\"实例 INST-001 · 已挂起 · 模板 编码闭环\",\"节点 T-001 开发 已升级 · 第 1 轮 · （开发 分支 maestro/INST-001/developer · 已合并）\",\"节点 T-002 测试 待执行\",\"会话 已升级\",\"交接包 HO-001  开发→测试  已构造   TIME\",\"交接包 HO-001  开发→测试  已拒绝   TIME  原因 内容不合规\",\"升级 ESC-001 待处理\",\"  原因：交接包 HO-001 内容不合规：证据不可读 calc.js\",\"  节点：T-001 开发 · 第 1 轮\",\"  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\"]\nbase=[\"实例 INST-001 · 已挂起 · 模板 编码闭环\",\"节点 T-001 开发 已升级 · 第 1 轮 · （开发 分支 maestro/INST-001/developer · 已合并）\",\"节点 T-002 测试 待执行\",\"会话 已升级\",\"交接包 HO-001  开发→测试  已构造   TIME\",\"交接包 HO-001  开发→测试  已拒绝   TIME  原因 内容不合规\",\"升级 ESC-001 待处理\",\"  原因：交接包 HO-001 内容不合规：证据不可读 calc.js\",\"  节点：T-001 开发 · 第 1 轮\",\"  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\"]"
+    },
+    {
+      "name": "code-loop graph 文本逐字一致",
+      "ok": true,
+      "detail": "实例 INST-001 · 编码闭环 · 已挂起\nT-001 开发 · 已升级 · 第 1 轮 （开发 分支 maestro/INST-001/developer · 已合并）\nT-002 测试 · 待执行 · 第 0 轮\n边：\n  T-001 -> T-002 正向\n  T-002 -> T-001 回流\n  T-001 -> T-002 复测\n升级：ESC-001 T-001 待处理\n"
+    },
+    {
+      "name": "code-loop graph 文本无健康度/health 字段",
+      "ok": true,
+      "detail": "实例 INST-001 · 编码闭环 · 已挂起\nT-001 开发 · 已升级 · 第 1 轮 （开发 分支 maestro/INST-001/developer · 已合并）\nT-002 测试 · 待执行 · 第 0 轮\n边：\n  T-001 -> T-002 正向\n  T-002 -> T-001 回流\n  T-001 -> T-002 复测\n升级：ESC-001 T-001 待处理\n"
+    },
+    {
+      "name": "code-loop graph JSON 逐字一致",
+      "ok": true,
+      "detail": "{\n  \"graphVersion\": 1,\n  \"instanceId\": \"INST-001\",\n  \"template\": \"code-loop\",\n  \"state\": \"suspended\",\n  \"paused\": false,\n  \"nodes\": [\n    {\n      \"nodeId\": \"T-001\",\n      \"title\": \"开发\",\n      \"roleId\": \"developer\",\n      \"state\": \"escalated\",\n      \"round\": 1,\n      \"branch\": \"maestro/INST-001/developer\",\n      \"mergeStatus\": \"merged\"\n    },\n    {\n      \"nodeId\": \"T-002\",\n      \"title\": \"测试\",\n    "
+    },
+    {
+      "name": "code-loop graph JSON 无健康度/health",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "工作树已移除（不留仓库外残留）",
+      "ok": true,
+      "detail": "/tmp/acc9-b-base"
+    }
+  ],
+  "cases": {
+    "single": {
+      "curRun": 0,
+      "baseRun": 0
+    },
+    "code-loop": {
+      "curRun": 4,
+      "baseRun": 4
+    }
+  },
+  "keyEvidence": [
+    "single-status-current/base.txt",
+    "code-loop-status-current/base.txt",
+    "*-graph-*"
+  ]
+}

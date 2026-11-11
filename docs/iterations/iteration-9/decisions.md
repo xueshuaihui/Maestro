@@ -233,3 +233,30 @@
 | 依据 | AC-24 冻结的机检命令是 `grep -c "object: 'session'" src/core/orchestrator.js` 不得超过 13（需求 L489 原文），D-16 ⑤ 实测口径同样是单文件；`escalation.js` 的那一处是升级事件，属既有 12 类之外的存量发射点，本迭代未触碰 |
 | 决定 | **计数以 `src/core/orchestrator.js` 单文件 ≤13 为准**，`src/daemon` 必须为 0；`src/core` 其余文件只允许 `escalation.js` 的 1 处存量。WP-9 实现即按此口径，**不是放宽**——若把 `escalation.js` 并入 ≤13，需改既有产品代码，超出本迭代授权。S3 取证按同一口径贴两个数字（单文件 13 / core 合计 14 及其构成） |
 | 影响面 | WP-9 断言口径、AC-24 取证、`report.md` §5；不改代码与判据 |
+
+## D-25 · AC-08 / A-3 与 AC-04 / A-4 的渲染冲突：全 `null` 不渲染失败摘要行
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | S3 验收 A 组实测：`--stop-after 3` 冻结窗口（backflow-once）里 `T-002 测试 失败` 跨度下方多出一行 `  失败摘要 命令 未提供 · 退出码 未提供 · 关键输出 未提供 · 日志 未提供`，其余 9 行与附录 A-3 逐字一致；AC-08 的 Then 要求「逐字为附录 A-3」，故判 FAIL |
+| 依据 | 需求内部冲突：AC-04 Then / A-4 要求「失败跨度下方带摘要行」，AC-08 Then 冻结的 A-3 基线**不含**该行。区别在数据：AC-04 的夹具用 `--fail-tool` 上报了四项，而 backflow-once 场景的 `T-002` 没有任何工具执行帧，摘要四项**全为 `null`**（WP-7 按 AC-04/26 正确写了 `execution.summary`，四项 `null`）。A-4 的「缺项替换未提供」针对**部分缺项**（`--fail-tool-no-refs` 有命令+退出码、另两项 `null`），并不要求「四项全无」也占一行 |
+| 决定 | **`trace show` 的失败摘要行只在四项中至少一项非 `null` 时渲染**；四项全 `null` 时**不渲染**该行。理由：全 `null` 表示「没有执行摘要数据」，用一行「未提供」占位会把 A-3 这类纯失败跨度渲染成两个基线都不认的形态；而只要有任何一项数据，A-4 的逐字形态与「缺项替换」规则照常生效。**`instance log` 的 `execution.summary` 行不受影响**（A-14 明确要求取消路径四项全 `未提供` 仍要显示）。不改附录 A、不改 AC-04/08 判据 |
+| 影响面 | `src/cli/render.js` 的 `renderTraceShow` 一处条件、`test/wp9/i19-render.test.js` 需补「全 `null` 不渲染 / 部分缺项照常渲染」用例、AC-08 重新取证；不改事件形状与 `instance log` |
+
+## D-26 · `trace show` 的空态判定：跨度为空即 A-1（覆盖 D-23 的实现位置）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | S3 验收 A/B 组实测：AC-23 的 `missing` 夹具（删除追踪文件的**当前代码实例**）输出 `TRC-xxxxxxxx / 跨度 0 条 · 回流 0 次 / 回流链 / 无`，而 AC-23 Then 要求「`missing` 显示『暂无追踪记录』」。根因是 `renderTraceShow` 的 `hasTrace = traceId 存在 \|\| 跨度非空`，D-19 让实例恒有 `traceId` 后该条件永真 |
+| 依据 | AC-09（空实例 → A-1）、AC-23（删文件 → A-1）、AC-22（有进行中节点 → A-10）三条必须同时成立。它们的区分点是**是否有跨度行**：AC-22 有进行中叠加跨度，AC-09 / AC-23 没有任何跨度行。以 `traceId` 是否存在作判据在 D-19 之后已失效 |
+| 决定 | **`hasTrace` 改为「跨度数组（含进行中叠加）非空」**，不再依赖 `traceId`；`traceId` 只在有跨度行时用于首行。D-23 在 `server.js` 的「空号清空叠加」保留（对历史实例仍有效），但**不再承担**空态判定。这样：空实例 / 删文件 / 无跨度 → A-1；有进行中节点 → A-10 且首行带号；有已结束跨度 → A-2/A-3 |
+| 影响面 | `src/cli/render.js` 的 `renderTraceShow` 一处条件、`test/wp9/i19-render.test.js` 与 `test/wp9/i19-cli.test.js` 的空态用例、AC-09/AC-22/AC-23 重新取证；不改附录 A |
+
+## D-27 · `test/wp11/rpc.test.js` AC-57 期望从 8 条更新为 9 条
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | S3 全量跑出现**确定性**新增失败：`test/wp11/rpc.test.js:346` AC-57 断言 `events.jsonl` 恰 8 条，实际 9 条，第 9 条为 `object:'session'` · `reason:'execution.summary'`（四项 `null`，取消路径）；基线树单跑该文件 8/8 |
+| 依据 | I1.9 的 AC-26 明确要求「被取消的会话也有执行摘要，四项全『未提供』」，即取消路径**必须**新增这一条会话级记录；AC-57 是 I1.3 的既有行为断言，其冻结的 8 条序列是在摘要功能存在之前写的。D-2 的回归口径是「失败集合差集 = 0」，因此这条确定性失败必须消除，而不是登记为基线 |
+| 决定 | **更新该用例的期望序列到 9 条**：在摘要事件实际落点插入 `execution.summary`，并按真实 `detail` 断言 `{ nodeId, round, summary: { command:null, exitCode:null, keyOutputLines:null, logRef:null } }`；其余 8 条 reason 与 detail 逐字不变、顺序不变。**不得**改成「过滤掉 execution.summary」或放宽长度断言（那会掩盖真实回归）。该文件由 WP-7 负责（其行为导致该记录），授权范围仅此一个用例 |
+| 影响面 | `test/wp11/rpc.test.js` 一个用例、全量失败集合、AC-26/AC-24 取证；不改产品代码、不改其它测试 |

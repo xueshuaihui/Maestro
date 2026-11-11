@@ -1,0 +1,52 @@
+{
+  "ac": "AC-09",
+  "at": "2026-11-11T20:43:34.914Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-22-hold-r2",
+  "checks": [
+    {
+      "name": "真实 run 进入运行中（节点 T-001 state=running）",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "value": true
+      }
+    },
+    {
+      "name": "运行中实例首行为「实例 INST-001 · 追踪 <state.traceId>」（带号，D-26 不误伤）",
+      "ok": true,
+      "detail": {
+        "traceId": "TRC-860f0ff8",
+        "head": "实例 INST-001 · 追踪 TRC-860f0ff8"
+      }
+    },
+    {
+      "name": "汇总为「跨度 0 条 · 回流 0 次」",
+      "ok": true,
+      "detail": {
+        "got": "跨度 0 条 · 回流 0 次"
+      }
+    },
+    {
+      "name": "进行中跨度行逐字 A-10 形态（结束位 —、结果位 进行中）",
+      "ok": true,
+      "detail": {
+        "lines": [
+          "实例 INST-001 · 追踪 TRC-860f0ff8",
+          "跨度 0 条 · 回流 0 次",
+          "",
+          "04:43:33 → —  T-001  进行中  交接 HO-001",
+          "",
+          "回流链",
+          "无"
+        ]
+      }
+    },
+    {
+      "name": "不出现「暂无追踪记录」",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "pass": true,
+  "section": "AC-22"
+}

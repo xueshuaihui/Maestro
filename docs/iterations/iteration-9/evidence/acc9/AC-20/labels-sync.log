@@ -1,0 +1,41 @@
+exit=0
+TAP version 13
+# Subtest: 映射关系：CORE_TEXT 的六张状态表与 labels.js 六个导出一一对应
+ok 1 - 映射关系：CORE_TEXT 的六张状态表与 labels.js 六个导出一一对应
+  ---
+  duration_ms: 1.714819
+  type: 'test'
+  ...
+# Subtest: 两侧取同一批键：六张表的键集合逐表一致（缺键/多键即失败）
+ok 2 - 两侧取同一批键：六张表的键集合逐表一致（缺键/多键即失败）
+  ---
+  duration_ms: 0.316664
+  type: 'test'
+  ...
+# Subtest: 逐词交叉比对（CORE_TEXT 到 labels）：每个状态键文案逐字一致
+ok 3 - 逐词交叉比对（CORE_TEXT 到 labels）：每个状态键文案逐字一致
+  ---
+  duration_ms: 0.247569
+  type: 'test'
+  ...
+# Subtest: 逐词交叉比对（labels 到 CORE_TEXT）：反向同样逐字一致
+ok 4 - 逐词交叉比对（labels 到 CORE_TEXT）：反向同样逐字一致
+  ---
+  duration_ms: 0.256028
+  type: 'test'
+  ...
+# Subtest: 六张状态表整对象深比较，且每个文案为非空中文字符串（BR-35 / D-11.3）
+ok 5 - 六张状态表整对象深比较，且每个文案为非空中文字符串（BR-35 / D-11.3）
+  ---
+  duration_ms: 0.462849
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 204.65676

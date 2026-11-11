@@ -1,0 +1,38 @@
+# 全量测试汇总（复验 r2）
+# HEAD 40eb704 工作树（含 D-25 / D-26 / D-27 修复：src/cli/render.js +14/−3、test/wp9/i19-render.test.js +66、test/wp11/rpc.test.js +9/−1）
+# 命令：NODE_ENV=test node --test "test/**/*.test.js"
+# tests 1157
+# pass 1147
+# fail 9
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 345834
+
+# 失败项（9 条）
+not ok 100  - NFR-02: readReview p95 <= 50ms（1MB / 5MB 文档）
+not ok 101  - NFR-02: verifyProducts({sha256:true}) p95 <= 50ms（1MB / 5MB 文档）
+not ok 851  - task-loop 审核提示词给绝对路径：基址与 readReview 同源，避免宿主写进实例工作区
+not ok 902  - core.stop：先回包再断连，5s 内收敛，core.json 仍可读
+not ok 905  - 自动拉起：detached 起真进程，ping 拿到 pid/generation，stopCore 清干净
+not ok 910  - cursor.json 并发消费 20 次不重复
+not ok 920  - main：--cwd 相对当前 shell 目录解析，不作为项目根
+not ok 1019 - 早返回：turn-delay 3000ms 下 startRun 1s 内 resolve，随后 waitForRun 到 completed
+not ok 1040 - C-2 端到端：tool_running 的 status 会话行含"已运行 Ns"（N>0）
+
+# 与 docs/iterations/iteration-7/baseline-failures.txt 对账
+基线 8 条全部命中：
+  NFR-02 readReview p95 / NFR-02 verifyProducts p95 / core.stop 5s / cursor.json 并发 /
+  main --cwd / task-loop 绝对路径 / 早返回 turn-delay / 自动拉起 detached
+新增（相对基线）仅 1 条：
+  - not ok 1040 test/wp9/cli-e2e.test.js:164 C-2 —— 全量并行负载下时序 flake；
+    单文件复跑 4/4 通过（cli-e2e-solo-r2.log），按 D-2「失败集合差集 = 0（允许该 flake）」判 PASS。
+已消除：
+  - 上一轮确定性失败 test/wp11/rpc.test.js AC-57（D-27 更新期望到 9 条）；
+    单文件复跑 8/8 通过（rpc-test-solo-r2.log）。
+
+# 与上一轮（full-suite.log，1154 tests / 1143 pass / 10 fail）的差异
+- 用例数 +3：D-25 / D-26 在 test/wp9/i19-render.test.js 新增 3 个 test（全 null 不渲染 / 部分缺项仍渲染 / 0 与空串有值）。
+- 失败数 −1：AC-57 消失（D-27）；C-2 仍在（flaky）。
+- 环境说明：本轮第一次尝试在 855/1157 处停滞 23 分钟（full-suite-r2-aborted.log），系环境中累积 411 个
+  项目目录已删除、10 分钟内无写入的陈旧 `orch core serve` 进程（共 723 个）导致资源紧张；清理后同一命令 5m52s 跑完。

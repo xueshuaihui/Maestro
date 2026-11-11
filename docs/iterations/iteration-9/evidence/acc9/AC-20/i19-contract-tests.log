@@ -1,0 +1,766 @@
+TAP version 13
+# Subtest: exports: 4 levels + 8 reason codes verbatim, frozen tables, fixed order
+ok 1 - exports: 4 levels + 8 reason codes verbatim, frozen tables, fixed order
+  ---
+  duration_ms: 3.689736
+  type: 'test'
+  ...
+# Subtest: node timeout: now - startedAt = 30000 (exact) -> NOT node_timeout
+ok 2 - node timeout: now - startedAt = 30000 (exact) -> NOT node_timeout
+  ---
+  duration_ms: 0.605923
+  type: 'test'
+  ...
+# Subtest: node timeout: now - startedAt = 30001 -> node_timeout
+ok 3 - node timeout: now - startedAt = 30001 -> node_timeout
+  ---
+  duration_ms: 0.166059
+  type: 'test'
+  ...
+# Subtest: node timeout: missing health.nodeTimeoutMs falls back to 30000
+ok 4 - node timeout: missing health.nodeTimeoutMs falls back to 30000
+  ---
+  duration_ms: 0.23748
+  type: 'test'
+  ...
+# Subtest: P90: 5 samples -> P90 = 50000; node duration = 50000 (exact) -> NOT p90_exceeded
+ok 5 - P90: 5 samples -> P90 = 50000; node duration = 50000 (exact) -> NOT p90_exceeded
+  ---
+  duration_ms: 0.332503
+  type: 'test'
+  ...
+# Subtest: P90: node duration = 50001 -> p90_exceeded
+ok 6 - P90: node duration = 50001 -> p90_exceeded
+  ---
+  duration_ms: 0.26492
+  type: 'test'
+  ...
+# Subtest: P90: 4 samples (< 5) -> p90_exceeded never triggers even with a long node
+ok 7 - P90: 4 samples (< 5) -> p90_exceeded never triggers even with a long node
+  ---
+  duration_ms: 0.249825
+  type: 'test'
+  ...
+# Subtest: P90: spans missing start_time / end_time are not samples (AC-23 notime)
+ok 8 - P90: spans missing start_time / end_time are not samples (AC-23 notime)
+  ---
+  duration_ms: 0.261308
+  type: 'test'
+  ...
+# Subtest: TTL: now - pendingAt = 900000 (exact) -> NOT handoff_ttl_half
+ok 9 - TTL: now - pendingAt = 900000 (exact) -> NOT handoff_ttl_half
+  ---
+  duration_ms: 0.553035
+  type: 'test'
+  ...
+# Subtest: TTL: now - pendingAt = 900001 -> handoff_ttl_half
+ok 10 - TTL: now - pendingAt = 900001 -> handoff_ttl_half
+  ---
+  duration_ms: 0.526326
+  type: 'test'
+  ...
+# Subtest: TTL: now - pendingAt = 899999 -> NOT handoff_ttl_half
+ok 11 - TTL: now - pendingAt = 899999 -> NOT handoff_ttl_half
+  ---
+  duration_ms: 0.237848
+  type: 'test'
+  ...
+# Subtest: TTL: pending packet with no pendingAt / createdAt does not participate
+ok 12 - TTL: pending packet with no pendingAt / createdAt does not participate
+  ---
+  duration_ms: 0.14181
+  type: 'test'
+  ...
+# Subtest: TTL: createdAt is used when pendingAt is missing (B-3 fallback)
+ok 13 - TTL: createdAt is used when pendingAt is missing (B-3 fallback)
+  ---
+  duration_ms: 0.15399
+  type: 'test'
+  ...
+# Subtest: terminal priority: completed with timeout node + escalation + rejected handoff -> ended
+ok 14 - terminal priority: completed with timeout node + escalation + rejected handoff -> ended
+  ---
+  duration_ms: 0.122613
+  type: 'test'
+  ...
+# Subtest: terminal priority: all four terminal states -> ended
+ok 15 - terminal priority: all four terminal states -> ended
+  ---
+  duration_ms: 0.139507
+  type: 'test'
+  ...
+# Subtest: four levels: normal when there is no anomaly
+ok 16 - four levels: normal when there is no anomaly
+  ---
+  duration_ms: 0.100096
+  type: 'test'
+  ...
+# Subtest: four levels: attention on a single pending escalation
+ok 17 - four levels: attention on a single pending escalation
+  ---
+  duration_ms: 0.125739
+  type: 'test'
+  ...
+# Subtest: four levels: slow on a single TTL-exceeded pending handoff
+ok 18 - four levels: slow on a single TTL-exceeded pending handoff
+  ---
+  duration_ms: 0.159179
+  type: 'test'
+  ...
+# Subtest: four levels: ended on a terminal instance
+ok 19 - four levels: ended on a terminal instance
+  ---
+  duration_ms: 0.129878
+  type: 'test'
+  ...
+# Subtest: multiple reasons: all six red conditions -> reasons in fixed order
+ok 20 - multiple reasons: all six red conditions -> reasons in fixed order
+  ---
+  duration_ms: 0.228842
+  type: 'test'
+  ...
+# Subtest: red dominates yellow: red + two yellow signals -> attention, yellow codes omitted
+ok 21 - red dominates yellow: red + two yellow signals -> attention, yellow codes omitted
+  ---
+  duration_ms: 0.153894
+  type: 'test'
+  ...
+# Subtest: two yellow conditions -> reasons in fixed order
+ok 22 - two yellow conditions -> reasons in fixed order
+  ---
+  duration_ms: 0.163566
+  type: 'test'
+  ...
+# Subtest: session_crash: quarantined session bound to a failed node
+ok 23 - session_crash: quarantined session bound to a failed node
+  ---
+  duration_ms: 0.117185
+  type: 'test'
+  ...
+# Subtest: role_unavailable: escalated session (not quarantined)
+ok 24 - role_unavailable: escalated session (not quarantined)
+  ---
+  duration_ms: 0.34687
+  type: 'test'
+  ...
+# Subtest: quarantined + escalated session counted only as session_crash (no double count)
+ok 25 - quarantined + escalated session counted only as session_crash (no double count)
+  ---
+  duration_ms: 0.149169
+  type: 'test'
+  ...
+# Subtest: connection_rejected / connection_expired each map to their own code
+ok 26 - connection_rejected / connection_expired each map to their own code
+  ---
+  duration_ms: 0.137532
+  type: 'test'
+  ...
+# Subtest: AC-14 premise: nodeTimeoutMs = 300000 keeps a 70s node out of the red tier
+ok 27 - AC-14 premise: nodeTimeoutMs = 300000 keeps a 70s node out of the red tier
+  ---
+  duration_ms: 0.136987
+  type: 'test'
+  ...
+# Subtest: ISO string timestamps are accepted (startedAt / pendingAt)
+ok 28 - ISO string timestamps are accepted (startedAt / pendingAt)
+  ---
+  duration_ms: 1.262417
+  type: 'test'
+  ...
+# Subtest: defaults: graph = null and traces = [] do not throw
+ok 29 - defaults: graph = null and traces = [] do not throw
+  ---
+  duration_ms: 0.989688
+  type: 'test'
+  ...
+# Subtest: defaults: no-argument call returns a valid shape
+ok 30 - defaults: no-argument call returns a valid shape
+  ---
+  duration_ms: 0.133096
+  type: 'test'
+  ...
+# Subtest: pure: does not mutate any argument (frozen inputs)
+ok 31 - pure: does not mutate any argument (frozen inputs)
+  ---
+  duration_ms: 0.250917
+  type: 'test'
+  ...
+# Subtest: level is always one of the four frozen values
+ok 32 - level is always one of the four frozen values
+  ---
+  duration_ms: 0.146505
+  type: 'test'
+  ...
+# Subtest: 规范化序列化：字段顺序不同但内容相同的记录指纹相同（不对原始行字节哈希）
+ok 33 - 规范化序列化：字段顺序不同但内容相同的记录指纹相同（不对原始行字节哈希）
+  ---
+  duration_ms: 379.131991
+  type: 'test'
+  ...
+# Subtest: emit 生成首尾相接的规范化哈希链，首条为 64 个 0（逐条比对第 N-1 条）
+ok 34 - emit 生成首尾相接的规范化哈希链，首条为 64 个 0（逐条比对第 N-1 条）
+  ---
+  duration_ms: 627.694095
+  type: 'test'
+  ...
+# Subtest: 旧记录无 prev_event_hash：原字节不动、不回填，新行指向第 3 条的规范化哈希
+ok 35 - 旧记录无 prev_event_hash：原字节不动、不回填，新行指向第 3 条的规范化哈希
+  ---
+  duration_ms: 473.416413
+  type: 'test'
+  ...
+# Subtest: 末行被截断：跳过该行前溯到第 2 条续链，序号继续递增、不回 1
+ok 36 - 末行被截断：跳过该行前溯到第 2 条续链，序号继续递增、不回 1
+  ---
+  duration_ms: 244.05574
+  type: 'test'
+  ...
+# Subtest: 整份不可解析：corruptAll=true、从 seq=1 / 64 个 0 重起链、旧 3 行字节不变、命令不中断
+ok 37 - 整份不可解析：corruptAll=true、从 seq=1 / 64 个 0 重起链、旧 3 行字节不变、命令不中断
+  ---
+  duration_ms: 400.143446
+  type: 'test'
+  ...
+# Subtest: replay 透出 readEvents 的 badLines，与读取层同源（0 / 1 / 3）
+ok 38 - replay 透出 readEvents 的 badLines，与读取层同源（0 / 1 / 3）
+  ---
+  duration_ms: 2595.645182
+  type: 'test'
+  ...
+# Subtest: 兼容：store 未实现 readTailForChain 时降级到 nextSeq + 64 个 0，不抛错
+ok 39 - 兼容：store 未实现 readTailForChain 时降级到 nextSeq + 64 个 0，不抛错
+  ---
+  duration_ms: 0.645672
+  type: 'test'
+  ...
+# Subtest: trace show：空追踪 → A-1，退出 0
+ok 40 - trace show：空追踪 → A-1，退出 0
+  ---
+  duration_ms: 8326.570181
+  type: 'test'
+  ...
+# Subtest: trace show：跑完的单节点实例 → A-2（含回流链 / 无），退出 0
+ok 41 - trace show：跑完的单节点实例 → A-2（含回流链 / 无），退出 0
+  ---
+  duration_ms: 10466.872159
+  type: 'test'
+  ...
+# Subtest: trace show：进行中且尚无落地跨度 → 首行取快照 traceId（A-10）
+ok 42 - trace show：进行中且尚无落地跨度 → 首行取快照 traceId（A-10）
+  ---
+  duration_ms: 5700.341715
+  type: 'test'
+  ...
+# Subtest: trace show：历史实例运行中但无号 → A-1；补 traceId 后恢复 A-10（D-23）
+ok 43 - trace show：历史实例运行中但无号 → A-1；补 traceId 后恢复 A-10（D-23）
+  ---
+  duration_ms: 6214.809937
+  type: 'test'
+  ...
+# Subtest: trace show：single 的无边交接包归属到同轮跨度（交接 HO-001）
+ok 44 - trace show：single 的无边交接包归属到同轮跨度（交接 HO-001）
+  ---
+  duration_ms: 5516.309036
+  type: 'test'
+  ...
+# Subtest: trace show：实例不存在 → A-5，退出 1，stderr 无堆栈
+ok 45 - trace show：实例不存在 → A-5，退出 1，stderr 无堆栈
+  ---
+  duration_ms: 4103.985942
+  type: 'test'
+  ...
+# Subtest: trace show：不认 --format（按未知参数退出 2，不连核心）
+ok 46 - trace show：不认 --format（按未知参数退出 2，不连核心）
+  ---
+  duration_ms: 1950.100808
+  type: 'test'
+  ...
+# Subtest: trace show：三次输出字节一致，state / events 哈希不变（含无 health.level 的快照）
+ok 47 - trace show：三次输出字节一致，state / events 哈希不变（含无 health.level 的快照）
+  ---
+  duration_ms: 20953.760677
+  type: 'test'
+  ...
+# Subtest: instance status：只多一行健康度；删掉后与既有基线逐字相等
+ok 48 - instance status：只多一行健康度；删掉后与既有基线逐字相等
+  ---
+  duration_ms: 6645.109463
+  type: 'test'
+  ...
+# Subtest: instance graph 文本 / JSON 均不含健康度字段；orch status 列表行不变
+ok 49 - instance graph 文本 / JSON 均不含健康度字段；orch status 列表行不变
+  ---
+  duration_ms: 8003.921182
+  type: 'test'
+  ...
+# Subtest: instance log：A-12 摘要行与 A-8 健康度行出现且不乱序，A-13 跳过行在末尾
+ok 50 - instance log：A-12 摘要行与 A-8 健康度行出现且不乱序，A-13 跳过行在末尾
+  ---
+  duration_ms: 5578.805195
+  type: 'test'
+  ...
+# Subtest: instance log --format json：原始数组不变，RPC 的 result.badLines 与文本跳过行一致
+ok 51 - instance log --format json：原始数组不变，RPC 的 result.badLines 与文本跳过行一致
+  ---
+  duration_ms: 6680.443471
+  type: 'test'
+  ...
+# Subtest: status --events 仍按 seq 逐条渲染，健康度只占实例行后一行
+ok 52 - status --events 仍按 seq 逐条渲染，健康度只占实例行后一行
+  ---
+  duration_ms: 4391.27852
+  type: 'test'
+  ...
+# Subtest: 默认（无新开关）：帧序列与既有行为一致，tool_call 无 execution、完成帧 completed
+ok 53 - 默认（无新开关）：帧序列与既有行为一致，tool_call 无 execution、完成帧 completed
+  ---
+  duration_ms: 619.463275
+  type: 'test'
+  ...
+# Subtest: --fail-tool：command/title/failed/execution 四项逐项相等
+ok 54 - --fail-tool：command/title/failed/execution 四项逐项相等
+  ---
+  duration_ms: 514.283988
+  type: 'test'
+  ...
+# Subtest: --fail-tool-no-refs：execution 恰有 command 与 exitCode，两项缺项键不得出现
+ok 55 - --fail-tool-no-refs：execution 恰有 command 与 exitCode，两项缺项键不得出现
+  ---
+  duration_ms: 517.982208
+  type: 'test'
+  ...
+# Subtest: 回归 --slow-tool：title 取自定义值、无 execution、完成帧 completed
+ok 56 - 回归 --slow-tool：title 取自定义值、无 execution、完成帧 completed
+  ---
+  duration_ms: 546.926584
+  type: 'test'
+  ...
+# Subtest: 回归 --write-ref：rawInput.file_path + 真实落盘、无 execution、完成帧 completed
+ok 57 - 回归 --write-ref：rawInput.file_path + 真实落盘、无 execution、完成帧 completed
+  ---
+  duration_ms: 548.686625
+  type: 'test'
+  ...
+# Subtest: 回归 --permission=deny：拒绝帧形状不变（无 execution、refusal）
+ok 58 - 回归 --permission=deny：拒绝帧形状不变（无 execution、refusal）
+  ---
+  duration_ms: 2472.412975
+  type: 'test'
+  ...
+# Subtest: 失败步骤：进程正常退出、无堆栈、stopReason 仍为 end_turn（不新增失败码）
+ok 59 - 失败步骤：进程正常退出、无堆栈、stopReason 仍为 end_turn（不新增失败码）
+  ---
+  duration_ms: 819.471848
+  type: 'test'
+  ...
+# Subtest: 两开关同时给出：以 --fail-tool-no-refs 优先（缺项变体）
+ok 60 - 两开关同时给出：以 --fail-tool-no-refs 优先（缺项变体）
+  ---
+  duration_ms: 376.914568
+  type: 'test'
+  ...
+# Subtest: WP-4: 23 个新导出全部存在、类型正确、均 Object.freeze 且文案非空
+ok 61 - WP-4: 23 个新导出全部存在、类型正确、均 Object.freeze 且文案非空
+  ---
+  duration_ms: 1.569609
+  type: 'test'
+  ...
+# Subtest: WP-4: 5 张新增映射表对象本身冻结且每个值为非空中文字符串
+ok 62 - WP-4: 5 张新增映射表对象本身冻结且每个值为非空中文字符串
+  ---
+  duration_ms: 0.31003
+  type: 'test'
+  ...
+# Subtest: A-0 / A-6: HEALTH_LABEL 四档词逐字（无 emoji、无英文档位词）
+ok 63 - A-0 / A-6: HEALTH_LABEL 四档词逐字（无 emoji、无英文档位词）
+  ---
+  duration_ms: 0.80297
+  type: 'test'
+  ...
+# Subtest: D-3:968 / A-6 附: HEALTH_REASON 8 码键顺序与中文原因句逐字
+ok 64 - D-3:968 / A-6 附: HEALTH_REASON 8 码键顺序与中文原因句逐字
+  ---
+  duration_ms: 0.16424
+  type: 'test'
+  ...
+# Subtest: A-6 正文四组健康度行逐字（含无原因与带原因两种模板）
+ok 65 - A-6 正文四组健康度行逐字（含无原因与带原因两种模板）
+  ---
+  duration_ms: 0.435701
+  type: 'test'
+  ...
+# Subtest: A-6 附: 8 条原因句逐字（用 A-9 的键渲染比对）
+ok 66 - A-6 附: 8 条原因句逐字（用 A-9 的键渲染比对）
+  ---
+  duration_ms: 0.280646
+  type: 'test'
+  ...
+# Subtest: A-8: 健康度变化事件文本行逐字（中文档位 + 中文原因）
+ok 67 - A-8: 健康度变化事件文本行逐字（中文档位 + 中文原因）
+  ---
+  duration_ms: 0.245705
+  type: 'test'
+  ...
+# Subtest: A-1 / A-5 / A-10 / A-11: 空形态、进行中、结束位、降级提示与层名逐字
+ok 68 - A-1 / A-5 / A-10 / A-11: 空形态、进行中、结束位、降级提示与层名逐字
+  ---
+  duration_ms: 0.187146
+  type: 'test'
+  ...
+# Subtest: A-2 / A-3: 追踪头、汇总、跨度行、回流链逐字
+ok 69 - A-2 / A-3: 追踪头、汇总、跨度行、回流链逐字
+  ---
+  duration_ms: 0.587668
+  type: 'test'
+  ...
+# Subtest: A-4 / A-12 / A-14: 四要素标签、未提供、失败摘要行与执行摘要行逐字
+ok 70 - A-4 / A-12 / A-14: 四要素标签、未提供、失败摘要行与执行摘要行逐字
+  ---
+  duration_ms: 0.518136
+  type: 'test'
+  ...
+# Subtest: A-13: 事件不可读行提示逐字（与追踪侧 A-11 措辞不混用）
+ok 71 - A-13: 事件不可读行提示逐字（与追踪侧 A-11 措辞不混用）
+  ---
+  duration_ms: 0.242481
+  type: 'test'
+  ...
+# Subtest: 回归: USAGE_LINES 仍 25 行、冻结、全 25 行与前 8 行逐字不变
+ok 72 - 回归: USAGE_LINES 仍 25 行、冻结、全 25 行与前 8 行逐字不变
+  ---
+  duration_ms: 0.152317
+  type: 'test'
+  ...
+# Subtest: 回归: 抽 12 个既有键值逐字不变
+ok 73 - 回归: 抽 12 个既有键值逐字不变
+  ---
+  duration_ms: 0.169442
+  type: 'test'
+  ...
+# Subtest: 回归: 新键未并入六张状态表（labels-sync 映射表口径不受破坏）
+ok 74 - 回归: 新键未并入六张状态表（labels-sync 映射表口径不受破坏）
+  ---
+  duration_ms: 0.389914
+  type: 'test'
+  ...
+# Subtest: newState 只追加 health 与 traceId 两个字段、既有初始字段与顺序不动；缺 health 按 30000 缺省且不批量回填
+ok 75 - newState 只追加 health 与 traceId 两个字段、既有初始字段与顺序不动；缺 health 按 30000 缺省且不批量回填
+  ---
+  duration_ms: 11517.241978
+  type: 'test'
+  ...
+# Subtest: 实例创建即有 state.traceId，且此早于任何跨度落地（不是首条跨度反推）
+ok 76 - 实例创建即有 state.traceId，且此早于任何跨度落地（不是首条跨度反推）
+  ---
+  duration_ms: 3286.262828
+  type: 'test'
+  ...
+# Subtest: saveState 写回 health：保留 nodeTimeoutMs，level/reasons/computedAt 齐全
+ok 77 - saveState 写回 health：保留 nodeTimeoutMs，level/reasons/computedAt 齐全
+  ---
+  duration_ms: 1098.55834
+  type: 'test'
+  ...
+# Subtest: getStatus：首次补写不追加事件；档位变化恰一次窄 CAS + 一条 health.changed；档位未变不重复
+ok 78 - getStatus：首次补写不追加事件；档位变化恰一次窄 CAS + 一条 health.changed；档位未变不重复
+  ---
+  duration_ms: 1480.952478
+  type: 'test'
+  ...
+# Subtest: execution.summary 每会话恰一条，成功/失败/取消三种收尾都有，缺项为 null
+ok 79 - execution.summary 每会话恰一条，成功/失败/取消三种收尾都有，缺项为 null
+  ---
+  duration_ms: 18376.964364
+  type: 'test'
+  ...
+# Subtest: --fail-tool 合并四项；--fail-tool-no-refs 缺项为 null 且 command 不被工具名冒充
+ok 80 - --fail-tool 合并四项；--fail-tool-no-refs 缺项为 null 且 command 不被工具名冒充
+  ---
+  duration_ms: 18335.582331
+  type: 'test'
+  ...
+# Subtest: live 取消：四项全 null、终态 cancelled/ended、不阻断取消
+ok 81 - live 取消：四项全 null、终态 cancelled/ended、不阻断取消
+  ---
+  duration_ms: 3768.585185
+  type: 'test'
+  ...
+# Subtest: --stop-after 3 冻结窗口恰 3 条跨度、7 字段、无 handoff_ids、HO-002 读取时推导
+ok 82 - --stop-after 3 冻结窗口恰 3 条跨度、7 字段、无 handoff_ids、HO-002 读取时推导
+  ---
+  duration_ms: 24074.285904
+  type: 'test'
+  ...
+# Subtest: grep -c "object: 'session'" ≤ 13；会话级新增事件类型只有 execution.summary
+ok 83 - grep -c "object: 'session'" ≤ 13；会话级新增事件类型只有 execution.summary
+  ---
+  duration_ms: 8602.085961
+  type: 'test'
+  ...
+# Subtest: single / code-loop / task-loop 三主链运行期输出不出现健康度 / 追踪新行
+ok 84 - single / code-loop / task-loop 三主链运行期输出不出现健康度 / 追踪新行
+  ---
+  duration_ms: 10158.73444
+  type: 'test'
+  ...
+# Subtest: 三主链：无新增可见词，且归一化后与 I1.7 收口基线逐字一致（AC-03）
+ok 85 - 三主链：无新增可见词，且归一化后与 I1.7 收口基线逐字一致（AC-03）
+  ---
+  duration_ms: 74182.598289
+  type: 'test'
+  ...
+# Subtest: instance status：只在实例状态行后多一行健康度，删掉后与基线逐字相等（AC-19）
+ok 86 - instance status：只在实例状态行后多一行健康度，删掉后与基线逐字相等（AC-19）
+  ---
+  duration_ms: 5289.452273
+  type: 'test'
+  ...
+# Subtest: instance graph：文本与 JSON 均与基线逐字相等且不含健康度（AC-19）
+ok 87 - instance graph：文本与 JSON 均与基线逐字相等且不含健康度（AC-19）
+  ---
+  duration_ms: 6741.216883
+  type: 'test'
+  ...
+# Subtest: 零依赖与 USAGE_LINES 冻结基线（AC-20）
+ok 88 - 零依赖与 USAGE_LINES 冻结基线（AC-20）
+  ---
+  duration_ms: 23.825738
+  type: 'test'
+  ...
+# Subtest: 31 词纯净扫描：新增 core 文件纳入同一扫描且 exit 0（AC-20）
+ok 89 - 31 词纯净扫描：新增 core 文件纳入同一扫描且 exit 0（AC-20）
+  ---
+  duration_ms: 643.775345
+  type: 'test'
+  ...
+# Subtest: 无宿主分支：src/daemon 不出现 if host == / switch (host)（AC-20）
+ok 90 - 无宿主分支：src/daemon 不出现 if host == / switch (host)（AC-20）
+  ---
+  duration_ms: 93.101162
+  type: 'test'
+  ...
+# Subtest: 会话级事件类型只有 execution.summary 一种新增（AC-24）
+ok 91 - 会话级事件类型只有 execution.summary 一种新增（AC-24）
+  ---
+  duration_ms: 405.27781
+  type: 'test'
+  ...
+# Subtest: 事件链逐条可续、每会话恰 1 条 execution.summary、traces 恰 7 字段（AC-01/02/05/24）
+ok 92 - 事件链逐条可续、每会话恰 1 条 execution.summary、traces 恰 7 字段（AC-01/02/05/24）
+  ---
+  duration_ms: 8120.247076
+  type: 'test'
+  ...
+# Subtest: A-1 空追踪：实例 INST-001 · 暂无追踪记录
+ok 93 - A-1 空追踪：实例 INST-001 · 暂无追踪记录
+  ---
+  duration_ms: 1.531145
+  type: 'test'
+  ...
+# Subtest: A-2 单节点、无回流：逐字整份输出（含回流链「无」两行）
+ok 94 - A-2 单节点、无回流：逐字整份输出（含回流链「无」两行）
+  ---
+  duration_ms: 0.499681
+  type: 'test'
+  ...
+# Subtest: A-3 一次回流的跨角色因果链：逐字整份输出（3 条跨角色跨度、无进行中行）
+ok 95 - A-3 一次回流的跨角色因果链：逐字整份输出（3 条跨角色跨度、无进行中行）
+  ---
+  duration_ms: 0.318692
+  type: 'test'
+  ...
+# Subtest: A-4 失败摘要四要素：缩进 2 半角空格的失败摘要行，四项逐字
+ok 96 - A-4 失败摘要四要素：缩进 2 半角空格的失败摘要行，四项逐字
+  ---
+  duration_ms: 0.48127
+  type: 'test'
+  ...
+# Subtest: A-4 缺项"未提供"：缺项替换、其余项不省略
+ok 97 - A-4 缺项"未提供"：缺项替换、其余项不省略
+  ---
+  duration_ms: 0.242386
+  type: 'test'
+  ...
+# Subtest: A-5 实例不存在：实例 INST-999 · 不存在
+ok 98 - A-5 实例不存在：实例 INST-999 · 不存在
+  ---
+  duration_ms: 0.144863
+  type: 'test'
+  ...
+# Subtest: A-10 进行中的跨度：跨度 0 条、结束位 —、结果位 进行中、回流链「无」
+ok 99 - A-10 进行中的跨度：跨度 0 条、结束位 —、结果位 进行中、回流链「无」
+  ---
+  duration_ms: 0.238984
+  type: 'test'
+  ...
+# Subtest: A-11 追踪文件有不可读行：提示行位于汇总行之前；文件整体缺失按 A-1
+ok 100 - A-11 追踪文件有不可读行：提示行位于汇总行之前；文件整体缺失按 A-1
+  ---
+  duration_ms: 0.349435
+  type: 'test'
+  ...
+# Subtest: A-6 四组四档逐字（正常 / 慢 / 需关注 / 已结束）
+ok 101 - A-6 四组四档逐字（正常 / 慢 / 需关注 / 已结束）
+  ---
+  duration_ms: 0.777644
+  type: 'test'
+  ...
+# Subtest: A-6 健康度缺省降级：state.health 缺 level 按 normal、不抛错
+ok 102 - A-6 健康度缺省降级：state.health 缺 level 按 normal、不抛错
+  ---
+  duration_ms: 0.444533
+  type: 'test'
+  ...
+# Subtest: A-6 附 8 行原因句逐字（逐条单命中）
+ok 103 - A-6 附 8 行原因句逐字（逐条单命中）
+  ---
+  duration_ms: 0.342868
+  type: 'test'
+  ...
+# Subtest: A-6 附 多原因并列按 8 码固定顺序用 ` · ` 连接
+ok 104 - A-6 附 多原因并列按 8 码固定顺序用 ` · ` 连接
+  ---
+  duration_ms: 1.938488
+  type: 'test'
+  ...
+# Subtest: A-7 status.md：- 状态 之后插入 - 健康度：需关注 · 有待处理升级
+ok 105 - A-7 status.md：- 状态 之后插入 - 健康度：需关注 · 有待处理升级
+  ---
+  duration_ms: 0.776249
+  type: 'test'
+  ...
+# Subtest: A-7 健康度缺省降级：state.health 缺 level 渲染 - 健康度：正常
+ok 106 - A-7 健康度缺省降级：state.health 缺 level 渲染 - 健康度：正常
+  ---
+  duration_ms: 0.131739
+  type: 'test'
+  ...
+# Subtest: A-8 文本行逐字：10:00:00  健康度 INST-001  正常 → 需关注  原因 有待处理升级
+ok 107 - A-8 文本行逐字：10:00:00  健康度 INST-001  正常 → 需关注  原因 有待处理升级
+  ---
+  duration_ms: 0.882334
+  type: 'test'
+  ...
+# Subtest: A-12 执行摘要行逐字（层名 会话、四项、缺项降级同模板）
+ok 108 - A-12 执行摘要行逐字（层名 会话、四项、缺项降级同模板）
+  ---
+  duration_ms: 0.238525
+  type: 'test'
+  ...
+# Subtest: A-14 取消四项全"未提供"：复用同一行模板 SUMMARY_LOG_LINE
+ok 109 - A-14 取消四项全"未提供"：复用同一行模板 SUMMARY_LOG_LINE
+  ---
+  duration_ms: 0.226617
+  type: 'test'
+  ...
+# Subtest: A-13 事件不可读行提示：单独成行、不带时刻前缀、填 {n}
+ok 110 - A-13 事件不可读行提示：单独成行、不带时刻前缀、填 {n}
+  ---
+  duration_ms: 0.143257
+  type: 'test'
+  ...
+# Subtest: 回归：renderEventLines 既有事件样本行格式与相对顺序不变
+ok 111 - 回归：renderEventLines 既有事件样本行格式与相对顺序不变
+  ---
+  duration_ms: 0.857992
+  type: 'test'
+  ...
+# Subtest: 回归：STATE_LABEL.health 指向 HEALTH_LABEL（health 对象事件中文档位）
+ok 112 - 回归：STATE_LABEL.health 指向 HEALTH_LABEL（health 对象事件中文档位）
+  ---
+  duration_ms: 0.124753
+  type: 'test'
+  ...
+# Subtest: 回归：instance graph / 节点行既有格式零改，不出现健康度字段
+ok 113 - 回归：instance graph / 节点行既有格式零改，不出现健康度字段
+  ---
+  duration_ms: 1.147188
+  type: 'test'
+  ...
+# Subtest: D-12 / A-6 附 8 行：纯码值 reasons + 真实快照推导，两处渲染逐字一致
+ok 114 - D-12 / A-6 附 8 行：纯码值 reasons + 真实快照推导，两处渲染逐字一致
+  ---
+  duration_ms: 2.555884
+  type: 'test'
+  ...
+# Subtest: D-12 / A-6 附 多原因并列：6 红码 + 2 黄码按 8 码固定顺序（真实 computeHealth 输出）
+ok 115 - D-12 / A-6 附 多原因并列：6 红码 + 2 黄码按 8 码固定顺序（真实 computeHealth 输出）
+  ---
+  duration_ms: 0.622208
+  type: 'test'
+  ...
+# Subtest: D-12 / A-6 附 8 码全并列：纯码值数组按固定顺序用 ` · ` 连接（推导不抛错）
+ok 116 - D-12 / A-6 附 8 码全并列：纯码值数组按固定顺序用 ` · ` 连接（推导不抛错）
+  ---
+  duration_ms: 0.229706
+  type: 'test'
+  ...
+# Subtest: D-12 ②：health.reasonVars?.[code] 优先于快照推导（两处一致）
+ok 117 - D-12 ②：health.reasonVars?.[code] 优先于快照推导（两处一致）
+  ---
+  duration_ms: 0.134836
+  type: 'test'
+  ...
+# Subtest: D-12 ②：快照无匹配对象时降级空串、不抛错、不硬编码兜底中文
+ok 118 - D-12 ②：快照无匹配对象时降级空串、不抛错、不硬编码兜底中文
+  ---
+  duration_ms: 0.286423
+  type: 'test'
+  ...
+# Subtest: D-12 ④：事件文本行带占位符码从 detail.reasonVars 取值，A-8 基线不变
+ok 119 - D-12 ④：事件文本行带占位符码从 detail.reasonVars 取值，A-8 基线不变
+  ---
+  duration_ms: 0.164915
+  type: 'test'
+  ...
+# Subtest: D-12 ③：对象形态 {code,...实参} 兼容保留（非主契约）
+ok 120 - D-12 ③：对象形态 {code,...实参} 兼容保留（非主契约）
+  ---
+  duration_ms: 0.10096
+  type: 'test'
+  ...
+# Subtest: instanceStateDir / instanceTracesPath 形状；既有 statePath / eventsPath 不变
+ok 121 - instanceStateDir / instanceTracesPath 形状；既有 statePath / eventsPath 不变
+  ---
+  duration_ms: 1.181796
+  type: 'test'
+  ...
+# Subtest: newTraceId 匹配 /^TRC-[0-9a-f]{8}$/ 且两次调用不同
+ok 122 - newTraceId 匹配 /^TRC-[0-9a-f]{8}$/ 且两次调用不同
+  ---
+  duration_ms: 0.544179
+  type: 'test'
+  ...
+# Subtest: appendSpan 两次追加 7 字段行；readTraces 读回 2 条；handoff_ids 不落盘
+ok 123 - appendSpan 两次追加 7 字段行；readTraces 读回 2 条；handoff_ids 不落盘
+  ---
+  duration_ms: 416.707936
+  type: 'test'
+  ...
+# Subtest: readTraces 文件缺失返回空；单行损坏跳过计数；整份损坏不抛错
+ok 124 - readTraces 文件缺失返回空；单行损坏跳过计数；整份损坏不抛错
+  ---
+  duration_ms: 399.527647
+  type: 'test'
+  ...
+# Subtest: deriveHandoffIds 冻结窗口：HO-002（round=2 回流）不漏
+ok 125 - deriveHandoffIds 冻结窗口：HO-002（round=2 回流）不漏
+  ---
+  duration_ms: 0.717734
+  type: 'test'
+  ...
+# Subtest: overlayRunningSpans 有 running 返回 1 条进行中、无 running 返回空、不写盘
+ok 126 - overlayRunningSpans 有 running 返回 1 条进行中、无 running 返回空、不写盘
+  ---
+  duration_ms: 2.545557
+  type: 'test'
+  ...
+1..126
+# tests 126
+# suites 0
+# pass 126
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 103231.217481

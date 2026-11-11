@@ -1,0 +1,176 @@
+{
+  "ac": "AC-08",
+  "at": "2026-11-11T20:43:10.718Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-08-r2",
+  "checks": [
+    {
+      "name": ".mock/stopped-after-3 出现（冻结点成立）",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "value": true
+      }
+    },
+    {
+      "name": "冻结窗口恰 3 条已结束跨度（T-001 r1 / T-002 r1 / T-001 r2）",
+      "ok": true,
+      "detail": {
+        "spans": [
+          {
+            "n": "T-001",
+            "r": 1,
+            "end": "2026-11-11T20:43:04.264Z"
+          },
+          {
+            "n": "T-002",
+            "r": 1,
+            "end": "2026-11-11T20:43:06.625Z"
+          },
+          {
+            "n": "T-001",
+            "r": 2,
+            "end": "2026-11-11T20:43:08.703Z"
+          }
+        ]
+      }
+    },
+    {
+      "name": "冻结窗口无进行中跨度（全部有 end_time）",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "trace show 退出码 0",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "stderr": ""
+      }
+    },
+    {
+      "name": "输出为 9 行内容（stdout 以换行结尾时 split 得 10 段）",
+      "ok": true,
+      "detail": {
+        "contentLines": 9,
+        "splitSegments": 10
+      }
+    },
+    {
+      "name": "与附录 A-3 逐字全等（A-0 归一化后，9/9 行）",
+      "ok": true,
+      "detail": {
+        "expected": [
+          "实例 INST-001 · 追踪 TRC-1fb42941",
+          "跨度 3 条 · 回流 1 次",
+          "",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-001",
+          "TIME → TIME  T-002 测试  失败  交接 HO-001 HO-002",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-002",
+          "",
+          "回流链",
+          "第 2 轮  T-002 测试 → T-001 开发  HO-002  已完成"
+        ],
+        "actual": [
+          "实例 INST-001 · 追踪 TRC-1fb42941",
+          "跨度 3 条 · 回流 1 次",
+          "",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-001",
+          "TIME → TIME  T-002 测试  失败  交接 HO-001 HO-002",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-002",
+          "",
+          "回流链",
+          "第 2 轮  T-002 测试 → T-001 开发  HO-002  已完成"
+        ]
+      }
+    },
+    {
+      "name": "不再出现「失败摘要」行（D-25）",
+      "ok": true,
+      "detail": {
+        "actual": [
+          "实例 INST-001 · 追踪 TRC-1fb42941",
+          "跨度 3 条 · 回流 1 次",
+          "",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-001",
+          "TIME → TIME  T-002 测试  失败  交接 HO-001 HO-002",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-002",
+          "",
+          "回流链",
+          "第 2 轮  T-002 测试 → T-001 开发  HO-002  已完成"
+        ]
+      }
+    },
+    {
+      "name": "时间线不含「进行中」",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "数据侧：确有 execution.summary 记录（证明渲染层按四项全 null 抑制）",
+      "ok": true,
+      "detail": {
+        "n": 3,
+        "detail": [
+          {
+            "nodeId": "T-001",
+            "round": 1,
+            "summary": {
+              "command": null,
+              "exitCode": null,
+              "keyOutputLines": null,
+              "logRef": null
+            }
+          },
+          {
+            "nodeId": "T-002",
+            "round": 1,
+            "summary": {
+              "command": null,
+              "exitCode": null,
+              "keyOutputLines": null,
+              "logRef": null
+            }
+          },
+          {
+            "nodeId": "T-001",
+            "round": 2,
+            "summary": {
+              "command": null,
+              "exitCode": null,
+              "keyOutputLines": null,
+              "logRef": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "被抑制的那条摘要四项全 null（D-25 的触发条件成立）",
+      "ok": true,
+      "detail": {
+        "summaries": [
+          {
+            "command": null,
+            "exitCode": null,
+            "keyOutputLines": null,
+            "logRef": null
+          },
+          {
+            "command": null,
+            "exitCode": null,
+            "keyOutputLines": null,
+            "logRef": null
+          },
+          {
+            "command": null,
+            "exitCode": null,
+            "keyOutputLines": null,
+            "logRef": null
+          }
+        ]
+      }
+    }
+  ],
+  "a3Exact": true,
+  "pass": true
+}

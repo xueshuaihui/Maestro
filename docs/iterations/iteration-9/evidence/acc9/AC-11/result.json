@@ -1,0 +1,66 @@
+{
+  "ac": "AC-11",
+  "at": "2026-11-11T20:05:39.706Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-11",
+  "checks": [
+    {
+      "name": "空目录先拉起核心（status 返回「不存在」）",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "instance status 退出码 0",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "stderr": ""
+      }
+    },
+    {
+      "name": "健康度行为「健康度 正常」且无附加原因",
+      "ok": true,
+      "detail": {
+        "lines": [
+          "实例 INST-001 · 运行中 · 模板 编码闭环",
+          "健康度 正常",
+          "节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s",
+          "节点 T-002 测试 待执行",
+          "升级 —"
+        ]
+      }
+    },
+    {
+      "name": "健康度行紧跟实例状态行之后（第 2 行）",
+      "ok": true,
+      "detail": {
+        "head": [
+          "实例 INST-001 · 运行中 · 模板 编码闭环",
+          "健康度 正常",
+          "节点 T-001 开发 已完成 · 第 1 轮 · 耗时 2s"
+        ]
+      }
+    },
+    {
+      "name": "status.md 的「- 健康度：正常」",
+      "ok": true,
+      "detail": {
+        "doc": [
+          "- 健康度：正常"
+        ]
+      }
+    },
+    {
+      "name": "健康度写入实例元数据（level=normal、保留 nodeTimeoutMs=300000）",
+      "ok": true,
+      "detail": {
+        "health": {
+          "level": "normal",
+          "reasons": [],
+          "computedAt": "2026-11-11T20:05:39.522Z",
+          "nodeTimeoutMs": 300000
+        }
+      }
+    }
+  ],
+  "pass": true
+}

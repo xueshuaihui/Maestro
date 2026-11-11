@@ -1,0 +1,78 @@
+{
+  "ac": "AC-26",
+  "generatedAt": "2026-11-11T20:02:28.269Z",
+  "title": "取消收尾的执行摘要：被取消的会话也答得出“为什么结束”",
+  "fixture": "--turn-delay-ms 30000 → tool_running；第二进程 orch cancel",
+  "passed": true,
+  "total": 12,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "orch cancel exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "instance log 文本 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "A-14 取消摘要四项全「未提供」逐字",
+      "ok": true,
+      "detail": "04:02:25  会话 mock-sess-33274-1  执行摘要 命令 未提供 · 退出码 未提供 · 关键输出 未提供 · 日志 未提供"
+    },
+    {
+      "name": "instance status exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "实例状态为已取消",
+      "ok": true,
+      "detail": "实例 INST-001 · 已取消"
+    },
+    {
+      "name": "健康度为已结束",
+      "ok": true,
+      "detail": "actual=\"健康度 已结束\" expected=\"健康度 已结束\""
+    },
+    {
+      "name": "state.json state=cancelled",
+      "ok": true,
+      "detail": "actual=\"cancelled\" expected=\"cancelled\""
+    },
+    {
+      "name": "state.json health.level=ended",
+      "ok": true,
+      "detail": "actual=\"ended\" expected=\"ended\""
+    },
+    {
+      "name": "instance log json exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "取消会话 execution.summary 恰 1 条",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "四项全为 null",
+      "ok": true,
+      "detail": "actual=\"{\\\"command\\\":null,\\\"exitCode\\\":null,\\\"keyOutputLines\\\":null,\\\"logRef\\\":null}\" expected=\"{\\\"command\\\":null,\\\"exitCode\\\":null,\\\"keyOutputLines\\\":null,\\\"logRef\\\":null}\""
+    },
+    {
+      "name": "除 execution.summary 与既有冻结会话事件外无新增类型",
+      "ok": true,
+      "detail": "session.state,run.cancelled,execution.summary"
+    }
+  ],
+  "keyEvidence": [
+    "tool-running-event.json",
+    "cancel.txt",
+    "log-text.txt",
+    "status.txt",
+    "log.json"
+  ]
+}

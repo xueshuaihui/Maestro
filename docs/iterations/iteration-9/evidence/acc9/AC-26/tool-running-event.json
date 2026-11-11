@@ -1,0 +1,15 @@
+{
+  "object": "session",
+  "objectId": "mock-sess-33274-1",
+  "from": "thinking",
+  "to": "tool_running",
+  "result": "applied",
+  "reason": "session.state",
+  "detail": {
+    "event": "tool_call"
+  },
+  "gen": "gen-209ee99387b82704",
+  "seq": 7,
+  "ts": "2026-11-11T20:02:24.929Z",
+  "prev_event_hash": "db2922e1e7da2581c67f18b0da96f71343a167c2578e237b2d17808857aee82b"
+}

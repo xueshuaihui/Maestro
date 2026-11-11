@@ -1,0 +1,20 @@
+exit=0
+09:00:00  实例 INST-001  已创建 → 运行中  原因 run.started
+09:00:01  节点 T-001  待执行 → 执行中  原因 run.started
+09:00:02  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
+03:59:47  实例 INST-001  已创建 → 运行中  原因 run.started
+03:59:47  节点 T-001  待执行 → 执行中  原因 run.started
+03:59:47  交接包 HO-001  已构造  原因 handoff.created
+03:59:47  交接包 HO-001  已构造 → 已投递  原因 handoff.delivered
+03:59:48  会话 mock-sess-29640-1  空闲 → 执行中  原因 session.state
+03:59:48  交接包 HO-001  已投递 → 已接受  原因 turn.first_event
+03:59:48  会话 mock-sess-29640-1  执行中 → 执行中（tool_call）  原因 session.state
+03:59:48  会话 mock-sess-29640-1  执行中 → 执行中（agent_message_chunk）  原因 session.state
+03:59:49  会话 mock-sess-29640-1  执行中 → 等待下游  原因 output.submitted
+03:59:49  节点 T-001  执行中 → 待校验  原因 output.submitted
+03:59:49  节点 T-001  未声明产出，跳过存在性检查  原因 verification.skipped
+03:59:49  节点 T-001  待校验 → 已完成  原因 verification.passed
+03:59:49  交接包 HO-001  已接受 → 已完成  原因 handoff.consumed
+03:59:49  实例 INST-001  运行中 → 已完成  原因 run.completed
+03:59:49  会话 mock-sess-29640-1  等待下游 → 空闲  原因 run.completed
+03:59:49  会话 mock-sess-29640-1  执行摘要 命令 未提供 · 退出码 未提供 · 关键输出 未提供 · 日志 未提供

@@ -1,0 +1,110 @@
+[
+  {
+    "pair": 0,
+    "order": [
+      "base",
+      "cur"
+    ],
+    "baseExit": 0,
+    "curExit": 0,
+    "baseNormalized": [
+      "实例 INST-N · 运行中",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 等待下游 · 产出已提交",
+      "会话 空闲",
+      "节点 已完成 · 耗时 Ns",
+      "交接包 HO-001  已构造   TIME",
+      "交接包 HO-001  已投递   TIME",
+      "交接包 HO-001  已接受   TIME",
+      "交接包 HO-001  已完成   TIME"
+    ],
+    "curNormalized": [
+      "实例 INST-N · 运行中",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 等待下游 · 产出已提交",
+      "会话 空闲",
+      "节点 已完成 · 耗时 Ns",
+      "交接包 HO-001  已构造   TIME",
+      "交接包 HO-001  已投递   TIME",
+      "交接包 HO-001  已接受   TIME",
+      "交接包 HO-001  已完成   TIME"
+    ],
+    "diff": []
+  },
+  {
+    "pair": 1,
+    "order": [
+      "cur",
+      "base"
+    ],
+    "baseExit": 0,
+    "curExit": 0,
+    "baseNormalized": [
+      "实例 INST-N · 运行中",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 等待下游 · 产出已提交",
+      "会话 空闲",
+      "节点 已完成 · 耗时 Ns",
+      "交接包 HO-001  已构造   TIME",
+      "交接包 HO-001  已投递   TIME",
+      "交接包 HO-001  已接受   TIME",
+      "交接包 HO-001  已完成   TIME"
+    ],
+    "curNormalized": [
+      "实例 INST-N · 运行中",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 等待下游 · 产出已提交",
+      "会话 空闲",
+      "节点 已完成 · 耗时 Ns",
+      "交接包 HO-001  已构造   TIME",
+      "交接包 HO-001  已投递   TIME",
+      "交接包 HO-001  已接受   TIME",
+      "交接包 HO-001  已完成   TIME"
+    ],
+    "diff": []
+  },
+  {
+    "pair": 2,
+    "order": [
+      "base",
+      "cur"
+    ],
+    "baseExit": 0,
+    "curExit": 0,
+    "baseNormalized": [
+      "实例 INST-N · 运行中",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 等待下游 · 产出已提交",
+      "会话 空闲",
+      "节点 已完成 · 耗时 Ns",
+      "交接包 HO-001  已构造   TIME",
+      "交接包 HO-001  已投递   TIME",
+      "交接包 HO-001  已接受   TIME",
+      "交接包 HO-001  已完成   TIME"
+    ],
+    "curNormalized": [
+      "实例 INST-N · 运行中",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 等待下游 · 产出已提交",
+      "会话 空闲",
+      "节点 已完成 · 耗时 Ns",
+      "交接包 HO-001  已构造   TIME",
+      "交接包 HO-001  已投递   TIME",
+      "交接包 HO-001  已接受   TIME",
+      "交接包 HO-001  已完成   TIME"
+    ],
+    "diff": []
+  }
+]

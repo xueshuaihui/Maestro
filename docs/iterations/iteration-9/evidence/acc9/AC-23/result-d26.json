@@ -1,0 +1,159 @@
+{
+  "group": "B",
+  "after": "D-26",
+  "generatedAt": "2026-11-11T20:43:51.765Z",
+  "scope": [
+    "AC-23 missing/badline/notime",
+    "AC-22 hold 回归"
+  ],
+  "passed": true,
+  "total": 29,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "missing：真实 run 后存在 traceId",
+      "ok": true,
+      "detail": "TRC-3ed3a6be"
+    },
+    {
+      "name": "missing：真实 run 后 traces.jsonl 有跨度行",
+      "ok": true,
+      "detail": "spans=1"
+    },
+    {
+      "name": "missing：traces.jsonl 已删除",
+      "ok": true,
+      "detail": "false"
+    },
+    {
+      "name": "missing：trace show exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "missing：逐字 A-1「暂无追踪记录」",
+      "ok": true,
+      "detail": "actual=\"实例 INST-001 · 暂无追踪记录\\n\" expected=\"实例 INST-001 · 暂无追踪记录\\n\""
+    },
+    {
+      "name": "missing：无堆栈",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "missing：status exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "missing：健康度照常给出（四档之一）",
+      "ok": true,
+      "detail": "健康度 已结束"
+    },
+    {
+      "name": "missing：已完成实例健康度为「已结束」",
+      "ok": true,
+      "detail": "actual=\"健康度 已结束\" expected=\"健康度 已结束\""
+    },
+    {
+      "name": "badline：先起核心",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "badline：trace show exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "badline：首行带追踪号",
+      "ok": true,
+      "detail": "actual=\"实例 INST-001 · 追踪 TRC-0000aaaa\" expected=\"实例 INST-001 · 追踪 TRC-0000aaaa\""
+    },
+    {
+      "name": "badline：A-11 提示行在汇总行之前",
+      "ok": true,
+      "detail": "actual=\"追踪记录有 1 行不可读，已跳过\" expected=\"追踪记录有 1 行不可读，已跳过\""
+    },
+    {
+      "name": "badline：汇总 跨度 2 条",
+      "ok": true,
+      "detail": "actual=\"跨度 2 条 · 回流 0 次\" expected=\"跨度 2 条 · 回流 0 次\""
+    },
+    {
+      "name": "badline：正常跨度行 2 条",
+      "ok": true,
+      "detail": "actual=2 expected=2"
+    },
+    {
+      "name": "badline：无堆栈",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "notime：先起核心",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "notime：trace show exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "notime：无堆栈",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "notime：status exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "notime：不计 P90 样本、档位不判慢",
+      "ok": true,
+      "detail": "actual=\"健康度 正常\" expected=\"健康度 正常\""
+    },
+    {
+      "name": "hold：当前代码实例带 traceId",
+      "ok": true,
+      "detail": "TRC-8f496e5c"
+    },
+    {
+      "name": "hold：exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "hold：首行带实例与追踪号",
+      "ok": true,
+      "detail": "actual=\"实例 INST-001 · 追踪 TRC-8f496e5c\" expected=\"实例 INST-001 · 追踪 TRC-8f496e5c\""
+    },
+    {
+      "name": "hold：汇总 跨度 0 条 · 回流 0 次",
+      "ok": true,
+      "detail": "actual=\"跨度 0 条 · 回流 0 次\" expected=\"跨度 0 条 · 回流 0 次\""
+    },
+    {
+      "name": "hold：跨度行 HH:MM:SS → —  T-001  进行中  交接 HO-001",
+      "ok": true,
+      "detail": "04:43:49 → —  T-001  进行中  交接 HO-001"
+    },
+    {
+      "name": "hold：末两行 回流链 / 无",
+      "ok": true,
+      "detail": "actual=\"回流链|无\" expected=\"回流链|无\""
+    },
+    {
+      "name": "hold：不出现「暂无追踪记录」",
+      "ok": true,
+      "detail": "实例 INST-001 · 追踪 TRC-8f496e5c\n跨度 0 条 · 回流 0 次\n\n04:43:49 → —  T-001  进行中  交接 HO-001\n\n回流链\n无\n"
+    },
+    {
+      "name": "hold：cancel 收尾 exit 0",
+      "ok": true,
+      "detail": "0"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+$ orch instance status INST-003
+exit=0
+实例 INST-003 · 运行中 · 模板 编码闭环
+健康度 正常
+节点 T-001 开发 待执行
+节点 T-002 测试 待执行
+升级 —

@@ -1,0 +1,58 @@
+{
+  "ac": "AC-04",
+  "at": "2026-11-11T20:43:16.018Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-04-r2",
+  "checks": [
+    {
+      "name": "run 以失败收尾（退出码 1，夹具预期）",
+      "ok": true,
+      "detail": {
+        "exitCode": 1
+      }
+    },
+    {
+      "name": "trace show 退出码 0",
+      "ok": true,
+      "detail": {
+        "stderr": ""
+      }
+    },
+    {
+      "name": "A-4 摘要行仍逐字渲染（D-25 未打掉有值摘要）",
+      "ok": true,
+      "detail": {
+        "lines": [
+          "实例 INST-001 · 追踪 TRC-e87030ef",
+          "跨度 1 条 · 回流 0 次",
+          "",
+          "04:43:12 → 04:43:14  T-001  失败  交接 HO-001",
+          "  失败摘要 命令 node out/run.js · 退出码 1 · 关键输出 3 行 · 日志 host-logs/T-001.log",
+          "",
+          "回流链",
+          "无"
+        ]
+      }
+    },
+    {
+      "name": "摘要行紧跟失败跨度行",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "仅 1 条失败摘要行（无重复）",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "instance log 的 execution.summary 仍为完整四项",
+      "ok": true,
+      "detail": {
+        "command": "node out/run.js",
+        "exitCode": 1,
+        "keyOutputLines": 3,
+        "logRef": "host-logs/T-001.log"
+      }
+    }
+  ],
+  "pass": true
+}

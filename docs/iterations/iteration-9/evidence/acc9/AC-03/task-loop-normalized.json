@@ -1,0 +1,194 @@
+[
+  {
+    "pair": 0,
+    "order": [
+      "base",
+      "cur"
+    ],
+    "baseExit": 4,
+    "curExit": 4,
+    "baseNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "curNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "diff": []
+  },
+  {
+    "pair": 1,
+    "order": [
+      "cur",
+      "base"
+    ],
+    "baseExit": 4,
+    "curExit": 4,
+    "baseNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "curNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "diff": []
+  },
+  {
+    "pair": 2,
+    "order": [
+      "base",
+      "cur"
+    ],
+    "baseExit": 4,
+    "curExit": 4,
+    "baseNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "curNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "diff": []
+  },
+  {
+    "pair": 3,
+    "order": [
+      "cur",
+      "base"
+    ],
+    "baseExit": 4,
+    "curExit": 4,
+    "baseNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "curNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "diff": []
+  },
+  {
+    "pair": 4,
+    "order": [
+      "base",
+      "cur"
+    ],
+    "baseExit": 4,
+    "curExit": 4,
+    "baseNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "curNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "diff": []
+  },
+  {
+    "pair": 5,
+    "order": [
+      "cur",
+      "base"
+    ],
+    "baseExit": 4,
+    "curExit": 4,
+    "baseNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "curNormalized": [
+      "实例 INST-N · 运行中 · 模板 通用任务闭环",
+      "会话已创建 mock-sess-PID-SEQ",
+      "任务已投递",
+      "会话 执行中 · 已运行 Ns",
+      "会话 空闲",
+      "会话 已升级",
+      "实例 INST-N · 已挂起 · 模板 通用任务闭环",
+      "升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮",
+      "下一步：orch escalate list --instance INST-N 查看升级；orch escalate resolve ESC-nnn --instance INST-N --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-N"
+    ],
+    "diff": []
+  }
+]

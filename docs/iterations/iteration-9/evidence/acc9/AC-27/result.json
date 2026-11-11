@@ -1,0 +1,112 @@
+{
+  "ac": "AC-27",
+  "generatedAt": "2026-11-11T20:02:43.026Z",
+  "title": "同一节点多轮：每轮会话各一条摘要，条数等于轮次",
+  "fixture": "code-loop backflow-once --stop-after 3 --keep 冻结窗口",
+  "passed": true,
+  "total": 19,
+  "failed": 0,
+  "checks": [
+    {
+      "name": ".mock/stopped-after-3 存在（冻结点成立）",
+      "ok": true,
+      "detail": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/acc9-b-summary-rounds-PTWfZN/.mock/stopped-after-3"
+    },
+    {
+      "name": "冻结窗口 state=running",
+      "ok": true,
+      "detail": "actual=\"running\" expected=\"running\""
+    },
+    {
+      "name": "冻结窗口会话数 3",
+      "ok": true,
+      "detail": "actual=3 expected=3"
+    },
+    {
+      "name": "instance log 文本 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "instance log json exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "全文摘要条数 = 会话数",
+      "ok": true,
+      "detail": "actual=3 expected=3"
+    },
+    {
+      "name": "T-001 摘要恰 2 条",
+      "ok": true,
+      "detail": "actual=2 expected=2"
+    },
+    {
+      "name": "T-001 轮次为 1 与 2",
+      "ok": true,
+      "detail": "actual=\"[1,2]\" expected=\"[1,2]\""
+    },
+    {
+      "name": "T-002 摘要恰 1 条",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "T-002 轮次为 1",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "每会话恰 1 条摘要",
+      "ok": true,
+      "detail": "[[\"mock-sess-33516-1\",1],[\"mock-sess-33618-1\",1],[\"mock-sess-33645-1\",1]]"
+    },
+    {
+      "name": "文本视图摘要行数 = 3",
+      "ok": true,
+      "detail": "actual=3 expected=3"
+    },
+    {
+      "name": "文本视图 T-001 摘要行数 2",
+      "ok": true,
+      "detail": "actual=2 expected=2"
+    },
+    {
+      "name": "文本视图 T-002 摘要行数 1",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "trace show exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "trace 中 T-001 跨度行 2 条",
+      "ok": true,
+      "detail": "actual=2 expected=2"
+    },
+    {
+      "name": "trace 中 T-002 跨度行 1 条",
+      "ok": true,
+      "detail": "actual=1 expected=1"
+    },
+    {
+      "name": "trace 汇总跨度 3 条",
+      "ok": true,
+      "detail": "actual=\"跨度 3 条 · 回流 1 次\" expected=\"跨度 3 条 · 回流 1 次\""
+    },
+    {
+      "name": "driver 已正常收尾（release + SIGINT）",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "keyEvidence": [
+    "log-text.txt",
+    "log.json",
+    "trace.txt",
+    "driver.txt"
+  ]
+}

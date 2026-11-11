@@ -1,0 +1,11 @@
+exit=0
+实例 INST-001 · 已挂起 · 模板 编码闭环
+节点 T-001 开发 已升级 · 第 1 轮 · （开发 分支 maestro/INST-001/developer · 已合并）
+节点 T-002 测试 待执行
+会话 已升级
+交接包 HO-001  开发→测试  已构造   03:56:55
+交接包 HO-001  开发→测试  已拒绝   03:56:55  原因 内容不合规
+升级 ESC-001 待处理
+  原因：交接包 HO-001 内容不合规：证据不可读 calc.js
+  节点：T-001 开发 · 第 1 轮
+  下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001

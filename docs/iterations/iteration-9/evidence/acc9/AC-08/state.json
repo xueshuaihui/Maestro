@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-d0814ec1f68c8afb",
+  "createdAt": "2026-11-11T20:19:20.215Z",
+  "updatedAt": "2026-11-11T20:19:27.147Z",
+  "state": "running",
+  "stateSince": "2026-11-11T20:19:25.096Z",
+  "template": "code-loop",
+  "cwd": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-08/demo-code-pass",
+  "task": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 39,
+  "counters": {
+    "eventSeq": 40,
+    "runCount": 1,
+    "dispatchCount": 3
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 2,
+      "state": "done",
+      "stateSince": "2026-11-11T20:19:26.556Z",
+      "startedAt": "2026-11-11T20:19:20.866Z",
+      "roundStartedAt": "2026-11-11T20:19:25.096Z",
+      "endedAt": "2026-11-11T20:19:26.665Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-61344-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-08/demo-code-pass/calc.js",
+          "declared": true,
+          "exists": true,
+          "bytes": 291,
+          "sha256": null,
+          "verifiedAt": "2026-11-11T20:19:26.548Z"
+        }
+      ],
+      "branch": "maestro/INST-001/developer",
+      "mergeStatus": "merged"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "failed",
+      "stateSince": "2026-11-11T20:19:24.585Z",
+      "startedAt": "2026-11-11T20:19:22.906Z",
+      "roundStartedAt": "2026-11-11T20:19:22.906Z",
+      "endedAt": "2026-11-11T20:19:24.578Z",
+      "failure": null,
+      "note": "等待复测",
+      "verdict": {
+        "value": "fail",
+        "defectCount": 2,
+        "verdictPath": "out/verdict.json",
+        "readAt": "2026-11-11T20:19:24.425Z"
+      },
+      "sessionId": "mock-sess-61325-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-61212-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-11T20:19:22.352Z",
+      "createdAt": "2026-11-11T20:19:21.363Z",
+      "lastEventAt": "2026-11-11T20:19:21.509Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-08/demo-code-pass/calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-61325-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-11T20:19:24.742Z",
+      "createdAt": "2026-11-11T20:19:23.328Z",
+      "lastEventAt": "2026-11-11T20:19:23.790Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-08/demo-code-pass/out/test-log.txt",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-61344-1",
+      "nodeId": "T-001",
+      "round": 2,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-11T20:19:26.843Z",
+      "createdAt": "2026-11-11T20:19:25.511Z",
+      "lastEventAt": "2026-11-11T20:19:25.830Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-08/demo-code-pass/calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-11T20:19:22.793Z",
+      "deliveredAt": "2026-11-11T20:19:23.458Z",
+      "acceptedAt": "2026-11-11T20:19:23.629Z",
+      "consumedAt": "2026-11-11T20:19:24.444Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 171,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "calc.js"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 1,
+      "fromNodeId": "T-001",
+      "toNodeId": "T-002",
+      "retestRequirement": null,
+      "deliveryAttempts": 1,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    },
+    {
+      "handoffId": "HO-002",
+      "edge": {
+        "from": "T-002",
+        "to": "T-001",
+        "kind": "backflow"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-11T20:19:24.927Z",
+      "deliveredAt": "2026-11-11T20:19:25.639Z",
+      "acceptedAt": "2026-11-11T20:19:25.803Z",
+      "consumedAt": "2026-11-11T20:19:26.698Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": "2026-11-11T20:19:24.929Z",
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 164,
+      "defects": [
+        {
+          "summary": "div 在除数为 0 时返回 Infinity，未抛错",
+          "evidence": "out/test-log.txt"
+        },
+        {
+          "summary": "div 在整除场景存在浮点误差",
+          "evidence": "out/test-log-2.txt"
+        }
+      ],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "out/verdict.json"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 2,
+      "fromNodeId": "T-002",
+      "toNodeId": "T-001",
+      "retestRequirement": "按上方每条缺陷修正后重新提交产物",
+      "deliveryAttempts": 1,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    }
+  ],
+  "escalations": [],
+  "health": {
+    "nodeTimeoutMs": 30000
+  },
+  "traceId": "TRC-fd3f97bf",
+  "paused": false
+}

@@ -1,0 +1,132 @@
+{
+  "ac": "AC-08",
+  "at": "2026-11-11T20:19:28.542Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-08",
+  "checks": [
+    {
+      "name": ".mock/stopped-after-3 出现（冻结点成立）",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "value": true
+      }
+    },
+    {
+      "name": "冻结窗口恰 3 条已结束跨度（T-001 r1 / T-002 r1 / T-001 r2）",
+      "ok": true,
+      "detail": {
+        "spans": [
+          {
+            "n": "T-001",
+            "r": 1,
+            "end": "2026-11-11T20:19:22.268Z"
+          },
+          {
+            "n": "T-002",
+            "r": 1,
+            "end": "2026-11-11T20:19:24.578Z"
+          },
+          {
+            "n": "T-001",
+            "r": 2,
+            "end": "2026-11-11T20:19:26.665Z"
+          }
+        ]
+      }
+    },
+    {
+      "name": "冻结窗口没有进行中的跨度行（无 end_time 为空的跨度）",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "trace show 退出码 0",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "stderr": ""
+      }
+    },
+    {
+      "name": "输出与附录 A-3 逐字一致（A-0 归一化后）",
+      "ok": false,
+      "detail": {
+        "expected": [
+          "实例 INST-001 · 追踪 TRC-fd3f97bf",
+          "跨度 3 条 · 回流 1 次",
+          "",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-001",
+          "TIME → TIME  T-002 测试  失败  交接 HO-001 HO-002",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-002",
+          "",
+          "回流链",
+          "第 2 轮  T-002 测试 → T-001 开发  HO-002  已完成"
+        ],
+        "actual": [
+          "实例 INST-001 · 追踪 TRC-fd3f97bf",
+          "跨度 3 条 · 回流 1 次",
+          "",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-001",
+          "TIME → TIME  T-002 测试  失败  交接 HO-001 HO-002",
+          "  失败摘要 命令 未提供 · 退出码 未提供 · 关键输出 未提供 · 日志 未提供",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-002",
+          "",
+          "回流链",
+          "第 2 轮  T-002 测试 → T-001 开发  HO-002  已完成"
+        ]
+      }
+    },
+    {
+      "name": "除「失败摘要」行外，其余各行与 A-3 逐字一致（差异仅此一行）",
+      "ok": true,
+      "detail": {
+        "stripped": [
+          "实例 INST-001 · 追踪 TRC-fd3f97bf",
+          "跨度 3 条 · 回流 1 次",
+          "",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-001",
+          "TIME → TIME  T-002 测试  失败  交接 HO-001 HO-002",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-002",
+          "",
+          "回流链",
+          "第 2 轮  T-002 测试 → T-001 开发  HO-002  已完成"
+        ],
+        "expected": [
+          "实例 INST-001 · 追踪 TRC-fd3f97bf",
+          "跨度 3 条 · 回流 1 次",
+          "",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-001",
+          "TIME → TIME  T-002 测试  失败  交接 HO-001 HO-002",
+          "TIME → TIME  T-001 开发  已完成  交接 HO-002",
+          "",
+          "回流链",
+          "第 2 轮  T-002 测试 → T-001 开发  HO-002  已完成"
+        ]
+      }
+    },
+    {
+      "name": "A-3 未含、实测多出的失败摘要行 #1（AC-04/BR-04 要求，需主控裁决）",
+      "ok": true,
+      "detail": {
+        "line": "  失败摘要 命令 未提供 · 退出码 未提供 · 关键输出 未提供 · 日志 未提供"
+      }
+    },
+    {
+      "name": "时间线不含「进行中」，汇总为「跨度 3 条 · 回流 1 次」",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "时间线含两个角色标题与两个节点编号，回流链含 HO-002 与「第 2 轮」",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "a3Exact": false,
+  "extraSummaryLines": [
+    "  失败摘要 命令 未提供 · 退出码 未提供 · 关键输出 未提供 · 日志 未提供"
+  ],
+  "needsArbitration": true,
+  "note": "AC-08 Then 要求与附录 A-3 逐字一致，但 A-3 未包含失败跨度下方的摘要行；AC-04 Then / A-4 / BR-04 要求失败跨度展示摘要行，两处判据冲突，登记需主控裁决。",
+  "pass": false
+}

@@ -1,0 +1,9 @@
+{
+  "orchestrator": 13,
+  "coreTotal": 14,
+  "coreCounts": {
+    "escalation.js": 1,
+    "orchestrator.js": 13
+  },
+  "daemonTotal": 0
+}

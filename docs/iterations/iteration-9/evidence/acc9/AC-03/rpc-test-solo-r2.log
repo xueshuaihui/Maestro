@@ -1,0 +1,59 @@
+TAP version 13
+# Subtest: 6 个生命周期 RPC 注册并转发正确参数，结果原样放在 result
+ok 1 - 6 个生命周期 RPC 注册并转发正确参数，结果原样放在 result
+  ---
+  duration_ms: 154.462397
+  type: 'test'
+  ...
+# Subtest: 参数边界校验：缺必填字段 → IPC_BAD_PARAMS，编排层语义码原样透传
+ok 2 - 参数边界校验：缺必填字段 → IPC_BAD_PARAMS，编排层语义码原样透传
+  ---
+  duration_ms: 177.993894
+  type: 'test'
+  ...
+# Subtest: 生命周期 RPC 不随 NODE_ENV 门控：production 下仍可用
+ok 3 - 生命周期 RPC 不随 NODE_ENV 门控：production 下仍可用
+  ---
+  duration_ms: 197.196498
+  type: 'test'
+  ...
+# Subtest: run.start 白名单透传 approvalPolicy（D-5.2 / G9），非法取值在边界拒绝
+ok 4 - run.start 白名单透传 approvalPolicy（D-5.2 / G9），非法取值在边界拒绝
+  ---
+  duration_ms: 182.057572
+  type: 'test'
+  ...
+# Subtest: run.start 不传 approvalPolicy 时沿用宿主配置，不调用 setApprovalPolicy
+ok 5 - run.start 不传 approvalPolicy 时沿用宿主配置，不调用 setApprovalPolicy
+  ---
+  duration_ms: 180.799104
+  type: 'test'
+  ...
+# Subtest: 3 个接缝仅 NODE_ENV=test 挂载：test.handoff / test.delivery / test.escalate
+ok 6 - 3 个接缝仅 NODE_ENV=test 挂载：test.handoff / test.delivery / test.escalate
+  ---
+  duration_ms: 177.302395
+  type: 'test'
+  ...
+# Subtest: production 下 3 个接缝一律 IPC_BAD_METHOD，核心不崩
+ok 7 - production 下 3 个接缝一律 IPC_BAD_METHOD，核心不崩
+  ---
+  duration_ms: 188.158653
+  type: 'test'
+  ...
+# Subtest: AC-57：校验/审批/暂停/恢复 流程的 reason 序列与 detail 落盘并可复盘（行为断言）
+ok 8 - AC-57：校验/审批/暂停/恢复 流程的 reason 序列与 detail 落盘并可复盘（行为断言）
+  ---
+  duration_ms: 760.398979
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2585.965777
+EXIT=0

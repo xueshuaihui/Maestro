@@ -1,0 +1,97 @@
+{
+  "ac": "AC-22",
+  "generatedAt": "2026-11-11T20:00:39.994Z",
+  "title": "进行中的跨度：显示“进行中”与结束位“—”，不显示“暂无追踪记录”",
+  "fixture": "真实当前代码实例：--hold-session（A-10）；--turn-delay-ms 放行后同实例变已完成跨度",
+  "passed": true,
+  "total": 16,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "当前代码实例带 traceId（D-23）",
+      "ok": true,
+      "detail": "TRC-002568ef"
+    },
+    {
+      "name": "hold trace exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "首行带实例与追踪号",
+      "ok": true,
+      "detail": "actual=\"实例 INST-001 · 追踪 TRC-002568ef\" expected=\"实例 INST-001 · 追踪 TRC-002568ef\""
+    },
+    {
+      "name": "汇总 跨度 0 条 · 回流 0 次",
+      "ok": true,
+      "detail": "actual=\"跨度 0 条 · 回流 0 次\" expected=\"跨度 0 条 · 回流 0 次\""
+    },
+    {
+      "name": "跨度行：HH:MM:SS → —  T-001  进行中  交接 HO-001",
+      "ok": true,
+      "detail": "03:59:59 → —  T-001  进行中  交接 HO-001"
+    },
+    {
+      "name": "末两行 回流链 / 无",
+      "ok": true,
+      "detail": "actual=\"回流链|无\" expected=\"回流链|无\""
+    },
+    {
+      "name": "不出现暂无追踪记录",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hold 期间无落地跨度文件或为空",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hold 取消 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "hold 运行进程已结束",
+      "ok": true,
+      "detail": "code=1"
+    },
+    {
+      "name": "delay 运行中：汇总 跨度 0 条",
+      "ok": true,
+      "detail": "actual=\"跨度 0 条 · 回流 0 次\" expected=\"跨度 0 条 · 回流 0 次\""
+    },
+    {
+      "name": "delay 运行中：跨度行为进行中/—",
+      "ok": true,
+      "detail": "04:00:03 → —  T-001  进行中  交接 HO-001"
+    },
+    {
+      "name": "delay run exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "放行后汇总 跨度 1 条 · 回流 0 次",
+      "ok": true,
+      "detail": "actual=\"跨度 1 条 · 回流 0 次\" expected=\"跨度 1 条 · 回流 0 次\""
+    },
+    {
+      "name": "放行后不再出现进行中",
+      "ok": true,
+      "detail": "实例 INST-001 · 追踪 TRC-54a78f76\n跨度 1 条 · 回流 0 次\n\n04:00:03 → 04:00:38  T-001  已完成  交接 HO-001\n\n回流链\n无\n"
+    },
+    {
+      "name": "放行后跨度行有起止时刻",
+      "ok": true,
+      "detail": "04:00:03 → 04:00:38  T-001  已完成  交接 HO-001"
+    }
+  ],
+  "keyEvidence": [
+    "trace-hold.txt",
+    "trace-delay-running.txt",
+    "trace-delay-done.txt"
+  ],
+  "note": "--hold-session 在 mock 里只能被取消唤醒，没有“放行后完成”的通道；因此同一实例的「运行中 → 已完成」用 --turn-delay-ms 的同形运行中窗口复验，两者均使用当前代码创建的实例。"
+}

@@ -1,0 +1,36 @@
+{
+  "ac": "AC-05",
+  "at": "2026-11-11T20:43:20.882Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-05-r2",
+  "checks": [
+    {
+      "name": "run 以失败收尾（退出码 1）",
+      "ok": true,
+      "detail": {
+        "exitCode": 1
+      }
+    },
+    {
+      "name": "部分缺项行仍逐字渲染（命令+退出码有值，另两项未提供）",
+      "ok": true,
+      "detail": {
+        "lines": [
+          "实例 INST-001 · 追踪 TRC-36607433",
+          "跨度 1 条 · 回流 0 次",
+          "",
+          "04:43:18 → 04:43:19  T-001  失败  交接 HO-001",
+          "  失败摘要 命令 node out/run.js · 退出码 1 · 关键输出 未提供 · 日志 未提供",
+          "",
+          "回流链",
+          "无"
+        ]
+      }
+    },
+    {
+      "name": "仅 1 条失败摘要行",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "pass": true
+}

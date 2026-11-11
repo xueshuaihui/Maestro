@@ -1,0 +1,14 @@
+{"ok":true,"root":"/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-08-r2","cwd":"/private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-08-r2/demo-code-pass","scenario":"backflow-once","resolvedScenario":"backflow","stopAfter":3,"keep":true,"released":false,"target":"stop","exitCode":null,"instanceId":"INST-001","state":"running","nodes":[{"nodeId":"T-001","round":2,"state":"done"},{"nodeId":"T-002","round":1,"state":"failed"}],"handoffs":2,"escalations":[],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":9121,"checks":[{"name":"stopped-after-3","ok":true},{"name":"state.json 可读","ok":true}]}
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-85691-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲

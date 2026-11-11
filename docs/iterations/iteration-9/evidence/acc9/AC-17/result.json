@@ -1,0 +1,88 @@
+{
+  "ac": "AC-17",
+  "generatedAt": "2026-11-11T19:56:30.709Z",
+  "title": "健康度写入实例元数据，并在两个用户面可见",
+  "fixture": "task-loop driver --scenario dispatch-fail-first（真实运行）",
+  "passed": true,
+  "total": 14,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "run 退出码 4（升级收尾，预期）",
+      "ok": true,
+      "detail": "actual=4 expected=4"
+    },
+    {
+      "name": "run 收尾输出没有健康度行",
+      "ok": true,
+      "detail": "实例 INST-001 · 已挂起 · 模板 通用任务闭环\n升级 ESC-001 待处理 · 节点 T-001 研究员 · 第 1 轮\n下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001\n"
+    },
+    {
+      "name": "instance status exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "instance status 健康度行逐字",
+      "ok": true,
+      "detail": "actual=\"健康度 需关注 · 有待处理升级\" expected=\"健康度 需关注 · 有待处理升级\""
+    },
+    {
+      "name": "元数据 health.level=attention",
+      "ok": true,
+      "detail": "actual=\"attention\" expected=\"attention\""
+    },
+    {
+      "name": "元数据 health.reasons=[pending_escalation]",
+      "ok": true,
+      "detail": "actual=\"[\\\"pending_escalation\\\"]\" expected=\"[\\\"pending_escalation\\\"]\""
+    },
+    {
+      "name": "元数据保留 nodeTimeoutMs",
+      "ok": true,
+      "detail": "{\"level\":\"attention\",\"reasons\":[\"pending_escalation\"],\"computedAt\":\"2026-11-11T19:56:24.076Z\",\"nodeTimeoutMs\":30000}"
+    },
+    {
+      "name": "元数据 computedAt 存在",
+      "ok": true,
+      "detail": "2026-11-11T19:56:24.076Z"
+    },
+    {
+      "name": "status.md 同一行逐字",
+      "ok": true,
+      "detail": "- 健康度：需关注 · 有待处理升级"
+    },
+    {
+      "name": "graph 文本无健康度/health",
+      "ok": true,
+      "detail": "实例 INST-001 · 通用任务闭环 · 已挂起\nT-001 研究员 · 已升级 · 第 1 轮\nT-002 撰写者 · 待执行 · 第 0 轮\nT-003 审核者 · 待执行 · 第 0 轮\n边：\n  T-001 -> T-002 正向\n  T-002 -> T-003 正向\n  T-003 -> T-002 回流\n  T-002 -> T-003 复测\n升级：ESC-001 T-001 待处理\n"
+    },
+    {
+      "name": "graph JSON 无健康度/health",
+      "ok": true,
+      "detail": "{\n  \"graphVersion\": 1,\n  \"instanceId\": \"INST-001\",\n  \"template\": \"task-loop\",\n  \"state\": \"suspended\",\n  \"paused\": false,\n  \"nodes\": [\n    {\n      \"nodeId\": \"T-001\",\n      \"title\": \"研究员\",\n      \"roleId\": \"researcher\",\n      \"state\": \"escalated\",\n      \"round\": 1\n    },\n    {\n      \"nodeId\": \"T-002\",\n      \"title\": \"撰写者\",\n      \"roleId\": \"writer\",\n      \"state\": \"pending\",\n      \"round\": 0\n    },\n    {\n      \"nodeId\": \"T-003\",\n      \"title\": \"审核者\",\n      \"roleId\": \"reviewer\",\n      \"state\": \"pending\",\n      \"round\": 0\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"T-001\",\n      \"to\": \"T-002\",\n      \"kind\": \"forward\"\n    },\n    {\n      \"from\": \"T-002\",\n      \"to\": \"T-003\",\n      \"kind\": \"forward\"\n    },\n    {\n      \"from\": \"T-003\",\n      \"to\": \"T-002\",\n      \"kind\": \"backflow\"\n    },\n    {\n      \"from\": \"T-002\",\n      \"to\": \"T-003\",\n      \"kind\": \"retest\"\n    }\n  ],\n  \"handoffs\": [],\n  \"escalations\": [\n    {\n      \"escalationId\": \"ESC-001\",\n      \"nodeId\": \"T-001\",\n      \"round\": 1,\n      \"reasonCode\": \"dispatch_failed\",\n      \"reasonDetail\": \"派遣失败：目标会话不可用\",\n      \"defects\": [],\n      \"state\": \"pending\",\n      \"createdAt\": \"2026-11-11T19:56:23.697Z\",\n      \"resolvedAt\": null,\n      \"resolution\": null,\n      \"voidedAt\": null\n    }\n  ],\n  \"approvals\": [],\n  \"current\": null\n}\n"
+    },
+    {
+      "name": "graph JSON 顶层无 health 键",
+      "ok": true,
+      "detail": "graphVersion,instanceId,template,state,paused,nodes,edges,handoffs,escalations,approvals,current"
+    },
+    {
+      "name": "实例目录不存在 graph.json（健康度不写入图文件）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "再次查看仍同档同原因",
+      "ok": true,
+      "detail": "actual=\"健康度 需关注 · 有待处理升级\" expected=\"健康度 需关注 · 有待处理升级\""
+    }
+  ],
+  "keyEvidence": [
+    "run-task-loop.txt",
+    "status.txt",
+    "status.md",
+    "graph.txt",
+    "graph.json"
+  ]
+}

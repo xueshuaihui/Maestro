@@ -1,0 +1,71 @@
+{
+  "ac": "AC-25",
+  "generatedAt": "2026-11-11T20:01:04.572Z",
+  "title": "事件链整份不可解析：从固定起点重起链、序号从 1、旧行原样保留",
+  "fixture": "events.jsonl 预置 3 行乱码（无一条可解析）",
+  "passed": true,
+  "total": 11,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "先起核心",
+      "ok": true,
+      "detail": "实例 INST-001 · 不存在"
+    },
+    {
+      "name": "run exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "旧 3 行字节原样保留（新文件以旧字节为前缀）",
+      "ok": true,
+      "detail": "8e4907545d0d6d39a5ac9a63921c90f03bc5a061855982d270a2c19ef9c32a57"
+    },
+    {
+      "name": "旧 3 行字节哈希不变",
+      "ok": true,
+      "detail": "actual=\"8e4907545d0d6d39a5ac9a63921c90f03bc5a061855982d270a2c19ef9c32a57\" expected=\"8e4907545d0d6d39a5ac9a63921c90f03bc5a061855982d270a2c19ef9c32a57\""
+    },
+    {
+      "name": "新记录 seq 从 1 起连续无空洞",
+      "ok": true,
+      "detail": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16"
+    },
+    {
+      "name": "新链首条 prev_event_hash 为 64 个 0",
+      "ok": true,
+      "detail": "actual=\"0000000000000000000000000000000000000000000000000000000000000000\" expected=\"0000000000000000000000000000000000000000000000000000000000000000\""
+    },
+    {
+      "name": "instance log 文本 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "文本视图末行为 A-13（N=3）",
+      "ok": true,
+      "detail": "已跳过 3 行不可读记录"
+    },
+    {
+      "name": "无“校验失败/链已断”报错",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "instance log json exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "JSON 只含新链（seq 从 1）",
+      "ok": true,
+      "detail": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16"
+    }
+  ],
+  "keyEvidence": [
+    "run.txt",
+    "log-text.txt",
+    "log.json"
+  ]
+}

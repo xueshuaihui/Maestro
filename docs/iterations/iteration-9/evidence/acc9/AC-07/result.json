@@ -1,0 +1,96 @@
+{
+  "ac": "AC-07",
+  "at": "2026-11-11T20:19:17.632Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-07",
+  "checks": [
+    {
+      "name": "driver backflow-once 跑完（exit 0）且实例 completed",
+      "ok": true,
+      "detail": {
+        "drv": 0,
+        "state": "completed"
+      }
+    },
+    {
+      "name": "跨度恰 4 条：T-001 两条 + T-002 两条",
+      "ok": true,
+      "detail": {
+        "nodes": [
+          "T-001",
+          "T-002",
+          "T-001",
+          "T-002"
+        ]
+      }
+    },
+    {
+      "name": "round 覆盖 1 与 2（同一节点多轮不合并、不覆盖）",
+      "ok": true,
+      "detail": {
+        "rounds": [
+          1,
+          1,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "name": "T-001 第 1 轮跨度仍在（未被第 2 轮覆盖）",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "汇总行为「跨度 4 条 · 回流 1 次」",
+      "ok": true,
+      "detail": {
+        "got": "跨度 4 条 · 回流 1 次"
+      }
+    },
+    {
+      "name": "回流链恰 1 条且逐字为附录 A-3 的回流行",
+      "ok": true,
+      "detail": {
+        "tail": [
+          "04:19:13 → 04:19:15  T-002 测试  已完成  交接 HO-003",
+          "",
+          "回流链",
+          "第 2 轮  T-002 测试 → T-001 开发  HO-002  已完成"
+        ]
+      }
+    },
+    {
+      "name": "HO-002 = backflow、round 2、状态 consumed（推导「第 2 轮/已完成」）",
+      "ok": true,
+      "detail": {
+        "ho2": {
+          "kind": "backflow",
+          "round": 2,
+          "state": "consumed"
+        }
+      }
+    },
+    {
+      "name": "复测包 HO-003 是 retest，不计入「回流 1 次」",
+      "ok": true,
+      "detail": {
+        "ho3": {
+          "kind": "retest",
+          "state": "consumed"
+        }
+      }
+    },
+    {
+      "name": "交接包总数 3（HO-001 forward / HO-002 backflow / HO-003 retest）",
+      "ok": true,
+      "detail": {
+        "ids": [
+          "HO-001:forward",
+          "HO-002:backflow",
+          "HO-003:retest"
+        ]
+      }
+    }
+  ],
+  "pass": true
+}

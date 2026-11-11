@@ -1,0 +1,31 @@
+{
+  "ac": "AC-23",
+  "at": "2026-11-11T20:43:30.218Z",
+  "checks": [
+    {
+      "name": "空实例逐字 A-1 且退出 0",
+      "ok": true,
+      "detail": {
+        "stdout": "实例 INST-001 · 暂无追踪记录\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "夹具就绪：当前代码实例带 state.traceId，追踪文件已删除",
+      "ok": true,
+      "detail": {
+        "traceId": "TRC-32cdd9cc",
+        "exists": false
+      }
+    },
+    {
+      "name": "删追踪文件 → 逐字 A-1（不再输出 TRC-xxx / 跨度 0 条）",
+      "ok": true,
+      "detail": {
+        "stdout": "实例 INST-001 · 暂无追踪记录\n",
+        "exitCode": 0
+      }
+    }
+  ],
+  "pass": true
+}

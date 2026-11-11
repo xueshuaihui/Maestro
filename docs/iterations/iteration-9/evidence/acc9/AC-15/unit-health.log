@@ -1,0 +1,202 @@
+TAP version 13
+# Subtest: exports: 4 levels + 8 reason codes verbatim, frozen tables, fixed order
+ok 1 - exports: 4 levels + 8 reason codes verbatim, frozen tables, fixed order
+  ---
+  duration_ms: 2.126834
+  type: 'test'
+  ...
+# Subtest: node timeout: now - startedAt = 30000 (exact) -> NOT node_timeout
+ok 2 - node timeout: now - startedAt = 30000 (exact) -> NOT node_timeout
+  ---
+  duration_ms: 0.576584
+  type: 'test'
+  ...
+# Subtest: node timeout: now - startedAt = 30001 -> node_timeout
+ok 3 - node timeout: now - startedAt = 30001 -> node_timeout
+  ---
+  duration_ms: 0.17166
+  type: 'test'
+  ...
+# Subtest: node timeout: missing health.nodeTimeoutMs falls back to 30000
+ok 4 - node timeout: missing health.nodeTimeoutMs falls back to 30000
+  ---
+  duration_ms: 0.224415
+  type: 'test'
+  ...
+# Subtest: P90: 5 samples -> P90 = 50000; node duration = 50000 (exact) -> NOT p90_exceeded
+ok 5 - P90: 5 samples -> P90 = 50000; node duration = 50000 (exact) -> NOT p90_exceeded
+  ---
+  duration_ms: 0.323719
+  type: 'test'
+  ...
+# Subtest: P90: node duration = 50001 -> p90_exceeded
+ok 6 - P90: node duration = 50001 -> p90_exceeded
+  ---
+  duration_ms: 0.243987
+  type: 'test'
+  ...
+# Subtest: P90: 4 samples (< 5) -> p90_exceeded never triggers even with a long node
+ok 7 - P90: 4 samples (< 5) -> p90_exceeded never triggers even with a long node
+  ---
+  duration_ms: 0.237351
+  type: 'test'
+  ...
+# Subtest: P90: spans missing start_time / end_time are not samples (AC-23 notime)
+ok 8 - P90: spans missing start_time / end_time are not samples (AC-23 notime)
+  ---
+  duration_ms: 0.251032
+  type: 'test'
+  ...
+# Subtest: TTL: now - pendingAt = 900000 (exact) -> NOT handoff_ttl_half
+ok 9 - TTL: now - pendingAt = 900000 (exact) -> NOT handoff_ttl_half
+  ---
+  duration_ms: 0.465395
+  type: 'test'
+  ...
+# Subtest: TTL: now - pendingAt = 900001 -> handoff_ttl_half
+ok 10 - TTL: now - pendingAt = 900001 -> handoff_ttl_half
+  ---
+  duration_ms: 0.472588
+  type: 'test'
+  ...
+# Subtest: TTL: now - pendingAt = 899999 -> NOT handoff_ttl_half
+ok 11 - TTL: now - pendingAt = 899999 -> NOT handoff_ttl_half
+  ---
+  duration_ms: 0.211787
+  type: 'test'
+  ...
+# Subtest: TTL: pending packet with no pendingAt / createdAt does not participate
+ok 12 - TTL: pending packet with no pendingAt / createdAt does not participate
+  ---
+  duration_ms: 0.139577
+  type: 'test'
+  ...
+# Subtest: TTL: createdAt is used when pendingAt is missing (B-3 fallback)
+ok 13 - TTL: createdAt is used when pendingAt is missing (B-3 fallback)
+  ---
+  duration_ms: 0.121308
+  type: 'test'
+  ...
+# Subtest: terminal priority: completed with timeout node + escalation + rejected handoff -> ended
+ok 14 - terminal priority: completed with timeout node + escalation + rejected handoff -> ended
+  ---
+  duration_ms: 0.112967
+  type: 'test'
+  ...
+# Subtest: terminal priority: all four terminal states -> ended
+ok 15 - terminal priority: all four terminal states -> ended
+  ---
+  duration_ms: 0.131181
+  type: 'test'
+  ...
+# Subtest: four levels: normal when there is no anomaly
+ok 16 - four levels: normal when there is no anomaly
+  ---
+  duration_ms: 0.090785
+  type: 'test'
+  ...
+# Subtest: four levels: attention on a single pending escalation
+ok 17 - four levels: attention on a single pending escalation
+  ---
+  duration_ms: 0.122346
+  type: 'test'
+  ...
+# Subtest: four levels: slow on a single TTL-exceeded pending handoff
+ok 18 - four levels: slow on a single TTL-exceeded pending handoff
+  ---
+  duration_ms: 0.109573
+  type: 'test'
+  ...
+# Subtest: four levels: ended on a terminal instance
+ok 19 - four levels: ended on a terminal instance
+  ---
+  duration_ms: 0.086119
+  type: 'test'
+  ...
+# Subtest: multiple reasons: all six red conditions -> reasons in fixed order
+ok 20 - multiple reasons: all six red conditions -> reasons in fixed order
+  ---
+  duration_ms: 0.19929
+  type: 'test'
+  ...
+# Subtest: red dominates yellow: red + two yellow signals -> attention, yellow codes omitted
+ok 21 - red dominates yellow: red + two yellow signals -> attention, yellow codes omitted
+  ---
+  duration_ms: 0.150723
+  type: 'test'
+  ...
+# Subtest: two yellow conditions -> reasons in fixed order
+ok 22 - two yellow conditions -> reasons in fixed order
+  ---
+  duration_ms: 0.151577
+  type: 'test'
+  ...
+# Subtest: session_crash: quarantined session bound to a failed node
+ok 23 - session_crash: quarantined session bound to a failed node
+  ---
+  duration_ms: 0.111759
+  type: 'test'
+  ...
+# Subtest: role_unavailable: escalated session (not quarantined)
+ok 24 - role_unavailable: escalated session (not quarantined)
+  ---
+  duration_ms: 0.20499
+  type: 'test'
+  ...
+# Subtest: quarantined + escalated session counted only as session_crash (no double count)
+ok 25 - quarantined + escalated session counted only as session_crash (no double count)
+  ---
+  duration_ms: 0.115315
+  type: 'test'
+  ...
+# Subtest: connection_rejected / connection_expired each map to their own code
+ok 26 - connection_rejected / connection_expired each map to their own code
+  ---
+  duration_ms: 0.116853
+  type: 'test'
+  ...
+# Subtest: AC-14 premise: nodeTimeoutMs = 300000 keeps a 70s node out of the red tier
+ok 27 - AC-14 premise: nodeTimeoutMs = 300000 keeps a 70s node out of the red tier
+  ---
+  duration_ms: 0.1204
+  type: 'test'
+  ...
+# Subtest: ISO string timestamps are accepted (startedAt / pendingAt)
+ok 28 - ISO string timestamps are accepted (startedAt / pendingAt)
+  ---
+  duration_ms: 1.222904
+  type: 'test'
+  ...
+# Subtest: defaults: graph = null and traces = [] do not throw
+ok 29 - defaults: graph = null and traces = [] do not throw
+  ---
+  duration_ms: 0.944857
+  type: 'test'
+  ...
+# Subtest: defaults: no-argument call returns a valid shape
+ok 30 - defaults: no-argument call returns a valid shape
+  ---
+  duration_ms: 0.119312
+  type: 'test'
+  ...
+# Subtest: pure: does not mutate any argument (frozen inputs)
+ok 31 - pure: does not mutate any argument (frozen inputs)
+  ---
+  duration_ms: 0.780845
+  type: 'test'
+  ...
+# Subtest: level is always one of the four frozen values
+ok 32 - level is always one of the four frozen values
+  ---
+  duration_ms: 0.195116
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 168.99343

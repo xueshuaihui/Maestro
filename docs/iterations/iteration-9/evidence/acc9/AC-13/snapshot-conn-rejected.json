@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-acc9-health",
+  "createdAt": "2026-11-11T18:06:01.511Z",
+  "updatedAt": "2026-11-11T18:06:01.511Z",
+  "state": "running",
+  "stateSince": "2026-11-11T18:06:01.511Z",
+  "template": "code-loop",
+  "cwd": ".",
+  "task": "x",
+  "halted": false,
+  "rev": 0,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "startedAt": "2026-11-11T18:06:01.512Z",
+      "endedAt": "2026-11-11T18:06:03.512Z"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "done",
+      "startedAt": "2026-11-11T18:06:01.512Z",
+      "endedAt": "2026-11-11T18:06:03.512Z"
+    }
+  ],
+  "sessions": [],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-002",
+        "to": "T-001",
+        "kind": "forward"
+      },
+      "state": "rejected",
+      "round": 2,
+      "createdAt": "2026-11-11T20:06:01.512Z"
+    }
+  ],
+  "escalations": [],
+  "health": {
+    "nodeTimeoutMs": 300000
+  }
+}

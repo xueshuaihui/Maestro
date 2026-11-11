@@ -1,0 +1,68 @@
+[
+  {
+    "object": "session",
+    "objectId": "mock-sess-85691-1",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "execution.summary",
+    "detail": {
+      "nodeId": "T-001",
+      "round": 1,
+      "summary": {
+        "command": null,
+        "exitCode": null,
+        "keyOutputLines": null,
+        "logRef": null
+      }
+    },
+    "gen": "gen-718e6e57555d1c9f",
+    "seq": 10,
+    "ts": "2026-11-11T20:43:04.373Z",
+    "prev_event_hash": "0d385ffb369ed727e4add2683830c74efdeab70e993c89f6ab9d80c87e140aea"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-85791-1",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "execution.summary",
+    "detail": {
+      "nodeId": "T-002",
+      "round": 1,
+      "summary": {
+        "command": null,
+        "exitCode": null,
+        "keyOutputLines": null,
+        "logRef": null
+      }
+    },
+    "gen": "gen-718e6e57555d1c9f",
+    "seq": 25,
+    "ts": "2026-11-11T20:43:06.772Z",
+    "prev_event_hash": "aa8a1d24b7c809769771ab0228b428b1f1216fff12e11746783ca79b0999ac8c"
+  },
+  {
+    "object": "session",
+    "objectId": "mock-sess-85810-1",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "execution.summary",
+    "detail": {
+      "nodeId": "T-001",
+      "round": 2,
+      "summary": {
+        "command": null,
+        "exitCode": null,
+        "keyOutputLines": null,
+        "logRef": null
+      }
+    },
+    "gen": "gen-718e6e57555d1c9f",
+    "seq": 40,
+    "ts": "2026-11-11T20:43:08.882Z",
+    "prev_event_hash": "e3f692d13079ba73e07e8527000a32b5d839f5a159bf7f25d3f6c0b9707a70ed"
+  }
+]

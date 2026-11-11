@@ -1,0 +1,4 @@
+baseline commit: 322fb5e
+run exit: 1
+session reasons: output.submitted,run.failed,session.state
+has execution.summary: false

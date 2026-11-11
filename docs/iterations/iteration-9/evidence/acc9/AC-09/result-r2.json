@@ -1,0 +1,56 @@
+{
+  "ac": "AC-09",
+  "at": "2026-11-11T20:43:30.257Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-09-single-r2",
+  "checks": [
+    {
+      "name": "空实例夹具：核心已在空根拉起（instance status 返回不存在）",
+      "ok": true,
+      "detail": {
+        "exitCode": 1,
+        "stdout": "实例 INST-001 · 不存在\n"
+      }
+    },
+    {
+      "name": "空实例逐字 A-1 且退出 0",
+      "ok": true,
+      "detail": {
+        "stdout": "实例 INST-001 · 暂无追踪记录\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "真实 single 跑完（exit 0）且仍为 A-2（7 行）",
+      "ok": true,
+      "detail": {
+        "run": 0,
+        "lines": [
+          "实例 INST-001 · 追踪 TRC-32cdd9cc",
+          "跨度 1 条 · 回流 0 次",
+          "",
+          "04:43:26 → 04:43:28  T-001  已完成  交接 HO-001",
+          "",
+          "回流链",
+          "无"
+        ]
+      }
+    },
+    {
+      "name": "夹具就绪：当前代码实例带 state.traceId，追踪文件已删除",
+      "ok": true,
+      "detail": {
+        "traceId": "TRC-32cdd9cc",
+        "exists": false
+      }
+    },
+    {
+      "name": "删追踪文件 → 逐字 A-1（不再输出 TRC-xxx / 跨度 0 条）",
+      "ok": true,
+      "detail": {
+        "stdout": "实例 INST-001 · 暂无追踪记录\n",
+        "exitCode": 0
+      }
+    }
+  ],
+  "pass": true
+}

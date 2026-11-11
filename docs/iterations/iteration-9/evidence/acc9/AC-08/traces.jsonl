@@ -1,0 +1,3 @@
+{"trace_id":"TRC-1fb42941","instance_id":"INST-001","node_id":"T-001","round":1,"start_time":"2026-11-11T20:43:02.919Z","end_time":"2026-11-11T20:43:04.264Z","status":"done"}
+{"trace_id":"TRC-1fb42941","instance_id":"INST-001","node_id":"T-002","round":1,"start_time":"2026-11-11T20:43:04.904Z","end_time":"2026-11-11T20:43:06.625Z","status":"failed"}
+{"trace_id":"TRC-1fb42941","instance_id":"INST-001","node_id":"T-001","round":2,"start_time":"2026-11-11T20:43:07.107Z","end_time":"2026-11-11T20:43:08.703Z","status":"done"}

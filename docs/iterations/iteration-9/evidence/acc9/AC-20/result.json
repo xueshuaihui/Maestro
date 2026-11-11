@@ -1,0 +1,52 @@
+{
+  "ac": "AC-20",
+  "generatedAt": "2026-11-11T19:59:44.380Z",
+  "title": "非功能：零依赖、中文唯一来源、纯净扫描、无宿主分支",
+  "fixture": "仓库静态检查（无业务夹具）",
+  "passed": true,
+  "total": 7,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "dependencies 键数 = 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "node -p dependencies 输出 0",
+      "ok": true,
+      "detail": "actual=\"0\" expected=\"0\""
+    },
+    {
+      "name": "--forbid 词表 31 词",
+      "ok": true,
+      "detail": "actual=31 expected=31"
+    },
+    {
+      "name": "31 词纯净扫描 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "src/daemon 无宿主分支",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "新增中文非注释行 0（中文只来自 labels.js）",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    },
+    {
+      "name": "labels-sync 用例 exit 0",
+      "ok": true,
+      "detail": "actual=0 expected=0"
+    }
+  ],
+  "keyEvidence": [
+    "purity.log",
+    "daemon-host-branch-scan.txt",
+    "src-core-daemon-added-cjk.txt",
+    "labels-sync.log"
+  ]
+}

@@ -1,0 +1,4 @@
+exit=0
+10:00:00  会话 mock-sess-100-1  空闲 → 执行中  原因 session.state
+10:00:00  会话 mock-sess-100-1  执行中  原因 session.state
+10:00:00  会话 mock-sess-100-1  执行中 → 空闲  原因 run.completed

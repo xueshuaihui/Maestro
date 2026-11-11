@@ -1,0 +1,70 @@
+{
+  "graphVersion": 1,
+  "instanceId": "INST-001",
+  "template": "task-loop",
+  "state": "suspended",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": "研究员",
+      "roleId": "researcher",
+      "state": "escalated",
+      "round": 1
+    },
+    {
+      "nodeId": "T-002",
+      "title": "撰写者",
+      "roleId": "writer",
+      "state": "pending",
+      "round": 0
+    },
+    {
+      "nodeId": "T-003",
+      "title": "审核者",
+      "roleId": "reviewer",
+      "state": "pending",
+      "round": 0
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward"
+    },
+    {
+      "from": "T-002",
+      "to": "T-003",
+      "kind": "forward"
+    },
+    {
+      "from": "T-003",
+      "to": "T-002",
+      "kind": "backflow"
+    },
+    {
+      "from": "T-002",
+      "to": "T-003",
+      "kind": "retest"
+    }
+  ],
+  "handoffs": [],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-001",
+      "round": 1,
+      "reasonCode": "dispatch_failed",
+      "reasonDetail": "派遣失败：目标会话不可用",
+      "defects": [],
+      "state": "pending",
+      "createdAt": "2026-11-11T19:56:23.697Z",
+      "resolvedAt": null,
+      "resolution": null,
+      "voidedAt": null
+    }
+  ],
+  "approvals": [],
+  "current": null
+}

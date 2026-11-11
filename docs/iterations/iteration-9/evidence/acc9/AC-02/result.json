@@ -1,0 +1,83 @@
+{
+  "ac": "AC-02",
+  "at": "2026-11-11T19:51:02.881Z",
+  "task": "写一份说明",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-02",
+  "checks": [
+    {
+      "name": "两次 run 退出码 0",
+      "ok": true,
+      "detail": {
+        "run1": 0,
+        "run2": 0,
+        "stderr1": "",
+        "stderr2": ""
+      }
+    },
+    {
+      "name": "两次 instance log 退出码 0",
+      "ok": true,
+      "detail": {
+        "log1": 0,
+        "log2": 0
+      }
+    },
+    {
+      "name": "INST-001 首条 prev_event_hash = 64 个 0",
+      "ok": true,
+      "detail": {
+        "got": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "name": "INST-001 链断点数为 0",
+      "ok": true,
+      "detail": {
+        "breaks": [],
+        "n": 16
+      }
+    },
+    {
+      "name": "INST-002 首条 prev_event_hash = 64 个 0",
+      "ok": true,
+      "detail": {
+        "got": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "name": "INST-002 链断点数为 0",
+      "ok": true,
+      "detail": {
+        "breaks": [],
+        "n": 16
+      }
+    },
+    {
+      "name": "INST-002 未引用 INST-001 的任何记录指纹（链不串）",
+      "ok": true,
+      "detail": {
+        "crossRefs": [],
+        "chain1RecordHashes": 16
+      }
+    },
+    {
+      "name": "两实例记录自身的指纹集合不同（各是一条独立链）",
+      "ok": true,
+      "detail": {
+        "n1": 16,
+        "n2": 16
+      }
+    },
+    {
+      "name": "INST-002 的实例级事件全部写的是 INST-002",
+      "ok": true,
+      "detail": {
+        "instanceEvents": [
+          "INST-002",
+          "INST-002"
+        ]
+      }
+    }
+  ],
+  "pass": true
+}

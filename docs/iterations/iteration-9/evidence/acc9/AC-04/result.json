@@ -1,0 +1,126 @@
+{
+  "ac": "AC-04",
+  "at": "2026-11-11T19:59:39.351Z",
+  "root": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc9a/AC-04",
+  "checks": [
+    {
+      "name": "run 以失败收尾（退出码 1，属本夹具预期）",
+      "ok": true,
+      "detail": {
+        "exitCode": 1
+      }
+    },
+    {
+      "name": "trace show 退出码 0",
+      "ok": true,
+      "detail": {
+        "exitCode": 0,
+        "stderr": ""
+      }
+    },
+    {
+      "name": "跨度行逐字匹配 A-4 形态",
+      "ok": true,
+      "detail": {
+        "lines": [
+          "实例 INST-001 · 追踪 TRC-9260bd5e",
+          "跨度 1 条 · 回流 0 次",
+          "",
+          "03:59:31 → 03:59:33  T-001  失败  交接 HO-001",
+          "  失败摘要 命令 node out/run.js · 退出码 1 · 关键输出 3 行 · 日志 host-logs/T-001.log",
+          "",
+          "回流链",
+          "无"
+        ]
+      }
+    },
+    {
+      "name": "失败摘要四项逐字命中 A-4",
+      "ok": true,
+      "detail": {
+        "want": "  失败摘要 命令 node out/run.js · 退出码 1 · 关键输出 3 行 · 日志 host-logs/T-001.log",
+        "got": [
+          "实例 INST-001 · 追踪 TRC-9260bd5e",
+          "跨度 1 条 · 回流 0 次",
+          "",
+          "03:59:31 → 03:59:33  T-001  失败  交接 HO-001",
+          "  失败摘要 命令 node out/run.js · 退出码 1 · 关键输出 3 行 · 日志 host-logs/T-001.log",
+          "",
+          "回流链",
+          "无"
+        ]
+      }
+    },
+    {
+      "name": "摘要行紧跟在跨度行之后",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "instance log --format json 有 1 条 execution.summary",
+      "ok": true,
+      "detail": {
+        "n": 1
+      }
+    },
+    {
+      "name": "JSON 摘要四项取值与夹具一致",
+      "ok": true,
+      "detail": {
+        "command": "node out/run.js",
+        "exitCode": 1,
+        "keyOutputLines": 3,
+        "logRef": "host-logs/T-001.log"
+      }
+    },
+    {
+      "name": "文本视图含 A-12 摘要行且四项与 JSON 一致",
+      "ok": true,
+      "detail": {
+        "tail": [
+          "03:59:33  会话 mock-sess-29425-1  等待下游 → 空闲  原因 run.failed",
+          "03:59:33  会话 mock-sess-29425-1  执行摘要 命令 node out/run.js · 退出码 1 · 关键输出 3 行 · 日志 host-logs/T-001.log",
+          ""
+        ]
+      }
+    },
+    {
+      "name": "实例目录内无完整日志副本（按内容比对）",
+      "ok": true,
+      "detail": {
+        "instanceFiles": [
+          "events.jsonl",
+          "state/traces.jsonl",
+          "state.json",
+          "workspace/status.md"
+        ],
+        "copies": []
+      }
+    },
+    {
+      "name": "host-logs/T-001.log 仍在项目根（未被搬迁）",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "摘要不包含完整日志正文",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "成功实例同样有 execution.summary 记录（每会话一条）",
+      "ok": true,
+      "detail": {
+        "run2": 0,
+        "n": 1,
+        "summary": {
+          "command": null,
+          "exitCode": null,
+          "keyOutputLines": null,
+          "logRef": null
+        }
+      }
+    }
+  ],
+  "pass": true
+}
