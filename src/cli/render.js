@@ -2180,6 +2180,14 @@ function failSummaryLine(summary) {
   return replaceAll(SUMMARY_FAIL_LINE, summaryFour(summary));
 }
 
+/** D-25：四项中至少一项非 null 才算"有摘要数据"（0 与空串算有值，只有 null/undefined 算缺）。 */
+function hasSummaryData(summary) {
+  if (!summary || typeof summary !== 'object') return false;
+  return ['command', 'exitCode', 'keyOutputLines', 'logRef'].some(
+    (key) => summary[key] !== null && summary[key] !== undefined
+  );
+}
+
 /**
  * A-1 / A-2 / A-3 / A-4 / A-5 / A-10 / A-11 `orch trace show` 多行输出。
  * 消费已组装好的 payload（见交付回执 D-11），不读盘、不写状态、不追加事件。
@@ -2192,7 +2200,8 @@ export function renderTraceShow(payload) {
   const backflows = Array.isArray(payload?.backflows) ? payload.backflows : [];
   const badLines = Number(payload?.badLines) || 0;
   const traceId = payload?.traceId;
-  const hasTrace = (typeof traceId === 'string' && traceId.length > 0) || spans.length > 0;
+  // D-26：空态只看跨度数组（含进行中叠加）是否非空；traceId 只在有跨度行时用于首行。
+  const hasTrace = spans.length > 0;
   if (!hasTrace) return replaceAll(TRACE_EMPTY_LINE, { instanceId });
 
   // 进行中跨度不计入"跨度 N 条"（trace.js overlayRunningSpans 的口径）。
@@ -2204,7 +2213,8 @@ export function renderTraceShow(payload) {
   lines.push('');
   for (const span of spans) {
     lines.push(traceSpanLine(span));
-    if (span?.summary) lines.push(failSummaryLine(span.summary)); // A-4：失败跨度下方
+    // D-25：四项全 null 不渲染失败摘要行（A-3 无此行）；任一项有值才渲染（A-4）。
+    if (hasSummaryData(span?.summary)) lines.push(failSummaryLine(span.summary));
   }
   lines.push('');
   lines.push(TRACE_BACKFLOW_HEADER);

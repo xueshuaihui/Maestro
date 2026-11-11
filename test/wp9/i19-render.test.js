@@ -83,6 +83,11 @@ test('A-1 空追踪：实例 INST-001 · 暂无追踪记录', () => {
     renderTraceShow(tracePayload({ traceId: null, spans: [], badLines: 0 })),
     '实例 INST-001 · 暂无追踪记录'
   );
+  // D-26：D-19 后实例恒有 traceId，空态只看跨度是否为空 —— traceId 非空但无跨度仍为 A-1。
+  assert.equal(
+    renderTraceShow(tracePayload({ traceId: 'TRC-1a2b3c4d', spans: [], badLines: 0 })),
+    '实例 INST-001 · 暂无追踪记录'
+  );
 });
 
 test('A-2 单节点、无回流：逐字整份输出（含回流链「无」两行）', () => {
@@ -131,6 +136,35 @@ test('A-3 一次回流的跨角色因果链：逐字整份输出（3 条跨角�
   assert.equal(out.split('\n').filter((line) => line.includes('→') && line.includes('交接')).length, 3);
 });
 
+test('D-25 / A-3：失败跨度 summary 四项全 null 时不渲染失败摘要行，其余逐字同 A-3', () => {
+  const spans = [
+    landed({ start_time: T0, end_time: T_0_40, node_id: 'T-001', title: '开发', result: '已完成', handoff_ids: ['HO-001'] }),
+    landed({
+      start_time: T_0_40, end_time: T_1_30, node_id: 'T-002', title: '测试', result: '失败',
+      handoff_ids: ['HO-001', 'HO-002'],
+      summary: { command: null, exitCode: null, keyOutputLines: null, logRef: null },
+    }),
+    landed({ start_time: T_1_30, end_time: T_2_20, node_id: 'T-001', title: '开发', result: '已完成', handoff_ids: ['HO-002'] }),
+  ];
+  const backflows = [{ round: 2, from: 'T-002 测试', to: 'T-001 开发', handoff: 'HO-002', state: '已完成' }];
+  const out = renderTraceShow(tracePayload({ spans, backflows }));
+  assert.equal(
+    out,
+    [
+      '实例 INST-001 · 追踪 TRC-1a2b3c4d',
+      '跨度 3 条 · 回流 1 次',
+      '',
+      '10:00:00 → 10:00:40  T-001 开发  已完成  交接 HO-001',
+      '10:00:40 → 10:01:30  T-002 测试  失败  交接 HO-001 HO-002',
+      '10:01:30 → 10:02:20  T-001 开发  已完成  交接 HO-002',
+      '',
+      '回流链',
+      '第 2 轮  T-002 测试 → T-001 开发  HO-002  已完成',
+    ].join('\n')
+  );
+  assert.equal(out.includes('失败摘要'), false);
+});
+
 test('A-4 失败摘要四要素：缩进 2 半角空格的失败摘要行，四项逐字', () => {
   const spans = [
     landed({
@@ -165,6 +199,38 @@ test('A-4 缺项"未提供"：缺项替换、其余项不省略', () => {
     out.split('\n').includes(
       '  失败摘要 命令 未提供 · 退出码 1 · 关键输出 未提供 · 日志 host-logs/T-001.log'
     )
+  );
+});
+
+test('D-25 / A-4：summary 部分缺项（命令+退出码有值、另两项 null）仍渲染一行', () => {
+  const spans = [
+    landed({
+      start_time: T_0_40,
+      end_time: T_1_30,
+      result: '失败',
+      summary: { command: 'node out/run.js', exitCode: 1, keyOutputLines: null, logRef: null },
+    }),
+  ];
+  const out = renderTraceShow(tracePayload({ spans }));
+  assert.ok(
+    out.split('\n').includes(
+      '  失败摘要 命令 node out/run.js · 退出码 1 · 关键输出 未提供 · 日志 未提供'
+    )
+  );
+});
+
+test('D-25：0 与空串算「有值」，只有 null/undefined 算缺（四项皆非 null 仍渲染）', () => {
+  const spans = [
+    landed({
+      start_time: T_0_40,
+      end_time: T_1_30,
+      result: '失败',
+      summary: { command: '', exitCode: 0, keyOutputLines: 0, logRef: '' },
+    }),
+  ];
+  const out = renderTraceShow(tracePayload({ spans }));
+  assert.ok(
+    out.split('\n').includes('  失败摘要 命令  · 退出码 0 · 关键输出 0 行 · 日志 ')
   );
 });
 

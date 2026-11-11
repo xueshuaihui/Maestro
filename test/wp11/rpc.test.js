@@ -326,7 +326,9 @@ test('AC-57：校验/审批/暂停/恢复 流程的 reason 序列与 detail 落�
     const cancelled = await orch.cancel({ instanceId: ID });
     assert.equal(cancelled.ok, true, JSON.stringify(cancelled));
 
-    // A-5 / §3.2 / D-3.4 硬编码基线：8 条事件的 reason 序列与逐条 detail。
+    // A-5 / §3.2 / D-3.4 硬编码基线：9 条事件的 reason 序列与逐条 detail。
+    // 前 8 条为 I1.3 既有序列；第 9 条是 I1.9 AC-26 要求的取消路径执行摘要
+    // （D-27：取消的会话也要有摘要，四项全 null；round 取自取消会话的收尾上下文）。
     const EXPECTED = [
       ['workflow.paused', { paused: true }],
       ['workflow.resumed', { paused: false }],
@@ -336,6 +338,11 @@ test('AC-57：校验/审批/暂停/恢复 流程的 reason 序列与 detail 落�
       ['escalation.voided', { escalationId: 'ESC-001' }],
       ['approval.withdrawn', { approvalId: 'APR-001' }],
       ['run.cancelled', null],
+      ['execution.summary', {
+        nodeId: 'T-001',
+        round: null,
+        summary: { command: null, exitCode: null, keyOutputLines: null, logRef: null },
+      }],
     ];
     const expectedReasons = EXPECTED.map(([reason]) => reason);
     const expectedDetails = EXPECTED.map(([, detail]) => detail);
