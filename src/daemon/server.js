@@ -22,6 +22,7 @@ import {
 import { writeJsonAtomic } from '../persistence/atomic-write.js';
 import { createStore } from '../persistence/instance-store.js';
 import { createEventBus } from '../core/event-bus.js';
+import * as traceLog from '../core/trace.js';
 import { createFrameDecoder, encodeFrame, validateFrame } from './ipc-frames.js';
 
 /** 核心协议版本（写进 `core.json` 与 `core.ping`，不是产品版本号）。 */
@@ -68,6 +69,9 @@ export function createServer({
   if (!activeBus || typeof activeBus.subscribe !== 'function') {
     throw new TypeError('createServer: bus 必须实现 subscribe');
   }
+  // Read-only store for `instance.trace`: it never writes state and never enters the
+  // health write path that `instance.get` owns.
+  const traceStore = createStore({ root });
 
   /** @type {Set<{socket: net.Socket, decoder: ReturnType<typeof createFrameDecoder>, unsubscribes: Set<Function>}>} */
   const connections = new Set();
@@ -228,7 +232,56 @@ export function createServer({
       const sinceSeq = Number.isInteger(params?.sinceSeq) ? params.sinceSeq : null;
       const events = await activeBus.replay(instanceId.value);
       const filtered = sinceSeq === null ? events : events.filter((ev) => Number.isInteger(ev?.seq) && ev.seq > sinceSeq);
-      return { ok: true, result: { events: filtered } };
+      // `replay` keeps the array shape; `badLines` is a non-enumerable property that
+      // IPC serialization would drop, so expose it explicitly on the result (D-6).
+      const badLines = Number.isInteger(events.badLines) && events.badLines > 0 ? events.badLines : 0;
+      return { ok: true, result: { events: filtered, badLines } };
+    },
+
+    // Read-only trace view: landed spans from disk plus in-memory running overlays.
+    // It never writes a file, never emits, and never recomputes health.
+    'instance.trace': async (params) => {
+      const instanceId = requireInstanceId(params);
+      if (!instanceId.ok) return instanceId;
+      const loaded = await traceStore.load(instanceId.value);
+      if (!loaded || loaded.ok !== true) {
+        const backupPath = typeof loaded?.backupPath === 'string' && loaded.backupPath.length > 0
+          ? loaded.backupPath
+          : null;
+        return {
+          ok: false,
+          code: loaded?.code ?? 'NOT_FOUND',
+          params: backupPath === null ? loaded?.params : { ...(loaded?.params ?? {}), backupPath },
+        };
+      }
+      const state = loaded.state ?? {};
+      const read = await traceLog.readTraces(root, instanceId.value);
+      const landed = Array.isArray(read.spans) ? read.spans : [];
+      // D-19: the snapshot id is authoritative; older instances fall back to the
+      // first landed span, then to null (A-1 shows no id).
+      const stored = typeof state.traceId === 'string' && state.traceId.length > 0 ? state.traceId : null;
+      const first = landed.length > 0 ? landed[0]?.trace_id : null;
+      const traceId = stored ?? (typeof first === 'string' && first.length > 0 ? first : null);
+      // D-23: an older instance with no id and no landed span has no legal header
+      // (A-1 / A-10 are the only shapes); drop the running overlay and fall to A-1.
+      const noTrace = stored === null && landed.length === 0;
+      const spans = noTrace ? [] : [...landed, ...traceLog.overlayRunningSpans(state, landed)];
+      return {
+        ok: true,
+        result: {
+          traceId,
+          spans,
+          badLines: Number.isInteger(read.badLines) && read.badLines > 0 ? read.badLines : 0,
+          // Minimal read-only projection so the CLI can derive handoff ids and title
+          // columns without touching the health write path.
+          view: {
+            instanceId: instanceId.value,
+            template: typeof state.template === 'string' ? state.template : null,
+            nodes: Array.isArray(state.nodes) ? state.nodes : [],
+            handoffs: Array.isArray(state.handoffs) ? state.handoffs : [],
+          },
+        },
+      };
     },
 
     'instance.cancel': async (params) => {

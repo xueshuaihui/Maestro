@@ -18,9 +18,13 @@ import { corruptPath } from '../persistence/paths.js';
 import { loadRegistry } from '../registry/index.js';
 import { ARTIFACT_TYPES, GROUPS, SIDE_EFFECTS } from '../registry/role-schema.js';
 import { getGraph } from '../templates/index.js';
+import { deriveHandoffIds } from '../core/trace.js';
 import {
   GROUP_LABEL,
+  HANDOFF_LABEL,
+  NODE_LABEL,
   ROLE_CLI_TEXT,
+  ROLE_LABEL,
   ROLE_USAGE_TEXT,
   SKILL_CLI_TEXT,
   WORKFLOW_CLI_TEXT,
@@ -195,6 +199,8 @@ VALUE_FLAGS.add('decision');
 const RUNTIME_COMMANDS = new Set([
   'run', 'status', 'cancel', 'core',
   'instance', 'attach', 'escalate', 'approve', 'handoff', 'workflow',
+  // I1.9 WP-8：只读追踪视图（仅 `show`，不新增 `--format`）。
+  'trace',
 ]);
 /** 两层命令表：第一层命令 → 合法子命令（§1.7）。 */
 const RUNTIME_SUBS = Object.freeze({
@@ -203,6 +209,7 @@ const RUNTIME_SUBS = Object.freeze({
   escalate: ['list', 'resolve'],
   handoff: ['list', 'show'],
   workflow: ['pause', 'resume', 'abort'],
+  trace: ['show'],
 });
 const RUNTIME_BOOLEAN_FLAGS = new Set(['events', 'all']);
 const RUNTIME_VALUE_FLAGS = new Set([
@@ -519,6 +526,13 @@ function parseRuntimeArgs(argv) {
     }
   }
 
+  // I1.9 WP-8：`trace show` 只读、不新增 `--format`；除 `--instance` 外一律按未知参数拒绝。
+  if (command === 'trace') {
+    for (const key of Object.keys(flags)) {
+      if (key !== 'instance') return usage(`未知参数：--${key}`);
+    }
+  }
+
   // 位置参数形态（§1.7）：多余 / 缺失都在解析层挡掉
   const rule = runtimePositionalRule(command, sub);
   if (positionals.length > rule.max) return usage(`多余的参数：${positionals[rule.max]}`);
@@ -549,6 +563,9 @@ function runtimePositionalRule(command, sub) {
       return { max: 1, exact: 1 };
     case 'instance':
       return { max: 1, needsId: true };
+    case 'trace':
+      // `trace show <实例号>`：实例号可用 `--instance` 替代（与 `instance status` 同口径）。
+      return { max: 1, needsId: true };
     case 'escalate':
       return sub === 'resolve' ? { max: 1, exact: 1 } : { max: 0 };
     case 'handoff':
@@ -568,7 +585,7 @@ function runtimeDescribeCommand(command, sub) {
 // I1.4 把 `workflow` 用作运行时控制（pause|resume|abort），I1.6 把同一词用作资产族。
 // 两套 parseArgs 的结果形状互斥（I1.4 有 positionals；I1.6 键集恰好 4 个且带 positional），
 // 因此按命令字分流到各自原版实现，避免任何一侧的逐字验收基线被改写。
-const RUNTIME_COMMAND_WORDS = new Set(['instance', 'attach', 'escalate', 'approve', 'handoff']);
+const RUNTIME_COMMAND_WORDS = new Set(['instance', 'attach', 'escalate', 'approve', 'handoff', 'trace']);
 const RUNTIME_WORKFLOW_SUBS = new Set(['pause', 'resume', 'abort']);
 function isRuntimeArgv(argv) {
   const args = Array.isArray(argv) ? argv : [];
@@ -627,6 +644,7 @@ export async function main(argv, options = {}) {
     else if (parsed.command === 'cancel') code = await cancelCommand(parsed.flags, ctx);    else if (parsed.command === 'core') code = await coreCommand(parsed.sub, ctx);
     else if (isRuntimeArgv(argv)) {
       if (parsed.command === 'instance') code = await instanceCommand(parsed, ctx);
+      else if (parsed.command === 'trace') code = await traceCommand(parsed, ctx);
       else if (parsed.command === 'attach') code = await attachCommand(parsed, ctx);
       else if (parsed.command === 'escalate') code = await escalateCommand(parsed, ctx);
       else if (parsed.command === 'approve') code = await approveCommand(parsed, ctx);
@@ -1062,6 +1080,8 @@ async function statusCommand(flags, ctx) {
     } else {
       out(render.renderInstanceLine(snapshot));
     }
+    // I1.9 WP-8：实例状态行之后只插这一行健康度；其余各行文字与相对顺序零改（AC-19）。
+    out(render.renderHealthLine(snapshot, ctx.now()));
     // 节点表：`single` 1 行（I1.1）、`code-loop` 按 T-001/002 逐行（A-2 第 3 段）
     // I1.7 AC-12：instance status 视图透出 code 角色的分支/合并状态（`includeBranch:true`）；
     // 上方 `run` 收尾路径（renderNodeLines 无此标志）保持逐字不变，绝不回灌运行期输出。
@@ -1200,14 +1220,31 @@ async function instanceCommand(parsed, ctx) {
         return exitCodeFor(eventsRes.code);
       }
       const list = [...(eventsRes.result?.events ?? [])].sort((a, b) => (a?.seq ?? 0) - (b?.seq ?? 0));
+      // D-6：跳过行数由 RPC 的 `result.badLines` 显式透出（IPC 会丢数组上的非枚举属性）。
+      const badLines = Number.isInteger(eventsRes.result?.badLines) && eventsRes.result.badLines > 0
+        ? eventsRes.result.badLines
+        : 0;
       if (flags.format === 'json') {
         out(render.renderLogJson(list));
       } else if (list.length === 0) {
         out(render.renderEmptyLine('event'));
+        if (badLines > 0) out(render.renderEventsSkippedLine(badLines));
       } else {
         for (const event of list) {
+          // I1.9 WP-8：`instance log` 在既有事件行之前只分派两类新记录
+          // （A-12 执行摘要 / A-8 健康度变化）；其余事件仍走原渲染逻辑，行格式与相对顺序零改。
+          if (event?.reason === 'execution.summary') {
+            out(render.renderSummaryLogLine(event));
+            continue;
+          }
+          if (event?.reason === 'health.changed') {
+            out(render.renderHealthEventLine(event));
+            continue;
+          }
           for (const line of render.renderEventLines(event, { template })) out(line);
         }
+        // A-13：单独成行、不带时刻前缀，出现在事件行列表末尾。
+        if (badLines > 0) out(render.renderEventsSkippedLine(badLines));
       }
       return EXIT_OK;
     }
@@ -1223,6 +1260,150 @@ async function instanceCommand(parsed, ctx) {
   } finally {
     await client.close?.();
   }
+}
+
+// ---------------------------------------------------------------- trace show
+
+/**
+ * `orch trace show <实例号>`（I1.9 / AC-09 / AC-10）：只读、无 `--format`。
+ *
+ * 只调用只读接口：`instance.trace` 在核心侧读盘落地跨度并叠加进行中的节点，
+ * 不经 `instance.get` 的健康度写路径（AC-10 要求三次执行 `state.json` 字节不变）。
+ * 组装 D-11 冻结形状的 payload 后交给 `render.renderTraceShow`，本函数不拼中文。
+ */
+async function traceCommand(parsed, ctx) {
+  const out = ctx.out;
+  const instanceId = parsed.positionals[0] ?? parsed.flags.instance;
+  const client = ctx.createClient(ctx.cwd);
+
+  try {
+    const connectErr = await connectOrError(client, out);
+    if (connectErr !== null) return connectErr;
+
+    const res = await client.request('instance.trace', { instanceId }, { timeoutMs: 10_000 });
+    if (!res.ok) {
+      // A-5：实例不存在只打一行、退出 1，不打印堆栈。
+      if (res.code === 'NOT_FOUND') {
+        out(render.renderTraceShow({ instanceId, exists: false }));
+        return EXIT_FAILED;
+      }
+      out(render.renderError({ code: res.code, params: res.params ?? {} }));
+      return exitCodeFor(res.code);
+    }
+
+    const trace = res.result ?? {};
+    const view = {
+      template: typeof trace.view?.template === 'string' ? trace.view.template : null,
+      nodes: Array.isArray(trace.view?.nodes) ? trace.view.nodes : [],
+      handoffs: Array.isArray(trace.view?.handoffs) ? trace.view.handoffs : [],
+    };
+    const spans = Array.isArray(trace.spans) ? trace.spans : [];
+    // 失败摘要从事件日志的 `execution.summary` 取四项原值；仅失败跨度渲染（A-4）。
+    const summaries = spans.some((span) => span?.status === 'failed')
+      ? await loadExecutionSummaries(client, instanceId)
+      : new Map();
+    const titles = graphNodeTitles(view.template);
+
+    // 追踪号只透传核心值（D-19：快照 traceId 优先）；为空时保持 null，绝不在 CLI 侧伪造。
+    out(render.renderTraceShow({
+      instanceId,
+      exists: true,
+      traceId: typeof trace.traceId === 'string' && trace.traceId.length > 0 ? trace.traceId : null,
+      spans: spans.map((span) => traceSpanPayload(span, view, titles, summaries)),
+      backflows: backflowPayload(view, titles),
+      badLines: Number.isInteger(trace.badLines) && trace.badLines > 0 ? trace.badLines : 0,
+    }));
+    return EXIT_OK;
+  } finally {
+    await client.close?.();
+  }
+}
+
+/** 图定义里的 `nodeId → title`（`single` 的 title 为 null，因此只有节点号）。 */
+function graphNodeTitles(template) {
+  const graph = getGraph(template ?? '') ?? null;
+  const titles = new Map();
+  for (const node of graph?.nodes ?? []) {
+    const id = node?.nodeId ?? node?.id ?? null;
+    if (typeof id === 'string' && typeof node?.title === 'string' && node.title.length > 0) {
+      titles.set(id, node.title);
+    }
+  }
+  return titles;
+}
+
+/**
+ * 一条跨度的交接包编号：优先用 `trace.deriveHandoffIds`（按节点/轮次与交接包边推导）。
+ * `single` 的交接包不带 `edge` / 节点绑定（`edge: null`），推导为空时按轮次兜底，
+ * 保证 A-2 的 `交接 HO-001` 命中；不为任何跨度伪造编号。
+ */
+function spanHandoffIds(view, span) {
+  const ids = deriveHandoffIds({ handoffs: view.handoffs }, span?.node_id ?? null, span?.round);
+  if (ids.length > 0) return ids;
+  const round = span?.round;
+  return view.handoffs
+    .filter((handoff) => handoff
+      && handoff.edge == null
+      && handoff.fromNodeId == null
+      && handoff.toNodeId == null
+      && (handoff.round == null || Number(handoff.round) === Number(round)))
+    .map((handoff) => handoff.handoffId)
+    .filter((id) => typeof id === 'string' && id.length > 0);
+}
+
+/** 单条跨度 → D-11 payload：结果位与节点列是显示值，其余为原始值。 */
+function traceSpanPayload(span, view, titles, summaries) {
+  const running = span?.end_time === null || span?.end_time === undefined;
+  const status = span?.status ?? null;
+  const key = `${span?.node_id ?? ''}\u0000${span?.round ?? ''}`;
+  return {
+    start_time: span?.start_time ?? null,
+    end_time: running ? null : span?.end_time ?? null,
+    node_id: span?.node_id ?? null,
+    title: titles.get(span?.node_id) ?? null,
+    result: running ? '' : (NODE_LABEL[status] ?? (typeof status === 'string' ? status : '')),
+    handoff_ids: spanHandoffIds(view, span),
+    summary: !running && status === 'failed' ? summaries.get(key) ?? null : null,
+  };
+}
+
+/** 回流链行：只取 `edge.kind === 'backflow'` 的交接包，按轮次升序。 */
+function backflowPayload(view, titles) {
+  const roleOfNode = new Map(view.nodes.map((node) => [node?.nodeId, node?.roleId]));
+  const nodeColumn = (nodeId) => {
+    if (typeof nodeId !== 'string' || nodeId.length === 0) return '';
+    const role = ROLE_LABEL[roleOfNode.get(nodeId)] ?? null;
+    const suffix = titles.get(nodeId) ?? role;
+    return suffix ? `${nodeId} ${suffix}` : nodeId;
+  };
+  return view.handoffs
+    .filter((handoff) => handoff?.edge?.kind === 'backflow')
+    .sort((a, b) => {
+      const byRound = (Number(a?.round) || 0) - (Number(b?.round) || 0);
+      if (byRound !== 0) return byRound;
+      return String(a?.handoffId ?? '').localeCompare(String(b?.handoffId ?? ''));
+    })
+    .map((handoff) => ({
+      round: Number.isInteger(handoff.round) ? handoff.round : 0,
+      from: nodeColumn(handoff?.edge?.from ?? handoff?.fromNodeId ?? null),
+      to: nodeColumn(handoff?.edge?.to ?? handoff?.toNodeId ?? null),
+      handoff: handoff?.handoffId ?? '',
+      state: HANDOFF_LABEL[handoff?.state] ?? (typeof handoff?.state === 'string' ? handoff.state : ''),
+    }));
+}
+
+/** `execution.summary` 事件 → `(nodeId, round) → 四项原值`；读取失败按无摘要降级。 */
+async function loadExecutionSummaries(client, instanceId) {
+  const map = new Map();
+  const res = await client.request('instance.events', { instanceId }, { timeoutMs: 10_000 });
+  if (!res.ok) return map;
+  for (const event of res.result?.events ?? []) {
+    if (event?.reason !== 'execution.summary') continue;
+    const detail = event.detail ?? {};
+    if (typeof detail.nodeId !== 'string' || detail.nodeId.length === 0) continue;
+    map.set(`${detail.nodeId}\u0000${detail.round ?? ''}`, detail.summary ?? null);
+  }
+  return map;
 }
 
 // ---------------------------------------------------------------- attach
