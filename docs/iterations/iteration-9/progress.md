@@ -9,7 +9,7 @@
 |---|---|---|---|---|
 | S0 需求生成与评审 | ✅ 收口 | 需求 **v7**（1060 行 / 27 AC / 25 BR / 附录 A0~A14 + B1~B5 + C + D1~D11）；**7 轮独立评审**，最终 `review-round7.md` **PASS（阻断 0 / 建议 0）**，规划原文 12/12 覆盖、反向扫描无夹带；DoR 13 条 **12 绿 + 1 口径偏离**（第 9 条按 D-2 裁决沿用「失败集合差集=0」） | `review-round1..7.md`、`requirement-understanding.md`（359 行）、`decisions.md` D-1/D-2/D-3 | S0 Gate 通过，准出 S1 |
 | S1 拆分与选型 | ✅ 收口 | `iteration-9.md` **r2 / 751 行**；9 WP / 23 负责文件零交集 / **AC→WP 27/27**；`split-review.md` **PASS（阻断 0 / 建议 3）**，3 条建议由 r2 纯增 32 行全闭合 | `iteration-9.md`、`split-review.md`、`b6f646b` | S1 Gate 通过，准出 S2 |
-| S2 实现 | ⏳ 进行中（6 批中 **5 批收口**） | 批次 1~5 的 8 个 WP 契约测试全绿：`i19-orchestrator` **10/10**、`i19-cli` **13/13**、`wp9/**` **108/108**；`status-doc`/`labels-sync`/`cli-assets` **44/44**；`wp4` **37/36/1**（唯一失败为基线第 6 行 macOS `/private/var`）；`grep -c "object: 'session'"` **13**；deps **0** / `USAGE_LINES` **25** / purity **exit 0**；6 份独立评审全部 **PASS（阻断 0）** | `8beb6ca`…`review-wp8.md` | 批次 6（WP-9 回归守护）待做，之后进 S3 |
+| S2 实现 | ✅ 收口（6/6 批） | 批次 1~5 的 8 个 WP 契约测试全绿：`i19-orchestrator` **10/10**、`i19-cli` **13/13**、`wp9/**` **108/108**；`status-doc`/`labels-sync`/`cli-assets` **44/44**；`wp4` **37/36/1**（唯一失败为基线第 6 行 macOS `/private/var`）；`grep -c "object: 'session'"` **13**；deps **0** / `USAGE_LINES` **25** / purity **exit 0**；6 份独立评审全部 **PASS（阻断 0）** | `8beb6ca`…`review-wp8.md` | 批次 6（WP-9 回归守护）待做，之后进 S3 |
 | S3 验收 | ⏳ 未开始 | — | — | — |
 | S4 终验与收口 | ⏳ 未开始 | — | — | — |
 
@@ -133,3 +133,14 @@
 - **AC-10 只读**：连续三次 `trace show` stdout 字节一致、`state.json` / `events.jsonl` sha256 不变（为此 `trace show` **不走** `instance.get`，避免首次健康度受控写，见 D-22）。
 - **裁决**：D-18（`cli-e2e.test.js` 归属，部分作废于 D-21）、D-19（追踪号落盘，WP-7 侧）、D-20（`single` 无 `edge` 交接包的组装层归属，只归属已存在编号）、D-21（`cli-e2e.test.js` 零改动，D-8 所指实为 `status-doc.test.js`）、D-22（`instance.trace` 附加只读 `view`、摘要仅失败跨度附着）、D-23（历史实例空号降级为 A-1）。
 - **评审建议 5 条（非阻断）**：S-1 历史实例空号（已按 D-23 收口）、S-2 `instance.trace` 异常路径会写 `state.json.corrupt` 备份（正常路径零写盘，登记 `report.md` §5）、S-3 `main.js` 未知参数文案沿用基线既有字面量（登记）、S-4 追踪文件全坏且无号时落 A-1 不显示 A-11（AC-23 夹具不受影响）、S-5 首次 `instance status` 会刷新 `orch status` 列表的「更新」时刻（WP-7/D-7 行为，AC-19 逐字比对只覆盖 `instance status` 与 `graph`）。
+
+## S2 批次 6（WP-9，已收口）
+
+| WP | commit | 文件 | 门禁（主控独立复跑） | 独立评审 |
+|---|---|---|---|---|
+| WP-9 | 见批次提交 | `test/wp9/i19-regression.test.js`（762 行 / 8 用例，唯一文件） | `i19-regression` **8/8**（连跑 3 次全绿）、`wp9/**` **116/116**、`status-doc`/`labels-sync`/`cli-assets` **44/44**、deps **0** | `review-wp9.md` **PASS（阻断 0 / 建议 7）** |
+
+- **可证伪性**：评审对三条链做 4 种变异压力测试（加行 / 改文案 / 打乱顺序 / 丢行），3 种变异**全部变红**、控制组绿；基线由两棵独立树（`322fb5e`、`70277df`）实跑复核，排除自证。
+- **D-24 裁决**：`object: 'session'` 计数以 `orchestrator.js` 单文件 **13** 为准；`src/core` 合计 **14**（含 `escalation.js` 既有 1 处），`src/daemon` **0**。
+- **采纳建议 S-1（已修）**：`single` / `code-loop` 由「N 次中至少 1 次命中」收紧为**每次都必须命中**，仅 `task-loop` 保留 `≥1`（D-17 ⑥ 只豁免该链）；收紧后连跑 3 次仍 8/8。
+- **其余建议 6 条（非阻断）**：S-2 `wp9/**` 5 轮中 1 轮 115/116（未留用例名，S3 复跑须落完整 reporter）、S-3 宿主分支扫描为启发式、S-4 AC-05 只认 `.log` 后缀、S-5 `USAGE_LINES` 中间行由 `cli-assets.test.js` 互补覆盖、S-6 事件链分工标注、S-7 D-24 随 docs 单列提交。

@@ -224,3 +224,12 @@
 | 依据 | A-1 与 A-10 是仅有的两种合法首行形态，空号行不属于任何基线；AC-22 的夹具由当前代码创建、必带 `state.traceId`，故该分支不影响任何 AC 判定，但属可见的不规范输出 |
 | 决定 | **按 D-19 字面收口**：`instance.trace` 在 `traceId` 为空时**不叠加进行中跨度**，直接返回 `{ traceId: null, spans: [], badLines }`，由渲染层落到 A-1「暂无追踪记录」。有已落地跨度的历史实例不受影响（号由首条跨度推导）。不改 `render.js`、不伪造编号、不改附录 A。**转达 WP-9 / S3**：AC-22 取证必须用当前代码创建实例（带 `state.traceId`），不得用改造的历史快照冒充 |
 | 影响面 | `src/daemon/server.js` 一处降级分支、`test/wp9/i19-cli.test.js` 一条用例、`report.md` §5；不改 A-1/A-10 基线 |
+
+## D-24 · `object: 'session'` 计数范围（WP-9 开放点）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | WP-9 按任务书「`src/core` / `src/daemon` 里 `object: 'session'` ≤ 13」实扫，`src/core` 合计 **14**：`orchestrator.js` **13** + `escalation.js` **1**（I1.3 存量） |
+| 依据 | AC-24 冻结的机检命令是 `grep -c "object: 'session'" src/core/orchestrator.js` 不得超过 13（需求 L489 原文），D-16 ⑤ 实测口径同样是单文件；`escalation.js` 的那一处是升级事件，属既有 12 类之外的存量发射点，本迭代未触碰 |
+| 决定 | **计数以 `src/core/orchestrator.js` 单文件 ≤13 为准**，`src/daemon` 必须为 0；`src/core` 其余文件只允许 `escalation.js` 的 1 处存量。WP-9 实现即按此口径，**不是放宽**——若把 `escalation.js` 并入 ≤13，需改既有产品代码，超出本迭代授权。S3 取证按同一口径贴两个数字（单文件 13 / core 合计 14 及其构成） |
+| 影响面 | WP-9 断言口径、AC-24 取证、`report.md` §5；不改代码与判据 |
