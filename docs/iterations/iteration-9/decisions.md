@@ -138,3 +138,89 @@
 | 依据 | OP-2：AC-04 夹具原文「`host-logs/T-001.log` 由夹具预置在项目根、不在实例目录内」；AC-05「`host-logs/` 位于项目根之外」。OP-3：AC-04/05/26 的夹具命令行都不与 `--permission` / `--host-error` / `--hold-session` / `--session-missing` / `--turn-delay-ms` 取消组合，D-4 L979 只要求两个新开关；扩范围会改既有分支，违反「既有 12 开关逐字不变」红线。OP-4：`docs/iterations/iteration-7/baseline-failures.txt` **第 4 行**即 `cursor.json 并发消费 20 次不重复`，D-2 已裁决以「失败集合差集 = 0」判定 |
 | 决定 | ①**OP-2 确认**：日志文件由 S3 验收脚手架在项目根预置，夹具只上报引用字符串、不创建文件、不复制正文，符合 AC-05「实例目录无完整日志副本」。②**OP-3 接受现有组合边界，不扩范围**：新开关只在主 prompt 路径正常完成阶段注入失败帧；既有提前 `return` 分支逐字保留。**转达 S3**：验收脚手架不得把 `--fail-tool*` 与上述开关组合；该边界登记进 `report.md` §5 已知边界。③**OP-4 判非缺陷**：属基线第 4 行既有失败（`cursor.lock` 5s 超时，两次复现稳定），按 D-2 差集口径处理，不放宽断言、不改测试。④ OP-1（转达 WP-7 按 D-10 合并 `execution`）已由 D-10 覆盖，不重复裁决 |
 | 影响面 | S3 验收脚手架构造、`report.md` §5 遗留清单；不改任何代码与需求判据 |
+
+## D-14 · 追踪号生成时机（WP-7 开放点 3）
+
+| 项 | 内容 |
+| 触发点 | WP-7 回报：未在 `newState` 里落 `trace_id`，而是在 `appendNodeSpan` 中「从已落地跨度首条 `trace_id` 复用、首次 `newTraceId()`」；需求 §3.2 L957 字面写「实例创建时生成一次」，两者字面不一致，需裁决 |
+| 依据 | 拆分 §2.6 明确 `newState` **只追加 `health: { nodeTimeoutMs: 30000 }` 一个字段**，加 `trace_id` 会越权；WP-1 已冻结并由 `review-wp1-wp3.md` PASS 的 `trace.readTraces` 在 `trace.js:159` **从已落地跨度首条 `trace_id` 推导**追踪号；BR-06「每个实例一个追踪号」与 A-0「追踪号随夹具变」的用户可见判据是「同一实例跨度共用一个号、不同实例不同、空实例按 A-1 显示暂无追踪记录」，实现实测 3 条跨度同号、跨进程重启仍复用；空实例无跨度时追踪号无用户可见载体 |
+| 决定 | **接受 WP-7 实现，判为口径澄清而非缺陷**：追踪号在首次落地跨度时生成并随跨度持久化，读取时由 `readTraces` 推导，`state.json` 不新增字段；`newState` 保持只加一个字段。S3 验收 AC-06/07/08/22 按「跨度同号 / 空实例 A-1」取证，不要求 `state.json` 存在 `trace_id`。`report.md` §5 登记该口径（字面「实例创建时」→ 实际「首次跨度落地时」） |
+| 影响面 | AC-06/07/08/22 取证口径、`report.md` §5；不改代码、不改需求、不改 `trace.js` |
+
+## D-15 · 取消路径 `execution.summary` 的 `ts` 口径（WP-7 开放点 4）
+
+| 项 | 内容 |
+| 触发点 | WP-7 回报：quiesce / idle 的摘要 `ts` 复用收尾函数同一时刻 `at`（实测 `ts == session.stateSince`）；但 `applyCancel` 是**批量 emit**、无单一状态变更时刻，故取消摘要**不传 `ts`**，由 `emit` 现取样。任务书硬约束写「事件 `ts` 必须复用状态变更同一时刻」，需裁决是否违反 |
+| 依据 | 项目硬约束「事件 `ts` 复用状态变更同一时刻」出自 I1.3 验收缺陷 #2，针对的是**状态迁移事件**（`startedAt` / `endedAt` 各自 `iso()` 会差 4~8ms 导致同一动作两帧不同刻）；`execution.summary` 的 `result:'note'` **不是状态迁移事件**，不伴随 `from`/`to` 状态变更，无「状态变更时刻」可复用。需求 D-4 L975 只固定摘要事件形状，未约束 `ts`。WP-7 实测：若给取消摘要传提前取的 `at`，会造成事件链 **ts 倒退**（曾导致 `test/wp4/orchestrator.test.js` 2 条真实回归，修复后消失）；不传则链单调。事件链 `prev_event_hash` 与 `seq` 单调性由 WP-2 保证 |
+| 决定 | **接受「取消路径不传 `ts`、由 `emit` 现取样」**，判为口径澄清：①quiesce / idle 已按硬约束复用同一时刻；②取消摘要无状态变更时刻、且传提前时刻会破坏链单调，属硬约束的适用边界，不是放宽；③AC-26 判据是四项全 `未提供` + `cancelled`/`ended`，不含 `ts` 逐字。登记进 `report.md` §5 已知边界。**转达 S3**：AC-26 取证不得把取消摘要的 `ts` 与某个状态变更时刻做等值断言 |
+| 影响面 | AC-26 取证、`report.md` §5；不改代码、不改事件形状、不改附录 A-14 |
+
+## D-16 · WP-7 其余开放点与复核结论（主控）
+
+| 项 | 内容 |
+| 触发点 | WP-7 回报开放点 1（B 段 async）、2（授权行号漂移）、5（`reasonVars` 可选增强未做）、6（工作区遗留文件），以及主控独立复跑时发现的 `saveState` 每次保存新增一次异步读盘 |
+| 依据 | ①`saveState` 本身已是 `async`（内部 `await store.save`），在其中 `await trace.readTraces(...)` 未改签名、未改 `trace.js`、未把异步结果塞同步路径，符合拆分 §2.6「保存前调 computeHealth」。②授权行号是 `322fb5e` 评审时快照，实现按函数名定位、各段下移 +99~+166 行、相对顺序不变，符合任务书指令。③`health.reasonVars` / `detail.reasonVars` 按 D-12 判为**可选增强**，不做则纯码值降级，A-8 逐字判据只用 `pending_escalation`，不受影响。④`.workbuddy/memory/*` 与 `docs/iterations/regression-2026-11-09*` 是历史遗留，主控提交时按精确路径 `git add` 排除。⑤主控独立复跑：`grep -c "object: 'session'"` **13**（≤13）、`git diff -U0` 仅 3 行删除（2 行 `stateSince = iso()` → 复用 `at`、1 行 `getStatus` 返回快照加 health），均为授权内语义等价改写；门禁 `i19-orchestrator` 9/9、`wp9/**` 94/94、`status-doc`+`cli-e2e` 16/16、deps 0、USAGE 25、purity exit 0，`wp4` 37/36/1 唯一失败为基线第 6 行（`/private/var`），按 D-2 差集口径判非回归 |
+| 决定 | ①**B 段 async 无需裁决**，实现正确、登记备查；②**行号漂移接受**，以函数名为准；③**可选增强不做接受**，按 D-12 降级；④**遗留文件不纳入 I1.9 提交**；⑤**新增一条 WP-9 必查项**：`saveState` / `getStatus` 每次调用新增一次 `trace.readTraces` 异步读盘 + `computeHealth`，末批必须复跑 NFR-02 p95 两条性能用例并核对 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 未被劣化（跑完还原副作用文件）；若出现新增性能失败，判阻断并由主控裁决优化方案，**不许**放宽 p95 断言。⑥**三主链逐字比对不能只靠「不出现新词」正则**：WP-7 自查用的是红线词命中 0，AC-03/19 要求的是与 I1.7 收口基线**逐字 diff 为空**，该项转 WP-9 主责、WP-7 独立评审补做一次真实三链输出比对 |
+| 影响面 | WP-7 独立评审取证范围、WP-9 回归守护必查项、`report.md` §5；不改代码与判据 |
+
+## D-17 · WP-7 阻断 F-01：三主链 `task-loop` 逐字回归，打回修复
+
+| 项 | 内容 |
+| 触发点 | `review-wp7.md` **FAIL（阻断 1 / 建议 6）**，唯一阻断 F-01：`git worktree` 基线 `322fb5e` 与当前工作区同夹具实跑，A-0 归一化后 `single` / `code-loop` 逐字 diff 为空，但 `task-loop` 稳定少一行 `会话 已升级`（`src/cli/main.js:855-885` 的 `printSnapshot` 依 `snapshot.session.state==='escalated'` 打印）。评审证据：两树 `diff -rq` 仅 `src/core/orchestrator.js` 不同；单版各 5 次基线 4/5、当前 0/5；**交替 6 对基线 6/6、当前 1/6**；`code-loop` 交替 3 对两版 3/3 一致。**主控独立复现**（同一 `/tmp/i19-wp7-chains.mjs` + `/tmp/i19-wp7-baseline`，交替 2 对）得 `base=1 / cur=0` ×2，方向确认 |
+| 依据 | **AC-03 Then「三条主链的终端输出逐字一致，没有任何文字或顺序变化」是标注「破坏即阻断收口」的高风险红线**，连带 AC-19 / BR-18「既有状态输出不回归」。该行在基线本身即具时序 flaky（4/5），但 WP-7 使出现率从 ≈91%（10/11）降到 ≈9%（1/11），是方向明确、可重复、由 `orchestrator.js` 引起的分布变化，不是随机噪声，**不得**以「基线也 flaky」豁免。优先级 `AC Then > 附录 D 实现约束`：拆分 §2.6「`saveState` 保存前调 `computeHealth`」属实现约束，附录 D 抬头明确「仅供编码参考，不进入需求判定」；需求 §3.2 / AC-11~17 的健康度判定口径本来就是 **`instance status` 读取时按真实 `now` 重算**（D-7 L1011 已授权 `getStatus` 做一次受控写入），并不要求每次状态保存都重算 |
+| 决定 | ①**判阻断，打回 WP-7 修复，批次 4 不收口**；修复后须另派干净上下文独立复评。②**首选修复方向（主控裁决）**：消除 `saveState`（约 `:450-479`）每次保存的 `await trace.readTraces(...) + computeHealth` 异步读盘——允许把 `saveState` 的健康度处理降级为「**保留 / 透传已有 `state.health`，不重算、不读盘**」，`computeHealth` 集中到 `getStatus` 读取时按真实 `now` 执行。`saveState` 的 `store.save` / CAS / `refreshWorkspaceStatus` / `status.md` 语义与 `getStatus` 的一次窄 CAS + `health.changed` **全部不变**；AC-11~17 的档位判定、AC-17 的实例元数据与 `status.md` 均由 `getStatus` 满足。③若去掉读盘后仍有差异，再排查 `quiesceSession` / `idleSession` 新增的 `await writeExecutionSummary(...)`：把它并入既有收尾 emit 的**同一批次**、不额外 await 一轮；**不得**丢摘要、不得破坏事件链 `ts` 单调与「每会话恰一条」。④**禁止**：改 `src/cli/main.js` / 任何 CLI 渲染、放宽或跳过 AC-03 断言、加 `sleep` / 人为延迟「凑」输出、改 `trace.js` / `health.js`、用固定轮询次数绕过、把「基线本身 flaky」当豁免。⑤**修复验收口径**：复用评审方案①（`/tmp/i19-wp7-baseline` + `/tmp/i19-wp7-chains.mjs`），做**交替 ≥6 对**，`task-loop` 的 `会话 已升级` 出现率恢复到与基线可比（不得显著低于基线 ≈91%），且 A-0 归一化后三条链逐字 diff 为空；必须贴出成对照表与原始 stdout 证据。⑥**登记 `report.md` §5**：该行基线本身 flaky，S3 验收按「同一夹具脚本多次交替对照 + 归一化逐字 diff」判，**不得只跑单次**。⑦ D-16 ⑤ 的性能必查项随之闭合：去掉 `saveState` 读盘后每次保存不再新增异步 IO，三链时序与 p95 风险同时解除；WP-9 末批仍须复跑全量核对 |
+| 影响面 | WP-7 `saveState` / 可能的收尾 emit 位置、`test/wp9/i19-orchestrator.test.js`、批次 4 复评、AC-03/19 取证、`report.md` §5；不改需求正文、拆分文档、附录 A 任何逐字基线，不改 CLI |
+
+## D-18 · `test/wp9/cli-e2e.test.js` 归属（拆分内部不一致）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | 拆分 `iteration-9.md` 的 WP-8 段「交付」文字要求「`cli-e2e.test.js` 按 D-8 只插健康度行」，但同段「负责文件（3）」只列 `src/cli/main.js`、`src/daemon/server.js`、`test/wp9/i19-cli.test.js`；WP-9 段「负责文件（2）」又把 `test/wp9/cli-e2e.test.js` 列入。同一文件被两个 WP 认领，违反「负责文件零交集」 |
+| 依据 | `instance status` 一旦插入健康度行，`cli-e2e.test.js` 的整份期望文本必然变红；若留到 WP-9 才改，WP-8 自己的门禁 `node --test test/wp9/cli-e2e.test.js` 无法收口，且「先红后绿」会把真实回归掩盖在已知红里。D-8 只授权在这一文件「两处整份期望文本插 `- 健康度：正常`」，不涉及其他断言，风险可控 |
+| 决定 | **`test/wp9/cli-e2e.test.js` 归 WP-8**（首个必须让它变绿的批次），只按 D-8 插健康度行、`USAGE_LINES` 断言不动、其它用例零改。**WP-9 不再触碰该文件**，其负责文件收缩为 `test/wp9/i19-regression.test.js` 单个文件（回归守护只做跨链逐字与静态门禁）。S3 验收以「删健康度行后与 I1.7 基线逐字相等」取证 |
+| 影响面 | WP-8 / WP-9 负责文件清单、批次 5 门禁、AC-19 取证；不改需求、附录 A、任何产品代码契约 |
+
+## D-19 · 追踪号改由实例创建时落 `state.traceId`（覆盖 D-14，WP-8 OP-2 阻断）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | WP-8 回报 OP-2：`--hold-session` 让节点停在运行中、尚无任何已落地跨度时，`traces.jsonl` 为空，D-14 又规定 `state.json` 无 `trace_id`，于是 `trace show` 首行为 `实例 INST-001 · 追踪 `（追踪号为空）。而 **AC-22 的 Then 明确要求第一次输出逐字为附录 A-10「实例与追踪号一行」**，`实例 INST-001 · 追踪 TRC-1a2b3c4d` |
+| 依据 | 优先级 `AC Then > 附录 A 输出基线 > 附录 D 实现约束 > 拆分`：AC-22 是用户可见判据，A-10 首行含追踪号；D-14 裁决时只考虑了「空实例按 A-1」，未覆盖「有运行中节点但无已落地跨度」这一 A-10 场景，属漏判。实现侧 `appendNodeSpan`（`orchestrator.js:517-539`）当前从首条已落地跨度取 id、否则 `newTraceId()`，正是「首跨度落地时才有号」的根因 |
+| 决定 | **覆盖 D-14**：`newState` 追加 `traceId: trace.newTraceId()`（与 `health` 同为新增字段，其余初始字段与顺序不动）；`appendNodeSpan` **优先**用 `ctx.state.traceId`，缺失时才回落到「首条已落地跨度 → `newTraceId()`」；`instance.trace` 返回 `traceId` 时同样优先取 `state.traceId`。**不新增**第二条追踪号来源：写入跨度与读取展示取同一个字段。历史实例（无 `traceId`）回落推导，空跨度旧实例仍按 A-1「暂无追踪记录」，AC-09 不受影响。**转达 WP-7**：`test/wp9/i19-orchestrator.test.js` 中「`newState` 只多 `health` 一个字段」的断言改为「多 `health` 与 `traceId` 两个字段、其余不变」，并新增「首次派发前 `state.traceId` 已是 `TRC-` + 8 位小写十六进制、且与随后落地跨度的 `trace_id` 相同」用例 |
+| 影响面 | `src/core/orchestrator.js`（`newState` / `appendNodeSpan`）、`test/wp9/i19-orchestrator.test.js`、`src/daemon/server.js` 的 `instance.trace`、AC-22/AC-06/AC-07 取证；不改 `trace.js`、不改附录 A 逐字基线 |
+
+## D-20 · `single` 交接包在跨度上的归属（WP-8 OP-3）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | WP-8 回报：`single` 的 `HO-001` 由 `claimSingle` 构造，`edge: null` 且无 `fromNodeId` / `toNodeId`，WP-1 的 `deriveHandoffIds` 因此返回 `[]`，A-2 会渲染成 `交接 无`；WP-8 在**组装层**加了有界兜底 |
+| 依据 | A-2 逐字要求 `10:00:00 → 10:00:40  T-001  已完成  交接 HO-001`；D-11 已把 `spans[].handoff_ids` 的组装责任划给 WP-8（payload 由 WP-8 组装，`render.js` 只渲染）；`trace.js` 已由 WP-1 收口并经独立评审 PASS，本迭代不应再动 |
+| 决定 | **接受组装层兜底，判为 D-11 remit 内的实现自由**：仅对「无 `edge`、无节点绑定」的交接包按轮次归属到同一轮跨度，**只归属已存在的交接包、不得虚构编号**；有 `edge` 的图仍完全走 `deriveHandoffIds`（A-3 的 `HO-001` / `HO-001 HO-002` / `HO-002` 实测正确）。登记进 `report.md` §5 已知实现选择 |
+| 影响面 | WP-8 `main.js` 组装辅助、AC-06/07/08 取证；不改 `trace.js`、不改 A-2/A-3 基线 |
+
+## D-21 · D-18 前提不成立：`cli-e2e.test.js` 零改动（WP-8 OP-4）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | WP-8 回报 OP-4：`test/wp9/cli-e2e.test.js` 内**不存在**含 `- 状态：` 的整份期望文本（`grep -Fc '状态：'` = 0），全部断言为子串与退出码，D-8 所指「两处整份期望文本」实际是 `test/wp11/status-doc.test.js`（WP-6 已按 D-8 修改并通过） |
+| 依据 | 主控复核：该文件 4/4 原样通过，`instance status` 新增健康度行不破坏其子串断言；强行插入不存在的文本会造假 |
+| 决定 | **D-18 的「WP-8 改 `cli-e2e.test.js`」部分作废**：该文件**零改动**，WP-9 也不触碰；AC-19 的「删健康度行后逐字相等」由 `test/wp11/status-doc.test.js`（整份文本）与 `test/wp9/i19-cli.test.js`（与 I1.7 基线 diff）共同承担。D-18 其余部分（WP-9 负责文件收缩为 `i19-regression.test.js`）继续有效 |
+| 影响面 | WP-8/WP-9 文件清单、AC-19 取证方式；不改代码与判据 |
+
+## D-22 · `trace show` 的只读读路径与 `instance.trace` 附加字段（WP-8 OP-1/OP-5）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | WP-8 回报 OP-1：若 `trace show` 走 `instance.get`，会触发 WP-7 的首次健康度受控写，违反 AC-10「三次执行 `state.json` 与 `events.jsonl` 字节哈希不变」；故改为只调 `instance.trace`，并让该 RPC 额外返回只读投影 `view { instanceId, template, nodes, handoffs }` |
+| 依据 | AC-10 是硬判据；D-11 只冻结 `renderTraceShow` 的 payload，未限制 RPC 返回字段；`instance.trace` 本身是新增只读接口，附加只读字段不改变 D-11 契约三字段 `{ traceId, spans, badLines }` 的语义 |
+| 决定 | **接受**：`instance.trace` 返回 `{ traceId, spans, badLines, view }`，`view` 仅含只读投影、不得含健康度、不得写盘、不得 emit；`trace show` 不调用 `instance.get`。摘要四项仅在跨度 `status === 'failed'` 时附着（依据需求 L108 与 A-14），摘要查询失败按「无摘要」降级、不阻断展示。`instance log` 在 `list.length===0 && badLines>0` 时保留既有「事件 —」行后再追加 A-13 行 |
+| 影响面 | WP-8 `server.js` / `main.js`、AC-10 取证、`report.md` §5；不改 D-11 payload 契约、不改附录 A |
+
+## D-23 · 历史实例「运行中但无追踪号」的降级口径（WP-8 评审 S-1）
+
+| 项 | 内容 |
+|---|---|
+| 触发点 | `review-wp8.md` 建议 S-1：升级前创建、升级后仍未落任何跨度、且 `state.json` 无 `traceId` 的实例，首行为 `实例 INST-001 · 追踪 `（号为空、行尾一个空格），既非 A-10（带号）也非 A-1（暂无追踪记录）。D-19 已写明「空跨度旧实例仍按 A-1」 |
+| 依据 | A-1 与 A-10 是仅有的两种合法首行形态，空号行不属于任何基线；AC-22 的夹具由当前代码创建、必带 `state.traceId`，故该分支不影响任何 AC 判定，但属可见的不规范输出 |
+| 决定 | **按 D-19 字面收口**：`instance.trace` 在 `traceId` 为空时**不叠加进行中跨度**，直接返回 `{ traceId: null, spans: [], badLines }`，由渲染层落到 A-1「暂无追踪记录」。有已落地跨度的历史实例不受影响（号由首条跨度推导）。不改 `render.js`、不伪造编号、不改附录 A。**转达 WP-9 / S3**：AC-22 取证必须用当前代码创建实例（带 `state.traceId`），不得用改造的历史快照冒充 |
+| 影响面 | `src/daemon/server.js` 一处降级分支、`test/wp9/i19-cli.test.js` 一条用例、`report.md` §5；不改 A-1/A-10 基线 |

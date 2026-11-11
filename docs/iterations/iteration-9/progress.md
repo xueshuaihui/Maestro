@@ -9,7 +9,7 @@
 |---|---|---|---|---|
 | S0 需求生成与评审 | ✅ 收口 | 需求 **v7**（1060 行 / 27 AC / 25 BR / 附录 A0~A14 + B1~B5 + C + D1~D11）；**7 轮独立评审**，最终 `review-round7.md` **PASS（阻断 0 / 建议 0）**，规划原文 12/12 覆盖、反向扫描无夹带；DoR 13 条 **12 绿 + 1 口径偏离**（第 9 条按 D-2 裁决沿用「失败集合差集=0」） | `review-round1..7.md`、`requirement-understanding.md`（359 行）、`decisions.md` D-1/D-2/D-3 | S0 Gate 通过，准出 S1 |
 | S1 拆分与选型 | ✅ 收口 | `iteration-9.md` **r2 / 751 行**；9 WP / 23 负责文件零交集 / **AC→WP 27/27**；`split-review.md` **PASS（阻断 0 / 建议 3）**，3 条建议由 r2 纯增 32 行全闭合 | `iteration-9.md`、`split-review.md`、`b6f646b` | S1 Gate 通过，准出 S2 |
-| S2 实现 | ⏳ 进行中（6 批中 **3 批收口**） | 批次 1~3 的 5 个 WP 契约测试全绿；主控独立复跑 `i19-render`+`status-doc` **40/40**、`wp9/**` **85/85**、`labels-sync`/`cli-assets`/`purity`/`cli-e2e` **45/45**；deps **0** / `USAGE_LINES` **25** / purity **24 文件零命中 exit 0**；4 份独立评审全部 **PASS（阻断 0）** | `8beb6ca`…`3078c83`、`review-wp1-wp3.md` / `review-wp2-wp4.md` / `review-wp5.md` / `review-wp6.md` | 批次 4（WP-7）待开发，批次 5/6 未开始 |
+| S2 实现 | ⏳ 进行中（6 批中 **5 批收口**） | 批次 1~5 的 8 个 WP 契约测试全绿：`i19-orchestrator` **10/10**、`i19-cli` **13/13**、`wp9/**` **108/108**；`status-doc`/`labels-sync`/`cli-assets` **44/44**；`wp4` **37/36/1**（唯一失败为基线第 6 行 macOS `/private/var`）；`grep -c "object: 'session'"` **13**；deps **0** / `USAGE_LINES` **25** / purity **exit 0**；6 份独立评审全部 **PASS（阻断 0）** | `8beb6ca`…`review-wp8.md` | 批次 6（WP-9 回归守护）待做，之后进 S3 |
 | S3 验收 | ⏳ 未开始 | — | — | — |
 | S4 终验与收口 | ⏳ 未开始 | — | — | — |
 
@@ -110,3 +110,26 @@
   - WP-7：①按 **D-10** 在 `handleUpdate` 内按帧名合并 `execution` 到会话级摘要缓存，缺项存 `null`，**不得**用 `toolName` 或默认值补齐；②`state.health.reasons` / `detail.reasons` 恒为**纯码值数组**，不得改对象数组；③如需事件文本行显示带占位符原因的实参，可**可选**提供 `health.reasonVars` / `detail.reasonVars`（WP-6 已支持优先读取），不提供则按 D-12 降级，A-8 不受影响；④AC-04/05/26 的夹具**不得**把 `--fail-tool*` 与 `--permission` / `--host-error` / `--hold-session` 等既有分支组合（D-13）。
   - WP-8：按 **D-11** payload 形状组装 `trace show`；健康度事件行 `{layer}` 取 `LAYER_HEALTH.health`（D-7）；`HEALTH_EVENT_LINE` 不含 `{ts}`，渲染层自补 `HH:MM:SS` + 2 半角空格（D-9 / F-01）。
 - **建议 8 条（非阻断，记录不改判据）**：WP-5 四条（`--help` 多 1 行、`pickFrames` 末帧健壮性、测试超时兜底、双开关布尔收敛为枚举）；WP-6 四条（事件文本行占位符码需 `reasonVars`、「首个」匹配口径登记、注释中文最严字面口径观察、对象形态兼容用例可收敛为纯码值形态）。D-7/D-8/D-9/D-11/D-12④/D-13 已裁决项不得重新升格为阻断。
+
+## S2 批次 4（WP-7，已收口）
+
+| WP | commit | 文件 | 门禁（主控独立复跑） | 独立评审 |
+|---|---|---|---|---|
+| WP-7 | 见批次提交 | `src/core/orchestrator.js`（+224/-5：`newState` 追加 `health`/`traceId`、`saveState` 只透传不自算、`handleUpdate` 摘要提取、三收尾共享 `writeExecutionSummary`、节点收尾 `appendNodeSpan`、`getStatus` 读取重算 + 一次窄 CAS + `health.changed`）、`test/wp9/i19-orchestrator.test.js`（10 用例 / 445 行） | `i19-orchestrator` **10/10**、`wp9/**` **108/108**、`wp4` **37/36/1**（基线第 6 行）、`status-doc`+`cli-e2e` **16/16**、`grep` **13**、deps **0**、purity **exit 0** | `review-wp7.md` **FAIL（阻断 1）** → 修复 → `review-wp7-r2.md` **PASS（阻断 0 / 建议 6）** + D-19 增量 **PASS（阻断 0 / 建议 4）** |
+
+- **唯一阻断 F-01（三主链逐字回归）已闭合**：首轮发现 `task-loop` 稳定少一行 `会话 已升级`（基线 4/5、当前 0/5；交替 6 对基线 6/6、当前 1/6），主控独立复现同向（`base=1 / cur=0` ×2），判阻断。
+- **修复方向（D-17）**：`saveState` 降级为「保留/透传已有 `state.health`、不读盘、不自算」，`computeHealth` 集中到 `getStatus` 读取时按真实 `now` 执行；`store.save` CAS、`refreshWorkspaceStatus`、`getStatus` 的一次窄 CAS 与 `health.changed` 全部不变。
+- **闭合验证**：交替 **10 对**（评审）+ **9 对**（主控）：`single`/`code-loop` 累计归一化 diff **0**；`task-loop` 的 `会话 已升级` 基线 **6/9**、当前 **9/9**（当前每对都不低于基线），逐对 diff 在双方均出现的 6 对上为 0。
+- **D-19 增量**：AC-22 要求 A-10 首行带追踪号，故覆盖 D-14，改由实例创建时落 `state.traceId`；`appendNodeSpan` 优先取该值、跨度 `trace_id` 与之相等；历史实例回落首条跨度，空跨度旧实例按 A-1（D-23）。
+- **其余裁决**：D-14（追踪号生成时机，已被 D-19 覆盖）、D-15（取消摘要不传 `ts`，链单调优先）、D-16（行号漂移 / `reasonVars` 可选 / 遗留文件不纳入提交）、D-17（F-01 修复口径）。
+
+## S2 批次 5（WP-8，已收口）
+
+| WP | commit | 文件 | 门禁（主控独立复跑） | 独立评审 |
+|---|---|---|---|---|
+| WP-8 | 见批次提交 | `src/cli/main.js`（+183：`trace show` 命令与 payload 组装、`instance status` 健康度行、`instance log` 两类 reason 分派 + A-13 跳过行）、`src/daemon/server.js`（+52：只读 `instance.trace`、`instance.events` 透出 `badLines`）、`test/wp9/i19-cli.test.js`（13 用例） | `i19-cli` **13/13**、`wp9/**` **108/108**、`status-doc`/`labels-sync`/`cli-assets` **44/44**、`cli-e2e` **4/4**（零改动）、deps **0**、`USAGE_LINES` **25**、purity **exit 0** | `review-wp8.md` **PASS（阻断 0 / 建议 5）** |
+
+- **A 系列逐字实测**：A-1（空实例，退出 0）、A-2（单节点 + `交接 HO-001` + 末尾「回流链 / 无」）、A-5（不存在，退出 1、无堆栈）、A-10（进行中：`跨度 0 条 · 回流 0 次`、`HH:MM:SS → —  T-001  进行中  交接 HO-001`、首行带 `TRC-xxxxxxxx`）、A-11（坏行提示在汇总行之前）、A-12 / A-8 / A-13（`instance log` 三类行）。
+- **AC-10 只读**：连续三次 `trace show` stdout 字节一致、`state.json` / `events.jsonl` sha256 不变（为此 `trace show` **不走** `instance.get`，避免首次健康度受控写，见 D-22）。
+- **裁决**：D-18（`cli-e2e.test.js` 归属，部分作废于 D-21）、D-19（追踪号落盘，WP-7 侧）、D-20（`single` 无 `edge` 交接包的组装层归属，只归属已存在编号）、D-21（`cli-e2e.test.js` 零改动，D-8 所指实为 `status-doc.test.js`）、D-22（`instance.trace` 附加只读 `view`、摘要仅失败跨度附着）、D-23（历史实例空号降级为 A-1）。
+- **评审建议 5 条（非阻断）**：S-1 历史实例空号（已按 D-23 收口）、S-2 `instance.trace` 异常路径会写 `state.json.corrupt` 备份（正常路径零写盘，登记 `report.md` §5）、S-3 `main.js` 未知参数文案沿用基线既有字面量（登记）、S-4 追踪文件全坏且无号时落 A-1 不显示 A-11（AC-23 夹具不受影响）、S-5 首次 `instance status` 会刷新 `orch status` 列表的「更新」时刻（WP-7/D-7 行为，AC-19 逐字比对只覆盖 `instance status` 与 `graph`）。
