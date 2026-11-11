@@ -1,0 +1,550 @@
+{
+  "iteration": "I1.9",
+  "requirement": "docs/iterations/iteration-9/requirement.md (v7)",
+  "split": "docs/iterations/iteration-9.md (r2)",
+  "head": "51c83f1",
+  "ac_total": 27,
+  "ac_pass": 27,
+  "ac_fail": 0,
+  "ac_blocked": 0,
+  "checks_total": 201,
+  "checks_note": "A 组 14 条 AC 的机检项 + B 组 13 条 AC 的 201 项机检；合计见 acceptance-a.md / acceptance-b.md",
+  "evidence_files": 255,
+  "tests_total": 1157,
+  "baseline_failures": 8,
+  "failure_set_diff": 0,
+  "purity_scan": "exit 0",
+  "dependencies": 0,
+  "usage_lines": 25,
+  "session_emit_orchestrator": 13,
+  "session_emit_core": 14,
+  "final_verification": "PASS",
+  "gate": "PASS",
+  "acs": [
+    {
+      "ac": "AC-01",
+      "title": "事件日志只追加：旧行不变、序号不复用",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-01",
+      "evidence_files": [
+        "captured-events.jsonl",
+        "final-events.jsonl",
+        "result.json",
+        "run-attempts.json",
+        "stdout-instance-log-json.txt",
+        "stdout-run.txt"
+      ],
+      "evidence_count": 6
+    },
+    {
+      "ac": "AC-02",
+      "title": "链式哈希：每条记录接上前一条的指纹",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-02",
+      "evidence_files": [
+        "chain-verify.json",
+        "result.json",
+        "stdout-log-inst001-json.txt",
+        "stdout-log-inst002-json.txt",
+        "stdout-run-inst001.txt",
+        "stdout-run-inst002.txt"
+      ],
+      "evidence_count": 6
+    },
+    {
+      "ac": "AC-03",
+      "title": "回归红线：三条主链运行输出逐字不变",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-03",
+      "evidence_files": [
+        "ac57-events.json",
+        "cli-e2e-solo-r2.log",
+        "cli-e2e-solo.log",
+        "code-loop-normalized.json",
+        "code-loop-pair0-base.txt",
+        "code-loop-pair0-cur.txt",
+        "code-loop-pair1-base.txt",
+        "code-loop-pair1-cur.txt",
+        "code-loop-pair2-base.txt",
+        "code-loop-pair2-cur.txt",
+        "full-suite-r2-aborted.log",
+        "full-suite-r2-summary.txt",
+        "full-suite-r2.log",
+        "full-suite-summary.txt",
+        "full-suite.log",
+        "result.json",
+        "rpc-test-baseline-tree.log",
+        "rpc-test-solo-r2.log",
+        "rpc-test-solo.log",
+        "single-normalized.json",
+        "single-pair0-base.txt",
+        "single-pair0-cur.txt",
+        "single-pair1-base.txt",
+        "single-pair1-cur.txt",
+        "single-pair2-base.txt",
+        "single-pair2-cur.txt",
+        "static-gates.txt",
+        "task-loop-normalized.json",
+        "task-loop-pair0-base.txt",
+        "task-loop-pair0-cur.txt",
+        "task-loop-pair1-base.txt",
+        "task-loop-pair1-cur.txt",
+        "task-loop-pair2-base.txt",
+        "task-loop-pair2-cur.txt",
+        "task-loop-pair3-base.txt",
+        "task-loop-pair3-cur.txt",
+        "task-loop-pair4-base.txt",
+        "task-loop-pair4-cur.txt",
+        "task-loop-pair5-base.txt",
+        "task-loop-pair5-cur.txt",
+        "taskloop-rate-pair0.txt",
+        "taskloop-rate-pair1.txt",
+        "taskloop-rate-pair2.txt",
+        "taskloop-rate-pair3.txt",
+        "taskloop-rate-pair4.txt",
+        "taskloop-rate-pair5.txt",
+        "taskloop-rate-pair6.txt",
+        "taskloop-rate-pair7.txt",
+        "taskloop-rate-pair8.txt",
+        "taskloop-rate-pair9.txt",
+        "verdict-r2.json",
+        "verdict.json"
+      ],
+      "evidence_count": 52
+    },
+    {
+      "ac": "AC-04",
+      "title": "执行摘要四要素：失败节点当场回答“为什么失败”",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-04",
+      "evidence_files": [
+        "host-log-preset.txt",
+        "instance-dir-files.txt",
+        "result-r2.json",
+        "result.json",
+        "stdout-instance-log-json-r2.txt",
+        "stdout-instance-log-json.txt",
+        "stdout-instance-log.txt",
+        "stdout-run.txt",
+        "stdout-trace-show-r2.txt",
+        "stdout-trace-show.txt"
+      ],
+      "evidence_count": 10
+    },
+    {
+      "ac": "AC-05",
+      "title": "摘要边界：只存摘要与引用，缺项显示“未提供”",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-05",
+      "evidence_files": [
+        "instance-dir-files.txt",
+        "result-r2.json",
+        "result.json",
+        "stdout-instance-log-json.txt",
+        "stdout-run.txt",
+        "stdout-trace-show-r2.txt",
+        "stdout-trace-show.txt"
+      ],
+      "evidence_count": 7
+    },
+    {
+      "ac": "AC-06",
+      "title": "追踪跨度：追踪号、起止、结果、交接包齐全",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-06",
+      "evidence_files": [
+        "result.json",
+        "state.json",
+        "stdout-driver.txt",
+        "stdout-trace-show.txt",
+        "traces.jsonl"
+      ],
+      "evidence_count": 5
+    },
+    {
+      "ac": "AC-07",
+      "title": "回流链按轮次展开：同一节点多轮不合并、不覆盖",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-07",
+      "evidence_files": [
+        "result.json",
+        "stdout-driver.txt",
+        "stdout-trace-show.txt",
+        "traces.jsonl"
+      ],
+      "evidence_count": 4
+    },
+    {
+      "ac": "AC-08",
+      "title": "规划验收①：orch trace show 展开一次回流的跨角色因果链",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-08",
+      "evidence_files": [
+        "execution-summary-events-r2.json",
+        "execution-summary-events.json",
+        "result-r2.json",
+        "result.json",
+        "state.json",
+        "stdout-driver-r2.txt",
+        "stdout-driver.txt",
+        "stdout-trace-show.txt",
+        "trace-after-fix.txt",
+        "traces.jsonl"
+      ],
+      "evidence_count": 10
+    },
+    {
+      "ac": "AC-09",
+      "title": "追踪的三种空形态：空、单节点、实例不存在",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-09",
+      "evidence_files": [
+        "fixtures.json",
+        "hold-session-state-r2.json",
+        "result-ac22-r2.json",
+        "result-r2.json",
+        "result.json",
+        "reverify-summary.json",
+        "stdout-deleted-traces-r2.txt",
+        "stdout-empty-r2.txt",
+        "stdout-empty.txt",
+        "stdout-hold-session-r2.txt",
+        "stdout-missing.txt",
+        "stdout-single-r2.txt",
+        "stdout-single.txt"
+      ],
+      "evidence_count": 13
+    },
+    {
+      "ac": "AC-10",
+      "title": "追踪只读：重复执行不改状态、不追加事件",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-10",
+      "evidence_files": [
+        "result.json",
+        "sha256-before-after.json",
+        "stdout-trace-1.txt",
+        "stdout-trace-2.txt",
+        "stdout-trace-3.txt"
+      ],
+      "evidence_count": 5
+    },
+    {
+      "ac": "AC-11",
+      "title": "健康度 正常：无异常时显示正常",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-11",
+      "evidence_files": [
+        "result.json",
+        "state.json",
+        "status.md",
+        "stdout-instance-status.txt"
+      ],
+      "evidence_count": 4
+    },
+    {
+      "ac": "AC-12",
+      "title": "健康度 已结束：终态优先，不回升",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-12",
+      "evidence_files": [
+        "result.json",
+        "status-md-real-completed.md",
+        "stdout-real-completed.txt",
+        "terminal-states.json"
+      ],
+      "evidence_count": 4
+    },
+    {
+      "ac": "AC-13",
+      "title": "健康度 五类条件（六夹具）矩阵：任一项命中即需关注",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-13",
+      "evidence_files": [
+        "result.json",
+        "snapshot-conn-expired.json",
+        "snapshot-conn-rejected.json",
+        "snapshot-crash.json",
+        "snapshot-pending.json",
+        "snapshot-role.json",
+        "snapshot-timeout.json",
+        "stdout-conn-expired.txt",
+        "stdout-conn-rejected.txt",
+        "stdout-crash.txt",
+        "stdout-pending.txt",
+        "stdout-role.txt",
+        "stdout-timeout.txt",
+        "unit-health-test.log"
+      ],
+      "evidence_count": 14
+    },
+    {
+      "ac": "AC-14",
+      "title": "健康度 超过 P90：样本、阈值与边界",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-14",
+      "evidence_files": [
+        "result.json",
+        "snapshots-and-p90.json",
+        "stdout-INST-001.txt",
+        "stdout-INST-002.txt",
+        "stdout-INST-003.txt",
+        "unit-health-test.log"
+      ],
+      "evidence_count": 6
+    },
+    {
+      "ac": "AC-15",
+      "title": "健康度 连接线待投递超过 TTL 50%",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-15",
+      "evidence_files": [
+        "result.json",
+        "snapshots.json",
+        "status-INST-001.txt",
+        "status-INST-002.txt",
+        "status-INST-003.txt",
+        "unit-health.log"
+      ],
+      "evidence_count": 6
+    },
+    {
+      "ac": "AC-16",
+      "title": "规划验收②：健康度在实例状态变化后正确更新并进事件日志",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-16",
+      "evidence_files": [
+        "log-text.txt",
+        "real-status-second.txt",
+        "real-status.txt",
+        "real-task-loop-driver.txt",
+        "result.json",
+        "status-first.txt",
+        "status-second.txt"
+      ],
+      "evidence_count": 7
+    },
+    {
+      "ac": "AC-17",
+      "title": "健康度写入实例元数据，两个用户面可见",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-17",
+      "evidence_files": [
+        "graph.json",
+        "graph.txt",
+        "result.json",
+        "run-task-loop.txt",
+        "status-again.txt",
+        "status.md",
+        "status.txt"
+      ],
+      "evidence_count": 7
+    },
+    {
+      "ac": "AC-18",
+      "title": "健康度只读：不改变节点/会话/交接包，不触发升级",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-18",
+      "evidence_files": [
+        "result.json",
+        "status-1.txt",
+        "status-2.txt",
+        "status-3.txt",
+        "trace-1.txt",
+        "trace-2.txt",
+        "trace-3.txt"
+      ],
+      "evidence_count": 7
+    },
+    {
+      "ac": "AC-19",
+      "title": "既有状态输出不回归：只允许新增一行健康度",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-19",
+      "evidence_files": [
+        "code-loop-graph-base.json",
+        "code-loop-graph-base.txt",
+        "code-loop-graph-current.json",
+        "code-loop-graph-current.txt",
+        "code-loop-run-base.txt",
+        "code-loop-run-current.txt",
+        "code-loop-status-base.txt",
+        "code-loop-status-current.txt",
+        "result.json",
+        "single-graph-base.json",
+        "single-graph-base.txt",
+        "single-graph-current.json",
+        "single-graph-current.txt",
+        "single-run-base.txt",
+        "single-run-current.txt",
+        "single-status-base.txt",
+        "single-status-current.txt"
+      ],
+      "evidence_count": 17
+    },
+    {
+      "ac": "AC-20",
+      "title": "非功能：零依赖、中文唯一来源、纯净扫描、无宿主分支",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-20",
+      "evidence_files": [
+        "daemon-host-branch-scan.txt",
+        "i19-contract-tests.log",
+        "labels-sync.log",
+        "purity.log",
+        "result.json",
+        "src-core-daemon-added-cjk.txt"
+      ],
+      "evidence_count": 6
+    },
+    {
+      "ac": "AC-21",
+      "title": "事件链历史兼容：旧记录无标记、末行截断仍可续链",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-21",
+      "evidence_files": [
+        "legacy-log.json",
+        "legacy-log.txt",
+        "legacy-run.txt",
+        "result.json",
+        "truncated-log.json",
+        "truncated-log.txt",
+        "truncated-run.txt"
+      ],
+      "evidence_count": 7
+    },
+    {
+      "ac": "AC-22",
+      "title": "进行中的跨度：显示“进行中”与结束位“—”，不显示“暂无追踪记录”",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-22",
+      "evidence_files": [
+        "delay-run.txt",
+        "hold-cancel-after-d26-r2.txt",
+        "hold-cancel.txt",
+        "result.json",
+        "trace-delay-done.txt",
+        "trace-delay-running.txt",
+        "trace-hold-after-d26-r2.txt",
+        "trace-hold.txt"
+      ],
+      "evidence_count": 8
+    },
+    {
+      "ac": "AC-23",
+      "title": "追踪异常：文件缺失、单行损坏、缺时间字段都降级且可见",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-23",
+      "evidence_files": [
+        "badline-after-d26-r2.txt",
+        "badline-status.txt",
+        "badline-trace.txt",
+        "fixture-a.json",
+        "missing-after-d26-r2-facts.json",
+        "missing-after-d26-r2-status.txt",
+        "missing-after-d26-r2.txt",
+        "missing-status.txt",
+        "missing-trace.txt",
+        "notime-after-d26-r2-status.txt",
+        "notime-after-d26-r2.txt",
+        "notime-status.txt",
+        "notime-trace.txt",
+        "result-a.json",
+        "result-d26.json",
+        "result.json",
+        "stdout-missing-traces-a.txt",
+        "wp9-after-d26-r2.log"
+      ],
+      "evidence_count": 18
+    },
+    {
+      "ac": "AC-24",
+      "title": "会话审计粒度：逐条状态不进主审计，摘要回答“为什么结束”",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-24",
+      "evidence_files": [
+        "baseline-session-reasons.txt",
+        "legacy-log.txt",
+        "log-text.txt",
+        "log.json",
+        "object-session-counts.json",
+        "result.json",
+        "run.txt",
+        "session-event-reasons.txt"
+      ],
+      "evidence_count": 8
+    },
+    {
+      "ac": "AC-25",
+      "title": "事件链整份不可解析：从固定起点重起链、序号从 1、旧行原样保留",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-25",
+      "evidence_files": [
+        "log-text.txt",
+        "log.json",
+        "result.json",
+        "run.txt"
+      ],
+      "evidence_count": 4
+    },
+    {
+      "ac": "AC-26",
+      "title": "取消收尾的执行摘要：被取消的会话也答得出“为什么结束”",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-26",
+      "evidence_files": [
+        "cancel.txt",
+        "log-text.txt",
+        "log.json",
+        "result.json",
+        "run.txt",
+        "session-event-reasons.txt",
+        "status.txt",
+        "tool-running-event.json",
+        "ts-note.json"
+      ],
+      "evidence_count": 9
+    },
+    {
+      "ac": "AC-27",
+      "title": "同一节点多轮：每轮会话各一条摘要，条数等于轮次",
+      "status": "pass",
+      "grade": "mock/real-core+cli",
+      "evidence_dir": "docs/iterations/iteration-9/evidence/acc9/AC-27",
+      "evidence_files": [
+        "driver.txt",
+        "log-text.txt",
+        "log.json",
+        "result.json",
+        "trace.txt"
+      ],
+      "evidence_count": 5
+    }
+  ]
+}

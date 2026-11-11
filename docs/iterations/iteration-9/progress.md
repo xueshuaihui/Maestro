@@ -10,8 +10,8 @@
 | S0 需求生成与评审 | ✅ 收口 | 需求 **v7**（1060 行 / 27 AC / 25 BR / 附录 A0~A14 + B1~B5 + C + D1~D11）；**7 轮独立评审**，最终 `review-round7.md` **PASS（阻断 0 / 建议 0）**，规划原文 12/12 覆盖、反向扫描无夹带；DoR 13 条 **12 绿 + 1 口径偏离**（第 9 条按 D-2 裁决沿用「失败集合差集=0」） | `review-round1..7.md`、`requirement-understanding.md`（359 行）、`decisions.md` D-1/D-2/D-3 | S0 Gate 通过，准出 S1 |
 | S1 拆分与选型 | ✅ 收口 | `iteration-9.md` **r2 / 751 行**；9 WP / 23 负责文件零交集 / **AC→WP 27/27**；`split-review.md` **PASS（阻断 0 / 建议 3）**，3 条建议由 r2 纯增 32 行全闭合 | `iteration-9.md`、`split-review.md`、`b6f646b` | S1 Gate 通过，准出 S2 |
 | S2 实现 | ✅ 收口（6/6 批） | 批次 1~5 的 8 个 WP 契约测试全绿：`i19-orchestrator` **10/10**、`i19-cli` **13/13**、`wp9/**` **108/108**；`status-doc`/`labels-sync`/`cli-assets` **44/44**；`wp4` **37/36/1**（唯一失败为基线第 6 行 macOS `/private/var`）；`grep -c "object: 'session'"` **13**；deps **0** / `USAGE_LINES` **25** / purity **exit 0**；6 份独立评审全部 **PASS（阻断 0）** | `8beb6ca`…`review-wp8.md` | 批次 6（WP-9 回归守护）待做，之后进 S3 |
-| S3 验收 | ⏳ 未开始 | — | — | — |
-| S4 终验与收口 | ⏳ 未开始 | — | — | — |
+| S3 验收 | ✅ 收口 | **27 通过 / 0 不通过 / 0 阻塞**；A 组 AC-01~14（首轮 12P/2F，D-25/D-26/D-27 修复后复验 **14/14 PASS**）、B 组 AC-15~27（**13/13 PASS**，201 项机检）；证据 **27 目录 / 255 份文件 / 34 份 `result*.json`**；全量 1157 tests，失败集合与基线 8 条**差集 = 0** | `acceptance-a.md`、`acceptance-b.md`、`evidence/acc9/`、`probe/acc9-{a,b}-*.mjs` | S3 Gate 通过，准出 S4 |
+| S4 终验与收口 | ✅ 收口 | 终验 **PASS**（六项全 PASS、Done 全项满足）；`report.md` / `final-verification.md` / `summary.json` / `results.jsonl` 就位；`docs/index.md` I1.9 行更新 | `final-verification.md`、`report.md`、`summary.json` | 迭代收口 |
 
 ## 基线（HEAD `70277df`，2026-11-10 实测）
 
