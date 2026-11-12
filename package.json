@@ -10,6 +10,7 @@
     "orch": "bin/orch.js"
   },
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test test/",
+    "desktop:build": "node scripts/desktop/build.mjs"
   }
 }

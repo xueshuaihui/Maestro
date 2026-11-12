@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Maestro",
+  "version": "0.1.0",
+  "identifier": "com.maestro.desktop",
+  "build": {
+    "frontendDist": "target/ui-placeholder"
+  },
+  "app": {
+    "windows": [],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": false,
+    "targets": [],
+    "resources": [],
+    "icon": ["target/icon.png"]
+  }
+}
