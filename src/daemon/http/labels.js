@@ -137,7 +137,43 @@ export const UI_LABEL_KEYS = Object.freeze({
   ...flattenTable('COMMAND_ERROR', COMMAND_ERROR)
 });
 
-/** `GET /ui/labels` 响应体（需求 D-2：`{ keys: { "<KEY>": "<文案模板>" } }`）。 */
+/** `GET /ui/labels` response body (requirement D-2: `{ keys: { "<KEY>": "<label>" } }`). */
 export function labelKeysPayload() {
   return Object.freeze({ keys: UI_LABEL_KEYS });
+}
+
+// ---------------------------------------------------------------------------
+// `GET /ui/labels` route assembly (decision G: folded in from the removed
+// labels-route.js). Exports match the WP-2 handler-table seam shape
+// `{ method, pattern, handler }`; auth, static files and lifecycle stay in
+// `http/server.js` (WP-2).
+// ---------------------------------------------------------------------------
+
+/** The single route path constant (matches the requirement D-2 interface table). */
+export const UI_LABELS_PATH = '/ui/labels';
+
+/** Response body JSON string (recomputed per call; the key/value table is frozen). */
+export function labelsResponseBody() {
+  return JSON.stringify(labelKeysPayload());
+}
+
+/** Writes 200 + JSON; `res` is a `node:http` ServerResponse. */
+export function respondUiLabels(res) {
+  res.writeHead(200, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-store'
+  });
+  res.end(labelsResponseBody());
+  return res;
+}
+
+/** Route descriptor (handler-table shape, see the seam note above). */
+export function createLabelsRoute() {
+  return {
+    method: 'GET',
+    pattern: UI_LABELS_PATH,
+    handler(req, res) {
+      respondUiLabels(res);
+    }
+  };
 }

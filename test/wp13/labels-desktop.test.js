@@ -33,15 +33,13 @@ import {
 } from '../../src/cli/labels.js';
 import {
   DESKTOP_LABEL_KEYS,
-  UI_LABEL_KEYS,
-  labelKeysPayload
-} from '../../src/daemon/http/labels.js';
-import {
   UI_LABELS_PATH,
+  UI_LABEL_KEYS,
   createLabelsRoute,
+  labelKeysPayload,
   labelsResponseBody,
   respondUiLabels
-} from '../../src/daemon/http/labels-route.js';
+} from '../../src/daemon/http/labels.js';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
