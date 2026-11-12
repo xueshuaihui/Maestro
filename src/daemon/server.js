@@ -50,6 +50,7 @@ export function createServer({
   logger,
   clock,
   exitOnStop = true,
+  http = false,
 } = {}) {
   if (typeof root !== 'string' || root.length === 0) {
     throw new TypeError('createServer: root 必填');
@@ -414,6 +415,17 @@ export function createServer({
       startedAt,
     });
     await log('info', 'CORE_LISTENING', { pipeName: pipe, generation: gen, pid: process.pid, boot });
+
+    // Desktop HTTP channel (I1.10a WP-2, D-10 authorized section): optional
+    // switch plus start hook only. A desktop-channel failure is logged and
+    // never affects the IPC main channel (D-1).
+    if (http === true) {
+      const desktop = await startDesktopChannel();
+      if (desktop && desktop.ok === true) {
+        await log('info', 'DESKTOP_LISTENING', { port: desktop.port });
+      }
+    }
+
     return { ok: true, pipeName: pipe, generation: gen, pid: process.pid, startedAt };
   }
 
@@ -498,6 +510,10 @@ export function createServer({
         await new Promise((resolve) => server.close(() => resolve()));
       }
 
+      // Desktop channel: closing HTTP and removing desktop.json ride on the
+      // same stop path (core.stop / SIGTERM both land here), per D-1.
+      await stopDesktopChannel();
+
       try {
         if (typeof orchestrator.dispose === 'function') {
           await withDeadline(Promise.resolve().then(() => orchestrator.dispose()), 1000);
@@ -541,6 +557,58 @@ export function createServer({
 
   function address() {
     return { pipeName: pipe, generation: gen, pid: process.pid, startedAt };
+  }
+
+  // ------------------------------------------------- Desktop HTTP channel hooks
+  // I1.10a WP-2, D-10 authorized section: the optional `http` switch and its
+  // start/close hooks. New code only; the methods table, error mapping,
+  // shapeSnapshot, instance.trace and the event subscription above are
+  // untouched. Everything here degrades to a log line on failure so the IPC
+  // main channel can never be affected (D-1).
+  let desktopChannel = null;
+
+  async function startDesktopChannel() {
+    try {
+      const { createHttpServer } = await import('./http/server.js');
+      const channel = createHttpServer({
+        root,
+        orchestrator,
+        bus: activeBus,
+        logger: log,
+        clock: typeof clock === 'function' ? clock : Date.now,
+        generation: gen,
+        startedAt,
+        graph: {
+          loadState: (instanceId) => traceStore.load(instanceId),
+          replayEvents: (instanceId) => activeBus.replay(instanceId),
+          readTraces: (instanceId) => traceLog.readTraces(root, instanceId),
+        },
+      });
+      const result = await channel.listen();
+      if (!result || result.ok !== true) {
+        await log('warn', 'DESKTOP_START_FAILED', {
+          code: result?.code ?? null,
+          cause: result?.params?.cause ?? null,
+        });
+        return null;
+      }
+      desktopChannel = channel;
+      return result;
+    } catch (err) {
+      await log('warn', 'DESKTOP_START_FAILED', { cause: err?.message ?? String(err) });
+      return null;
+    }
+  }
+
+  async function stopDesktopChannel() {
+    const channel = desktopChannel;
+    desktopChannel = null;
+    if (!channel) return;
+    try {
+      await channel.close();
+    } catch (err) {
+      await log('warn', 'DESKTOP_CLOSE_FAILED', { cause: err?.message ?? String(err) });
+    }
   }
 
   // ---------------------------------------------------------------- 连接处理

@@ -48,7 +48,7 @@ const bus = createEventBus({ store, clock: Date.now });
 const { orchestrator, mode } = await loadOrchestrator({ store, bus, generation, root });
 await log('info', 'SERVE_ENTRY_START', { root, generation, orchestrator: mode, pid: process.pid });
 
-const server = createServer({ root, orchestrator, bus, generation });
+const server = createServer({ root, orchestrator, bus, generation, http: args.desktop === true });
 const listened = await server.listen();
 
 if (!listened.ok) {
