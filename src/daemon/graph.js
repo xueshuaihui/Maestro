@@ -39,13 +39,16 @@
  * sessions, nodes and the instance alike). `session.state`, `execution.summary`
  * and `health.changed` can therefore never advance `rev`.
  *
- * `stateNodes` (D-2 supplement, decision O / B-26): the board needs the
- * orchestration node states (nine states, e.g. pending/running/done/failed/
- * escalated/cancelled) while the node projection above only carries the five
- * role visual tokens. This field is a verbatim copy of the snapshot
- * `state.nodes` entries reduced to `{ nodeId, state }`: no recomputation from
- * role instances, no mapping, no derived semantics. A missing or non-array
- * snapshot node list projects `[]`; the caller degrades on its own.
+ * `stateNodes` (D-2 supplement, decision O / B-26, role binding Q-2): the board
+ * needs the orchestration node states (nine states, e.g. pending/running/done/
+ * failed/escalated/cancelled) while the node projection above only carries the
+ * five role visual tokens. This field is a verbatim copy of the snapshot
+ * `state.nodes` entries reduced to `{ nodeId, roleId, state }`: no
+ * recomputation from role instances, no mapping, no derived semantics. The
+ * `roleId` is the snapshot's own binding (non-string becomes `null`) so the
+ * board can resolve a role display node to the snapshot ids it stands for. A
+ * missing or non-array snapshot node list projects `[]`; the caller degrades on
+ * its own.
  */
 
 import { buildRoleInstances } from '../registry/role-instances.js';
@@ -203,7 +206,8 @@ function emptyNode() {
  * @returns {{rev:number, instanceId:string|null, template:string|null,
  *            state:string|null, workflow:{ref:string|null, readable:boolean},
  *            nodes:Array<object>, edges:Array<object>,
- *            stateNodes:Array<{nodeId:(string|null), state:(string|null)}>}}
+ *            stateNodes:Array<{nodeId:(string|null), roleId:(string|null),
+ *                              state:(string|null)}>}}
  */
 export function buildGraph({ state, workflowDef, roles, traces, events, rev, subWorkflows, now } = {}) {
   void now; // frozen signature placeholder: time comes from the caller only.
@@ -579,12 +583,15 @@ export function buildGraph({ state, workflowDef, roles, traces, events, rev, sub
     ? snapshot.workflowRef
     : defRefOf(def) ?? (typeof snapshot.template === 'string' ? snapshot.template : null);
 
-  // ---- stateNodes (D-2 supplement / B-26) ---------------------------------
-  // One entry per snapshot node, `{ nodeId, state }` only: the state value is
-  // passed through untouched so the board can read the nine-state vocabulary
-  // the five role tokens above cannot express. Nothing is recomputed here.
+  // ---- stateNodes (D-2 supplement / B-26, role binding / Q-2) --------------
+  // One entry per snapshot node, `{ nodeId, roleId, state }` only: the state
+  // value is passed through untouched so the board can read the nine-state
+  // vocabulary the five role tokens above cannot express, and `roleId` is the
+  // snapshot's own binding so the board can resolve display nodes to the
+  // snapshot ids they stand for (decision Q / Q-2). Nothing is recomputed here.
   const boardStateNodes = stateNodes.map((node) => ({
     nodeId: stateNodeKey(node),
+    roleId: typeof node?.roleId === 'string' ? node.roleId : null,
     state: node?.state ?? null,
   }));
 

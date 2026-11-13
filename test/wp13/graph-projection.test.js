@@ -153,15 +153,15 @@ test('AC-07 fixture: the projected node and edge sets equal the definition sets'
   assert.equal(graph.edges.length, 9);
 });
 
-test('stateNodes mirrors the snapshot node states for board column projection (D-2 / B-26)', () => {
+test('stateNodes mirrors snapshot node states and role bindings for the board (D-2 / B-26 / Q-2)', () => {
   const graph = project();
-  // One entry per snapshot node, `{ nodeId, state }` only, in snapshot order.
+  // One entry per snapshot node, `{ nodeId, roleId, state }` only, in snapshot order.
   assert.deepEqual(graph.stateNodes, [
-    { nodeId: 'T-001', state: 'done' },
-    { nodeId: 'T-002', state: 'running' },
-    { nodeId: 'T-003', state: 'pending' },
-    { nodeId: 'T-004', state: 'pending' },
-    { nodeId: 'T-005', state: 'pending' },
+    { nodeId: 'T-001', roleId: 'alpha', state: 'done' },
+    { nodeId: 'T-002', roleId: 'beta', state: 'running' },
+    { nodeId: 'T-003', roleId: 'gamma', state: 'pending' },
+    { nodeId: 'T-004', roleId: 'delta', state: 'pending' },
+    { nodeId: 'T-005', roleId: 'epsilon', state: 'pending' },
   ]);
   assert.equal(graph.stateNodes.length, ac07State().nodes.length);
 });
@@ -177,11 +177,29 @@ test('stateNodes passes the nine-state vocabulary through verbatim, without role
   ];
   const graph = project({ state });
   assert.deepEqual(graph.stateNodes, [
-    { nodeId: 'T-001', state: 'done' },
-    { nodeId: 'T-002', state: 'escalated' },
-    { nodeId: 'T-003', state: 'cancelled' },
-    { nodeId: 'H-001', state: 'failed' },
-    { nodeId: 'X-001', state: 'running' },
+    { nodeId: 'T-001', roleId: 'alpha', state: 'done' },
+    { nodeId: 'T-002', roleId: 'beta', state: 'escalated' },
+    { nodeId: 'T-003', roleId: 'gamma', state: 'cancelled' },
+    // A special node carries no role binding: the field is null, not invented.
+    { nodeId: 'H-001', roleId: null, state: 'failed' },
+    { nodeId: 'X-001', roleId: null, state: 'running' },
+  ]);
+});
+
+test('stateNodes keeps roleId only when the snapshot supplies a string (Q-2)', () => {
+  const state = ac07State();
+  state.nodes = [
+    { nodeId: 'T-001', roleId: 'alpha', state: 'pending' },
+    { nodeId: 'T-002', roleId: 42, state: 'pending' },
+    { nodeId: 'T-003', roleId: null, state: 'pending' },
+    { nodeId: 'T-004', state: 'pending' },
+  ];
+  const graph = project({ state });
+  assert.deepEqual(graph.stateNodes, [
+    { nodeId: 'T-001', roleId: 'alpha', state: 'pending' },
+    { nodeId: 'T-002', roleId: null, state: 'pending' },
+    { nodeId: 'T-003', roleId: null, state: 'pending' },
+    { nodeId: 'T-004', roleId: null, state: 'pending' },
   ]);
 });
 

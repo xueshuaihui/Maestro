@@ -93,9 +93,10 @@ const NOT_STARTED = 'not_started';
 /**
  * Snapshot cards fed to the board projection (decision O / B-26).
  *
- * The graph payload carries `stateNodes: [{ nodeId, state }]` — the
- * orchestration nine-state vocabulary the board reads. The role status tokens
- * are five and never stand in for those states, so a payload without
+ * The graph payload carries `stateNodes: [{ nodeId, roleId, state }]` — the
+ * orchestration nine-state vocabulary the board reads plus the role binding
+ * the board uses to resolve display nodes (decision Q / Q-2). The role status
+ * tokens are five and never stand in for those states, so a payload without
  * `stateNodes` degrades to an empty board instead of inventing states.
  */
 function boardStateNodes(graph) {
@@ -994,8 +995,8 @@ function paintSvgText(parent, x, y, text, attrs = {}) {
  * @param {unknown} [options.labels] already fetched label payload
  * @param {object} [options.modules]
  * @param {object} [options.io] transport seam; defaults to loopback fetch
- * @param {{port:number, token:string}} [options.credentials]
- * @param {object} [options.project]
+ * @param {{port:number, token:string, project:(string|null)}} [options.credentials]
+ * @param {object} [options.project] explicit summary (highest priority)
  */
 export function mountApp({
   root,
@@ -1012,8 +1013,10 @@ export function mountApp({
   if (!host) throw new TypeError('mountApp: root element not found');
 
   const creds = credentials ?? takeLocationCredentials();
+  const injected = typeof window === 'undefined' ? null : (window.__MAESTRO_DESKTOP__ ?? null);
+  const mountProject = resolveMountProject({ project, injected, credentials: creds, labels });
   const transport = { ...createLoopbackTransport(creds), ...(io ?? {}) };
-  const app = createApp({ labels, project: project ?? undefined, io: transport, modules });
+  const app = createApp({ labels, project: mountProject ?? undefined, io: transport, modules });
 
   function paint() {
     const model = app.compose();
@@ -1509,24 +1512,31 @@ export function mountApp({
 let locationToken = null;
 
 /**
- * Read `?token=` from the page URL once, keep it in memory and remove it from
- * the address bar (`history.replaceState`). Parsing the token from the query is
- * how the shell hands the credential to the WebView (static assets accept it,
- * every data route still requires the Bearer header). Safe without a DOM: a
- * test process that merely imports this module calls nothing here.
+ * Read `?token=` (and the shell-supplied `?project=`) from the page URL once,
+ * keep both in memory and remove them from the address bar
+ * (`history.replaceState`). Parsing the query is how the shell hands the
+ * credential and the opened project root to the WebView (static assets accept
+ * the token, every data route still requires the Bearer header). Safe without
+ * a DOM: a test process that merely imports this module calls nothing here.
  */
 export function takeLocationCredentials() {
   const injected = typeof window === 'undefined' ? {} : (window.__MAESTRO_DESKTOP__ ?? {});
   const location = typeof window === 'undefined' ? null : window.location ?? null;
   let queryPort = null;
+  let queryProject = null;
   if (location !== null) {
     try {
       const params = new URLSearchParams(typeof location.search === 'string' ? location.search : '');
       const token = params.get('token');
       queryPort = params.get('port');
+      // Decision Q (Q-1): the shell also hands over the project root it opened,
+      // so the window assembles with a real `project.root` instead of null.
+      const project = params.get('project');
+      if (typeof project === 'string' && project.trim().length > 0) queryProject = project.trim();
       if (token !== null && token.length > 0) locationToken = String(token);
-      if (params.has('token')) {
+      if (params.has('token') || params.has('project')) {
         params.delete('token');
+        params.delete('project');
         const rest = params.toString();
         const path = typeof location.pathname === 'string' ? location.pathname : '';
         const hash = typeof location.hash === 'string' ? location.hash : '';
@@ -1540,7 +1550,28 @@ export function takeLocationCredentials() {
   const port = queryPort ?? injected.port ?? (location === null ? null : location.port || null);
   const token = locationToken ?? injected.token ?? null;
   if (port === null || token === null) return null;
-  return { port: Number(port), token: String(token) };
+  return { port: Number(port), token: String(token), project: queryProject };
+}
+
+/**
+ * Project summary the window mounts with (decision Q / Q-1). Priority is the
+ * explicit argument, then the injected `__MAESTRO_DESKTOP__` global, then the
+ * `project` query value the shell appended to the navigation URL. The query
+ * value is a bare root, so it goes through the same resolver as `--project`
+ * (only the syntactic shape is checked here; the shell already validated the
+ * directory before navigating).
+ */
+export function resolveMountProject({
+  project = null,
+  injected = null,
+  credentials = null,
+  labels = null,
+} = {}) {
+  const direct = project ?? injected?.project ?? null;
+  if (direct !== null && direct !== undefined) return direct;
+  const root = typeof credentials?.project === 'string' ? credentials.project : null;
+  if (root === null || root.length === 0) return null;
+  return resolveProject({ argRoot: root, labels });
 }
 
 /**

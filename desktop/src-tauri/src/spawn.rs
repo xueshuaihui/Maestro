@@ -177,10 +177,21 @@ pub fn wait_desktop_channel(app: tauri::AppHandle, root: PathBuf) {
                     // Authorization header, so the token rides in the query.
                     // Only static GETs accept it; the page captures it and the
                     // shell never logs or prints it.
+                    //
+                    // Decision Q (Q-1): the project root rides along the same
+                    // way, so the page can hand it to the view-preference calls
+                    // (AC-22) and the project guard (AC-31) instead of starting
+                    // with a null root. `append_pair` percent-encodes both
+                    // values; neither is ever printed or logged.
                     let token = meta.get("token").and_then(Value::as_str).unwrap_or("");
                     if let Some(win) = app.get_webview_window("main") {
-                        let url: tauri::Url =
-                            format!("http://127.0.0.1:{port}/ui/?token={token}").parse().unwrap();
+                        let mut url: tauri::Url = format!("http://127.0.0.1:{port}/ui/").parse().unwrap();
+                        let project = root.to_string_lossy();
+                        {
+                            let mut query = url.query_pairs_mut();
+                            query.append_pair("token", token);
+                            query.append_pair("project", &project);
+                        }
                         let _ = win.navigate(url);
                     }
                 }

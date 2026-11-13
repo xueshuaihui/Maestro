@@ -33,6 +33,8 @@ import {
   createApp,
   createLoopbackTransport,
   parseSseBlock,
+  resolveMountProject,
+  takeLocationCredentials,
 } from '../../desktop/ui/app.js';
 import { createConnectionState } from '../../desktop/ui/connection.js';
 import { resolveProject } from '../../desktop/ui/project.js';
@@ -697,6 +699,72 @@ test('B-31 seam 3: reopening an instance replays the stored offsets onto the bas
     assert.equal(reopened.x, base.x + 40);
     assert.equal(reopened.y, base.y + 60);
     assert.deepEqual(app.state().offsets, { 'role:dev': { dx: 40, dy: 60 } });
+  } finally {
+    restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Q-1：壳侧把项目根随查询参数送达（窗口面 project.root 非 null）
+// ---------------------------------------------------------------------------
+
+/** Install a fake `window` (location + recording history) for one test. */
+function stubWindow(search, calls) {
+  const previous = globalThis.window;
+  globalThis.window = {
+    ...(previous ?? {}),
+    location: { search, pathname: '/ui/', hash: '', port: '51234', origin: 'http://127.0.0.1:51234' },
+    history: { replaceState: (...args) => calls.push(args) },
+  };
+  return () => {
+    if (previous === undefined) delete globalThis.window;
+    else globalThis.window = previous;
+  };
+}
+
+test('Q-1: the query project reaches state.project.root and the offsets seam', async () => {
+  const calls = [];
+  const restore = stubWindow('?token=tok-q1&project=%2Ftmp%2Fmaestro-q1-root', calls);
+  try {
+    const creds = takeLocationCredentials();
+    assert.deepEqual(creds, { port: 51234, token: 'tok-q1', project: '/tmp/maestro-q1-root' });
+    assert.deepEqual(
+      calls.at(-1),
+      [null, '', '/ui/'],
+      'both the token and the project query values are scrubbed from the address bar',
+    );
+
+    // Priority (decision Q): explicit argument > injected global > query value.
+    const summary = resolveMountProject({ credentials: creds, labels: LABELS });
+    assert.equal(summary.view, 'instances');
+    assert.equal(summary.root, '/tmp/maestro-q1-root');
+    assert.equal(summary.message, null);
+    assert.equal(
+      resolveMountProject({
+        project: { view: 'instances', root: '/explicit' },
+        injected: { project: { view: 'instances', root: '/injected' } },
+        credentials: creds,
+      }).root,
+      '/explicit',
+    );
+    assert.equal(
+      resolveMountProject({
+        injected: { project: { view: 'instances', root: '/injected' } },
+        credentials: creds,
+      }).root,
+      '/injected',
+    );
+
+    // With the root in place the preference calls stop being no-ops (AC-22).
+    const { app, writes } = makeApp({ project: summary });
+    await app.openGraph('INST-001');
+    app.dragEnd('role:dev', 20, 30);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(app.state().project.root, '/tmp/maestro-q1-root');
+    assert.equal(writes.length, 1);
+    assert.equal(writes[0].root, '/tmp/maestro-q1-root');
+    assert.equal(writes[0].instance_id, 'INST-001');
+    assert.deepEqual(writes[0].offsets, { 'role:dev': { dx: 20, dy: 30 } });
   } finally {
     restore();
   }
