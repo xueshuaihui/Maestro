@@ -492,6 +492,55 @@ test('unknown paths answer 404 with a code-only body', async () => {
   }
 });
 
+test('static /ui/* accepts the query token while the data plane stays Bearer-only', async () => {
+  // Decision M / B-25: WebView navigation cannot set the Authorization header,
+  // so a GET that resolves to a real static file may present `?token=`. Every
+  // handler-owned path (here `/ui/labels`) keeps refusing that credential.
+  const root = makeRoot();
+  try {
+    const uiDir = path.join(root, 'ui-fixture');
+    fs.mkdirSync(uiDir, { recursive: true });
+    const page = '<html><body>desktop</body></html>';
+    fs.writeFileSync(path.join(uiDir, 'index.html'), page);
+    const store = createStore({ root });
+    const bus = createEventBus({ store });
+    const httpServer = createHttpServer({
+      root,
+      orchestrator: fakeOrchestrator(),
+      bus,
+      graph: { loadState: async () => ({ ok: false, code: 'NOT_FOUND' }) },
+      staticRoot: uiDir,
+    });
+    const listened = await httpServer.listen();
+    assert.equal(listened.ok, true);
+    try {
+      const base = `http://127.0.0.1:${listened.port}`;
+      const headers = { Authorization: `Bearer ${listened.token}` };
+
+      const viaBearer = await fetch(`${base}/ui/index.html`, { headers });
+      assert.equal(viaBearer.status, 200);
+      const expected = await viaBearer.text();
+      assert.equal(expected, page);
+
+      const viaQuery = await fetch(`${base}/ui/index.html?token=${listened.token}`);
+      assert.equal(viaQuery.status, 200);
+      assert.equal(await viaQuery.text(), expected);
+
+      const anonymous = await fetch(`${base}/ui/index.html`);
+      assert.equal(anonymous.status, 401);
+      assert.deepEqual(JSON.parse(await anonymous.text()), { error: 'UNAUTHORIZED' });
+
+      const labelsViaQuery = await fetch(`${base}/ui/labels?token=${listened.token}`);
+      assert.equal(labelsViaQuery.status, 401);
+      assert.deepEqual(JSON.parse(await labelsViaQuery.text()), { error: 'UNAUTHORIZED' });
+    } finally {
+      await httpServer.close();
+    }
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('static /ui/* serves files read-only from the configured root', async () => {
   const root = makeRoot();
   try {

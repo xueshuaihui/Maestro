@@ -173,8 +173,14 @@ pub fn wait_desktop_channel(app: tauri::AppHandle, root: PathBuf) {
                     crate::tray::refresh(app.clone());
                 }
                 if port != 0 {
+                    // Decision M (B-25): WebView navigation cannot attach an
+                    // Authorization header, so the token rides in the query.
+                    // Only static GETs accept it; the page captures it and the
+                    // shell never logs or prints it.
+                    let token = meta.get("token").and_then(Value::as_str).unwrap_or("");
                     if let Some(win) = app.get_webview_window("main") {
-                        let url: tauri::Url = format!("http://127.0.0.1:{port}/ui/").parse().unwrap();
+                        let url: tauri::Url =
+                            format!("http://127.0.0.1:{port}/ui/?token={token}").parse().unwrap();
                         let _ = win.navigate(url);
                     }
                 }

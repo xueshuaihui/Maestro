@@ -6,6 +6,11 @@
  * - generates a 32-byte random hex Bearer token; every request without the
  *   exact `Authorization: Bearer <token>` header gets `401` with a body that
  *   contains only the error code (D-1);
+ * - the single exception (decision M / B-25): a `GET` that resolves to a real
+ *   file inside the static root may carry the same token as `?token=`, because
+ *   WebView navigation cannot attach headers. Every handler-owned path
+ *   (`/ui/labels`, REST, SSE) stays Bearer-only: the query credential is only
+ *   honoured once the request is known to fall through to the static branch;
  * - writes `<root>/.orch/desktop.json` (`{port, token, pid, generation,
  *   startedAt}`) atomically AFTER listen succeeds, and removes it on close
  *   (D-1; the path constant lives here because `src/persistence/paths.js` is
@@ -316,19 +321,76 @@ export function createHttpServer({
 
   // ---------------------------------------------------------------- routing
 
-  function authorized(req) {
+  /** Parses `req.url`; `null` when it is not a valid URL (answers 404 later). */
+  function safeUrl(rawUrl) {
+    try {
+      return new URL(rawUrl ?? '/', 'http://127.0.0.1');
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Whether the request is owned by a handler instead of the static branch:
+   * the injected table (S-02), the WP-2 built-ins and the whole-path WP-3
+   * dispatcher. `/ui/labels` also starts with `/ui/`, so the query credential
+   * must never be decided by a path prefix (decision M).
+   */
+  function claimedByHandler(method, pathname) {
+    for (const entry of injectedRoutes) {
+      if (entry.method !== method) continue;
+      if (matchPattern(entry.pattern, pathname) !== null) return true;
+    }
+    if (method === 'GET') {
+      if (pathname === '/ui/labels') return true;
+      if (pathname === '/instances/stream') return true;
+      if (matchPattern('/instances/:id/graph/stream', pathname) !== null) return true;
+      if (matchPattern('/instances/:id/graph', pathname) !== null) return true;
+    }
+    if (method === 'POST' && pathname === '/__test__/graph/pulse') return true;
+    // A whole-path dispatcher takes every request before the static branch.
+    return fallbackDispatcher !== null;
+  }
+
+  /** Whether `pathname` resolves to an existing file inside the static root. */
+  async function isStaticFile(pathname) {
+    const target = resolveStaticPath(pathname);
+    if (target === null) return false;
+    try {
+      const stat = await fs.stat(target);
+      return stat.isFile();
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Two credentials, decision M: the Bearer header everywhere, plus `?token=`
+   * on `GET` requests that would reach the static branch. The query value is
+   * compared to the same `meta.token` and is never logged or echoed.
+   */
+  async function authorized(req, url) {
     if (!meta) return false;
     const header = req.headers.authorization ?? '';
-    return header === `Bearer ${meta.token}`;
+    if (header === `Bearer ${meta.token}`) return true;
+    if (req.method !== 'GET' || url === null) return false;
+    const provided = url.searchParams.get('token');
+    if (provided === null || provided !== meta.token) return false;
+    if (claimedByHandler(req.method, url.pathname)) return false;
+    return isStaticFile(url.pathname);
   }
 
   async function handleRequest(req, res) {
     try {
-      if (!authorized(req)) {
+      const url = safeUrl(req.url);
+      if (!(await authorized(req, url))) {
         sendError(res, 401, 'UNAUTHORIZED');
         return;
       }
-      const url = new URL(req.url ?? '/', 'http://127.0.0.1');
+      if (url === null) {
+        sendError(res, 404, 'NOT_FOUND');
+        return;
+      }
       const pathname = url.pathname;
 
       // 1. Injected handler table (S-02) wins over everything built in.
@@ -417,10 +479,23 @@ export function createHttpServer({
     }
   }
 
-  async function serveStatic(res, pathname) {
+  /**
+   * Single source of truth for the static branch: maps `/ui/*` to a file path
+   * inside `uiRoot`, `null` outside it. Traversal protection lives here and is
+   * shared by the auth exception and the serving path, so the query token can
+   * never reach a file the Bearer path would refuse to serve.
+   */
+  function resolveStaticPath(pathname) {
+    if (pathname !== '/ui' && !pathname.startsWith('/ui/')) return null;
     const rel = pathname.slice('/ui/'.length);
     const target = path.resolve(uiRoot, rel.length > 0 ? rel : 'index.html');
-    if (target !== uiRoot && !target.startsWith(uiRoot + path.sep)) {
+    if (target !== uiRoot && !target.startsWith(uiRoot + path.sep)) return null;
+    return target;
+  }
+
+  async function serveStatic(res, pathname) {
+    const target = resolveStaticPath(pathname);
+    if (target === null) {
       sendError(res, 404, 'NOT_FOUND');
       return;
     }
