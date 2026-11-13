@@ -153,6 +153,44 @@ test('AC-07 fixture: the projected node and edge sets equal the definition sets'
   assert.equal(graph.edges.length, 9);
 });
 
+test('stateNodes mirrors the snapshot node states for board column projection (D-2 / B-26)', () => {
+  const graph = project();
+  // One entry per snapshot node, `{ nodeId, state }` only, in snapshot order.
+  assert.deepEqual(graph.stateNodes, [
+    { nodeId: 'T-001', state: 'done' },
+    { nodeId: 'T-002', state: 'running' },
+    { nodeId: 'T-003', state: 'pending' },
+    { nodeId: 'T-004', state: 'pending' },
+    { nodeId: 'T-005', state: 'pending' },
+  ]);
+  assert.equal(graph.stateNodes.length, ac07State().nodes.length);
+});
+
+test('stateNodes passes the nine-state vocabulary through verbatim, without role-token mapping', () => {
+  const state = ac07State();
+  state.nodes = [
+    { nodeId: 'T-001', roleId: 'alpha', state: 'done' },
+    { nodeId: 'T-002', roleId: 'beta', state: 'escalated' },
+    { nodeId: 'T-003', roleId: 'gamma', state: 'cancelled' },
+    { nodeId: 'H-001', state: 'failed' },
+    { nodeId: 'X-001', state: 'running' },
+  ];
+  const graph = project({ state });
+  assert.deepEqual(graph.stateNodes, [
+    { nodeId: 'T-001', state: 'done' },
+    { nodeId: 'T-002', state: 'escalated' },
+    { nodeId: 'T-003', state: 'cancelled' },
+    { nodeId: 'H-001', state: 'failed' },
+    { nodeId: 'X-001', state: 'running' },
+  ]);
+});
+
+test('stateNodes degrades to an empty array when the snapshot has no node list', () => {
+  assert.deepEqual(project({ state: { instanceId: 'INST-005', state: 'running' } }).stateNodes, []);
+  assert.deepEqual(project({ state: { instanceId: 'INST-006', nodes: 'not-an-array' } }).stateNodes, []);
+  assert.deepEqual(project({ state: null }).stateNodes, []);
+});
+
 test('projection is deterministic and does not mutate its inputs', () => {
   const state = ac07State();
   const def = ac07Def();
