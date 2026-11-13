@@ -159,19 +159,88 @@ function emit(payload, outputPath) {
   }
 }
 
+/**
+ * Label table for the legend segment: the payload may already carry one
+ * (`labels`), otherwise the live loopback channel serves `GET /ui/labels`
+ * (same read-only source as `collect.mjs`; the harness never reaches into the
+ * daemon modules for it). Anything missing keeps the segment `null`.
+ */
+async function loadLabelTable(root, payload) {
+  const fromPayload = payload?.labels;
+  if (fromPayload !== null && typeof fromPayload === 'object' && !Array.isArray(fromPayload)) {
+    return fromPayload;
+  }
+  if (root === null) return null;
+  let meta;
+  try {
+    meta = JSON.parse(fs.readFileSync(path.join(root, '.orch', 'desktop.json'), 'utf8'));
+  } catch {
+    return null;
+  }
+  if (!Number.isInteger(meta?.port) || typeof meta?.token !== 'string') return null;
+  try {
+    const res = await fetch(`http://127.0.0.1:${meta.port}/ui/labels`, {
+      headers: { Authorization: `Bearer ${meta.token}` },
+    });
+    if (!res.ok) return null;
+    const body = await res.json();
+    return body?.keys ?? body ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** First role node id, else the first node id (the segment's hover subject). */
+function hoverKeyOf(graph) {
+  const nodes = Array.isArray(graph?.nodes) ? graph.nodes : [];
+  const role = nodes.find((node) => node?.type === 'role' && typeof node.id === 'string');
+  if (role !== undefined) return role.id;
+  const first = nodes.find((node) => typeof node?.id === 'string');
+  return first === undefined ? null : first.id;
+}
+
+/**
+ * Fill the `legend` and `hover` segments through lazy dynamic imports (S-03 /
+ * decision J): no static import, no DAG edge. Both segments are filled as a
+ * pair — the full export needs the label table, which is also what the legend
+ * renders — and a missing module, a missing label table or a graph without a
+ * hover subject keeps the segments `null` without throwing.
+ */
+async function fillSegments(graph, { root, payload } = {}) {
+  let legend = null;
+  let hover = null;
+  const labelTable = await loadLabelTable(root, payload);
+  if (labelTable !== null) {
+    try {
+      const { renderLegend } = await import('../ui/graph/legend.js');
+      legend = renderLegend(labelTable);
+    } catch {
+      legend = null;
+    }
+    const key = hoverKeyOf(graph);
+    if (key !== null) {
+      try {
+        const { hoverSet } = await import('../ui/graph/highlight.js');
+        hover = hoverSet(graph, key);
+      } catch {
+        hover = null;
+      }
+    }
+  }
+
+  return { legend, hover };
+}
+
 const opts = parseArgs(process.argv.slice(2));
 
 if (opts.instance !== null) {
   const graph = await buildFromProject(opts);
-  emit({ legend: null, hover: null, ...graph }, opts.payload ?? opts.out);
+  const root = path.resolve(opts.project);
+  const segments = await fillSegments(graph, { root, payload: null });
+  emit({ ...segments, ...graph }, opts.payload ?? opts.out);
 } else {
   const payload = readJson(opts.payload, 'payload');
-  emit(
-    {
-      legend: null, // S-03: filled by a lazy import once legend.js (WP-5) lands
-      hover: null, // S-03: filled by a lazy import once highlight.js (WP-6) lands
-      ...(payload !== null && typeof payload === 'object' ? payload : {}),
-    },
-    opts.out,
-  );
+  const source = payload !== null && typeof payload === 'object' ? payload : {};
+  const segments = await fillSegments(source, { root: null, payload: source });
+  emit({ ...segments, ...source }, opts.out);
 }
