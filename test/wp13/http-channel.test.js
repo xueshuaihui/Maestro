@@ -25,6 +25,8 @@ import { createEventBus } from '../../src/core/event-bus.js';
 import { createServer } from '../../src/daemon/server.js';
 import { createHttpServer, desktopMetaPath } from '../../src/daemon/http/server.js';
 import { labelKeysPayload } from '../../src/daemon/http/labels.js';
+import { createRoutes } from '../../src/daemon/http/routes.js';
+import { TEMPLATE_LABEL } from '../../src/cli/labels.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(HERE, '..', '..');
@@ -217,33 +219,147 @@ test('registerRoutes injection serves injected handlers', async () => {
   }
 });
 
-test('REST routes owned by WP-3 degrade to a structured 503 NOT_READY', async () => {
-  const root = makeRoot();
-  try {
-    const spy = {};
-    const { server, meta } = await startDesktopServer(root, fakeOrchestrator(spy));
+test('WP-3 routes take over 503 NOT_READY when injected; unattached seam still degrades', async () => {
+  // Form 1 (degradation preserved, decision H): without an injected WP-3
+  // table and when the table cannot attach (orchestrator without the
+  // startRun seam, so createRoutes refuses to build it), the WP-3 owned
+  // paths still answer the structured 503 NOT_READY (S-02).
+  {
+    const root = makeRoot();
     try {
-      const base = `http://127.0.0.1:${meta.port}`;
-      const headers = { Authorization: `Bearer ${meta.token}` };
-      for (const pathname of ['/instances', '/workflows']) {
-        const res = await fetch(`${base}${pathname}`, { headers });
-        assert.equal(res.status, 503);
-        assert.deepEqual(JSON.parse(await res.text()), { error: 'NOT_READY' });
-      }
-      // POST /instances stays unregistered in this batch and must not reach
-      // the orchestrator through any side door (AC-27 read-only discipline).
-      const post = await fetch(`${base}/instances`, {
-        method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ template: 'single', task: 'hello' }),
+      const store = createStore({ root });
+      const bus = createEventBus({ store });
+      const httpServer = createHttpServer({
+        root,
+        orchestrator: {
+          async listInstances() {
+            return { ok: true, items: [] };
+          },
+          async getStatus() {
+            return { ok: false, code: 'NOT_FOUND' };
+          },
+          // no startRun: the WP-3 table cannot be constructed
+        },
+        bus,
+        graph: { loadState: async () => ({ ok: false, code: 'NOT_FOUND' }) },
+        staticRoot: root,
       });
-      assert.equal(post.status, 503);
-      assert.equal(spy.startRunCalls ?? 0, 0);
+      const listened = await httpServer.listen();
+      assert.equal(listened.ok, true);
+      try {
+        const base = `http://127.0.0.1:${listened.port}`;
+        const headers = { Authorization: `Bearer ${listened.token}` };
+        for (const pathname of ['/instances', '/workflows']) {
+          const res = await fetch(`${base}${pathname}`, { headers });
+          assert.equal(res.status, 503);
+          assert.deepEqual(JSON.parse(await res.text()), { error: 'NOT_READY' });
+        }
+        const post = await fetch(`${base}/instances`, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ template: 'single', task: 'hello' }),
+        });
+        assert.equal(post.status, 503);
+        assert.deepEqual(JSON.parse(await post.text()), { error: 'NOT_READY' });
+      } finally {
+        await httpServer.close();
+      }
     } finally {
-      await server.close();
+      fs.rmSync(root, { recursive: true, force: true });
     }
-  } finally {
-    fs.rmSync(root, { recursive: true, force: true });
+  }
+
+  // Form 2 (takeover, decision H): after registerRoutes injects the WP-3
+  // table built from routes.js createRoutes, the same paths answer 200 with
+  // real orchestrator data; POST /instances reaches the orchestrator
+  // exclusively through the existing startRun seam (AC-27).
+  {
+    const root = makeRoot();
+    try {
+      const spy = {};
+      const snapshot = {
+        template: 'single',
+        state: 'running',
+        nodes: [
+          { nodeId: 'n1', roleId: 'coder', state: 'done' },
+          { nodeId: 'n2', roleId: 'coder', state: 'running' },
+        ],
+        sessions: [],
+        handoffs: [],
+        pendingEscalations: 0,
+        pendingApprovals: 1,
+        health: { level: 'ok', reasons: [] },
+        updatedAt: '2026-11-13T00:00:00.000Z',
+      };
+      const orchestrator = {
+        async listInstances() {
+          return { ok: true, items: [{ instanceId: 'INST-1', template: 'single', readable: true }] };
+        },
+        async getStatus(params) {
+          return params?.instanceId === 'INST-1'
+            ? { ok: true, snapshot }
+            : { ok: false, code: 'NOT_FOUND' };
+        },
+        async startRun(params) {
+          spy.startRunCalls = (spy.startRunCalls ?? 0) + 1;
+          spy.lastStartRunParams = params ?? null;
+          return { ok: true, instanceId: 'INST-NEW' };
+        },
+      };
+      const store = createStore({ root });
+      const bus = createEventBus({ store });
+      const httpServer = createHttpServer({
+        root,
+        orchestrator,
+        bus,
+        graph: { loadState: async () => ({ ok: false, code: 'NOT_FOUND' }) },
+        staticRoot: root,
+      });
+      httpServer.registerRoutes(createRoutes({ orchestrator, root }));
+      const listened = await httpServer.listen();
+      assert.equal(listened.ok, true);
+      try {
+        const base = `http://127.0.0.1:${listened.port}`;
+        const headers = { Authorization: `Bearer ${listened.token}` };
+        const list = await fetch(`${base}/instances`, { headers });
+        assert.equal(list.status, 200);
+        const payload = await list.json();
+        assert.equal(payload.items.length, 1);
+        assert.deepEqual(payload.items[0], {
+          instanceId: 'INST-1',
+          template: 'single',
+          templateTitle: TEMPLATE_LABEL.single,
+          phase: 'running',
+          progress: { done: 1, total: 2 },
+          pending: { escalations: 0, approvals: 1 },
+          health: { level: 'ok', reasons: [] },
+          updatedAt: '2026-11-13T00:00:00.000Z',
+          readable: true,
+        });
+        const workflows = await fetch(`${base}/workflows`, { headers });
+        assert.equal(workflows.status, 200);
+        const wf = await workflows.json();
+        assert.deepEqual(wf.items.map((item) => item.id), ['single', 'code-loop', 'task-loop']);
+        const post = await fetch(`${base}/instances`, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ template: 'single', task: 'hello' }),
+        });
+        assert.equal(post.status, 200);
+        assert.deepEqual(await post.json(), { ok: true, instanceId: 'INST-NEW' });
+        assert.equal(spy.startRunCalls, 1);
+        assert.deepEqual(spy.lastStartRunParams, {
+          cwd: root,
+          task: 'hello',
+          template: 'single',
+          earlyReturn: true,
+        });
+      } finally {
+        await httpServer.close();
+      }
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
   }
 });
 
