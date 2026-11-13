@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maestro</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #28303b;
+      --muted: #5b6573;
+      --line: #d7dde6;
+      --paper: #ffffff;
+      --wash: #f5f7fa;
+      --warn: #b3402f;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--wash);
+    }
+    #app { min-height: 100vh; padding: 16px 20px 40px; }
+    header { display: flex; align-items: baseline; gap: 12px; }
+    .title { font-size: 18px; font-weight: 600; margin: 0 0 8px; }
+    .status, .focus { margin: 4px 0 12px; color: var(--muted); }
+    .notice {
+      display: flex; align-items: center; gap: 8px;
+      margin: 8px 0 14px; padding: 10px 12px;
+      border: 1px solid #e4b8ae; border-left: 4px solid var(--warn);
+      background: #fdf4f2; color: #7a2a1e;
+    }
+    .controls { display: flex; gap: 8px; margin: 0 0 12px; }
+    button {
+      font: inherit; color: var(--ink); background: var(--paper);
+      border: 1px solid var(--line); border-radius: 6px;
+      padding: 4px 10px; cursor: pointer;
+    }
+    button:hover { background: #eef2f7; }
+    button.active { border-color: #2f6fd0; color: #2f6fd0; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+    .list ul { list-style: none; margin: 0; padding: 0; }
+    .list li {
+      padding: 9px 12px; margin-bottom: 6px;
+      background: var(--paper); border: 1px solid var(--line); border-radius: 6px;
+      cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .list li:hover { border-color: #9fb6d6; }
+    .empty { color: var(--muted); }
+    .panel {
+      margin-top: 14px; padding: 14px; max-width: 560px;
+      background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .panel h2 { font-size: 15px; margin: 0; }
+    .panel textarea { min-height: 88px; font: inherit; padding: 6px; }
+    .panel select { font: inherit; padding: 4px; }
+    .message { color: var(--warn); margin: 0; }
+    .prompt { padding: 24px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
+    .canvas { display: block; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
+    .legend { margin-top: 8px; color: var(--muted); }
+    .legend p { margin: 2px 0; }
+    .rows { margin: 12px 0 0; padding-left: 18px; color: var(--muted); }
+    .rows li { margin: 2px 0; }
+    .board { display: grid; grid-template-columns: repeat(7, minmax(130px, 1fr)); gap: 10px; }
+    .column { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 8px; min-height: 160px; }
+    .column h3 { font-size: 13px; margin: 0 0 8px; color: var(--muted); }
+    .card { margin: 0 0 6px; padding: 6px 8px; background: var(--wash); border-radius: 5px; }
+    .card.folded { opacity: .55; }
+    .fold { color: var(--muted); font-size: 12px; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+    .pulse { animation: pulse 1.6s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module">
+    import { mountApp } from './app.js';
+    const injected = window.__MAESTRO_DESKTOP__ || {};
+    const mounted = mountApp({ root: '#app', project: injected.project ?? undefined });
+    mounted.app.start().then(() => mounted.paint());
+  </script>
+</body>
+</html>
