@@ -220,26 +220,42 @@ test('registerRoutes injection serves injected handlers', async () => {
 });
 
 test('WP-3 routes take over 503 NOT_READY when injected; unattached seam still degrades', async () => {
-  // Form 1 (degradation preserved, decision H): without an injected WP-3
-  // table and when the table cannot attach (orchestrator without the
-  // startRun seam, so createRoutes refuses to build it), the WP-3 owned
-  // paths still answer the structured 503 NOT_READY (S-02).
+  // Form 1 (degradation preserved, decision H): with the write seam absent
+  // the WP-3 table refuses to build, so the WP-3 owned paths answer the
+  // structured 503 NOT_READY (S-02) and the seam is never invoked. This form
+  // is unreachable in production once routes.js registers its table at boot;
+  // it guards the S-02 degradation semantics only (B-09).
   {
     const root = makeRoot();
     try {
-      const store = createStore({ root });
-      const bus = createEventBus({ store });
-      const httpServer = createHttpServer({
-        root,
-        orchestrator: {
+      const spy = { startRunCalls: 0, startRunProbes: 0 };
+      const orchestrator = new Proxy(
+        {
           async listInstances() {
             return { ok: true, items: [] };
           },
           async getStatus() {
             return { ok: false, code: 'NOT_FOUND' };
           },
-          // no startRun: the WP-3 table cannot be constructed
         },
+        {
+          // `startRun` is probed by createRoutes and stays non-callable: that
+          // refusal is exactly what keeps the 503 fallback in force, and the
+          // probe counter proves the seam was inspected but never invoked.
+          get(target, prop, receiver) {
+            if (prop === 'startRun') {
+              spy.startRunProbes += 1;
+              return undefined;
+            }
+            return Reflect.get(target, prop, receiver);
+          },
+        },
+      );
+      const store = createStore({ root });
+      const bus = createEventBus({ store });
+      const httpServer = createHttpServer({
+        root,
+        orchestrator,
         bus,
         graph: { loadState: async () => ({ ok: false, code: 'NOT_FOUND' }) },
         staticRoot: root,
@@ -261,6 +277,10 @@ test('WP-3 routes take over 503 NOT_READY when injected; unattached seam still d
         });
         assert.equal(post.status, 503);
         assert.deepEqual(JSON.parse(await post.text()), { error: 'NOT_READY' });
+        assert.equal(spy.startRunProbes > 0, true); // seam probed by the table builder
+        assert.equal(spy.startRunCalls ?? 0, 0); // degradation never writes
+        const instancesDir = path.join(root, '.orch', 'instances');
+        assert.deepEqual(fs.existsSync(instancesDir) ? fs.readdirSync(instancesDir) : [], []);
       } finally {
         await httpServer.close();
       }
@@ -346,7 +366,7 @@ test('WP-3 routes take over 503 NOT_READY when injected; unattached seam still d
           body: JSON.stringify({ template: 'single', task: 'hello' }),
         });
         assert.equal(post.status, 200);
-        assert.deepEqual(await post.json(), { ok: true, instanceId: 'INST-NEW' });
+        assert.deepEqual(await post.json(), { instanceId: 'INST-NEW' });
         assert.equal(spy.startRunCalls, 1);
         assert.deepEqual(spy.lastStartRunParams, {
           cwd: root,

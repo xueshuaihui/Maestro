@@ -292,7 +292,7 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root } = {}) {
       earlyReturn: true,
     });
     if (started && started.ok === true && typeof started.instanceId === 'string') {
-      sendJson(res, 200, { ok: true, instanceId: started.instanceId });
+      sendJson(res, 200, { instanceId: started.instanceId });
       return res;
     }
     const code = started?.code ?? 'UNKNOWN_ERROR';

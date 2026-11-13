@@ -2,11 +2,14 @@
  * Legend projection for the role flow graph (I1.10a WP-5; A-8 / AC-34).
  *
  * Contract (split doc 2.2 / requirement AC-34):
- * - `renderLegend(labels)` returns the fixed two-line legend:
+ * - `renderLegend(labels)` accepts either label shape: the flat key table
+ *   (`DESKTOP_LABEL_KEYS`) or a `GET /ui/labels` payload `{ keys: {...} }`
+ *   (B-07). It returns the fixed two-line legend:
  *   `{ anchor: 'bottom-left', layer: 'top', offset, lines: [roleLine, specialLine] }`.
  *   The two line strings come verbatim from the frozen label keys
  *   `DESKTOP_LEGEND_ROLE` / `DESKTOP_LEGEND_SPECIAL` (A-8); this module owns
- *   no text itself, so the desktop layer stays CJK-free.
+ *   no text itself, so the desktop layer stays CJK-free. A table missing
+ *   either key throws instead of silently yielding `lines: [null, null]`.
  * - The anchor is a canvas-only property: zoom and pan values never enter
  *   `legendPoint`, which maps the fixed bottom-left offset onto a canvas
  *   size. Three view states (zoomed/panned, reset, collapsed) therefore
@@ -27,22 +30,60 @@ export const LEGEND_LAYER = 'top';
 export const LEGEND_OFFSET = Object.freeze({ x: 16, y: 16 });
 
 /**
+ * Pick the key table out of either accepted shape: a `{ keys: {...} }`
+ * payload (as served by `GET /ui/labels`) or the flat table itself.
+ *
+ * @param {unknown} labels
+ * @returns {unknown} the table to read `DESKTOP_LEGEND_*` from.
+ */
+function labelTable(labels) {
+  if (
+    labels !== null &&
+    typeof labels === 'object' &&
+    labels.keys !== null &&
+    typeof labels.keys === 'object' &&
+    !Array.isArray(labels.keys)
+  ) {
+    return labels.keys;
+  }
+  return labels;
+}
+
+/**
  * Project the two-line legend from the frozen label keys.
  *
- * @param {{ DESKTOP_LEGEND_ROLE?: string, DESKTOP_LEGEND_SPECIAL?: string }} labels
- *        the label key table (`DESKTOP_LABEL_KEYS` or a `/ui/labels` payload).
+ * Accepts both shapes (B-07): the flat key table (`DESKTOP_LABEL_KEYS`) and a
+ * `/ui/labels` payload carrying the table under `keys`.
+ *
+ * @param {{ DESKTOP_LEGEND_ROLE?: string, DESKTOP_LEGEND_SPECIAL?: string }
+ *         | { keys?: { DESKTOP_LEGEND_ROLE?: string, DESKTOP_LEGEND_SPECIAL?: string } }} labels
+ *        the label key table, flat or wrapped in a `/ui/labels` payload.
  * @returns {{ anchor: 'bottom-left', layer: 'top',
  *             offset: { x: number, y: number },
  *             lines: [string, string] }}
  *         plain JSON data; `lines[0]` is the A-8 role-status row,
  *         `lines[1]` the A-8 special-node/direction row, both verbatim.
+ * @throws {TypeError} when the resolved table lacks
+ *         `DESKTOP_LEGEND_ROLE` or `DESKTOP_LEGEND_SPECIAL` as strings; the
+ *         legend never degrades to `lines: [null, null]`.
  */
 export function renderLegend(labels) {
+  const table = labelTable(labels);
+  const role = table?.DESKTOP_LEGEND_ROLE;
+  const special = table?.DESKTOP_LEGEND_SPECIAL;
+  const missing = [];
+  if (typeof role !== 'string') missing.push('DESKTOP_LEGEND_ROLE');
+  if (typeof special !== 'string') missing.push('DESKTOP_LEGEND_SPECIAL');
+  if (missing.length > 0) {
+    throw new TypeError(
+      `renderLegend: label table (flat keys or { keys } payload) is missing ${missing.join(', ')}`,
+    );
+  }
   return {
     anchor: LEGEND_ANCHOR,
     layer: LEGEND_LAYER,
     offset: { ...LEGEND_OFFSET },
-    lines: [labels?.DESKTOP_LEGEND_ROLE ?? null, labels?.DESKTOP_LEGEND_SPECIAL ?? null],
+    lines: [role, special],
   };
 }
 

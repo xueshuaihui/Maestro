@@ -52,12 +52,24 @@ function ac35Payload() {
 test('AC-35 (harness): the unknown card lands in blocked tagged with the frozen text', async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-i10a-board-x-'));
   const payloadFile = path.join(dir, 'board.json');
+  const labelsFile = path.join(dir, 'labels.json');
   const outFile = path.join(dir, 'board-out.json');
   fs.writeFileSync(payloadFile, JSON.stringify(ac35Payload()), 'utf8');
+  // The harness no longer imports the daemon key table (B-12): feed it the
+  // `GET /ui/labels` body shape through --labels.
+  fs.writeFileSync(labelsFile, JSON.stringify({ keys: DESKTOP_LABEL_KEYS }), 'utf8');
 
   const result = spawnSync(
     process.execPath,
-    [path.join(REPO, 'desktop', 'harness', 'board-dump.mjs'), '--payload', payloadFile, '--out', outFile],
+    [
+      path.join(REPO, 'desktop', 'harness', 'board-dump.mjs'),
+      '--payload',
+      payloadFile,
+      '--labels',
+      labelsFile,
+      '--out',
+      outFile,
+    ],
     { encoding: 'utf8', env: { ...process.env, NODE_ENV: 'test' } },
   );
   assert.equal(result.status, 0, result.stderr);
