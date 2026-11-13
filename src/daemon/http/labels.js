@@ -74,6 +74,12 @@ export const DESKTOP_LABEL_KEYS = Object.freeze({
   DESKTOP_ESCALATE_ROW: '升级节点 {title} · {status}',
   DESKTOP_SUBFLOW_ROW: '子工作流：{title} · {n} 角色',
   DESKTOP_GROUP_ROW: '分组 {group} · {n} 角色',
+  // A-14 补充（裁决 K / B-16）：组显示名，供 `DESKTOP_GROUP_ROW` 的 `{group}` 取值。
+  // 只登记 AC-19 文本已给出的两组 + 未分组兜底；其余组本迭代不下发中文名，
+  // 渲染层回退原始 group id（不臆造）。三键均无占位符。
+  GROUP_LABEL_CODING: '编码工程',
+  GROUP_LABEL_RESEARCH: '研究分析',
+  GROUP_LABEL_UNGROUPED: '未分组',
   DESKTOP_SUBFLOW_UNKNOWN: '子工作流 {id} · 角色数未知',
   // A-11 连接线行（并行计数与正文之间以 ` · ` 相接，故模板自带分隔符）。
   DESKTOP_EDGE_ROW: '连接线 {from}→{to} · {direction} · {status}',

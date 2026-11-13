@@ -21,17 +21,21 @@
  *   `escalate`, `subworkflow` and `group` node types plus the degraded
  *   "member count unknown" form. The type is read from `node.type` (the
  *   projection layer's `node_type`) only — never guessed from the title.
- * - Group rows need the display name of the role group. The frozen label
- *   table carries the row template but not the five group names, so the lookup
- *   is `GROUP_LABEL_<GROUP>` (the same table_member flattening the daemon uses);
- *   when the table does not carry it, the raw group id from the node is used.
- *   This module never hardcodes a group name.
+ * - Both renderers accept either label shape: the flat key table or the
+ *   `GET /ui/labels` body `{ keys: { "<KEY>": "<template>" } }` (B-18, same
+ *   seam as `renderLegend`). A table that lacks the required row template
+ *   throws a `TypeError` naming the key instead of degrading to `text: null`.
+ * - Group rows need the display name of the role group. The lookup order is
+ *   `GROUP_LABEL_<GROUP>` (the same table_member flattening the daemon uses)
+ *   → `GROUP_LABEL_UNGROUPED` when the node carries no group → the raw group
+ *   id. This module never hardcodes a group name, and groups without a
+ *   registered name keep their id (A-14 supplement, decision K).
  *
  * Purity: no DOM, no fs, no wall clock, no `window`; inputs never mutated.
  */
 
 import { NODE_HEIGHT, NODE_WIDTH } from './layout.js';
-import { fillTemplate } from '../labels/labels.js';
+import { fillTemplate, resolveLabels } from '../labels/labels.js';
 
 /** Role status token (A-9 five tokens) -> status word key (ROLE_INSTANCE_STATUS_LABEL_*). */
 const STATUS_WORD_KEY = Object.freeze({
@@ -71,6 +75,31 @@ function textOf(labels, key) {
   return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
+/**
+ * Normalise either accepted label shape to the flat key table and assert the
+ * keys this projection cannot render without.
+ *
+ * Shape handling is delegated to `resolveLabels` (`{ keys: {...} }` payload or
+ * flat table) — the same seam the legend uses — so no second dialect exists.
+ * A missing required key throws instead of silently yielding `text: null`.
+ *
+ * @param {unknown} labels flat key table or `{ keys: {...} }` payload
+ * @param {string} owner renderer name for the error message
+ * @param {string[]} required key names the row cannot be built without
+ * @returns {Record<string, string>} the flat key table
+ * @throws {TypeError} naming every missing key
+ */
+function requireLabelTable(labels, owner, required) {
+  const table = resolveLabels(labels).keys;
+  const missing = required.filter((key) => textOf(table, key) === null);
+  if (missing.length > 0) {
+    throw new TypeError(
+      `${owner}: label table (flat keys or { keys } payload) is missing ${missing.join(', ')}`,
+    );
+  }
+  return table;
+}
+
 function placeholderOf(labels) {
   return textOf(labels, 'DESKTOP_PLACEHOLDER') ?? '';
 }
@@ -88,20 +117,23 @@ function listOf(value) {
  * Project one role node into the A-9 row.
  *
  * @param {object} node the frozen projection role node (read-only)
- * @param {Record<string, string>} labels the frozen label key table
- * @returns {{ id: string|null, type: 'role', text: string|null,
+ * @param {Record<string, string> | { keys: Record<string, string> }} labels
+ *        the frozen label key table, flat or wrapped in a `/ui/labels` payload
+ * @returns {{ id: string|null, type: 'role', text: string,
  *             role: string|null, status: string|null, statusText: string|null,
  *             sessions: number, servingNodes: string[], hostIcons: string[],
  *             abnormalCount: number, width: number, height: number,
  *             visual: { statusColor: string, badge: string|null,
  *                       badgeCount: number, sessionStack: number,
  *                       stackBadge: string|null, animation: string } }}
+ * @throws {TypeError} when the resolved table lacks `DESKTOP_ROLE_ROW`
  */
 export function renderRoleRow(node, labels) {
-  const placeholder = placeholderOf(labels);
+  const table = requireLabelTable(labels, 'renderRoleRow', ['DESKTOP_ROLE_ROW']);
+  const placeholder = placeholderOf(table);
   const status = typeof node?.status === 'string' ? node.status : null;
   const statusKey = status === null ? null : STATUS_WORD_KEY[status] ?? null;
-  const statusText = statusKey === null ? null : textOf(labels, statusKey);
+  const statusText = statusKey === null ? null : textOf(table, statusKey);
 
   const role = typeof node?.title === 'string' && node.title.length > 0
     ? node.title
@@ -114,7 +146,7 @@ export function renderRoleRow(node, labels) {
   if (servingNodes.length === 0) {
     servingText = placeholder;
   } else if (servingNodes.length > 2) {
-    servingText = fillTemplate(textOf(labels, 'DESKTOP_ROLE_ROW_SERVING_MORE') ?? '', {
+    servingText = fillTemplate(textOf(table, 'DESKTOP_ROLE_ROW_SERVING_MORE') ?? '', {
       first: servingNodes[0],
       n: servingNodes.length,
     });
@@ -129,20 +161,17 @@ export function renderRoleRow(node, labels) {
     ? node.abnormalCount
     : (node?.abnormal === true ? 1 : 0);
 
-  const template = textOf(labels, 'DESKTOP_ROLE_ROW');
-  const text = template === null
-    ? null
-    : fillTemplate(template, {
-      role: role ?? placeholder,
-      status: statusText ?? placeholder,
-      sessions,
-      serving: servingText,
-      hosts: hostsText,
-      abnormal: abnormalCount,
-    });
+  const text = fillTemplate(table.DESKTOP_ROLE_ROW, {
+    role: role ?? placeholder,
+    status: statusText ?? placeholder,
+    sessions,
+    serving: servingText,
+    hosts: hostsText,
+    abnormal: abnormalCount,
+  });
 
   const stackBadge = sessions > 1
-    ? fillTemplate(textOf(labels, 'DESKTOP_ROLE_ROW_SESSION_STACK') ?? '', { n: sessions })
+    ? fillTemplate(textOf(table, 'DESKTOP_ROLE_ROW_SESSION_STACK') ?? '', { n: sessions })
     : null;
 
   return {
@@ -170,15 +199,28 @@ export function renderRoleRow(node, labels) {
 }
 
 /**
- * Display name of the role group of one group node. Looked up through the
- * flattened `GROUP_LABEL_<GROUP>` key when the table carries it; the raw group
- * id is the fallback so no Chinese literal ever lives in this module.
+ * Display name of the role group of one group node.
+ *
+ * Lookup order (decision K / B-16): the flattened `GROUP_LABEL_<GROUP>` key
+ * when the table carries it; `GROUP_LABEL_UNGROUPED` when the node has no
+ * group; otherwise the raw group id (groups without a registered name are a
+ * known limitation, never invented here).
  */
-function groupNameOf(node, labels, placeholder) {
+function groupNameOf(node, table, placeholder) {
   const raw = typeof node?.group === 'string' && node.group.length > 0 ? node.group : null;
-  if (raw === null) return placeholder;
+  if (raw === null) return textOf(table, 'GROUP_LABEL_UNGROUPED') ?? placeholder;
   const key = `GROUP_LABEL_${raw.replaceAll('-', '_').replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase()}`;
-  return textOf(labels, key) ?? (typeof node?.title === 'string' && node.title.length > 0 ? node.title : raw);
+  return textOf(table, key) ?? raw;
+}
+
+/** Row template key of one A-10 node type (subworkflow degrades on an unknown member count). */
+function templateKeyOf(type, memberCount) {
+  if (type === 'human') return 'DESKTOP_HUMAN_ROW';
+  if (type === 'escalate') return 'DESKTOP_ESCALATE_ROW';
+  if (type === 'subworkflow') {
+    return memberCount === null ? 'DESKTOP_SUBFLOW_UNKNOWN' : 'DESKTOP_SUBFLOW_ROW';
+  }
+  return 'DESKTOP_GROUP_ROW';
 }
 
 /**
@@ -188,69 +230,66 @@ function groupNameOf(node, labels, placeholder) {
  * a title that happens to read like another type never changes the row.
  *
  * @param {object} node the frozen projection node (read-only)
- * @param {Record<string, string>} labels the frozen label key table
- * @returns {{ id: string|null, type: string, text: string|null,
+ * @param {Record<string, string> | { keys: Record<string, string> }} labels
+ *        the frozen label key table, flat or wrapped in a `/ui/labels` payload
+ * @returns {{ id: string|null, type: string, text: string,
  *             title: string|null, status: string|null, statusText: string|null,
  *             memberCount: number|null, group: string|null, width: number,
  *             height: number,
  *             visual: { shape: string, color: string, animation: string,
  *                       badge: string|null, badgeCount: number } } | null}
+ *        `null` only when the node type is not an A-10 type (it then belongs to
+ *        `renderRoleRow`).
+ * @throws {TypeError} when the resolved table lacks the row template key of
+ *         the given node type
  */
 export function renderSpecialRow(node, labels) {
   const type = typeof node?.type === 'string' ? node.type : null;
   if (type === null || !SPECIAL_TYPES.has(type)) return null;
 
-  const placeholder = placeholderOf(labels);
+  let memberCount = Number.isInteger(node?.memberCount) ? node.memberCount : null;
+  const templateKey = templateKeyOf(type, memberCount);
+  const table = requireLabelTable(labels, 'renderSpecialRow', [templateKey]);
+  const template = table[templateKey];
+
+  const placeholder = placeholderOf(table);
   const title = typeof node?.title === 'string' && node.title.length > 0 ? node.title : null;
   const status = typeof node?.status === 'string' ? node.status : null;
   const statusKey = status === null ? null : NODE_WORD_KEY[status] ?? null;
-  const statusText = statusKey === null ? null : textOf(labels, statusKey);
+  const statusText = statusKey === null ? null : textOf(table, statusKey);
   const abnormal = node?.abnormal === true;
   const abnormalCount = Number.isInteger(node?.abnormalCount)
     ? node.abnormalCount
     : (abnormal ? 1 : 0);
 
-  let text = null;
   let shape = 'group';
   let color = 'green';
   let animation = 'none';
-  let memberCount = Number.isInteger(node?.memberCount) ? node.memberCount : null;
+  let text;
 
   if (type === 'human') {
     shape = 'shield';
     color = 'gray';
-    const template = textOf(labels, 'DESKTOP_HUMAN_ROW');
-    text = template === null
-      ? null
-      : fillTemplate(template, { title: title ?? placeholder, status: statusText ?? placeholder });
+    text = fillTemplate(template, { title: title ?? placeholder, status: statusText ?? placeholder });
   } else if (type === 'escalate') {
     shape = 'alert';
     color = 'red';
     animation = abnormal || status === 'escalated' ? 'pulse' : 'none';
-    const template = textOf(labels, 'DESKTOP_ESCALATE_ROW');
-    text = template === null
-      ? null
-      : fillTemplate(template, { title: title ?? placeholder, status: statusText ?? placeholder });
+    text = fillTemplate(template, { title: title ?? placeholder, status: statusText ?? placeholder });
   } else if (type === 'subworkflow') {
     shape = 'group';
     if (memberCount === null) {
       // D-3: an unreadable child definition keeps the group, gray, no pulse.
       color = 'gray';
       animation = 'none';
-      const template = textOf(labels, 'DESKTOP_SUBFLOW_UNKNOWN');
       const ref = typeof node?.workflow === 'string' && node.workflow.length > 0
         ? node.workflow
         : (node?.id ?? placeholder);
-      text = template === null
-        ? null
-        : fillTemplate(template, { id: ref });
+      text = fillTemplate(template, { id: ref });
     } else {
       color = abnormal ? 'red' : 'green';
       animation = abnormal ? 'pulse' : 'none';
-      const template = textOf(labels, 'DESKTOP_SUBFLOW_ROW');
-      text = template === null
-        ? null
-        : fillTemplate(template, { title: title ?? placeholder, n: memberCount });
+      text = fillTemplate(template, { title: title ?? placeholder, n: memberCount });
     }
   } else {
     // Automatic collapse group (> 12 visible roles, A-10 row four).
@@ -260,10 +299,7 @@ export function renderSpecialRow(node, labels) {
       const ids = listOf(node?.nodeIds);
       memberCount = ids.length;
     }
-    const template = textOf(labels, 'DESKTOP_GROUP_ROW');
-    text = template === null
-      ? null
-      : fillTemplate(template, { group: groupNameOf(node, labels, placeholder), n: memberCount });
+    text = fillTemplate(template, { group: groupNameOf(node, table, placeholder), n: memberCount });
   }
 
   return {

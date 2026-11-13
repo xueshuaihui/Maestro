@@ -18,6 +18,7 @@ import assert from 'node:assert/strict';
 
 import { computeLayout } from '../../desktop/ui/graph/layout.js';
 import { renderEdgeRow } from '../../desktop/ui/graph/edge-rows.js';
+import { renderRoleRow } from '../../desktop/ui/graph/node-rows.js';
 import { DIM_OPACITY, FULL_OPACITY, elementStyle } from '../../desktop/ui/graph/style.js';
 import { buildGraph } from '../../src/daemon/graph.js';
 import { UI_LABEL_KEYS } from '../../src/daemon/http/labels.js';
@@ -96,6 +97,8 @@ test('AC-23: the abnormal node keeps width / height / x / y and gains the pulse 
   assert.equal(style.animation, 'pulse');
   assert.equal(style.z, 1);
   assert.equal(node.abnormalCount, 1);
+  // AC-23 anchor, fourth item: the row projection carries the escalated badge.
+  assert.equal(renderRoleRow(node, LABELS).visual.badge, 'escalated');
 });
 
 test('AC-23: the rejected line turns red with the backflow arrow and lifts', () => {

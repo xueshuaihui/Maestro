@@ -56,7 +56,7 @@ function placeholders(template) {
 }
 
 // ---------------------------------------------------------------------------
-// 期望清单（冻结契约本体）：新增键 61 + 复用键 83 = 144。
+// 期望清单（冻结契约本体）：新增键 64 + 复用键 83 = 147。
 // ---------------------------------------------------------------------------
 
 /** 桌面新增键（键名即契约；值逐字断言见 EXPECTED_DESKTOP_VALUES）。 */
@@ -95,6 +95,9 @@ const EXPECTED_DESKTOP_KEYS = Object.freeze([
   'DESKTOP_ESCALATE_ROW',
   'DESKTOP_SUBFLOW_ROW',
   'DESKTOP_GROUP_ROW',
+  'GROUP_LABEL_CODING',
+  'GROUP_LABEL_RESEARCH',
+  'GROUP_LABEL_UNGROUPED',
   'DESKTOP_SUBFLOW_UNKNOWN',
   'DESKTOP_EDGE_ROW',
   'DESKTOP_EDGE_ROW_PARALLEL',
@@ -162,6 +165,9 @@ const EXPECTED_DESKTOP_VALUES = Object.freeze({
   DESKTOP_ESCALATE_ROW: '升级节点 {title} · {status}',
   DESKTOP_SUBFLOW_ROW: '子工作流：{title} · {n} 角色',
   DESKTOP_GROUP_ROW: '分组 {group} · {n} 角色',
+  GROUP_LABEL_CODING: '编码工程',
+  GROUP_LABEL_RESEARCH: '研究分析',
+  GROUP_LABEL_UNGROUPED: '未分组',
   DESKTOP_SUBFLOW_UNKNOWN: '子工作流 {id} · 角色数未知',
   DESKTOP_EDGE_ROW: '连接线 {from}→{to} · {direction} · {status}',
   DESKTOP_EDGE_ROW_PARALLEL: ' · {n} 并行交接',
@@ -227,6 +233,9 @@ const EXPECTED_DESKTOP_PLACEHOLDERS = Object.freeze({
   DESKTOP_ESCALATE_ROW: ['status', 'title'],
   DESKTOP_SUBFLOW_ROW: ['n', 'title'],
   DESKTOP_GROUP_ROW: ['group', 'n'],
+  GROUP_LABEL_CODING: [],
+  GROUP_LABEL_RESEARCH: [],
+  GROUP_LABEL_UNGROUPED: [],
   DESKTOP_SUBFLOW_UNKNOWN: ['id'],
   DESKTOP_EDGE_ROW: ['direction', 'from', 'status', 'to'],
   DESKTOP_EDGE_ROW_PARALLEL: ['n'],
@@ -298,7 +307,7 @@ const EXPECTED_ALL_KEYS = (() => {
 test('键全集冻结：下发键集合与期望清单精确相等（多键/少键都 fail）', () => {
   assert.deepEqual(Object.keys(UI_LABEL_KEYS).sort(), EXPECTED_ALL_KEYS);
   assert.equal(Object.keys(UI_LABEL_KEYS).length, EXPECTED_ALL_KEYS.length);
-  assert.equal(Object.keys(UI_LABEL_KEYS).length, 144, '新增 61 + 复用 83');
+  assert.equal(Object.keys(UI_LABEL_KEYS).length, 147, '新增 64 + 复用 83');
 });
 
 test('桌面新增键：DESKTOP_LABEL_KEYS 与期望值表逐字相等（A-14 新增段冻结）', () => {

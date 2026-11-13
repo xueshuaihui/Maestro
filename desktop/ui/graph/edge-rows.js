@@ -19,11 +19,15 @@
  *   caller annotates them; otherwise the id is used with a leading `role:`
  *   namespace stripped, so `role:dev` renders as `dev` instead of an internal
  *   id.
+ * - The label table may arrive in either accepted shape (B-18, same seam as
+ *   `renderLegend`): the flat key table or the `GET /ui/labels` body
+ *   `{ keys: { "<KEY>": "<template>" } }`. A table without `DESKTOP_EDGE_ROW`
+ *   throws a `TypeError` naming the key instead of degrading to `text: null`.
  *
  * Purity: no DOM, no fs, no wall clock, no `window`; inputs never mutated.
  */
 
-import { fillTemplate } from '../labels/labels.js';
+import { fillTemplate, resolveLabels } from '../labels/labels.js';
 
 /** Aggregate state -> status word key (A-11 last column uses the same states). */
 const STATUS_WORD_KEY = Object.freeze({
@@ -42,6 +46,25 @@ function textOf(labels, key) {
   return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
+/**
+ * Normalise either accepted label shape to the flat key table and assert the
+ * row template this projection cannot render without. Shape handling is
+ * delegated to `resolveLabels`, the same seam the legend uses.
+ *
+ * @param {unknown} labels flat key table or `{ keys: {...} }` payload
+ * @throws {TypeError} naming the missing key
+ * @returns {Record<string, string>}
+ */
+function requireLabelTable(labels) {
+  const table = resolveLabels(labels).keys;
+  if (textOf(table, 'DESKTOP_EDGE_ROW') === null) {
+    throw new TypeError(
+      'renderEdgeRow: label table (flat keys or { keys } payload) is missing DESKTOP_EDGE_ROW',
+    );
+  }
+  return table;
+}
+
 function endpointName(edge, side) {
   const title = side === 'from' ? edge?.fromTitle : edge?.toTitle;
   if (typeof title === 'string' && title.length > 0) return title;
@@ -54,49 +77,49 @@ function endpointName(edge, side) {
  * Project one connection line into the A-11 text row.
  *
  * @param {object} edge the frozen projection edge (read-only)
- * @param {Record<string, string>} labels the frozen label key table
- * @returns {{ id: string|null, text: string|null, hoverText: string|null,
+ * @param {Record<string, string> | { keys: Record<string, string> }} labels
+ *        the frozen label key table, flat or wrapped in a `/ui/labels` payload
+ * @returns {{ id: string|null, text: string, hoverText: string,
  *             statusText: string|null, directionText: string|null,
  *             direction: string, aggregateStatus: string|null,
  *             parallelCount: number, visual: object|null }}
+ * @throws {TypeError} when the resolved table lacks `DESKTOP_EDGE_ROW`
  */
 export function renderEdgeRow(edge, labels) {
+  const table = requireLabelTable(labels);
   const from = endpointName(edge, 'from');
   const to = endpointName(edge, 'to');
 
   const direction = edge?.direction === 'backflow' ? 'backflow' : 'forward';
   const directionText = textOf(
-    labels,
+    table,
     direction === 'backflow' ? 'DESKTOP_EDGE_DIRECTION_BACKFLOW' : 'DESKTOP_EDGE_DIRECTION_FORWARD',
   );
 
   const aggregateStatus = typeof edge?.aggregateStatus === 'string' ? edge.aggregateStatus : null;
   const statusKey = aggregateStatus === null ? null : STATUS_WORD_KEY[aggregateStatus] ?? null;
-  const statusText = statusKey === null ? null : textOf(labels, statusKey);
+  const statusText = statusKey === null ? null : textOf(table, statusKey);
 
   const parallelCount = Number.isInteger(edge?.parallelCount) && edge.parallelCount > 1
     ? edge.parallelCount
     : 0;
   const parallelText = parallelCount > 1
-    ? fillTemplate(textOf(labels, 'DESKTOP_EDGE_ROW_PARALLEL') ?? '', { n: parallelCount })
+    ? fillTemplate(textOf(table, 'DESKTOP_EDGE_ROW_PARALLEL') ?? '', { n: parallelCount })
     : '';
 
-  const rowTemplate = textOf(labels, 'DESKTOP_EDGE_ROW');
-  const build = (status) => (rowTemplate === null
-    ? null
-    : `${fillTemplate(rowTemplate, {
-      from,
-      to,
-      direction: directionText ?? '',
-      status: status ?? '',
-    })}${parallelText}`);
+  const build = (status) => `${fillTemplate(table.DESKTOP_EDGE_ROW, {
+    from,
+    to,
+    direction: directionText ?? '',
+    status: status ?? '',
+  })}${parallelText}`;
 
   const text = build(statusText);
 
   // A-11: hovering an accepted line shows the merged "processing" wording.
   let hoverText = text;
   if (aggregateStatus === 'accepted') {
-    const hoverStatus = textOf(labels, 'DESKTOP_EDGE_ROW_ACCEPTED_HOVER');
+    const hoverStatus = textOf(table, 'DESKTOP_EDGE_ROW_ACCEPTED_HOVER');
     if (hoverStatus !== null) hoverText = build(hoverStatus);
   }
 

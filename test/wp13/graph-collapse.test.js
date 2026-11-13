@@ -31,8 +31,7 @@ import { renderSpecialRow } from '../../desktop/ui/graph/node-rows.js';
 import { buildGraph } from '../../src/daemon/graph.js';
 import { buildRoleInstances } from '../../src/registry/role-instances.js';
 import { loadRegistry } from '../../src/registry/index.js';
-import { GROUP_LABEL } from '../../src/cli/labels.js';
-import { UI_LABEL_KEYS } from '../../src/daemon/http/labels.js';
+import { labelKeysPayload } from '../../src/daemon/http/labels.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(HERE, '..', '..');
@@ -40,19 +39,11 @@ const ORCH = path.join(REPO, 'bin', 'orch.js');
 const MOCK = path.join(REPO, 'test', 'fixtures', 'mock-acp-agent.js');
 
 /**
- * Group display names are not part of the frozen 144-key table yet, so the
- * label table is extended with the flattening convention the daemon uses
- * (`GROUP_LABEL_<GROUP>`). Without the extension the row falls back to the raw
- * group id, which is exactly what the module documents.
+ * The real `GET /ui/labels` key table (147 keys). Group display names are part
+ * of it since the A-14 supplement (decision K / B-16), so the fixture never
+ * fabricates `GROUP_LABEL_*` keys of its own.
  */
-const GROUP_KEYS = Object.fromEntries(
-  Object.entries(GROUP_LABEL).map(([name, text]) => [`GROUP_LABEL_${name.toUpperCase()}`, text]),
-);
-const LABELS = { ...UI_LABEL_KEYS, ...GROUP_KEYS };
-
-/** A-10 group rows, verbatim. */
-const A10_GROUP_CODING = '分组 编码工程 · 8 角色';
-const A10_GROUP_RESEARCH = '分组 研究分析 · 5 角色';
+const LABELS = labelKeysPayload().keys;
 
 /** Thirteen roles: eight `coding` (`c1`..`c8`) and five `research` (`r1`..`r5`). */
 function roleIds() {
@@ -142,10 +133,14 @@ test('AC-19: the group node labels are the A-10 rows verbatim', () => {
   const research = collapsed.groups.find((group) => group.id === 'group:research');
   assert.equal(coding.memberCount, 8);
   assert.equal(research.memberCount, 5);
-  assert.equal(renderSpecialRow(coding, LABELS).text, A10_GROUP_CODING);
-  assert.equal(renderSpecialRow(research, LABELS).text, A10_GROUP_RESEARCH);
-  // Without the group-name keys the row falls back to the raw group id.
-  assert.equal(renderSpecialRow(coding, UI_LABEL_KEYS).text, '分组 coding · 8 角色');
+  // The real `GET /ui/labels` body already carries both group display names
+  // (A-14 supplement), so `{ keys: {...} }` renders the verbatim A-10 rows.
+  const real = labelKeysPayload();
+  assert.equal(renderSpecialRow(coding, real).text, '分组 编码工程 · 8 角色');
+  assert.equal(renderSpecialRow(research, real).text, '分组 研究分析 · 5 角色');
+  // Groups without a registered display name fall back to the raw group id
+  // (known limitation of this iteration, never an invented name).
+  assert.equal(renderSpecialRow({ ...coding, group: 'ops' }, real).text, '分组 ops · 8 角色');
 });
 
 test('AC-19: expanded members return to their original layers and order', () => {
@@ -202,8 +197,8 @@ test('AC-19: a role without a group lands in the single ungrouped bucket', () =>
   assert.notEqual(ungrouped, undefined);
   assert.equal(ungrouped.memberCount, 3);
   assert.equal(ungrouped.group, null);
-  // The row keeps the placeholder, never an invented name.
-  assert.equal(renderSpecialRow(ungrouped, LABELS).text, '分组 — · 3 角色');
+  // B-17: the ungrouped bucket reads its display name from GROUP_LABEL_UNGROUPED.
+  assert.equal(renderSpecialRow(ungrouped, LABELS).text, '分组 未分组 · 3 角色');
 });
 
 test('AC-19: subworkflows stay folded and every ungrouped node stays visible', () => {
@@ -220,6 +215,19 @@ test('AC-19: subworkflows stay folded and every ungrouped node stays visible', (
   assert.equal(view.visibleIds.includes('S-001'), true);
   const subflow = view.nodes.find((node) => node.id === 'S-001');
   assert.equal(subflow.collapsed, true);
+
+  // B-21: a drifting `collapsed: false` on a subworkflow is normalised to true.
+  const drifted = autoCollapse({
+    nodes: [
+      ...graph.nodes,
+      { id: 'S-002', type: 'subworkflow', title: 'child', nodeIds: [], memberCount: 2, collapsed: false, abnormal: false },
+    ],
+    edges: graph.edges,
+  });
+  assert.equal(drifted.nodes.find((node) => node.id === 'S-002').collapsed, true);
+  assert.equal(drifted.visibleIds.includes('S-002'), true);
+  // The input node itself is never mutated.
+  assert.equal(drifted.source.nodes.find((node) => node.id === 'S-002').collapsed, false);
 });
 
 test('AC-19: toggling an unknown group changes nothing', () => {

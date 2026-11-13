@@ -29,7 +29,8 @@
  *
  * Subworkflows are always collapsed by the projection (`collapsed: true`) and
  * are not part of this model: a subworkflow group node is never a member of an
- * automatic group.
+ * automatic group. `buildView` re-asserts that state on every emitted node
+ * (B-21), so an upstream `collapsed: false` can never be drawn expanded.
  *
  * Purity: no DOM, no fs, no wall clock, no `window`; inputs never mutated.
  */
@@ -67,6 +68,18 @@ function isGroupNode(node) {
     && typeof node.id === 'string'
     && node.id.length > 0
     && Array.isArray(node.nodeIds);
+}
+
+/**
+ * Emit a node of the visible view. A subworkflow is always collapsed (B-21):
+ * the projection declares it once, and this normalisation keeps a drifting
+ * `collapsed: false` from rendering it expanded. Other nodes pass through.
+ */
+function viewNode(node) {
+  if (node !== null && typeof node === 'object' && node.type === 'subworkflow' && node.collapsed !== true) {
+    return { ...node, collapsed: true };
+  }
+  return node;
 }
 
 /**
@@ -163,7 +176,7 @@ function buildView({ baseNodes, baseEdges, groups, expanded, active, threshold }
       groups: [],
       expanded: [],
       collapsedGroupIds: [],
-      nodes: baseNodes.slice(),
+      nodes: baseNodes.map(viewNode),
       edges: baseEdges.slice(),
       memberGroup: {},
       members: {},
@@ -186,11 +199,11 @@ function buildView({ baseNodes, baseEdges, groups, expanded, active, threshold }
     const id = typeof node?.id === 'string' ? node.id : null;
     const groupId = id === null ? undefined : memberGroup[id];
     if (groupId === undefined) {
-      nodes.push(node);
+      nodes.push(viewNode(node));
       continue;
     }
     emitGroup(groupId);
-    if (expandedSet.has(groupId)) nodes.push(node);
+    if (expandedSet.has(groupId)) nodes.push(viewNode(node));
   }
   for (const group of groups) emitGroup(group.id);
 

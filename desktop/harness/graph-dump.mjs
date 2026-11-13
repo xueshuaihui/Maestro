@@ -12,9 +12,12 @@
  *       role registry, landed traces and the event replay are read here (the
  *       projection itself stays pure). With --instance the --payload value is
  *       the OUTPUT payload path; without it, --payload is an INPUT payload.
- *   node desktop/harness/graph-dump.mjs --payload <in.json> [--out <out.json>]
+ *   node desktop/harness/graph-dump.mjs --payload <in.json> [--project <root>] [--out <out.json>]
  *       Re-export an existing graph payload, keeping its nodes/edges and
- *       filling the legend/hover segments with their current (null) values.
+ *       filling the legend/hover segments. The label table comes from the
+ *       payload `labels` field, else from `--project <root>` (that root's
+ *       `.orch/desktop.json` loopback `GET /ui/labels`). Without any label
+ *       source the `legend` and `hover` segments stay `null`.
  *       The output goes to stdout when no output path is given.
  *
  * Exit codes: 0 ok, 1 load/build failure, 2 bad arguments.
@@ -37,7 +40,7 @@ function fail(message) {
   process.exit(message === USAGE_ERROR ? 2 : 1);
 }
 
-const USAGE_ERROR = 'usage: graph-dump.mjs --project <root> --instance <id> [--payload <out.json>] | --payload <in.json> [--out <out.json>]';
+const USAGE_ERROR = 'usage: graph-dump.mjs --project <root> --instance <id> [--payload <out.json>] | --payload <in.json> [--project <root>] [--out <out.json>]';
 
 function parseArgs(argv) {
   const opts = { project: null, instance: null, payload: null, out: null };
@@ -241,6 +244,9 @@ if (opts.instance !== null) {
 } else {
   const payload = readJson(opts.payload, 'payload');
   const source = payload !== null && typeof payload === 'object' ? payload : {};
-  const segments = await fillSegments(source, { root: null, payload: source });
+  // B-19: `--project` is an optional label source on the re-export branch too,
+  // so a payload without `labels` can still fill legend/hover.
+  const root = opts.project === null ? null : path.resolve(opts.project);
+  const segments = await fillSegments(source, { root, payload: source });
   emit({ ...segments, ...source }, opts.out);
 }
