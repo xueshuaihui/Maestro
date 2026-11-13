@@ -771,6 +771,92 @@ test('Q-1: the query project reaches state.project.root and the offsets seam', a
 });
 
 // ---------------------------------------------------------------------------
+// 裁决 R / R-06：无 project root → 项目提示页（不是列表空态）
+// ---------------------------------------------------------------------------
+
+test('R-06: no project root assembles the project prompt page, never the empty list', () => {
+  for (const project of [undefined, null, {}, { root: '' }]) {
+    const app = createApp({ labels: LABELS, project });
+    const model = app.compose();
+    assert.equal(model.view, 'project');
+    assert.equal(model.projectMessage, LABELS.DESKTOP_PROJECT_MISSING);
+    assert.equal(model.emptyText, null, 'the empty list line must never paint');
+    assert.equal(model.rows.length, 0);
+    assert.equal(model.operable, false);
+  }
+
+  // The window mounts before `/ui/labels` arrives: the summary keeps its key
+  // and resolves once the table lands.
+  const late = createApp({ labels: null, project: null });
+  assert.equal(late.compose().view, 'project');
+  late.setLabels({ keys: LABELS });
+  assert.equal(late.compose().projectMessage, LABELS.DESKTOP_PROJECT_MISSING);
+
+  // An unusable directory stops on the same page with the invalid wording.
+  const invalid = resolveProject({
+    argRoot: '/tmp/maestro-i10a-proj/nope',
+    isUsable: () => false,
+    labels: LABELS,
+  });
+  assert.equal(invalid.messageKey, 'DESKTOP_PROJECT_INVALID');
+  const invalidModel = createApp({ labels: LABELS, project: invalid }).compose();
+  assert.equal(invalidModel.view, 'project');
+  assert.equal(invalidModel.projectMessage, '项目 不可用 · /tmp/maestro-i10a-proj/nope');
+  assert.equal(invalidModel.emptyText, null);
+});
+
+// ---------------------------------------------------------------------------
+// 裁决 R / R-04：sessionStorage 单键恢复凭据（URL 无 query）
+// ---------------------------------------------------------------------------
+
+/** Install a fake sessionStorage for one test and return the restore hook. */
+function stubSessionStorage(initial) {
+  const store = new Map(Object.entries(initial ?? {}));
+  const previous = globalThis.sessionStorage;
+  globalThis.sessionStorage = {
+    getItem: (key) => (store.has(key) ? store.get(key) : null),
+    setItem: (key, value) => { store.set(key, String(value)); },
+    removeItem: (key) => { store.delete(key); },
+  };
+  return {
+    store,
+    restore() {
+      if (previous === undefined) delete globalThis.sessionStorage;
+      else globalThis.sessionStorage = previous;
+    },
+  };
+}
+
+test('R-04: a stored token is restored when the URL carries no query', () => {
+  const calls = [];
+  const restoreWindow = stubWindow('', calls);
+  const storage = stubSessionStorage({ 'maestro.desktop.token': 'tok-restored' });
+  try {
+    const creds = takeLocationCredentials();
+    assert.deepEqual(creds, { port: 51234, token: 'tok-restored', project: null });
+    assert.deepEqual(calls, [], 'nothing to scrub when the URL is already clean');
+  } finally {
+    storage.restore();
+    restoreWindow();
+  }
+});
+
+test('R-04: a query token wins and is written to the single sessionStorage key', () => {
+  const calls = [];
+  const restoreWindow = stubWindow('?token=tok-query', calls);
+  const storage = stubSessionStorage({ 'maestro.desktop.token': 'tok-stale' });
+  try {
+    const creds = takeLocationCredentials();
+    assert.equal(creds.token, 'tok-query');
+    assert.equal(storage.store.get('maestro.desktop.token'), 'tok-query');
+    assert.deepEqual(calls.at(-1), [null, '', '/ui/']);
+  } finally {
+    storage.restore();
+    restoreWindow();
+  }
+});
+
+// ---------------------------------------------------------------------------
 // S-02：真实守护进程的批次后置端到端校验
 // ---------------------------------------------------------------------------
 

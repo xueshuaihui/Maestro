@@ -163,22 +163,40 @@ function asText(value) {
 }
 
 /**
+ * First-screen project summary (decision R / R-06). A missing summary — no
+ * argument at all, `null`, or an object that carries neither a view nor a
+ * usable root — resolves to the project prompt page instead of the instance
+ * list, so a window without a project root can never show the empty list.
+ */
+function initialProject(project, labels) {
+  if (project === null || project === undefined || typeof project !== 'object') {
+    return resolveProject({ labels });
+  }
+  const view = typeof project.view === 'string' && project.view.length > 0;
+  const root = typeof project.root === 'string' && project.root.trim().length > 0;
+  if (!view && !root) return resolveProject({ labels });
+  return project;
+}
+
+/**
  * Create the assembly model. No DOM is touched here: `compose()` returns the
  * full view model and `mountApp()` paints it.
  *
  * @param {object} [options]
  * @param {unknown} [options.labels] `/ui/labels` body or flat table
- * @param {object} [options.project] summary from `resolveProject`
+ * @param {object} [options.project] summary from `resolveProject`; absent or
+ *   empty resolves to the project prompt page (decision R / R-06)
  * @param {object} [options.io] transport seam (see `mountApp`)
  * @param {object} [options.modules] module overrides (same shapes)
  */
 export function createApp({ labels, project, io = {}, modules = {} } = {}) {
   const m = { ...DEFAULT_MODULES, ...(modules ?? {}) };
   const transport = io ?? {};
+  const labelKeys = m.resolveLabels(labels ?? {}).keys;
 
   const state = {
-    labels: m.resolveLabels(labels ?? {}).keys,
-    project: project ?? { view: 'instances' },
+    labels: labelKeys,
+    project: initialProject(project, labelKeys),
     view: 'instances',
     connection: m.createConnectionState({
       connect: typeof transport.connect === 'function' ? transport.connect : undefined,
@@ -1505,25 +1523,55 @@ export function mountApp({
 // ---------------------------------------------------------------------------
 
 /**
- * Bearer token taken from the page query at startup (decision M). It lives in
- * this module only: never `localStorage`, never `sessionStorage`, never a
- * second URL after `takeLocationCredentials()` scrubbed it.
+ * Bearer token kept in memory for this page instance (decision R.3). It is
+ * also persisted under one `sessionStorage` key so a reload or a second
+ * navigation recovers it; no persistent web storage and no printed token.
  */
 let locationToken = null;
 
+/** The single sessionStorage key that may hold the desktop token. */
+const TOKEN_STORAGE_KEY = 'maestro.desktop.token';
+
+/** Read the stored token; absent storage or a throwing getter is "none". */
+function readStoredToken() {
+  try {
+    const storage = typeof globalThis.sessionStorage === 'undefined' ? null : globalThis.sessionStorage;
+    if (storage === null || typeof storage.getItem !== 'function') return null;
+    const value = storage.getItem(TOKEN_STORAGE_KEY);
+    return typeof value === 'string' && value.length > 0 ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Persist the token best-effort; a blocked storage is a silent no-op. */
+function writeStoredToken(token) {
+  try {
+    const storage = typeof globalThis.sessionStorage === 'undefined' ? null : globalThis.sessionStorage;
+    if (storage === null || typeof storage.setItem !== 'function') return;
+    storage.setItem(TOKEN_STORAGE_KEY, token);
+  } catch {
+    // A disabled / private storage must never break the page.
+  }
+}
+
 /**
- * Read `?token=` (and the shell-supplied `?project=`) from the page URL once,
- * keep both in memory and remove them from the address bar
- * (`history.replaceState`). Parsing the query is how the shell hands the
- * credential and the opened project root to the WebView (static assets accept
- * the token, every data route still requires the Bearer header). Safe without
- * a DOM: a test process that merely imports this module calls nothing here.
+ * Read the credential once: `?token=` from the page URL (decision M), then the
+ * sessionStorage copy (decision R.3 / R-04), then the injected
+ * `__MAESTRO_DESKTOP__.token` global. A query value is written back to memory
+ * and to the single sessionStorage key, then scrubbed from the address bar
+ * (`history.replaceState`). The shell-supplied `?project=` (decision Q) is
+ * captured in the same pass.
+ *
+ * Safe without a DOM or a storage implementation: a test process that merely
+ * imports this module calls nothing here.
  */
 export function takeLocationCredentials() {
   const injected = typeof window === 'undefined' ? {} : (window.__MAESTRO_DESKTOP__ ?? {});
   const location = typeof window === 'undefined' ? null : window.location ?? null;
   let queryPort = null;
   let queryProject = null;
+  let queryToken = null;
   if (location !== null) {
     try {
       const params = new URLSearchParams(typeof location.search === 'string' ? location.search : '');
@@ -1533,7 +1581,7 @@ export function takeLocationCredentials() {
       // so the window assembles with a real `project.root` instead of null.
       const project = params.get('project');
       if (typeof project === 'string' && project.trim().length > 0) queryProject = project.trim();
-      if (token !== null && token.length > 0) locationToken = String(token);
+      if (typeof token === 'string' && token.length > 0) queryToken = token;
       if (params.has('token') || params.has('project')) {
         params.delete('token');
         params.delete('project');
@@ -1547,8 +1595,14 @@ export function takeLocationCredentials() {
       // A hostile URL or a missing history must never block the page.
     }
   }
+  // Priority: query > sessionStorage > in-memory cache (the cache only serves
+  // environments without a usable storage after the query was scrubbed).
+  const token = queryToken ?? readStoredToken() ?? locationToken;
+  if (token !== null) {
+    locationToken = token;
+    if (queryToken !== null) writeStoredToken(queryToken);
+  }
   const port = queryPort ?? injected.port ?? (location === null ? null : location.port || null);
-  const token = locationToken ?? injected.token ?? null;
   if (port === null || token === null) return null;
   return { port: Number(port), token: String(token), project: queryProject };
 }

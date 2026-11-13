@@ -492,16 +492,20 @@ test('unknown paths answer 404 with a code-only body', async () => {
   }
 });
 
-test('static /ui/* accepts the query token while the data plane stays Bearer-only', async () => {
-  // Decision M / B-25: WebView navigation cannot set the Authorization header,
-  // so a GET that resolves to a real static file may present `?token=`. Every
-  // handler-owned path (here `/ui/labels`) keeps refusing that credential.
+test('decision R: the static face is public while the data plane stays Bearer-only', async () => {
+  // Decision R (superseding decision M / B-25): the WebView's ES module
+  // imports (`import './app.js'`) cannot carry a header or a query, so a GET
+  // that resolves to a real file inside the static root is served without any
+  // credential. Handler-owned paths (`/ui/labels`) keep refusing both the
+  // missing header and the query credential.
   const root = makeRoot();
   try {
     const uiDir = path.join(root, 'ui-fixture');
     fs.mkdirSync(uiDir, { recursive: true });
     const page = '<html><body>desktop</body></html>';
+    const script = 'export const boot = 1;\n';
     fs.writeFileSync(path.join(uiDir, 'index.html'), page);
+    fs.writeFileSync(path.join(uiDir, 'app.js'), script);
     const store = createStore({ root });
     const bus = createEventBus({ store });
     const httpServer = createHttpServer({
@@ -526,13 +530,31 @@ test('static /ui/* accepts the query token while the data plane stays Bearer-onl
       assert.equal(viaQuery.status, 200);
       assert.equal(await viaQuery.text(), expected);
 
+      // The top-level document and every module it imports are public.
       const anonymous = await fetch(`${base}/ui/index.html`);
-      assert.equal(anonymous.status, 401);
-      assert.deepEqual(JSON.parse(await anonymous.text()), { error: 'UNAUTHORIZED' });
+      assert.equal(anonymous.status, 200);
+      assert.equal(await anonymous.text(), expected);
+
+      const scriptViaBearer = await fetch(`${base}/ui/app.js`, { headers });
+      assert.equal(scriptViaBearer.status, 200);
+      const moduleText = await scriptViaBearer.text();
+      assert.equal(moduleText, script);
+      const scriptAnonymous = await fetch(`${base}/ui/app.js`);
+      assert.equal(scriptAnonymous.status, 200);
+      assert.equal(await scriptAnonymous.text(), moduleText);
+
+      // Data plane: no credential, and the query credential, both stay 401.
+      const labelsAnonymous = await fetch(`${base}/ui/labels`);
+      assert.equal(labelsAnonymous.status, 401);
+      assert.deepEqual(JSON.parse(await labelsAnonymous.text()), { error: 'UNAUTHORIZED' });
 
       const labelsViaQuery = await fetch(`${base}/ui/labels?token=${listened.token}`);
       assert.equal(labelsViaQuery.status, 401);
       assert.deepEqual(JSON.parse(await labelsViaQuery.text()), { error: 'UNAUTHORIZED' });
+
+      const instancesAnonymous = await fetch(`${base}/instances`);
+      assert.equal(instancesAnonymous.status, 401);
+      assert.deepEqual(JSON.parse(await instancesAnonymous.text()), { error: 'UNAUTHORIZED' });
     } finally {
       await httpServer.close();
     }

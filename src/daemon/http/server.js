@@ -3,14 +3,15 @@
  * S-02). Loopback-only HTTP server carrying the desktop channel:
  *
  * - binds `127.0.0.1:0` (ephemeral port, loopback only, AC-27);
- * - generates a 32-byte random hex Bearer token; every request without the
- *   exact `Authorization: Bearer <token>` header gets `401` with a body that
- *   contains only the error code (D-1);
- * - the single exception (decision M / B-25): a `GET` that resolves to a real
- *   file inside the static root may carry the same token as `?token=`, because
- *   WebView navigation cannot attach headers. Every handler-owned path
- *   (`/ui/labels`, REST, SSE) stays Bearer-only: the query credential is only
- *   honoured once the request is known to fall through to the static branch;
+ * - generates a 32-byte random hex Bearer token; every data-plane request
+ *   without the exact `Authorization: Bearer <token>` header gets `401` with a
+ *   body that contains only the error code (D-1);
+ * - the single exception (decision R, superseding decision M): the static face
+ *   is public. A `GET` that resolves to a real file inside the static root and
+ *   is not claimed by a handler needs no credential at all, because the
+ *   WebView's ES module imports (`import './app.js'`) cannot carry either the
+ *   header or a query. Every handler-owned path (`/ui/labels`, REST, SSE)
+ *   stays Bearer-only, so `/ui/labels?token=` is still `401`;
  * - writes `<root>/.orch/desktop.json` (`{port, token, pid, generation,
  *   startedAt}`) atomically AFTER listen succeeds, and removes it on close
  *   (D-1; the path constant lives here because `src/persistence/paths.js` is
@@ -333,8 +334,8 @@ export function createHttpServer({
   /**
    * Whether the request is owned by a handler instead of the static branch:
    * the injected table (S-02), the WP-2 built-ins and the whole-path WP-3
-   * dispatcher. `/ui/labels` also starts with `/ui/`, so the query credential
-   * must never be decided by a path prefix (decision M).
+   * dispatcher. `/ui/labels` also starts with `/ui/`, so the public static
+   * exception must never be decided by a path prefix (decision R).
    */
   function claimedByHandler(method, pathname) {
     for (const entry of injectedRoutes) {
@@ -365,19 +366,22 @@ export function createHttpServer({
   }
 
   /**
-   * Two credentials, decision M: the Bearer header everywhere, plus `?token=`
-   * on `GET` requests that would reach the static branch. The query value is
-   * compared to the same `meta.token` and is never logged or echoed.
+   * Decision R: the static face is public. A `GET` that resolves to a real
+   * file inside the static root and is not claimed by a handler is allowed
+   * without any credential — the WebView's `import './app.js'` cannot carry the
+   * header, and a query would only survive the first hop. The data plane is
+   * unchanged: the Bearer header stays the only accepted credential for every
+   * handler-owned path (`/ui/labels`, REST, SSE), and `?token=` is not one.
    */
   async function authorized(req, url) {
+    if (req.method === 'GET' && url !== null
+      && !claimedByHandler(req.method, url.pathname)
+      && await isStaticFile(url.pathname)) {
+      return true;
+    }
     if (!meta) return false;
     const header = req.headers.authorization ?? '';
-    if (header === `Bearer ${meta.token}`) return true;
-    if (req.method !== 'GET' || url === null) return false;
-    const provided = url.searchParams.get('token');
-    if (provided === null || provided !== meta.token) return false;
-    if (claimedByHandler(req.method, url.pathname)) return false;
-    return isStaticFile(url.pathname);
+    return header === `Bearer ${meta.token}`;
   }
 
   async function handleRequest(req, res) {
