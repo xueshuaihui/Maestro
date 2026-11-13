@@ -857,6 +857,48 @@ test('R-04: a query token wins and is written to the single sessionStorage key',
 });
 
 // ---------------------------------------------------------------------------
+// 裁决 R / R-09 + R-10：注入源回退不被删；重载同时恢复 project root
+// ---------------------------------------------------------------------------
+
+test('R-09: the injected __MAESTRO_DESKTOP__ token still works as the last resort', () => {
+  const calls = [];
+  const restoreWindow = stubWindow('', calls);
+  const storage = stubSessionStorage({});
+  try {
+    globalThis.window.__MAESTRO_DESKTOP__ = { port: 51234, token: 'tok-injected' };
+    const creds = takeLocationCredentials();
+    assert.deepEqual(creds, { port: 51234, token: 'tok-injected', project: null });
+  } finally {
+    delete globalThis.window.__MAESTRO_DESKTOP__;
+    storage.restore();
+    restoreWindow();
+  }
+});
+
+test('R-10: a reload restores the project root from the single sessionStorage key', () => {
+  const calls = [];
+  const restoreWindow = stubWindow('', calls);
+  const storage = stubSessionStorage({
+    'maestro.desktop.token': 'tok-reload',
+    'maestro.desktop.project': '/tmp/maestro-reload-root',
+  });
+  try {
+    const creds = takeLocationCredentials();
+    assert.deepEqual(creds, {
+      port: 51234,
+      token: 'tok-reload',
+      project: '/tmp/maestro-reload-root',
+    });
+    const summary = resolveMountProject({ credentials: creds, labels: LABELS });
+    assert.equal(summary.view, 'instances');
+    assert.equal(summary.root, '/tmp/maestro-reload-root');
+  } finally {
+    storage.restore();
+    restoreWindow();
+  }
+});
+
+// ---------------------------------------------------------------------------
 // S-02：真实守护进程的批次后置端到端校验
 // ---------------------------------------------------------------------------
 

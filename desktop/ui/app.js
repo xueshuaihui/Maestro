@@ -1532,6 +1532,9 @@ let locationToken = null;
 /** The single sessionStorage key that may hold the desktop token. */
 const TOKEN_STORAGE_KEY = 'maestro.desktop.token';
 
+/** The single sessionStorage key that may hold the shell-supplied project root. */
+const PROJECT_STORAGE_KEY = 'maestro.desktop.project';
+
 /** Read the stored token; absent storage or a throwing getter is "none". */
 function readStoredToken() {
   try {
@@ -1550,6 +1553,29 @@ function writeStoredToken(token) {
     const storage = typeof globalThis.sessionStorage === 'undefined' ? null : globalThis.sessionStorage;
     if (storage === null || typeof storage.setItem !== 'function') return;
     storage.setItem(TOKEN_STORAGE_KEY, token);
+  } catch {
+    // A disabled / private storage must never break the page.
+  }
+}
+
+/** Read the stored project root; absent storage or a throwing getter is "none". */
+function readStoredProject() {
+  try {
+    const storage = typeof globalThis.sessionStorage === 'undefined' ? null : globalThis.sessionStorage;
+    if (storage === null || typeof storage.getItem !== 'function') return null;
+    const value = storage.getItem(PROJECT_STORAGE_KEY);
+    return typeof value === 'string' && value.length > 0 ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Persist the project root best-effort; a blocked storage is a silent no-op. */
+function writeStoredProject(root) {
+  try {
+    const storage = typeof globalThis.sessionStorage === 'undefined' ? null : globalThis.sessionStorage;
+    if (storage === null || typeof storage.setItem !== 'function') return;
+    storage.setItem(PROJECT_STORAGE_KEY, root);
   } catch {
     // A disabled / private storage must never break the page.
   }
@@ -1595,16 +1621,20 @@ export function takeLocationCredentials() {
       // A hostile URL or a missing history must never block the page.
     }
   }
-  // Priority: query > sessionStorage > in-memory cache (the cache only serves
-  // environments without a usable storage after the query was scrubbed).
-  const token = queryToken ?? readStoredToken() ?? locationToken;
+  // Priority: query > sessionStorage > injected global > in-memory cache. The
+  // cache is the last resort for environments without a usable storage; a real
+  // source (query / storage / injected) always outranks a stale cached value.
+  const token = queryToken ?? readStoredToken() ?? injected.token ?? locationToken ?? null;
   if (token !== null) {
     locationToken = token;
     if (queryToken !== null) writeStoredToken(queryToken);
   }
+  // Decision R.10: a reload keeps the project root too, not only the token.
+  const project = queryProject ?? readStoredProject();
+  if (project !== null && queryProject !== null) writeStoredProject(queryProject);
   const port = queryPort ?? injected.port ?? (location === null ? null : location.port || null);
   if (port === null || token === null) return null;
-  return { port: Number(port), token: String(token), project: queryProject };
+  return { port: Number(port), token: String(token), project };
 }
 
 /**
