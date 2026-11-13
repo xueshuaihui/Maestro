@@ -234,13 +234,33 @@ async function fillSegments(graph, { root, payload } = {}) {
   return { legend, hover };
 }
 
+/**
+ * R-01 (decision L): the freshly filled segments must win over the source
+ * payload. The earlier `{ ...segments, ...source }` order let an input that
+ * explicitly carried `legend: null` / `hover: null` overwrite the new value,
+ * so a second export stayed empty. `source` therefore comes first and a
+ * `null` segment is only kept when nothing new was produced.
+ *
+ * @param {object} source the payload being re-exported (nodes/edges/...)
+ * @param {{legend: object|null, hover: object|null}} segments filled segments
+ * @returns {object} the merged payload
+ */
+function mergeSegments(source, segments) {
+  const base = source !== null && typeof source === 'object' ? source : {};
+  return {
+    ...base,
+    legend: segments.legend ?? base.legend ?? null,
+    hover: segments.hover ?? base.hover ?? null,
+  };
+}
+
 const opts = parseArgs(process.argv.slice(2));
 
 if (opts.instance !== null) {
   const graph = await buildFromProject(opts);
   const root = path.resolve(opts.project);
   const segments = await fillSegments(graph, { root, payload: null });
-  emit({ ...segments, ...graph }, opts.payload ?? opts.out);
+  emit(mergeSegments(graph, segments), opts.payload ?? opts.out);
 } else {
   const payload = readJson(opts.payload, 'payload');
   const source = payload !== null && typeof payload === 'object' ? payload : {};
@@ -248,5 +268,5 @@ if (opts.instance !== null) {
   // so a payload without `labels` can still fill legend/hover.
   const root = opts.project === null ? null : path.resolve(opts.project);
   const segments = await fillSegments(source, { root, payload: source });
-  emit({ ...segments, ...source }, opts.out);
+  emit(mergeSegments(source, segments), opts.out);
 }
