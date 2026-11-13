@@ -27,7 +27,13 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { buildClosedProbe, buildGraphShownProbe, createApp } from '../../desktop/ui/app.js';
+import {
+  buildClosedProbe,
+  buildGraphShownProbe,
+  createApp,
+  createLoopbackTransport,
+  parseSseBlock,
+} from '../../desktop/ui/app.js';
 import { createConnectionState } from '../../desktop/ui/connection.js';
 import { resolveProject } from '../../desktop/ui/project.js';
 import { UI_LABEL_KEYS } from '../../src/daemon/http/labels.js';
@@ -122,7 +128,7 @@ function makeApp({ labels = LABELS, project = { view: 'instances' }, io = {} } =
     getGraph: async () => ({ status: 200, body: graphPayload() }),
     getWorkflows: async () => ({ status: 200, body: { items: [] } }),
     postInstance: async () => ({ status: 200, body: { instanceId: 'INST-010' } }),
-    writeViewOffsets: async (instanceId, payload, root) => writes.push({ instanceId, payload, root }),
+    writeViewOffsets: async (args) => writes.push(args),
     probe: (event) => probes.push(event),
     ...io,
   };
@@ -568,15 +574,132 @@ test('AC-22: a drag writes the views shape and reset clears it', async () => {
   assert.equal(moved.x, base.x + 40);
   assert.equal(moved.y, base.y + 60);
   assert.equal(writes.length, 1);
-  assert.equal(writes[0].instanceId, 'INST-001');
-  assert.deepEqual(writes[0].payload.offsets, { 'role:dev': { dx: 40, dy: 60 } });
-  assert.match(writes[0].payload.updatedAt, /^\d{4}-\d{2}-\d{2}T/);
+  // AC-22 / split 3.2: the transport receives the three-field seam and the
+  // offsets map stays flat; the shell adds `updatedAt` when it writes the file.
+  assert.equal(writes[0].instance_id, 'INST-001');
+  assert.equal(writes[0].root, null);
+  assert.deepEqual(writes[0].offsets, { 'role:dev': { dx: 40, dy: 60 } });
+  assert.equal(writes[0].offsets.offsets, undefined);
+  assert.equal(writes[0].offsets.updatedAt, undefined);
 
   app.resetView();
   const reset = app.compose().graph.nodes.find((node) => node.id === 'role:dev');
   assert.equal(reset.x, base.x);
   assert.equal(writes.length, 2);
-  assert.deepEqual(writes[1].payload.offsets, {});
+  assert.deepEqual(writes[1].offsets, {});
+});
+
+// ---------------------------------------------------------------------------
+// B-31 接缝：SSE 原文 → 解析 → setGraph / invoke 实参形状 / 重开读回偏移
+// ---------------------------------------------------------------------------
+
+/** Install a fake shell bridge for one test and return the restore hook. */
+function stubTauri(invoke) {
+  const previous = globalThis.window;
+  globalThis.window = { ...(previous ?? {}), __TAURI__: { core: { invoke } } };
+  return () => {
+    if (previous === undefined) delete globalThis.window;
+    else globalThis.window = previous;
+  };
+}
+
+test('B-31 seam 1: the raw graph.snapshot frame replaces the graph through the SSE parser', async () => {
+  const { app } = makeApp();
+  await app.openGraph('INST-001');
+  assert.equal(app.state().graph.rev, 10);
+
+  const next = graphPayload({
+    rev: 42,
+    nodes: [
+      roleNode('role:dev', '开发'),
+      roleNode('role:qa', '测试'),
+      { id: 'H-001', type: 'human', title: '人工验收', status: 'pending', abnormal: false },
+    ],
+  });
+  const raw = `event: graph.snapshot\ndata: ${JSON.stringify({ rev: 42, instanceId: 'INST-001', type: 'snapshot', key: null, payload: next })}\n\n`;
+  const frame = parseSseBlock(raw.trimEnd());
+  assert.equal(frame.event, 'graph.snapshot');
+  assert.equal(frame.type, 'graph.snapshot', 'the event name wins over data.type');
+
+  const result = app.handleFrame(frame);
+  assert.equal(result.repaint, 'graph');
+  assert.equal(app.state().graph.rev, 42);
+  assert.equal(app.compose().graph.nodes.length, 3, 'the snapshot must replace the graph');
+
+  const again = parseSseBlock(
+    `event: graph.snapshot\ndata: ${JSON.stringify({ rev: 43, instanceId: 'INST-001', type: 'graph.snapshot', payload: graphPayload({ rev: 43 }) })}`,
+  );
+  assert.equal(app.handleFrame(again).repaint, 'graph');
+  assert.equal(app.state().graph.rev, 43);
+});
+
+test('B-31 seam 2: writeViewOffsets hands the shell the three-field invoke shape', async () => {
+  const calls = [];
+  const restore = stubTauri(async (command, args) => {
+    calls.push({ command, args });
+    return null;
+  });
+  try {
+    const transport = createLoopbackTransport({ port: 51234, token: 'tok' });
+    await transport.writeViewOffsets({
+      root: '/tmp/maestro-i10a-view',
+      instance_id: 'INST-001',
+      offsets: { 'T-002': { dx: 40, dy: 60 } },
+    });
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].command, 'write_view_command');
+    assert.deepEqual(calls[0].args, {
+      root: '/tmp/maestro-i10a-view',
+      instance_id: 'INST-001',
+      offsets: { 'T-002': { dx: 40, dy: 60 } },
+    });
+    assert.equal(calls[0].args.offsets.offsets, undefined, 'the offsets map is never wrapped twice');
+    assert.equal(calls[0].args.offsets.updatedAt, undefined, 'updatedAt belongs to the shell');
+  } finally {
+    restore();
+  }
+});
+
+test('B-31 seam 3: reopening an instance replays the stored offsets onto the base coordinates', async () => {
+  const files = new Map();
+  const restore = stubTauri(async (command, args) => {
+    if (command === 'write_view_command') {
+      files.set(args.instance_id, { offsets: args.offsets, updatedAt: '2026-01-01T00:00:00.000Z' });
+      return null;
+    }
+    if (command === 'read_view_command') return files.get(args.instance_id) ?? null;
+    return null;
+  });
+  try {
+    const transport = createLoopbackTransport({ port: 51234, token: 'tok' });
+    const app = createApp({
+      labels: LABELS,
+      project: { view: 'instances', root: '/tmp/maestro-i10a-view' },
+      io: {
+        ...transport,
+        getLabels: async () => ({ status: 200, body: { keys: LABELS } }),
+        getGraph: async () => ({ status: 200, body: graphPayload() }),
+      },
+    });
+    await app.openGraph('INST-001');
+    const base = app.compose().graph.nodes.find((node) => node.id === 'role:dev');
+
+    app.dragEnd('role:dev', 40, 60);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.deepEqual(files.get('INST-001'), {
+      offsets: { 'role:dev': { dx: 40, dy: 60 } },
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    }, 'the shell file stays single-layer');
+
+    app.backToList();
+    await app.openGraph('INST-001');
+    const reopened = app.compose().graph.nodes.find((node) => node.id === 'role:dev');
+    assert.equal(reopened.x, base.x + 40);
+    assert.equal(reopened.y, base.y + 60);
+    assert.deepEqual(app.state().offsets, { 'role:dev': { dx: 40, dy: 60 } });
+  } finally {
+    restore();
+  }
 });
 
 // ---------------------------------------------------------------------------

@@ -44,7 +44,7 @@ import {
   renderStarted,
   validateNewInstance,
 } from './list/new-instance.js';
-import { ARC_LIFT, computeLayout } from './graph/layout.js';
+import { computeLayout } from './graph/layout.js';
 import { createViewState } from './graph/view.js';
 import { autoCollapse, toggleGroup } from './graph/collapse.js';
 import { elementStyle } from './graph/style.js';
@@ -90,16 +90,16 @@ const CONTROL_RETRY = '\u21BB';
 /** Aggregate states whose line label is visible without hovering (A-11). */
 const NOT_STARTED = 'not_started';
 
-/** Cards fed to the board projection when only the graph payload is known. */
-function boardCardsFromGraph(graph) {
-  const nodes = Array.isArray(graph?.nodes) ? graph.nodes : [];
-  return nodes.map((node) => ({
-    nodeId: node.id,
-    id: node.id,
-    state: node.status,
-    roleId: node.roleId,
-    title: node.title,
-  }));
+/**
+ * Snapshot cards fed to the board projection (decision O / B-26).
+ *
+ * The graph payload carries `stateNodes: [{ nodeId, state }]` — the
+ * orchestration nine-state vocabulary the board reads. The role status tokens
+ * are five and never stand in for those states, so a payload without
+ * `stateNodes` degrades to an empty board instead of inventing states.
+ */
+function boardStateNodes(graph) {
+  return Array.isArray(graph?.stateNodes) ? graph.stateNodes : [];
 }
 
 function nodeIndex(graph) {
@@ -299,6 +299,12 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         state.view = 'instances';
         return api;
       }
+      // Replay the stored drag offsets of this instance before the projection
+      // lands, so the first paint already carries them (AC-22). A missing file,
+      // a foreign instance id or a failed read is "no preferences", never an
+      // error and never a blocked render.
+      const stored = await readOffsets(id);
+      if (stored !== null) state.offsets = stored;
       let answer = null;
       try {
         answer = await transport.getGraph?.(id);
@@ -315,14 +321,14 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         if (status === 404) {
           state.notice = {
             key: 'DESKTOP_GRAPH_MISSING',
-            text: fill(state.labels?.DESKTOP_GRAPH_MISSING, { id }),
+            text: noticeText('DESKTOP_GRAPH_MISSING', { id }),
             retryable: true,
             returnable: true,
           };
         } else if (status === 422) {
           state.notice = {
             key: 'DESKTOP_LIST_UNREADABLE',
-            text: fill(state.labels?.DESKTOP_LIST_UNREADABLE, { id }),
+            text: noticeText('DESKTOP_LIST_UNREADABLE', { id }),
             retryable: true,
             returnable: true,
           };
@@ -416,7 +422,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       state.viewState?.reset?.();
       state.offsets = {};
       state.focus = null;
-      void persistOffsets({ offsets: {}, updatedAt: stamp() });
+      void persistOffsets(state.offsets);
       return api;
     },
 
@@ -463,7 +469,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       if (typeof nodeId !== 'string') return api;
       state.viewState?.applyOffsets?.({ [nodeId]: { dx, dy } });
       state.offsets = state.viewState?.getOffsets?.() ?? {};
-      void persistOffsets({ offsets: state.offsets, updatedAt: stamp() });
+      void persistOffsets(state.offsets);
       return api;
     },
 
@@ -489,7 +495,10 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       const payload = data?.payload !== null && typeof data?.payload === 'object' ? data.payload : {};
       const rev = Number.isFinite(data?.rev) ? Number(data.rev) : null;
 
-      if (type === 'graph.snapshot') {
+      // D-2: the first frame (and every reconnect frame) is
+      // `event: graph.snapshot` with `data.type: "snapshot"`; a frame that
+      // already carries the event name must land here as well (B-23).
+      if (type === 'graph.snapshot' || type === 'snapshot') {
         api.setGraph(payload, asText(data?.instanceId) ?? state.graphId);
         if (state.view === 'graph') emitGraphProbe();
         return { type, repaint: 'graph', refetch: false, indicatorOnly: false, rev: state.graph?.rev ?? null };
@@ -663,7 +672,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       if (view === 'board') {
         model.toolbar = toolbar(state);
         model.board = m.projectBoard({
-          state: { nodes: boardCardsFromGraph(state.graph) },
+          state: { nodes: boardStateNodes(state.graph) },
           graph: state.graph,
           labels: state.labels,
         });
@@ -682,15 +691,44 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
 
   // ---------------------------------------------------------------- helpers
 
-  function stamp() {
-    const base = typeof transport.now === 'function' ? transport.now() : Date.now();
-    return new Date(base).toISOString();
+  /** One label line through the shared resolver (no local template dialect). */
+  function noticeText(key, params) {
+    return m.resolveLabels(state.labels).text(key, params);
   }
 
-  async function persistOffsets(payload) {
-    if (typeof transport.writeViewOffsets !== 'function') return;
+  /**
+   * Read the stored view offsets of one instance through the transport seam
+   * (AC-22). A missing file, a foreign instance id or a failed read is
+   * "no preferences": `null`, never an error.
+   */
+  async function readOffsets(instanceId) {
+    if (typeof transport.readViewOffsets !== 'function') return null;
+    const root = typeof state.project?.root === 'string' ? state.project.root : null;
+    if (root === null) return null;
     try {
-      await transport.writeViewOffsets(state.graphId, payload, state.project?.root ?? null);
+      const stored = await transport.readViewOffsets({ root, instance_id: instanceId });
+      if (stored === null || typeof stored !== 'object') return null;
+      if (typeof stored.instanceId === 'string' && stored.instanceId !== instanceId) return null;
+      const offsets = stored.offsets;
+      return offsets !== null && typeof offsets === 'object' && !Array.isArray(offsets) ? offsets : null;
+    } catch (error) {
+      state.lastError = error?.message ?? String(error);
+      return null;
+    }
+  }
+
+  /**
+   * Hand the drag offsets to the shell as `{ root, instance_id, offsets }`
+   * (AC-22 / split 3.2): the shell adds `updatedAt` and writes the single-layer
+   * file, so the offsets map is never wrapped a second time here.
+   */
+  async function persistOffsets(offsets) {
+    if (typeof transport.writeViewOffsets !== 'function') return;
+    const instanceId = state.graphId;
+    if (typeof instanceId !== 'string' || instanceId.length === 0) return;
+    const root = typeof state.project?.root === 'string' ? state.project.root : null;
+    try {
+      await transport.writeViewOffsets({ root, instance_id: instanceId, offsets });
     } catch (error) {
       state.lastError = error?.message ?? String(error);
     }
@@ -811,8 +849,8 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       const toNode = displayNodes.get(display.to) ?? projections.get(display.to) ?? null;
       const annotated = {
         ...display,
-        fromTitle: asText(fromNode?.title) ?? undefined,
-        toTitle: asText(toNode?.title) ?? undefined,
+        fromTitle: displayNameOf(fromNode, current.labels),
+        toTitle: displayNameOf(toNode, current.labels),
       };
       let row;
       try {
@@ -825,6 +863,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       edges.push({
         id: placed.id,
         path: placed.path,
+        control: pathControl(view, placed.path),
         from: display.from,
         to: display.to,
         text: labelKeys.has(placed.id) ? row.text : '',
@@ -842,7 +881,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     if (current.focus !== null) {
       const target = displayNodes.get(current.focus.nodeId) ?? projections.get(current.focus.nodeId);
       const name = asText(target?.title) ?? current.focus.nodeId;
-      focusTitle = fill(current.labels.DESKTOP_VIEW_FOCUS, {
+      focusTitle = noticeText('DESKTOP_VIEW_FOCUS', {
         node: name,
         hops: current.focus.hops ?? 2,
       });
@@ -864,12 +903,35 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
   return api;
 }
 
-/** Literal `{xx}` replacement (same discipline as the label table). */
-function fill(template, params) {
-  if (typeof template !== 'string') return null;
-  return template.replace(/\{(\w+)\}/g, (match, key) =>
-    Object.prototype.hasOwnProperty.call(params, key) ? String(params[key]) : match,
-  );
+/**
+ * Screen position of a layout control point (decision N / B-24): the arc
+ * geometry belongs to `layout.js`, the assembly only applies the same linear
+ * `zoom` / `pan` transform it applies to the node boxes.
+ */
+function pathControl(view, path) {
+  const ctrl = path?.ctrl;
+  if (!ctrl || !Number.isFinite(ctrl.x) || !Number.isFinite(ctrl.y)) return null;
+  const point = view.screen({ x: ctrl.x, y: ctrl.y, width: 0, height: 0 });
+  return { x: point.x, y: point.y };
+}
+
+/**
+ * Display name of one edge endpoint (B-29). Group containers carry the raw
+ * group id in `title`, so they resolve through the same `GROUP_LABEL_*` keys
+ * the group row uses (decision K): `GROUP_LABEL_<UPPER(group)>`, then
+ * `GROUP_LABEL_UNGROUPED` for a group without a name, then the raw id.
+ */
+function displayNameOf(node, labels) {
+  if (node === null || typeof node !== 'object') return undefined;
+  if (node.type !== 'group') return asText(node.title) ?? undefined;
+  const table = labels !== null && typeof labels === 'object' ? labels : {};
+  const group = typeof node.group === 'string' && node.group.length > 0 ? node.group : null;
+  const key = group === null
+    ? 'GROUP_LABEL_UNGROUPED'
+    : `GROUP_LABEL_${group.replaceAll('-', '_').replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase()}`;
+  const name = table[key];
+  if (typeof name === 'string' && name.length > 0) return name;
+  return asText(node.title) ?? undefined;
 }
 
 function patchNode(graph, key, payload) {
@@ -949,8 +1011,8 @@ export function mountApp({
   const host = typeof root === 'string' ? document.querySelector(root) : root;
   if (!host) throw new TypeError('mountApp: root element not found');
 
-  const creds = credentials ?? credentialsFromLocation();
-  const transport = { ...defaultTransport(creds), ...(io ?? {}) };
+  const creds = credentials ?? takeLocationCredentials();
+  const transport = { ...createLoopbackTransport(creds), ...(io ?? {}) };
   const app = createApp({ labels, project: project ?? undefined, io: transport, modules });
 
   function paint() {
@@ -1135,16 +1197,31 @@ export function mountApp({
       group.setAttribute('data-node', node.id);
       group.setAttribute('opacity', String(node.opacity ?? 1));
       if (node.animation === 'pulse') group.setAttribute('class', 'pulse');
+      // Stroke and tint come from the A-9 / A-10 colour token the row
+      // renderers produced; abnormality only owns the badge and the pulse.
+      const visual = node.visual ?? {};
+      const token = visual.statusColor ?? visual.color ?? null;
+      const color = COLOR_TOKENS[token] ?? '#c7ced8';
       const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       rect.setAttribute('x', String(node.x));
       rect.setAttribute('y', String(node.y));
       rect.setAttribute('width', String(node.width));
       rect.setAttribute('height', String(node.height));
       rect.setAttribute('rx', '8');
-      rect.setAttribute('fill', '#ffffff');
-      rect.setAttribute('stroke', node.abnormal ? COLOR_TOKENS.red : '#c7ced8');
-      rect.setAttribute('stroke-width', node.abnormal ? '2' : '1');
+      rect.setAttribute('fill', color);
+      rect.setAttribute('fill-opacity', '0.08');
+      rect.setAttribute('stroke', color);
+      rect.setAttribute('stroke-width', '2');
       group.appendChild(rect);
+      if (visual.badge !== null && visual.badge !== undefined) {
+        const badge = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        badge.setAttribute('cx', String(node.x + node.width - 10));
+        badge.setAttribute('cy', String(node.y + 10));
+        badge.setAttribute('r', '5');
+        badge.setAttribute('fill', color);
+        badge.setAttribute('data-badge', String(visual.badge));
+        group.appendChild(badge);
+      }
       paintSvgText(group, node.x + 10, node.y + 24, node.text, {
         'font-size': '10',
         fill: '#28303b',
@@ -1166,6 +1243,11 @@ export function mountApp({
     container.appendChild(rows);
   }
 
+  /**
+   * Path data of one edge. The arc control point is already the layout one
+   * mapped through the view transform (`edge.control`), so this function
+   * draws, never computes geometry (decision N / B-24).
+   */
   function edgeGeometry(edge, nodes) {
     const byId = new Map(nodes.map((node) => [node.id, node]));
     const from = byId.get(edge.from);
@@ -1173,9 +1255,8 @@ export function mountApp({
     if (!from || !to) return { d: '', mid: { x: 0, y: 0 } };
     const a = { x: from.x + from.width / 2, y: from.y + from.height / 2 };
     const b = { x: to.x + to.width / 2, y: to.y + to.height / 2 };
-    if (edge.path?.kind === 'arc') {
-      const lift = ARC_LIFT * (model.graph.zoom ?? 1);
-      const ctrl = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - lift };
+    const ctrl = edge.control;
+    if (edge.path?.kind === 'arc' && ctrl && Number.isFinite(ctrl.x) && Number.isFinite(ctrl.y)) {
       return {
         d: `M ${a.x} ${a.y} Q ${ctrl.x} ${ctrl.y} ${b.x} ${b.y}`,
         mid: { x: (a.x + 2 * ctrl.x + b.x) / 4, y: (a.y + 2 * ctrl.y + b.y) / 4 },
@@ -1343,7 +1424,10 @@ export function mountApp({
           else if (result.repaint === 'list') paint();
         },
         onStatus(status) {
-          if (status === 'error') {
+          // A graceful EOF is a drop like an error: keep the last frame,
+          // show the reconnecting line and retry. An active `destroy()`
+          // aborts without reporting, so it never reconnects (B-30).
+          if (status === 'error' || status === 'closed') {
             listClose = null;
             app.state().connection.disconnect();
             paint();
@@ -1365,7 +1449,7 @@ export function mountApp({
             if (result.repaint === 'graph') paint();
           },
           onStatus(status) {
-            if (status === 'error') {
+            if (status === 'error' || status === 'closed') {
               graphClose = null;
               graphStreamId = null;
               app.state().connection.disconnect();
@@ -1417,17 +1501,54 @@ export function mountApp({
 // the shell (query string or injected global).
 // ---------------------------------------------------------------------------
 
-function credentialsFromLocation() {
-  if (typeof window === 'undefined') return null;
-  const params = new URLSearchParams(window.location.search);
-  const injected = window.__MAESTRO_DESKTOP__ ?? {};
-  const port = params.get('port') ?? injected.port ?? (window.location.port || null);
-  const token = params.get('token') ?? injected.token ?? null;
+/**
+ * Bearer token taken from the page query at startup (decision M). It lives in
+ * this module only: never `localStorage`, never `sessionStorage`, never a
+ * second URL after `takeLocationCredentials()` scrubbed it.
+ */
+let locationToken = null;
+
+/**
+ * Read `?token=` from the page URL once, keep it in memory and remove it from
+ * the address bar (`history.replaceState`). Parsing the token from the query is
+ * how the shell hands the credential to the WebView (static assets accept it,
+ * every data route still requires the Bearer header). Safe without a DOM: a
+ * test process that merely imports this module calls nothing here.
+ */
+export function takeLocationCredentials() {
+  const injected = typeof window === 'undefined' ? {} : (window.__MAESTRO_DESKTOP__ ?? {});
+  const location = typeof window === 'undefined' ? null : window.location ?? null;
+  let queryPort = null;
+  if (location !== null) {
+    try {
+      const params = new URLSearchParams(typeof location.search === 'string' ? location.search : '');
+      const token = params.get('token');
+      queryPort = params.get('port');
+      if (token !== null && token.length > 0) locationToken = String(token);
+      if (params.has('token')) {
+        params.delete('token');
+        const rest = params.toString();
+        const path = typeof location.pathname === 'string' ? location.pathname : '';
+        const hash = typeof location.hash === 'string' ? location.hash : '';
+        const next = `${path}${rest.length > 0 ? `?${rest}` : ''}${hash}`;
+        window.history?.replaceState?.(null, '', next);
+      }
+    } catch {
+      // A hostile URL or a missing history must never block the page.
+    }
+  }
+  const port = queryPort ?? injected.port ?? (location === null ? null : location.port || null);
+  const token = locationToken ?? injected.token ?? null;
   if (port === null || token === null) return null;
   return { port: Number(port), token: String(token) };
 }
 
-function parseSseBlock(block) {
+/**
+ * Parse one SSE block into a frame. The event name wins over `data.type`:
+ * the daemon sends the first frame as `event: graph.snapshot` with
+ * `data.type: "snapshot"`, and the dispatch table keys on event names (B-23).
+ */
+export function parseSseBlock(block) {
   let eventName = null;
   let dataLine = '';
   for (const line of block.split('\n')) {
@@ -1441,7 +1562,7 @@ function parseSseBlock(block) {
   } catch {
     payload = {};
   }
-  return { event: eventName, data: payload, type: payload.type ?? eventName };
+  return { event: eventName, data: payload, type: eventName };
 }
 
 function openStream(url, token, { onFrame, onStatus } = {}) {
@@ -1485,7 +1606,22 @@ function openStream(url, token, { onFrame, onStatus } = {}) {
   };
 }
 
-function defaultTransport(creds) {
+/** The shell bridge (`__TAURI__`) when the page runs inside the WebView. */
+function tauriInvoke() {
+  const bridge = globalThis.window?.__TAURI__;
+  const invoke = bridge?.core?.invoke ?? bridge?.invoke;
+  return typeof invoke === 'function' ? invoke : null;
+}
+
+/**
+ * Loopback transport used by the window. Every REST call carries the Bearer
+ * token; the two view-preference calls go through the shell so the file lives
+ * under `.orch/desktop/views/` (AC-22).
+ *
+ * @param {{port: number, token: string}|null} creds
+ * @returns {object} the transport seam consumed by `createApp`
+ */
+export function createLoopbackTransport(creds) {
   const base = creds ? `http://127.0.0.1:${creds.port}` : '';
   const headers = creds
     ? { Authorization: `Bearer ${creds.token}`, 'Content-Type': 'application/json' }
@@ -1510,11 +1646,17 @@ function defaultTransport(creds) {
     getWorkflows: () => request('/workflows'),
     getGraph: (instanceId) => request(`/instances/${encodeURIComponent(instanceId)}/graph`),
     postInstance: (payload) => request('/instances', { method: 'POST', body: JSON.stringify(payload) }),
-    writeViewOffsets: async (instanceId, payload, root) => {
-      const invoke = globalThis.window?.__TAURI__?.core?.invoke
-        ?? globalThis.window?.__TAURI__?.invoke;
-      if (typeof invoke !== 'function' || typeof root !== 'string') return;
-      await invoke('write_view_command', { root, instance_id: instanceId, offsets: payload });
+    // The shell wraps the map into `{ offsets, updatedAt }` (split 3.2), so
+    // the invoke argument is the offsets map itself, never a second envelope.
+    writeViewOffsets: async ({ root, instance_id: instanceId, offsets } = {}) => {
+      const invoke = tauriInvoke();
+      if (invoke === null || typeof root !== 'string') return;
+      await invoke('write_view_command', { root, instance_id: instanceId, offsets });
+    },
+    readViewOffsets: async ({ root, instance_id: instanceId } = {}) => {
+      const invoke = tauriInvoke();
+      if (invoke === null || typeof root !== 'string') return null;
+      return invoke('read_view_command', { root, instance_id: instanceId });
     },
     probe: (event) => {
       const sink = globalThis.window?.__MAESTRO_PROBE__;
@@ -1527,4 +1669,3 @@ function defaultTransport(creds) {
 // The page entry lives in `index.html`: it imports `mountApp` and starts the
 // assembly. This module stays free of a document-presence branch so the same
 // code path is imported directly by tests and by the window.
-
