@@ -1,0 +1,19 @@
+{
+  "ac": "AC-08",
+  "title": "实时推送：先全量、角色变化 500ms 内到、断线重连补全量",
+  "face": "功能 / 实时",
+  "refs": "BR-08, BR-19",
+  "risk": "高（推送错一次，界面就开始骗人）",
+  "given": "同 AC-07 的实例，界面已进入流程图，推送通道已连上。",
+  "when": "先读取推送通道的第一帧；再用测试接缝让某个角色从“可用”变为“服务中”；然后主动断开连接并重连。",
+  "then": [
+    "第一帧是完整快照（含全部节点与连接线）；角色变化 500ms 内到达一帧角色更新，界面上该角色变为蓝色“服务中”，其它节点不闪；重连后的第一帧又是完整快照，界面恢复为最新状态，断线期间的中间帧不叠加。"
+  ],
+  "judgement": "",
+  "jijian": "`test/wp13/graph-stream.test.js` 断言第一帧 `graph.snapshot`、间隔 `t_role - t_pulse ≤ 500ms`、重连后首帧仍为 `graph.snapshot` 且节点数与当前快照一致。",
+  "fixture": "`POST /__test__/graph/pulse`（仅 `NODE_ENV=test` 提供）把目标角色状态翻一次；推送用 `GET /instances/:id/graph/stream`（见附录 D-2）。",
+  "archText": "推送必须来自事件总线的既有事件，不得为界面单开一条数据源；`grep -REn \"new EventEmitter\" src/daemon/http/` 必须**零命中（exit 1）**。",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-08",
+  "level": "mock 实测",
+  "notes": []
+}

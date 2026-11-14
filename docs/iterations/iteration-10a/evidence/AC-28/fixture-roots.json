@@ -1,0 +1,7 @@
+{
+  "ac": "AC-28",
+  "tmpdir": "/tmp/maestro-i10a-acc10/AC-28",
+  "requirement": "§3.3 每个 AC 独立项目根 /tmp/maestro-i10a-*，绝不进仓库；一律 NODE_ENV=test",
+  "count": 0,
+  "roots": []
+}

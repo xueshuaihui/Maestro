@@ -1,0 +1,60 @@
+{
+  "ac": "AC-35",
+  "title": "看板未知状态落「被阻塞」并标注「状态未知」",
+  "face": "功能 / 边界",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:04:02.471Z",
+  "endedAt": "2026-11-14T05:04:03.181Z",
+  "durationMs": 710,
+  "checksTotal": 7,
+  "checksPass": 7,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "board-unknown.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 3,
+        "pass": 3,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"default|未知\" desktop/ui/board/board.js",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-board-unknown.test.js.attempt-1.log",
+    "unit-board-unknown.test.js.log",
+    "unit-board-unknown.test.js.summary.json",
+    "unit-board-unknown.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

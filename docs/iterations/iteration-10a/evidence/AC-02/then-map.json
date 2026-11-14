@@ -1,0 +1,19 @@
+{
+  "ac": "AC-02",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "关闭后：窗口消失、托盘图标仍在、后台守护进程继续运行——`orch instance status INST-001` 仍能读到该实例，且关闭前后能看到两个不同的 `updatedAt`（或一次真实的节点状态推进），不是停在旧快照上；托盘“退出”时先出现确认句（逐字附录 A-6），确认后后台停止（再执行 `instance status` 得到“核心未启动/连接失败”类提示），托盘消失。",
+      "status": "通过",
+      "evidence": [
+        "unit-desktop-shell.test.js.log"
+      ],
+      "testNames": [
+        "desktop-shell: ready probe + close-to-tray + quit confirm flow (AC-01/02)"
+      ],
+      "mappingNote": "该契约测试文件用例名未带 AC 编号；逐字断言见文件头注释与断言体"
+    }
+  ]
+}

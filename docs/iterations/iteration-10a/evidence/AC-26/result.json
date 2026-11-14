@@ -1,0 +1,71 @@
+{
+  "ac": "AC-26",
+  "title": "规划验收句端到端（逐字）",
+  "face": "规划验收（核心）",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:03:03.674Z",
+  "endedAt": "2026-11-14T05:03:09.826Z",
+  "durationMs": 6152,
+  "checksTotal": 11,
+  "checksPass": 11,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 4,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "acceptance-e2e.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 2,
+        "pass": 2,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"process[.]env[.]NODE_ENV|__TEST__[ ]*=|isTest[ ]*=\" desktop/ui/",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"probe_emit|window-probe\" desktop/ui/app.js",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [
+    "规划逐字验收句（857 行）由 acceptance-e2e.test.js 在真实 Tauri 壳 + mock 宿主 + 真实 core/daemon 下跑完三段；不接真实 DSH。"
+  ],
+  "evidence": [
+    "arch-1.log",
+    "arch-2.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-acceptance-e2e.test.js.attempt-1.log",
+    "unit-acceptance-e2e.test.js.log",
+    "unit-acceptance-e2e.test.js.summary.json",
+    "unit-acceptance-e2e.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

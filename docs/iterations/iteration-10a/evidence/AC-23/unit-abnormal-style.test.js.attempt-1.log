@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: AC-23: the abnormal node keeps width / height / x / y and gains the pulse token
+ok 1 - AC-23: the abnormal node keeps width / height / x / y and gains the pulse token
+  ---
+  duration_ms: 3.65453
+  type: 'test'
+  ...
+# Subtest: AC-23: the rejected line turns red with the backflow arrow and lifts
+ok 2 - AC-23: the rejected line turns red with the backflow arrow and lifts
+  ---
+  duration_ms: 1.074292
+  type: 'test'
+  ...
+# Subtest: AC-23: every other node keeps its coordinates when one node turns abnormal
+ok 3 - AC-23: every other node keeps its coordinates when one node turns abnormal
+  ---
+  duration_ms: 0.556065
+  type: 'test'
+  ...
+# Subtest: AC-23: the style projection never carries geometry and clearing is immediate
+ok 4 - AC-23: the style projection never carries geometry and clearing is immediate
+  ---
+  duration_ms: 0.83848
+  type: 'test'
+  ...
+# Subtest: AC-23: hover dimming is a paint-level token, not a geometry change
+ok 5 - AC-23: hover dimming is a paint-level token, not a geometry change
+  ---
+  duration_ms: 1.000373
+  type: 'test'
+  ...
+# Subtest: A-11: the connection line text rows are verbatim, with the parallel and hover forms
+ok 6 - A-11: the connection line text rows are verbatim, with the parallel and hover forms
+  ---
+  duration_ms: 0.471969
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 240.889641

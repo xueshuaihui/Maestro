@@ -1,0 +1,25 @@
+6: *   columns from the instance snapshot nodes plus the graph edges:
+7: *   `{ columns, columnNames, cards, cancelledFold, cancelledCount, unknownTag }`.
+9: *   `nodeId ?? id`, raw status = `state ?? status`). The column mapping over
+10: *   the nine baseline states is: `blocked -> blocked`, `ready -> ready`,
+13: * - `pending` is the merged display state of `blocked + ready`; per U-8 the
+14: *   single state derives into the two columns: a `pending` node lands in
+16: *   has no predecessors), otherwise in `blocked`.
+17: * - `cancelled` folds into the `done` column as a folded count
+19: *   template); the cards keep `column: 'done'` with `folded: true`.
+20: * - Unknown states fall to `blocked` with the `DESKTOP_BOARD_UNKNOWN_STATE`
+38:/** Fixed seven columns in display order (A-12 / AC-24). */
+40:  'blocked',
+50:  blocked: 'blocked',
+123: * (D-4: the board column derives from node state + upstream completeness).
+149: *        frozen label key table for the seven column names and the fold and
+181:    let column;
+185:      // U-8: the single merged display state derives into the two columns.
+186:      column = upstreamDone(id) ? 'ready' : 'blocked';
+188:      column = 'done'; // folds into the done column as a count (U-8)
+192:      column = COLUMN_BY_STATE[raw];
+194:      // AC-35 explicit default branch: unknown states land in blocked with
+196:      column = 'blocked';
+204:      column,
+215:    columns: BOARD_COLUMNS.slice(),
+216:    columnNames: [

@@ -1,0 +1,1862 @@
+{
+  "iteration": "I1.10a",
+  "phase": "S3",
+  "generatedAt": "2026-11-14T05:05:26.279Z",
+  "head": "7949e8a",
+  "total": 37,
+  "counts": {
+    "通过": 37,
+    "不通过": 0,
+    "阻塞": 0
+  },
+  "levels": {
+    "mock 实测": 36,
+    "mock 实测（结构断言）": 1
+  },
+  "checksTotal": 282,
+  "checksPass": 282,
+  "checksInfo": 0,
+  "checksFail": 0,
+  "thenTotal": 40,
+  "evidenceDirs": 37,
+  "evidenceFiles": 353,
+  "evidenceBelow4": [],
+  "skips": [],
+  "retries": [],
+  "gate": {
+    "tests": 1370,
+    "pass": 1365,
+    "fail": 4,
+    "skipped": 1,
+    "diff": [],
+    "diffCount": 0,
+    "testsFloorOk": true,
+    "gatesOk": true,
+    "gatesPass": 11,
+    "gatesTotal": 11
+  },
+  "verdict": "PASS",
+  "perAC": [
+    {
+      "ac": "AC-01",
+      "title": "双击应用图标打开主窗口，停在实例列表",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 桌面壳",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T04:58:52.988Z",
+      "files": [
+        "desktop-shell.test.js"
+      ],
+      "unit": [
+        {
+          "file": "desktop-shell.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 1,
+            "pass": 1,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid \"task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check\"",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-02",
+      "title": "关闭主窗口缩到托盘，守护进程继续运行；托盘退出才停止",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 桌面壳 / 规划验收",
+      "checksTotal": 9,
+      "checksPass": 9,
+      "thenCount": 1,
+      "evidenceCount": 11,
+      "startedAt": "2026-11-14T04:59:28.698Z",
+      "files": [
+        "desktop-shell.test.js"
+      ],
+      "unit": [
+        {
+          "file": "desktop-shell.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 1,
+            "pass": 1,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"core[.]stop\" desktop/src-tauri/src/",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn -B8 \"core[.]stop\" desktop/src-tauri/src/",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 3,
+          "cmd": "grep -REn \"close-window|close_to_tray\" desktop/src-tauri/src/tray.rs",
+          "exit": 0,
+          "expect": null,
+          "ok": true,
+          "informational": true
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-03",
+      "title": "实例列表六项字段齐全，按健康度分档置顶",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:00:04.687Z",
+      "files": [
+        "instance-list.test.js"
+      ],
+      "unit": [
+        {
+          "file": "instance-list.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"saveState|computeHealth\" desktop/ui/list/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-04",
+      "title": "列表的空态、不可读行与实时增减",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 边界",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-14T05:00:15.611Z",
+      "files": [
+        "instance-list.test.js"
+      ],
+      "unit": [
+        {
+          "file": "instance-list.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"renderListUnreadable\" desktop/ui/list/list.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"状态不可读\" desktop/ui/list/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "R-08 已登记的时序竞态基线项；单文件机检若失败，须保留全部 attempt 原始帧并在 blockers 台账登记，不得改断言。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-05",
+      "title": "新建实例：选工作流 → 填任务说明 → 启动成功",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-14T05:00:26.944Z",
+      "files": [
+        "new-instance.test.js"
+      ],
+      "unit": [
+        {
+          "file": "new-instance.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 5,
+            "pass": 5,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -Rn \"startRun\" desktop/",
+          "exit": 0,
+          "expect": null,
+          "ok": true,
+          "informational": true
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"startRun\" desktop/ui/ desktop/harness/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "需求架构检查原文 `grep -Rn \"startRun\" desktop/` 在本机包含 bundle 构建产物（`desktop/src-tauri/target/**` 内为产品源码副本）；判定以界面层作用域 `desktop/ui/ desktop/harness/` 零命中为准，原文形态仅留证。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-06",
+      "title": "新建实例的校验与失败提示",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 异常",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:01:26.289Z",
+      "files": [
+        "new-instance.test.js"
+      ],
+      "unit": [
+        {
+          "file": "new-instance.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 5,
+            "pass": 5,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"[一-龥]\" desktop/ui/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-07",
+      "title": "流程图快照：角色、特殊节点与连接线一次画全",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:01:31.028Z",
+      "files": [
+        "graph-projection.test.js"
+      ],
+      "unit": [
+        {
+          "file": "graph-projection.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 22,
+            "pass": 22,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"saveState|emit\\(\" src/daemon/graph.js",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-08",
+      "title": "实时推送：先全量、角色变化 500ms 内到、断线重连补全量",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 实时",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:01:32.325Z",
+      "files": [
+        "graph-stream.test.js"
+      ],
+      "unit": [
+        {
+          "file": "graph-stream.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 7,
+            "pass": 7,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"new EventEmitter\" src/daemon/http/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-09",
+      "title": "连接线合并：1 秒内 5 次变化只推 1 次、且是最后一次",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 节流",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-14T05:01:41.403Z",
+      "files": [
+        "graph-throttle.test.js"
+      ],
+      "unit": [
+        {
+          "file": "graph-throttle.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 9,
+            "pass": 9,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"setTimeout\" src/daemon/http/stream.js",
+          "exit": 0,
+          "expect": null,
+          "ok": true,
+          "informational": true
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"now\" src/daemon/http/stream.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-10",
+      "title": "会话状态变化只走指示器：不重排、不动版本号",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 节流 / 边界",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-14T05:01:46.262Z",
+      "files": [
+        "graph-throttle.test.js"
+      ],
+      "unit": [
+        {
+          "file": "graph-throttle.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 9,
+            "pass": 9,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"REV_WHITELIST\" src/daemon/graph.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"'session'|'execution'|'health'\" src/daemon/graph.js",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-11",
+      "title": "角色节点五要素齐全",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-14T05:01:51.294Z",
+      "files": [
+        "role-node.test.js"
+      ],
+      "unit": [
+        {
+          "file": "role-node.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 6,
+            "pass": 6,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -R \"decideStatus\" desktop/",
+          "exit": 0,
+          "expect": null,
+          "ok": true,
+          "informational": true
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"decideStatus\" desktop/ui/ desktop/harness/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "同上：需求 `grep -R \"decideStatus\" desktop/` 命中构建产物副本，判定以界面层作用域零命中为准。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-12",
+      "title": "角色节点折叠规则：服务节点超 2 个、活跃会话大于 1",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 边界",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:02:46.611Z",
+      "files": [
+        "role-node.test.js"
+      ],
+      "unit": [
+        {
+          "file": "role-node.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 6,
+            "pass": 6,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"saveState|emit\\(\" desktop/ui/graph/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-13",
+      "title": "特殊节点：人工、升级、子工作流的视觉与标签",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:02:47.659Z",
+      "files": [
+        "special-node.test.js"
+      ],
+      "unit": [
+        {
+          "file": "special-node.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 6,
+            "pass": 6,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"node_type|nodeType\" src/daemon/graph.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-14",
+      "title": "含人工节点与子工作流的实例拓扑完整（规划验收句中段）",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 规划验收",
+      "checksTotal": 12,
+      "checksPass": 12,
+      "thenCount": 1,
+      "evidenceCount": 14,
+      "startedAt": "2026-11-14T05:02:48.468Z",
+      "files": [
+        "graph-projection.test.js",
+        "graph-layout.test.js"
+      ],
+      "unit": [
+        {
+          "file": "graph-projection.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 22,
+            "pass": 22,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        },
+        {
+          "file": "graph-layout.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 8,
+            "pass": 8,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"Unknown node_type|未知\" src/daemon/graph.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"saveState|emit\\(\" src/daemon/graph.js",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-15",
+      "title": "连接线 7 种聚合状态的视觉编码",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 视觉编码",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:02:50.448Z",
+      "files": [
+        "edge-visual.test.js"
+      ],
+      "unit": [
+        {
+          "file": "edge-visual.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 6,
+            "pass": 6,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"aggregateStatus\" desktop/ui/graph/edge-rows.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-16",
+      "title": "连接线聚合优先级、正向/回流分线、并行合并",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 聚合",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:02:51.159Z",
+      "files": [
+        "edge-aggregate.test.js"
+      ],
+      "unit": [
+        {
+          "file": "edge-aggregate.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 8,
+            "pass": 8,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"AGGREGATE_PRIORITY\" src/daemon/graph.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-17",
+      "title": "层次布局：同层并行、回流不改层次、坐标稳定",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 布局",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:02:51.884Z",
+      "files": [
+        "graph-layout.test.js"
+      ],
+      "unit": [
+        {
+          "file": "graph-layout.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 8,
+            "pass": 8,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"Date[.]now|fs[.]\" desktop/ui/graph/layout.js",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-18",
+      "title": "异常置顶不破坏布局",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 布局 / 边界",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:02:52.797Z",
+      "files": [
+        "graph-layout.test.js"
+      ],
+      "unit": [
+        {
+          "file": "graph-layout.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 8,
+            "pass": 8,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"abnormal\" desktop/ui/graph/layout.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-19",
+      "title": "角色超过 12 个时按分组折叠，可展开/收起",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 布局 / 折叠",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:02:53.667Z",
+      "files": [
+        "graph-collapse.test.js"
+      ],
+      "unit": [
+        {
+          "file": "graph-collapse.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 8,
+            "pass": 8,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"group\" desktop/ui/graph/collapse.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-20",
+      "title": "缩放平移与一键复位",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 交互",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:02:58.422Z",
+      "files": [
+        "view-state.test.js"
+      ],
+      "unit": [
+        {
+          "file": "view-state.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 6,
+            "pass": 6,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"saveState|writeFile\" desktop/ui/graph/view.js",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-21",
+      "title": "双击聚焦 2 跳，Esc 退出",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 交互",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:02:59.434Z",
+      "files": [
+        "focus-mode.test.js"
+      ],
+      "unit": [
+        {
+          "file": "focus-mode.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 5,
+            "pass": 5,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"focus|visible\" desktop/ui/graph/view.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-22",
+      "title": "手动拖拽按实例保存，且不写实例状态",
+      "verdict": "通过",
+      "level": "mock 实测（结构断言）",
+      "face": "功能 / 持久化 / 只读",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-14T05:03:00.175Z",
+      "files": [
+        "view-state.test.js"
+      ],
+      "unit": [
+        {
+          "file": "view-state.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 6,
+            "pass": 6,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"instanceDir|statePath\" desktop/ui/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"views\" desktop/src-tauri/src/config.rs",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "R-12：B-36 真实壳内拖拽仍为结构断言（写入端 config.rs 零窗口级自动化用例）。本条按「mock 实测（结构断言）」判定，不冒充真实宿主实测；S3 以 view-state.test.js + config.rs 路径常量补结构证据。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-23",
+      "title": "异常高亮：角标 + 红色脉冲，尺寸与坐标不变",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 视觉 / 边界",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:03:01.348Z",
+      "files": [
+        "abnormal-style.test.js"
+      ],
+      "unit": [
+        {
+          "file": "abnormal-style.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 6,
+            "pass": 6,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"pulse\" desktop/ui/graph/style.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-24",
+      "title": "节点看板作为可选切换，7 列只读",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 视图切换",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:03:02.160Z",
+      "files": [
+        "board.test.js"
+      ],
+      "unit": [
+        {
+          "file": "board.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 7,
+            "pass": 7,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"column|blocked\" desktop/ui/board/board.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-25",
+      "title": "标签策略：默认只显异常，正常悬停显示",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 交互",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:03:02.936Z",
+      "files": [
+        "labels-policy.test.js"
+      ],
+      "unit": [
+        {
+          "file": "labels-policy.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 6,
+            "pass": 6,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"visibleLabels|hover\" desktop/ui/labels/labels.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-26",
+      "title": "规划验收句端到端（逐字）",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "规划验收（核心）",
+      "checksTotal": 11,
+      "checksPass": 11,
+      "thenCount": 4,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-14T05:03:03.674Z",
+      "files": [
+        "acceptance-e2e.test.js"
+      ],
+      "unit": [
+        {
+          "file": "acceptance-e2e.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"process[.]env[.]NODE_ENV|__TEST__[ ]*=|isTest[ ]*=\" desktop/ui/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"probe_emit|window-probe\" desktop/ui/app.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "规划逐字验收句（857 行）由 acceptance-e2e.test.js 在真实 Tauri 壳 + mock 宿主 + 真实 core/daemon 下跑完三段；不接真实 DSH。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-27",
+      "title": "只读与本地性：不写实例、只绑回环、无凭据拒绝",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 安全 / 边界",
+      "checksTotal": 9,
+      "checksPass": 9,
+      "thenCount": 1,
+      "evidenceCount": 11,
+      "startedAt": "2026-11-14T05:03:10.049Z",
+      "files": [
+        "readonly-local.test.js"
+      ],
+      "unit": [
+        {
+          "file": "readonly-local.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 1,
+            "pass": 1,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"saveState|instance-store|appendSpan\" src/daemon/http/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"startRun\" src/daemon/http/",
+          "exit": 0,
+          "expect": null,
+          "ok": true,
+          "informational": true
+        },
+        {
+          "index": 3,
+          "cmd": "grep -REn \"0[.]0[.]0[.]0\" src/daemon/http/",
+          "exit": 1,
+          "expect": null,
+          "ok": true,
+          "informational": true
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-28",
+      "title": "非功能：零依赖、中文唯一来源、纯净扫描、无宿主分支",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "非功能 / 架构",
+      "checksTotal": 10,
+      "checksPass": 10,
+      "thenCount": 1,
+      "evidenceCount": 12,
+      "startedAt": "2026-11-14T05:03:13.656Z",
+      "files": [
+        "labels-desktop.test.js"
+      ],
+      "unit": [
+        {
+          "file": "labels-desktop.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 25,
+            "pass": 25,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid \"task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check\"",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "node test/fixtures/purity-check.mjs --dirs desktop/ui --forbid \"task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check\"",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 3,
+          "cmd": "node -p \"Object.keys(require('./package.json').dependencies||{}).length\"",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 4,
+          "cmd": "grep -REn \"[一-龥]\" desktop/ui/ desktop/harness/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-29",
+      "title": "开箱即用：没有预装运行时的机器上双击就能用",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "非功能 / 开箱即用",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:03:15.320Z",
+      "files": [
+        "bundle.test.js"
+      ],
+      "unit": [
+        {
+          "file": "bundle.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 1,
+            "pass": 1,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn 'env::var\\(\"PATH\"\\)|Command::new\\(\"node\"\\)' desktop/src-tauri/src/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "env -i PATH=/usr/bin:/bin 等价夹具；判定不检查包内目录结构（附录 D-14）。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-30",
+      "title": "六种异常提示：实例不存在、定义不可读、角色数未知、守护进程未启动、重连中、状态不可读",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 异常",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-14T05:03:46.828Z",
+      "files": [
+        "errors.test.js"
+      ],
+      "unit": [
+        {
+          "file": "errors.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 24,
+            "pass": 24,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"[一-龥]\" desktop/ui/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"fallback|内置模板\" src/daemon/graph.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-31",
+      "title": "项目未指定 / 项目不可用：停在提示页，填入可用目录后进入列表",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 异常 / 首次体验",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:03:49.485Z",
+      "files": [
+        "project-guard.test.js"
+      ],
+      "unit": [
+        {
+          "file": "project-guard.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 1,
+            "pass": 1,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"项目 未指定|项目 不可用\" desktop/ui desktop/harness",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-32",
+      "title": "健康度悬停原因逐字复用 I1.9 八类，无原因只显「健康度 正常」",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 文案基线",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:04:00.148Z",
+      "files": [
+        "health-hover.test.js"
+      ],
+      "unit": [
+        {
+          "file": "health-hover.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 4,
+            "pass": 4,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"P90|TTL|崩溃\" desktop/ui/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-33",
+      "title": "悬停高亮：角色节点上下游与连接线两端",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 交互",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:04:00.996Z",
+      "files": [
+        "hover-highlight.test.js"
+      ],
+      "unit": [
+        {
+          "file": "hover-highlight.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 5,
+            "pass": 5,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"Math[.]\" desktop/ui/graph/highlight.js",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-34",
+      "title": "图例固定在画布左下角，缩放平移不改锚点",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 视觉",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:04:01.707Z",
+      "files": [
+        "legend.test.js"
+      ],
+      "unit": [
+        {
+          "file": "legend.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 4,
+            "pass": 4,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"Date[.]now|fs[.]\" desktop/ui/graph/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-35",
+      "title": "看板未知状态落「被阻塞」并标注「状态未知」",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 边界",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:04:02.471Z",
+      "files": [
+        "board-unknown.test.js"
+      ],
+      "unit": [
+        {
+          "file": "board-unknown.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 3,
+            "pass": 3,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"default|未知\" desktop/ui/board/board.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-36",
+      "title": "重复双击单实例，托盘「打开主窗口」激活已有窗口",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 桌面壳",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:04:03.383Z",
+      "files": [
+        "single-instance.test.js"
+      ],
+      "unit": [
+        {
+          "file": "single-instance.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 1,
+            "pass": 1,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"SingleInstance|single_instance|activate\" desktop/src-tauri/src/",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-37",
+      "title": "角色与连接线同时变化互不阻塞、都不丢",
+      "verdict": "通过",
+      "level": "mock 实测",
+      "face": "功能 / 节流 / 实时",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "thenCount": 1,
+      "evidenceCount": 9,
+      "startedAt": "2026-11-14T05:04:09.724Z",
+      "files": [
+        "graph-parallel.test.js"
+      ],
+      "unit": [
+        {
+          "file": "graph-parallel.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 1,
+            "pass": 1,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"now\" src/daemon/http/stream.js",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [],
+      "failedChecks": []
+    }
+  ]
+}

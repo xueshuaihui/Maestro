@@ -1,0 +1,34 @@
+{
+  "ac": "AC-34",
+  "file": "legend.test.js",
+  "cmd": "test -f test/wp13/legend.test.js && NODE_ENV=test node --test test/wp13/legend.test.js",
+  "attempt": 1,
+  "attempts": 1,
+  "exit": 0,
+  "durationMs": 239,
+  "timedOut": false,
+  "tap": {
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 154.583469,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "AC-07 (S-03): legend.lines equal the A-8 rows verbatim and the frozen keys",
+      "AC-34: anchor is bottom-left, top layer, fixed offset; shape is plain JSON",
+      "AC-34: three view states keep the legend identical",
+      "AC-34: legend projection is deterministic and input-safe"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  }
+}

@@ -1,0 +1,4 @@
+31: * status follows `AGGREGATE_PRIORITY` only; visual tokens come from
+57:export const AGGREGATE_PRIORITY = Object.freeze([
+541:      let bestRank = AGGREGATE_PRIORITY.length; // smallest index wins (rejected first)
+544:        const rank = AGGREGATE_PRIORITY.indexOf(status);

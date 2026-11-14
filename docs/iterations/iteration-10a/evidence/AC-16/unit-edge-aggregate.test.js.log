@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: AC-16: three backflow handoffs collapse into one rejected arc, two parallel forwards into one line
+ok 1 - AC-16: three backflow handoffs collapse into one rejected arc, two parallel forwards into one line
+  ---
+  duration_ms: 4.127506
+  type: 'test'
+  ...
+# Subtest: AC-16: no third same-direction line exists for the role pair
+ok 2 - AC-16: no third same-direction line exists for the role pair
+  ---
+  duration_ms: 0.359171
+  type: 'test'
+  ...
+# Subtest: AC-16: aggregate priority is table-driven over all 7x7 state pairs
+ok 3 - AC-16: aggregate priority is table-driven over all 7x7 state pairs
+  ---
+  duration_ms: 2.527161
+  type: 'test'
+  ...
+# Subtest: AC-16: two same-direction definition edges between one role pair merge into a single line
+ok 4 - AC-16: two same-direction definition edges between one role pair merge into a single line
+  ---
+  duration_ms: 0.187544
+  type: 'test'
+  ...
+# Subtest: definition edges without handoffs are not_started and stay hidden by default
+ok 5 - definition edges without handoffs are not_started and stay hidden by default
+  ---
+  duration_ms: 0.205963
+  type: 'test'
+  ...
+# Subtest: handoffs without a matching definition edge are not drawn; edge ids are stable
+ok 6 - handoffs without a matching definition edge are not drawn; edge ids are stable
+  ---
+  duration_ms: 0.194874
+  type: 'test'
+  ...
+# Subtest: handoff states outside the aggregate set degrade to pending, not to an unknown token
+ok 7 - handoff states outside the aggregate set degrade to pending, not to an unknown token
+  ---
+  duration_ms: 0.1545
+  type: 'test'
+  ...
+# Subtest: parallelCount counts only the latest round; earlier rounds stay in handoffIds
+ok 8 - parallelCount counts only the latest round; earlier rounds stay in handoffIds
+  ---
+  duration_ms: 0.238175
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 157.292646

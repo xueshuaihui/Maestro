@@ -1,0 +1,31 @@
+{
+  "ac": "AC-37",
+  "file": "graph-parallel.test.js",
+  "cmd": "test -f test/wp13/graph-parallel.test.js && NODE_ENV=test node --test test/wp13/graph-parallel.test.js",
+  "attempt": 1,
+  "attempts": 1,
+  "exit": 0,
+  "durationMs": 1862,
+  "timedOut": false,
+  "tap": {
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 1779.381108,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "AC-37: role and connection changes in one window both arrive, neither blocking"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  }
+}

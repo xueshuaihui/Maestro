@@ -1,0 +1,10 @@
+{
+  "ac": "AC-37",
+  "file": "graph-parallel.test.js",
+  "count": 1,
+  "subtests": [
+    "AC-37: role and connection changes in one window both arrive, neither blocking"
+  ],
+  "notOk": [],
+  "skips": []
+}

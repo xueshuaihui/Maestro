@@ -1,0 +1,69 @@
+{
+  "ac": "AC-09",
+  "title": "连接线合并：1 秒内 5 次变化只推 1 次、且是最后一次",
+  "face": "功能 / 节流",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:01:41.403Z",
+  "endedAt": "2026-11-14T05:01:46.049Z",
+  "durationMs": 4646,
+  "checksTotal": 8,
+  "checksPass": 8,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "graph-throttle.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 9,
+        "pass": 9,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"setTimeout\" src/daemon/http/stream.js",
+      "exit": 0,
+      "expect": null,
+      "ok": true,
+      "informational": true
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"now\" src/daemon/http/stream.js",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-2.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-graph-throttle.test.js.attempt-1.log",
+    "unit-graph-throttle.test.js.log",
+    "unit-graph-throttle.test.js.summary.json",
+    "unit-graph-throttle.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

@@ -1,0 +1,14 @@
+{
+  "ac": "AC-21",
+  "file": "focus-mode.test.js",
+  "count": 5,
+  "subtests": [
+    "AC-21: double-click C shows exactly B, C, D",
+    "AC-21: only edges with both ends visible survive; the A->E skip edge hides",
+    "AC-21: the title renders the frozen 2-hop template verbatim",
+    "AC-21: Esc restores the full node and edge set",
+    "AC-21: focus never changes screen coordinates"
+  ],
+  "notOk": [],
+  "skips": []
+}

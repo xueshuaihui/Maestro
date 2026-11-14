@@ -1,0 +1,60 @@
+{
+  "ac": "AC-08",
+  "title": "实时推送：先全量、角色变化 500ms 内到、断线重连补全量",
+  "face": "功能 / 实时",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:01:32.325Z",
+  "endedAt": "2026-11-14T05:01:41.193Z",
+  "durationMs": 8868,
+  "checksTotal": 7,
+  "checksPass": 7,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "graph-stream.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 7,
+        "pass": 7,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"new EventEmitter\" src/daemon/http/",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-graph-stream.test.js.attempt-1.log",
+    "unit-graph-stream.test.js.log",
+    "unit-graph-stream.test.js.summary.json",
+    "unit-graph-stream.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

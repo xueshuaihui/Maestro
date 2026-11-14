@@ -1,0 +1,2 @@
+90:          const timer = setTimeout(fn, delayMs);
+617:      else setTimeout(fire, at);

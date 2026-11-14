@@ -1,0 +1,33 @@
+{
+  "ac": "AC-35",
+  "file": "board-unknown.test.js",
+  "cmd": "test -f test/wp13/board-unknown.test.js && NODE_ENV=test node --test test/wp13/board-unknown.test.js",
+  "attempt": 1,
+  "attempts": 1,
+  "exit": 0,
+  "durationMs": 417,
+  "timedOut": false,
+  "tap": {
+    "tests": 3,
+    "pass": 3,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 336.041827,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "AC-35 (harness): the unknown card lands in blocked tagged with the frozen text",
+      "AC-35 (in-process): the explicit default branch never throws on any alien value",
+      "AC-35: switching back to the graph view keeps the view-state object unchanged"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  }
+}

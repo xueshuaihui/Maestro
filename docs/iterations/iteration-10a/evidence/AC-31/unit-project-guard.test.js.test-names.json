@@ -1,0 +1,10 @@
+{
+  "ac": "AC-31",
+  "file": "project-guard.test.js",
+  "count": 1,
+  "subtests": [
+    "project-guard: missing / invalid / valid views (AC-31)"
+  ],
+  "notOk": [],
+  "skips": []
+}

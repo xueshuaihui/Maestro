@@ -241,3 +241,17 @@
 - **R-13（不改，登记）**：`bundleFreshness()`（壳面用例过期即 skip）与 `regression.test.js` 时效用例（产物不存在/过期即 skip，存在则 assert）判据面一致、不矛盾；S3 脚手架统一按「skip 必须写明需 `npm run desktop:build`」执行，不为对齐而削弱任一侧。
 - **S2 门禁终值**：`env -u NODE_OPTIONS NODE_ENV=test node --test --test-concurrency=1 "test/**/*.test.js"` → **1370 tests / 1365 pass / 4 fail / 1 skip**；失败集合 = `AC-04`（R-08 允许项）/ `task-loop 审核提示词` / `core.stop` / `main --cwd`，全部 ⊆ 判定基线 9 条，**差集 = 0**。31 词 purity 两轮、CJK 零命中、`git show --check` 五笔全绿。
 - **结论**：S0/S1/S2 全部收口，**可进 S3 逐 AC-01~37 验收取证**。
+
+
+## 裁决 Z（S3 验收收口）｜acc10 脚手架口径、AC 级隔离机检、R-12/R-13 处置
+
+- **触发点**：裁决 Y 放行 S3。S3 需按拆分文档 §5 落地 `probe/acc10-f-*` 与 `probe/acc10-cases/`，并对 37 条 AC 逐条取证；实现期暴露三类口径问题（同文件多 AC 串扰、架构检查注释误判、bundle 产物进入 `desktop/` 扫描范围），须在不动产品代码、不放宽 Then 的前提下固定判定口径。
+- **决定 1（判据逐字）**：37 个逐 AC 用例由 `probe/acc10-f-gen.mjs` 从 `requirement.md` v2 §3.1 **逐字抽取**（AC 号 / 标题 / Given / When / Then / 机检 / 夹具 / 架构检查原文），`--check` 37/37 一致；Then 不放宽、不合并、不改写。逐字断言由同名契约测试承载（拆分文档 §4），S3 以 F-16 机检 + 架构检查做独立复核。
+- **决定 2（F-16 机检与环境口径）**：命令形态恒为 `test -f test/wp13/<file>.test.js && NODE_ENV=test node --test test/wp13/<file>.test.js`，断言退出码 0 / `# pass ≥ 1` / `# fail 0`；**禁全量 glob 代替**。每 AC 注入独立 `TMPDIR=/tmp/maestro-i10a-acc10/<AC>`（需求 §3.3），`fixture-roots.json` 留证；每次 attempt 的原始 TAP 帧全部保留。
+  - **NODE_OPTIONS 不剥离**：需求 §3.3 只强制 `NODE_ENV=test`，未要求剥离平台注入的 `NODE_OPTIONS`。S3 实跑定位到 R-08 的物理根因：该预加载改变 mock 宿主一轮完成的速度；**剥离**时 `POST /instances` 的实例在第一帧 refetch 前已 `completed`（AC-04 的 `phase` 断言 `running` 失败，整文件 1.7s），**保留**时同一整文件 `2p/0f` 稳定通过（约 10.4s）。因此逐 AC F-16 用本机默认环境；全量回归门禁仍按裁决 V 用 `env -u NODE_OPTIONS`，其失败集合里的 AC-04 仍是 R-08 允许项，判定基线 9 条、差集 0 不变。两种环境原始帧都留证，不靠切环境掩盖：AC 级通过是 B 类验收面的真实结果，全量门禁的剥离环境失败如实登记。
+- **决定 3（同文件多 AC / AC 级隔离机检保留为安全网）**：`instance-list.test.js` 同时承载 AC-03 / AC-04。若某个环境形态下整文件 F-16 出现 `# fail 1`（例如剥离 `NODE_OPTIONS` 时 AC-04 触发 R-08 时序竞态），会把并无缺陷的 AC-03 一并判红。按需求 §3.3「每个 AC 使用独立项目根」保留 **AC 级隔离机检**：仍先 `test -f`、仍是单文件 `--test`，仅追加 `--test-name-pattern "<AC>"`；最多 3 次 attempt、每次原始帧全留。隔离结果只用于本 AC 判定，不掩盖整文件失败、不修改任何测试断言（D-11 授权断言修改清单仍为「无」）。决定 2 的环境口径落地后，AC-03 / AC-04 的**整文件 F-16 本身即 `2p/0f`**，隔离机检不触发，仅作为可复跑的安全网存在。
+- **决定 4（架构检查口径自查修正）**：AC-10 / AC-26 / AC-33 初版扫描把「注释里声明禁止」的否定陈述当成命中，改为只扫带引号的白名单数组成员 / 实际代码分支 / `Math.` 运算；53 条架构命令预检 0 失败。AC-05 / AC-11 的原文 `grep -R ... desktop/` 会命中 `desktop/src-tauri/target/**/Resources/src/**`（bundle 内产品源码副本，非界面层）；按「原文形态留证 + 界面层作用域 `desktop/ui/ desktop/harness/` 零命中判定」执行，不放宽断言、不改需求。AC-04 需求写作 `renderInstanceUnreadable`、实现导出名 `renderListUnreadable`，属命名差异观察项，不改产品。
+- **决定 5（R-12 处置）**：AC-22 单列证据等级 **`mock 实测（结构断言）`**，补 `view-state.test.js` 与 `desktop/src-tauri/src/config.rs` 视图路径常量的结构证据；真实壳内拖拽的窗口级自动化补证留待后续迭代，**不冒充真实宿主实测**。真实 DSH 取证仍属本机保留项（需求 §3.3 B 类）。
+- **决定 6（R-13 处置）**：`bundleFreshness()` 与 `regression.test.js` 两侧 skip 判据保持一致、不为对齐削弱任一侧；S3 脚手架统一按「skip 必须写明需 `env -u NODE_OPTIONS npm run desktop:build` 重建产物」执行，并在产物时效门禁里核 `Contents/Resources/desktop/ui/index.html` 与裁决 R 静态面标记。
+- **门禁口径**：全量 `env -u NODE_OPTIONS NODE_ENV=test node --test --test-concurrency=1 "test/**/*.test.js"` → **1370 tests / 1365 pass / 4 fail / 1 skip**，失败集合 ⊆ 判定基线 9 条、差集 0；静态门禁 11/11（31 词两轮、零依赖、CJK 零命中、AC 37、USAGE_LINES 25、无宿主分支、产物时效、提交卫生）。逐 AC 结论与证据统计由 `probe/acc10-f-final.mjs` 重建到 `summary.json` / `report.md` / `final-verification.md`，可漂移数字不在本裁决复制。
+- **结论**：S3 收口，**可进 S4 终验收口与台账更新**。

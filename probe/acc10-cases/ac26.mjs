@@ -1,0 +1,50 @@
+// 由 node probe/acc10-f-gen.mjs 生成；判据原文逐字取自 requirement.md v2 §3.1 AC-26。
+// 禁止手工放宽 / 合并 / 改写任何 Then；改动请先改生成器并复跑 --check。
+import { runCase } from '../acc10-f-common.mjs';
+
+export const spec = {
+  "ac": "AC-26",
+  "title": "规划验收句端到端（逐字）",
+  "face": "规划验收（核心）",
+  "level": "mock 实测",
+  "refs": "BR-01, BR-03, BR-10, BR-19",
+  "risk": "高（规划逐字验收句，不许弱化）",
+  "given": "`/tmp/maestro-i10a-acceptance` 已构建应用、已记住项目根；项目里有两个实例：`INST-001`（运行中，含人工节点与子工作流，拓扑 4 节点 4 边，**由夹具构造**——运行时当前还不会推进 human / subworkflow 节点，见 U-4）与 `INST-002`（已完成单节点）；`NODE_ENV=test`。",
+  "when": "用户：双击图标 → 在列表里看到两个实例 → 点击 `INST-001` 进入流程图 → 关闭主窗口。",
+  "then": [
+    "三段逐条成立：",
+    "- 列表两行逐字为附录 A-1，行内有健康度（需关注 / 已结束），排序把需关注放在第一行；",
+    "- `INST-001` 的流程图上有角色节点、人工节点、子工作流折叠组，定义中的 4 条边全部画出、悬空端点 0 个；",
+    "- 关闭主窗口后窗口不可见、托盘仍在、守护进程进程号不变，`orch instance status INST-001` 仍可读。"
+  ],
+  "judgement": "双击应用图标打开主窗口，能看到所有实例的健康度列表；点击实例进入角色流程图，含人工节点和子工作流的实例在流程图上拓扑完整；关闭主窗口缩到托盘，daemon 继续运行。",
+  "jijian": "`NODE_ENV=test node --test test/wp13/acceptance-e2e.test.js` 一次跑完三段：探针 `ready → rows → graph-shown(nodes=..., edges=..., dangling=0) → closed(visible=false)`；守护进程 `pid` 前后相等；`instance status` 返回成功；`# pass ≥ 1`、`# fail 0`。",
+  "fixture": "`open -na ... --args --project /tmp/maestro-i10a-acceptance --probe ... --ctl ...`；点实例通过 `ctl/open-instance/INST-001` 触发（等价于界面点击行）；关闭通过 `ctl/close-window`。",
+  "archText": "本 AC 不得使用任何“测试专用渲染分支”；界面渲染与 AC-07/14 同一批模块。",
+  "files": [
+    "acceptance-e2e.test.js"
+  ],
+  "arch": [
+    {
+      "cmd": "grep -REn \"process[.]env[.]NODE_ENV|__TEST__[ ]*=|isTest[ ]*=\" desktop/ui/",
+      "expect": 1,
+      "note": "不得使用测试专用渲染分支（扫实际代码分支；注释中的否定陈述不算命中）"
+    },
+    {
+      "cmd": "grep -REn \"probe_emit|window-probe\" desktop/ui/app.js",
+      "expect": 0,
+      "note": "探针只记录渲染结果，不合成、不重算"
+    }
+  ],
+  "notes": [
+    "规划逐字验收句（857 行）由 acceptance-e2e.test.js 在真实 Tauri 壳 + mock 宿主 + 真实 core/daemon 下跑完三段；不接真实 DSH。"
+  ],
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-26"
+};
+
+export const cases = [{
+  ac: spec.ac,
+  title: spec.title,
+  face: spec.face,
+  run: () => runCase(spec),
+}];

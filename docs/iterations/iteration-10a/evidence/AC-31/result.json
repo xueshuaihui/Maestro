@@ -1,0 +1,60 @@
+{
+  "ac": "AC-31",
+  "title": "项目未指定 / 项目不可用：停在提示页，填入可用目录后进入列表",
+  "face": "功能 / 异常 / 首次体验",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:03:49.485Z",
+  "endedAt": "2026-11-14T05:03:59.929Z",
+  "durationMs": 10444,
+  "checksTotal": 7,
+  "checksPass": 7,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "project-guard.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"项目 未指定|项目 不可用\" desktop/ui desktop/harness",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-project-guard.test.js.attempt-1.log",
+    "unit-project-guard.test.js.log",
+    "unit-project-guard.test.js.summary.json",
+    "unit-project-guard.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

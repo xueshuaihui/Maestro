@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: AC-24: the seven columns keep their fixed id order and verbatim names
+ok 1 - AC-24: the seven columns keep their fixed id order and verbatim names
+  ---
+  duration_ms: 1.86605
+  type: 'test'
+  ...
+# Subtest: AC-24: the single pending state derives into blocked and ready per U-8
+ok 2 - AC-24: the single pending state derives into blocked and ready per U-8
+  ---
+  duration_ms: 0.406327
+  type: 'test'
+  ...
+# Subtest: AC-24: both cancelled cards fold into done with the frozen fold label
+ok 3 - AC-24: both cancelled cards fold into done with the frozen fold label
+  ---
+  duration_ms: 0.327276
+  type: 'test'
+  ...
+# Subtest: AC-24: card titles resolve from the graph projection
+ok 4 - AC-24: card titles resolve from the graph projection
+  ---
+  duration_ms: 0.187229
+  type: 'test'
+  ...
+# Subtest: AC-24: the frozen WP-4 shape (role:<id>, empty nodeIds) gates pending correctly
+ok 5 - AC-24: the frozen WP-4 shape (role:<id>, empty nodeIds) gates pending correctly
+  ---
+  duration_ms: 1.772797
+  type: 'test'
+  ...
+# Subtest: AC-24: switching back to the graph view keeps every view-state field
+ok 6 - AC-24: switching back to the graph view keeps every view-state field
+  ---
+  duration_ms: 0.747384
+  type: 'test'
+  ...
+# Subtest: AC-24: the projection adds no state field and never mutates its inputs
+ok 7 - AC-24: the projection adds no state field and never mutates its inputs
+  ---
+  duration_ms: 0.267578
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 206.413235

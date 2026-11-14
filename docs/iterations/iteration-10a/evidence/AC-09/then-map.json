@@ -1,0 +1,25 @@
+{
+  "ac": "AC-09",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "推送通道在这 1.5 秒内只为这条线送 **1 帧**连接线更新；帧里的聚合状态是最后一次的“已过期”；界面上该线变为橙色虚线 + 感叹号，没有出现五次闪烁。",
+      "status": "通过",
+      "evidence": [
+        "unit-graph-throttle.test.js.log"
+      ],
+      "testNames": [
+        "AC-09 boundary: 1000ms after the FIRST change fires exactly once with the last value",
+        "AC-09 boundary: a single change still fires at the window end (never lost)",
+        "AC-09 boundary: a change at 1001ms opens a NEW window ending at 2001ms",
+        "AC-09: different keys keep independent windows",
+        "AC-09: flush() emits every pending window immediately with the last value",
+        "the AC-09/AC-37 lanes stay separated in code: role frames bypass the throttle",
+        "AC-09 live: five changes within 200ms collapse into exactly one frame with the last value"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

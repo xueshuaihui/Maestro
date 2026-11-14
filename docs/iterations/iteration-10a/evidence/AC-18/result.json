@@ -1,0 +1,60 @@
+{
+  "ac": "AC-18",
+  "title": "异常置顶不破坏布局",
+  "face": "功能 / 布局 / 边界",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:02:52.797Z",
+  "endedAt": "2026-11-14T05:02:53.463Z",
+  "durationMs": 666,
+  "checksTotal": 7,
+  "checksPass": 7,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "graph-layout.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 8,
+        "pass": 8,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"abnormal\" desktop/ui/graph/layout.js",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-graph-layout.test.js.attempt-1.log",
+    "unit-graph-layout.test.js.log",
+    "unit-graph-layout.test.js.summary.json",
+    "unit-graph-layout.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

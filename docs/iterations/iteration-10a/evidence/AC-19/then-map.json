@@ -1,0 +1,25 @@
+{
+  "ac": "AC-19",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "默认只显示 2 个组节点，逐字为“分组 编码工程 · 8 角色”“分组 研究分析 · 5 角色”，13 个成员节点都不显示；组间 1 条边连接两个组节点；展开编码组后出现 8 个成员节点、研究组仍折叠；收起后恢复 2 个组节点。",
+      "status": "通过",
+      "evidence": [
+        "unit-graph-collapse.test.js.log"
+      ],
+      "testNames": [
+        "AC-19: thirteen roles collapse into two groups, expand to ten, collapse back to two",
+        "AC-19: the group node labels are the A-10 rows verbatim",
+        "AC-19: expanded members return to their original layers and order",
+        "AC-19: the threshold is \"more than twelve visible role nodes\"",
+        "AC-19: a role without a group lands in the single ungrouped bucket",
+        "AC-19: subworkflows stay folded and every ungrouped node stays visible",
+        "AC-19: toggling an unknown group changes nothing"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

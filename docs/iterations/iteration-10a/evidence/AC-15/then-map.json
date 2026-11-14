@@ -1,0 +1,21 @@
+{
+  "ac": "AC-15",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "默认只显示前 6 条，未开始的 1 条隐藏；每条的视觉 token 与附录 A-11 的表逐项相等（颜色、虚实、箭头、动画、角标）；打开开关后第 7 条以灰色虚线出现。",
+      "status": "通过",
+      "evidence": [
+        "unit-edge-visual.test.js.log"
+      ],
+      "testNames": [
+        "AC-15: seven lines in seven states carry exactly the A-11 tokens",
+        "AC-15: rejected always renders the backflow arrow even on a forward line",
+        "AC-15: not_started is hidden by default and appears once the toggle is on"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "ac": "AC-28",
+  "title": "非功能：零依赖、中文唯一来源、纯净扫描、无宿主分支",
+  "face": "非功能 / 架构",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:03:13.656Z",
+  "endedAt": "2026-11-14T05:03:15.083Z",
+  "durationMs": 1427,
+  "checksTotal": 10,
+  "checksPass": 10,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "labels-desktop.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid \"task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check\"",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "node test/fixtures/purity-check.mjs --dirs desktop/ui --forbid \"task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check\"",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 3,
+      "cmd": "node -p \"Object.keys(require('./package.json').dependencies||{}).length\"",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 4,
+      "cmd": "grep -REn \"[一-龥]\" desktop/ui/ desktop/harness/",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-2.log",
+    "arch-3.log",
+    "arch-4.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-labels-desktop.test.js.attempt-1.log",
+    "unit-labels-desktop.test.js.log",
+    "unit-labels-desktop.test.js.summary.json",
+    "unit-labels-desktop.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

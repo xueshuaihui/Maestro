@@ -1,0 +1,19 @@
+{
+  "ac": "AC-36",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "第二次启动不产生第二个窗口、不产生第二个守护进程：探针不出现第二个 `ready` 事件、守护进程 `pid` 前后相等，已有窗口被激活到前台（探针记录 `activated`）；窗口隐藏后经 `tray-open` 打开，探针出现 `visible=true` 且视图仍为实例列表。",
+      "status": "通过",
+      "evidence": [
+        "unit-single-instance.test.js.log"
+      ],
+      "testNames": [
+        "single-instance: no second ready, activated, pid equal, tray-open reopens (AC-36)"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

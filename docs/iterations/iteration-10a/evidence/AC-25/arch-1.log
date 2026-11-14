@@ -1,0 +1,7 @@
+14: * - `visibleLabels(edges, hoveredKey)` implements the label policy: the
+16: *   `pending`; hovering one connection line adds that line and changes
+29:/** Aggregate states whose line label is visible without hovering (A-11 / D-4). */
+114: * @param {string|null} [hoveredKey] the hovered line key, if any
+117:export function visibleLabels(edges, hoveredKey = null) {
+119:  const hovered = typeof hoveredKey === 'string' && hoveredKey.length > 0 ? hoveredKey : null;
+126:    const byHover = hovered !== null && key === hovered;

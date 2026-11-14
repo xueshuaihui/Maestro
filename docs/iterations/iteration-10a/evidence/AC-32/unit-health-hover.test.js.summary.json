@@ -1,0 +1,34 @@
+{
+  "ac": "AC-32",
+  "file": "health-hover.test.js",
+  "cmd": "test -f test/wp13/health-hover.test.js && NODE_ENV=test node --test test/wp13/health-hover.test.js",
+  "attempt": 1,
+  "attempts": 1,
+  "exit": 0,
+  "durationMs": 234,
+  "timedOut": false,
+  "tap": {
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 154.947361,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "AC-32：八类原因悬停句与附录 A-7 逐字相等（模板 + reasons 参数渲染）",
+      "AC-32：无原因只显「健康度 正常」，缺 level 降级 normal，无自造句",
+      "AC-32：原因句由 HEALTH_REASON 平铺键模板驱动（替换模板值即改变输出）",
+      "AC-32：缺参占位符保留 {xx}；纯码串 reasons 同样经模板渲染"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  }
+}

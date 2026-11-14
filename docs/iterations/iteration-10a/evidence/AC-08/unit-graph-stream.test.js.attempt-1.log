@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: GET /instances/:id/graph reuses the frozen buildGraph projection
+ok 1 - GET /instances/:id/graph reuses the frozen buildGraph projection
+  ---
+  duration_ms: 435.187175
+  type: 'test'
+  ...
+# Subtest: unknown instance answers 404, corrupt state answers 422
+ok 2 - unknown instance answers 404, corrupt state answers 422
+  ---
+  duration_ms: 347.276181
+  type: 'test'
+  ...
+# Subtest: AC-08: first frame is the full snapshot, role frame arrives within 500ms
+ok 3 - AC-08: first frame is the full snapshot, role frame arrives within 500ms
+  ---
+  duration_ms: 441.558636
+  type: 'test'
+  ...
+# Subtest: AC-08: reconnect always reopens with a full snapshot matching the REST view
+ok 4 - AC-08: reconnect always reopens with a full snapshot matching the REST view
+  ---
+  duration_ms: 508.036274
+  type: 'test'
+  ...
+# Subtest: sinceRev replays buffered whitelist frames after the snapshot
+ok 5 - sinceRev replays buffered whitelist frames after the snapshot
+  ---
+  duration_ms: 5416.922953
+  type: 'test'
+  ...
+# Subtest: the pulse seam never writes state.json or events.jsonl (AC-27 hash rule)
+ok 6 - the pulse seam never writes state.json or events.jsonl (AC-27 hash rule)
+  ---
+  duration_ms: 667.783626
+  type: 'test'
+  ...
+# Subtest: non-test environments never register the pulse route
+ok 7 - non-test environments never register the pulse route
+  ---
+  duration_ms: 304.2507
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8431.262507

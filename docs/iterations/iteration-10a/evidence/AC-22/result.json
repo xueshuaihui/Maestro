@@ -1,0 +1,71 @@
+{
+  "ac": "AC-22",
+  "title": "手动拖拽按实例保存，且不写实例状态",
+  "face": "功能 / 持久化 / 只读",
+  "verdict": "通过",
+  "level": "mock 实测（结构断言）",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:03:00.175Z",
+  "endedAt": "2026-11-14T05:03:01.138Z",
+  "durationMs": 963,
+  "checksTotal": 8,
+  "checksPass": 8,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "view-state.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"instanceDir|statePath\" desktop/ui/",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"views\" desktop/src-tauri/src/config.rs",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [
+    "R-12：B-36 真实壳内拖拽仍为结构断言（写入端 config.rs 零窗口级自动化用例）。本条按「mock 实测（结构断言）」判定，不冒充真实宿主实测；S3 以 view-state.test.js + config.rs 路径常量补结构证据。"
+  ],
+  "evidence": [
+    "arch-1.log",
+    "arch-2.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-view-state.test.js.attempt-1.log",
+    "unit-view-state.test.js.log",
+    "unit-view-state.test.js.summary.json",
+    "unit-view-state.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

@@ -1,0 +1,25 @@
+{
+  "ac": "AC-24",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "7 列顺序固定为“被阻塞 可调度 执行中 待校验 已完成 失败 已升级”；待执行且上游未完成的落在“被阻塞”、另一个落在“可调度”；2 个已取消折入“已完成”列并显示“已取消 2”；切回流程图后缩放、平移、拖拽偏移、折叠状态都保持。",
+      "status": "通过",
+      "evidence": [
+        "unit-board.test.js.log"
+      ],
+      "testNames": [
+        "AC-24: the seven columns keep their fixed id order and verbatim names",
+        "AC-24: the single pending state derives into blocked and ready per U-8",
+        "AC-24: both cancelled cards fold into done with the frozen fold label",
+        "AC-24: card titles resolve from the graph projection",
+        "AC-24: the frozen WP-4 shape (role:<id>, empty nodeIds) gates pending correctly",
+        "AC-24: switching back to the graph view keeps every view-state field",
+        "AC-24: the projection adds no state field and never mutates its inputs"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

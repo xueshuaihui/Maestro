@@ -1,0 +1,21 @@
+{
+  "ac": "AC-14",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "画布上四类节点（角色 / 人工 / 子工作流 / 角色）齐全；定义里的 4 条边全部有对应连接线；每条线两端都存在（悬空端点数 0）；回流边是弧线而不是第二条正向线；节点按层次从左到右（`T-001` 最左，`T-002` 最右），`H-001` 与 `S-001` 在中间层；子工作流折叠组显示“子工作流：发布子流程 · N 角色”。",
+      "status": "通过",
+      "evidence": [
+        "unit-graph-projection.test.js.log",
+        "unit-graph-layout.test.js.log"
+      ],
+      "testNames": [
+        "AC-14: topology with a human node and a subworkflow is complete",
+        "AC-14 collaboration: forward edges are strictly layered on a real projection"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "ac": "AC-22",
+  "level": "mock 实测（结构断言）",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "B 的坐标为“基础坐标 + (40, 60)”；另一个实例不受影响；视图偏好写在 `.orch/desktop/views/INST-001.json`；实例的 `state.json` 与 `events.jsonl` 字节哈希运行前后完全相同。",
+      "status": "通过",
+      "evidence": [
+        "unit-view-state.test.js.log"
+      ],
+      "testNames": [
+        "AC-22: drag offsets persist per instance, reopen restores, hashes hold",
+        "AC-22: reset clears drag offsets and clearOffsets targets the whole map"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

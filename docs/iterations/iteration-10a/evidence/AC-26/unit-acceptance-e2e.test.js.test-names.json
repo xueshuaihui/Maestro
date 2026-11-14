@@ -1,0 +1,11 @@
+{
+  "ac": "AC-26",
+  "file": "acceptance-e2e.test.js",
+  "count": 2,
+  "subtests": [
+    "AC-26 daemon 面：两行列表、拓扑完整的图快照、graph-dump 全量导出与 R-01 回归",
+    "AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且实例仍可读"
+  ],
+  "notOk": [],
+  "skips": []
+}

@@ -1,0 +1,19 @@
+{
+  "ac": "AC-29",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "主窗口正常出现并显示实例列表（3 秒内），点进实例能画出流程图；全程不需要用户先安装任何运行时、不需要开终端、不需要设置环境变量；托盘在启动后已创建。",
+      "status": "通过",
+      "evidence": [
+        "unit-bundle.test.js.log"
+      ],
+      "testNames": [
+        "bundle: artifacts + bundled node + narrowed-env launch + seams + quit"
+      ],
+      "mappingNote": "该契约测试文件用例名未带 AC 编号；逐字断言见文件头注释与断言体"
+    }
+  ]
+}

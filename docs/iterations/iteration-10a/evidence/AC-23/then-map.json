@@ -1,0 +1,23 @@
+{
+  "ac": "AC-23",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "角色节点出现红色角标与 `pulse` 动画 token，宽度与高度与变化前相等，坐标相等；连接线变为红色实线 + 回流箭头；其它节点坐标不变。",
+      "status": "通过",
+      "evidence": [
+        "unit-abnormal-style.test.js.log"
+      ],
+      "testNames": [
+        "AC-23: the abnormal node keeps width / height / x / y and gains the pulse token",
+        "AC-23: the rejected line turns red with the backflow arrow and lifts",
+        "AC-23: every other node keeps its coordinates when one node turns abnormal",
+        "AC-23: the style projection never carries geometry and clearing is immediate",
+        "AC-23: hover dimming is a paint-level token, not a geometry change"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

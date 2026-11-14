@@ -1,0 +1,60 @@
+{
+  "ac": "AC-15",
+  "title": "连接线 7 种聚合状态的视觉编码",
+  "face": "功能 / 视觉编码",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:02:50.448Z",
+  "endedAt": "2026-11-14T05:02:50.970Z",
+  "durationMs": 522,
+  "checksTotal": 7,
+  "checksPass": 7,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "edge-visual.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"aggregateStatus\" desktop/ui/graph/edge-rows.js",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-edge-visual.test.js.attempt-1.log",
+    "unit-edge-visual.test.js.log",
+    "unit-edge-visual.test.js.summary.json",
+    "unit-edge-visual.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

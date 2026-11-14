@@ -1,0 +1,20 @@
+{
+  "ac": "AC-32",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-32 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"P90|TTL|崩溃\" desktop/ui/",
+      "note": "悬停原因只透传 health.reasons，不重算、不拼接",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

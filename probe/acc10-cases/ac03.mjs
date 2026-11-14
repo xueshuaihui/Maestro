@@ -1,0 +1,40 @@
+// 由 node probe/acc10-f-gen.mjs 生成；判据原文逐字取自 requirement.md v2 §3.1 AC-03。
+// 禁止手工放宽 / 合并 / 改写任何 Then；改动请先改生成器并复跑 --check。
+import { runCase } from '../acc10-f-common.mjs';
+
+export const spec = {
+  "ac": "AC-03",
+  "title": "实例列表六项字段齐全，按健康度分档置顶",
+  "face": "功能",
+  "level": "mock 实测",
+  "refs": "BR-03, BR-04, BR-23",
+  "risk": "中（列表是主入口，字段缺失会让人误判）",
+  "given": "`/tmp/maestro-i10a-list` 里四个实例，健康度分别为需关注、慢、正常、已结束，更新时间交错；`NODE_ENV=test`。",
+  "when": "打开实例列表。",
+  "then": [
+    "四行按“需关注 → 慢 → 正常 → 已结束”排列；每行逐字符合附录 A-1 的模板，六项齐全且顺序固定；健康度只用四档词，工作流只用三个中文名；同一档内按最近更新时间倒序（本夹具每档各一个，排序只看档位）。"
+  ],
+  "judgement": "",
+  "jijian": "`cd \"$MAESTRO_REPO\" && NODE_ENV=test node --test test/wp13/instance-list.test.js`，用 `desktop/harness/render-list.mjs --payload /tmp/maestro-i10a-list/instances.json` 输出四行，与附录 A-1 的四行逐字比较（附录 A-1 本身即按该顺序排列）；并断言排序序列为 `attention, slow, normal, ended`、`# pass ≥ 1`、`# fail 0`。",
+  "fixture": "按 §3.3 先在空目录拉起核心，再写四份 `state.json` 快照（含 `health.level` 与 `updatedAt`）；`desktop/harness/collect.mjs --project /tmp/maestro-i10a-list --out /tmp/maestro-i10a-list/instances.json` 从真实接口取列表。",
+  "archText": "列表只消费 `instance.list` + `instance.get`，不新增状态字段、不重算健康度。",
+  "files": [
+    "instance-list.test.js"
+  ],
+  "arch": [
+    {
+      "cmd": "grep -REn \"saveState|computeHealth\" desktop/ui/list/",
+      "expect": 1,
+      "note": "列表只读：不新增状态字段、不重算健康度"
+    }
+  ],
+  "notes": [],
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-03"
+};
+
+export const cases = [{
+  ac: spec.ac,
+  title: spec.title,
+  face: spec.face,
+  run: () => runCase(spec),
+}];

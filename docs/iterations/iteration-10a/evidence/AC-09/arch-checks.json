@@ -1,0 +1,33 @@
+{
+  "ac": "AC-09",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-09 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"setTimeout\" src/daemon/http/stream.js",
+      "note": "调度器内部定时器留证；窗口边界由注入时钟单测覆盖",
+      "expect": null,
+      "exit": 0,
+      "lines": 2,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "90:          const timer = setTimeout(fn, delayMs);\n617:      else setTimeout(fire, at);",
+      "ok": true,
+      "informational": true
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"now\" src/daemon/http/stream.js",
+      "note": "合并调度器 now 可注入",
+      "expect": 0,
+      "exit": 0,
+      "lines": 7,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "71: * `now`, `setTimer` and `clearTimer` are all injectable so unit tests can\n77:  now,\n85:  const clock = typeof now === 'function' ? now : Date.now;\n199:  const now = typeof clock === 'function' ? clock : Date.now;\n206:  /** Latest known rev per instance (whitelist events and pulse steps only). */\n230:    now,\n484:        now,",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

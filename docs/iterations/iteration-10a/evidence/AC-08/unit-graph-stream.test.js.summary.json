@@ -1,0 +1,37 @@
+{
+  "ac": "AC-08",
+  "file": "graph-stream.test.js",
+  "cmd": "test -f test/wp13/graph-stream.test.js && NODE_ENV=test node --test test/wp13/graph-stream.test.js",
+  "attempt": 1,
+  "attempts": 1,
+  "exit": 0,
+  "durationMs": 8512,
+  "timedOut": false,
+  "tap": {
+    "tests": 7,
+    "pass": 7,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 8431.262507,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "GET /instances/:id/graph reuses the frozen buildGraph projection",
+      "unknown instance answers 404, corrupt state answers 422",
+      "AC-08: first frame is the full snapshot, role frame arrives within 500ms",
+      "AC-08: reconnect always reopens with a full snapshot matching the REST view",
+      "sinceRev replays buffered whitelist frames after the snapshot",
+      "the pulse seam never writes state.json or events.jsonl (AC-27 hash rule)",
+      "non-test environments never register the pulse route"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "ac": "AC-34",
+  "title": "图例固定在画布左下角，缩放平移不改锚点",
+  "face": "功能 / 视觉",
+  "refs": "BR-29",
+  "risk": "中（图例位置是 A-8 逐字基线的一部分）",
+  "given": "`/tmp/maestro-i10a-legend` 项目根的实例流程图已打开，图例按附录 A-8 两行显示；`NODE_ENV=test`。",
+  "when": "缩放到 150% 并平移 (+120, -40)；再点“复位视图”；再把一个分组折叠（或直接观察无分组图的默认态）。",
+  "then": [
+    "三种状态下图例文本都与附录 A-8 两行逐字相等，锚点始终在画布可视区左下角（固定偏移），不随缩放与平移改变；图例绘制在画布最上层，不被节点或连接线遮挡。"
+  ],
+  "judgement": "",
+  "jijian": "`test -f test/wp13/legend.test.js && NODE_ENV=test node --test test/wp13/legend.test.js`，断言三种视图状态下 `legend.anchor === 'bottom-left'`、`legend.lines` 与附录 A-8 两行逐字相等、图例层级为画布最上层；`# pass ≥ 1`、`# fail 0`。",
+  "fixture": "视图状态模块 + 图例投影模块（均不访问 DOM / fs），由 harness 直接驱动；项目根仅用于保证与真实界面同批模块。",
+  "archText": "图例锚点只由画布尺寸决定，不进入布局计算；`grep -REn \"Date[.]now|fs[.]\" desktop/ui/graph/` 必须**零命中（exit 1）**。",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-34",
+  "level": "mock 实测",
+  "notes": []
+}

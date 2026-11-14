@@ -1,0 +1,7 @@
+src/daemon/http/routes.js:13: * Read-only discipline (AC-27 / AC-05): every `startRun` hit lives in the
+src/daemon/http/routes.js:15: * through the existing `orchestrator.startRun` seam (`cwd` = project root,
+src/daemon/http/routes.js:203: *   (`listInstances` / `getStatus` / `startRun`)
+src/daemon/http/routes.js:214:  if (!orchestrator || typeof orchestrator.startRun !== 'function') {
+src/daemon/http/routes.js:215:    throw new TypeError('createRoutes: orchestrator.startRun is required');
+src/daemon/http/routes.js:259:   * existing `orchestrator.startRun` seam; success answers `{instanceId}`,
+src/daemon/http/routes.js:288:    const started = await orchestrator.startRun({

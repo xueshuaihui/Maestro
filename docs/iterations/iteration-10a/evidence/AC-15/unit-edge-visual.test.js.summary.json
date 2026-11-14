@@ -1,0 +1,36 @@
+{
+  "ac": "AC-15",
+  "file": "edge-visual.test.js",
+  "cmd": "test -f test/wp13/edge-visual.test.js && NODE_ENV=test node --test test/wp13/edge-visual.test.js",
+  "attempt": 1,
+  "attempts": 1,
+  "exit": 0,
+  "durationMs": 237,
+  "timedOut": false,
+  "tap": {
+    "tests": 6,
+    "pass": 6,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 157.578256,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "EDGE_VISUAL equals the A-11 table value by value",
+      "AC-15: seven lines in seven states carry exactly the A-11 tokens",
+      "AC-15: rejected always renders the backflow arrow even on a forward line",
+      "AC-15: not_started is hidden by default and appears once the toggle is on",
+      "visual tokens are stable across rebuilds of the same input",
+      "label visibility defaults match the A-11 last column"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  }
+}

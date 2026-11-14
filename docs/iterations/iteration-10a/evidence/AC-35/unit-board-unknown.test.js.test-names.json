@@ -1,0 +1,12 @@
+{
+  "ac": "AC-35",
+  "file": "board-unknown.test.js",
+  "count": 3,
+  "subtests": [
+    "AC-35 (harness): the unknown card lands in blocked tagged with the frozen text",
+    "AC-35 (in-process): the explicit default branch never throws on any alien value",
+    "AC-35: switching back to the graph view keeps the view-state object unchanged"
+  ],
+  "notOk": [],
+  "skips": []
+}

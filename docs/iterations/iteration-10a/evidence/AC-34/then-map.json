@@ -1,0 +1,21 @@
+{
+  "ac": "AC-34",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "三种状态下图例文本都与附录 A-8 两行逐字相等，锚点始终在画布可视区左下角（固定偏移），不随缩放与平移改变；图例绘制在画布最上层，不被节点或连接线遮挡。",
+      "status": "通过",
+      "evidence": [
+        "unit-legend.test.js.log"
+      ],
+      "testNames": [
+        "AC-34: anchor is bottom-left, top layer, fixed offset; shape is plain JSON",
+        "AC-34: three view states keep the legend identical",
+        "AC-34: legend projection is deterministic and input-safe"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

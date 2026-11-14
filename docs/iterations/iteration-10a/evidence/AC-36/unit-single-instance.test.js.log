@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: single-instance: no second ready, activated, pid equal, tray-open reopens (AC-36)
+ok 1 - single-instance: no second ready, activated, pid equal, tray-open reopens (AC-36)
+  ---
+  duration_ms: 5547.895264
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5662.221339

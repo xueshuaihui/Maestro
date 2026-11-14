@@ -1,0 +1,33 @@
+{
+  "ac": "AC-04",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-04 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"renderListUnreadable\" desktop/ui/list/list.js",
+      "note": "不可读行复用既有渲染函数（需求写作 renderInstanceUnreadable，实现导出名为 renderListUnreadable）",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "140:export function renderListUnreadable(instanceId, labels) {",
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"状态不可读\" desktop/ui/list/",
+      "note": "界面层不得硬编码中文（走 /ui/labels）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

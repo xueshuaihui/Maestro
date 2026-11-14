@@ -1,0 +1,33 @@
+{
+  "ac": "AC-05",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-05 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -Rn \"startRun\" desktop/",
+      "note": "需求原文形态；本机 bundle 构建产物内有产品源码副本，命中仅作留证",
+      "expect": null,
+      "exit": 0,
+      "lines": 14,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/core/orchestrator.js:3721:  async function startRun({\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/core/orchestrator.js:5223:    startRun,\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/serve-entry.js:81:    if (!orch || typeof orch.startRun !== 'function') throw new Error('createOrchestrator 返回值缺少 startRun');\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/serve-entry.js:105:    async startRun() {\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/server.js:148:      // 早返回契约：orchestrator.startRun 必须在会话建立后立即 resolve，\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/server.js:786:   * 调 `startRun` 并附带 `onProgress`。若实现签名不接受该字段，多传一个键也无副作用。\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/server.js:794:    return orch.startRun({ ...args, onProgress });\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:13: * Read-only discipline (AC-27 / AC-05): every `startRun` hit lives in the\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:15: * through the existing `orchestrator.startRun` seam (`cwd` = project root,\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:203: *   (`listInstances` / `getStatus` / `startRun`)\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:214:  if (!orchestrator || typeof orchestrator.startRun !== 'function') {\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:215:    throw new TypeError('createRoutes: orchestrator.startRun is required');\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:259:   * existing `orchestrator.startRun` seam; success answers `{instanceId}`,\ndesktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:288:    const started = await orchestrator.startRun({",
+      "ok": true,
+      "informational": true
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"startRun\" desktop/ui/ desktop/harness/",
+      "note": "界面层零命中：新建实例只能经接口，不得重写 run.start",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

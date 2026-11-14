@@ -1,0 +1,78 @@
+{
+  "ac": "AC-02",
+  "title": "关闭主窗口缩到托盘，守护进程继续运行；托盘退出才停止",
+  "face": "功能 / 桌面壳 / 规划验收",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T04:59:28.698Z",
+  "endedAt": "2026-11-14T05:00:04.460Z",
+  "durationMs": 35762,
+  "checksTotal": 9,
+  "checksPass": 9,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "desktop-shell.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"core[.]stop\" desktop/src-tauri/src/",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn -B8 \"core[.]stop\" desktop/src-tauri/src/",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 3,
+      "cmd": "grep -REn \"close-window|close_to_tray\" desktop/src-tauri/src/tray.rs",
+      "exit": 0,
+      "expect": null,
+      "ok": true,
+      "informational": true
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-2.log",
+    "arch-3.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-desktop-shell.test.js.attempt-1.log",
+    "unit-desktop-shell.test.js.log",
+    "unit-desktop-shell.test.js.summary.json",
+    "unit-desktop-shell.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

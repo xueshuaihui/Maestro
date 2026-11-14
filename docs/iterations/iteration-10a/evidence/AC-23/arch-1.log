@@ -1,0 +1,4 @@
+7: *   `{ opacity, z, animation }`. It never returns geometry: the pulse and the
+11: *   node the `pulse` animation token. Clearing the abnormality drops both
+82:  // A-11 already owns the line animation token; the pulse belongs to nodes
+86:    : (abnormal ? 'pulse' : 'none');

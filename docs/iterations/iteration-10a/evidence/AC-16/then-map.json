@@ -1,0 +1,22 @@
+{
+  "ac": "AC-16",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "画布上“测试→开发”只有 1 条回流弧线，聚合状态为“已拒绝”；“开发→测试”只有 1 条正向线，标注“2 并行交接”；不存在第 3 条同向线。",
+      "status": "通过",
+      "evidence": [
+        "unit-edge-aggregate.test.js.log"
+      ],
+      "testNames": [
+        "AC-16: three backflow handoffs collapse into one rejected arc, two parallel forwards into one line",
+        "AC-16: no third same-direction line exists for the role pair",
+        "AC-16: aggregate priority is table-driven over all 7x7 state pairs",
+        "AC-16: two same-direction definition edges between one role pair merge into a single line"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

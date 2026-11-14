@@ -1,0 +1,9 @@
+17: * - `human` / `escalate` nodes come from the definition layer `node_type`;
+24: * - unknown `node_type` renders as a role node and keeps its definition id,
+153:function nodeTypeOf(node) {
+154:  const raw = node?.node_type ?? node?.nodeType;
+237:      .filter((node) => nodeTypeOf(node) === 'role' && defRoleOf(node) !== null)
+391:    const type = nodeTypeOf(defNode);
+414:        if (nodeTypeOf(childNode) !== 'role') continue;
+443:    // Unknown node_type: render as a role node, keep the definition id (D-3).
+487:    const type = nodeTypeOf(defNode);

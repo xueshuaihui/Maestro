@@ -1,0 +1,14 @@
+{
+  "ac": "AC-33",
+  "file": "hover-highlight.test.js",
+  "count": 5,
+  "subtests": [
+    "AC-33: hovering B highlights three lines and their four endpoints",
+    "AC-33: hovering the line B->C highlights the line and its two endpoints",
+    "AC-33: two pointer leaves restore the full set",
+    "AC-33: highlighting never changes coordinates or sizes",
+    "AC-33: the set derives from adjacency, not from positions"
+  ],
+  "notOk": [],
+  "skips": []
+}

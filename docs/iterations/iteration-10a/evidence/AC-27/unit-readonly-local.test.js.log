@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: AC-27：读操作不写实例、四组状态不变、仅回环监听、数据面无凭据 401
+ok 1 - AC-27：读操作不写实例、四组状态不变、仅回环监听、数据面无凭据 401
+  ---
+  duration_ms: 2294.344505
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2502.450993

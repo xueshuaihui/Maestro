@@ -1,0 +1,15 @@
+{
+  "ac": "AC-25",
+  "file": "labels-policy.test.js",
+  "count": 6,
+  "subtests": [
+    "AC-25: three label states are 3 / 4 / 3 and the added key is the done line",
+    "AC-25: the default set is exactly rejected / expired / pending",
+    "AC-25: the role node content survives all three label states",
+    "A-14: the resolver accepts both label shapes and resolves the same text",
+    "A-14: placeholder substitution is literal and never fabricates text",
+    "A-14: resolution never mutates the shared label table"
+  ],
+  "notOk": [],
+  "skips": []
+}

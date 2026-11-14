@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: AC-20: 150% zoom renders 270 screen pixels and leaves layout coordinates alone
+ok 1 - AC-20: 150% zoom renders 270 screen pixels and leaves layout coordinates alone
+  ---
+  duration_ms: 1.737277
+  type: 'test'
+  ...
+# Subtest: AC-20: the zoom/pan combination is invertible
+ok 2 - AC-20: the zoom/pan combination is invertible
+  ---
+  duration_ms: 0.231721
+  type: 'test'
+  ...
+# Subtest: AC-20: reset restores 100% / origin / cleared drag offsets
+ok 3 - AC-20: reset restores 100% / origin / cleared drag offsets
+  ---
+  duration_ms: 0.388937
+  type: 'test'
+  ...
+# Subtest: AC-20: zoom clamps to the [0.5, 2.0] window
+ok 4 - AC-20: zoom clamps to the [0.5, 2.0] window
+  ---
+  duration_ms: 0.148178
+  type: 'test'
+  ...
+# Subtest: AC-22: drag offsets persist per instance, reopen restores, hashes hold
+ok 5 - AC-22: drag offsets persist per instance, reopen restores, hashes hold
+  ---
+  duration_ms: 157.526833
+  type: 'test'
+  ...
+# Subtest: AC-22: reset clears drag offsets and clearOffsets targets the whole map
+ok 6 - AC-22: reset clears drag offsets and clearOffsets targets the whole map
+  ---
+  duration_ms: 0.331434
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 289.250719

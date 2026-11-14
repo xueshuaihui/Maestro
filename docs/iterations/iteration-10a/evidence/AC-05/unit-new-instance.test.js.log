@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: AC-06：两条面板校验逐字（A-5），面板不发起、不关闭由消费方保持 open
+ok 1 - AC-06：两条面板校验逐字（A-5），面板不发起、不关闭由消费方保持 open
+  ---
+  duration_ms: 1.329074
+  type: 'test'
+  ...
+# Subtest: AC-05：buildStartRequest 只含 {template, task} 两个字段
+ok 2 - AC-05：buildStartRequest 只含 {template, task} 两个字段
+  ---
+  duration_ms: 0.138993
+  type: 'test'
+  ...
+# Subtest: AC-06：失败渲染经 ERROR_TEMPLATE 平铺键 + DESKTOP_NEW_START_FAILED 包裹（逐字）
+ok 3 - AC-06：失败渲染经 ERROR_TEMPLATE 平铺键 + DESKTOP_NEW_START_FAILED 包裹（逐字）
+  ---
+  duration_ms: 0.291357
+  type: 'test'
+  ...
+# Subtest: AC-05：GET /workflows 三模板、POST 成功回 instanceId、2 秒入列表且与 CLI 逐词同构
+ok 4 - AC-05：GET /workflows 三模板、POST 成功回 instanceId、2 秒入列表且与 CLI 逐词同构
+  ---
+  duration_ms: 2627.412912
+  type: 'test'
+  ...
+# Subtest: AC-06：宿主启动失败现场显示「启动失败 · <既有错误原文>」，列表实例数不变
+ok 5 - AC-06：宿主启动失败现场显示「启动失败 · <既有错误原文>」，列表实例数不变
+  ---
+  duration_ms: 1197.470654
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4001.674767

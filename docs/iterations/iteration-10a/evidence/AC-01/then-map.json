@@ -1,0 +1,19 @@
+{
+  "ac": "AC-01",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "3 秒内出现主窗口，标题为 `Maestro`，默认页面是实例列表；两行逐字为附录 A-1 的第 1 行与第 4 行（含六项字段与健康度）；界面没有要求用户先开终端或浏览器。",
+      "status": "通过",
+      "evidence": [
+        "unit-desktop-shell.test.js.log"
+      ],
+      "testNames": [
+        "desktop-shell: ready probe + close-to-tray + quit confirm flow (AC-01/02)"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

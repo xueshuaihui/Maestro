@@ -1,0 +1,14 @@
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/core/orchestrator.js:3721:  async function startRun({
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/core/orchestrator.js:5223:    startRun,
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/serve-entry.js:81:    if (!orch || typeof orch.startRun !== 'function') throw new Error('createOrchestrator 返回值缺少 startRun');
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/serve-entry.js:105:    async startRun() {
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/server.js:148:      // 早返回契约：orchestrator.startRun 必须在会话建立后立即 resolve，
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/server.js:786:   * 调 `startRun` 并附带 `onProgress`。若实现签名不接受该字段，多传一个键也无副作用。
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/server.js:794:    return orch.startRun({ ...args, onProgress });
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:13: * Read-only discipline (AC-27 / AC-05): every `startRun` hit lives in the
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:15: * through the existing `orchestrator.startRun` seam (`cwd` = project root,
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:203: *   (`listInstances` / `getStatus` / `startRun`)
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:214:  if (!orchestrator || typeof orchestrator.startRun !== 'function') {
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:215:    throw new TypeError('createRoutes: orchestrator.startRun is required');
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:259:   * existing `orchestrator.startRun` seam; success answers `{instanceId}`,
+desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/daemon/http/routes.js:288:    const started = await orchestrator.startRun({

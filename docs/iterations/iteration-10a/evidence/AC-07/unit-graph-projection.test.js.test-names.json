@@ -1,0 +1,31 @@
+{
+  "ac": "AC-07",
+  "file": "graph-projection.test.js",
+  "count": 22,
+  "subtests": [
+    "AC-07: the snapshot draws 8 nodes and 9 edges in one pass",
+    "AC-07: no dangling endpoints; every node has type and status; every edge has direction and aggregate status",
+    "AC-07 fixture: the projected node and edge sets equal the definition sets",
+    "stateNodes mirrors snapshot node states and role bindings for the board (D-2 / B-26 / Q-2)",
+    "stateNodes passes the nine-state vocabulary through verbatim, without role-token mapping",
+    "stateNodes keeps roleId only when the snapshot supplies a string (Q-2)",
+    "stateNodes degrades to an empty array when the snapshot has no node list",
+    "projection is deterministic and does not mutate its inputs",
+    "AC-14: topology with a human node and a subworkflow is complete",
+    "subworkflow with an unreadable child definition degrades to memberCount null and gray status",
+    "unknown node_type renders as a role node and keeps its id",
+    "special nodes read their status from the snapshot; missing state falls back to pending",
+    "escalated node state and pending escalations light the abnormal badge",
+    "an empty registry keeps declared roles known by declaration (never unavailable)",
+    "rev follows the whitelist: session/execution/health events never advance it",
+    "role lastActivity prefers the latest landed span end_time and falls back to state.updatedAt",
+    "group nodes appear only above 12 visible role nodes",
+    "an unreadable definition projects an empty graph with readable=false",
+    "workflow reports ref and readability; snapshot passthrough fields are intact",
+    "label visibility defaults: only rejected, expired and pending are visible",
+    "edgeHidden implements the not-started toggle (AC-15 server half)",
+    "harness end-to-end: graph-dump.mjs builds a payload from a throwaway project root"
+  ],
+  "notOk": [],
+  "skips": []
+}

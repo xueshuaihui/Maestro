@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: AC-26 daemon 面：两行列表、拓扑完整的图快照、graph-dump 全量导出与 R-01 回归
+ok 1 - AC-26 daemon 面：两行列表、拓扑完整的图快照、graph-dump 全量导出与 R-01 回归
+  ---
+  duration_ms: 2449.576256
+  type: 'test'
+  ...
+# Subtest: AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且实例仍可读
+ok 2 - AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且实例仍可读
+  ---
+  duration_ms: 2791.131023
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5368.721013

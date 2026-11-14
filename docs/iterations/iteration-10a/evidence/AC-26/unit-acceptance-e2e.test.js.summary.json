@@ -1,0 +1,32 @@
+{
+  "ac": "AC-26",
+  "file": "acceptance-e2e.test.js",
+  "cmd": "test -f test/wp13/acceptance-e2e.test.js && NODE_ENV=test node --test test/wp13/acceptance-e2e.test.js",
+  "attempt": 1,
+  "attempts": 1,
+  "exit": 0,
+  "durationMs": 5453,
+  "timedOut": false,
+  "tap": {
+    "tests": 2,
+    "pass": 2,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 5368.721013,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "AC-26 daemon 面：两行列表、拓扑完整的图快照、graph-dump 全量导出与 R-01 回归",
+      "AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且实例仍可读"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  }
+}

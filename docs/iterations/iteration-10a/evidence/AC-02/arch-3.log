@@ -1,0 +1,3 @@
+93:        "close-window" => close_to_tray(app),
+148:pub fn close_to_tray(app: &AppHandle) {
+152:    probe::event("close-window", json!({ "window": { "visible": false } }));

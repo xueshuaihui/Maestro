@@ -1,0 +1,2 @@
+1820:          const result = invoke('probe_emit', { payload });
+1829:      void request('/__test__/window-probe', { method: 'POST', body: payload });

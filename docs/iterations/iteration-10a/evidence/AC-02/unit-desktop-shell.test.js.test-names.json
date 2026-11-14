@@ -1,0 +1,10 @@
+{
+  "ac": "AC-02",
+  "file": "desktop-shell.test.js",
+  "count": 1,
+  "subtests": [
+    "desktop-shell: ready probe + close-to-tray + quit confirm flow (AC-01/02)"
+  ],
+  "notOk": [],
+  "skips": []
+}

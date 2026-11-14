@@ -1,0 +1,5 @@
+84: *             direction: string, aggregateStatus: string|null,
+99:  const aggregateStatus = typeof edge?.aggregateStatus === 'string' ? edge.aggregateStatus : null;
+100:  const statusKey = aggregateStatus === null ? null : STATUS_WORD_KEY[aggregateStatus] ?? null;
+121:  if (aggregateStatus === 'accepted') {
+133:    aggregateStatus,

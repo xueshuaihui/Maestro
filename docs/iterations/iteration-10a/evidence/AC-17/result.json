@@ -1,0 +1,60 @@
+{
+  "ac": "AC-17",
+  "title": "层次布局：同层并行、回流不改层次、坐标稳定",
+  "face": "功能 / 布局",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:02:51.884Z",
+  "endedAt": "2026-11-14T05:02:52.613Z",
+  "durationMs": 729,
+  "checksTotal": 7,
+  "checksPass": 7,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "graph-layout.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 8,
+        "pass": 8,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"Date[.]now|fs[.]\" desktop/ui/graph/layout.js",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-graph-layout.test.js.attempt-1.log",
+    "unit-graph-layout.test.js.log",
+    "unit-graph-layout.test.js.summary.json",
+    "unit-graph-layout.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

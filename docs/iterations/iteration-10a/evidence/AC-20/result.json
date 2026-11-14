@@ -1,0 +1,60 @@
+{
+  "ac": "AC-20",
+  "title": "缩放平移与一键复位",
+  "face": "功能 / 交互",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:02:58.422Z",
+  "endedAt": "2026-11-14T05:02:59.098Z",
+  "durationMs": 676,
+  "checksTotal": 7,
+  "checksPass": 7,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "view-state.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"saveState|writeFile\" desktop/ui/graph/view.js",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-view-state.test.js.attempt-1.log",
+    "unit-view-state.test.js.log",
+    "unit-view-state.test.js.summary.json",
+    "unit-view-state.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

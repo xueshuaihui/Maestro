@@ -1,0 +1,20 @@
+{
+  "ac": "AC-36",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-36 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"SingleInstance|single_instance|activate\" desktop/src-tauri/src/",
+      "note": "单实例用应用级锁；二次启动激活已有窗口",
+      "expect": 0,
+      "exit": 0,
+      "lines": 6,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "desktop/src-tauri/src/single-instance.rs:3://! record the `activated` probe event (into the second instance's probe file\ndesktop/src-tauri/src/single-instance.rs:11:    tauri_plugin_single_instance::init(|app, argv, _cwd| {\ndesktop/src-tauri/src/single-instance.rs:16:                \"activated\",\ndesktop/src-tauri/src/single-instance.rs:20:                \"activated\",\ndesktop/src-tauri/src/main.rs:9:mod single_instance;\ndesktop/src-tauri/src/main.rs:108:        .plugin(single_instance::init())",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

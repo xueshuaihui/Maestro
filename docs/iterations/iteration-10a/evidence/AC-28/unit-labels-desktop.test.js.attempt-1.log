@@ -1,0 +1,160 @@
+TAP version 13
+# Subtest: 键全集冻结：下发键集合与期望清单精确相等（多键/少键都 fail）
+ok 1 - 键全集冻结：下发键集合与期望清单精确相等（多键/少键都 fail）
+  ---
+  duration_ms: 1.646808
+  type: 'test'
+  ...
+# Subtest: 桌面新增键：DESKTOP_LABEL_KEYS 与期望值表逐字相等（A-14 新增段冻结）
+ok 2 - 桌面新增键：DESKTOP_LABEL_KEYS 与期望值表逐字相等（A-14 新增段冻结）
+  ---
+  duration_ms: 0.282542
+  type: 'test'
+  ...
+# Subtest: 键名纪律：全部 UPPER_SNAKE、值为非空字符串、两张表均冻结
+ok 3 - 键名纪律：全部 UPPER_SNAKE、值为非空字符串、两张表均冻结
+  ---
+  duration_ms: 0.494742
+  type: 'test'
+  ...
+# Subtest: 占位符集合：每个新增键的占位符与期望一一对应
+ok 4 - 占位符集合：每个新增键的占位符与期望一一对应
+  ---
+  duration_ms: 0.595934
+  type: 'test'
+  ...
+# Subtest: 占位符字面替换：fill 只替换大括号变量、不加工分隔符
+ok 5 - 占位符字面替换：fill 只替换大括号变量、不加工分隔符
+  ---
+  duration_ms: 0.200287
+  type: 'test'
+  ...
+# Subtest: 复用键同源：平铺键值与 src/cli/labels.js 对应成员逐字相同
+ok 6 - 复用键同源：平铺键值与 src/cli/labels.js 对应成员逐字相同
+  ---
+  duration_ms: 0.358136
+  type: 'test'
+  ...
+# Subtest: 既有键计数锚点：复用表成员名清单与期望一致（既有表零改动）
+ok 7 - 既有键计数锚点：复用表成员名清单与期望一致（既有表零改动）
+  ---
+  duration_ms: 0.179373
+  type: 'test'
+  ...
+# Subtest: A-1 列表行：四行样例逐字（六项固定顺序，待处理 0 也显示）
+ok 8 - A-1 列表行：四行样例逐字（六项固定顺序，待处理 0 也显示）
+  ---
+  duration_ms: 0.201762
+  type: 'test'
+  ...
+# Subtest: A-2 空态与不可读 + A-3 项目提示逐字
+ok 9 - A-2 空态与不可读 + A-3 项目提示逐字
+  ---
+  duration_ms: 0.32335
+  type: 'test'
+  ...
+# Subtest: A-4 连接三态逐字
+ok 10 - A-4 连接三态逐字
+  ---
+  duration_ms: 0.50845
+  type: 'test'
+  ...
+# Subtest: A-5 新建面板：标题/字段/按钮/三选项/校验/成功/失败（错误原文透传）逐字
+ok 11 - A-5 新建面板：标题/字段/按钮/三选项/校验/成功/失败（错误原文透传）逐字
+  ---
+  duration_ms: 0.193075
+  type: 'test'
+  ...
+# Subtest: A-6 托盘菜单与退出确认逐字
+ok 12 - A-6 托盘菜单与退出确认逐字
+  ---
+  duration_ms: 0.094793
+  type: 'test'
+  ...
+# Subtest: A-7 健康度悬停：八类原因句 + 无原因行逐字（经 HEALTH_LINE / HEALTH_REASON 模板渲染）
+ok 13 - A-7 健康度悬停：八类原因句 + 无原因行逐字（经 HEALTH_LINE / HEALTH_REASON 模板渲染）
+  ---
+  duration_ms: 0.169524
+  type: 'test'
+  ...
+# Subtest: A-8 图例两行逐字
+ok 14 - A-8 图例两行逐字
+  ---
+  duration_ms: 0.072612
+  type: 'test'
+  ...
+# Subtest: A-9 角色节点行：五例 + 折叠形态 + 堆叠角标逐字
+ok 15 - A-9 角色节点行：五例 + 折叠形态 + 堆叠角标逐字
+  ---
+  duration_ms: 0.165677
+  type: 'test'
+  ...
+# Subtest: A-10 特殊节点行：五例逐字（含子工作流全角冒号与角色数未知）
+ok 16 - A-10 特殊节点行：五例逐字（含子工作流全角冒号与角色数未知）
+  ---
+  duration_ms: 0.113573
+  type: 'test'
+  ...
+# Subtest: A-11 连接线行：四例 + 并行后缀 + accepted 悬停 + 7 态词逐字
+ok 17 - A-11 连接线行：四例 + 并行后缀 + accepted 悬停 + 7 态词逐字
+  ---
+  duration_ms: 0.163522
+  type: 'test'
+  ...
+# Subtest: A-12 视图控件九项 + 看板七列 + 折叠标记逐字
+ok 18 - A-12 视图控件九项 + 看板七列 + 折叠标记逐字
+  ---
+  duration_ms: 0.126364
+  type: 'test'
+  ...
+# Subtest: A-13 图数据异常三行逐字
+ok 19 - A-13 图数据异常三行逐字
+  ---
+  duration_ms: 0.081037
+  type: 'test'
+  ...
+# Subtest: labelKeysPayload：形状恰为 { keys }，键值表与 UI_LABEL_KEYS 深比较相等
+ok 20 - labelKeysPayload：形状恰为 { keys }，键值表与 UI_LABEL_KEYS 深比较相等
+  ---
+  duration_ms: 0.101406
+  type: 'test'
+  ...
+# Subtest: respondUiLabels：200 + application/json; charset=utf-8 + { keys } 响应体
+ok 21 - respondUiLabels：200 + application/json; charset=utf-8 + { keys } 响应体
+  ---
+  duration_ms: 0.360484
+  type: 'test'
+  ...
+# Subtest: labelsResponseBody / createLabelsRoute：S-02 handler 表形状与路径常量
+ok 22 - labelsResponseBody / createLabelsRoute：S-02 handler 表形状与路径常量
+  ---
+  duration_ms: 0.390954
+  type: 'test'
+  ...
+# Subtest: AC-28：desktop/ui 与 desktop/harness 的 CJK 命中数为 0（中文只经 /ui/labels 下发）
+ok 23 - AC-28：desktop/ui 与 desktop/harness 的 CJK 命中数为 0（中文只经 /ui/labels 下发）
+  ---
+  duration_ms: 132.630059
+  type: 'test'
+  ...
+# Subtest: AC-28：GET /ui/labels 覆盖 A-14 契约键集合（显式契约名 + 前缀族）
+ok 24 - AC-28：GET /ui/labels 覆盖 A-14 契约键集合（显式契约名 + 前缀族）
+  ---
+  duration_ms: 0.408677
+  type: 'test'
+  ...
+# Subtest: AC-28：新增键存在且非空 + dependencies / devDependencies 为空
+ok 25 - AC-28：新增键存在且非空 + dependencies / devDependencies 为空
+  ---
+  duration_ms: 6.213606
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 300.146061

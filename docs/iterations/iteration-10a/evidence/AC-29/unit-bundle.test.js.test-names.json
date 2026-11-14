@@ -1,0 +1,10 @@
+{
+  "ac": "AC-29",
+  "file": "bundle.test.js",
+  "count": 1,
+  "subtests": [
+    "bundle: artifacts + bundled node + narrowed-env launch + seams + quit"
+  ],
+  "notOk": [],
+  "skips": []
+}

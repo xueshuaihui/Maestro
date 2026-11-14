@@ -1,0 +1,60 @@
+{
+  "ac": "AC-32",
+  "title": "健康度悬停原因逐字复用 I1.9 八类，无原因只显「健康度 正常」",
+  "face": "功能 / 文案基线",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "7949e8a",
+  "startedAt": "2026-11-14T05:04:00.148Z",
+  "endedAt": "2026-11-14T05:04:00.803Z",
+  "durationMs": 655,
+  "checksTotal": 7,
+  "checksPass": 7,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "health-hover.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 4,
+        "pass": 4,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"P90|TTL|崩溃\" desktop/ui/",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [],
+  "evidence": [
+    "arch-1.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-health-hover.test.js.attempt-1.log",
+    "unit-health-hover.test.js.log",
+    "unit-health-hover.test.js.summary.json",
+    "unit-health-hover.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

@@ -1,0 +1,20 @@
+{
+  "ac": "AC-15",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-15 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"aggregateStatus\" desktop/ui/graph/edge-rows.js",
+      "note": "视觉 token 只由聚合状态映射",
+      "expect": 0,
+      "exit": 0,
+      "lines": 5,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "84: *             direction: string, aggregateStatus: string|null,\n99:  const aggregateStatus = typeof edge?.aggregateStatus === 'string' ? edge.aggregateStatus : null;\n100:  const statusKey = aggregateStatus === null ? null : STATUS_WORD_KEY[aggregateStatus] ?? null;\n121:  if (aggregateStatus === 'accepted') {\n133:    aggregateStatus,",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

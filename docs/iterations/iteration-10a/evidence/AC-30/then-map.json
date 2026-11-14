@@ -1,0 +1,24 @@
+{
+  "ac": "AC-30",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "依次显示：`实例 INST-999 · 不存在`；`流程图定义不可读 · 已按内置模板显示`；`子工作流 child-x · 角色数未知`；`连接守护进程失败 · 请确认项目目录后重试`；`已断开 · 正在重连…`；`实例 {id} · 状态不可读`。全部不白屏、不打印堆栈，界面仍可返回列表或重试。",
+      "status": "通过",
+      "evidence": [
+        "unit-errors.test.js.log"
+      ],
+      "testNames": [
+        "AC-30 scene 1: missing instance renders the exact line and keeps the list one action away",
+        "AC-30 scene 2: unreadable definition shows the exact line and keeps the fallback graph",
+        "AC-30 scene 3: unknown subworkflow member count renders the exact A-10 degraded row",
+        "AC-30 scene 4 + F-17: connecting transient shows first, failure after 10s, retry restarts it",
+        "AC-30 scene 5: a dropped stream shows the reconnecting line and keeps the last graph",
+        "AC-30 scene 6: a corrupt snapshot renders the exact unreadable row without blocking others"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

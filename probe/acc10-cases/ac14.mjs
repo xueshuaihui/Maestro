@@ -1,0 +1,46 @@
+// 由 node probe/acc10-f-gen.mjs 生成；判据原文逐字取自 requirement.md v2 §3.1 AC-14。
+// 禁止手工放宽 / 合并 / 改写任何 Then；改动请先改生成器并复跑 --check。
+import { runCase } from '../acc10-f-common.mjs';
+
+export const spec = {
+  "ac": "AC-14",
+  "title": "含人工节点与子工作流的实例拓扑完整（规划验收句中段）",
+  "face": "功能 / 规划验收",
+  "level": "mock 实测",
+  "refs": "BR-10, BR-12",
+  "risk": "高（规划关键判断点：主视图的拓扑完整性）",
+  "given": "`/tmp/maestro-i10a-topology` 的实例拓扑为：`T-001`（开发）→ `H-001`（人工验收）→ `S-001`（发布子流程）→ `T-002`（测试），且 `T-002` → `T-001` 有一条回流边；`NODE_ENV=test`。",
+  "when": "用户点击该实例进入角色流程图。",
+  "then": [
+    "画布上四类节点（角色 / 人工 / 子工作流 / 角色）齐全；定义里的 4 条边全部有对应连接线；每条线两端都存在（悬空端点数 0）；回流边是弧线而不是第二条正向线；节点按层次从左到右（`T-001` 最左，`T-002` 最右），`H-001` 与 `S-001` 在中间层；子工作流折叠组显示“子工作流：发布子流程 · N 角色”。"
+  ],
+  "judgement": "",
+  "jijian": "`test/wp13/graph-projection.test.js` 断言节点集合、边集合、`dangling === 0`、回流边 `path.kind === 'arc'`、层号 `{T-001:0, H-001:1, S-001:2, T-002:3}`；`test/wp13/graph-layout.test.js` 断言同层节点 x 相等、y 不等。",
+  "fixture": "同 AC-07 的定义与快照，节点标题使用中文标题（由 `labels.js` 之外的夹具数据提供，不属于界面硬编码）。",
+  "archText": "图投影不得因为节点类型不认识就丢节点；对未知 `node_type` 按角色节点渲染并保留 ID。",
+  "files": [
+    "graph-projection.test.js",
+    "graph-layout.test.js"
+  ],
+  "arch": [
+    {
+      "cmd": "grep -REn \"Unknown node_type|未知\" src/daemon/graph.js",
+      "expect": 0,
+      "note": "未知 node_type 按角色节点渲染并保留 ID"
+    },
+    {
+      "cmd": "grep -REn \"saveState|emit\\(\" src/daemon/graph.js",
+      "expect": 1,
+      "note": "图投影只读"
+    }
+  ],
+  "notes": [],
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-14"
+};
+
+export const cases = [{
+  ac: spec.ac,
+  title: spec.title,
+  face: spec.face,
+  run: () => runCase(spec),
+}];

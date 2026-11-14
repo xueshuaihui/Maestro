@@ -1,0 +1,20 @@
+{
+  "ac": "AC-31",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-31 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"项目 未指定|项目 不可用\" desktop/ui desktop/harness",
+      "note": "提示文案只从 labels.js 取",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

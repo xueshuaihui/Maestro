@@ -1,0 +1,10 @@
+{
+  "ac": "AC-27",
+  "file": "readonly-local.test.js",
+  "count": 1,
+  "subtests": [
+    "AC-27：读操作不写实例、四组状态不变、仅回环监听、数据面无凭据 401"
+  ],
+  "notOk": [],
+  "skips": []
+}

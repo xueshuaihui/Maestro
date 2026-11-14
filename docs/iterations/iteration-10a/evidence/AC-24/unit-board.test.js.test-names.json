@@ -1,0 +1,16 @@
+{
+  "ac": "AC-24",
+  "file": "board.test.js",
+  "count": 7,
+  "subtests": [
+    "AC-24: the seven columns keep their fixed id order and verbatim names",
+    "AC-24: the single pending state derives into blocked and ready per U-8",
+    "AC-24: both cancelled cards fold into done with the frozen fold label",
+    "AC-24: card titles resolve from the graph projection",
+    "AC-24: the frozen WP-4 shape (role:<id>, empty nodeIds) gates pending correctly",
+    "AC-24: switching back to the graph view keeps every view-state field",
+    "AC-24: the projection adds no state field and never mutates its inputs"
+  ],
+  "notOk": [],
+  "skips": []
+}

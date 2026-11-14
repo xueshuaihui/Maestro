@@ -1,0 +1,10 @@
+{
+  "ac": "AC-36",
+  "file": "single-instance.test.js",
+  "count": 1,
+  "subtests": [
+    "single-instance: no second ready, activated, pid equal, tray-open reopens (AC-36)"
+  ],
+  "notOk": [],
+  "skips": []
+}

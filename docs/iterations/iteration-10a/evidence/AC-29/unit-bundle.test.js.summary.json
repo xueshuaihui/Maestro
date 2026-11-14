@@ -1,0 +1,31 @@
+{
+  "ac": "AC-29",
+  "file": "bundle.test.js",
+  "cmd": "test -f test/wp13/bundle.test.js && NODE_ENV=test node --test test/wp13/bundle.test.js",
+  "attempt": 1,
+  "attempts": 1,
+  "exit": 0,
+  "durationMs": 30920,
+  "timedOut": false,
+  "tap": {
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 30841.479545,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "bundle: artifacts + bundled node + narrowed-env launch + seams + quit"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  }
+}

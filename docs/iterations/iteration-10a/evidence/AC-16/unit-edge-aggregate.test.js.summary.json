@@ -1,0 +1,38 @@
+{
+  "ac": "AC-16",
+  "file": "edge-aggregate.test.js",
+  "cmd": "test -f test/wp13/edge-aggregate.test.js && NODE_ENV=test node --test test/wp13/edge-aggregate.test.js",
+  "attempt": 1,
+  "attempts": 1,
+  "exit": 0,
+  "durationMs": 238,
+  "timedOut": false,
+  "tap": {
+    "tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 157.292646,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "AC-16: three backflow handoffs collapse into one rejected arc, two parallel forwards into one line",
+      "AC-16: no third same-direction line exists for the role pair",
+      "AC-16: aggregate priority is table-driven over all 7x7 state pairs",
+      "AC-16: two same-direction definition edges between one role pair merge into a single line",
+      "definition edges without handoffs are not_started and stay hidden by default",
+      "handoffs without a matching definition edge are not drawn; edge ids are stable",
+      "handoff states outside the aggregate set degrade to pending, not to an unknown token",
+      "parallelCount counts only the latest round; earlier rounds stay in handoffIds"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  }
+}

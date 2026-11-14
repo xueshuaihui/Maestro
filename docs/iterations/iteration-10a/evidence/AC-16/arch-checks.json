@@ -1,0 +1,20 @@
+{
+  "ac": "AC-16",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-16 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"AGGREGATE_PRIORITY\" src/daemon/graph.js",
+      "note": "聚合复用基线优先级顺序常量",
+      "expect": 0,
+      "exit": 0,
+      "lines": 4,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "31: * status follows `AGGREGATE_PRIORITY` only; visual tokens come from\n57:export const AGGREGATE_PRIORITY = Object.freeze([\n541:      let bestRank = AGGREGATE_PRIORITY.length; // smallest index wins (rejected first)\n544:        const rank = AGGREGATE_PRIORITY.indexOf(status);",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

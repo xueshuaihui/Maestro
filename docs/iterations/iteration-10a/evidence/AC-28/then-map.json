@@ -1,0 +1,21 @@
+{
+  "ac": "AC-28",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "`dependencies` 仍为 `{}`；桌面界面层无任何中文字面量，`GET /ui/labels` 返回界面用到的全部文案键；`src/core` / `src/daemon` 仍零命中 31 词、无 `if host ==` / `switch (host)`；全量测试通过（失败集合与基线差集为 0）。",
+      "status": "通过",
+      "evidence": [
+        "unit-labels-desktop.test.js.log"
+      ],
+      "testNames": [
+        "AC-28：desktop/ui 与 desktop/harness 的 CJK 命中数为 0（中文只经 /ui/labels 下发）",
+        "AC-28：GET /ui/labels 覆盖 A-14 契约键集合（显式契约名 + 前缀族）",
+        "AC-28：新增键存在且非空 + dependencies / devDependencies 为空"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

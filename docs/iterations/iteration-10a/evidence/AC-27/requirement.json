@@ -1,0 +1,19 @@
+{
+  "ac": "AC-27",
+  "title": "只读与本地性：不写实例、只绑回环、无凭据拒绝",
+  "face": "功能 / 安全 / 边界",
+  "refs": "BR-20, BR-02",
+  "risk": "高（面板误写会污染编排状态）",
+  "given": "一个运行中的实例与已打开的界面；记下 `state.json`、`events.jsonl` 的字节哈希与节点/会话/交接包/升级四组状态。",
+  "when": "依次打开列表、进入流程图、缩放、拖拽、聚焦、切看板、打开/关闭“显示未开始连接线”、重复刷新三次；再用不带凭据的请求访问数据接口；再检查监听地址。",
+  "then": [
+    "四组状态完全不变、两份文件哈希不变（拖拽只写 `.orch/desktop/views/`）；无凭据请求被拒绝（返回 401，不含任何实例数据）；数据接口只在本机回环地址上可达——从另一台机器或本机非回环地址访问一律连不上，监听地址里不出现 `0.0.0.0` / `*`。"
+  ],
+  "judgement": "",
+  "jijian": "`NODE_ENV=test node --test test/wp13/readonly-local.test.js` 断言两组哈希相等、四组状态深比较相等、无凭据 `status === 401`；`lsof -nP -iTCP:<port> -sTCP:LISTEN` 的每一行本地地址都是 `127.0.0.1:<port>`，`grep -REc \"0[.]0[.]0[.]0|[*]:<port>\"` 对该输出为零命中（exit 1）；`# fail 0`。",
+  "fixture": "`lsof -nP -iTCP:<port> -sTCP:LISTEN` 输出只有 `127.0.0.1:<port>`；端口与凭据从 `.orch/desktop.json` 读取。",
+  "archText": "`grep -REn \"saveState|instance-store|appendSpan\" src/daemon/http/` 必须**零命中（exit 1）**——HTTP 层不得直接调用任何写状态/追加审计的方法；新建实例只能经 `orchestrator.startRun`（`grep -REn \"startRun\" src/daemon/http/` 的命中必须全部落在 `POST /instances` 的处理器所在文件，退出码按命中数判定）。",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-27",
+  "level": "mock 实测",
+  "notes": []
+}

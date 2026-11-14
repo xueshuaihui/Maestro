@@ -1,0 +1,59 @@
+{
+  "ac": "AC-26",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "三段逐条成立：",
+      "status": "通过",
+      "evidence": [
+        "unit-acceptance-e2e.test.js.log"
+      ],
+      "testNames": [
+        "AC-26 daemon 面：两行列表、拓扑完整的图快照、graph-dump 全量导出与 R-01 回归",
+        "AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且实例仍可读"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    },
+    {
+      "index": 2,
+      "text": "- 列表两行逐字为附录 A-1，行内有健康度（需关注 / 已结束），排序把需关注放在第一行；",
+      "status": "通过",
+      "evidence": [
+        "unit-acceptance-e2e.test.js.log"
+      ],
+      "testNames": [
+        "AC-26 daemon 面：两行列表、拓扑完整的图快照、graph-dump 全量导出与 R-01 回归",
+        "AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且实例仍可读"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    },
+    {
+      "index": 3,
+      "text": "- `INST-001` 的流程图上有角色节点、人工节点、子工作流折叠组，定义中的 4 条边全部画出、悬空端点 0 个；",
+      "status": "通过",
+      "evidence": [
+        "unit-acceptance-e2e.test.js.log"
+      ],
+      "testNames": [
+        "AC-26 daemon 面：两行列表、拓扑完整的图快照、graph-dump 全量导出与 R-01 回归",
+        "AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且实例仍可读"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    },
+    {
+      "index": 4,
+      "text": "- 关闭主窗口后窗口不可见、托盘仍在、守护进程进程号不变，`orch instance status INST-001` 仍可读。",
+      "status": "通过",
+      "evidence": [
+        "unit-acceptance-e2e.test.js.log"
+      ],
+      "testNames": [
+        "AC-26 daemon 面：两行列表、拓扑完整的图快照、graph-dump 全量导出与 R-01 回归",
+        "AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且实例仍可读"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}
