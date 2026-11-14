@@ -349,6 +349,9 @@ export function createHttpServer({
       if (matchPattern('/instances/:id/graph', pathname) !== null) return true;
     }
     if (method === 'POST' && pathname === '/__test__/graph/pulse') return true;
+    // Decision W: window-side probe events are handler-owned too, so the
+    // public static exception can never swallow them.
+    if (method === 'POST' && pathname === '/__test__/window-probe') return true;
     // A whole-path dispatcher takes every request before the static branch.
     return fallbackDispatcher !== null;
   }
@@ -451,6 +454,30 @@ export function createHttpServer({
           return;
         }
         await hub.handlePulse(req, res);
+        return;
+      }
+      if (req.method === 'POST' && pathname === '/__test__/window-probe') {
+        // Decision W: on an external http origin the WebView has no Tauri IPC,
+        // so the window posts the very same probe event it built. The daemon
+        // only mirrors it; the shell copies it into the --probe file.
+        if (process.env.NODE_ENV !== 'test') {
+          sendError(res, 404, 'NOT_FOUND');
+          return;
+        }
+        let event = null;
+        try {
+          event = JSON.parse(await readBody(req, 65536));
+        } catch {
+          event = null;
+        }
+        if (event === null || typeof event !== 'object' || Array.isArray(event)) {
+          sendError(res, 400, 'BAD_REQUEST');
+          return;
+        }
+        const sink = path.join(root, '.orch', 'window-probe.jsonl');
+        await fs.mkdir(path.dirname(sink), { recursive: true });
+        await fs.appendFile(sink, `${JSON.stringify(event)}\n`, 'utf8');
+        sendJson(res, 200, { ok: true });
         return;
       }
 

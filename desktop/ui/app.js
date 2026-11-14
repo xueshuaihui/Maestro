@@ -1750,10 +1750,18 @@ function openStream(url, token, { onFrame, onStatus } = {}) {
   };
 }
 
-/** The shell bridge (`__TAURI__`) when the page runs inside the WebView. */
+/**
+ * The shell bridge when the page runs inside the WebView. Tauri 2 injects
+ * `window.__TAURI__` only with `app.withGlobalTauri`; the internals object is
+ * the fallback for builds where that flag is absent (decision V).
+ */
 function tauriInvoke() {
-  const bridge = globalThis.window?.__TAURI__;
-  const invoke = bridge?.core?.invoke ?? bridge?.invoke;
+  const win = globalThis.window;
+  if (!win) return null;
+  const bridge = win.__TAURI__;
+  const invoke = bridge?.core?.invoke
+    ?? bridge?.invoke
+    ?? win.__TAURI_INTERNALS__?.invoke;
   return typeof invoke === 'function' ? invoke : null;
 }
 
@@ -1805,14 +1813,20 @@ export function createLoopbackTransport(creds) {
     probe: (event) => {
       const sink = globalThis.window?.__MAESTRO_PROBE__;
       if (typeof sink === 'function') sink(event);
+      const payload = JSON.stringify(event);
       const invoke = tauriInvoke();
-      if (invoke === null) return;
-      try {
-        const result = invoke('probe_emit', { payload: JSON.stringify(event) });
-        if (result && typeof result.catch === 'function') result.catch(() => {});
-      } catch {
-        // The bridge is optional; a failed probe never breaks rendering.
+      if (invoke !== null) {
+        try {
+          const result = invoke('probe_emit', { payload });
+          if (result && typeof result.catch === 'function') result.catch(() => {});
+        } catch {
+          // A missing bridge must never break rendering.
+        }
       }
+      // Decision W: a WebView served from the loopback http origin has no
+      // Tauri IPC, so the same window-built event is mirrored through the
+      // daemon. That endpoint exists only in the acceptance environment.
+      void request('/__test__/window-probe', { method: 'POST', body: payload });
     },
     openStream: (url, handlers) => openStream(url, creds?.token ?? '', handlers),
   };

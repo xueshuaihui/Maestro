@@ -76,6 +76,44 @@ pub fn probe_emit(payload: String) {
     append_line(path, &payload);
 }
 
+/// Mirror window-side probe events (decision W) into the `--probe` file.
+///
+/// The daemon appends the exact JSON lines the window built; the shell only
+/// copies complete lines, so no rendered value is re-derived here. Without
+/// `--probe` this watcher is never started (zero production overhead).
+pub fn start_window_probe_watcher(root: PathBuf) {
+    let Some(probe_path) = PROBE_FILE.get().cloned() else { return };
+    std::thread::spawn(move || {
+        let sink = root.join(".orch").join("window-probe.jsonl");
+        let mut offset = 0usize;
+        loop {
+            if let Ok(data) = std::fs::read(&sink) {
+                if data.len() < offset {
+                    offset = 0; // a recreated acceptance root
+                }
+                if data.len() > offset {
+                    let chunk = &data[offset..];
+                    let complete = chunk
+                        .iter()
+                        .rposition(|byte| *byte == b'\n')
+                        .map(|index| index + 1)
+                        .unwrap_or(0);
+                    if complete > 0 {
+                        let text = String::from_utf8_lossy(&chunk[..complete]);
+                        for line in text.lines() {
+                            if !line.trim().is_empty() {
+                                append_line(&probe_path, line);
+                            }
+                        }
+                        offset += complete;
+                    }
+                }
+            }
+            std::thread::sleep(std::time::Duration::from_millis(100));
+        }
+    });
+}
+
 /// Poll the ctl directory (100ms cadence) and dispatch triggers through the
 /// main-thread handler. Each trigger file is renamed to `.done` after firing.
 pub fn start_ctl_watcher(app: tauri::AppHandle, dir: PathBuf) {

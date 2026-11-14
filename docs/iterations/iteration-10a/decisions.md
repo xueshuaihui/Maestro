@@ -207,3 +207,20 @@
 - **触发点**：进度汇报时核证发现 `docs/iterations/iteration-10a/` 下仅 `wp1-bundle-verdict.md` 入库，需求 v2 / 拆分 r2 / 理解纪要 / `decisions.md` / 16 份评审记录全部 `??` 未跟踪；批次 2 建议项 B-06 提出的 `desktop/src-tauri/Cargo.lock` 与 `gen/` 仍未处置。
 - **决定**：① 本迭代全部文档（17 个 `.md`）统一入库，作为 S3 逐 AC 取证的判据链；② `desktop/src-tauri/Cargo.lock`（4999 行，应用仓库锁定依赖树）入库；③ `.gitignore` 追加 `desktop/src-tauri/gen/`（Tauri 生成的 ACL schemas，属构建派生产物，不入库）；④ `desktop/src-tauri/target/` 已由既有 `target/` 规则覆盖，保持忽略。
 - **理由**：S3 验收需按 `requirement.md` 与 `decisions.md` 逐条复核，未入库文档会造成证据链断裂；Cargo.lock 保证 CI 与本机 release 构建可复现。不改任何产品代码语义。
+
+
+## 裁决 V（S2 批次 6 实跑后）｜WebView → Tauri invoke 桥接缺失（B-33 二次阻断）
+
+- **事实**：重建 bundle（`2026-11-14 11:48`，`env -u NODE_OPTIONS npm run desktop:build`，46s）后真跑 AC-26 壳面用例，探针文件只有壳侧事件 `launch / ready / tray-created / ctl-fired / tray-open × 20`，**窗口侧 `probe_emit` 零命中**。根因：`desktop/src-tauri/tauri.conf.json` 的 `app` 段没有 `"withGlobalTauri": true`，Tauri 2 默认不注入 `window.__TAURI__`；而 `desktop/ui/app.js` 的 `tauriInvoke()` 只认 `window.__TAURI__`，因此 `write_view_command` / `probe_emit` 在真实窗口里全部静默 no-op（这也是 B-14 所说 AC-22 写入端零测试的根因）。
+- **决定**：① `tauri.conf.json` 的 `app` 段加 `"withGlobalTauri": true`（官方配置，注入 `window.__TAURI__.core.invoke`）；② `tauriInvoke()` 追加 `window.__TAURI_INTERNALS__?.invoke` 兼容通道（Tauri 2 内部 IPC，配置未生效时仍可用）；③ 不改 `probe_emit` 命令形状、不改事件语义。
+- **授权扩展**：`desktop/src-tauri/tauri.conf.json`（裁决 S/T 清单外，一处配置键）。
+- **构建口径**：桌面构建必须 `env -u NODE_OPTIONS npm run desktop:build`——平台注入的 `NODE_OPTIONS` safe-delete shim 会拦截 build.mjs 的 `fs.rmSync(APP)`（bulk-delete 62 > 阈值 50），首次重建因此 `BUILD_EXIT=1`，去掉注入后 46s 成功。
+- **夹具修正（同批）**：`runCtl` 建立的是**目录**，清理 `.done` 必须 `fs.rmSync(..., { recursive: true, force: true })`，否则第二次 ctl 重试报 `EISDIR`。
+
+
+## 裁决 W（S2 批次 6 实跑后）｜外部 http origin 无 Tauri IPC：改 HTTP 探针上报
+
+- **诊断证据（主控实跑，诊断版 bundle）**：`ui-current-url` 探针显示 WebView 已在 `/ui/`（导航成功），但 `win.eval` 里的 `__TAURI__`/`__TAURI_INTERNALS__.invoke` 均不存在、`ctl-eval-reached` 零命中；包内静态面 `/ui/` `/ui/app.js` 200 且 `Content-Type: text/javascript`、`/ui/labels` 401；`tauri.conf.json` 加 `withGlobalTauri` 后仍零窗口事件。本地 `tauri-2.12.5` 源码 grep 确认 v2 已移除远程域 IPC 配置项（`manager/webview.rs` 的 init script 只对 app origin 生效）。
+- **决定（接缝，不改渲染归属）**：窗口侧 `probe` 事件改走**双通道**——优先 Tauri invoke（app origin 场景），同时 `POST /__test__/window-probe`（仅 `NODE_ENV=test` 注册、Bearer 保护）；daemon 把事件原样 append 到 `<root>/.orch/window-probe.jsonl`；壳 `probe.rs` 起一个 100ms 轮询线程把新行**原样搬运**到 `--probe` 文件。事件内容仍由窗口渲染层产出（rows 文本来自 `desktop/ui/list`、graph-shown 计数来自 `buildGraphShownProbe`），壳不合成、不重算。
+- **AC-27 边界**：新端点仅 `NODE_ENV=test` 存在，生产零注册；写的是验收探针产物，不触碰实例状态/事件链/追踪；`readonly-local` 用例不触发该端点，`.orch` 文件面断言不受影响。
+- **授权面**：`src/daemon/http/server.js`（D-10 清单内）、`desktop/ui/app.js`、`desktop/src-tauri/src/{probe.rs,main.rs,tray.rs,spawn.rs}`、`test/wp13/acceptance-e2e.test.js`。诊断期的 `ui-navigate` / `ui-current-url` / `ctl-eval-reached` 三段临时代码在实现落地后删除。

@@ -495,14 +495,14 @@ test('AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且�
     ];
     let rowsEvent = null;
     for (let attempt = 0; attempt < 20 && rowsEvent === null; attempt += 1) {
-      fs.rmSync(path.join(ctlDir, 'tray-open.done'), { force: true });
+      fs.rmSync(path.join(ctlDir, 'tray-open.done'), { recursive: true, force: true });
       runCtl(ctlDir, 'tray-open');
       rowsEvent = await waitFor(
         () => readProbe(probeFile).find((e) => e.event === 'rows' && Array.isArray(e.rows) && e.rows.length === 2),
         1500,
       );
     }
-    assert.ok(rowsEvent, 'rows 探针缺失：窗口未完成列表渲染（probe_emit 桥接或 refresh-list 未生效）');
+    assert.ok(rowsEvent, `rows 探针缺失：窗口未完成列表渲染（probe_emit 桥接或 refresh-list 未生效）；实际探针尾部：${JSON.stringify(readProbe(probeFile).slice(-8))}`);
     assert.deepEqual(rowsEvent.rows, expectedRows, 'rows 探针必须与 A-1 逐字相等且来自窗口渲染');
 
     // --- graph-shown：窗口自己统计的 nodes/edges/dangling（不是壳合成事件）
@@ -516,7 +516,7 @@ test('AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且�
 
     let shown = null;
     for (let attempt = 0; attempt < 15 && shown === null; attempt += 1) {
-      fs.rmSync(path.join(ctlDir, 'open-instance', 'INST-001.done'), { force: true });
+      fs.rmSync(path.join(ctlDir, 'open-instance', 'INST-001.done'), { recursive: true, force: true });
       runCtl(ctlDir, path.join('open-instance', 'INST-001'));
       shown = await waitFor(
         () => readProbe(probeFile).find((e) => e.event === 'graph-shown' && typeof e.nodes === 'number'),

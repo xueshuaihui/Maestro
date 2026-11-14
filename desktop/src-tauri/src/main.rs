@@ -147,6 +147,7 @@ fn main() {
             tray::init(app.handle())?;
 
             if let Some(root) = spawn_root.as_deref() {
+                probe::start_window_probe_watcher(root.to_path_buf());
                 spawn::wait_desktop_channel(app.handle().clone(), root.to_path_buf());
             }
             if let Some(dir) = ctl_dir {
