@@ -136,6 +136,24 @@ function runCtl(ctlDir, name) {
   fs.mkdirSync(path.join(ctlDir, name), { recursive: true });
 }
 
+/**
+ * B-40 / decision S: a bundle built before WP-6/WP-8 and decision R cannot
+ * render the window at all (no `Resources/desktop/ui`, Bearer-only server).
+ * Returns null when fresh, otherwise the reason used in the skip message.
+ */
+function bundleFreshness() {
+  if (!fs.existsSync(SHELL)) return `shell binary missing (${SHELL})`;
+  const ui = path.join(APP, 'Contents', 'Resources', 'desktop', 'ui', 'index.html');
+  if (!fs.existsSync(ui)) return 'missing Contents/Resources/desktop/ui/index.html';
+  const server = path.join(APP, 'Contents', 'Resources', 'src', 'daemon', 'http', 'server.js');
+  if (!fs.existsSync(server)) return 'missing in-bundle src/daemon/http/server.js';
+  const text = fs.readFileSync(server, 'utf8');
+  if (!/decision R|the static face is public/.test(text)) {
+    return 'in-bundle server.js predates decision R (static face still Bearer-only)';
+  }
+  return null;
+}
+
 function cloudChannel(meta) {
   const base = `http://127.0.0.1:${meta.port}`;
   const headers = { Authorization: `Bearer ${meta.token}`, 'Content-Type': 'application/json' };
@@ -415,15 +433,15 @@ test('AC-26 daemon 面：两行列表、拓扑完整的图快照、graph-dump �
 // ---------------------------------------------------------------------------
 
 test('AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且实例仍可读', async (t) => {
-  if (!fs.existsSync(SHELL)) {
-    t.skip(`Maestro.app bundle 不存在（${SHELL}），壳面探针无法真跑；daemon 面断言已在上一条用例完成`);
+  const stale = bundleFreshness();
+  if (stale !== null) {
+    t.skip(`Maestro.app bundle 不可用于窗口面取证（${stale}）；需先执行 npm run desktop:build 重建。daemon 面断言已在上一条用例完成`);
     return;
   }
 
   await withShellLock(async () => {
     const root = tmpRoot('maestro-i10a-accept-shell-');
     writeHostConfig(root);
-    const { child: daemon, ready } = startDaemon(root);
     const probeFile = path.join(root, 'probe.jsonl');
     const ctlDir = path.join(root, 'ctl');
     fs.mkdirSync(ctlDir, { recursive: true });
@@ -431,22 +449,21 @@ test('AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且�
     let shell = null;
     t.after(async () => {
       if (shell && shell.exitCode === null && shell.signalCode === null) shell.kill('SIGKILL');
-      await stopDaemon(daemon);
+      const meta = readJson(path.join(root, '.orch', 'desktop.json'));
+      if (meta && Number.isInteger(meta.pid)) {
+        try { process.kill(meta.pid, 'SIGTERM'); } catch { /* already gone */ }
+      }
       fs.rmSync(root, { recursive: true, force: true });
     });
 
-    const meta = await ready;
-    assert.ok(meta, 'desktop.json 未落盘');
-    assertEmptyRoot(root);
-    writeAcceptanceFixtures(root);
-
-    // 壳直接执行二进制（禁 open -na）：继承 NODE_ENV / MAESTRO_CONFIG_DIR。
+    // B-35: only the shell is launched; the daemon is the shell's own child.
+    // Never spawn a second daemon from the fixture to supply the pid.
     shell = spawn(SHELL, ['--project', root, '--probe', probeFile, '--ctl', ctlDir], {
       env: envFor(root),
       stdio: 'ignore',
     });
 
-    // --- ready：launch → ready ≤ 3000ms（需求硬指标；失败时同时给出实测值与负载提示）
+    // --- ready：launch → ready ≤ 3000ms（需求硬指标 NF-1）
     const readyEvent = await waitFor(() => readProbe(probeFile).find((e) => e.event === 'ready'), 30_000);
     assert.ok(readyEvent, 'ready 探针缺失（壳未完成窗口构建）');
     const launchEvent = readProbe(probeFile).find((e) => e.event === 'launch');
@@ -459,21 +476,37 @@ test('AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且�
     assert.equal(readyEvent.window.visible, true, '主窗口必须真实可见');
     assert.equal(readyEvent.window.title, 'Maestro');
     assert.equal(readyEvent.view, 'instances');
+    assert.ok(readyEvent.daemon?.pid > 0, 'ready.daemon.pid 必须来自壳自己启动的 daemon');
     const trayCreated = await waitFor(() => readProbe(probeFile).find((e) => e.event === 'tray-created'), 10_000);
     assert.ok(trayCreated?.created === true, 'tray-created 缺失');
 
-    // --- rows：列表两行（A-1 逐字，同一渲染模块）
-    const api = cloudChannel(meta);
-    const labels = (await api.get('/ui/labels')).body.keys;
-    const list = await api.get('/instances');
-    assert.equal(list.status, 200);
-    const rows = sortInstances(list.body.items).map((item) => renderListRow(item, labels));
-    assert.deepEqual(rows, [
+    const meta = await waitFor(() => readJson(path.join(root, '.orch', 'desktop.json')), 30_000);
+    assert.ok(meta, 'desktop.json 未落盘');
+    assert.equal(meta.pid, readyEvent.daemon.pid, 'desktop.json.pid 必须等于壳启动的 daemon pid');
+
+    // decision T: boot reconciliation rewrites pre-seeded state.json, so the
+    // fixtures are written only AFTER the shell's own daemon is up.
+    writeAcceptanceFixtures(root);
+
+    // --- rows：窗口渲染完成后由窗口自己发出的探针（A-1 逐字）
+    const expectedRows = [
       '实例 INST-001 · 编码闭环 · 运行中 · 进度 1/2 · 待处理 1 · 需关注',
       '实例 INST-002 · 单节点 · 已完成 · 进度 1/1 · 待处理 0 · 已结束',
-    ], 'rows 阶段必须与 A-1 逐字相等');
+    ];
+    let rowsEvent = null;
+    for (let attempt = 0; attempt < 20 && rowsEvent === null; attempt += 1) {
+      fs.rmSync(path.join(ctlDir, 'tray-open.done'), { force: true });
+      runCtl(ctlDir, 'tray-open');
+      rowsEvent = await waitFor(
+        () => readProbe(probeFile).find((e) => e.event === 'rows' && Array.isArray(e.rows) && e.rows.length === 2),
+        1500,
+      );
+    }
+    assert.ok(rowsEvent, 'rows 探针缺失：窗口未完成列表渲染（probe_emit 桥接或 refresh-list 未生效）');
+    assert.deepEqual(rowsEvent.rows, expectedRows, 'rows 探针必须与 A-1 逐字相等且来自窗口渲染');
 
-    // --- graph-shown：ctl 点击 INST-001（等价界面点击行）
+    // --- graph-shown：窗口自己统计的 nodes/edges/dangling（不是壳合成事件）
+    const api = cloudChannel(meta);
     const graphBody = await api.get('/instances/INST-001/graph');
     assert.equal(graphBody.status, 200);
     const sig = graphSignature(graphBody.body);
@@ -481,23 +514,34 @@ test('AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且�
     assert.equal(sig.edges, 4);
     assert.equal(sig.dangling, 0);
 
-    runCtl(ctlDir, path.join('open-instance', 'INST-001'));
-    const shown = await waitFor(() => readProbe(probeFile).find((e) => e.event === 'graph-shown'), 15_000);
-    assert.ok(shown, 'graph-shown 探针缺失（ctl open-instance 未生效）');
+    let shown = null;
+    for (let attempt = 0; attempt < 15 && shown === null; attempt += 1) {
+      fs.rmSync(path.join(ctlDir, 'open-instance', 'INST-001.done'), { force: true });
+      runCtl(ctlDir, path.join('open-instance', 'INST-001'));
+      shown = await waitFor(
+        () => readProbe(probeFile).find((e) => e.event === 'graph-shown' && typeof e.nodes === 'number'),
+        1500,
+      );
+    }
+    assert.ok(shown, 'graph-shown 探针缺失或未带计数（窗口未渲染流程图）');
     assert.equal(shown.instanceId, 'INST-001');
     assert.equal(shown.view, 'graph');
+    assert.equal(shown.nodes, sig.nodes, 'graph-shown.nodes 必须等于窗口拿到的图快照节点数');
+    assert.equal(shown.edges, sig.edges, 'graph-shown.edges 必须等于窗口拿到的图快照边数');
+    assert.equal(shown.dangling, 0, 'graph-shown.dangling 必须为 0');
 
-    // --- 关窗前后 daemon.pid 必须相等
+    // --- 关窗前 daemon.pid
     const coreBefore = readJson(path.join(root, '.orch', 'core.json'));
     assert.ok(coreBefore, 'core.json 缺失（daemon 未拥有 IPC 管道）');
-    const metaBefore = readJson(path.join(root, '.orch', 'desktop.json'));
-    assert.equal(metaBefore.pid, coreBefore.pid, 'desktop.json 与 core.json 的 pid 必须一致');
+    assert.equal(coreBefore.pid, readyEvent.daemon.pid, 'core.json.pid 必须等于壳启动的 daemon pid');
 
     // --- closed：ctl close-window → 窗口不可见 + 托盘仍在
     runCtl(ctlDir, 'close-window');
-    const closed = await waitFor(() => readProbe(probeFile).find((e) => e.event === 'close-window'), 15_000);
-    assert.ok(closed, 'close-window 探针缺失');
+    const closed = await waitFor(() => readProbe(probeFile).find((e) => e.event === 'closed'), 15_000);
+    assert.ok(closed, 'closed 探针缺失');
     assert.equal(closed.window.visible, false, 'closed 阶段 window.visible 必须为 false');
+    const closeWindow = await waitFor(() => readProbe(probeFile).find((e) => e.event === 'close-window'), 15_000);
+    assert.ok(closeWindow, 'close-window 探针缺失');
     const trayStill = await waitFor(() => readProbe(probeFile).find((e) => e.event === 'tray-still-present'), 10_000);
     assert.ok(trayStill?.created === true, '关窗后托盘必须仍在');
 
@@ -516,7 +560,6 @@ test('AC-26 壳面：ready → rows → graph-shown → closed，pid 不变且�
     assert.equal(status.status, 0, `关窗后 instance status 必须成功：\n${status.stdout}\n${status.stderr}`);
     assert.match(status.stdout, /^实例 INST-001 · 运行中/m, `关窗后实例状态必须仍可读：\n${status.stdout}`);
 
-    // 进程号仍存活（独立核对，不只信文件）。
     assert.doesNotThrow(() => process.kill(coreAfter.pid, 0), '关窗后 daemon 进程不存在');
   });
 });

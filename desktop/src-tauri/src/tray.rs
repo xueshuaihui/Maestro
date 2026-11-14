@@ -93,6 +93,13 @@ pub fn handle_ctl(app: &AppHandle, action: &str) {
         "close-window" => close_to_tray(app),
         "tray-open" => {
             open_main_window(app);
+            // A fresh ctl refresh asks the live window to re-read the instance
+            // list through its own transport; the window then emits `rows`.
+            if let Some(win) = app.get_webview_window("main") {
+                let _ = win.eval(
+                    "if (window.__MAESTRO_CTL__) window.__MAESTRO_CTL__('refresh-list');",
+                );
+            }
             let visible = app
                 .get_webview_window("main")
                 .and_then(|win| win.is_visible().ok())
@@ -111,14 +118,24 @@ pub fn handle_ctl(app: &AppHandle, action: &str) {
     }
 }
 
-/// ctl `open-instance/<id>`: switch the shell view to the instance graph.
+/// ctl `open-instance/<id>`: ask the live window to open the graph.
+///
+/// The shell must not synthesise `graph-shown`: AC-26 requires the event to
+/// carry `nodes` / `edges` / `dangling` measured by the window that rendered
+/// the graph. Only the request is recorded here.
 pub fn handle_open_instance(app: &AppHandle, instance_id: &str) {
     {
         let state = app.state::<ShellState>();
         *state.view.lock().unwrap() = "graph".to_string();
     }
+    let id = serde_json::to_string(instance_id).unwrap_or_else(|_| "null".into());
+    if let Some(win) = app.get_webview_window("main") {
+        let _ = win.eval(&format!(
+            "if (window.__MAESTRO_CTL__) window.__MAESTRO_CTL__('open-instance', {id});"
+        ));
+    }
     probe::event(
-        "graph-shown",
+        "graph-open-request",
         json!({ "instanceId": instance_id, "view": "graph" }),
     );
 }
@@ -133,6 +150,7 @@ pub fn close_to_tray(app: &AppHandle) {
         let _ = win.hide();
     }
     probe::event("close-window", json!({ "window": { "visible": false } }));
+    probe::event("closed", json!({ "window": { "visible": false }, "view": current_view(app) }));
     probe::event("tray-still-present", json!({ "created": true }));
 }
 

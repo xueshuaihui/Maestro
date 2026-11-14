@@ -563,6 +563,10 @@ test('全量基线清单存在且格式正确（不在本文件内跑全量，�
   assert.equal(fs.existsSync(manifest), true, `基线清单缺失：${manifest}`);
   const lines = fs.readFileSync(manifest, 'utf8').split('\n').map((line) => line.trim()).filter(Boolean);
   assert.equal(lines.length, 8, `基线失败集合必须恰 8 条（实际 ${lines.length}）`);
+  // 裁决 R-08 / B-39：AC-04 是允许双向的环境敏感项，不计入物理清单，
+  // 但判定口径按 9 条计（历史清单 8 条 + 允许项 1 条）。
+  const R08_ALLOWED = ['AC-04'];
+  assert.equal(lines.length + R08_ALLOWED.length, 9, '判定口径必须恰 9 条（物理 8 + R-08 允许项 1）');
   assert.equal(new Set(lines).size, lines.length, '基线清单不得有重复项');
   for (const line of lines) {
     assert.ok(line.length >= 8, `基线清单存在过短/空行：${JSON.stringify(line)}`);
@@ -573,4 +577,50 @@ test('全量基线清单存在且格式正确（不在本文件内跑全量，�
   for (const rel of ['test/fixtures/purity-check.mjs', 'test/fixtures/mock-acp-agent.js']) {
     assert.equal(fs.existsSync(path.join(REPO, rel)), true, `基线夹具缺失：${rel}`);
   }
+});
+
+// ---------------------------------------------------------------------------
+// B-38 / B-40：规模与产物时效（均为结构断言，不递归跑全量、不依赖墙钟）
+// ---------------------------------------------------------------------------
+
+test('全量用例规模不低于 I1.9 基线（纯结构统计，不递归跑全量）', () => {
+  const files = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const target = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(target);
+      else if (entry.name.endsWith('.test.js')) files.push(target);
+    }
+  };
+  walk(path.join(REPO, 'test'));
+  let count = 0;
+  for (const file of files) {
+    count += (fs.readFileSync(file, 'utf8').match(/^test\(/gm) ?? []).length;
+  }
+  // 判定口径（裁决 F / I / R-08）：串行 `--test-concurrency=1` 全量，
+  // 失败集合必须 ⊆ 9 条判定基线，差集 = 0；默认并发跑不作依据。
+  assert.ok(count >= 1157, `测试规模 ${count} 低于 I1.9 基线 1157`);
+  assert.ok(files.length >= 100, `测试文件数 ${files.length} 异常偏少`);
+});
+
+test('桌面 bundle 产物时效（S3 前置；旧构建显式跳过并写明需重建）', (t) => {
+  const app = path.join(REPO, 'desktop', 'src-tauri', 'target', 'release', 'bundle', 'macos', 'Maestro.app');
+  const shell = path.join(app, 'Contents', 'MacOS', 'maestro');
+  if (!fs.existsSync(shell)) {
+    t.skip(`bundle 未构建（${shell}）；S3 前需执行 npm run desktop:build`);
+    return;
+  }
+  const server = path.join(app, 'Contents', 'Resources', 'src', 'daemon', 'http', 'server.js');
+  const ui = path.join(app, 'Contents', 'Resources', 'desktop', 'ui', 'index.html');
+  if (!fs.existsSync(server)) {
+    t.skip('包内缺 src/daemon/http/server.js；需 npm run desktop:build 重建');
+    return;
+  }
+  const text = fs.readFileSync(server, 'utf8');
+  if (!/decision R|the static face is public/.test(text)) {
+    t.skip('包内 server.js 早于裁决 R（静态面仍只认 Bearer）；需 npm run desktop:build 重建');
+    return;
+  }
+  assert.equal(fs.existsSync(ui), true, '包内必须含 desktop/ui/index.html（WP-8 界面资源）');
+  assert.match(fs.readFileSync(ui, 'utf8'), /mountApp/, '包内 index.html 必须装配 mountApp');
 });

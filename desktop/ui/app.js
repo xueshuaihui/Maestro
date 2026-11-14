@@ -1036,6 +1036,16 @@ export function mountApp({
   const transport = { ...createLoopbackTransport(creds), ...(io ?? {}) };
   const app = createApp({ labels, project: mountProject ?? undefined, io: transport, modules });
 
+  let lastRowsSignature = '[]';
+  function emitProbe(event) {
+    if (typeof transport.probe !== 'function') return;
+    try {
+      transport.probe(event);
+    } catch {
+      // A broken probe sink must never break painting.
+    }
+  }
+
   function paint() {
     const model = app.compose();
     host.replaceChildren();
@@ -1081,6 +1091,12 @@ export function mountApp({
     }
 
     if (model.view === 'instances') {
+      const texts = model.rows.map((row) => row.text);
+      const signature = JSON.stringify(texts);
+      if (texts.length > 0 && signature !== lastRowsSignature) {
+        lastRowsSignature = signature;
+        emitProbe({ event: 'rows', rows: texts });
+      }
       paintList(host, model);
       if (model.panel.open) paintPanel(host, model);
       return;
@@ -1498,6 +1514,19 @@ export function mountApp({
     }
   }, 1000);
 
+  // ctl seam (requirement 3.3): the shell asks the live window to refresh the
+  // list or open an instance; the window then emits its own probe events. This
+  // is a capability probe on the host object, never a test-only branch.
+  if (typeof window !== 'undefined') {
+    window.__MAESTRO_CTL__ = (action, arg) => {
+      if (action === 'refresh-list') {
+        void app.loadInstances().then(paint);
+      } else if (action === 'open-instance' && typeof arg === 'string') {
+        void app.openGraph(arg).then(paint);
+      }
+    };
+  }
+
   paint();
   ensureStreams();
 
@@ -1776,6 +1805,14 @@ export function createLoopbackTransport(creds) {
     probe: (event) => {
       const sink = globalThis.window?.__MAESTRO_PROBE__;
       if (typeof sink === 'function') sink(event);
+      const invoke = tauriInvoke();
+      if (invoke === null) return;
+      try {
+        const result = invoke('probe_emit', { payload: JSON.stringify(event) });
+        if (result && typeof result.catch === 'function') result.catch(() => {});
+      } catch {
+        // The bridge is optional; a failed probe never breaks rendering.
+      }
     },
     openStream: (url, handlers) => openStream(url, creds?.token ?? '', handlers),
   };

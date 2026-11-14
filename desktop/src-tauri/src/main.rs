@@ -112,6 +112,7 @@ fn main() {
             config::remember_project_command,
             config::read_view_command,
             config::write_view_command,
+            probe::probe_emit,
         ])
         .setup(move |app| {
             // Daemon child first: it starts serving while the window builds.
@@ -159,6 +160,7 @@ fn main() {
                 api.prevent_close();
                 let _ = window.hide();
                 probe::event("close-window", json!({ "window": { "visible": false } }));
+                probe::event("closed", json!({ "window": { "visible": false } }));
                 probe::event("tray-still-present", json!({ "created": true }));
             }
         })

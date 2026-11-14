@@ -355,6 +355,7 @@ test('AC-27：读操作不写实例、四组状态不变、仅回环监听、数
     '/instances',
     '/instances/stream',
     '/instances/INST-001/graph',
+    '/instances/INST-001/graph/stream',
     '/workflows',
   ];
   for (const pathname of dataPlane) {

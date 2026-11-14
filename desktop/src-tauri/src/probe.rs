@@ -3,6 +3,10 @@
 //! Both seams are only active when the corresponding argument was passed at
 //! launch (`--probe <file>` / `--ctl <dir>`). A production start without those
 //! arguments never writes probe files and never polls ctl directories.
+//!
+//! The window contributes its own events through the `probe_emit` command:
+//! the UI builds the JSON line (list rows, graph counts) and the shell only
+//! appends it, so no rendered text is re-derived here.
 
 use std::path::PathBuf;
 use std::sync::OnceLock;
@@ -53,6 +57,23 @@ fn append_line(path: &std::path::Path, line: &str) {
         let _ = writeln!(file, "{line}");
         let _ = file.flush();
     }
+}
+
+/// Tauri command: append one probe event built by the live window.
+///
+/// The payload is the exact `JSON.stringify` output from `desktop/ui/app.js`
+/// (`{event: "rows", ...}` / `{event: "graph-shown", ...}`), so the shell does
+/// not recompute any rendered value. Without `--probe` this is a silent
+/// no-op. A malformed payload logs one fixed diagnostic to stderr and never
+/// echoes the payload (it may carry user-visible text).
+#[tauri::command]
+pub fn probe_emit(payload: String) {
+    let Some(path) = PROBE_FILE.get() else { return };
+    if serde_json::from_str::<serde_json::Value>(&payload).is_err() {
+        eprintln!("maestro-shell: probe_emit rejected a non-JSON payload");
+        return;
+    }
+    append_line(path, &payload);
 }
 
 /// Poll the ctl directory (100ms cadence) and dispatch triggers through the
