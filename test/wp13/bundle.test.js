@@ -174,14 +174,18 @@ test('bundle: artifacts + bundled node + narrowed-env launch + seams + quit', (t
   assert.ok(coreMeta, 'daemon core.json never appeared');
   assert.ok(Number.isInteger(coreMeta.pid) && coreMeta.pid > 0, 'core.json pid invalid');
 
-  // ctl open-instance 接缝 → view === 'graph'
+  // ctl open-instance seam -> the shell records a request and asks the live
+  // window to open the graph (decision T/W). The counted `graph-shown` event
+  // is emitted by the window after rendering and is covered by the shell case
+  // in `acceptance-e2e.test.js`, not by this ctl-only probe check.
   fs.mkdirSync(path.join(ctlDir, 'open-instance'), { recursive: true });
   fs.mkdirSync(path.join(ctlDir, 'open-instance', 'INST-999'), { recursive: true });
   const graph = await waitFor(() => {
-    return readProbe(probeFile).find((e) => e.event === 'graph-shown');
+    return readProbe(probeFile).find((e) => e.event === 'graph-open-request');
   });
-  assert.ok(graph, 'graph-shown missing');
+  assert.ok(graph, 'graph-open-request missing');
   assert.equal(graph.view, 'graph');
+  assert.equal(graph.instanceId, 'INST-999');
 
   // 0 运行实例 → 托盘退出直接退出
   runCtl(ctlDir, 'tray-quit');

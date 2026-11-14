@@ -224,3 +224,10 @@
 - **决定（接缝，不改渲染归属）**：窗口侧 `probe` 事件改走**双通道**——优先 Tauri invoke（app origin 场景），同时 `POST /__test__/window-probe`（仅 `NODE_ENV=test` 注册、Bearer 保护）；daemon 把事件原样 append 到 `<root>/.orch/window-probe.jsonl`；壳 `probe.rs` 起一个 100ms 轮询线程把新行**原样搬运**到 `--probe` 文件。事件内容仍由窗口渲染层产出（rows 文本来自 `desktop/ui/list`、graph-shown 计数来自 `buildGraphShownProbe`），壳不合成、不重算。
 - **AC-27 边界**：新端点仅 `NODE_ENV=test` 存在，生产零注册；写的是验收探针产物，不触碰实例状态/事件链/追踪；`readonly-local` 用例不触发该端点，`.orch` 文件面断言不受影响。
 - **授权面**：`src/daemon/http/server.js`（D-10 清单内）、`desktop/ui/app.js`、`desktop/src-tauri/src/{probe.rs,main.rs,tray.rs,spawn.rs}`、`test/wp13/acceptance-e2e.test.js`。诊断期的 `ui-navigate` / `ui-current-url` / `ctl-eval-reached` 三段临时代码在实现落地后删除。
+
+
+## 裁决 X（S2 批次 6 全量门禁后）｜bundle.test.js 的合成 graph-shown 断言演进
+
+- **事实**：串行全量 `1370 tests / 1364 pass / 5 fail / 1 skip` 中，`bundle: artifacts + bundled node + narrowed-env launch + seams + quit` 稳定失败（`graph-shown missing`，单跑 30s 复现）。原因是裁决 T 删除了 `tray.rs::handle_open_instance` 合成的**不带计数** `graph-shown`，改为 `graph-open-request` + 请求窗口打开；该用例只测 ctl 接缝、不写实例夹具，窗口自然不会渲染图并发带计数的 `graph-shown`。
+- **决定（依需求附录 D-11 测试修改条款）**：授权 `test/wp13/bundle.test.js` 该断言段改为核 `graph-open-request`（`view === 'graph'`、`instanceId === 'INST-999'`），并注明「带计数的 `graph-shown` 由窗口渲染后发出，由 `acceptance-e2e.test.js` 壳面用例覆盖（裁决 T/W）」。**只改这一处断言与注释**，不动其它用例、不放宽 401/收窄环境/pid/quit 等断言。
+- **失败集合口径**：其余 4 条（`AC-04` 时序 flake、`task-loop 审核提示词`、`core.stop`、`main --cwd`）全 ⊂ 判定基线 9 条；修复后差集 = 0。
