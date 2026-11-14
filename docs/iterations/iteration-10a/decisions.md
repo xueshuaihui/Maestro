@@ -231,3 +231,13 @@
 - **事实**：串行全量 `1370 tests / 1364 pass / 5 fail / 1 skip` 中，`bundle: artifacts + bundled node + narrowed-env launch + seams + quit` 稳定失败（`graph-shown missing`，单跑 30s 复现）。原因是裁决 T 删除了 `tray.rs::handle_open_instance` 合成的**不带计数** `graph-shown`，改为 `graph-open-request` + 请求窗口打开；该用例只测 ctl 接缝、不写实例夹具，窗口自然不会渲染图并发带计数的 `graph-shown`。
 - **决定（依需求附录 D-11 测试修改条款）**：授权 `test/wp13/bundle.test.js` 该断言段改为核 `graph-open-request`（`view === 'graph'`、`instanceId === 'INST-999'`），并注明「带计数的 `graph-shown` 由窗口渲染后发出，由 `acceptance-e2e.test.js` 壳面用例覆盖（裁决 T/W）」。**只改这一处断言与注释**，不动其它用例、不放宽 401/收窄环境/pid/quit 等断言。
 - **失败集合口径**：其余 4 条（`AC-04` 时序 flake、`task-loop 审核提示词`、`core.stop`、`main --cwd`）全 ⊂ 判定基线 9 条；修复后差集 = 0。
+
+
+## 裁决 Y（S2 批次 6 复评后）｜R-12 / R-13 处置与 S2 收口
+
+批次 6 round2 复评 **PASS**（阻断 0 / 建议 2），B-33 / B-34 两条阻断按真实链路闭合，授权面 30 文件全部合规，裁决 W 未放松 AC-27 只读边界（`readonly-local` 在终版全量全绿），产物时效门槛有效。
+
+- **R-12（后移 S3）**：B-36 / AC-22 真实壳内拖拽仍是结构断言（写入端 `config.rs` 零测试），裁决 S 已登记「S3 用窗口级自动化补证或接受结构断言并注明」。S3 逐 AC 取证时给 AC-22 单列证据等级（结构断言 = mock 实测，不冒充真实宿主）。
+- **R-13（不改，登记）**：`bundleFreshness()`（壳面用例过期即 skip）与 `regression.test.js` 时效用例（产物不存在/过期即 skip，存在则 assert）判据面一致、不矛盾；S3 脚手架统一按「skip 必须写明需 `npm run desktop:build`」执行，不为对齐而削弱任一侧。
+- **S2 门禁终值**：`env -u NODE_OPTIONS NODE_ENV=test node --test --test-concurrency=1 "test/**/*.test.js"` → **1370 tests / 1365 pass / 4 fail / 1 skip**；失败集合 = `AC-04`（R-08 允许项）/ `task-loop 审核提示词` / `core.stop` / `main --cwd`，全部 ⊆ 判定基线 9 条，**差集 = 0**。31 词 purity 两轮、CJK 零命中、`git show --check` 五笔全绿。
+- **结论**：S0/S1/S2 全部收口，**可进 S3 逐 AC-01~37 验收取证**。
