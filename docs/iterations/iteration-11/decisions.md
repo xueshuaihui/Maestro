@@ -344,3 +344,15 @@
 - **依据**：D-11 的「不得修改」清单只点名 `src/cli/main.js` 与 `src/cli/render.js`，未含 `src/cli/workflows.js`；「消除复刻」符合 BR-26/判据精神（同源优于复刻），改动是纯导出（零行为变化）。
 - **决定**：WP-7 挂 HTTP 时**授权**在 `src/cli/workflows.js` 给 `workflowDetailOf` 加 `export`（只加 `export` 关键字，不改函数体），`assets-view.js` 的 `workflowDetailText` 收敛为 `import` + 转发；AC-23 的逐字断言保持，作为回归护栏。若实现时发现 `workflowDetailOf` 依赖 CLI 上下文无法直接导出，维持现状（复刻 + 断言锚定）并在回执说明，不算缺陷。
 - **影响面**：`src/cli/workflows.js`（WP-7）、`src/daemon/assets-view.js`、AC-23 断言。
+
+## D-48 · 占用行补第 8 字段 `hosts`；同档排序取 roleId 升序；「参与」按节点绑定计
+
+- **触发点**：WP-4 回执 ⑥/⑦：A-6 逐字行含第 6 段「宿主 mock」（宿主段取实例运行时 `hostId`），AC-26 机检要求经 `occupancy-dump.mjs` **逐字比对 A-6**——但拆分文档 §2.5 的七字段契约没有 hosts，投影若不透出宿主，WP-8/WP-11 渲染不出该段，AC-26 必挂。
+- **依据**：AC 的 Then 优先级最高（裁决优先级第 1 位）；`buildRoleInstances` 投影已读 `session.hostId`（`src/registry/role-instances.js:78`），聚合层透出即可，零新数据源。
+- **决定**：
+  1. **契约修正**：`buildOccupancy` 返回的 `rows` 每行增第 8 字段 **`hosts: string[]`**（该角色在各实例会话的 `hostId` 并集，去重升序；无宿主信息 → 空数组，界面渲染「宿主 —」）。拆分文档 §2.5 签名同步修正（S1 文档由主控维护，属实现期契约完善，不属需求变更）。
+  2. **同档排序**：取 **`roleId` 升序**（确定性、注册表空时天然兜底）；A-6 注记「同档按角色名升序」判读为其样例行序与 roleId 升序一致（developer < reviewer < tester 亦为字母序），**不引入环境相关的 `localeCompare`/拼音序**（NFR 确定性）。
+  3. **「参与实例数」**：按「绑定到至少一个节点」计；仅声明未绑定的角色计 0、仍出「未参与」行（AC-26/AC-27 三现场由此自洽）。
+  4. **注册表枚举条件**：有 ≥1 可读实例时补注册表「未参与」行；完全无实例时 `rows` 为空（A-6 现场一「角色占用 无」）。
+  5. WP-4 测试同步补：AC-26 三行 hosts 断言（`['mock']`）与未参与行（`[]`）；AC-28 不受影响。
+- **影响面**：`src/daemon/occupancy.js`、`test/wp14/occupancy.test.js`、拆分文档 §2.5、WP-7 挂接、WP-8 渲染（宿主列）。

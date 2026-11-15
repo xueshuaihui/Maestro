@@ -83,9 +83,10 @@ export async function showAsset(root, kind, id) {}
 
 ### 2.5 `src/daemon/occupancy.js`（新增，WP-4）
 ```js
-export function buildOccupancy(root, { instances }) {}
-// → [{ roleId, roleName, group, instances: n, activeSessions: n,
-//      servingNodes: string[], status: '服务中'|'可用'|'冷却中'|'不可用'|'未参与' }]
+export function buildOccupancy(root, { instances }) {}   // → { rows, skipped, disconnected? }（D-48）
+// rows: [{ roleId, roleName, group, instances: n, activeSessions: n,
+//         servingNodes: string[], hosts: string[], status: '服务中'|'可用'|'冷却中'|'不可用'|'未参与' }]
+// skipped: [{ instanceId, reason }]（实例状态不可读逐条登记）；hosts = 各实例会话 hostId 并集（A-6 第 6 段）
 // 复用既有 buildRoleInstances 只读投影；status 取"最忙"（服务中>可用>冷却中>不可用>未参与）；
 // 注册表空不得判 unavailable（D-5）；实例不可读跳过并计数。
 ```
