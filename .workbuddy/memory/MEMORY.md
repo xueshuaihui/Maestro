@@ -138,3 +138,26 @@
   9. **三主链逐字回归口径**：`git worktree` 建基线树 + 交替 ≥6 对 + A-0 归一化逐字 diff；判「当前不得低于基线」，不能只跑单次、也不能只查「有没有新词」。
 - **环境**：测试残留大量 `orch core serve`（观测 723 个，411 个目录已删）会造成负载型 flake（同命令两次 13 / 17 fail，逐文件复跑全绿）；全量会改写 `docs/iterations/iteration-4/evidence/nfr-perf-*.json`，收口用 `git checkout --` 还原。
 - **验收审计口径**：`object: 'session'` 计 `orchestrator.js` 13（`src/core` 合计 14 含 `escalation.js` 存量 1，`src/daemon` 0）——D-24。
+
+## 阶段一 I1.10a 已收口（2026-11-15：44/44 AC、0 阻塞、1425 测试、终验 PASS，远端 9c30f61）
+需求 v4（44 AC / 39 BR / 附录 A~D）/ 拆分 r3（WP-1~12 / 9 批）；产物 `docs/iterations/iteration-10a/`
+`{report,acceptance-a/b/c,final-verification,release-manual,summary.json,results.jsonl,evidence/}`（425 份帧）。
+- **发布面走 GitHub Actions，不再依赖某台机器**：`.github/workflows/release.yml`（tag `v*` + `workflow_dispatch`，
+  `permissions: contents: write` 仅此一项，令牌只用 `${{ github.token }}`）；三平台矩阵各自在自家 runner 构建
+  （macOS x64 / arm64 出 `.dmg`，windows-latest 出 NSIS `.exe`）+ `SHA256SUMS.txt`。
+  `v0.*` → prerelease，草稿通道标识 `dryrun-<sha7>` 不以 `v` 开头（避免再次命中 tag 触发）。
+- **I1.11+ 必守（发布面）**：
+  1. **证据原始帧不得改写**：Actions 日志每行以 `<时间戳>Z ` 结尾。`.gitattributes` 已对
+     `docs/iterations/**/evidence/**/*.log` 与逐字摘录的回归报告关掉 whitespace 检查——`git show --check`
+     会把它判成空白错误，strip 掉就等于篡改证据。
+  2. **门禁记的 HEAD 必须可达**：`gates.json` 的 `head` 是「被验证提交」，台账产物要在**紧随其后**的提交里落盘；
+     用 `--amend` 把产物并入同一提交会让 sha 变孤儿（本迭代踩过两轮）。
+  3. **「分支型」Then 跑不了就如实写未实测**：AC-41 的 `v1+ → 正式` 要真跑得把产品版本改成 1.0.0，
+     但「版本对齐校验」会拦（tag 版本 ≠ package.json）；AC-43 的同名 tag 重推同理。两者由静态契约承载并明写未实测。
+  4. **`makensis` 预装但不在 PATH**：`package-win.mjs` 探测 `ProgramFiles(x86)\NSIS`；找不到硬失败。
+  5. **Windows 子进程路径必须规范化**：壳交给 `CreateProcess` 的 `\\?\` 逐字前缀会被 Node 解析成盘符
+     （`EISDIR lstat 'C:'`）；`spawn.rs` 的 `win_path_arg()` 剥前缀 + 正斜杠，stderr 落 `<root>/.orch/daemon-spawn.log`。
+  6. **flake 用文件级隔离复跑确认**，别用 `--no-flake-confirm` 一把关掉；确认通过记 flake、确认失败照旧判红。
+- **仓库协作**：`origin/main` 可能被并行工作树推进（本迭代被推进 2 次，`git fetch`/`push` 隧道 intermittently 恢复）。
+  分叉时：备份 WIP → `git reset --hard origin/main` → 记忆日志按**标题级并集**合并，不要整文件 ours/theirs。
+  本地提交 sha 与远端可能不等（本地 committer 时间带 `+08:00`），**以 `origin/main` 为权威**。
