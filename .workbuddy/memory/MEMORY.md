@@ -107,3 +107,16 @@
   `probe/acc6-f-results.jsonl` 被改成「不通过」，恢复 HEAD，原始帧另存本迭代 `evidence/gate-batch1/`。
 - `core.autocrlf=true` 下 `git restore` 后 status 会假报 M（内容 diff 已空）；用
   `git -c core.autocrlf=false checkout-index -f -- <具体路径>` 刷新，**不可全量 `-a -f`**（会覆盖未提交改动）。
+
+## I1.8 S2 第 1 批已合入 main（2026-11-15）
+- `feat/i1.8-instance-recovery`（S0/S1/S2 第 1 批 4 提交）以 `--no-ff` 合入，merge `c1915c3`
+  （父 `5246f3b` 合入时 origin/main + `2a74368`）；零冲突（merge-tree 试算 `4935ead` 与合并树一致）。
+  功能分支**保留不删除**并 ff 同步；留痕 `docs/iterations/integration-2026-11-15.md`。
+- **主线不再是 `3f35bfa`**：期间前进 71 提交，含 I1.7 代码隔离 worktree、I1.9 追踪/CLI、
+  I1.10a 桌面 UI + CI release（1040 文件 / +12.5 万行）。后续 I1.8 批次必须基于最新 main，
+  需求 v3「I1.7 合入后 67 AC 全部重跑」已生效。
+- 全量测试新基线：`1425 条 / 24 条 Windows 平台噪声`（`workspace_init_failed`、桌面 `lsof`、SSE 时序、
+  `EBUSY` 清理）；门禁按「失败集合差集 = 0」，新增红先 `--test-concurrency=1` 独占复跑证伪 flake。
+  `test/wp13/` 现为桌面 UI 用例集（36 文件），I1.8 的 checkpoint/dialect 用例同目录共存。
+- `origin/main` 可能被并行推送（本次门禁期间新增 `5246f3b`）：合入前重新 `git fetch`；
+  未推送的本地 merge 可 `git reset --hard <最新 origin/main>` 后重建干净的单 merge 节点。
