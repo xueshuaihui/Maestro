@@ -47,3 +47,10 @@
 
 - 派出 WP-1（通知域：notify.js + prefs.js）与 WP-2（队列域：queue.js）两个并行 Agent，六段式任务书，门禁四件套（全量差集 0 + tests>=1425、purity 31 词、零依赖、自带契约测试）。
 - 契约先冻结点：`iteration-11.md` §2.1~§2.3 签名；决策入口实锚 `orchestrator.resolveEscalation`（orchestrator.js:5022）。
+
+## S2 批次 A 收口（2026-11-16）
+
+- **WP-1 通知域**（c1072a5）：notify.js 502 行 + prefs.js 99 行 + 测试 32 条全绿。异常合并经主控裁决 D-46 改「首条即发 + 并入更新」（mergedCount [1,2,3,4] 单调递增，首条 0ms < 2s，AC-03 与 AC-06 同时成立）；需求 v8 补 AC-06 判读句。
+- **WP-2 队列域**（325f6bd）：queue.js 339 行 + 测试 16 条全绿。五动作全走既有 RPC（escalation.resolve / approval.resolve / instance.cancel）；totals 零重算（D-36）；错误映射带 hint + reasonCode；夹具口径 D-45。
+- **批次 A 门禁**：全量 1473 / 1468 pass / 4 fail（AC-04 + core.stop + main --cwd + task-loop 审核提示词）全部落在判定基线，差集 0；tests >= 1425 ✓；purity 31 词 exit 0；deps 0。
+
