@@ -60,3 +60,13 @@
 - 派出 WP-3（资产库投影 assets-view.js）与 WP-4（全局角色占用 occupancy.js）两个并行 Agent。
 - 任务书红线：D-40 禁 pulse 造占用；D-4 资产接口零写入；校验失败原因与 CLI 逐字一致（复用注册表校验输出）。
 - 全量门禁下限升至 tests >= 1473（批次 A 合入 48 条用例后）。
+
+## S2 批次 B 收口（2026-11-16）
+
+- **WP-3 资产库**（8493f52）：assets-view.js 844 行 + 测试 10 条全绿；校验原因零复刻（import CLI detailOf）；零写入 sha256 锚定；AC-46 经 builtinRoot 隔离。D-47 登记收敛路径。
+- **WP-4 全局占用**（5bac7f4）：occupancy.js 249 行 + 测试 4 条全绿；三方同源断言（buildOccupancy/buildRoleInstances/buildGraph）；禁 pulse（D-40）；D-48 补 hosts 第 8 字段（A-6 第 6 段逐字所需），拆分文档 §2.5 签名同步修正。
+- **批次 B 门禁**：全量 1487 / 1482 pass / 4 fail（同一基线集合）差集 0；tests >= 1473 ✓；purity exit 0；deps 0。
+
+## S2 批次 C 开工（2026-11-16）
+
+- 派出 WP-5（工作流画布投影 canvas.js）与 WP-6（证据投影 evidence.js）两个并行 Agent。
