@@ -1,0 +1,11 @@
+{
+  "repo": "xueshuaihui/Maestro",
+  "tag": "dryrun-4371758",
+  "check": "gating",
+  "at": "2026-11-15T13:33:45.014Z",
+  "verdict": {
+    "ok": true,
+    "detail": "run conclusion=failure；资产数 0 → 0"
+  },
+  "releases": []
+}

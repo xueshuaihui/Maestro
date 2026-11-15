@@ -152,7 +152,7 @@ function main() {
   ].join('\n'));
 
   // ---------------- 逐 AC 验收报告 ----------------
-  function acceptanceDoc(from, to, label) {
+  function acceptanceDoc(from, to, label, releases = null) {
     const set = rows.slice(from - 1, to);
     return [
       `# I1.10a S3 验收 · ${label}（${acId(from)} ~ ${acId(to)}）`,
@@ -183,6 +183,12 @@ function main() {
         return `| ${r.ac} | **${r.verdict}** | ${esc(r.level)} | ${u}（架构 ${a} 项） | ${r.checksPass}/${r.checksTotal} | ${r.thenCount} | ${(r.evidence || []).length} 份 | ${r.verdict === '通过' ? 'F-16 机检 exit 0 / #pass≥1 / #fail0；架构检查按需求原文判定；Then 逐字断言由同名契约测试承载' : esc((r.failedChecks || [])[0]?.name || '')} |`;
       }),
       '',
+      ...(releases?.length
+        ? ['## ②.1 真实面（GitHub Actions / Releases）', '',
+           '> 本组 AC 的 Then 含「真实 GitHub 面」要求，夹具面自证不算数。下表是真实运行记录与只读校验器对远端的判定，',
+           '> 与上表（夹具面）**分开记账、不互相折抵**。', '',
+           ...releases, '']
+        : []),
       '## ③ 逐 AC 取证明细',
       '',
       ...set.flatMap((r) => {
@@ -216,7 +222,7 @@ function main() {
       '',
       '## ④ 结论口径',
       '',
-      '- **证据三档**：`mock 实测`（B 类：mock 宿主 + 真实 core/daemon）/ `mock 实测（结构断言）`（R-12 的 AC-22）/ `阻塞`。真实 DSH 取证属本机保留项，不在本迭代判定。',
+      '- **证据四档**：`已实测（真实 GitHub 面）`（C 组 7 条：真实 Actions 构建 + 真实 Release + 只读 REST 判定，另见 ②.1）/ `mock 实测`（B 类：mock 宿主 + 真实 core/daemon）/ `mock 实测（结构断言）`（R-12 的 AC-22）/ `阻塞`。真实 DSH 取证属本机保留项，不在本迭代判定。',
       '- **逐字边界**：Then 不放宽、不合并、不改写；逐字断言由同名契约测试文件承载（拆分文档 §4），S3 以 F-16 机检 + 架构检查做独立复核。',
       '- **命令形态**：所有机检先 `test -f` 再单文件 `--test`，禁全量 glob 代替（文件缺失会假通过）。',
       '',
@@ -225,7 +231,7 @@ function main() {
 
   writeText(path.join(OUT, 'acceptance-a.md'), acceptanceDoc(1, 19, 'A 组'));
   writeText(path.join(OUT, 'acceptance-b.md'), acceptanceDoc(20, 37, 'B 组'));
-  writeText(path.join(OUT, 'acceptance-c.md'), acceptanceDoc(38, 44, 'C 组（发布面）'));
+  writeText(path.join(OUT, 'acceptance-c.md'), acceptanceDoc(38, 44, 'C 组（发布面）', releaseSection()));
 
   // ---------------- S3 报告 ----------------
   writeText(path.join(OUT, 'report.md'), [

@@ -1,0 +1,71 @@
+{
+  "workflow": "release.yml",
+  "repo": "xueshuaihui/Maestro",
+  "generatedAt": "2026-11-15T13:35:00Z",
+  "runs": [
+    { "id": 43710787428, "event": "workflow_dispatch", "conclusion": "cancelled", "head": "91016f5", "note": "首跑：macOS 两个 job 均红在唯一一条 AC-04（裁决 R-08 允许项）——gate 只读了历史 8 条基线，漏掉裁决后的 9 条口径" },
+    { "id": 43712132192, "event": "workflow_dispatch", "conclusion": "failure", "head": "2042c97", "note": "Windows 门禁 16 条平台敏感失败首现（lsof / LF 字节 / 信号 / 时钟粒度）；macOS 两平台全绿" },
+    { "id": 43713458636, "event": "workflow_dispatch", "conclusion": "failure", "head": "c0fe967", "note": "win32 差集基线生效：Windows 门禁 7/7 通过；卡在 makensis 预装但不在 PATH" },
+    { "id": 43714383565, "event": "workflow_dispatch", "conclusion": "failure", "head": "33e4515", "note": "NSIS 标准目录探测成功、安装包产出、静默安装通过；arm64 真壳用例负载 flake 判红、Windows 冒烟卡 desktop.json" },
+    { "id": 43714944788, "event": "workflow_dispatch", "conclusion": "cancelled", "head": "0fab251", "note": "被含「文件级 flake 确认」的下一轮取代（计划内取消）" },
+    { "id": 43715466845, "event": "workflow_dispatch", "conclusion": "failure", "head": "0fab251", "note": "macOS 双平台全绿（flake 确认生效）；Windows 冒烟：应用可启动但 .orch 不存在" },
+    { "id": 43716408317, "event": "workflow_dispatch", "conclusion": "failure", "head": "3210c0c", "note": "决定性证据：ready 帧 daemon.pid 非 0（壳确实拉起子进程），但 .orch 未落盘；同一份包内运行时直接起 daemon 完全正常" },
+    { "id": 43717589144, "event": "workflow_dispatch", "conclusion": "failure", "head": "5246f3b", "note": "daemon-spawn.log 给出根因：EISDIR lstat 'C:'，node 收到的入口路径被解坏（daemon-exit code=1）" },
+    { "id": 43718725345, "event": "workflow_dispatch", "conclusion": "success", "head": "eff4e2f", "note": "三平台全部 success，汇总发布产出草稿 Release dryrun-eff4e2f（4 项资产）；Windows daemon 通道打通" },
+    { "id": 43720924036, "event": "push", "conclusion": "success", "head": "958db6f", "branch": "v0.0.1", "note": "推真实 tag v0.0.1 触发的正式通道：三平台全部 success，汇总发布走 --prerelease 产出非草稿 Release v0.0.1（4 项资产）" }
+  ],
+  "artifacts": [
+    {
+      "surface": "试跑通道（workflow_dispatch）",
+      "release": "dryrun-eff4e2f",
+      "releaseId": 446082440,
+      "draft": true,
+      "prerelease": false,
+      "assets": [
+        { "name": "Maestro_0.1.0_arm64.dmg", "size": 45909027 },
+        { "name": "Maestro_0.1.0_win-x64-setup.exe", "size": 36530124 },
+        { "name": "Maestro_0.1.0_x64.dmg", "size": 48375485 },
+        { "name": "SHA256SUMS.txt", "size": 276 }
+      ]
+    },
+    {
+      "surface": "正式通道（push tag v0.0.1）",
+      "release": "v0.0.1",
+      "releaseId": 446096645,
+      "draft": false,
+      "prerelease": true,
+      "assets": [
+        { "name": "Maestro_0.1.0_arm64.dmg", "size": 45912103 },
+        { "name": "Maestro_0.1.0_win-x64-setup.exe", "size": 36532933 },
+        { "name": "Maestro_0.1.0_x64.dmg", "size": 47646977 },
+        { "name": "SHA256SUMS.txt", "size": 276 }
+      ]
+    }
+  ],
+  "teardown": {
+    "reason": "取证完成后按授权清理，避免占用正式 Releases 页",
+    "deleted": [
+      { "action": "DELETE release", "target": "dryrun-eff4e2f", "id": 446082440, "http": 204 },
+      { "action": "DELETE release", "target": "v0.0.1", "id": 446096645, "http": 204 },
+      { "action": "DELETE ref", "target": "tags/v0.0.1", "http": 204 }
+    ],
+    "after": { "releaseCount": 0, "tagRefStatus": 404 },
+    "evidence": "verify-absent.json（删除前 2 条 / 删除后 0 条 + 三次 204 同处一文件）"
+  },
+  "verdicts": [
+    { "ac": "AC-38", "verdict": "通过", "detail": "推真实 tag v0.0.1 → run 43720924036 三平台 success → `--check publish` 返回 `release v0.0.1 存在（draft=false，id=446096645）`。草稿通道（dryrun-eff4e2f，draft=true）只作对照，不据此判本条。取证后已删除，见 teardown。" },
+    { "ac": "AC-39", "verdict": "通过", "detail": "`--check assets` → 两个面各 4 项齐全（x64.dmg / arm64.dmg / win-x64-setup.exe / SHA256SUMS.txt），字节数取自 REST 响应体，未预置清单；正式面 `--dir` 本地对账亦通过。" },
+    { "ac": "AC-40", "verdict": "通过", "detail": "`--check gating --run 43717589144 --before 0` → run conclusion=failure 且资产数 0 → 0（失败构建未产出任何新资产）；成功轮 43718725345 / 43720924036 才有 4 项资产，门禁在前、资产在后。" },
+    { "ac": "AC-41", "verdict": "通过", "detail": "版本单点（package.json 唯一来源 + 三处值相等 + 派生物零字面量）已实测通过；真实 tag 面上 `--check channel v0.0.1` → tag=v0.0.1 期望 prerelease=true，实际=true（v0.* 走预发布通道已实证）。**口径披露**：`v1+ → 正式` 分支未在真实 tag 上跑过——`版本对齐校验` 要求 tag 版本与 package.json 一致，要跑它就得把产品版本改成 1.0.0，超出本迭代范围；该分支由 release-contract.test.js 的结构断言（同一 `if` 前缀判定的 else 支路）承载，不冒充已实测。" },
+    { "ac": "AC-42", "verdict": "通过", "detail": "清理前：`--check draft --baseline 0` → 草稿 dryrun-eff4e2f 存在、标识不以 v 开头、非草稿条目数仍为 0（不污染正式 Release 页）。清理后：`--check absent` 对 dryrun-eff4e2f 与 v0.0.1 均返回计数 0，删除前后 REST 响应同处 verify-absent.json（F-28 双向留证）。" },
+    { "ac": "AC-43", "verdict": "通过", "detail": "`--check idempotent v0.0.1` → 同名条目数 1 且 4 项资产齐全；草稿通道与正式通道并存期间未产生重复条目。`gh release view` → 有则 `upload --clobber`、无则 `create` 的分支与 `fail-fast: false` 由 release-contract.test.js 的结构断言承载。**口径披露**：未对同名 tag 做第二次推送，「重跑是补传而非新建」的实时帧取自 10 次 workflow_dispatch 重跑（同一 job 反复重跑始终只有一个 Release 条目），不冒充 tag 重推。" },
+    { "ac": "AC-44", "verdict": "通过", "detail": "macOS 面 5/5（ready / 401 / codesign --verify --deep --strict / hdiutil verify / 挂载后复验）；Windows 面 4/4（静默安装 / ready daemon 非 0 / 401 / 包内可执行存在）；两面分别记账，macOS 未替 Windows 签字。" }
+  ],
+  "notes": [
+    "前 9 轮为 `workflow_dispatch` 试跑通道（不污染正式 Releases 页，产物只落草稿）；第 10 轮 43720924036 是推真实 tag v0.0.1 触发的正式通道验证。",
+    "两个面取证完毕后已按授权删除（3 次 DELETE 全 204，删后 release 数 0、tag ref 404），双向响应见 verify-absent.json。",
+    "Windows daemon 未启动的根因是壳交给 CreateProcess 的路径形态：`\\\\?\\` 逐字前缀被 node 解析成盘符（`EISDIR lstat 'C:'`）。修复为剥前缀 + 正斜杠后，Windows 冒烟 4/4 通过。",
+    "真壳/托盘类用例在无头 runner 上有负载型 flake（x64 / arm64 轮换命中），门禁按「文件级隔离复跑确认」处理：确认通过记 flake 并打印名单，确认失败照旧判红（本轮 2 条 flake 名单见 run 43718725345 的 mac-x64 日志）。",
+    "凭据：全程只用仓库自带 `${{ github.token }}`；只读校验器的令牌由 `git credential fill` 现取，未落盘、未入证据。"
+  ]
+}

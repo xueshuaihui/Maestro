@@ -1,0 +1,37 @@
+{
+  "repo": "xueshuaihui/Maestro",
+  "tag": "v0.0.1",
+  "check": "publish",
+  "at": "2026-11-15T13:53:53.873Z",
+  "verdict": {
+    "ok": true,
+    "detail": "release v0.0.1 存在（draft=false，id=446096645）"
+  },
+  "releases": [
+    {
+      "id": 446096645,
+      "tag_name": "v0.0.1",
+      "draft": false,
+      "prerelease": true,
+      "created_at": "2026-11-15T13:28:55Z",
+      "assets": [
+        {
+          "name": "Maestro_0.1.0_arm64.dmg",
+          "size": 45912103
+        },
+        {
+          "name": "Maestro_0.1.0_win-x64-setup.exe",
+          "size": 36532933
+        },
+        {
+          "name": "Maestro_0.1.0_x64.dmg",
+          "size": 47646977
+        },
+        {
+          "name": "SHA256SUMS.txt",
+          "size": 276
+        }
+      ]
+    }
+  ]
+}

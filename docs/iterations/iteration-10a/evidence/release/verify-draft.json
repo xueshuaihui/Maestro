@@ -1,0 +1,38 @@
+{
+  "repo": "xueshuaihui/Maestro",
+  "tag": "dryrun-eff4e2f",
+  "check": "draft",
+  "at": "2026-11-15T13:33:37.489Z",
+  "verdict": {
+    "ok": true,
+    "detail": "草稿 dryrun-eff4e2f 存在，非草稿数仍为 0",
+    "publicCount": 0
+  },
+  "releases": [
+    {
+      "id": 446082440,
+      "tag_name": "dryrun-eff4e2f",
+      "draft": true,
+      "prerelease": false,
+      "created_at": "2026-11-15T13:30:42Z",
+      "assets": [
+        {
+          "name": "Maestro_0.1.0_arm64.dmg",
+          "size": 45909027
+        },
+        {
+          "name": "Maestro_0.1.0_win-x64-setup.exe",
+          "size": 36530124
+        },
+        {
+          "name": "Maestro_0.1.0_x64.dmg",
+          "size": 48375485
+        },
+        {
+          "name": "SHA256SUMS.txt",
+          "size": 276
+        }
+      ]
+    }
+  ]
+}

@@ -61,6 +61,32 @@ gh release delete dryrun-<sha7> --cleanup-tag --yes
 node probe/acc10-release-verify.mjs dryrun-<sha7> --check absent
 ```
 
+### 2.1 真实 tag 取证后的清理（2026-11-15 实做）
+
+为 AC-38 / AC-41 取真实面时推过一个临时 `v0.0.1`（用完即删），完整动作与响应：
+
+```bash
+# 1) 删前先抓一份 REST 快照（双向留证的前一半）
+curl -sS -H "Authorization: Bearer $TOKEN" \
+  "https://api.github.com/repos/<owner>/<repo>/releases?per_page=30" -o /tmp/pre-releases.json
+
+# 2) 删草稿、删正式 Release、删 tag ref —— 三步都应返回 204
+curl -X DELETE .../releases/<draft-id>    # 204
+curl -X DELETE .../releases/<release-id>  # 204
+curl -X DELETE .../git/refs/tags/v0.0.1   # 204
+
+# 3) 删后复抓（双向留证的后一半）+ 两遍 absent
+curl -sS ... /releases?per_page=30 -o /tmp/post-releases.json   # 条数 0
+curl -sS ... /git/ref/tags/v0.0.1                                # 404
+node probe/acc10-release-verify.mjs v0.0.1 --check absent
+node probe/acc10-release-verify.mjs dryrun-<sha7> --check absent
+```
+
+**为什么要留两半**：只留「删后查不到」无法区分「发过并已清理」与「根本没发过」。删前响应体（含
+`draft` / `prerelease` / 四项资产名与字节数）+ 删后空集 + 三次 204 写进同一个
+`evidence/release/verify-absent.json`，才是 AC-42 要求的双向证据。`gh release delete --cleanup-tag`
+等价，但不会留下删前响应体。
+
 ---
 
 ## 3. 只读校验（取证用）
@@ -119,3 +145,18 @@ node probe/acc10-release-verify.mjs dryrun-<sha7> --check draft --baseline 0
 3. **只出 x64 / arm64 两个 macOS 架构与 win-x64**：不做跨架构合成，无 Linux 包，无自动更新（§1.3 范围外）。
 4. **版本号只改一处**：`package.json`。`Cargo.toml` / `tauri.conf.json` 必须同步改成同一个值（`release-version.test.js` 会挡）。
 5. **本机不能产出 Windows 包**：`makensis` 与 `llvm-rc` 都不在本机，`package-win.mjs` 在非 Windows 平台会**显式报错退出**。
+
+---
+
+## 7. 首次真实运行踩到的坑（2026-11-15，全部已修进脚本）
+
+| 现象 | 根因 | 现在的处置 |
+|---|---|---|
+| Windows job 在「生成安装包」exit 1：`未找到 makensis` | windows-latest **预装** NSIS，但不在 `PATH`（实际在 `C:\Program Files (x86)\NSIS\makensis.exe`） | `package-win.mjs` 的 `resolveMakensis()` 先试 PATH，再探测 `ProgramFiles` / `ProgramFiles(x86)` / `ProgramW6432` 下的 `NSIS` 目录；工作流另加一步「准备 NSIS」（已预装则跳过，否则 `choco install nsis`）。找不到仍**硬失败**。 |
+| Windows 冒烟：应用能启动、ready 探针正常，但 10s 等不到 401（`desktop.json` 不出现） | 壳把子进程路径原样交给 `CreateProcess`，`\\?\` 逐字前缀被 Node 解析成盘符，daemon 启动即崩：`EISDIR: illegal operation on a directory, lstat 'C:'` | `spawn.rs` 的 `win_path_arg()`：剥 `\\?\`（含 `\\?\UNC\`）并统一正斜杠后再传给 node。daemon 的 stderr 现在落到 `<root>/.orch/daemon-spawn.log`，另在探针流写 `daemon-spawn` / `daemon-exit` 事件。 |
+| macOS 门禁把 AC-04 判成意外失败 | gate 只读了历史 `baseline-failures.txt` 的 8 条，漏掉裁决 R-08 登记后的 9 条口径 | gate 内置 `ADJUDICATED_ALLOW`（AC-04），与 `probe/acc10-f-gates.mjs`、`regression.test.js` 同源。 |
+| Windows 门禁 16 条红 | 既有测试面里平台敏感的断言（`lsof` / LF 逐字节 / POSIX 信号 / 时钟粒度） | `baseline-failures-win32.txt` 逐条登记 + 归因分类，**只在 win32 加载**；登记 ≠ 通过，新出现的失败照旧判红。 |
+| 同一条真壳/托盘用例时而红、时而绿（x64 与 arm64 轮换命中） | 无头 runner 上真壳启动抖动（负载型 flake） | gate 对意外失败做**文件级**隔离复跑：确认通过记 flake 并打印名单，确认失败照旧判红；判红时回显该用例的 TAP 断言与堆栈。 |
+| 本机 `git push` 到 github.com 不通（`Empty reply` / HTTP2 framing / 超时） | 本机网络对 github.com 的 smart-HTTP 隧道不稳，`api.github.com` 直连正常 | 用 Git Data API 重放提交（blob → tree → commit → PATCH ref）；判据以远端 `main` 为准，本地 sha 因时区写法不同而不等、tree 逐字相同。取日志/资产同样走 REST。 |
+
+**排障顺序建议**：先看 `gate.mjs` / `smoke.mjs` 的 PASS/FAIL 逐项输出 → 冒烟红且症状是「ready 正常但 401 等不到」时，直接看 `<root>/.orch/daemon-spawn.log` 与探针流里的 `daemon-spawn` / `daemon-exit` 事件，不要先怀疑核心逻辑。
