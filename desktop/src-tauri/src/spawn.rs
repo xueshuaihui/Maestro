@@ -25,6 +25,7 @@ pub fn resource_dir(app: &tauri::AppHandle) -> Option<PathBuf> {
 /// The interpreter path is absolute inside the package; the user's search
 /// path is never consulted (AC-29 architectural rule).
 /// Returns the child pid (0 when the bundle is incomplete).
+#[allow(unused_mut)] // Windows 分支要拿 `child` 做 try_wait / take(stderr)，Unix 不需要
 pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
     let Some(resources) = resource_dir(app) else { return 0 };
     // The bundled interpreter is `node` on Unix and `node.exe` on Windows; the
@@ -38,17 +39,43 @@ pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
         eprintln!("maestro-shell: bundled runtime incomplete (node/entry missing)");
         return 0;
     }
-    let child = Command::new(&node)
+    let mut command = Command::new(&node);
+    command
         .arg(&entry)
         .arg("--project")
         .arg(root)
         .arg("--desktop")
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn();
-    match child {
-        Ok(child) => {
+        .stdout(Stdio::null());
+    // Windows: 子进程 cwd 显式设成项目根，并把 stderr 收进 `.orch/daemon-spawn.log`。
+    // 为什么（真实 CI 实测，run 43716408317）：打包后的 Windows 版壳能拿到 pid，
+    // 但子进程什么也没落盘；而用同一份包内运行时**直接**起 daemon 却能正常
+    // 监听命名管道并写出 desktop.json —— 说明差异在「壳怎么起」这一侧，
+    // 而壳把 stderr 接到 null 导致无从归因。Unix 分支逐字不变（AC 红线）。
+    #[cfg(windows)]
+    {
+        command.current_dir(root);
+        command.stderr(Stdio::piped());
+    }
+    #[cfg(not(windows))]
+    {
+        command.stderr(Stdio::null());
+    }
+    match command.spawn() {
+        Ok(mut child) => {
             let pid = child.id();
+            #[cfg(windows)]
+            {
+                capture_stderr(child.stderr.take(), root);
+                // 启动即退出说明子进程没能跑起来（缺 DLL / 参数被拒 / 解释器拒绝执行），
+                // 把退出码写进探针流，CI 日志里就能直接看到病因。
+                std::thread::sleep(Duration::from_millis(700));
+                if let Ok(Some(status)) = child.try_wait() {
+                    crate::probe::event(
+                        "daemon-exit",
+                        json!({ "pid": pid, "code": status.code().unwrap_or(-1) }),
+                    );
+                }
+            }
             *app.state::<ShellState>().daemon.lock().unwrap() = Some(child);
             pid
         }
@@ -57,6 +84,29 @@ pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
             0
         }
     }
+}
+
+/// Drain the daemon's stderr into `<root>/.orch/daemon-spawn.log`（Windows only）。
+///
+/// 子进程正常时这个文件是空的（daemon 自己只写 `core.log`）；非空即等于拿到了
+/// 「解释器为什么拒绝启动这段脚本」的第一手证据。
+#[cfg(windows)]
+fn capture_stderr(stderr: Option<std::process::ChildStderr>, root: &Path) {
+    let Some(mut stderr) = stderr else { return };
+    let dir = root.join(".orch");
+    let _ = std::fs::create_dir_all(&dir);
+    let log = dir.join("daemon-spawn.log");
+    std::thread::spawn(move || {
+        use std::io::Read;
+        let mut buf = Vec::new();
+        let _ = stderr.read_to_end(&mut buf);
+        if buf.is_empty() {
+            return;
+        }
+        // 按字节截断再转字符串（按 char 截断会切到 UTF-8 中间字节而 panic）。
+        let text = String::from_utf8_lossy(&buf[..buf.len().min(16 * 1024)]).to_string();
+        let _ = std::fs::write(&log, text);
+    });
 }
 
 // ---------------------------------------------------------------- pipe client

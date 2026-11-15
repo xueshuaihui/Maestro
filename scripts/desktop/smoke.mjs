@@ -135,7 +135,7 @@ async function diagnoseDaemon(shellPath, root) {
   } catch {
     process.stdout.write(`[smoke] 诊断：直起后 ${orchDir} 仍不存在（core 进程根本没跑到 ensureLayout）\n`);
   }
-  for (const name of ['core.log', 'desktop.json']) {
+  for (const name of ['daemon-spawn.log', 'core.log', 'desktop.json']) {
     const file = path.join(orchDir, name);
     if (!fs.existsSync(file)) continue;
     const text = fs.readFileSync(file, 'utf8');
@@ -189,6 +189,10 @@ async function smokeApp(shellPath, root) {
 
     // 2. 无凭据 → 401
     const metaPath = path.join(root, '.orch', 'desktop.json');
+    const daemonExit = readProbeEvents(probe).find((e) => e.event === 'daemon-exit');
+    if (daemonExit) {
+      process.stdout.write(`[smoke] 壳记录到 daemon 启动即退出：pid=${daemonExit.pid} code=${daemonExit.code}\n`);
+    }
     try {
       await waitFor(() => fs.existsSync(metaPath), 10_000, 'desktop.json 出现');
       const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
