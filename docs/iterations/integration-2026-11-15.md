@@ -50,7 +50,8 @@
 
 ## 5. 处置声明
 
-- 本地 `main` 合入后推送 `origin/main`；功能分支 `feat/i1.8-instance-recovery` **保留不删除**，并快进同步到合入后的 main，避免后续 S2 批次继续基于落后 72 提交的旧基线。
+- 本地 `main` 合入后推送 `origin/main`；功能分支先快进同步到合入后的 main（`958db6f`），
+  随后按用户指令删除本地与远端分支（见 §7）。后续 S2 批次须从最新 main 重新开分支。
 - 基线隔离 worktree 用后已 `git worktree remove --force` + `prune` 清理；测试写入的 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 测量值已恢复 HEAD，未进提交。
 - 未创建集成分支、未改写任何迭代的 `report.md` / 验收证据。
 
@@ -60,4 +61,27 @@
 （I1.10a S3：Windows 子进程路径规范化，**仅 `desktop/src-tauri/src/spawn.rs`**，与 I1.8 零交集）。
 主控重新 `git fetch` 后以 `ort` 策略生成同步 merge `49a8c6d` 并推送成功，
 故主线最终存在两个 merge 节点：`c1915c3`（I1.8 功能合入）与 `49a8c6d`（并行提交同步），
-两者都未改写 I1.8 的合入内容。功能分支随后快进同步到最终 main，保留不删除。
+两者都未改写 I1.8 的合入内容。功能分支随后快进同步到最终 main（`958db6f`），并按用户指令删除（见 §7）。
+
+## 7. 功能分支删除（补记）
+
+用户指令「删除原功能分支」，目标 `feat/i1.8-instance-recovery`。
+
+**删除前校验**：`HEAD`、`main`、该分支三者同指 `958db6f`；`git branch --merged main` 包含该分支、
+`git branch --no-merged main` 为空 → 分支无独有提交，删除不丢失任何内容；工作区干净；
+远端 ref 经 REST `GET /git/refs/heads/feat/i1.8-instance-recovery` 确认亦为 `958db6f`。
+
+**执行**：
+1. `git push origin --delete feat/i1.8-instance-recovery` 被代理隧道阻断
+   （`CONNECT tunnel failed, response 502` / `schannel: server closed abruptly`），未产生任何删除。
+2. 改用已验证的备用通道：`git credential fill` 取 PAT，
+   `curl --noproxy '*' -X DELETE https://api.github.com/repos/xueshuaihui/Maestro/git/refs/heads/feat/i1.8-instance-recovery`
+   → **HTTP 204**。
+3. 删除后紧接的单 ref GET 一度返回 200（缓存/时序假象）；改用无缓存
+   `GET /repos/xueshuaihui/Maestro/git/refs/heads` 列全量复核，**仅剩 `refs/heads/main`**，确认删除生效。
+4. 本地 `git branch -d feat/i1.8-instance-recovery`（安全删除，已合并）+
+   `git branch -dr origin/feat/i1.8-instance-recovery` 清理远端跟踪引用。
+
+**最终状态**：本地分支只剩 `main`，远端分支只剩 `main`，`main...origin/main` 一致、工作区干净。
+I1.8 的 S0/S1/S2 第 1 批内容已全部保留在 main 历史中（`c1915c3` 及其祖先），
+后续 S2 剩余 4 批与 S3/S4 **须从最新 main 重新开分支**，不再存在可继续沿用的旧功能分支。

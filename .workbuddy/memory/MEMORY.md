@@ -111,7 +111,10 @@
 ## I1.8 S2 第 1 批已合入 main（2026-11-15）
 - `feat/i1.8-instance-recovery`（S0/S1/S2 第 1 批 4 提交）以 `--no-ff` 合入，merge `c1915c3`
   （父 `5246f3b` 合入时 origin/main + `2a74368`）；零冲突（merge-tree 试算 `4935ead` 与合并树一致）。
-  功能分支**保留不删除**并 ff 同步；留痕 `docs/iterations/integration-2026-11-15.md`。
+  功能分支先 ff 同步到 `958db6f`，随后**按用户指令删除本地 + 远端分支**（远端只剩 `main`）；
+  留痕 `docs/iterations/integration-2026-11-15.md` §7。**后续 I1.8 批次从最新 main 重新开分支**。
+  `git push origin --delete` 通道 502 时走 `api.github.com` REST DELETE（204），
+  删后 GET 可能短暂返回 200 缓存，须用 `GET /git/refs/heads` 列全量复核。
 - **主线不再是 `3f35bfa`**：期间前进 71 提交，含 I1.7 代码隔离 worktree、I1.9 追踪/CLI、
   I1.10a 桌面 UI + CI release（1040 文件 / +12.5 万行）。后续 I1.8 批次必须基于最新 main，
   需求 v3「I1.7 合入后 67 AC 全部重跑」已生效。
