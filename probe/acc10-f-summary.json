@@ -1,31 +1,32 @@
 {
   "iteration": "I1.10a",
   "phase": "S3",
-  "generatedAt": "2026-11-14T05:05:26.279Z",
-  "head": "7949e8a",
-  "total": 37,
+  "generatedAt": "2026-11-15T14:06:06.403Z",
+  "head": "3e20925",
+  "total": 44,
   "counts": {
-    "通过": 37,
+    "通过": 44,
     "不通过": 0,
     "阻塞": 0
   },
   "levels": {
     "mock 实测": 36,
-    "mock 实测（结构断言）": 1
+    "mock 实测（结构断言）": 1,
+    "已实测（真实 GitHub 面）": 7
   },
-  "checksTotal": 282,
-  "checksPass": 282,
+  "checksTotal": 349,
+  "checksPass": 349,
   "checksInfo": 0,
   "checksFail": 0,
-  "thenTotal": 40,
-  "evidenceDirs": 37,
-  "evidenceFiles": 353,
+  "thenTotal": 56,
+  "evidenceDirs": 44,
+  "evidenceFiles": 425,
   "evidenceBelow4": [],
   "skips": [],
   "retries": [],
   "gate": {
-    "tests": 1370,
-    "pass": 1365,
+    "tests": 1425,
+    "pass": 1420,
     "fail": 4,
     "skipped": 1,
     "diff": [],
@@ -1856,6 +1857,419 @@
       ],
       "skips": [],
       "notes": [],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-38",
+      "title": "推 tag 即发布：维护者不需要手工传包",
+      "verdict": "通过",
+      "level": "已实测（真实 GitHub 面）",
+      "face": "功能 / 发布主路径（v3 新增）",
+      "checksTotal": 13,
+      "checksPass": 13,
+      "thenCount": 4,
+      "evidenceCount": 12,
+      "startedAt": "2026-11-15T11:23:55.311Z",
+      "files": [
+        "release-contract.test.js"
+      ],
+      "unit": [
+        {
+          "file": "release-contract.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 18,
+            "pass": 18,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"secrets\\.\" .github/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"permissions:\" .github/workflows/release.yml",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 3,
+          "cmd": "grep -REn \"ghp_|github_pat_|password|token:\" .github/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 4,
+          "cmd": "grep -REn \"github[.]token\" .github/workflows/release.yml",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "证据分级：`已实测（真实 GitHub 面）` 需一次真实 tag 推送 + Actions 记录 + Release 存在；静态契约（release-contract.test.js）只能证明「定义里写了什么」，不得单独判本条通过。",
+        "零个人凭据的判定点：`.github/` 内 `secrets.` 零命中 + `permissions:` 只含 `contents: write`；令牌表达式为 `${{ github.token }}`。",
+        "真实面：推 `v0.0.1` tag → run `43720924036` 三平台 success → `--check publish` 返回 `draft=false`、id=446096645；草稿通道 dryrun-eff4e2f 只作对照，不据此判本条。取证后两个 Release 与 tag 均已删除（见 verify-absent.json）。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-39",
+      "title": "三平台安装包与校验和齐全且对得上",
+      "verdict": "通过",
+      "level": "已实测（真实 GitHub 面）",
+      "face": "功能 / 产物分发（v3 新增）",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-15T11:23:56.626Z",
+      "files": [
+        "release-contract.test.js"
+      ],
+      "unit": [
+        {
+          "file": "release-contract.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 18,
+            "pass": 18,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"lipo|-target universal-apple-darwin|universal2-apple-darwin\" .github/ scripts/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"macos-15-intel|macos-15|windows-latest\" .github/workflows/release.yml",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "静态契约由 release-contract.test.js 的 `judgeAssets` 单测承载（三平台 + 清单共 4 项、资产数恰为 4）；真实面由 `acc10-release-verify.mjs --check assets` 取远端资产名与字节数并本地重算 SHA-256。",
+        "禁止用仓内文件冒充远端资产（`docs/index.md` 710 行第 3 条）；缺任一平台即判不通过，不得用「另外两个平台已过」折抵。",
+        "真实面：`--check assets` 在 `v0.0.1` 上得 4 项（x64.dmg / arm64.dmg / win-x64-setup.exe / SHA256SUMS.txt），字节数直接取自 REST 响应体；`--dir` 下载后本地重算 SHA-256 与清单一致。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-40",
+      "title": "门禁与产物冒烟不过就不出包",
+      "verdict": "通过",
+      "level": "已实测（真实 GitHub 面）",
+      "face": "非功能 / 发布可靠性（v3 新增）",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-15T11:23:57.525Z",
+      "files": [
+        "release-contract.test.js"
+      ],
+      "unit": [
+        {
+          "file": "release-contract.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 18,
+            "pass": 18,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"skip-smoke|skip-gates\" .github/ scripts/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"gate[.]mjs\" .github/workflows/release.yml",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "失败判定点（需求 v4 F-24）：该次 run `conclusion=failure` 且同名 Release 资产数在 run 前后相等；构造不出真实红色 run 时本条判 `阻塞`，不得用静态断言替代真实失败帧。",
+        "真实面：失败构建 run `43717589144`（conclusion=failure）前后同名 Release 资产数 0 → 0；成功构建 run `43720924036` 才产出 4 项——「门禁在前、产物在后」由两次真实帧对比证明。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-41",
+      "title": "版本与通道：包内版本一致、预发布与正式版不串档",
+      "verdict": "通过",
+      "level": "已实测（真实 GitHub 面）",
+      "face": "功能 / 版本管理（v3 新增）",
+      "checksTotal": 11,
+      "checksPass": 11,
+      "thenCount": 4,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-15T11:23:58.362Z",
+      "files": [
+        "release-contract.test.js"
+      ],
+      "unit": [
+        {
+          "file": "release-contract.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 18,
+            "pass": 18,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"0[.]1[.]0\" scripts/desktop/",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"assertAligned|readVersion\" scripts/desktop/version.mjs",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "静态契约三条（来源唯一 / 值相等 / 派生物零字面量）由 release-version.test.js 承载；真实面由 `--check channel` 断言 `v0.* → prerelease`、`v1+ → 正式`。",
+        "真实面：`--check channel v0.0.1` → 期望 `prerelease=true`、实际 `true`，v0.* 走预发布档已实证；四处版本一致由 CI 的「版本对齐校验」步骤在真实 runner 上复核。",
+        "口径披露：`v1+ → 正式` 分支未在真实 tag 上跑过（需把产品版本改成 1.0.0，超出本迭代范围），由静态契约的 else 支路断言承载，不冒充已实测。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-42",
+      "title": "试跑不污染正式发布",
+      "verdict": "通过",
+      "level": "已实测（真实 GitHub 面）",
+      "face": "功能 / 试运行通道（v3 新增）",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-15T11:23:59.182Z",
+      "files": [
+        "release-contract.test.js"
+      ],
+      "unit": [
+        {
+          "file": "release-contract.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 18,
+            "pass": 18,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"dryrun-\" .github/workflows/release.yml",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"[-][-]draft\" .github/workflows/release.yml",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "真实面：`workflow_dispatch` 一次 → 草稿 `draft=true` 且正式条目数不增；清理后必须 `--check absent` 计数归零，删除前后的 REST 响应双向落证（F-28）。",
+        "真实面收尾：取证后执行 3 次 DELETE（两个 Release + tag ref）全 204，再跑 `--check absent` 两个 tag 均返回计数 0；删除前的响应体与删除后的空集同处 verify-absent.json，构成 F-28 要求的双向证据。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-43",
+      "title": "失败重跑与重复 tag 不产生重复 Release",
+      "verdict": "通过",
+      "level": "已实测（真实 GitHub 面）",
+      "face": "非功能 / 幂等与可恢复（v3 新增）",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "thenCount": 1,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-15T11:24:00.017Z",
+      "files": [
+        "release-contract.test.js"
+      ],
+      "unit": [
+        {
+          "file": "release-contract.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 18,
+            "pass": 18,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"gh release view|[-][-]clobber\" .github/workflows/release.yml",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"fail-fast:[[:space:]]*false\" .github/workflows/release.yml",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "真实面：同名 Release 计数为 1 且资产齐全；静态契约断言「已存在则补传 / 否则创建」与 `--clobber` 覆盖式上传。",
+        "真实面：`--check idempotent v0.0.1` → 同名条目数 1、4 项资产齐全；草稿通道与正式通道并存期间未产生重复条目。",
+        "口径披露：未对同名 tag 做第二次推送；「重跑是补传而非新建」的实时帧取自 10 次 workflow_dispatch 重跑（始终只有 1 个 Release 条目），不冒充 tag 重推。"
+      ],
+      "failedChecks": []
+    },
+    {
+      "ac": "AC-44",
+      "title": "下载的包能装、能开，且与本机双击是同一个应用",
+      "verdict": "通过",
+      "level": "已实测（真实 GitHub 面）",
+      "face": "功能 / 开箱即用（v3 新增，与 AC-29 衔接）",
+      "checksTotal": 11,
+      "checksPass": 11,
+      "thenCount": 4,
+      "evidenceCount": 10,
+      "startedAt": "2026-11-15T11:24:00.847Z",
+      "files": [
+        "release-smoke.test.js"
+      ],
+      "unit": [
+        {
+          "file": "release-smoke.test.js",
+          "attempt": 1,
+          "attempts": 1,
+          "exit": 0,
+          "tap": {
+            "tests": 4,
+            "pass": 4,
+            "fail": 0,
+            "skipped": 0
+          },
+          "effectiveSource": "整文件 F-16",
+          "effectiveOk": true,
+          "scoped": null
+        }
+      ],
+      "arch": [
+        {
+          "index": 1,
+          "cmd": "grep -REn \"hdiutil.*verify|镜像内应用复验\" scripts/desktop/smoke.mjs",
+          "exit": 0,
+          "expect": 0,
+          "ok": true,
+          "informational": false
+        },
+        {
+          "index": 2,
+          "cmd": "grep -REn \"0[.]0[.]0[.]0|listen.*all\" scripts/desktop/smoke.mjs",
+          "exit": 1,
+          "expect": 1,
+          "ok": true,
+          "informational": false
+        }
+      ],
+      "skips": [],
+      "notes": [
+        "本机 macOS 面可实测（冒烟四件套已跑通）；Windows 面只能由 `windows-latest` 证明（本机无 `makensis`、无 `llvm-rc`），macOS 面通过不得替 Windows 面签字（需求 v4 F-20 连带项）。",
+        "真机安装/首启、Gatekeeper 放行、SmartScreen 引导属人工核验，不计入自动通过数。",
+        "真实面（CI 两面分别记账）：run `43718725345` macOS x64 冒烟 5/5（含 `hdiutil verify` 与挂载复验）、macOS arm64 success、Windows 冒烟 4/4（静默安装 / ready daemon 非 0 / 401 / 包内可执行存在）。"
+      ],
       "failedChecks": []
     }
   ]

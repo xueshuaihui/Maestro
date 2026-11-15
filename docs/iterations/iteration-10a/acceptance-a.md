@@ -1,20 +1,20 @@
 # I1.10a S3 验收 · A 组（AC-01 ~ AC-19）
 
-> 判据来源：`docs/iterations/iteration-10a/requirement.md` v2 §3.1 同号 AC 全文 + 附录 A-0~A-14 / D-1~D-14；
-> `docs/iterations/iteration-10a.md` r2 §4（F-16 机检模板）与 §5（交付物）；`decisions.md` 裁决 A~Y。
-> 取证脚手架：`probe/acc10-f-{lib,common,run,final,gen,gates}.mjs` + `probe/acc10-cases/`（逐字抽取，`--check` 37/37 一致）。
+> 判据来源：`docs/iterations/iteration-10a/requirement.md` v4 §3.1 同号 AC 全文 + 附录 A-0~A-14 / C / D-15；
+> `docs/iterations/iteration-10a.md` r3 §4（F-16 机检模板）与 §5（交付物）；`decisions.md` 裁决 A~AA。
+> 取证脚手架：`probe/acc10-f-{lib,common,run,final,gen,gates}.mjs` + `probe/acc10-cases/`（逐字抽取，`--check` 44/44 一致）。
 > 只做取证：未改动 `src/**`、`desktop/**`、`test/**`、`bin/**`、`package.json`。
 
 ## ① 环境与复跑
 
 | 项 | 值 |
 |---|---|
-| 仓库 HEAD | `7949e8a` |
+| 仓库 HEAD | `3e20925` |
 | 验收级别 | B 类（mock 宿主 + 真实 core / daemon + 真实 Tauri 壳；不接真实 DSH、不需模型凭据，需求 §3.3） |
 | 环境变量 | 全部命令 `NODE_ENV=test`；保留本机默认 `NODE_OPTIONS` 预加载（需求 §3.3 未要求剥离；剥离会触发 R-08 时序竞态），仅清 `ELECTRON_RUN_AS_NODE` |
 | 夹具根 | 每 AC 独立 `TMPDIR=/tmp/maestro-i10a-acc10/<AC>`，绝不进仓库 |
 | 证据根 | `docs/iterations/iteration-10a/evidence/<AC>/` |
-| 复跑 | `node probe/acc10-f-run.mjs AC-xx` / `--batch a|b|c|d`；`node probe/acc10-f-final.mjs` 重建本文件 |
+| 复跑 | `node probe/acc10-f-run.mjs AC-xx` / `--batch a|b|c|d|r`；`node probe/acc10-f-final.mjs` 重建本文件 |
 
 ## ② 逐 AC 判定表
 
@@ -572,6 +572,6 @@
 
 ## ④ 结论口径
 
-- **证据三档**：`mock 实测`（B 类：mock 宿主 + 真实 core/daemon）/ `mock 实测（结构断言）`（R-12 的 AC-22）/ `阻塞`。真实 DSH 取证属本机保留项，不在本迭代判定。
+- **证据四档**：`已实测（真实 GitHub 面）`（C 组 7 条：真实 Actions 构建 + 真实 Release + 只读 REST 判定，另见 ②.1）/ `mock 实测`（B 类：mock 宿主 + 真实 core/daemon）/ `mock 实测（结构断言）`（R-12 的 AC-22）/ `阻塞`。真实 DSH 取证属本机保留项，不在本迭代判定。
 - **逐字边界**：Then 不放宽、不合并、不改写；逐字断言由同名契约测试文件承载（拆分文档 §4），S3 以 F-16 机检 + 架构检查做独立复核。
 - **命令形态**：所有机检先 `test -f` 再单文件 `--test`，禁全量 glob 代替（文件缺失会假通过）。
