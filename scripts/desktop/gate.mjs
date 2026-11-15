@@ -123,6 +123,25 @@ function confirmFlakes(names) {
   return { flakes, real };
 }
 
+/**
+ * 把失败用例的 TAP 细节打到 stdout。
+ *
+ * 为什么：`spawnSync` 把子进程输出吞在内存里，CI 日志只剩一行汇总结论，
+ * 「哪条断言、实得什么」全丢——本轮 macOS x64 的 `bundle:` 失败就是这样变成
+ * 无法归因的红。这里在判红时把每条的断言消息与堆栈片段回显（限 30 行/条），
+ * 只影响日志可读性，不改判定。
+ */
+function dumpFailureDetail(output, names) {
+  const lines = output.split('\n');
+  for (const name of names) {
+    const at = lines.findIndex((line) => /^not ok \d+ - /.test(line) && line.includes(name));
+    if (at < 0) continue;
+    process.stdout.write(`[gate] ---- 失败详情：${name} ----\n`);
+    for (const line of lines.slice(at, at + 30)) process.stdout.write(`[gate] ${line}\n`);
+    process.stdout.write('[gate] ---- 详情结束 ----\n');
+  }
+}
+
 function main() {
   const skipTests = process.argv.includes('--skip-tests');
   // CI runner 上没有本机那类残留进程负载，且一次隔离复跑要重扫全量；
@@ -152,6 +171,7 @@ function main() {
         unexpectedReal = confirmed.real;
       }
     }
+    if (unexpectedReal.length) dumpFailureDetail(output, unexpectedReal);
     check('全量单测可运行并产出 TAP 摘要', tap.tests !== null, `tests=${tap.tests} pass=${tap.pass} fail=${tap.fail}`);
     check(
       '失败集合与判定基线差集为 0',

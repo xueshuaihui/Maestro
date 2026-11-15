@@ -87,6 +87,36 @@ SectionEnd
 `;
 }
 
+/**
+ * 定位 makensis。
+ *
+ * windows-latest 预装 NSIS，但**不在 PATH**（首轮 CI 实测：`makensis` 直接 spawn 失败，
+ * 安装目录是 `C:\Program Files (x86)\NSIS\makensis.exe`）。这里先试 PATH，
+ * 再按标准安装目录探测；全都找不到才算环境缺失。
+ */
+function resolveMakensis() {
+  const fromPath = spawnSync('makensis', ['/VERSION'], { encoding: 'utf8' });
+  if (fromPath.status === 0) return fromPath.stdout.trim() || 'makensis';
+
+  const roots = [
+    process.env['ProgramFiles(x86)'],
+    process.env.ProgramFiles,
+    process.env.ProgramW6432,
+    'C:\\Program Files (x86)',
+    'C:\\Program Files',
+  ].filter(Boolean);
+  const candidates = roots.flatMap((root) => [
+    path.join(root, 'NSIS', 'makensis.exe'),
+    path.join(root, 'NSIS', 'Bin', 'makensis.exe'),
+  ]);
+  for (const exe of candidates) {
+    if (!fs.existsSync(exe)) continue;
+    const probe = spawnSync(exe, ['/VERSION'], { encoding: 'utf8' });
+    if (probe.status === 0) return exe;
+  }
+  return null;
+}
+
 function main() {
   const argv = process.argv.slice(2);
   const skipBuild = argv.includes('--skip-build');
@@ -106,9 +136,12 @@ function main() {
   const exeName = artifactName(version, arch, 'win32');
   const exePath = path.join(outDir, exeName);
 
-  const makensis = spawnSync('makensis', ['/VERSION'], { encoding: 'utf8' });
-  if (makensis.status !== 0) {
-    die('未找到 makensis（NSIS）。Windows runner 自带，本机没有——这属于环境缺失，不是跳过理由。');
+  const makensis = resolveMakensis();
+  if (!makensis) {
+    die(
+      '未找到 makensis（NSIS）。windows-latest 预装但不在 PATH，本脚本会探测标准安装目录；' +
+        '仍找不到说明环境确实缺，属环境缺失，不是跳过理由（CI 里由工作流的安装步骤兜底）。',
+    );
   }
 
   if (!skipBuild) {
@@ -132,7 +165,7 @@ function main() {
   fs.mkdirSync(outDir, { recursive: true });
   const nsiPath = path.join(outDir, '.maestro-installer.nsi');
   fs.writeFileSync(nsiPath, nsiScript({ outFile: exePath, stagingDir: staging, version }), 'utf8');
-  run('makensis', ['/V2', nsiPath]);
+  run(makensis, ['/V2', nsiPath]);
   fs.rmSync(staging, { recursive: true, force: true });
   fs.rmSync(nsiPath, { force: true });
 

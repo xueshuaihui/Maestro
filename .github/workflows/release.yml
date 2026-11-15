@@ -85,6 +85,18 @@ jobs:
       - name: 版本对齐校验
         run: node -e "import('./scripts/desktop/version.mjs').then(m => { console.log('version-aligned', m.assertAligned()); })"
 
+      - name: 准备 NSIS（Windows 安装包工具）
+        if: matrix.platform == 'win32'
+        shell: pwsh
+        run: |
+          $candidates = @("${env:ProgramFiles(x86)}\NSIS\makensis.exe", "$env:ProgramFiles\NSIS\makensis.exe")
+          if ($candidates | Where-Object { Test-Path $_ }) {
+            Write-Host "NSIS 已预装：$($candidates | Where-Object { Test-Path $_ } | Select-Object -First 1)"
+            exit 0
+          }
+          Write-Host "未找到 NSIS，安装中…"
+          choco install nsis -y --no-progress
+
       - name: 生成安装包
         run: node scripts/desktop/${{ matrix.packager }} --skip-build
 
