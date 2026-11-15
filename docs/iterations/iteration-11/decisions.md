@@ -356,3 +356,9 @@
   4. **注册表枚举条件**：有 ≥1 可读实例时补注册表「未参与」行；完全无实例时 `rows` 为空（A-6 现场一「角色占用 无」）。
   5. WP-4 测试同步补：AC-26 三行 hosts 断言（`['mock']`）与未参与行（`[]`）；AC-28 不受影响。
 - **影响面**：`src/daemon/occupancy.js`、`test/wp14/occupancy.test.js`、拆分文档 §2.5、WP-7 挂接、WP-8 渲染（宿主列）。
+
+## D-49 · 内置工作流画布回退：项目文件缺失且 id 命中内置图时按内置定义投影
+
+- **触发点**：WP-5 回执 ⑥.1：AC-29 的 `release-flow` 是项目夹具，仓库内置图只有 `single` / `code-loop` / `task-loop`；若「文件不存在 → 定义 空」一刀切，工作流库内置行的「查看画布」必然空转。
+- **决定**：`buildCanvas` 在项目文件缺失且 id 命中内置图时，按 `projectBuiltinWorkflows` 的只读定义投影出画布（`readable=true`）；未命中内置才是「定义 空」（AC-31 现场二不冲突——现场二语境是项目工作流）。复测边 `retest` 保留原词不归一（既有 `EDGE_KINDS`）；未知 `node_type` 按角色节点渲染并保留定义 id（与 graph.js 同口径）。`nodes:[]` / 0 字节叠加 `valid=false` 按 CLI 逐字口径（B-1 正交明文允许）。
+- **影响面**：`src/daemon/canvas.js`（已实现）、WP-7 挂接、WP-8 渲染分支。
