@@ -5,3 +5,7 @@
 # 一部分（例如 Actions 每行都以 `<时间戳>Z ` 结尾）；改写它们等于篡改证据。
 # 因此对证据目录下的 .log 关闭空白检查，其余文本仍按默认规则检查。
 docs/iterations/**/evidence/**/*.log -whitespace
+
+# 回归报告里有逐字摘录的 CLI 输出行（形如 `会话 执行中 · `，行尾分隔符后有空格），
+# 空格本身是被记录的差异之一；剥掉就等于把证据改成「看起来更整齐」的版本。
+docs/iterations/regression-2026-11-09.md -whitespace
