@@ -10,6 +10,53 @@
 
 import { setTimeout as delay } from 'node:timers/promises';
 
+// Capability negotiation is derived only from the initialize advertisement.
+// The two flags follow the frozen formula (D-4 / freeze point 3); no host
+// identifier is ever consulted when picking a recovery dialect.
+function unwrapInitialize(initialize) {
+  let node = initialize;
+  if (node && typeof node === 'object' && node.result && typeof node.result === 'object') {
+    node = node.result;
+  }
+  if (node && typeof node === 'object' && node.raw && typeof node.raw === 'object') {
+    node = node.raw;
+  }
+  return node && typeof node === 'object' ? node : {};
+}
+
+export function normalizeCapabilities(initialize) {
+  const init = unwrapInitialize(initialize);
+  if (typeof init.canResume === 'boolean' && typeof init.canLoad === 'boolean') {
+    return {
+      canResume: init.canResume,
+      canLoad: init.canLoad,
+      sessionCapabilities: init.sessionCapabilities ?? {},
+    };
+  }
+  const sessionCapabilities = init.agentCapabilities?.sessionCapabilities
+    ?? init.sessionCapabilities
+    ?? init;
+  const canResume = Boolean(sessionCapabilities.resume);
+  const canLoad = Boolean(sessionCapabilities.load || init.loadSession === true);
+  return { canResume, canLoad, sessionCapabilities };
+}
+
+export function canResume(initialize) {
+  return normalizeCapabilities(initialize).canResume;
+}
+
+export function canLoad(initialize) {
+  return normalizeCapabilities(initialize).canLoad;
+}
+
+function failureReason(res) {
+  const code = res?.error?.code;
+  if (code === 'REQUEST_TIMEOUT') return 'timeout';
+  if (code === 'DSH_SPAWN_FAILED' || code === 'CLIENT_DISPOSED') return 'transport_error';
+  if (typeof code === 'number') return 'host_error';
+  return code == null ? 'error' : String(code);
+}
+
 const DEFAULT_LIMITS = {
   requestTimeoutMs: 120_000,
   initializeTimeoutMs: 60_000,
@@ -104,6 +151,7 @@ export function createAcpClient({ transport, limits = {}, clock = () => Date.now
   let agentInfo = null;
   let lastError = null;
   let disposed = null;
+  let lastInitializeResult = null;
 
   function emit(set, payload) {
     for (const cb of [...set]) {
@@ -269,6 +317,7 @@ export function createAcpClient({ transport, limits = {}, clock = () => Date.now
       return res;
     }
     const result = res.result ?? {};
+    lastInitializeResult = result;
     // 真实 DSH 把 sessionCapabilities 放在 agentCapabilities 内（dsh-probe.md §3）；
     // 这里归一化到顶层，同时保留宿主原始 result 供复核。
     capabilities = result.agentCapabilities?.sessionCapabilities ?? result.sessionCapabilities ?? {};
@@ -311,20 +360,102 @@ export function createAcpClient({ transport, limits = {}, clock = () => Date.now
     };
   }
 
-  async function resumeOrCreate({ cwd, sessionId } = {}) {
-    // I1.1 只实现 new 分支：每节点新会话（fresh），会话恢复留给 I1.8。
-    const created = await newSession({ cwd });
-    if (!created.ok) return created;
-    return {
-      ok: true,
-      result: {
-        id: created.result.sessionId,
-        cwd,
-        restored: false,
-        requestedSessionId: sessionId ?? null,
-        configOptions: created.result.configOptions,
-      },
-    };
+  // Recovery verbs are thin wrappers over the ACP request methods. A quiet
+  // window consumes the trailing frames a server may push after a session is
+  // attached, notably the replay frames produced by a load.
+  async function resumeSession(sessionId, { cwd, mcpServers = [] } = {}) {
+    const res = await request(
+      'session/resume',
+      { sessionId, cwd, mcpServers: Array.isArray(mcpServers) ? mcpServers : [] },
+      cfg.requestTimeoutMs,
+    );
+    if (!res.ok) {
+      lastError = res.error;
+      return res;
+    }
+    await quietWindow();
+    return { ok: true, result: { sessionId, raw: res.result } };
+  }
+
+  async function loadSession(sessionId, { cwd, mcpServers = [] } = {}) {
+    const res = await request(
+      'session/load',
+      { sessionId, cwd, mcpServers: Array.isArray(mcpServers) ? mcpServers : [] },
+      cfg.requestTimeoutMs,
+    );
+    if (!res.ok) {
+      lastError = res.error;
+      return res;
+    }
+    await quietWindow();
+    return { ok: true, result: { sessionId, raw: res.result } };
+  }
+
+  // Fixed rollback chain resume -> load -> new. Capability flags decide which
+  // verbs are advertised; the order and the new fallback are never chosen by a
+  // host identifier. Each failed step contributes a serializable detail
+  // {from, to, reason} so the caller can land a recovery.dialect event.
+  async function resumeOrCreate({
+    cwd,
+    sessionId,
+    policy = 'fresh',
+    capabilities: capsInput,
+    currentPrompt,
+  } = {}) {
+    const attempts = [];
+    const caps = normalizeCapabilities(capsInput ?? lastInitializeResult);
+
+    async function createNew(reprompt) {
+      const created = await newSession({ cwd });
+      if (!created.ok) {
+        attempts.push({
+          dialect: 'new',
+          ok: false,
+          reason: failureReason(created),
+          error: created.error,
+        });
+        return null;
+      }
+      attempts.push({ dialect: 'new', ok: true });
+      // A fresh session only replays the current round once (C-09); completed
+      // history is never re-delivered.
+      if (reprompt && currentPrompt !== undefined && currentPrompt !== null) {
+        await prompt(created.result.sessionId, currentPrompt);
+      }
+      return { restored: false, dialect: 'new', attempts };
+    }
+
+    if (policy !== 'reuse') {
+      const created = await createNew(false);
+      return created ?? { ok: false, code: 'SESSION_RESTORE_FAILED', attempts };
+    }
+
+    const stations = [];
+    if (caps.canResume) stations.push('resume');
+    if (caps.canLoad) stations.push('load');
+
+    for (let i = 0; i < stations.length; i += 1) {
+      const from = stations[i];
+      const res = from === 'resume'
+        ? await resumeSession(sessionId, { cwd })
+        : await loadSession(sessionId, { cwd });
+      if (res.ok) {
+        attempts.push({ dialect: from, ok: true });
+        return { restored: true, dialect: from, attempts };
+      }
+      const reason = failureReason(res);
+      const to = stations[i + 1] ?? 'new';
+      attempts.push({
+        dialect: from,
+        ok: false,
+        reason,
+        error: res.error,
+        detail: { from, to, reason },
+      });
+    }
+
+    const created = await createNew(true);
+    return created ?? { ok: false, code: 'SESSION_RESTORE_FAILED', attempts };
   }
 
   async function prompt(sessionId, blocks) {
@@ -424,6 +555,11 @@ export function createAcpClient({ transport, limits = {}, clock = () => Date.now
   return {
     initialize,
     newSession,
+    normalizeCapabilities,
+    canResume,
+    canLoad,
+    resumeSession,
+    loadSession,
     resumeOrCreate,
     prompt,
     cancel,
