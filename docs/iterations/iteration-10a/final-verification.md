@@ -3,6 +3,9 @@
 > 生成时刻 2026-11-14T05:05:26.348Z · HEAD `7949e8a` · 由 `node probe/acc10-f-final.mjs` 重建（只读汇总，不改产品代码）。
 > 判据：`docs/index.md` 迭代基线、`docs/iterations/iteration-10a/requirement.md` v2 §0/§3、`docs/iterations/iteration-10a.md` r2 §0/§5、`decisions.md` 裁决 A~Z。
 
+> ⚠️ **适用范围声明（2026-11-15，裁决 AA）**：本终验基于需求 **v2（AC-01~37）**。需求已修订为 **v3**，新增 BR-33~BR-39 / AC-38~AC-44 / NF-8~NF-10（GitHub CI 构建与 Release）。**本文件的 PASS 结论只对 AC-01~37 有效，不得再作为「全迭代 PASS」引用**；AC-38~44 待 S0 评审 → S1 拆分（新增 WP）→ S2 实现 → S3 逐条取证 → S4 重做终验。详见 `decisions.md` 裁决 AA、`requirement.md` 附录 C / D-15。
+> v2 的 37 份逐 AC 证据、353 份原始帧与 `probe/acc10-f-*` 脚手架**全部保留且可复跑，不是作废**，只是覆盖范围收窄。
+
 ## 0. 终验结论
 
 **PASS** — S0 需求 v2、S1 拆分 r2、S2 六批实现与逐批独立评审、S3 逐 AC-01~37 取证均已完成；

@@ -255,3 +255,22 @@
 - **决定 6（R-13 处置）**：`bundleFreshness()` 与 `regression.test.js` 两侧 skip 判据保持一致、不为对齐削弱任一侧；S3 脚手架统一按「skip 必须写明需 `env -u NODE_OPTIONS npm run desktop:build` 重建产物」执行，并在产物时效门禁里核 `Contents/Resources/desktop/ui/index.html` 与裁决 R 静态面标记。
 - **门禁口径**：全量 `env -u NODE_OPTIONS NODE_ENV=test node --test --test-concurrency=1 "test/**/*.test.js"` → **1370 tests / 1365 pass / 4 fail / 1 skip**，失败集合 ⊆ 判定基线 9 条、差集 0；静态门禁 11/11（31 词两轮、零依赖、CJK 零命中、AC 37、USAGE_LINES 25、无宿主分支、产物时效、提交卫生）。逐 AC 结论与证据统计由 `probe/acc10-f-final.mjs` 重建到 `summary.json` / `report.md` / `final-verification.md`，可漂移数字不在本裁决复制。
 - **结论**：S3 收口，**可进 S4 终验收口与台账更新**。
+
+## 裁决 AA（2026-11-15，主控）｜需求 v3 修订：补入 GitHub CI 构建与 Release
+
+- **触发点**：主控提问「I1.10a 需求里桌面应用壳这一项，PRD 有没有要求在 GitHub 上构建应用？没有就先补需求」。核查发现答案不只是「漏写」，而是**有明确排除条款**。
+- **依据（逐条实核，均为 v2 快照）**：
+  1. `iteration-10a/requirement.md` 的 37 条 AC / 32 条 BR 对 `GitHub / CI / release / tag / workflow / 分发` **零命中**；
+  2. §3.3（764–766 行）只规定**本机** `npm run desktop:build` 与固定本机产物路径，原话「没有 DSH 的机器只要有 Node 22 与这套构建链，就能完成全部 AC」；
+  3. **附录 D-14 末段（1249 行）明确排除**：「本迭代不要求验证分发签名 / Gatekeeper / CSP 等分发细节……**不回写本需求**」；
+  4. `docs/index.md` 713 行把「桌面壳 CI 构建」列为**本机保留项**，是任务归属说明，不是需求、无 AC、无验收判据；
+  5. 远端实测：`releases=0`、`tags=0`、`actions/workflows total_count=0`、`/contents/.github` 404（本机 PAT + `api.github.com` 直连）。
+  → 故 37/37 AC 全 PASS 与「GitHub 上零发布配置」并不矛盾，属需求范围而非实现缺陷。
+- **主控选择**：落点 = **修订 I1.10a 需求为 v3**（不新建独立文档、不追加到基线末尾）；范围 = **参考本机 `agent-task-board` 的构建进行实现**。
+- **决定**：
+  1. `requirement.md` 升 v3，新增 §1.2 目标 7 / §1.3 范围内「发版与安装包」+ 4 条范围外 / §2.15 BR-33~39 / §2.16 / §3.1 AC-38~44 / §3.2 NF-8~10 / §3.3 发布面验收口径 / 附录 B U-13~U-17 / 附录 C v3 记录 / D-12 条数 44·39·10 / D-14 末段按 U-15 改写 / **新增 D-15 发布流水线契约**；
+  2. 参照对象 `xueshuaihui/agent-task-board` 的链路**已实测跑通**（18 个 Release，x64/arm64 dmg + win-x64 NSIS + SHA256SUMS），契约要点收进 D-15，但**明确「仅供编码参考，不进入验收判定」**；AC 一律按用户视角写，不照抄实现形态；
+  3. `docs/index.md` 698 / 713 两行做**同行替换**（不插入新行），避免行号漂移打断所有定稿需求对基线的精确行号引用；713 行同步更正「CI 构建属本机保留项」与「本机无 Rust 只能 CI 构建」两处过时口径；
+  4. **v2 终验的效力收窄**：`final-verification.md` 的 PASS 只对 AC-01~37 有效，v2 的 37 目录 / 353 份证据与 `probe/acc10-f-*` 脚手架**全部保留可复跑、不作废**；AC-38~44 须重新走 S0 评审 → S1 拆分（新增 WP）→ S2 实现 → S3 逐条取证 → S4 重做终验。终验文档与其生成模板 `probe/acc10-f-final.mjs` 同步加「适用范围声明」，防止重建时丢失。
+- **影响面 / 红线**：AC-01~37 的判据、附录 A 逐字基线、三主链逐字断言、BR-22 零依赖红线**一字未改**；v3 新增 AC 的静态契约机检可本机跑，真实 GitHub 面取证按 §3.3 分级留证，**不得以静态文件存在冒充真实发布成功**，也不得把真机安装/Gatekeeper 放行的人工核验冒充自动通过。新增发布面真实取证属**发布通道依赖**，与 DSH 的 AI 宿主依赖是两类，不改变本迭代 B 类判定（`docs/index.md` 675 行）。
+- **未做（本轮范围外）**：S0 独立评审、S1 任务拆分、`.github/workflows/release.yml` 实现、测试 tag 与 Release 实际创建、`iteration-10a.md` 拆分文档的新增 WP。需求补充先行，实现按流程下一步推进。
