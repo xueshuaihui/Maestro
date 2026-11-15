@@ -53,3 +53,11 @@
 - 本地 `main` 合入后推送 `origin/main`；功能分支 `feat/i1.8-instance-recovery` **保留不删除**，并快进同步到合入后的 main，避免后续 S2 批次继续基于落后 72 提交的旧基线。
 - 基线隔离 worktree 用后已 `git worktree remove --force` + `prune` 清理；测试写入的 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 测量值已恢复 HEAD，未进提交。
 - 未创建集成分支、未改写任何迭代的 `report.md` / 验收证据。
+
+## 6. 推送期并行同步（补记）
+
+首次 `git push origin main` 被 `non-fast-forward` 拒绝：另一位同学并行推送了 `eff4e2f`
+（I1.10a S3：Windows 子进程路径规范化，**仅 `desktop/src-tauri/src/spawn.rs`**，与 I1.8 零交集）。
+主控重新 `git fetch` 后以 `ort` 策略生成同步 merge `49a8c6d` 并推送成功，
+故主线最终存在两个 merge 节点：`c1915c3`（I1.8 功能合入）与 `49a8c6d`（并行提交同步），
+两者都未改写 I1.8 的合入内容。功能分支随后快进同步到最终 main，保留不删除。
