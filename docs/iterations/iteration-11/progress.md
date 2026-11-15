@@ -54,3 +54,9 @@
 - **WP-2 队列域**（325f6bd）：queue.js 339 行 + 测试 16 条全绿。五动作全走既有 RPC（escalation.resolve / approval.resolve / instance.cancel）；totals 零重算（D-36）；错误映射带 hint + reasonCode；夹具口径 D-45。
 - **批次 A 门禁**：全量 1473 / 1468 pass / 4 fail（AC-04 + core.stop + main --cwd + task-loop 审核提示词）全部落在判定基线，差集 0；tests >= 1425 ✓；purity 31 词 exit 0；deps 0。
 
+
+## S2 批次 B 开工（2026-11-16）
+
+- 派出 WP-3（资产库投影 assets-view.js）与 WP-4（全局角色占用 occupancy.js）两个并行 Agent。
+- 任务书红线：D-40 禁 pulse 造占用；D-4 资产接口零写入；校验失败原因与 CLI 逐字一致（复用注册表校验输出）。
+- 全量门禁下限升至 tests >= 1473（批次 A 合入 48 条用例后）。
