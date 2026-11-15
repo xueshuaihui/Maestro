@@ -1,0 +1,7 @@
+# 原始取证帧逐字保留
+#
+# `git show --check` 会按 whitespace 规则检查提交 diff 的空白问题。验收证据里的
+# `.log` 是从 GitHub Actions / 终端原样导出的原始帧，行尾空格与 BOM 本身就是事实的
+# 一部分（例如 Actions 每行都以 `<时间戳>Z ` 结尾）；改写它们等于篡改证据。
+# 因此对证据目录下的 .log 关闭空白检查，其余文本仍按默认规则检查。
+docs/iterations/**/evidence/**/*.log -whitespace
