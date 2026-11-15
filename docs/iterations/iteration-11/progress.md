@@ -42,3 +42,8 @@
 | S0 | S0 Gate 13 条 DoR 全绿；D-44 裁决（条数下限归 test/wp14，不改 gate.mjs） | 主控 | **通过** | `decisions.md`（D-01~D-44） |
 | S1 | 拆分 `iteration-11.md`（8 节骨架 / 10 个 WP / 28 文件零重叠 / AC→WP 满覆盖映射 / 六批次 DAG） | 主控 | §1.5 自检全绿 | `docs/iterations/iteration-11.md` |
 
+
+## S2 批次 A 开工（2026-11-16）
+
+- 派出 WP-1（通知域：notify.js + prefs.js）与 WP-2（队列域：queue.js）两个并行 Agent，六段式任务书，门禁四件套（全量差集 0 + tests>=1425、purity 31 词、零依赖、自带契约测试）。
+- 契约先冻结点：`iteration-11.md` §2.1~§2.3 签名；决策入口实锚 `orchestrator.resolveEscalation`（orchestrator.js:5022）。
