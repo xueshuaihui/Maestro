@@ -79,7 +79,6 @@
   6. 串行连跑夹具场景 >10 个会累计资源耗尽（`session/new` 全失败），分批跑。
   7. 脚本化测试工厂禁止在 `prompt()` 里同步触发首个 update 帧。
 
-
 ## 阶段一 I1.3 验收结论（2026-11-06 收口）
 - **45 条 AC 全通过 / 651 条核对项 / 284 份证据**；真实面 1 条（AC-40）+ 夹具面 44 条。
   产物 `iteration-3/{report,acceptance-fixture,acceptance-product}.md` + `probe/acc3-*`。
@@ -123,3 +122,19 @@
   `test/wp13/` 现为桌面 UI 用例集（36 文件），I1.8 的 checkpoint/dialect 用例同目录共存。
 - `origin/main` 可能被并行推送（本次门禁期间新增 `5246f3b`）：合入前重新 `git fetch`；
   未推送的本地 merge 可 `git reset --hard <最新 origin/main>` 后重建干净的单 merge 节点。
+
+## 阶段一 I1.9 已收口（2026-11-12：27/27 AC、0 不通过、0 阻塞、1157 测试，终验 PASS）
+
+需求 v7（27 AC / 25 BR / 附录 A0-A14）；9 WP 六批；HEAD `1959935`。产物 `docs/iterations/iteration-9/{report,final-verification,acceptance-a,acceptance-b,summary.json,results.jsonl,evidence/acc9}`（27 目录 / 255 文件）。
+- **I1.10+ 必守的新增约束**：
+  1. **健康度只在 `getStatus` 读取时算**；`saveState` 只透传 `state.health`（不读盘、不自算）。在 `saveState` 里 `await readTraces + computeHealth` 会让 `task-loop` 的 `会话 已升级` 从 91% 掉到 9%（D-17，真实回归）。
+  2. **追踪号落 `state.traceId`**（`newState` 生成，D-19 覆盖 D-14）：否则「节点在跑但无已落地跨度」时 A-10 首行空号，违反 AC-22。
+  3. **`trace show` 空态看「跨度非空」不看 `traceId`**（D-26）：删掉 `traces.jsonl` 也必须落 A-1（AC-23）。
+  4. **失败摘要行只在四项至少一项非 null 时渲染**（D-25）：A-3 的失败跨度无摘要数据，无条件渲染会多一行「未提供」。
+  5. **`trace show` 不得走 `instance.get`**（D-22）：会触发首次健康度受控写，破坏 AC-10 只读哈希；用只读 `instance.trace`（返回 `{traceId, spans, badLines, view}`）。
+  6. **`computeHealth.reasons` 是纯码值数组**，占位符实参只能由渲染层从快照推导（D-12）；只喂对象夹具会自证通过而真实链路渲染成 `节点  执行超时`。
+  7. 新增会话级事件会打破既有「精确条数」断言（D-27：`test/wp11/rpc.test.js` AC-57 8→9 条），**改期望不要过滤**。
+  8. `single` 交接包无 `edge`，`deriveHandoffIds` 返回空 → 组装层按轮次归属已存在编号（D-20），不得虚构。
+  9. **三主链逐字回归口径**：`git worktree` 建基线树 + 交替 ≥6 对 + A-0 归一化逐字 diff；判「当前不得低于基线」，不能只跑单次、也不能只查「有没有新词」。
+- **环境**：测试残留大量 `orch core serve`（观测 723 个，411 个目录已删）会造成负载型 flake（同命令两次 13 / 17 fail，逐文件复跑全绿）；全量会改写 `docs/iterations/iteration-4/evidence/nfr-perf-*.json`，收口用 `git checkout --` 还原。
+- **验收审计口径**：`object: 'session'` 计 `orchestrator.js` 13（`src/core` 合计 14 含 `escalation.js` 存量 1，`src/daemon` 0）——D-24。
