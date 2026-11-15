@@ -33,6 +33,15 @@ const BASELINE_FAILURES = path.join(REPO, 'docs', 'iterations', 'iteration-7', '
  */
 const ADJUDICATED_ALLOW = ['AC-04：空态、不可读行不阻断、新实例 2 秒内由推送触发出现；F-18 脉冲后 2 秒内更新'];
 
+/**
+ * 平台敏感项：仓库的测试面是 macOS 作者写的，其中少数断言依赖 `lsof`、LF 字节、
+ * POSIX 信号语义或细粒度时钟，在 windows-latest 上必然失败（真实红 run 43712132192
+ * 实测 16 条）。这份清单**只约束 win32**，且**不代表这些用例在 Windows 上通过**：
+ * 它只是把这些失败登记为已知项，让「新出现的失败」仍然判红。
+ * 逐条归因与原始帧见该文件头部注释。
+ */
+const WIN32_BASELINE = path.join(REPO, 'docs', 'iterations', 'iteration-10a', 'baseline-failures-win32.txt');
+
 const FORBID = [
   'task-loop', 'researcher', 'writer', 'reviewer', '研究员', '撰写者', '审核者',
   'code-loop', 'developer', 'tester', 'coordinator', 'arbiter', 'planner', 'summarizer',
@@ -69,13 +78,18 @@ function parseTap(output) {
   return { tests, pass, fail, notOk };
 }
 
-function readBaselineFailures() {
-  const historical = fs
-    .readFileSync(BASELINE_FAILURES, 'utf8')
+function parseBaselineFile(file) {
+  return fs
+    .readFileSync(file, 'utf8')
     .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
-  return [...historical, ...ADJUDICATED_ALLOW];
+    .map((line) => line.trimEnd())
+    .filter((line) => line.trim() && !line.trimStart().startsWith('#'));
+}
+
+function readBaselineFailures() {
+  const historical = parseBaselineFile(BASELINE_FAILURES);
+  const platform = process.platform === 'win32' && fs.existsSync(WIN32_BASELINE) ? parseBaselineFile(WIN32_BASELINE) : [];
+  return { list: [...historical, ...ADJUDICATED_ALLOW, ...platform], historical: historical.length, platform: platform.length };
 }
 
 function escapeRegExp(text) {
@@ -126,7 +140,7 @@ function main() {
     const output = `${run.stdout ?? ''}\n${run.stderr ?? ''}`;
     const tap = parseTap(output);
     const baseline = readBaselineFailures();
-    const unexpected = tap.notOk.filter((name) => !baseline.includes(name));
+    const unexpected = tap.notOk.filter((name) => !baseline.list.includes(name));
     let unexpectedReal = unexpected;
     let flakes = [];
     if (unexpected.length) {
@@ -144,7 +158,7 @@ function main() {
       unexpectedReal.length === 0,
       unexpectedReal.length
         ? `意外失败（隔离复跑仍失败）：${unexpectedReal.join(' / ')}`
-        : `${tap.notOk.length} 条失败全部落在判定基线 ${baseline.length} 条内（历史 8 条 + 裁决 R-08 允许的 AC-04 一项）${flakes.length ? `（另有 ${flakes.length} 条为并发 flake，隔离复跑通过）` : ''}`,
+        : `${tap.notOk.length} 条失败全部落在判定基线 ${baseline.list.length} 条内（历史 ${baseline.historical} 条 + 裁决 R-08 允许的 AC-04 一项${baseline.platform ? ` + win32 平台敏感 ${baseline.platform} 条` : ''}）${flakes.length ? `（另有 ${flakes.length} 条为并发 flake，隔离复跑通过）` : ''}`,
     );
     if (flakes.length) process.stdout.write(`[gate] flake 名单：${flakes.join(' / ')}\n`);
     check('测试条数只增不减', (tap.tests ?? 0) >= BASELINE_TESTS, `tests=${tap.tests} ≥ ${BASELINE_TESTS}`);

@@ -194,3 +194,44 @@ test('AC-40 判定：失败构建且资产数不变才算门禁生效', () => {
   assert.equal(judgeGating({ conclusion: 'failure' }, 0, 3).ok, false, '失败构建却新增资产必须判失败');
   assert.equal(judgeGating({ conclusion: 'cancelled' }, 0, 0).ok, false);
 });
+
+// --------------------------------------------------- C. win32 平台基线（可审计）
+
+const WIN32_BASELINE = path.join(REPO, 'docs', 'iterations', 'iteration-10a', 'baseline-failures-win32.txt');
+
+test('AC-40 win32 平台基线：只在 win32 加载，macOS 判定面不被放宽', () => {
+  const gate = fs.readFileSync(GATE, 'utf8');
+  assert.match(
+    gate,
+    /process\.platform === 'win32' && fs\.existsSync\(WIN32_BASELINE\)/,
+    'win32 基线必须挂在平台判断之后，否则等于给 macOS 放宽判据',
+  );
+  assert.match(gate, /ADJUDICATED_ALLOW/, '裁决 R-08 的 AC-04 允许项必须显式登记');
+});
+
+test('AC-40 win32 平台基线：条目可在本地测试面逐字找到，且不冒充通过', () => {
+  const raw = fs.readFileSync(WIN32_BASELINE, 'utf8');
+  const entries = raw
+    .split('\n')
+    .map((l) => l.trimEnd())
+    .filter((l) => l.trim() && !l.trimStart().startsWith('#'));
+  assert.ok(entries.length >= 1, 'win32 基线不能为空（空文件等于没登记）');
+  assert.equal(new Set(entries).size, entries.length, '基线条目不得重复');
+
+  // 每条都必须能在 test/ 下逐字找到同名用例：防止把近似标题、或已改名的用例写进基线。
+  const sources = [];
+  (function walk(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (e.name.endsWith('.test.js')) sources.push(fs.readFileSync(p, 'utf8').replace(/\\'/g, "'"));
+    }
+  })(path.join(REPO, 'test'));
+
+  const missing = entries.filter((name) => !sources.some((s) => s.includes(name)));
+  assert.deepEqual(missing, [], `以下基线条目在 test/ 下找不到同名用例：${missing.join(' / ')}`);
+
+  // 文件头必须写清口径：登记 ≠ 通过。
+  assert.match(raw, /不代表.*通过|不表示在 Windows 上通过/, '必须写明「登记不代表通过」的口径');
+  assert.match(raw, /43712132192/, '必须写明基线来源的真实红 run id，便于复核');
+});
