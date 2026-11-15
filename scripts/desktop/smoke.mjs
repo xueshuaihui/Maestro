@@ -127,6 +127,21 @@ async function diagnoseDaemon(shellPath, root) {
   const out = `${probe.stdout ?? ''}${probe.stderr ?? ''}`.trim();
   process.stdout.write(`[smoke] 诊断：直起 daemon exit=${probe.status} signal=${probe.signal ?? '-'}\n`);
   for (const line of out.split('\n').slice(0, 20)) process.stdout.write(`[smoke]   | ${line}\n`);
+
+  // 直起之后再看一次现场：`.orch` 有没有被 ensureLayout 建出来、core.log 里写了什么。
+  // serve-entry 的输出只进 `<root>/.orch/core.log`（它自身绝不 console.log）。
+  try {
+    process.stdout.write(`[smoke] 诊断：直起后 ${orchDir} 内容 = ${fs.readdirSync(orchDir).join(', ') || '(空)'}\n`);
+  } catch {
+    process.stdout.write(`[smoke] 诊断：直起后 ${orchDir} 仍不存在（core 进程根本没跑到 ensureLayout）\n`);
+  }
+  for (const name of ['core.log', 'desktop.json']) {
+    const file = path.join(orchDir, name);
+    if (!fs.existsSync(file)) continue;
+    const text = fs.readFileSync(file, 'utf8');
+    process.stdout.write(`[smoke] 诊断：${name}（${text.length} 字节）\n`);
+    for (const line of text.trimEnd().split('\n').slice(-20)) process.stdout.write(`[smoke]   > ${line}\n`);
+  }
 }
 
 async function smokeApp(shellPath, root) {
@@ -134,11 +149,23 @@ async function smokeApp(shellPath, root) {
   const ctl = path.join(root, 'ctl');
   fs.mkdirSync(ctl, { recursive: true });
 
+  // 壳的 stderr 一定要收：它把「包内运行时缺失 / daemon 起不来」写在 eprintln! 里，
+  // 之前接 'ignore' 让 CI 上的失败完全无法归因。
+  const shellErr = [];
   const child = spawn(shellPath, ['--project', root, '--probe', probe, '--ctl', ctl], {
     env: { ...process.env, MAESTRO_CONFIG_DIR: path.join(root, 'config') },
-    stdio: 'ignore',
+    stdio: ['ignore', 'ignore', 'pipe'],
     detached: false,
   });
+  child.stderr?.setEncoding('utf8');
+  child.stderr?.on('data', (chunk) => {
+    for (const line of String(chunk).split('\n')) if (line.trim()) shellErr.push(line.trim());
+  });
+  const dumpShellErr = () => {
+    if (!shellErr.length) return;
+    process.stdout.write('[smoke] 壳 stderr：\n');
+    for (const line of shellErr.slice(0, 20)) process.stdout.write(`[smoke]   ! ${line}\n`);
+  };
 
   try {
     // 1. 启动 → ready
@@ -152,7 +179,9 @@ async function smokeApp(shellPath, root) {
         READY_TIMEOUT_MS,
         '探针 ready',
       );
-      record('1. 应用可启动（探针 ready）', true, `view=${ready.view ?? 'n/a'}`);
+      // daemon.pid 由壳在 spawn 后立刻写进 ready 帧：0 表示「壳自己就没起得来 daemon」
+      // （包内运行时缺失或 Command::spawn 失败），非 0 表示起了但没写 desktop.json。
+      record('1. 应用可启动（探针 ready）', true, `view=${ready.view ?? 'n/a'} daemon=${ready.daemon?.pid ?? 'n/a'}`);
     } catch (err) {
       record('1. 应用可启动（探针 ready）', false, err.message);
       return;
@@ -167,9 +196,11 @@ async function smokeApp(shellPath, root) {
       record('2. 鉴权守卫（无凭据 401）', res.status === 401, `HTTP ${res.status}`);
     } catch (err) {
       record('2. 鉴权守卫（无凭据 401）', false, err.message);
+      dumpShellErr();
       await diagnoseDaemon(shellPath, root);
     }
   } finally {
+    if (results.some((r) => !r.ok)) dumpShellErr();
     // 收尾：ctl 触发托盘退出（有实例时需确认），再兜底 kill。
     try {
       fs.writeFileSync(path.join(ctl, 'tray-quit'), '');
