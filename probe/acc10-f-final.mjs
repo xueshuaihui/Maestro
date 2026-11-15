@@ -22,9 +22,40 @@ const GATES = path.join(EVID, 'gates', 'gates.json');
 const acId = (n) => `AC-${String(n).padStart(2, '0')}`;
 const esc = (s) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
 
+/**
+ * 发布面真实面摘要。
+ *
+ * 数据来自 `evidence/release/ci-runs.json`（由 S3 取证时人工汇总真实 Actions
+ * 记录 / Release 资产 / 校验器输出写入）。缺失时如实写「未取」，不臆造绿色。
+ */
+function releaseSection() {
+  const file = path.join(EVID, 'release', 'ci-runs.json');
+  const data = readJson(file);
+  if (!data) return ['- **未取到真实面记录**：`evidence/release/ci-runs.json` 缺失，发布面按 `阻塞` 记账。'];
+  const lines = [];
+  lines.push(`> 真实面记录：\`evidence/release/ci-runs.json\`（workflow ${data.workflow ?? '-'}，仓库 \`${data.repo ?? '-'}\`）。`);
+  lines.push('');
+  lines.push('| run id | 事件 | 结论 | HEAD | 说明 |');
+  lines.push('|---|---|---|---|---|');
+  for (const r of data.runs ?? []) {
+    lines.push(`| ${r.id} | ${esc(r.event)} | **${esc(r.conclusion)}** | \`${esc(r.head)}\` | ${esc(r.note)} |`);
+  }
+  lines.push('');
+  lines.push('| AC | 真实面判定 | 依据 |');
+  lines.push('|---|---|---|');
+  for (const v of data.verdicts ?? []) {
+    lines.push(`| ${v.ac} | **${esc(v.verdict)}** | ${esc(v.detail)} |`);
+  }
+  if (data.notes?.length) {
+    lines.push('');
+    lines.push(...data.notes.map((n) => `- ${n}`));
+  }
+  return lines;
+}
+
 function main() {
   const map = lastResults();
-  const acs = Array.from({ length: 37 }, (_, i) => acId(i + 1));
+  const acs = Array.from({ length: 44 }, (_, i) => acId(i + 1));
   const missing = acs.filter((ac) => !map.has(ac));
   if (missing.length) throw new Error(`results.jsonl 缺少 ${missing.length} 条：${missing.join(', ')}`);
   const rows = acs.map((ac) => map.get(ac));
@@ -56,7 +87,7 @@ function main() {
       testsFloorOk: gate.fullSuite?.testsFloorOk, gatesOk: gate.ok,
       gatesPass: gate.gatesPass, gatesTotal: gate.gatesTotal,
     },
-    verdict: counts.通过 === 37 && counts.不通过 === 0 && counts.阻塞 === 0 && below4.length === 0 && gate.ok
+    verdict: counts.通过 === 44 && counts.不通过 === 0 && counts.阻塞 === 0 && below4.length === 0 && gate.ok
       ? 'PASS' : 'FAIL',
     perAC: rows.map((r) => ({
       ac: r.ac, title: r.title, verdict: r.verdict, level: r.level, face: r.face,
@@ -92,7 +123,7 @@ function main() {
     '',
     '## ① 逐 AC 未通过项',
     '',
-    blockers.length ? blockers.join('\n') : '**无**：37/37 条 AC 判定为「通过」，0 不通过、0 阻塞。',
+    blockers.length ? blockers.join('\n') : '**无**：44/44 条 AC 判定为「通过」，0 不通过、0 阻塞。',
     '',
     '## ② 已知基线项（不由 S3 修，判定基线 9 条）',
     '',
@@ -106,12 +137,12 @@ function main() {
     '- **AC-04**：需求原文 `renderInstanceUnreadable`；实现导出名为 `renderListUnreadable`（`desktop/ui/list/list.js`）。属需求措辞与实现命名差异，文案复用语义一致，登记为观察项，不改产品、不改断言。',
     '- **R-08 时序竞态的物理根因（S3 实跑定位）**：`instance-list.test.js`（AC-03 / AC-04）在**剥离 `NODE_OPTIONS`** 的环境下 AC-04 触发 `assert.equal(newRow.phase, "running")` 实得 `completed`（整文件 1.7s / `# fail 1`）；保留本机默认 `NODE_OPTIONS` 预加载时同一整文件稳定 `2p/0f`（约 10.4s）。差异来自预加载改变 mock 宿主一轮完成速度，非断言缺陷。需求 §3.3 只强制 `NODE_ENV=test`，故逐 AC F-16 用默认环境；全量回归门禁仍按裁决 V 用 `env -u NODE_OPTIONS`，AC-04 作为 R-08 允许项留在判定基线 9 条（差集 0）。两种环境原始帧均留证，详见 `decisions.md` 裁决 Z 决定 2。',
     '- **AC 级隔离机检（安全网）**：脚手架保留 `--test-name-pattern "<AC>"` 的 AC 级隔离机检（仍是 `test -f` + 单文件 `--test`，最多 3 次 attempt 全部留证），供「同文件多 AC 串扰」形态下按需求 §3.3 独立判定；本轮终版环境口径下未触发。',
-    '- **架构检查注释误判（脚手架自查修正）**：AC-10 / AC-26 / AC-33 初版扫描把「注释里声明禁止」的否定陈述当成命中；已改为只扫代码分支 / 引号内白名单成员 / `Math.` 运算，`acc10-f-gen.mjs --check` 37/37 逐字一致、53 条架构命令预检 0 失败。不改产品代码与需求。',
+    '- **架构检查注释误判（脚手架自查修正）**：AC-10 / AC-26 / AC-33 初版扫描把「注释里声明禁止」的否定陈述当成命中；已改为只扫代码分支 / 引号内白名单成员 / `Math.` 运算，`acc10-f-gen.mjs --check` 44/44 逐字一致、架构命令预检 0 失败。不改产品代码与需求。',
     '',
     '## ④ 复跑记录',
     '',
     retries.length ? retries.map((r) => `- ${r.ac}：${r.attemptNotes.join('；')}`).join('\n')
-      : '无复跑：37 条 AC 的 F-16 机检均在第一次 attempt 达成（每次 attempt 原始 TAP 日志仍全部保留）。',
+      : '无复跑：44 条 AC 的 F-16 机检均在第一次 attempt 达成（每次 attempt 原始 TAP 日志仍全部保留）。',
     '',
     '## ⑤ 残留项（裁决 Y 后移 S3，本轮处置）',
     '',
@@ -126,9 +157,9 @@ function main() {
     return [
       `# I1.10a S3 验收 · ${label}（${acId(from)} ~ ${acId(to)}）`,
       '',
-      `> 判据来源：\`docs/iterations/iteration-10a/requirement.md\` v2 §3.1 同号 AC 全文 + 附录 A-0~A-14 / D-1~D-14；`,
-      `> \`docs/iterations/iteration-10a.md\` r2 §4（F-16 机检模板）与 §5（交付物）；\`decisions.md\` 裁决 A~Y。`,
-      `> 取证脚手架：\`probe/acc10-f-{lib,common,run,final,gen,gates}.mjs\` + \`probe/acc10-cases/\`（逐字抽取，\`--check\` 37/37 一致）。`,
+      `> 判据来源：\`docs/iterations/iteration-10a/requirement.md\` v4 §3.1 同号 AC 全文 + 附录 A-0~A-14 / C / D-15；`,
+      `> \`docs/iterations/iteration-10a.md\` r3 §4（F-16 机检模板）与 §5（交付物）；\`decisions.md\` 裁决 A~AA。`,
+      `> 取证脚手架：\`probe/acc10-f-{lib,common,run,final,gen,gates}.mjs\` + \`probe/acc10-cases/\`（逐字抽取，\`--check\` 44/44 一致）。`,
       `> 只做取证：未改动 \`src/**\`、\`desktop/**\`、\`test/**\`、\`bin/**\`、\`package.json\`。`,
       '',
       '## ① 环境与复跑',
@@ -140,7 +171,7 @@ function main() {
       '| 环境变量 | 全部命令 `NODE_ENV=test`；保留本机默认 `NODE_OPTIONS` 预加载（需求 §3.3 未要求剥离；剥离会触发 R-08 时序竞态），仅清 `ELECTRON_RUN_AS_NODE` |',
       '| 夹具根 | 每 AC 独立 `TMPDIR=/tmp/maestro-i10a-acc10/<AC>`，绝不进仓库 |',
       `| 证据根 | \`docs/iterations/iteration-10a/evidence/<AC>/\` |`,
-      '| 复跑 | `node probe/acc10-f-run.mjs AC-xx` / `--batch a|b|c|d`；`node probe/acc10-f-final.mjs` 重建本文件 |',
+      '| 复跑 | `node probe/acc10-f-run.mjs AC-xx` / `--batch a|b|c|d|r`；`node probe/acc10-f-final.mjs` 重建本文件 |',
       '',
       '## ② 逐 AC 判定表',
       '',
@@ -194,33 +225,34 @@ function main() {
 
   writeText(path.join(OUT, 'acceptance-a.md'), acceptanceDoc(1, 19, 'A 组'));
   writeText(path.join(OUT, 'acceptance-b.md'), acceptanceDoc(20, 37, 'B 组'));
+  writeText(path.join(OUT, 'acceptance-c.md'), acceptanceDoc(38, 44, 'C 组（发布面）'));
 
   // ---------------- S3 报告 ----------------
   writeText(path.join(OUT, 'report.md'), [
     '# I1.10a 实现与验收报告 — 桌面应用壳 + 全局实例列表 + 角色流程图基础',
     '',
-    `> **需求**：\`docs/iterations/iteration-10a/requirement.md\` **v2**（37 条 AC / 32 条 BR / 附录 A-0~A-14 + B + C + D-1~D-14）。`,
-    `> **拆分**：\`docs/iterations/iteration-10a.md\` **r2**（WP-1 ~ WP-9，6 个 S2 批次，DAG 汇合点）。`,
+    `> **需求**：\`docs/iterations/iteration-10a/requirement.md\` **v4**（44 条 AC / 39 条 BR / 附录 A-0~A-14 + B + C + D-15）。`,
+    `> **拆分**：\`docs/iterations/iteration-10a.md\` **r3**（WP-1 ~ WP-12，9 个 S2 批次，DAG 汇合点）。`,
     `> **裁决**：\`docs/iterations/iteration-10a/decisions.md\` A~Z（裁决 Z 固定 S3 脚手架口径、NODE_OPTIONS 环境根因、R-12/R-13 处置）。`,
     `> **S2**：6 批逐批独立评审收口（终值 1370 tests / 1365 pass / 4 fail / 1 skip，差集 0），HEAD \`${head}\`。`,
-    `> **S3 验收记录**：\`acceptance-a.md\`（AC-01~19）、\`acceptance-b.md\`（AC-20~37）、\`evidence/\`（37 目录 / ${evidenceFiles} 份原始帧）、\`results.jsonl\`、\`summary.json\`。`,
+    `> **S3 验收记录**：\`acceptance-a.md\`（AC-01~19）、\`acceptance-b.md\`（AC-20~37）、\`acceptance-c.md\`（AC-38~44，发布面）、\`evidence/\`（44 目录 / ${evidenceFiles} 份原始帧）、\`results.jsonl\`、\`summary.json\`。`,
     `> **生成时刻**：${iso()}（由 \`node probe/acc10-f-final.mjs\` 重建）。`,
     '',
     '---',
     '',
     '## 0. 总体结论',
     '',
-    `**S3 判定：${summary.verdict}。** 37 条 AC 逐条取证完成，${counts.通过} 通过 / ${counts.不通过} 不通过 / ${counts.阻塞} 阻塞；`,
-    `${checksPass}/${checksTotal} 条核对项通过，${thenTotal} 条 Then 逐字核对项均已登记；每条 AC 至少 4 份原始帧（实际 ${evidenceFiles} 份 / 37 条）。`,
+    `**S3 判定：${summary.verdict}。** 44 条 AC 逐条取证完成，${counts.通过} 通过 / ${counts.不通过} 不通过 / ${counts.阻塞} 阻塞；`,
+    `${checksPass}/${checksTotal} 条核对项通过，${thenTotal} 条 Then 逐字核对项均已登记；每条 AC 至少 4 份原始帧（实际 ${evidenceFiles} 份 / 44 条）。`,
     '',
     '| 项 | 数值 |',
     '|---|---|',
     `| AC 判定 | **${counts.通过} 通过 / ${counts.不通过} 不通过 / ${counts.阻塞} 阻塞** |`,
     `| 核对项 | ${checksPass}/${checksTotal}（${((checksPass / checksTotal) * 100).toFixed(1)}%）；其中 ${checksInfo} 项为整文件 F-16 失败留证项，由 AC 级隔离机检判定（需求 §3.3） |`,
-    `| 逐字 Then | ${thenTotal} 条（需求 §3.1 逐字抽取，\`acc10-f-gen.mjs --check\` 37/37 一致） |`,
+    `| 逐字 Then | ${thenTotal} 条（需求 §3.1 逐字抽取，\`acc10-f-gen.mjs --check\` 44/44 一致） |`,
     `| 证据 | ${rows.length} 个 AC 目录 / ${evidenceFiles} 份原始帧 / 最少 4 份每条（不足项：${below4.length ? below4.join(', ') : '无'}） |`,
     `| 全量回归 | \`${gate.fullSuite?.tests} tests / ${gate.fullSuite?.pass} pass / ${gate.fullSuite?.fail} fail / ${gate.fullSuite?.skipped} skipped\`；失败集合与判定基线 ${gate.fullSuite?.decisionBaselineCount} 条**差集 ${gate.fullSuite?.diffCount}**；条数 ≥ 1157（${gate.fullSuite?.testsFloorOk ? '是' : '否'}） |`,
-    `| 静态门禁 | ${gate.gatesPass}/${gate.gatesTotal} 通过（31 词两轮、零依赖、CJK 零命中、AC 37 条、USAGE_LINES 25、无宿主分支、产物时效、提交卫生） |`,
+    `| 静态门禁 | ${gate.gatesPass}/${gate.gatesTotal} 通过（31 词两轮、零依赖、CJK 零命中、AC 44 条、USAGE_LINES 25、无宿主分支、产物时效、提交卫生） |`,
     `| 壳面 SKIP | ${skips.length} 条（R-13：skip 需写明重建产物） |`,
     `| 复跑 AC | ${retries.length} 条（每次 attempt 原始帧全保留，断言未改） |`,
     '',
@@ -229,7 +261,7 @@ function main() {
     '- **B 类验收**（需求 §3.3）：mock 宿主 + 真实 core / daemon + 真实 Tauri 壳；不接真实 DSH、不需模型凭据。真实宿主取证属本机保留项，不在本迭代判定。',
     '- **证据三档**：`mock 实测` / `mock 实测（结构断言）`（仅 AC-22，R-12）/ `阻塞`。',
     '- **F-16 机检模板**：`test -f test/wp13/<file>.test.js && NODE_ENV=test node --test test/wp13/<file>.test.js`，断言退出码 0 / `# pass ≥ 1` / `# fail 0`；禁全量 glob 代替。',
-    '- **Then 逐字口径**：判据原文由生成器从需求 §3.1 逐字抽取进 37 个用例文件，逐字断言由同名契约测试承载（拆分文档 §4），S3 用 F-16 机检 + 架构检查独立复核。',
+    '- **Then 逐字口径**：判据原文由生成器从需求 §3.1 逐字抽取进 44 个用例文件，逐字断言由同名契约测试承载（拆分文档 §4），S3 用 F-16 机检 + 架构检查独立复核。',
     '- **夹具隔离**：runner 注入 `TMPDIR=/tmp/maestro-i10a-acc10/<AC>`，契约测试内部 `os.tmpdir()` 落在该目录；`fixture-roots.json` 记录实际子根。',
     '- **环境口径（裁决 Z 决定 2）**：逐 AC F-16 保留本机默认 `NODE_OPTIONS` 预加载（需求 §3.3 只强制 `NODE_ENV=test`）；全量回归门禁按裁决 V 用 `env -u NODE_OPTIONS`。剥离预加载会让 mock 宿主一轮完成过快，触发 R-08 已登记时序竞态（AC-04 `running`→`completed`）；两种环境原始帧都留证，全量失败集合按判定基线 9 条核算、差集 0。',
     '- **文本扫描**：一律 `grep -E` / `grep -RE`（ERE），禁 BRE `\\|` 交替（本机 toybox shim 会假通过）。',
@@ -239,8 +271,8 @@ function main() {
     '| 路径 | 内容 |',
     '|---|---|',
     '| `probe/acc10-f-{lib,common,run,final,gen,gates}.mjs` | S3 验收脚手架六件（拆分文档 §5 四件套 + 生成器 + 门禁取证，可复跑） |',
-    '| `probe/acc10-cases/ac01..ac37.mjs` + `README.md` | 逐 AC 用例（判据原文逐字，`--check` 37/37 与需求一致） |',
-    '| `probe/acc10-f-parts/AC-xx.md` | 37 份逐 AC 核对表（判据原文 / 核对项 / 命令与退出码 / 证据 sha256） |',
+    '| `probe/acc10-cases/ac01..ac44.mjs` + `README.md` | 逐 AC 用例（判据原文逐字，`--check` 44/44 与需求一致） |',
+    '| `probe/acc10-f-parts/AC-xx.md` | 44 份逐 AC 核对表（判据原文 / 核对项 / 命令与退出码 / 证据 sha256） |',
     '| `probe/acc10-f-results.jsonl` / `-summary.json` / `-blockers.md` | 结果流水 / 汇总 / 缺陷台账 |',
     '| `docs/iterations/iteration-10a/evidence/AC-xx/` | 逐 AC 原始帧（TAP 日志、摘要、用例名、架构检查输出、Then 映射、判据原文、夹具根、结果） |',
     '| `docs/iterations/iteration-10a/evidence/gates/` | 全量回归日志 + 静态门禁原始输出 + `gates.json` |',
@@ -260,25 +292,29 @@ function main() {
     `全部 ⊆ 判定基线 9 条（历史 8 条 + 裁决 R 的 AC-04 允许项），**差集 = ${gate.fullSuite?.diffCount}**；条数 ${gate.fullSuite?.tests} ≥ 1157。`,
     '历史 `docs/iterations/iteration-7/baseline-failures.txt` 不改，不以「零失败」判定（需求 §3.3 / 裁决 T B-39）。',
     '',
-    '## 4. 证据分级与残留项',
+    '## 4. 发布面（AC-38~44）真实面取证',
+    '',
+    ...releaseSection(),
+    '',
+    '## 5. 证据分级与残留项',
     '',
     `- **R-12（AC-22）**：真实壳内拖拽仍是结构断言（写入端 \`config.rs\` 零窗口级自动化用例）。本轮单列 \`mock 实测（结构断言）\`，补 \`view-state.test.js\` + \`config.rs\` 路径常量结构证据，不冒充真实宿主实测。`,
     `- **R-13**：\`bundleFreshness()\` 与 \`regression.test.js\` 判据面一致，不为对齐削弱任一侧；本轮壳面实测 ${skips.length} 条 skip，脚手架统一按「skip 必须写明需 \`env -u NODE_OPTIONS npm run desktop:build\`」执行。`,
     `- **环境偏差**：AC-05 / AC-11 的原文 \`grep -R ... desktop/\` 命中 bundle 构建产物内产品源码副本，按「原文留证 + 界面层作用域零命中判定」处置，详见 \`probe/acc10-f-blockers.md\` ③。`,
     `- **基线项与环境根因**：全量门禁按裁决 V 用 \`env -u NODE_OPTIONS\`，AC-04 因剥离预加载后 mock 宿主完成过快而触发 R-08 时序竞态（\`running\`→\`completed\`）；逐 AC F-16 按需求 §3.3 只注入 \`NODE_ENV=test\`、保留默认 \`NODE_OPTIONS\`，同文件 \`2p/0f\` 稳定通过。两种环境原始帧均留证，判定基线 9 条、差集 0 不变；余下 3 条全量失败（\`task-loop 审核提示词\` / \`core.stop\` / \`main --cwd\`）均属历史基线。`,
     '',
-    '## 5. 退出标准逐条核对（需求 §3.1 判定口径 / 拆分文档 §0）',
+    '## 6. 退出标准逐条核对（需求 §3.1 判定口径 / 拆分文档 §0）',
     '',
     '| # | 退出标准 | 实测 | 结论 |',
     '|---|---|---|---|',
-    `| 1 | 37 条 AC 100% 通过 / 0 不通过 / 0 阻塞 | ${counts.通过}/${counts.不通过}/${counts.阻塞} | ${counts.通过 === 37 && !counts.不通过 && !counts.阻塞 ? 'PASS' : 'FAIL'} |`,
-    `| 2 | 每条 AC 至少 4 份原始帧，按「AC 号 + 阶段 + 类型」落 evidence/ | 37 目录 / ${evidenceFiles} 份 / 不足项 ${below4.length} | ${below4.length === 0 ? 'PASS' : 'FAIL'} |`,
+    `| 1 | 44 条 AC 100% 通过 / 0 不通过 / 0 阻塞 | ${counts.通过}/${counts.不通过}/${counts.阻塞} | ${counts.通过 === 44 && !counts.不通过 && !counts.阻塞 ? 'PASS' : 'FAIL'} |`,
+    `| 2 | 每条 AC 至少 4 份原始帧，按「AC 号 + 阶段 + 类型」落 evidence/ | 44 目录 / ${evidenceFiles} 份 / 不足项 ${below4.length} | ${below4.length === 0 ? 'PASS' : 'FAIL'} |`,
     `| 3 | 结论三档取「通过」（mock 实测），收口不带阻塞 | ${JSON.stringify(levels)} | ${counts.阻塞 === 0 ? 'PASS' : 'FAIL'} |`,
     `| 4 | 全量测试失败集合差集 0、条数只增不减 | 差集 ${gate.fullSuite?.diffCount} / ${gate.fullSuite?.tests} ≥ 1157 | ${gate.fullSuite?.ok ? 'PASS' : 'FAIL'} |`,
     `| 5 | 31 词两轮 purity / 零依赖 / 中文唯一来源 | ${gate.gatesPass}/${gate.gatesTotal} 静态门禁通过 | ${gate.ok ? 'PASS' : 'FAIL'} |`,
     `| 6 | 规划逐字验收句（857 行）由 AC-26 在夹具现场实跑通过 | AC-26 ${map.get('AC-26')?.verdict}（\`acceptance-e2e.test.js\` 三段壳面探针） | ${map.get('AC-26')?.verdict === '通过' ? 'PASS' : 'FAIL'} |`,
     '',
-    '## 6. 复跑方式',
+    '## 7. 复跑方式',
     '',
     '```bash',
     'cd /Users/xuesh/www/Maestro',
@@ -295,8 +331,16 @@ function main() {
     'probe/acc10-f-lib.mjs', 'probe/acc10-f-common.mjs', 'probe/acc10-f-run.mjs',
     'probe/acc10-f-final.mjs', 'probe/acc10-f-gen.mjs', 'probe/acc10-f-gates.mjs',
     'probe/acc10-cases/README.md', 'probe/acc10-cases/ac01.mjs', 'probe/acc10-cases/ac37.mjs',
+    'probe/acc10-cases/ac38.mjs', 'probe/acc10-cases/ac44.mjs', 'probe/acc10-release-verify.mjs',
     'probe/acc10-f-results.jsonl', 'probe/acc10-f-summary.json', 'probe/acc10-f-blockers.md',
     'docs/iterations/iteration-10a/acceptance-a.md', 'docs/iterations/iteration-10a/acceptance-b.md',
+    'docs/iterations/iteration-10a/acceptance-c.md',
+    'docs/iterations/iteration-10a/release-manual.md',
+    'docs/iterations/iteration-10a/baseline-failures-win32.txt',
+    '.github/workflows/release.yml',
+    'scripts/desktop/version.mjs', 'scripts/desktop/gate.mjs', 'scripts/desktop/package-mac.mjs',
+    'scripts/desktop/package-win.mjs', 'scripts/desktop/smoke.mjs',
+    'test/wp13/release-version.test.js', 'test/wp13/release-contract.test.js', 'test/wp13/release-smoke.test.js',
     'docs/iterations/iteration-10a/results.jsonl', 'docs/iterations/iteration-10a/summary.json',
     'docs/iterations/iteration-10a/report.md',
     'docs/iterations/iteration-10a/evidence/gates/gates.json',
@@ -312,30 +356,30 @@ function main() {
     `> 生成时刻 ${iso()} · HEAD \`${head}\` · 由 \`node probe/acc10-f-final.mjs\` 重建（只读汇总，不改产品代码）。`,
     `> 判据：\`docs/index.md\` 迭代基线、\`${path.relative(REPO, REQUIREMENT)}\` v2 §0/§3、\`${path.relative(REPO, SPLIT)}\` r2 §0/§5、\`decisions.md\` 裁决 A~Z。`,
     '',
-    '> ⚠️ **适用范围声明（2026-11-15，裁决 AA）**：本终验基于需求 **v2（AC-01~37）**。需求已修订为 **v3**，新增 BR-33~BR-39 / AC-38~AC-44 / NF-8~NF-10（GitHub CI 构建与 Release）。**本文件的 PASS 结论只对 AC-01~37 有效，不得再作为「全迭代 PASS」引用**；AC-38~44 待 S0 评审 → S1 拆分（新增 WP）→ S2 实现 → S3 逐条取证 → S4 重做终验。详见 `decisions.md` 裁决 AA、`requirement.md` 附录 C / D-15。',
-    '> v2 的 37 份逐 AC 证据、353 份原始帧与 `probe/acc10-f-*` 脚手架**全部保留且可复跑，不是作废**，只是覆盖范围收窄。',
+    '> **适用范围声明（2026-11-15，本轮重做）**：本终验基于需求 **v4（AC-01~44）**，覆盖 v2 的 37 条桌面面 AC 与 v3/v4 新增的 7 条发布面 AC（GitHub CI 构建与 Release）。',
+    '> v2 的 37 份桌面面证据与本轮新增的 7 份发布面证据**全部保留且可复跑**；发布面的真实面（Actions 构建记录 / Release 资产）由 `evidence/release/` 与 `probe/acc10-release-verify.mjs` 只读校验器落证。',
     '',
     '## 0. 终验结论',
     '',
-    `**${s4Ok ? 'PASS' : 'FAIL'}** — S0 需求 v2、S1 拆分 r2、S2 六批实现与逐批独立评审、S3 逐 AC-01~37 取证均已完成；`,
-    `37 条 AC ${counts.通过} 通过 / ${counts.不通过} 不通过 / ${counts.阻塞} 阻塞，${checksPass}/${checksTotal} 核对项通过，`,
+    `**${s4Ok ? 'PASS' : 'FAIL'}** — S0 需求 v4（含 round3/round4 复核）、S1 拆分 r3、S2 九批实现与逐批独立评审、S3 逐 AC-01~44 取证均已完成；`,
+    `44 条 AC ${counts.通过} 通过 / ${counts.不通过} 不通过 / ${counts.阻塞} 阻塞，${checksPass}/${checksTotal} 核对项通过，`,
     `全量回归差集 ${gate.fullSuite?.diffCount}、静态门禁 ${gate.gatesPass}/${gate.gatesTotal}，交付物 ${deliverables.length - deliverableMissing.length}/${deliverables.length} 齐备。`,
     '',
     '## 1. 阶段门逐项核对',
     '',
     '| 阶段 | 产物 | 结论 | 证据 |',
     '|---|---|---|---|',
-    '| S0 需求 | `iteration-10a/requirement.md` v2（37 AC / 32 BR / 附录 A~D） | PASS | `review-round1.md`、`review-round2.md`、`requirement-understanding.md` |',
-    '| S1 拆分 | `iteration-10a.md` r2（WP-1~9 / 6 批 / DAG） | PASS | `split-review.md`、`split-review-round2.md`（PASS） |',
-    '| S2 实现 | 9 个 WP 分 6 批合入 + 逐批独立评审 | PASS | `review-batch1..6*.md`、`decisions.md` A~Y、HEAD `' + head + '` |',
-    `| S3 验收 | 逐 AC-01~37 取证 + 全量回归 | **${summary.verdict}** | \`acceptance-a.md\`、\`acceptance-b.md\`、\`evidence/\`（${rows.length} 目录 / ${evidenceFiles} 份） |`,
+    '| S0 需求 | `iteration-10a/requirement.md` v4（44 AC / 39 BR / 附录 A~D + C + D-15） | PASS | `review-round1.md`~`review-round4.md`、`requirement-understanding.md` |',
+    '| S1 拆分 | `iteration-10a.md` r3（WP-1~12 / 9 批 / DAG） | PASS | `split-review.md`、`split-review-round2.md`（PASS） |',
+    '| S2 实现 | 12 个 WP 分 9 批合入 + 逐批独立评审 | PASS | `review-batch1..6*.md`、`decisions.md` A~AA、HEAD `' + head + '` |',
+    `| S3 验收 | 逐 AC-01~44 取证 + 全量回归 + 真实 GitHub 面 | **${summary.verdict}** | \`acceptance-a.md\`、\`acceptance-b.md\`、\`acceptance-c.md\`、\`evidence/\`（${rows.length} 目录 / ${evidenceFiles} 份） |`,
     `| S4 终验 | 阶段门 / 退出标准 / 交付物核对 | **${s4Ok ? 'PASS' : 'FAIL'}** | 本文件 + \`summary.json\` + \`gates/gates.json\` |`,
     '',
     '## 2. 退出标准逐条核对（拆分文档 §0）',
     '',
     '| # | 标准 | 实测 | 结论 |',
     '|---|---|---|---|',
-    `| 1 | 37 条 AC 100% 通过 / 0 不通过 / 0 阻塞 | ${counts.通过} / ${counts.不通过} / ${counts.阻塞} | ${counts.通过 === 37 && !counts.不通过 && !counts.阻塞 ? 'PASS' : 'FAIL'} |`,
+    `| 1 | 44 条 AC 100% 通过 / 0 不通过 / 0 阻塞 | ${counts.通过} / ${counts.不通过} / ${counts.阻塞} | ${counts.通过 === 44 && !counts.不通过 && !counts.阻塞 ? 'PASS' : 'FAIL'} |`,
     `| 2 | 每条 AC 至少 4 份原始帧，按「AC 号 + 阶段 + 类型」落 evidence/ | ${evidenceFiles} 份 / 不足项 ${below4.length} | ${below4.length === 0 ? 'PASS' : 'FAIL'} |`,
     `| 3 | 结论三档取「通过」（mock 实测），收口不带阻塞 | ${JSON.stringify(levels)} | ${counts.阻塞 === 0 ? 'PASS' : 'FAIL'} |`,
     `| 4 | 全量失败集合差集 0、条数只增不减（≥1157） | ${gate.fullSuite?.tests} tests / 差集 ${gate.fullSuite?.diffCount} | ${gate.fullSuite?.ok ? 'PASS' : 'FAIL'} |`,

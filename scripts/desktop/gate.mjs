@@ -97,17 +97,58 @@ function escapeRegExp(text) {
 }
 
 /**
+ * 「用例名 → 所在测试文件」索引。
+ *
+ * 为什么要建索引：全量并发下本仓存在已知负载型 flake（残留 `orch core serve`、
+ * 真壳/托盘在无头 runner 上的启动抖动），隔离复跑**只跑出事那个文件**就够，
+ * 不必重扫全量——否则 CI 里每条意外失败要重跑十几分钟。
+ */
+function indexTestFiles() {
+  const map = new Map();
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(p);
+      else if (entry.name.endsWith('.test.js')) {
+        const src = fs.readFileSync(p, 'utf8');
+        // 标题自身可能含转义引号（`object: \'session\'`）或裸双引号（`grep -c "x"`），
+        // 所以按引号种类分别匹配，并允许 `\x` 转义——用 `['"]` 做统一分隔符
+        // 会在第一个内层引号处截断，导致这类用例查不到文件。
+        const patterns = [
+          [/(?:^|\n)\s*test\(\s*\n?\s*'((?:[^'\\]|\\.)*)'/g, /\\'/g, "'"],
+          [/(?:^|\n)\s*test\(\s*\n?\s*"((?:[^"\\]|\\.)*)"/g, /\\"/g, '"'],
+        ];
+        for (const [re, esc, quote] of patterns) {
+          for (const m of src.matchAll(re)) {
+            const title = m[1].replace(esc, quote);
+            if (!map.has(title)) map.set(title, path.relative(REPO, p));
+          }
+        }
+      }
+    }
+  };
+  walk(path.join(REPO, 'test'));
+  return map;
+}
+
+/**
  * 对「不在基线里的失败」做一次隔离复跑确认。
  *
- * 为什么需要：全量并发下本仓存在已知负载型 flake（残留 `orch core serve` 进程、
- * 壳单实例锁竞争等），同一条断言逐文件复跑会全绿。这里**只做确认、不做放宽**：
- * 复跑仍失败 → 该失败成立；复跑通过 → 记为 flake 并打印名单，供 S3/S4 登记。
+ * **只做确认、不做放宽**：复跑仍失败 → 该失败成立；复跑通过 → 记为 flake 并打印名单，
+ * 供 S3/S4 登记。复跑范围收窄到出事文件（`--test-name-pattern` 仍保留，精准命中该用例），
+ * 这样 CI 里一条 flake 的代价是一个文件级重跑，而不是全量重扫。
  */
-function confirmFlakes(names) {
+function confirmFlakes(names, index) {
   const flakes = [];
   const real = [];
   for (const name of names) {
-    const r = spawnSync(process.execPath, ['--test', '--test-name-pattern', escapeRegExp(name), 'test/**/*.test.js'], {
+    const file = index.get(name);
+    if (!file) {
+      real.push(name);
+      process.stdout.write(`[gate] 复跑 SKIP 找不到用例文件，按失败成立处理：${name}\n`);
+      continue;
+    }
+    const r = spawnSync(process.execPath, ['--test', '--test-name-pattern', escapeRegExp(name), file], {
       cwd: REPO,
       encoding: 'utf8',
       env: { ...process.env, NODE_ENV: 'test' },
@@ -118,7 +159,7 @@ function confirmFlakes(names) {
     const stillFailing = tap.notOk.includes(name) || (tap.tests === 0 && r.status !== 0);
     if (stillFailing) real.push(name);
     else flakes.push(name);
-    process.stdout.write(`[gate] 复跑 ${stillFailing ? 'FAIL' : 'FLAKE'} ${name}\n`);
+    process.stdout.write(`[gate] 复跑 ${stillFailing ? 'FAIL' : 'FLAKE'} ${name}（${file}）\n`);
   }
   return { flakes, real };
 }
@@ -166,7 +207,7 @@ function main() {
       if (noFlakeConfirm) {
         process.stdout.write(`[gate] 跳过隔离复跑（--no-flake-confirm）：${unexpected.length} 条意外失败直接判红\n`);
       } else {
-        const confirmed = confirmFlakes(unexpected);
+        const confirmed = confirmFlakes(unexpected, indexTestFiles());
         flakes = confirmed.flakes;
         unexpectedReal = confirmed.real;
       }
