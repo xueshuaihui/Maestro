@@ -9,7 +9,7 @@
 
 | 项 | 值 |
 |---|---|
-| 仓库 HEAD | `3e20925` |
+| 仓库 HEAD | `2ee6d2c` |
 | 验收级别 | B 类（mock 宿主 + 真实 core / daemon + 真实 Tauri 壳；不接真实 DSH、不需模型凭据，需求 §3.3） |
 | 环境变量 | 全部命令 `NODE_ENV=test`；保留本机默认 `NODE_OPTIONS` 预加载（需求 §3.3 未要求剥离；剥离会触发 R-08 时序竞态），仅清 `ELECTRON_RUN_AS_NODE` |
 | 夹具根 | 每 AC 独立 `TMPDIR=/tmp/maestro-i10a-acc10/<AC>`，绝不进仓库 |

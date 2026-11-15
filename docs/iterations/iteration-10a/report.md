@@ -3,11 +3,11 @@
 > **需求**：`docs/iterations/iteration-10a/requirement.md` **v4**（44 条 AC / 39 条 BR / 附录 A-0~A-14 + B + C + D-15）。
 > **拆分**：`docs/iterations/iteration-10a.md` **r3**（WP-1 ~ WP-12，9 个 S2 批次，DAG 汇合点）。
 > **裁决**：`docs/iterations/iteration-10a/decisions.md` A~Z（裁决 Z 固定 S3 脚手架口径、NODE_OPTIONS 环境根因、R-12/R-13 处置）。
-> **S2**：6 批逐批独立评审收口（终值 1370 tests / 1365 pass / 4 fail / 1 skip，差集 0），HEAD `3e20925`。
+> **S2**：6 批逐批独立评审收口（终值 1370 tests / 1365 pass / 4 fail / 1 skip，差集 0），HEAD `2ee6d2c`。
 > **S3 验收记录**：`acceptance-a.md`（AC-01~19）、`acceptance-b.md`（AC-20~37）、`acceptance-c.md`（AC-38~44，发布面）、`evidence/`（44 目录 / 425 份原始帧）、`results.jsonl`、`summary.json`。
 > **全量基线的条数变化**：S2 终值 1370 条 → 本次 1425 条，差额来自 `origin/main` 并行合入的 I1.7 代码隔离与 I1.8 实例恢复用例（非本迭代新增）；
 > 判定仍按「失败集合与基线 9 条差集 = 0」，条数只作下限（≥ 1157），不拿总数涨跌当结论。
-> **生成时刻**：2026-11-15T14:06:06.421Z（由 `node probe/acc10-f-final.mjs` 重建）。
+> **生成时刻**：2026-11-15T14:07:42.858Z（由 `node probe/acc10-f-final.mjs` 重建）。
 
 ---
 
