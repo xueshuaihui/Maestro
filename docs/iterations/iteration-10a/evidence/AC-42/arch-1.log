@@ -1,0 +1,3 @@
+9:#   → 草稿 tag 名 dryrun-<sha7>，刻意不以 v 开头，避免再次命中 push.tags: v* 自我触发
+32:  group: ${{ github.event_name == 'workflow_dispatch' && format('dryrun-{0}', github.ref) || format('release-{0}', github.ref_name) }}
+140:            TAG="dryrun-$(printf '%s' '${{ github.sha }}' | cut -c1-7)"

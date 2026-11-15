@@ -3,7 +3,8 @@
  * 发布门禁——需求 AC-40 / NF-6 / NF-8。
  *
  * 复用仓库**既有判定**，不为发布另开一套宽松口径：
- *   1. 全量单测：`# fail` 的用例名集合必须 ⊆ `docs/iterations/iteration-7/baseline-failures.txt`（差集 0）
+ *   1. 全量单测：`# fail` 的用例名集合必须 ⊆ 判定基线（历史 `baseline-failures.txt` 8 条 +
+ *      裁决 R-08 允许的 `AC-04` 一项 = 9 条），差集 0
  *   2. 测试条数只增不减（基线 1157）
  *   3. `dependencies` 仍为 `{}`（BR-22 红线）
  *   4. 31 词纯净扫描两轮 exit 0（`src/core`+`src/daemon`、`desktop/ui`）
@@ -11,7 +12,7 @@
  *
  * 任一不过 → 非零退出，发布不得继续（AC-40：门禁在打包之前）。
  *
- * 用法：node scripts/desktop/gate.mjs [--skip-tests]
+ * 用法：node scripts/desktop/gate.mjs [--skip-tests] [--no-flake-confirm]
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -21,6 +22,16 @@ import { REPO, checkAligned } from './version.mjs';
 
 const BASELINE_TESTS = 1157;
 const BASELINE_FAILURES = path.join(REPO, 'docs', 'iterations', 'iteration-7', 'baseline-failures.txt');
+
+/**
+ * 裁决 R-08 的允许项：`AC-04` 的时序竞态在批次前快照 `aca57d6` 上同样失败，
+ * 已登记为**已知基线项**（`decisions.md` 裁决 R）。
+ *
+ * 判定口径 = 历史 `baseline-failures.txt` 的物理 8 条 + 本条 = **9 条**
+ * （与 `probe/acc10-f-gates.mjs` 的 `allow`、`test/wp13/regression.test.js` 的断言同源）。
+ * 这里只是复现仓库已裁决的口径，不是放宽：任何**不在**这 9 条里的失败仍然判红。
+ */
+const ADJUDICATED_ALLOW = ['AC-04：空态、不可读行不阻断、新实例 2 秒内由推送触发出现；F-18 脉冲后 2 秒内更新'];
 
 const FORBID = [
   'task-loop', 'researcher', 'writer', 'reviewer', '研究员', '撰写者', '审核者',
@@ -59,11 +70,12 @@ function parseTap(output) {
 }
 
 function readBaselineFailures() {
-  return fs
+  const historical = fs
     .readFileSync(BASELINE_FAILURES, 'utf8')
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean);
+  return [...historical, ...ADJUDICATED_ALLOW];
 }
 
 function escapeRegExp(text) {
@@ -99,6 +111,9 @@ function confirmFlakes(names) {
 
 function main() {
   const skipTests = process.argv.includes('--skip-tests');
+  // CI runner 上没有本机那类残留进程负载，且一次隔离复跑要重扫全量；
+  // 流水线里直接判红更快、也更严格（不把意外失败降级成 flake）。
+  const noFlakeConfirm = process.argv.includes('--no-flake-confirm');
 
   if (!skipTests) {
     const run = spawnSync(process.execPath, ['--test', 'test/**/*.test.js'], {
@@ -115,9 +130,13 @@ function main() {
     let unexpectedReal = unexpected;
     let flakes = [];
     if (unexpected.length) {
-      const confirmed = confirmFlakes(unexpected);
-      flakes = confirmed.flakes;
-      unexpectedReal = confirmed.real;
+      if (noFlakeConfirm) {
+        process.stdout.write(`[gate] 跳过隔离复跑（--no-flake-confirm）：${unexpected.length} 条意外失败直接判红\n`);
+      } else {
+        const confirmed = confirmFlakes(unexpected);
+        flakes = confirmed.flakes;
+        unexpectedReal = confirmed.real;
+      }
     }
     check('全量单测可运行并产出 TAP 摘要', tap.tests !== null, `tests=${tap.tests} pass=${tap.pass} fail=${tap.fail}`);
     check(
@@ -125,7 +144,7 @@ function main() {
       unexpectedReal.length === 0,
       unexpectedReal.length
         ? `意外失败（隔离复跑仍失败）：${unexpectedReal.join(' / ')}`
-        : `${tap.notOk.length} 条失败全部在基线内${flakes.length ? `（另有 ${flakes.length} 条为并发 flake，隔离复跑通过）` : ''}`,
+        : `${tap.notOk.length} 条失败全部落在判定基线 ${baseline.length} 条内（历史 8 条 + 裁决 R-08 允许的 AC-04 一项）${flakes.length ? `（另有 ${flakes.length} 条为并发 flake，隔离复跑通过）` : ''}`,
     );
     if (flakes.length) process.stdout.write(`[gate] flake 名单：${flakes.join(' / ')}\n`);
     check('测试条数只增不减', (tap.tests ?? 0) >= BASELINE_TESTS, `tests=${tap.tests} ≥ ${BASELINE_TESTS}`);

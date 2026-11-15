@@ -1,0 +1,33 @@
+{
+  "ac": "AC-44",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-44 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"hdiutil.*verify|镜像内应用复验\" scripts/desktop/smoke.mjs",
+      "note": "镜像完整性与挂载后复验",
+      "expect": 0,
+      "exit": 0,
+      "lines": 5,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "9: *   4. 安装包镜像：`hdiutil verify` 通过 + 挂载后对**镜像里那份** `.app` 再次验签\n169:        const verify = spawnSync('hdiutil', ['verify', args.dmg], { encoding: 'utf8' });\n170:        record('4a. 镜像完整性（hdiutil verify）', verify.status === 0, `exit ${verify.status}`);\n178:          record('4b. 镜像内应用复验', false, `挂载失败 exit ${attach.status}`);\n181:            verifySigned(path.join(mount, 'Maestro.app'), '4b. 镜像内应用复验');",
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"0[.]0[.]0[.]0|listen.*all\" scripts/desktop/smoke.mjs",
+      "note": "冒烟不绑定通配地址",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

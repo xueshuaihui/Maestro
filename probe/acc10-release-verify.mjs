@@ -13,6 +13,7 @@
  * 用法：
  *   node probe/acc10-release-verify.mjs <tag> --check publish|assets|gating|channel|draft|absent|idempotent
  *        [--repo owner/name] [--out <dir>] [--dir <下载目录>] [--baseline <非草稿数>]
+ *        [--run <run id>] [--before <资产数>]   # 仅 gating 用：指定构建记录与 run 前的资产数
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -208,7 +209,7 @@ async function main() {
   const baseIdx = argv.indexOf('--baseline');
 
   if (!tag || !check) {
-    process.stderr.write('用法：node probe/acc10-release-verify.mjs <tag> --check <publish|assets|gating|channel|draft|absent|idempotent>\n');
+    process.stderr.write('用法：node probe/acc10-release-verify.mjs <tag> --check <publish|assets|gating|channel|draft|absent|idempotent> [--run <id>] [--before <n>]\n');
     process.exit(2);
   }
 
@@ -250,10 +251,21 @@ async function main() {
       verdict = judgeIdempotent(releases, tag);
       break;
     case 'gating': {
-      const runs = await apiGet(`/repos/${repo}/actions/runs?per_page=50`, token);
-      const run = (runs.body?.workflow_runs ?? []).find((r) => r.head_branch === tag || r.name === tag);
+      // 默认按 tag / 分支名找 run；`--run <id>` 可直接指定一次构建记录（试跑通道的
+      // head_branch 是 main，按 tag 找会落空，S3 取证时用 id 更可靠）。
+      const runIdx = argv.indexOf('--run');
+      let run = null;
+      if (runIdx >= 0 && argv[runIdx + 1]) {
+        const one = await apiGet(`/repos/${repo}/actions/runs/${argv[runIdx + 1]}`, token);
+        run = one.status === 200 ? one.body : null;
+      } else {
+        const runs = await apiGet(`/repos/${repo}/actions/runs?per_page=50`, token);
+        run = (runs.body?.workflow_runs ?? []).find((r) => r.head_branch === tag || r.name === tag) ?? null;
+      }
       const hit = findReleases(releases, tag)[0];
-      verdict = judgeGating(run, 0, (hit?.assets ?? []).length);
+      const beforeIdx = argv.indexOf('--before');
+      const before = beforeIdx >= 0 ? Number(argv[beforeIdx + 1]) : 0;
+      verdict = judgeGating(run, before, (hit?.assets ?? []).length);
       break;
     }
     default:

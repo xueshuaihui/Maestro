@@ -1,0 +1,5 @@
+9: *   4. 安装包镜像：`hdiutil verify` 通过 + 挂载后对**镜像里那份** `.app` 再次验签
+169:        const verify = spawnSync('hdiutil', ['verify', args.dmg], { encoding: 'utf8' });
+170:        record('4a. 镜像完整性（hdiutil verify）', verify.status === 0, `exit ${verify.status}`);
+178:          record('4b. 镜像内应用复验', false, `挂载失败 exit ${attach.status}`);
+181:            verifySigned(path.join(mount, 'Maestro.app'), '4b. 镜像内应用复验');

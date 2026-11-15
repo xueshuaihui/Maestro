@@ -1,0 +1,33 @@
+{
+  "ac": "AC-39",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-39 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"lipo|-target universal-apple-darwin|universal2-apple-darwin\" .github/ scripts/",
+      "note": "不做跨架构装配（禁具体命令形态）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "",
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"macos-15-intel|macos-15|windows-latest\" .github/workflows/release.yml",
+      "note": "三平台各自在自家 runner 产出",
+      "expect": 0,
+      "exit": 0,
+      "lines": 3,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "48:            os: macos-15-intel\n52:            os: macos-15\n56:            os: windows-latest",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

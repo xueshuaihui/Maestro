@@ -1,0 +1,55 @@
+{
+  "ac": "AC-41",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "前者在 Releases 页标「预发布」、后者标正式版；两种情况下安装包文件名里的版本都与包内版本一致；改一处版本号后，产物名、包内版本、清单同步变化，不出现四处各写各的。",
+      "status": "通过",
+      "evidence": [
+        "unit-release-contract.test.js.log"
+      ],
+      "testNames": [
+        "AC-41 判定：v0.* 必须预发布，v1+ 必须正式"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    },
+    {
+      "index": 2,
+      "text": "- **来源唯一**：`node -p \"require('./package.json').version\"` 是版本号的唯一读取入口；`grep -c '^  \"version\"' package.json` **等于 1**（exit 0）。",
+      "status": "通过",
+      "evidence": [
+        "unit-release-contract.test.js.log"
+      ],
+      "testNames": [
+        "AC-41 判定：v0.* 必须预发布，v1+ 必须正式"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    },
+    {
+      "index": 3,
+      "text": "- **值相等**：`node -e` 读取 `package.json` / `desktop/src-tauri/Cargo.toml` / `desktop/src-tauri/tauri.conf.json` 三处版本，断言三者**逐字相等**；不做 `grep` 字面量扫描（这样才允许 cargo 必需字段存在）。",
+      "status": "通过",
+      "evidence": [
+        "unit-release-contract.test.js.log"
+      ],
+      "testNames": [
+        "AC-41 判定：v0.* 必须预发布，v1+ 必须正式"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    },
+    {
+      "index": 4,
+      "text": "- **派生物不写字面量**：`grep -REn \"0\\.[0-9]+\\.[0-9]+\" scripts/desktop/` **零命中（exit 1）**——构建/打包脚本不得再写死版本号，必须从 `package.json` 读取。",
+      "status": "通过",
+      "evidence": [
+        "unit-release-contract.test.js.log"
+      ],
+      "testNames": [
+        "AC-41 判定：v0.* 必须预发布，v1+ 必须正式"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

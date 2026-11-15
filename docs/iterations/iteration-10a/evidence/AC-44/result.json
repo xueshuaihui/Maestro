@@ -1,0 +1,72 @@
+{
+  "ac": "AC-44",
+  "title": "下载的包能装、能开，且与本机双击是同一个应用",
+  "face": "功能 / 开箱即用（v3 新增，与 AC-29 衔接）",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "a082296",
+  "startedAt": "2026-11-15T11:24:00.847Z",
+  "endedAt": "2026-11-15T11:24:12.698Z",
+  "durationMs": 11851,
+  "checksTotal": 11,
+  "checksPass": 11,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 4,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "release-smoke.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 4,
+        "pass": 4,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"hdiutil.*verify|镜像内应用复验\" scripts/desktop/smoke.mjs",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"0[.]0[.]0[.]0|listen.*all\" scripts/desktop/smoke.mjs",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [
+    "本机 macOS 面可实测（冒烟四件套已跑通）；Windows 面只能由 `windows-latest` 证明（本机无 `makensis`、无 `llvm-rc`），macOS 面通过不得替 Windows 面签字（需求 v4 F-20 连带项）。",
+    "真机安装/首启、Gatekeeper 放行、SmartScreen 引导属人工核验，不计入自动通过数。"
+  ],
+  "evidence": [
+    "arch-1.log",
+    "arch-2.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-release-smoke.test.js.attempt-1.log",
+    "unit-release-smoke.test.js.log",
+    "unit-release-smoke.test.js.summary.json",
+    "unit-release-smoke.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

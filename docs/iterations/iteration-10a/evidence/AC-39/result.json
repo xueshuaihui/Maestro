@@ -1,0 +1,72 @@
+{
+  "ac": "AC-39",
+  "title": "三平台安装包与校验和齐全且对得上",
+  "face": "功能 / 产物分发（v3 新增）",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "a082296",
+  "startedAt": "2026-11-15T11:23:56.626Z",
+  "endedAt": "2026-11-15T11:23:57.479Z",
+  "durationMs": 853,
+  "checksTotal": 8,
+  "checksPass": 8,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "release-contract.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"lipo|-target universal-apple-darwin|universal2-apple-darwin\" .github/ scripts/",
+      "exit": 1,
+      "expect": 1,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"macos-15-intel|macos-15|windows-latest\" .github/workflows/release.yml",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [
+    "静态契约由 release-contract.test.js 的 `judgeAssets` 单测承载（三平台 + 清单共 4 项、资产数恰为 4）；真实面由 `acc10-release-verify.mjs --check assets` 取远端资产名与字节数并本地重算 SHA-256。",
+    "禁止用仓内文件冒充远端资产（`docs/index.md` 710 行第 3 条）；缺任一平台即判不通过，不得用「另外两个平台已过」折抵。"
+  ],
+  "evidence": [
+    "arch-1.log",
+    "arch-2.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-release-contract.test.js.attempt-1.log",
+    "unit-release-contract.test.js.log",
+    "unit-release-contract.test.js.summary.json",
+    "unit-release-contract.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

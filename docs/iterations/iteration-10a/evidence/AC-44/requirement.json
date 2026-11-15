@@ -1,0 +1,25 @@
+{
+  "ac": "AC-44",
+  "title": "下载的包能装、能开，且与本机双击是同一个应用",
+  "face": "功能 / 开箱即用（v3 新增，与 AC-29 衔接）",
+  "refs": "BR-38, BR-02, BR-34",
+  "risk": "高（CI 产物与本机产物不一致是最容易漏的一类缺陷）",
+  "given": "用户从 Releases 页下载到与自己机器架构匹配的安装包。",
+  "when": "用户按常规方式安装并双击打开（macOS 挂载安装包拖入应用目录；Windows 运行安装程序）。",
+  "then": [
+    "应用正常启动、3 秒内出现主窗口并停在实例列表；不报「已损坏，无法打开」；不需要预装 Node / Rust / 不需要开终端；看到的应用与本机 `npm run desktop:build` 产出的 `Maestro.app` 是同一版本、同一行为。",
+    "- **macOS 面**（本机与 CI 的 macOS runner 都能跑）：`codesign --verify --deep --strict` 对 `.app` 与「挂载 dmg 后镜像里那份 `.app`」各验一次，两次都 exit 0；`hdiutil verify` 校验镜像完整性。",
+    "- **Windows 面**（只能由 `windows-latest` 跑，本机无 `makensis`）：对 `.exe` 做**可安装性最小证明**——解包/静默安装到临时目录后，包内可执行文件存在且 `--probe` 能写出 `ready`、无凭据 `GET /ui/labels` 返回 401。NSIS 交互式安装流程与 SmartScreen 首启**明确不在自动判定内**（§1.3 已排除），不计入通过数。",
+    "- 两个平台各自的冒烟结果**分开记账**：macOS 面通过而 Windows 面未经真实运行时，本 AC 判 **`阻塞`**，不得用 macOS 面替 Windows 面签字。"
+  ],
+  "judgement": "",
+  "jijian": "`test -f test/wp13/release-smoke.test.js && NODE_ENV=test node --test test/wp13/release-smoke.test.js` 断言产物冒烟四项（启动探针出现 `ready`、无凭据请求返回 401、签名验签通过、安装包镜像完整性校验通过 + 挂载后再次验签）；`# pass ≥ 1`、`# fail 0`；架构一致性硬校验（包内运行时架构 == 构建机架构，不符即失败）。**v4 修订（F-20 连带，按平台分开判）**：",
+  "fixture": "临时数据目录 + 独立端口，进程与挂载点退出时清理；不使用固定 `sleep` 判定就绪。",
+  "archText": "真机安装/首启、Gatekeeper 放行路径属人工核验项（§3.3 与附录 D-15），**不得**用本机自动化冒充已通过；冒烟脚本须覆盖「安装包里那份应用」而不是只验构建目录里的 `.app`。",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-44",
+  "level": "mock 实测",
+  "notes": [
+    "本机 macOS 面可实测（冒烟四件套已跑通）；Windows 面只能由 `windows-latest` 证明（本机无 `makensis`、无 `llvm-rc`），macOS 面通过不得替 Windows 面签字（需求 v4 F-20 连带项）。",
+    "真机安装/首启、Gatekeeper 放行、SmartScreen 引导属人工核验，不计入自动通过数。"
+  ]
+}

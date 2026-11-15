@@ -1,0 +1,59 @@
+{
+  "ac": "AC-38",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-38 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"secrets\\.\" .github/",
+      "note": "整份发布定义零密钥引用（exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "",
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"permissions:\" .github/workflows/release.yml",
+      "note": "permissions 声明恰好 1 处",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "contains": null,
+      "expectLines": 1,
+      "stdout": "35:permissions:",
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 3,
+      "cmd": "grep -REn \"ghp_|github_pat_|password|token:\" .github/",
+      "note": "无字面密钥前缀与 token: 赋值形态",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "",
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 4,
+      "cmd": "grep -REn \"github[.]token\" .github/workflows/release.yml",
+      "note": "令牌走 ${{ github.token }} 表达式",
+      "expect": 0,
+      "exit": 0,
+      "lines": 2,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "13:#   1. 凭据只用仓库自带令牌，写法 `${{ github.token }}`；顶层权限块只声明 contents: write\n136:          GH_TOKEN: ${{ github.token }}",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+13:#   1. 凭据只用仓库自带令牌，写法 `${{ github.token }}`；顶层权限块只声明 contents: write
+136:          GH_TOKEN: ${{ github.token }}

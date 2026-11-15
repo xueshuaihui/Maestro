@@ -1,0 +1,33 @@
+{
+  "ac": "AC-43",
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-43 · 架构检查",
+  "rule": "ERE（grep -E / grep -RE），禁 BRE \\| 交替；expect 1 = 零命中(exit 1)，0 = 有命中，null = 留证不判",
+  "checks": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"gh release view|[-][-]clobber\" .github/workflows/release.yml",
+      "note": "已存在则补传、覆盖式上传",
+      "expect": 0,
+      "exit": 0,
+      "lines": 3,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "20:#   5. 同名 Release 已存在则补传资产（--clobber），否则创建；并发互斥（AC-43）。\n151:          if gh release view \"$TAG\" >/dev/null 2>&1; then\n153:            gh release upload \"$TAG\" out/* --clobber",
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"fail-fast:[[:space:]]*false\" .github/workflows/release.yml",
+      "note": "任一平台失败不阻塞其它平台产出",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "contains": null,
+      "expectLines": null,
+      "stdout": "44:      fail-fast: false",
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+20:#   5. 同名 Release 已存在则补传资产（--clobber），否则创建；并发互斥（AC-43）。
+151:          if gh release view "$TAG" >/dev/null 2>&1; then
+153:            gh release upload "$TAG" out/* --clobber

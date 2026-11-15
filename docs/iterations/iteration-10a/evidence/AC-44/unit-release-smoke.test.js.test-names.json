@@ -1,0 +1,13 @@
+{
+  "ac": "AC-44",
+  "file": "release-smoke.test.js",
+  "count": 4,
+  "subtests": [
+    "AC-44 macOS 面：冒烟四件套全过",
+    "AC-44 安装包：dmg 镜像完整性可独立复核",
+    "AC-44 跨平台口径：非 Windows 平台打包脚本必须显式失败",
+    "AC-40 冒烟脚本不使用固定 sleep 判定就绪"
+  ],
+  "notOk": [],
+  "skips": []
+}

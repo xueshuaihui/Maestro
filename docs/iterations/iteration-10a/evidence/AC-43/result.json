@@ -1,0 +1,71 @@
+{
+  "ac": "AC-43",
+  "title": "失败重跑与重复 tag 不产生重复 Release",
+  "face": "非功能 / 幂等与可恢复（v3 新增）",
+  "verdict": "通过",
+  "level": "mock 实测",
+  "head": "a082296",
+  "startedAt": "2026-11-15T11:24:00.017Z",
+  "endedAt": "2026-11-15T11:24:00.802Z",
+  "durationMs": 785,
+  "checksTotal": 8,
+  "checksPass": 8,
+  "checksFail": 0,
+  "checksInfo": 0,
+  "thenCount": 1,
+  "fileCount": 1,
+  "unit": [
+    {
+      "file": "release-contract.test.js",
+      "attempt": 1,
+      "attempts": 1,
+      "exit": 0,
+      "tap": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skipped": 0
+      },
+      "effectiveSource": "整文件 F-16",
+      "effectiveOk": true,
+      "scoped": null
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"gh release view|[-][-]clobber\" .github/workflows/release.yml",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"fail-fast:[[:space:]]*false\" .github/workflows/release.yml",
+      "exit": 0,
+      "expect": 0,
+      "ok": true,
+      "informational": false
+    }
+  ],
+  "skips": [],
+  "attemptNotes": [],
+  "notes": [
+    "真实面：同名 Release 计数为 1 且资产齐全；静态契约断言「已存在则补传 / 否则创建」与 `--clobber` 覆盖式上传。"
+  ],
+  "evidence": [
+    "arch-1.log",
+    "arch-2.log",
+    "arch-checks.json",
+    "fixture-roots.json",
+    "requirement.json",
+    "then-map.json",
+    "unit-release-contract.test.js.attempt-1.log",
+    "unit-release-contract.test.js.log",
+    "unit-release-contract.test.js.summary.json",
+    "unit-release-contract.test.js.test-names.json"
+  ],
+  "fixtureRootCount": 0,
+  "failedChecks": []
+}

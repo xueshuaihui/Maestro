@@ -69,9 +69,9 @@ function main() {
     (r, out) => out.trim() === '0', '输出 0');
   add('界面层 / harness 中文零命中', `grep -REn "[一-龥]" desktop/ui/ desktop/harness/`,
     runCmd(`grep -REn "[一-龥]" desktop/ui/ desktop/harness/`, { timeoutMs: 30_000 }), 1, '零命中 exit 1（ERE 中文字符类）');
-  add('AC 条数 37', `grep -cE '^\\*\\*AC-' docs/iterations/iteration-10a/requirement.md`,
+  add('AC 条数 44', `grep -cE '^\\*\\*AC-' docs/iterations/iteration-10a/requirement.md`,
     runCmd(`grep -cE '^\\*\\*AC-' docs/iterations/iteration-10a/requirement.md`, { timeoutMs: 15_000 }),
-    (r, out) => out.trim() === '37', '恰好 37');
+    (r, out) => out.trim() === '44', '恰好 44（v4：AC-01~37 + 发布面 AC-38~44）');
   add('USAGE_LINES 25 行', `node -p "require('./src/cli/labels.js').USAGE_LINES.length"`,
     runCmd(`node -p "require('./src/cli/labels.js').USAGE_LINES.length"`, { timeoutMs: 15_000 }),
     (r, out) => out.trim() === '25', '25 行');

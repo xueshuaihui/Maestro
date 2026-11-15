@@ -1,0 +1,67 @@
+{
+  "ac": "AC-38",
+  "level": "mock 实测",
+  "rule": "Then 逐字原文 → 同名契约测试（拆分文档 §4）→ F-16 机检 + 架构检查独立复核；状态取复核结论",
+  "items": [
+    {
+      "index": 1,
+      "text": "不需要任何人在本机构建或上传：构建记录出现在 Actions 页且可查看每一步结果；全绿后 Releases 页出现该版本条目并标为「预发布」；维护者全程没有填写过个人 token。",
+      "status": "通过",
+      "evidence": [
+        "unit-release-contract.test.js.log"
+      ],
+      "testNames": [
+        "AC-38 触发条件：v* tag 与手动试跑双通道",
+        "AC-38 凭据口径：只用仓库自带令牌，全文件无 secrets. 引用",
+        "AC-38 权限：permissions 声明恰好一处且只含 contents: write",
+        "AC-38 判定：存在非草稿 Release 才算发布成功"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    },
+    {
+      "index": 2,
+      "text": "- `grep -REn \"secrets\\.\" .github/` **零命中（exit 1）**——即整份发布定义不出现任何 `secrets.` 引用（含 `secrets.GITHUB_TOKEN`）；令牌一律用 `${{ github.token }}` 表达式；",
+      "status": "通过",
+      "evidence": [
+        "unit-release-contract.test.js.log"
+      ],
+      "testNames": [
+        "AC-38 触发条件：v* tag 与手动试跑双通道",
+        "AC-38 凭据口径：只用仓库自带令牌，全文件无 secrets. 引用",
+        "AC-38 权限：permissions 声明恰好一处且只含 contents: write",
+        "AC-38 判定：存在非草稿 Release 才算发布成功"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    },
+    {
+      "index": 3,
+      "text": "- `grep -REn \"permissions:\" .github/workflows/release.yml` **恰好 1 条命中（exit 0）**，且其下只声明 `contents: write`（`grep -A3 \"permissions:\" .github/workflows/release.yml` 中出现其它权限键即判失败）；",
+      "status": "通过",
+      "evidence": [
+        "unit-release-contract.test.js.log"
+      ],
+      "testNames": [
+        "AC-38 触发条件：v* tag 与手动试跑双通道",
+        "AC-38 凭据口径：只用仓库自带令牌，全文件无 secrets. 引用",
+        "AC-38 权限：permissions 声明恰好一处且只含 contents: write",
+        "AC-38 判定：存在非草稿 Release 才算发布成功"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    },
+    {
+      "index": 4,
+      "text": "- `grep -REn \"ghp_|github_pat_|password|token:\" .github/` **零命中（exit 1）**（`github.token` 表达式不算命中，锚点只认字面密钥前缀与 `token:` 赋值形态）。",
+      "status": "通过",
+      "evidence": [
+        "unit-release-contract.test.js.log"
+      ],
+      "testNames": [
+        "AC-38 触发条件：v* tag 与手动试跑双通道",
+        "AC-38 凭据口径：只用仓库自带令牌，全文件无 secrets. 引用",
+        "AC-38 权限：permissions 声明恰好一处且只含 contents: write",
+        "AC-38 判定：存在非草稿 Release 才算发布成功"
+      ],
+      "mappingNote": "契约测试中带本 AC 编号的用例名（逐字断言由该测试文件承载）"
+    }
+  ]
+}

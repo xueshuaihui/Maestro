@@ -80,7 +80,7 @@ jobs:
         run: node scripts/desktop/build.mjs
 
       - name: 质量门禁（复用仓库既有判定）
-        run: node scripts/desktop/gate.mjs
+        run: node scripts/desktop/gate.mjs --no-flake-confirm
 
       - name: 版本对齐校验
         run: node -e "import('./scripts/desktop/version.mjs').then(m => { console.log('version-aligned', m.assertAligned()); })"

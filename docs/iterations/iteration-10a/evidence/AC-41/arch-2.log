@@ -1,0 +1,4 @@
+27:export function readVersion() {
+63:  return { version: readVersion(), cargo: readCargoVersion(), tauri: readTauriVersion() };
+73:    version = readVersion();
+93:export function assertAligned() {
