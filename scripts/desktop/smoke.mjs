@@ -93,6 +93,42 @@ function parseArgs(argv) {
   return out;
 }
 
+/**
+ * 桌面通道没起来时的现场诊断（只读 + 一次受控试跑，不改任何状态）。
+ *
+ * 为什么需要：Windows 首跑实测「应用可启动」通过、但 `.orch/desktop.json` 10s 未出现，
+ * 而壳层把 daemon 的 stdout/stderr 都接到 null，CI 日志里什么也看不到。
+ * 这里列出 `.orch` 实际内容，并用**同一份包内运行时**直接起一次 daemon 抓输出，
+ * 让下一次红是可归因的。
+ */
+async function diagnoseDaemon(shellPath, root) {
+  const orchDir = path.join(root, '.orch');
+  let listing = '(不存在)';
+  try {
+    listing = fs.readdirSync(orchDir).join(', ') || '(空目录)';
+  } catch {
+    /* 保持 (不存在) */
+  }
+  process.stdout.write(`[smoke] 诊断：${orchDir} 内容 = ${listing}\n`);
+
+  const dir = path.dirname(shellPath);
+  const nodeName = process.platform === 'win32' ? 'node.exe' : 'node';
+  const node = path.join(dir, 'runtime', nodeName);
+  const entry = path.join(dir, 'src', 'daemon', 'serve-entry.js');
+  if (!fs.existsSync(node) || !fs.existsSync(entry)) {
+    process.stdout.write(`[smoke] 诊断：包内运行时缺失（node=${fs.existsSync(node)} entry=${fs.existsSync(entry)}）\n`);
+    return;
+  }
+  const probe = spawnSync(node, [entry, '--project', root, '--desktop'], {
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, MAESTRO_SMOKE_DIAG: '1' },
+  });
+  const out = `${probe.stdout ?? ''}${probe.stderr ?? ''}`.trim();
+  process.stdout.write(`[smoke] 诊断：直起 daemon exit=${probe.status} signal=${probe.signal ?? '-'}\n`);
+  for (const line of out.split('\n').slice(0, 20)) process.stdout.write(`[smoke]   | ${line}\n`);
+}
+
 async function smokeApp(shellPath, root) {
   const probe = path.join(root, 'probe.jsonl');
   const ctl = path.join(root, 'ctl');
@@ -131,6 +167,7 @@ async function smokeApp(shellPath, root) {
       record('2. 鉴权守卫（无凭据 401）', res.status === 401, `HTTP ${res.status}`);
     } catch (err) {
       record('2. 鉴权守卫（无凭据 401）', false, err.message);
+      await diagnoseDaemon(shellPath, root);
     }
   } finally {
     // 收尾：ctl 触发托盘退出（有实例时需确认），再兜底 kill。
