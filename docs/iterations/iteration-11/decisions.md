@@ -337,3 +337,10 @@
   3. **探针判读口径（AC-06 机检补句）**：异常类计数按 `(kind, instanceId)` 意图组**去重**；断言去重后计数 1、末条 `mergedCount === 4`、正文含「共 4 次」、各更新意图的 `mergedCount` 单调递增。AC-03 的「同类通知计数为 1」同口径（单异常天然 1 条）。
   4. `notify.js` 退化模式（未注入 `clock.schedule`）维持「即发 + 窗口抑制」不变。
 - **影响面**：`src/daemon/notify.js` 异常组实现、`test/wp14/notify.test.js` AC-06 ③ 断言、需求 AC-06 机检补句（v8，只补不减）、WP-9 投递任务的替换语义、S3 验收判读。
+
+## D-47 · `src/cli/workflows.js` 导出 `workflowDetailOf`，WP-3 的 `workflowDetailText` 收敛为转发
+
+- **触发点**：WP-3 回执 ⑥.1：角色/技能校验原因已直接 import CLI 的 `detailOf`（`src/cli/roles.js:111`）零复刻；但工作流的 `workflowDetailOf`（`src/cli/workflows.js:89`）是私有函数，WP-3 只能用同批 labels 常量复刻组装（`assets-view.js:655`），逐字一致性目前由 AC-23 断言锚定。
+- **依据**：D-11 的「不得修改」清单只点名 `src/cli/main.js` 与 `src/cli/render.js`，未含 `src/cli/workflows.js`；「消除复刻」符合 BR-26/判据精神（同源优于复刻），改动是纯导出（零行为变化）。
+- **决定**：WP-7 挂 HTTP 时**授权**在 `src/cli/workflows.js` 给 `workflowDetailOf` 加 `export`（只加 `export` 关键字，不改函数体），`assets-view.js` 的 `workflowDetailText` 收敛为 `import` + 转发；AC-23 的逐字断言保持，作为回归护栏。若实现时发现 `workflowDetailOf` 依赖 CLI 上下文无法直接导出，维持现状（复刻 + 断言锚定）并在回执说明，不算缺陷。
+- **影响面**：`src/cli/workflows.js`（WP-7）、`src/daemon/assets-view.js`、AC-23 断言。
