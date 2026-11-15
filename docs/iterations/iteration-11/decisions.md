@@ -362,3 +362,11 @@
 - **触发点**：WP-5 回执 ⑥.1：AC-29 的 `release-flow` 是项目夹具，仓库内置图只有 `single` / `code-loop` / `task-loop`；若「文件不存在 → 定义 空」一刀切，工作流库内置行的「查看画布」必然空转。
 - **决定**：`buildCanvas` 在项目文件缺失且 id 命中内置图时，按 `projectBuiltinWorkflows` 的只读定义投影出画布（`readable=true`）；未命中内置才是「定义 空」（AC-31 现场二不冲突——现场二语境是项目工作流）。复测边 `retest` 保留原词不归一（既有 `EDGE_KINDS`）；未知 `node_type` 按角色节点渲染并保留定义 id（与 graph.js 同口径）。`nodes:[]` / 0 字节叠加 `valid=false` 按 CLI 逐字口径（B-1 正交明文允许）。
 - **影响面**：`src/daemon/canvas.js`（已实现）、WP-7 挂接、WP-8 渲染分支。
+
+## D-50 · approvals 接缝为内存覆盖层（不入 totals）；`closeAllConnections` 接受为停机确定性配套
+
+- **触发点**：WP-7 回执 ⑦。
+- **决定**：
+  1. `POST /__test__/approvals` 用既有 `buildApproval` 构造内存覆盖行并入快照投影，**不写盘、不改状态、不计入 `totals.pendingApprovals`**；需要「可处置审批」的测试走「先起核再写盘 / mock 宿主真实等待会话」主路径（D-45）。接缝只覆盖轻量队列投影验证。
+  2. `http/server.js` 的 `closeListener` 补 `closeAllConnections`：活跃 SSE 连接会令 `server.close()` 回调永不触发（诊断实测 close 卡 >3s，修复后 7ms），属停机确定性的必要配套，**不视为越权**；既有 8 路径行为不变。
+- **影响面**：`src/daemon/http/*`、WP-8/WP-9 的夹具口径（approvals 接缝仅轻量验证）。

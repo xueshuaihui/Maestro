@@ -37,6 +37,13 @@ import { EDGE_KINDS, NODE_TYPES } from '../registry/workflow-schema.js';
 import { parseYaml } from '../registry/yaml-lite.js';
 import { GRAPHS } from '../templates/index.js';
 import {
+  DESKTOP_ASSET_BUILTIN_FILE_PREFIX,
+  DESKTOP_CANVAS_EMPTY,
+  DESKTOP_CANVAS_INVALID,
+  DESKTOP_CANVAS_SUBFLOW_ROW,
+  DESKTOP_CANVAS_SUBFLOW_UNKNOWN,
+  DESKTOP_CANVAS_TITLE,
+  DESKTOP_CANVAS_UNREADABLE,
   NODE_TYPE_LABEL,
   REGISTRY_ERROR,
   TEMPLATE_LABEL,
@@ -46,23 +53,23 @@ import {
 } from '../cli/labels.js';
 
 /**
- * 画布侧中文文案基线（附录 A-7 逐字）：
+ * 画布侧中文文案键（附录 A-7 逐字；中文唯一来源 = src/cli/labels.js，BR-26）：
  * - TITLE_TEMPLATE / VALIDATION_BADGE 供 WP-8 拼标题行与标题旁标注；
  * - EMPTY_TEXT / UNREADABLE_TEXT 是两条降级文案（分工按 BR-19 固定）；
  * - SUBFLOW_ROW / SUBFLOW_UNKNOWN 与实例流程图同一套层名前缀
  *   （同 src/daemon/http/labels.js 的 DESKTOP_SUBFLOW_ROW / _UNKNOWN 逐字）。
  */
 export const CANVAS_LABELS = Object.freeze({
-  TITLE_TEMPLATE: '工作流 {name} · 定义态 · {n} 节点 · {m} 条边',
-  VALIDATION_BADGE: '校验不通过',
-  EMPTY_TEXT: '定义 空',
-  UNREADABLE_TEXT: '定义不可读 · 仅显示可解析部分',
-  SUBFLOW_ROW: '子工作流：{title} · {n} 角色',
-  SUBFLOW_UNKNOWN: '子工作流 {id} · 角色数未知',
+  TITLE_TEMPLATE: DESKTOP_CANVAS_TITLE,
+  VALIDATION_BADGE: DESKTOP_CANVAS_INVALID,
+  EMPTY_TEXT: DESKTOP_CANVAS_EMPTY,
+  UNREADABLE_TEXT: DESKTOP_CANVAS_UNREADABLE,
+  SUBFLOW_ROW: DESKTOP_CANVAS_SUBFLOW_ROW,
+  SUBFLOW_UNKNOWN: DESKTOP_CANVAS_SUBFLOW_UNKNOWN,
 });
 
 /** 与 workflows.js 的 fileOf 同字：内置资产的文件前缀（错误作用域用）。 */
-const BUILTIN_FILE_PREFIX = '内置 ';
+const BUILTIN_FILE_PREFIX = DESKTOP_ASSET_BUILTIN_FILE_PREFIX;
 
 const TRANSITION_DETAIL_KEY = Object.freeze({
   entryBackflow: 'entryBackflow',

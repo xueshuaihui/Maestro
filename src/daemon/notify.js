@@ -12,46 +12,58 @@
  * 3. 任何单点失败（状态读不到、偏好读不到）都不得中断后续意图的产生：
  *    读失败按缺省处理，该条意图丢弃，下一条照常。
  *
- * 意图文案的字面量全部集中在 NOTIFY_LABELS（A-1 / D-26：正文恒为 5 段、
- * ` · ` 分隔、取不到的段渲染 `—` 不省略），后续由 HTTP 批次搬进文案键表。
+ * 意图文案全部来自 src/cli/labels.js 的 A-11 键（A-1 / D-26：正文恒为 5 段、
+ * ` · ` 分隔、取不到的段渲染 `—` 不省略），本模块零中文字面量。
  */
 /** 去重窗口常量（AC-06）：同一升级 10s 一次；同类异常 60s 合并。 */
 export const DEDUP = Object.freeze({ ESCALATION_MS: 10_000, ANOMALY_MS: 60_000 });
 
+import {
+  DESKTOP_NOTIFY_CATEGORY_ANOMALY,
+  DESKTOP_NOTIFY_CATEGORY_COMPLETED,
+  DESKTOP_NOTIFY_CATEGORY_ESCALATION,
+  DESKTOP_NOTIFY_MERGE_COUNT_PREFIX,
+  DESKTOP_NOTIFY_MERGE_COUNT_SUFFIX,
+  DESKTOP_NOTIFY_MERGE_LATEST_PREFIX,
+  DESKTOP_NOTIFY_SEG_ESCALATION,
+  DESKTOP_NOTIFY_SEG_INSTANCE,
+  DESKTOP_NOTIFY_SEG_MISSING,
+  DESKTOP_NOTIFY_SEG_NODE,
+  DESKTOP_NOTIFY_SEG_ROUND_PREFIX,
+  DESKTOP_NOTIFY_SEG_ROUND_SUFFIX,
+  DESKTOP_NOTIFY_SEG_SEPARATOR,
+  DESKTOP_NOTIFY_TITLE_PREFIX,
+  HEALTH_LABEL,
+  INSTANCE_LABEL,
+} from '../cli/labels.js';
+
 /**
- * 通知文案字面量（A-1 / A-2 逐字基线）。标题形如 `通知 升级待处理 · INST-001`；
+ * 通知文案键（A-1 / A-2 逐字基线）。标题形如 `通知 升级待处理 · INST-001`；
  * 正文五段：`实例 {id} · 升级 {编号} · 节点 {节点} {角色} · 第 {n} 轮 · {原因摘要}`。
+ * 中文一律来自 src/cli/labels.js（BR-26），本模块零中文字面量；键名见附录 A-11。
  */
 export const NOTIFY_LABELS = Object.freeze({
-  TITLE_PREFIX: '通知',
+  TITLE_PREFIX: DESKTOP_NOTIFY_TITLE_PREFIX,
   CATEGORY: Object.freeze({
-    escalation: '升级待处理',
-    completed: '实例完成',
-    anomaly: '实例异常',
+    escalation: DESKTOP_NOTIFY_CATEGORY_ESCALATION,
+    completed: DESKTOP_NOTIFY_CATEGORY_COMPLETED,
+    anomaly: DESKTOP_NOTIFY_CATEGORY_ANOMALY,
   }),
-  SEG_INSTANCE: '实例',
-  SEG_ESCALATION: '升级',
-  SEG_NODE: '节点',
-  SEG_ROUND_PREFIX: '第',
-  SEG_ROUND_SUFFIX: '轮',
-  SEG_MISSING: '—',
-  SEG_SEPARATOR: ' · ',
-  /** 实例状态词（与既有状态词表同口径，不自造）。 */
-  STATE: Object.freeze({
-    created: '已创建',
-    running: '运行中',
-    completed: '已完成',
-    failed: '失败',
-    cancelled: '已取消',
-    interrupted: '已中断',
-    suspended: '已挂起',
-  }),
+  SEG_INSTANCE: DESKTOP_NOTIFY_SEG_INSTANCE,
+  SEG_ESCALATION: DESKTOP_NOTIFY_SEG_ESCALATION,
+  SEG_NODE: DESKTOP_NOTIFY_SEG_NODE,
+  SEG_ROUND_PREFIX: DESKTOP_NOTIFY_SEG_ROUND_PREFIX,
+  SEG_ROUND_SUFFIX: DESKTOP_NOTIFY_SEG_ROUND_SUFFIX,
+  SEG_MISSING: DESKTOP_NOTIFY_SEG_MISSING,
+  SEG_SEPARATOR: DESKTOP_NOTIFY_SEG_SEPARATOR,
+  /** 实例状态词（既有 INSTANCE_LABEL 同源引用，不自造）。 */
+  STATE: INSTANCE_LABEL,
   /** 健康度「需关注」档；其余档位不出现在异常摘要里。 */
-  HEALTH_ATTENTION: '需关注',
+  HEALTH_ATTENTION: HEALTH_LABEL.attention,
   /** 合并形态：`已中断，共 4 次，最近：…`。 */
-  MERGE_COUNT_PREFIX: '共',
-  MERGE_COUNT_SUFFIX: '次',
-  MERGE_LATEST_PREFIX: '最近：',
+  MERGE_COUNT_PREFIX: DESKTOP_NOTIFY_MERGE_COUNT_PREFIX,
+  MERGE_COUNT_SUFFIX: DESKTOP_NOTIFY_MERGE_COUNT_SUFFIX,
+  MERGE_LATEST_PREFIX: DESKTOP_NOTIFY_MERGE_LATEST_PREFIX,
 });
 
 const L = NOTIFY_LABELS;
@@ -77,7 +89,7 @@ const L = NOTIFY_LABELS;
  */
 export function createNotifier({ bus, getInstanceStates, clock, prefsRead } = {}) {
   if (!bus || typeof bus.subscribe !== 'function') {
-    throw new TypeError('createNotifier: bus 必须实现 subscribe');
+    throw new TypeError('createNotifier: bus must implement subscribe');
   }
 
   const nowFn = typeof clock?.now === 'function' ? clock.now : Date.now;

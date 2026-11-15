@@ -7,9 +7,8 @@
  *   调用只加载一次注册表），不跨请求缓存。
  * - 校验失败原因与 CLI validate 原文逐字一致：角色与技能直接复用 CLI 侧的
  *   同一组装函数（src/cli/roles.js 导出的 detailOf，即 role validate /
- *   skill validate 行明细的原文来源）；工作流侧的组装函数未从
- *   src/cli/workflows.js 导出，这里用同一批 labels 常量按同一段落组装，
- *   待该函数导出后可收敛回一处（本 WP 无权改 CLI 文件）。
+ *   skill validate 行明细的原文来源）；工作流侧经 D-47 收敛为对
+ *   src/cli/workflows.js 导出的 workflowDetailOf 的转发，零复刻。
  * - 任何接口不得写 .orch/roles|skills|workflows（AC-25）：本模块对这三个
  *   目录只做 stat / readdir / read，没有任何写调用。
  * - 降级口径（AC-24 / AC-46 / A-5）：项目资产目录存在但不可读 → dirUnreadable
@@ -31,48 +30,61 @@ import { parseSkillFile } from '../registry/skill-file.js';
 import { assetsRoot } from '../registry/assets.js';
 import { GRAPHS } from '../templates/index.js';
 import { detailOf } from '../cli/roles.js';
+import { workflowDetailOf } from '../cli/workflows.js';
 import {
+  DESKTOP_ASSET_BUILTIN_FILE_PREFIX,
+  DESKTOP_ASSET_GROUP_PLACEHOLDER,
+  DESKTOP_ASSET_ITEM_UNREADABLE,
+  DESKTOP_ASSET_KIND_ROLES,
+  DESKTOP_ASSET_KIND_SKILLS,
+  DESKTOP_ASSET_KIND_WORKFLOWS,
+  DESKTOP_ASSET_MISSING,
+  DESKTOP_ASSET_SOURCE_BUILTIN,
+  DESKTOP_ASSET_SOURCE_PROJECT,
+  DESKTOP_ASSET_UNREADABLE,
+  DESKTOP_ASSET_VALIDATION_FAIL,
+  DESKTOP_ASSET_VALIDATION_PASS,
+  DESKTOP_ASSET_VALIDATION_UNREADABLE,
+  DESKTOP_ASSET_VALIDATION_UNKNOWN,
   GROUP_LABEL,
   NODE_TYPE_LABEL,
-  REGISTRY_ERROR,
   TEMPLATE_LABEL,
-  WORKFLOW_REASON_TEXT,
-  WORKFLOW_TRANSITION_TEXT,
-  YAML_DETAIL,
 } from '../cli/labels.js';
 
-/** 资产库侧中文文案基线（附录 A-5 逐字），供 WP-7 搬运、WP-8 直接消费。 */
+/**
+ * 资产库侧中文文案键（附录 A-5 逐字；中文唯一来源 = src/cli/labels.js，BR-26，
+ * 本模块零中文字面量），供 WP-8 直接消费。
+ */
 export const ASSETS_LABELS = Object.freeze({
-  SOURCE_BUILTIN: '内置',
-  SOURCE_PROJECT: '项目',
-  VALIDATION_PASS: '通过',
-  VALIDATION_FAIL: '不通过',
-  VALIDATION_UNKNOWN: '未校验',
-  VALIDATION_UNREADABLE: '不可读',
-  MISSING: '缺失',
-  KIND_ROLES: '角色',
-  KIND_SKILLS: '技能',
-  KIND_WORKFLOWS: '工作流',
-  GROUP_PLACEHOLDER: '—',
-  DIR_UNREADABLE_LINE: '资产不可读 · {dir}',
-  UNREADABLE_ROW: '{kind} {id} · 不可读',
+  SOURCE_BUILTIN: DESKTOP_ASSET_SOURCE_BUILTIN,
+  SOURCE_PROJECT: DESKTOP_ASSET_SOURCE_PROJECT,
+  VALIDATION_PASS: DESKTOP_ASSET_VALIDATION_PASS,
+  VALIDATION_FAIL: DESKTOP_ASSET_VALIDATION_FAIL,
+  VALIDATION_UNKNOWN: DESKTOP_ASSET_VALIDATION_UNKNOWN,
+  VALIDATION_UNREADABLE: DESKTOP_ASSET_VALIDATION_UNREADABLE,
+  MISSING: DESKTOP_ASSET_MISSING,
+  KIND_ROLES: DESKTOP_ASSET_KIND_ROLES,
+  KIND_SKILLS: DESKTOP_ASSET_KIND_SKILLS,
+  KIND_WORKFLOWS: DESKTOP_ASSET_KIND_WORKFLOWS,
+  GROUP_PLACEHOLDER: DESKTOP_ASSET_GROUP_PLACEHOLDER,
+  DIR_UNREADABLE_LINE: DESKTOP_ASSET_UNREADABLE,
+  UNREADABLE_ROW: DESKTOP_ASSET_ITEM_UNREADABLE,
 });
 
 /** 技能详情正文摘要的截断上限（AC-21：恰好定义一处、使用一处）。 */
 export const BODY_PREVIEW_LINES = 20;
 
 /** 工作流校验错误里内置资产的文件前缀（与 workflows.js 的 fileOf 同字）。 */
-const BUILTIN_FILE_PREFIX = '内置 ';
+const BUILTIN_FILE_PREFIX = DESKTOP_ASSET_BUILTIN_FILE_PREFIX;
 
 const KINDS = new Set(['roles', 'skills', 'workflows']);
 
-/** 与 CLI 各命令一致的 `{name}` 占位替换；缺值成空串，不出现 undefined。 */
-function fill(template, vars) {
-  return String(template).replace(/\{(\w+)\}/g, (match, key) => {
-    const value = vars?.[key];
-    return value === undefined || value === null ? '' : String(value);
-  });
-}
+/**
+ * 工作流校验原因 → 人话明细（D-47 收敛）：CLI 侧的 `workflowDetailOf`
+ * （src/cli/workflows.js）已导出，这里直接转发，复刻删除——与 CLI validate
+ * 行明细天然同源，AC-23 的逐字断言继续作回归护栏。
+ */
+const workflowDetailText = workflowDetailOf;
 
 function compareText(a, b) {
   const left = typeof a === 'string' ? a : '';
@@ -643,39 +655,7 @@ function showSkillDetail(root, id, registry) {
   return { found: false, kind: 'skills', id };
 }
 
-// 工作流原因码的组装与 CLI 同一段落（workflows.js 的私有函数未导出，本 WP
-// 无权改 CLI 文件；文字全部来自 labels.js 的同一批常量，逐字一致）。
-const TRANSITION_DETAIL_KEY = Object.freeze({
-  entryBackflow: 'entryBackflow',
-  escalateForward: 'escalateOutbound',
-  humanCondition: 'humanEdgeCondition',
-  backflowTarget: 'backflowTarget',
-});
-
-function workflowDetailText(err) {
-  const code = err?.code;
-  const params = { ...(err?.params ?? {}) };
-  if (code === 'YAML_PARSE_FAILED') {
-    params.detail = fill(YAML_DETAIL[params.detailKey] ?? '', params.detailParams ?? {});
-    if (params.line === undefined || params.line === null) params.line = err?.line ?? null;
-    return fill(REGISTRY_ERROR.YAML_PARSE_FAILED, params);
-  }
-  if (code === 'WORKFLOW_TRANSITION_ILLEGAL') {
-    const slot = TRANSITION_DETAIL_KEY[params.reason] ?? params.reason;
-    params.detail = fill(WORKFLOW_TRANSITION_TEXT[slot] ?? '', params);
-  }
-  if (code === 'WORKFLOW_SUB_CYCLE' && Array.isArray(params.chain)) {
-    const chain = params.chain;
-    const open = chain.length > 1 && chain[0] === chain[chain.length - 1] ? chain.slice(0, -1) : chain;
-    params.chain = open.join(' → ');
-  }
-  if (code === 'WORKFLOW_EDGE_INVALID') {
-    if (params.value !== undefined) params.detail = `${params.detail}: ${params.value}`;
-    else if (params.edge !== undefined) params.detail = `${params.detail}: ${params.edge}`;
-  }
-  const template = WORKFLOW_REASON_TEXT[code];
-  return template === undefined ? String(code ?? '') : fill(template, params);
-}
+// 工作流原因码的组装已收敛为对 CLI `workflowDetailOf` 的转发（D-47，见上文）。
 
 function nodeTypeCountsOf(nodes) {
   const order = [];

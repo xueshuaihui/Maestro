@@ -18,27 +18,36 @@
 
 import { createClient } from './client.js';
 import { createStore } from '../persistence/instance-store.js';
-import { ROLE_LABEL, ESCALATION_LABEL, APPROVAL_LABEL } from '../cli/labels.js';
+import {
+  DESKTOP_QUEUE_ACTION_PREFIX,
+  DESKTOP_QUEUE_CONCLUSIONS,
+  DESKTOP_QUEUE_DISABLED_HINT,
+  DESKTOP_QUEUE_DISCONNECTED,
+  DESKTOP_QUEUE_EMPTY,
+  DESKTOP_QUEUE_STATE_UNREADABLE,
+  ESCALATION_LABEL,
+  APPROVAL_LABEL,
+  ROLE_LABEL,
+} from '../cli/labels.js';
 
-/** 队列侧中文文案基线（附录 A-3 / A-4 / A-5 逐字）。 */
+/**
+ * 队列侧中文文案键（附录 A-3 / A-4 / A-5 逐字；中文唯一来源 = src/cli/labels.js，
+ * 本模块零中文字面量）。导出名保持不变，供既有测试与界面直接消费。
+ */
 export const QUEUE_LABELS = Object.freeze({
-  EMPTY: '待处理 无',
-  DISCONNECTED: '已断开 · 正在重连…',
-  STATE_UNREADABLE: '状态不可读',
-  ACTION_PREFIX: '动作',
-  PASS_UNAVAILABLE: '该升级只能重派或终止',
+  EMPTY: DESKTOP_QUEUE_EMPTY,
+  DISCONNECTED: DESKTOP_QUEUE_DISCONNECTED,
+  STATE_UNREADABLE: DESKTOP_QUEUE_STATE_UNREADABLE,
+  ACTION_PREFIX: DESKTOP_QUEUE_ACTION_PREFIX,
+  PASS_UNAVAILABLE: DESKTOP_QUEUE_DISABLED_HINT,
 });
 
 /**
- * D-3 错误映射表：核心错误码 → 面向用户的固定结论词。
- * 结论词供「已处理（{结论}），无需再次处理」一类模板取值（D-13）。
+ * D-3 错误映射表：核心错误码 → 面向用户的固定结论词（labels.js 的
+ * DESKTOP_QUEUE_CONCLUSIONS 同源引用）。结论词供「已处理（{结论}），无需再次
+ * 处理」一类模板取值（D-13）。
  */
-export const QUEUE_ERROR_CONCLUSIONS = Object.freeze({
-  ESCALATION_NOT_PENDING: '已处理',
-  INSTANCE_NOT_SUSPENDED: '不是挂起状态',
-  APPROVAL_NOT_PENDING: '已处理',
-  APPROVAL_SESSION_GONE: '已失效',
-});
+export const QUEUE_ERROR_CONCLUSIONS = DESKTOP_QUEUE_CONCLUSIONS;
 
 const ESCALATION_DECISIONS = new Set(['pass', 'retry']);
 const APPROVAL_DECISIONS = new Set(['allow', 'deny']);

@@ -25,13 +25,22 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createStore } from '../persistence/instance-store.js';
+import {
+  DESKTOP_EVIDENCE_LOG_ON_HOST,
+  DESKTOP_EVIDENCE_TRUNCATED,
+  DESKTOP_EVIDENCE_UNPROVIDED,
+  DESKTOP_EVIDENCE_UNREADABLE,
+} from '../cli/labels.js';
 
-/** 证据侧中文文案基线（附录 A-8 / BR-21 逐字）。 */
+/**
+ * 证据侧中文文案键（附录 A-8 / BR-21 逐字；中文唯一来源 = src/cli/labels.js，
+ * 本模块零中文字面量）。
+ */
 export const EVIDENCE_LABELS = Object.freeze({
-  UNPROVIDED: '未提供',
-  LOG_ON_HOST: '完整日志留在宿主',
-  UNREADABLE: '引用不可读',
-  TRUNCATED: '体积超限已截断',
+  UNPROVIDED: DESKTOP_EVIDENCE_UNPROVIDED,
+  LOG_ON_HOST: DESKTOP_EVIDENCE_LOG_ON_HOST,
+  UNREADABLE: DESKTOP_EVIDENCE_UNREADABLE,
+  TRUNCATED: DESKTOP_EVIDENCE_TRUNCATED,
 });
 
 /** 单个条目的固定八字段模板（§2.7 契约，顺序即字段序）。 */

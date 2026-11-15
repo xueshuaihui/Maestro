@@ -26,25 +26,33 @@
 
 import { buildRoleInstances } from '../registry/role-instances.js';
 import { loadRegistry } from '../registry/index.js';
-import { ROLE_INSTANCE_STATUS_LABEL } from '../cli/labels.js';
+import {
+  DESKTOP_OCCUPANCY_EMPTY,
+  DESKTOP_OCCUPANCY_SKIPPED,
+  ROLE_INSTANCE_STATUS_LABEL,
+} from '../cli/labels.js';
 import { getGraph } from '../templates/index.js';
 
-/** 占用侧中文文案基线（附录 A-6 逐字；{n} 由界面以 skipped.length 替换）。 */
+/**
+ * 占用侧中文文案键（附录 A-6 逐字；{n} 由界面以 skipped.length 替换）。
+ * 中文唯一来源 = src/cli/labels.js（BR-26），本模块零中文字面量。
+ */
 export const OCCUPANCY_LABELS = Object.freeze({
-  EMPTY: '角色占用 无',
-  SKIPPED: '{n} 个实例状态不可读，已跳过',
+  EMPTY: DESKTOP_OCCUPANCY_EMPTY,
+  SKIPPED: DESKTOP_OCCUPANCY_SKIPPED,
 });
 
 /**
  * 占用状态词闭环与「最忙」排序基线（A-6 排序注记：服务中在前，同档按角色名
- * 升序）。五个词全部来自既有词表 `ROLE_INSTANCE_STATUS_LABEL`，不自造。
+ * 升序）。五个词全部取自既有词表 `ROLE_INSTANCE_STATUS_LABEL` 的键，不自造、
+ * 不写中文字面量。
  */
 export const OCCUPANCY_STATUS_ORDER = Object.freeze([
-  '服务中',
-  '可用',
-  '冷却中',
-  '不可用',
-  '未参与',
+  ROLE_INSTANCE_STATUS_LABEL.busy,
+  ROLE_INSTANCE_STATUS_LABEL.available,
+  ROLE_INSTANCE_STATUS_LABEL.cooldown,
+  ROLE_INSTANCE_STATUS_LABEL.unavailable,
+  ROLE_INSTANCE_STATUS_LABEL.inactive,
 ]);
 
 const FALLBACK_WORD = ROLE_INSTANCE_STATUS_LABEL.inactive;

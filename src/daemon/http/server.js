@@ -114,6 +114,9 @@ export function matchPattern(pattern, pathname) {
  *   `{ loadState(id), replayEvents(id), readTraces(id) }`
  * @param {Function} [options.logger] async (level, message, extra) logger
  * @param {Function} [options.clock] injected clock (ms)
+ * @param {object} [options.notifier] the daemon notifier (`{intents$, dispose}`,
+ *   I1.11 split doc 2.1); forwarded to the WP-7 routes seam for
+ *   `/notifications/stream`. Absent -> that stream degrades to 503 NOT_READY.
  * @param {string} [options.generation] core generation for desktop.json
  * @param {string} [options.startedAt] core start time for desktop.json
  * @param {string} [options.staticRoot] static resources root override (tests)
@@ -125,6 +128,7 @@ export function createHttpServer({
   graph,
   logger,
   clock,
+  notifier,
   generation,
   startedAt,
   staticRoot,
@@ -203,7 +207,16 @@ export function createHttpServer({
         const mod = await import('./routes.js');
         const factory = typeof mod?.createRoutes === 'function' ? mod.createRoutes : mod?.default;
         if (typeof factory === 'function') {
-          const routes = factory({ orchestrator, loadWorkflowDef: resolveWorkflowDef });
+          // I1.11 WP-7: the projections and streams need the project root, the
+          // injected clock and the daemon notifier; the S-02 seam keeps its
+          // original two parameters for compatibility.
+          const routes = factory({
+            orchestrator,
+            loadWorkflowDef: resolveWorkflowDef,
+            root,
+            clock: now,
+            notifier,
+          });
           if (typeof routes?.handle === 'function') {
             fallbackDispatcher = (req, res, url) => routes.handle(req, res, url);
           } else if (Array.isArray(routes)) {
@@ -599,7 +612,15 @@ export function createHttpServer({
     const current = server;
     server = null;
     if (!current) return;
-    await new Promise((resolve) => current.close(() => resolve()));
+    await new Promise((resolve) => {
+      current.close(() => resolve());
+      // close 的回调要等全部连接结束；活跃 SSE 连接（queue/notify 流）不会
+      // 自然结束，会阻塞停机路径（core.stop / SIGTERM 都走这里）。空闲
+      // keep-alive 连接 Node 19+ 会自动收，但活跃连接必须显式摧毁。
+      if (typeof current.closeAllConnections === 'function') {
+        current.closeAllConnections();
+      }
+    });
   }
 
   async function close() {

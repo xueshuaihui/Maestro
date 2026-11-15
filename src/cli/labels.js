@@ -880,3 +880,143 @@ export const SUMMARY_LOG_LINE = Object.freeze(
 // ---- 事件不可读行：A-13 ----
 
 export const EVENTS_SKIPPED = Object.freeze('已跳过 {n} 行不可读记录');
+
+// ---------------------------------------------------------------- I1.11 新增（WP-7，只在文件末尾追加；既有键零改动）
+//
+// 附录 A-11 的桌面文案键（中文逐字基线 = 需求附录 A-1 ~ A-9；`{xx}` 为字面占位
+// 符，替换时不做转义加工）。六个守护进程投影模块（notify / prefs / queue /
+// assets-view / occupancy / canvas / evidence）的模块内字面量全部改为本表的
+// import（BR-26 中文唯一来源）；桌面界面与壳层经 /ui/labels 与 config.rs 消费。
+
+// ---- A-1 通知标题与正文（五段固定段序的段词；合并形态） ----
+
+export const DESKTOP_NOTIFY_TITLE_PREFIX = Object.freeze('通知');
+export const DESKTOP_NOTIFY_CATEGORY_ESCALATION = Object.freeze('升级待处理');
+export const DESKTOP_NOTIFY_CATEGORY_COMPLETED = Object.freeze('实例完成');
+export const DESKTOP_NOTIFY_CATEGORY_ANOMALY = Object.freeze('实例异常');
+export const DESKTOP_NOTIFY_SEG_INSTANCE = Object.freeze('实例');
+export const DESKTOP_NOTIFY_SEG_ESCALATION = Object.freeze('升级');
+export const DESKTOP_NOTIFY_SEG_NODE = Object.freeze('节点');
+export const DESKTOP_NOTIFY_SEG_ROUND_PREFIX = Object.freeze('第');
+export const DESKTOP_NOTIFY_SEG_ROUND_SUFFIX = Object.freeze('轮');
+export const DESKTOP_NOTIFY_SEG_MISSING = Object.freeze('—');
+export const DESKTOP_NOTIFY_SEG_SEPARATOR = Object.freeze(' · ');
+export const DESKTOP_NOTIFY_MERGE_COUNT_PREFIX = Object.freeze('共');
+export const DESKTOP_NOTIFY_MERGE_COUNT_SUFFIX = Object.freeze('次');
+export const DESKTOP_NOTIFY_MERGE_LATEST_PREFIX = Object.freeze('最近：');
+
+// ---- A-2 通知开关与失效提示 ----
+
+export const DESKTOP_NOTIFY_TOGGLE = Object.freeze('通知');
+export const DESKTOP_NOTIFY_TOGGLE_ESCALATION = Object.freeze('升级待处理');
+export const DESKTOP_NOTIFY_TOGGLE_COMPLETED = Object.freeze('实例完成');
+export const DESKTOP_NOTIFY_TOGGLE_ANOMALY = Object.freeze('实例异常');
+export const DESKTOP_NOTIFY_UNAVAILABLE = Object.freeze('通知不可用 · 队列仍可用');
+
+// ---- A-3 队列行、空态与降级标注 ----
+
+export const DESKTOP_QUEUE_ROW_ESC = Object.freeze(
+  '升级 {id} · 实例 {instanceId} · 节点 {nodeId} {role} · 第 {round} 轮 · {state} · {reason} · {createdAt}'
+);
+export const DESKTOP_QUEUE_ROW_APR = Object.freeze(
+  '审批 {id} · 实例 {instanceId} · 节点 {nodeId} {role} · 第 {round} 轮 · {state} · 动作 {action} · {createdAt}'
+);
+export const DESKTOP_QUEUE_EMPTY = Object.freeze('待处理 无');
+export const DESKTOP_QUEUE_DISCONNECTED = Object.freeze('已断开 · 正在重连…');
+export const DESKTOP_QUEUE_ROW_STATE_UNREADABLE = Object.freeze('实例 {id} · 状态不可读');
+export const DESKTOP_QUEUE_STATE_UNREADABLE = Object.freeze('状态不可读');
+
+// ---- A-4 五种动作、确认与结果 ----
+
+export const DESKTOP_QUEUE_ACTION_PREFIX = Object.freeze('动作');
+export const DESKTOP_QUEUE_ACTION_PASS = Object.freeze('继续');
+export const DESKTOP_QUEUE_ACTION_RETRY = Object.freeze('重派');
+export const DESKTOP_QUEUE_ACTION_CANCEL = Object.freeze('终止');
+export const DESKTOP_QUEUE_ACTION_ALLOW = Object.freeze('允许');
+export const DESKTOP_QUEUE_ACTION_DENY = Object.freeze('拒绝');
+export const DESKTOP_QUEUE_CONFIRM_CANCEL = Object.freeze('终止实例 {id}？终止后该实例不再继续');
+export const DESKTOP_QUEUE_CONFIRM_OK = Object.freeze('终止');
+export const DESKTOP_QUEUE_CONFIRM_DISMISS = Object.freeze('取消');
+export const DESKTOP_QUEUE_RESULT_ESCALATION = Object.freeze('升级 {id} 已处理（{conclusion}）');
+export const DESKTOP_QUEUE_RESULT_CANCELLED = Object.freeze('实例 {id} 已取消');
+export const DESKTOP_QUEUE_RESULT_APPROVAL = Object.freeze('审批 {id} {conclusion} · 动作 {action}');
+export const DESKTOP_QUEUE_ALREADY_RESOLVED = Object.freeze('已处理（{conclusion}），无需再次处理');
+export const DESKTOP_QUEUE_DISABLED_HINT = Object.freeze('该升级只能重派或终止');
+export const DESKTOP_QUEUE_ACTION_UNSUPPORTED = Object.freeze('升级 {id} 不支持该动作');
+
+/** D-3 错误映射表的固定结论词（键 = 核心错误码；「已处理（{结论}）」模板取值）。 */
+export const DESKTOP_QUEUE_CONCLUSIONS = Object.freeze({
+  ESCALATION_NOT_PENDING: '已处理',
+  INSTANCE_NOT_SUSPENDED: '不是挂起状态',
+  APPROVAL_NOT_PENDING: '已处理',
+  APPROVAL_SESSION_GONE: '已失效'
+});
+
+// ---- A-5 资产库（行、计数、详情、异常） ----
+
+export const DESKTOP_ASSET_SOURCE_BUILTIN = Object.freeze('内置');
+export const DESKTOP_ASSET_SOURCE_PROJECT = Object.freeze('项目');
+export const DESKTOP_ASSET_BUILTIN_FILE_PREFIX = Object.freeze('内置 ');
+export const DESKTOP_ASSET_VALIDATION_PASS = Object.freeze('通过');
+export const DESKTOP_ASSET_VALIDATION_FAIL = Object.freeze('不通过');
+export const DESKTOP_ASSET_VALIDATION_UNKNOWN = Object.freeze('未校验');
+export const DESKTOP_ASSET_VALIDATION_UNREADABLE = Object.freeze('不可读');
+export const DESKTOP_ASSET_MISSING = Object.freeze('缺失');
+export const DESKTOP_ASSET_KIND_ROLES = Object.freeze('角色');
+export const DESKTOP_ASSET_KIND_SKILLS = Object.freeze('技能');
+export const DESKTOP_ASSET_KIND_WORKFLOWS = Object.freeze('工作流');
+export const DESKTOP_ASSET_GROUP_PLACEHOLDER = Object.freeze('—');
+export const DESKTOP_ASSET_UNREADABLE = Object.freeze('资产不可读 · {dir}');
+export const DESKTOP_ASSET_ITEM_UNREADABLE = Object.freeze('{kind} {id} · 不可读');
+export const DESKTOP_ASSET_ROW_ROLE = Object.freeze('角色 {name} · {group} · {source} · {validation}');
+export const DESKTOP_ASSET_ROW_SKILL = Object.freeze('技能 {id} · {group} · {source} · 命令 {n} · {validation}');
+export const DESKTOP_ASSET_ROW_WORKFLOW = Object.freeze('工作流 {name} · {source} · {nodes} 节点 · {edges} 条边 · {validation}');
+export const DESKTOP_ASSET_COUNT = Object.freeze('{kind} {total} 个（内置 {builtin} · 项目 {project}）');
+export const DESKTOP_ASSET_DETAIL_ROLE_HEADER = Object.freeze(
+  '角色 {name} · {group} · 产物 {artifact} · 副作用 {effect} · 并发 {n}'
+);
+export const DESKTOP_ASSET_DETAIL_ROLE_SKILLS = Object.freeze('技能 引用 {n} 个 · {list}');
+export const DESKTOP_ASSET_DETAIL_TOOLS = Object.freeze('工具 {tools}');
+export const DESKTOP_ASSET_DETAIL_WAKE = Object.freeze('唤醒 允许 {n} 个 · {list}');
+export const DESKTOP_ASSET_DETAIL_SKILL_HEADER = Object.freeze('技能 {id} · {group} · 命令 {n}');
+export const DESKTOP_ASSET_DETAIL_SUMMARY = Object.freeze('摘要 {summary}');
+export const DESKTOP_ASSET_DETAIL_BODY = Object.freeze('正文 摘要 {n} 行');
+export const DESKTOP_ASSET_DETAIL_WORKFLOW_HEADER = Object.freeze('工作流 {name} · {nodes} 节点 · {edges} 条边');
+export const DESKTOP_ASSET_DETAIL_BACKFLOW = Object.freeze('回流 {n} 条');
+export const DESKTOP_ASSET_DETAIL_VALIDATION = Object.freeze('校验 {validation}');
+
+// ---- A-6 全局角色占用 ----
+
+export const DESKTOP_OCCUPANCY_ROW = Object.freeze(
+  '角色 {role} · {status} · 参与 {instances} 个实例 · {sessions} 个活跃会话 · 服务 {serving} · 宿主 {hosts}'
+);
+export const DESKTOP_OCCUPANCY_EMPTY = Object.freeze('角色占用 无');
+export const DESKTOP_OCCUPANCY_SKIPPED = Object.freeze('{n} 个实例状态不可读，已跳过');
+
+// ---- A-7 工作流画布 ----
+
+export const DESKTOP_CANVAS_TITLE = Object.freeze('工作流 {name} · 定义态 · {n} 节点 · {m} 条边');
+export const DESKTOP_CANVAS_INVALID = Object.freeze('校验不通过');
+export const DESKTOP_CANVAS_UNREADABLE = Object.freeze('定义不可读 · 仅显示可解析部分');
+export const DESKTOP_CANVAS_EMPTY = Object.freeze('定义 空');
+export const DESKTOP_CANVAS_SUBFLOW_ROW = Object.freeze('子工作流：{title} · {n} 角色');
+export const DESKTOP_CANVAS_SUBFLOW_UNKNOWN = Object.freeze('子工作流 {id} · 角色数未知');
+
+// ---- A-8 证据（命令 / 退出码 / 关键输出 / 日志四项标签复用 SUMMARY_LABEL） ----
+
+export const DESKTOP_EVIDENCE_NODE_ROW = Object.freeze('节点 {id} · 第 {n} 轮');
+export const DESKTOP_EVIDENCE_ARTIFACT = Object.freeze('产物');
+export const DESKTOP_EVIDENCE_VERIFIED_AT = Object.freeze('校验于 {at}');
+export const DESKTOP_EVIDENCE_UNPROVIDED = Object.freeze('未提供');
+export const DESKTOP_EVIDENCE_LOG_ON_HOST = Object.freeze('完整日志留在宿主');
+export const DESKTOP_EVIDENCE_UNREADABLE = Object.freeze('引用不可读');
+export const DESKTOP_EVIDENCE_TRUNCATED = Object.freeze('体积超限已截断');
+
+// ---- A-9 托盘信息行与暂停 ----
+
+export const DESKTOP_TRAY_STATUS = Object.freeze('实例 {n} · 待处理升级 {m}');
+export const DESKTOP_TRAY_STATUS_DISCONNECTED = Object.freeze('实例 — · 待处理升级 —');
+export const DESKTOP_TRAY_PAUSE = Object.freeze('暂停');
+export const DESKTOP_TRAY_RESUME = Object.freeze('继续');
+export const DESKTOP_TRAY_PAUSE_SUMMARY = Object.freeze('{n} 个实例已暂停，{m} 个已跳过');
+export const DESKTOP_TRAY_PAUSE_NONE = Object.freeze('没有可暂停的实例');
