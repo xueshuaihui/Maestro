@@ -365,6 +365,7 @@ function main() {
     '# I1.10a 终验（S4）— 阶段门、退出标准与交付物核对',
     '',
     `> 生成时刻 ${iso()} · HEAD \`${head}\` · 由 \`node probe/acc10-f-final.mjs\` 重建（只读汇总，不改产品代码）。`,
+    `> **被验证提交**：\`${head}\` —— 门禁（\`node probe/acc10-f-gates.mjs\`）在该提交的工作树上执行。本文件与其同批产物由紧随其后的一次提交追加，**不含代码/测试改动**，复核时 \`git checkout ${head}\` 即可。`,
     `> 判据：\`docs/index.md\` 迭代基线、\`${path.relative(REPO, REQUIREMENT)}\` v4 §0/§3、\`${path.relative(REPO, SPLIT)}\` r3 §0/§5、\`decisions.md\` 裁决 A~AA。`,
     '',
     '> **适用范围声明（2026-11-15，本轮重做）**：本终验基于需求 **v4（AC-01~44）**，覆盖 v2 的 37 条桌面面 AC 与 v3/v4 新增的 7 条发布面 AC（GitHub CI 构建与 Release）。',

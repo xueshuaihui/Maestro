@@ -1,11 +1,11 @@
 {
-  "capturedAt": "2026-11-15T14:07:42.698Z",
-  "head": "2ee6d2c",
+  "capturedAt": "2026-11-15T14:07:54.840Z",
+  "head": "a093ede",
   "fullSuite": {
     "command": "env -u NODE_OPTIONS NODE_ENV=test node --test --test-concurrency=1 \"test/**/*.test.js\"",
     "log": "/tmp/i10a-s3-full.log",
-    "capturedAt": "2026-11-15T14:07:40.947Z",
-    "head": "2ee6d2c",
+    "capturedAt": "2026-11-15T14:07:53.055Z",
+    "head": "a093ede",
     "tests": 1425,
     "pass": 1420,
     "fail": 4,

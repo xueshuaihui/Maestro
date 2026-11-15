@@ -1,6 +1,6 @@
 # I1.10a S3 · 缺陷 / 偏差台账（acc10-f-blockers.md）
 
-> 生成时刻 2026-11-15T14:07:42.846Z · HEAD `2ee6d2c` · 逐 AC 44 条 · 结论 44 通过 / 0 不通过 / 0 阻塞。
+> 生成时刻 2026-11-15T14:08:09.099Z · HEAD `a093ede` · 逐 AC 44 条 · 结论 44 通过 / 0 不通过 / 0 阻塞。
 > 本台账由 `node probe/acc10-f-final.mjs` 重建；判据原文见 `docs/iterations/iteration-10a/requirement.md` §3.1。
 
 ## ① 逐 AC 未通过项

@@ -1,6 +1,7 @@
 # I1.10a 终验（S4）— 阶段门、退出标准与交付物核对
 
-> 生成时刻 2026-11-15T14:07:42.863Z · HEAD `2ee6d2c` · 由 `node probe/acc10-f-final.mjs` 重建（只读汇总，不改产品代码）。
+> 生成时刻 2026-11-15T14:08:09.111Z · HEAD `a093ede` · 由 `node probe/acc10-f-final.mjs` 重建（只读汇总，不改产品代码）。
+> **被验证提交**：`a093ede` —— 门禁（`node probe/acc10-f-gates.mjs`）在该提交的工作树上执行。本文件与其同批产物由紧随其后的一次提交追加，**不含代码/测试改动**，复核时 `git checkout a093ede` 即可。
 > 判据：`docs/index.md` 迭代基线、`docs/iterations/iteration-10a/requirement.md` v4 §0/§3、`docs/iterations/iteration-10a.md` r3 §0/§5、`decisions.md` 裁决 A~AA。
 
 > **适用范围声明（2026-11-15，本轮重做）**：本终验基于需求 **v4（AC-01~44）**，覆盖 v2 的 37 条桌面面 AC 与 v3/v4 新增的 7 条发布面 AC（GitHub CI 构建与 Release）。
@@ -18,7 +19,7 @@
 |---|---|---|---|
 | S0 需求 | `iteration-10a/requirement.md` v4（44 AC / 39 BR / 附录 A~D + C + D-15） | PASS | `review-round1.md`~`review-round4.md`、`requirement-understanding.md` |
 | S1 拆分 | `iteration-10a.md` r3（WP-1~12 / 9 批 / DAG） | PASS | `split-review.md`、`split-review-round2.md`（PASS） |
-| S2 实现 | 12 个 WP 分 9 批合入 + 逐批独立评审 | PASS | `review-batch1..6*.md`、`decisions.md` A~AA、HEAD `2ee6d2c` |
+| S2 实现 | 12 个 WP 分 9 批合入 + 逐批独立评审 | PASS | `review-batch1..6*.md`、`decisions.md` A~AA、HEAD `a093ede` |
 | S3 验收 | 逐 AC-01~44 取证 + 全量回归 + 真实 GitHub 面 | **PASS** | `acceptance-a.md`、`acceptance-b.md`、`acceptance-c.md`、`evidence/`（44 目录 / 425 份） |
 | S4 终验 | 阶段门 / 退出标准 / 交付物核对 | **PASS** | 本文件 + `summary.json` + `gates/gates.json` |
 
