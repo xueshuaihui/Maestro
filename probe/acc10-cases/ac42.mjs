@@ -1,0 +1,47 @@
+// 由 node probe/acc10-f-gen.mjs 生成；判据原文逐字取自 requirement.md v4 §3.1 AC-42。
+// 禁止手工放宽 / 合并 / 改写任何 Then；改动请先改生成器并复跑 --check。
+import { runCase } from '../acc10-f-common.mjs';
+
+export const spec = {
+  "ac": "AC-42",
+  "title": "试跑不污染正式发布",
+  "face": "功能 / 试运行通道（v3 新增）",
+  "level": "mock 实测",
+  "refs": "BR-36",
+  "risk": "中（试跑若对外可见或自我循环，会把 Releases 页弄脏）",
+  "given": "维护者想在正式打 tag 前验证整条流水线。",
+  "when": "在 Actions 页手动运行一次发布流水线。",
+  "then": [
+    "三个平台照常构建；产物进入一个**访客在 Releases 页看不到**的草稿；这次试跑不会再触发一次新的发布；维护者验证完可以一键删除该草稿，正式 Releases 列表条数不变。"
+  ],
+  "judgement": "",
+  "jijian": "`test -f test/wp13/release-contract.test.js && NODE_ENV=test node --test test/wp13/release-contract.test.js` 断言手动通道产出草稿、且草稿标识不以 `v` 开头（避免再次命中 tag 触发）；`node probe/acc10-release-verify.mjs <dryrun-tag> --check draft` 断言远端 `draft=true` 且正式（非草稿）Release 数未增加。**v4 补充（F-28）**：清理动作本身也要可验证——删除后再跑一次 `--check absent`，断言该草稿 tag 在 Releases 列表中计数为 **0**，且删除前后的 REST 响应**双向落证据**（删除前有、删除后无），避免「查不到」被误读成「没发过」。",
+  "fixture": "`workflow_dispatch` 一次，取证后按发布手册清理草稿与其 tag。",
+  "archText": "手动通道与 tag 通道共用同一套构建与冒烟步骤，不得为试跑另开一条宽松链路。",
+  "files": [
+    "release-contract.test.js"
+  ],
+  "arch": [
+    {
+      "cmd": "grep -REn \"dryrun-\" .github/workflows/release.yml",
+      "expect": 0,
+      "note": "草稿标识不以 v 开头（dryrun- 前缀）"
+    },
+    {
+      "cmd": "grep -REn \"[-][-]draft\" .github/workflows/release.yml",
+      "expect": 0,
+      "note": "试跑产出草稿"
+    }
+  ],
+  "notes": [
+    "真实面：`workflow_dispatch` 一次 → 草稿 `draft=true` 且正式条目数不增；清理后必须 `--check absent` 计数归零，删除前后的 REST 响应双向落证（F-28）。"
+  ],
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-42"
+};
+
+export const cases = [{
+  ac: spec.ac,
+  title: spec.title,
+  face: spec.face,
+  run: () => runCase(spec),
+}];

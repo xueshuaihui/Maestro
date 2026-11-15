@@ -25,3 +25,6 @@ probe/tmp-*.mjs
 
 # Tauri 生成的 ACL schemas（构建派生产物，裁决 U）
 desktop/src-tauri/gen/
+
+# 构建期生成的图标（Windows 资源所需；由 scripts/desktop/build.mjs 生成，不提交）
+desktop/src-tauri/icons/

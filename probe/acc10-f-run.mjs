@@ -6,6 +6,7 @@
  *   node probe/acc10-f-run.mjs --batch b       # AC-11~20
  *   node probe/acc10-f-run.mjs --batch c       # AC-21~30
  *   node probe/acc10-f-run.mjs --batch d       # AC-31~37
+ *   node probe/acc10-f-run.mjs --batch r       # AC-38~44（发布面）
  *   node probe/acc10-f-run.mjs --all           # 37 条串行
  *   node probe/acc10-f-run.mjs --list          # 只列用例，不执行
  *
@@ -20,7 +21,7 @@ import path from 'node:path';
 import { REPO, PARTS, RESULTS, ensureDir, iso } from './acc10-f-lib.mjs';
 
 const CASES = path.join(REPO, 'probe', 'acc10-cases');
-const BATCHES = { a: [1, 10], b: [11, 20], c: [21, 30], d: [31, 37] };
+const BATCHES = { a: [1, 10], b: [11, 20], c: [21, 30], d: [31, 37], r: [38, 44] };
 const acId = (n) => `AC-${String(n).padStart(2, '0')}`;
 const casePath = (ac) => path.join(CASES, `${ac.toLowerCase().replace('-', '')}.mjs`);
 
@@ -29,7 +30,7 @@ function select(argv) {
   const bi = argv.indexOf('--batch');
   if (bi >= 0) {
     const key = argv[bi + 1];
-    if (!BATCHES[key]) throw new Error(`未知批次 ${key}（可用 a/b/c/d）`);
+    if (!BATCHES[key]) throw new Error(`未知批次 ${key}（可用 a/b/c/d/r）`);
     const [lo, hi] = BATCHES[key];
     return Array.from({ length: hi - lo + 1 }, (_, i) => acId(lo + i));
   }
@@ -40,7 +41,7 @@ function select(argv) {
     const lo = Number(argv[from + 1]), hi = Number(argv[to + 1]);
     return Array.from({ length: hi - lo + 1 }, (_, i) => acId(lo + i));
   }
-  throw new Error('用法：AC-xx | --batch a|b|c|d | --all | --from N --to M | --list');
+  throw new Error('用法：AC-xx | --batch a|b|c|d|r | --all | --from N --to M | --list');
 }
 
 async function main() {

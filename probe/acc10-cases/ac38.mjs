@@ -1,0 +1,62 @@
+// 由 node probe/acc10-f-gen.mjs 生成；判据原文逐字取自 requirement.md v4 §3.1 AC-38。
+// 禁止手工放宽 / 合并 / 改写任何 Then；改动请先改生成器并复跑 --check。
+import { runCase } from '../acc10-f-common.mjs';
+
+export const spec = {
+  "ac": "AC-38",
+  "title": "推 tag 即发布：维护者不需要手工传包",
+  "face": "功能 / 发布主路径（v3 新增）",
+  "level": "mock 实测",
+  "refs": "BR-33, BR-35, BR-39",
+  "risk": "高（否则「发版」仍依赖某台机器，等于没有交付）",
+  "given": "待发布改动已在 main 上；仓库没有配置任何个人凭据；维护者本机没有安装 Rust 或 Xcode 也能执行发版动作。",
+  "when": "维护者打一个带说明的 `v0.x.y` tag 并推送。",
+  "then": [
+    "不需要任何人在本机构建或上传：构建记录出现在 Actions 页且可查看每一步结果；全绿后 Releases 页出现该版本条目并标为「预发布」；维护者全程没有填写过个人 token。",
+    "- `grep -REn \"secrets\\.\" .github/` **零命中（exit 1）**——即整份发布定义不出现任何 `secrets.` 引用（含 `secrets.GITHUB_TOKEN`）；令牌一律用 `${{ github.token }}` 表达式；",
+    "- `grep -REn \"permissions:\" .github/workflows/release.yml` **恰好 1 条命中（exit 0）**，且其下只声明 `contents: write`（`grep -A3 \"permissions:\" .github/workflows/release.yml` 中出现其它权限键即判失败）；",
+    "- `grep -REn \"ghp_|github_pat_|password|token:\" .github/` **零命中（exit 1）**（`github.token` 表达式不算命中，锚点只认字面密钥前缀与 `token:` 赋值形态）。"
+  ],
+  "judgement": "",
+  "jijian": "`test -f test/wp13/release-contract.test.js && NODE_ENV=test node --test test/wp13/release-contract.test.js` 静态断言发布定义存在、`v*` tag 是触发条件、所需权限仅仓库内容写权限、且**不含任何个人密钥引用**；`node probe/acc10-release-verify.mjs <tag> --check publish` 走只读 REST 断言该 tag 的 Release 存在且 `draft=false`；`# pass ≥ 1`、`# fail 0`。",
+  "fixture": "静态契约机检只用仓库内文件，不读写 `/tmp` 业务数据；真实面用一次性 `v0.x.y` 测试 tag（用后删除，取证帧保留在 `evidence/`）。",
+  "archText": "",
+  "files": [
+    "release-contract.test.js"
+  ],
+  "arch": [
+    {
+      "cmd": "grep -REn \"secrets\\.\" .github/",
+      "expect": 1,
+      "note": "整份发布定义零密钥引用（exit 1）"
+    },
+    {
+      "cmd": "grep -REn \"permissions:\" .github/workflows/release.yml",
+      "expect": 0,
+      "lines": 1,
+      "note": "permissions 声明恰好 1 处"
+    },
+    {
+      "cmd": "grep -REn \"ghp_|github_pat_|password|token:\" .github/",
+      "expect": 1,
+      "note": "无字面密钥前缀与 token: 赋值形态"
+    },
+    {
+      "cmd": "grep -REn \"github[.]token\" .github/workflows/release.yml",
+      "expect": 0,
+      "note": "令牌走 ${{ github.token }} 表达式"
+    }
+  ],
+  "notes": [
+    "证据分级：`已实测（真实 GitHub 面）` 需一次真实 tag 推送 + Actions 记录 + Release 存在；静态契约（release-contract.test.js）只能证明「定义里写了什么」，不得单独判本条通过。",
+    "零个人凭据的判定点：`.github/` 内 `secrets.` 零命中 + `permissions:` 只含 `contents: write`；令牌表达式为 `${{ github.token }}`。"
+  ],
+  "source": "docs/iterations/iteration-10a/requirement.md §3.1 AC-38"
+};
+
+export const cases = [{
+  ac: spec.ac,
+  title: spec.title,
+  face: spec.face,
+  run: () => runCase(spec),
+}];

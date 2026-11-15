@@ -1,14 +1,13 @@
 # I1.10a 任务拆分与文件级契约（桌面应用壳 + 全局实例列表 + 角色流程图基础）
 
-> 拆分文档版本：**r2**（依据 `docs/iterations/iteration-10a/split-review.md` §6 修复清单 S-01~S-08 修订；r1 → r2 变更行见下方「修订记录」，只改本文档，不动需求 / 评审记录 / decisions.md / 代码）
-> 需求依据：`docs/iterations/iteration-10a/requirement.md` **v2**（1249 行，37 条 AC / 32 条 BR / 附录 A~D；S0 评审闭环已 PASS（round2 总判 PASS、阻断 0 / 建议 F-15~F-19），本文档不自行宣布评审通过）
+> 拆分文档版本：**r3**（r2 收口 AC-01~37 后，按需求 **v4** 追加发布面三个工作包 WP-10~WP-12；r2 → r3 变更见下方「修订记录」）
+> 需求依据：`docs/iterations/iteration-10a/requirement.md` **v4**（1410 行，44 条 AC / 39 条 BR / 附录 A~D）。AC-01~37 已于 round2 PASS 并完成 S3/S4 收口；**AC-38~44（发布面）经 round3 FAIL → v4 修订 → round4 PASS**，本文档不自行宣布评审通过
 > 上游实现：I1.9 收口 `main@70277df`（全量基线 **1157 tests / 8 条已知失败 / 失败集合差集 = 0**，失败集合登记于 `docs/iterations/iteration-7/baseline-failures.txt`）
-> 评审依据：`docs/iterations/iteration-10a/review-round2.md`、`requirement-understanding.md`（§5 Given 可构造性、§9 S1 输入清单）、`decisions.md`（裁决 A~D + 环境事实更正 + 核查记录）
+> 评审依据：`docs/iterations/iteration-10a/review-round2.md`（AC-01~37）、`review-round3.md` + `review-round4.md`（AC-38~44）、`requirement-understanding.md`、`decisions.md`（裁决 A~Z + AA + 环境事实）
 > 拆分自检口径：模板 `docs/templates/execution-template.md` §1.3（0~8 骨架）/ §1.4（WP 四硬规则 + 五字段 + §4 末尾满覆盖表）/ §1.5（10 条自检）/ §1.6（可复制骨架）；形态样板 `docs/iterations/iteration-9.md`（r2，9 WP / 23 文件零交集）
 > 契约优先级（模板 §2.8）：`AC 的 Then/And > 附录 A 输出基线 > 附录 D 实现约束 > 规划文档 > 代码现状`。代码现状只用于核对签名与调用形态，不作需求来源。
 
 **修订记录（r1 → r2，逐条对应 split-review §6 S-01~S-08）**：
-
 - **S-01（阻断）**：批次由 5 批重排为 6 批——第 4 批 WP-6 单线、第 5 批 WP-8 单线、第 6 批 WP-9；消除「WP-8 依赖 WP-6 却同批并行」的时序矛盾。同步位置：§6 批次表、§7 风险 15、整合检查点批号、各 WP 头部新增批次标注。
 - **S-02（阻断，方案 b）**：`src/daemon/http/server.js` 对 `routes.js`（WP-3）/ `http/labels.js`（WP-7）改为**容缺接缝**——注入式 handler 表（`registerRoutes(table)` / `registerLabels(fn)`）+ 惰性动态 import 兜底，**非静态 import，不计入 §6 DAG 边、计入批次后置校验**。同步声明位置：§2.1 `http/server.js` / `routes.js` / `labels.js` 三处契约、§4 WP-2 / WP-3 / WP-8、§6 DAG 说明。
 - **S-03（阻断）**：`desktop/harness/graph-dump.mjs` 改为**分阶段交付**——批次 1 只出节点/边（`legend`/`hover` 段容缺 `null`），`legend.js`（WP-5）/ `highlight.js`（WP-6）落地后经惰性动态 import 补齐全量导出（非静态 import，不计入 DAG 边）；AC-07 的图例两行逐字断言自 WP-4 后置移由 WP-5 `legend.test.js` 承担（AC-34 同一 A-8 逐字基线）。同步位置：§2.4、§4 WP-4 / WP-5、AC→WP 表 AC-07 行、§6 DAG 说明。
@@ -17,6 +16,16 @@
 - **S-06（建议）**：§8.5 增 C-08——`scripts/desktop/build.mjs` 登记「新增文件对 D-10 清单的补充」豁免理由（桌面构建脚本，不进 `src/**` 扫描范围、不影响零依赖口径）；需求已定稿，不改 D-10，留 S3/S4 评审复核。
 - **S-07（建议）**：WP-6 `graph-collapse.test.js` 增加可读性实测阶段（`$TMPDIR` 独立根直写 `.orch/roles/*.yaml` 13 角色后以 `--host mock` 起一次会话，断言 `buildRoleInstances` 读出 13 角色、group 计数 8/5）；§8.4 增第 3 条登记。
 - **S-08（建议）**：§8.1 裁决 B 行补重排依据（引 D-14 末段；WP-1 即验证包，最短打包验证为其首个契约测试动作，语义等价不算推迟）。
+
+**修订记录（r2 → r3，发布面追加；需求 v3 引入 AC-38~44，v4 按 round3 修订）**：
+
+- **T-01（范围）**：r2 只覆盖 AC-01~37。需求 v3/v4 新增发布面 7 条 AC（AC-38~44）、7 条 BR（BR-33~39）、3 条 NF（NF-8~10），本版追加 **WP-10 / WP-11 / WP-12** 三个工作包承接，编号接续不重排既有 WP。
+- **T-02（批次）**：批次由 6 批扩为 **9 批**，新增第 7（WP-10）、第 8（WP-11）、第 9（WP-12），**全部单线**——理由：WP-10 改 `Cargo.toml` / `build.mjs` / `spawn.rs`，会改变壳面构建产物，与任何"读产物"的包并行会读到中间态；WP-11 与 WP-12 共享「冒烟脚本必须先存在」的顺序约束（AC-40 断言冒烟步骤在上传之前）。
+- **T-03（平台事实）**：按需求 §3.3「跨平台构建前置条件」，把 **Windows 面**写成显式风险与不可本机验证项（`risk-16`）；WP-10 的 Windows 分支**必须**保持 Unix 路径逐字不变，且不得读 `.orch/core.json` 的 `pipeName`。
+- **T-04（版本单点）**：按需求裁决 U-13，新增 `scripts/desktop/version.mjs` 作为唯一读取入口；`Cargo.toml` / `tauri.conf.json` 只做**值对齐**（cargo 必需字段不可省），`scripts/desktop/**` 不得再出现版本字面量。
+- **T-05（打包路径）**：按需求裁决 U-17，**保留手工脚本 + 补安装包生成**（`hdiutil` 出 dmg、Windows 侧出可安装 exe），不引入 `@tauri-apps/cli`（守 BR-22 零 npm 依赖红线）。
+- **T-06（验收工具）**：新增 `probe/acc10-release-verify.mjs`（只读 REST 校验器，7 个 `--check`）作为 WP-12 交付物；S3 脚手架 `acc10-f-*` 扩展 release 批次（`--batch r`），沿用 F-16 固化模板与证据分级。
+- **T-07（基线口径）**：全量测试条数基线由 1157 上移为**本次 S3 实测值**（≥1157），失败集合仍按 `baseline-failures.txt` 差集 = 0 判定；**不得**因为新增发布面测试而放宽既有断言（NF-8）。
 
 ---
 
@@ -282,9 +291,9 @@ edges:
 
 ---
 
-## 4. 工作包拆分（WP-1 ~ WP-9，文件互不重叠）
+## 4. 工作包拆分（WP-1 ~ WP-12，文件互不重叠）
 
-> 9 个 WP 按**能力**切（不按目录切）；每个 WP 固定五字段。同一文件只属一个 WP；4 个被改既有文件各指定唯一负责 WP（`server.js`+`serve-entry.js`→WP-2、`labels.js`→WP-7、`package.json`→WP-1），其它包通过 §2 签名契约调用、不许各自去改。依赖成 DAG（§6）；每包自带契约测试，缺字段按契约兼容缺省。**所有 AC 的「验收口径」= 需求 v2 §3.1 同号 Then 逐字口径，本文档只登记 AC 编号、测试文件与逐字断言锚点，不复制、不改写、不放宽任何 Then。**
+> **12 个 WP** 按**能力**切（不按目录切）；每个 WP 固定五字段。同一文件只属一个 WP；被改的既有文件各指定唯一负责 WP（`server.js`+`serve-entry.js`→WP-2、`labels.js`→WP-7、`package.json`→WP-1、`build.mjs`+`spawn.rs`+`Cargo.toml`+`tauri.conf.json`→WP-10），其它包通过 §2 签名契约调用、不许各自去改。依赖成 DAG（§6）；每包自带契约测试，缺字段按契约兼容缺省。**所有 AC 的「验收口径」= 需求 v4 §3.1 同号 Then 逐字口径，本文档只登记 AC 编号、测试文件与逐字断言锚点，不复制、不改写、不放宽任何 Then。**
 
 **门禁四件套（每 WP 合入前全跑，模板 §2.5；差集口径不用绝对全绿）**：
 
@@ -319,6 +328,7 @@ NODE_ENV=test node src/daemon/serve-entry.js --project "$ROOT" --desktop &      
 ### WP-1 桌面壳与打包先行验证（批次 2；依赖：无；裁决 B 硬动作为本包第一步）
 
 - **负责文件（16）**：`desktop/src-tauri/Cargo.toml`、`desktop/src-tauri/tauri.conf.json`、`desktop/src-tauri/build.rs`、`desktop/src-tauri/src/main.rs`、`desktop/src-tauri/src/spawn.rs`、`desktop/src-tauri/src/tray.rs`、`desktop/src-tauri/src/probe.rs`、`desktop/src-tauri/src/single-instance.rs`、`desktop/src-tauri/src/config.rs`、`scripts/desktop/build.mjs`、`package.json`（改）、`docs/iterations/iteration-10a/wp1-bundle-verdict.md`、`test/wp13/bundle.test.js`、`test/wp13/desktop-shell.test.js`、`test/wp13/single-instance.test.js`、`test/wp13/project-guard.test.js`
+  - **所有权移交（r3，T-02）**：`Cargo.toml`、`tauri.conf.json`、`src/spawn.rs`、`scripts/desktop/build.mjs` 四个文件在批次 2 由本包创建，**批次 7 起所有权移交 WP-10**（版本对齐与跨平台分支）。两包不同批，不构成并行冲突；本包合入后不得再改这四个文件。
 - **依赖**：无（DAG 叶子；**内部第一步 = 最短打包验证**：先以最小壳骨架完成「解释器 + `bin/` + `src/` 进 bundle、双击可用」验证并落一页结论，再完整化托盘/关窗/单实例/项目守卫——后续 WP 依赖其结论而非其代码）
 - **交付**：Tauri 壳全套（§2.3 十文件契约）：spawn bundle 内 node 绝对路径跑 `serve-entry.js --project <root> --desktop`（裁决 A 入口）、`desktop.json` 发现、托盘两项 + 退出确认（A-6 逐字）、关窗 hide、单实例锁 + `activated` 探针、`--probe`/`--ctl` 接缝（JSONL 事件 + ctl 文件触发改名 `.done`）、`projects.json` / views 读写命令；`npm run desktop:build` 纯复制 + cargo build；`package.json` 只追加 `scripts.desktop:*`。
 - **验收口径**：主责 **AC-01**（探针 `ready`、`ready.t - launch.t ≤ 3000`、`view:"instances"`、窗口真显、A-1 两行逐字）、**AC-02**（事件序列 `ready → close-window → tray-still-present → quit-confirm-shown → quit(daemonStopped=true)`、`daemon.pid` 不变、两次 `instance status` 的 `updatedAt` 不同、退出后 `daemon.alive === false`）、**AC-29**（`env -i PATH=/usr/bin:/bin` 下直接执行二进制、`ready ≤ 3000ms` + `tray-created`、同 PATH `which node` 非零、点进实例 `probe.view === 'graph'`）、**AC-31**（三次启动探针 `view` = `project-missing` / `project-invalid` / `instances`、A-3 逐字）、**AC-36**（第二次启动无第二个 `ready`、出现 `activated`、`pid` 相等、`tray-open` 后 `visible:true` 视图仍 instances）；协作 AC-26（e2e 三段壳面）、AC-22（views 落盘命令）。契约测试三件：`desktop-shell.test.js`（AC-01/02 探针序列 + pid + updatedAt 推进断言）、`single-instance.test.js`（AC-36）、`project-guard.test.js`（AC-31）；`bundle.test.js` 断言 bundle 存在、`Resources/runtime/node` 可执行、`bin/`、`src/` 在包内、bundle 内 node 可跑通 `serve-entry.js --desktop` 起服 → `desktop.json` 出现。逐条按需求同号 Then 判定
@@ -397,8 +407,46 @@ NODE_ENV=test node src/daemon/serve-entry.js --project "$ROOT" --desktop &      
 - **可否并行**：否 —— DAG 汇合点，末批单线合入并跑全量门禁
 - **门禁附加**：四件套全量复跑；`npm run desktop:build` 产物存在性断言
 
-**AC → WP 满覆盖映射**
+### WP-10 版本单点与跨平台壳层（批次 7，单线；依赖：WP-1 已合入）
 
+- **负责文件（6）**：`scripts/desktop/version.mjs`（新）、`scripts/desktop/build.mjs`（改）、`desktop/src-tauri/src/spawn.rs`（改，加 `#[cfg(windows)]` 分支）、`desktop/src-tauri/Cargo.toml`（改 version 对齐）、`desktop/src-tauri/tauri.conf.json`（改 version 对齐）、`test/wp13/release-version.test.js`（新）
+- **依赖**：WP-1（壳与打包脚本已合入）。**本包是发布面的唯一"改产品代码"包**，必须最先做且单线，因为后面两个包都读它产出的版本与产物。
+- **交付**：
+  - `version.mjs`：导出 `readVersion()`（唯一读 `package.json` 的实现）与 `assertAligned()`（读 `Cargo.toml` / `tauri.conf.json` 的值并断言与来源逐字相等）。
+  - `build.mjs` 改造：**去掉两处 `0.1.0` 字面量**，改为调用 `version.mjs`；在 `cargo build` 之前生成 `desktop/src-tauri/icons/icon.ico`（纯 Node 写 PNG-in-ICO，不提交二进制、不引依赖——实测缺此文件 Windows 目标在 `tauri-build` 即失败）。
+  - `spawn.rs` 跨平台化：**Unix 路径逐字不动**，新增 `#[cfg(windows)]` 实现——运行中实例计数改走桌面 HTTP 通道 `GET /instances`（`src/daemon/http/routes.js:310/317` 已有），终止改用 `taskkill /PID <pid> /T /F`；**禁止**读 `.orch/core.json` 的 `pipeName`（`src/daemon/server.js:409` 明令禁止）。
+  - `release-version.test.js`：断言版本单点三条（`package.json` 唯一来源 / 三处值相等 / `scripts/desktop/**` 无版本字面量）、`assertAligned` 在人为篡改时抛错、`build.mjs` 源码中 `0.1.0` 零命中、ico 生成函数产出的字节头是合法 ICO（`00 00 01 00 01 00`）。
+- **验收口径**：主责 **AC-41**（版本单点与通道判定）；协作 AC-38（发布定义不得引入 npm 依赖，需本包不新增 `dependencies`）。逐条按需求同号 Then 判定
+- **可否并行**：否 —— 改 `Cargo.toml` / `build.mjs` / `spawn.rs`，任何"读产物"的包并行都会读到中间态
+- **门禁附加**：`grep -REn "0\.[0-9]+\.[0-9]+" scripts/desktop/` **零命中（exit 1）**（AC-41 第三条）；`npm run desktop:build` 仍 exit 0 且产物可严格验签（`codesign --verify --deep --strict` exit 0）——**macOS 面零回归**；`grep -REn "env::var\(\"PATH\"\)|Command::new\(\"node\"\)" desktop/src-tauri/src/` 仍零命中（AC-29 旧约束不破）
+
+### WP-11 安装包生成与产物冒烟（批次 8，单线；依赖：WP-10）
+
+- **负责文件（4）**：`scripts/desktop/package-mac.mjs`（新）、`scripts/desktop/package-win.mjs`（新）、`scripts/desktop/smoke.mjs`（新）、`test/wp13/release-smoke.test.js`（新）
+- **依赖**：WP-10（版本来源与 ico 生成）
+- **交付**：
+  - `package-mac.mjs`：`npm run desktop:build` → `codesign --force --deep --sign -` → `codesign --verify --deep --strict` → `hdiutil create` 出 `<产物名>_<arch>.dmg`（每架构只生成一次；生成前先 `hdiutil detach` 清理残留挂载）→ `hdiutil verify`。
+  - `package-win.mjs`：Windows 侧产出可安装 `.exe`（runner 自带 `makensis`）；本机无 `makensis`，脚本必须**明确报错退出（非零码 + 可读原因）**而不是静默跳过。
+  - `smoke.mjs`：四件套——`--probe` 启动出 `ready`（条件轮询，上限 30s，不用固定 `sleep`）、无凭据 `GET /ui/labels` 返回 401、`codesign --verify --deep --strict` 通过、镜像挂载后对镜像里那份 `.app` 复验；按平台分派（macOS 面全跑，Windows 面只跑前两项 + 包内可执行存在）。
+  - `release-smoke.test.js`：本机 macOS 面真实执行（构建 → 签名 → 冒烟四项）；Windows 面**不得**在本机伪造通过——检测不到 `makensis` 时该用例走 `t.skip` 并落「未在本机验证」标记，由 CI 面补证。
+- **验收口径**：主责 **AC-44**（下载的包能装能开，与本机双击同一应用）；协作 AC-39（产物命名与架构后缀）、AC-40（冒烟四项必须在上传之前）。逐条按需求同号 Then 判定
+- **可否并行**：否 —— 单线，产出的冒烟脚本是 WP-12 断言的前置
+- **门禁附加**：本机 `npm run desktop:build` 与新增打包命令串跑一次，`.dmg` 必须 `hdiutil verify` 通过；`grep -REn "sleep [0-9]" scripts/desktop/` **零命中（exit 1）**（禁固定 sleep 判就绪）
+
+### WP-12 发布流水线与只读校验器（批次 9，单线；依赖：WP-10 + WP-11）
+
+- **负责文件（4）**：`.github/workflows/release.yml`（新）、`probe/acc10-release-verify.mjs`（新）、`test/wp13/release-contract.test.js`（新）、`docs/iterations/iteration-10a/release-manual.md`（新）
+- **依赖**：WP-10（版本/ico）+ WP-11（冒烟脚本）
+- **交付**：
+  - `release.yml`：`push: tags: v*` + `workflow_dispatch` 双通道；矩阵 `macos-15-intel`（x64 dmg）/ `macos-15`（arm64 dmg）/ `windows-latest`（x64 exe）；步骤链 = 准备 Node22 与 Rust → 质量门禁（复用仓库既有判定）→ 构建 → 打包 → 元数据对齐校验 → 签名验签 → 产物冒烟 → SHA256 → 上传中间产物 → 汇总发布。**令牌只用 `${{ github.token }}` + `permissions: contents: write`，全文不得出现 `secrets.`**（AC-38 架构检查）；试跑与 tag 通道**并发组区分**（需求 D-15 F-27）；草稿 tag 不以 `v` 开头。
+  - `acc10-release-verify.mjs`：只读 REST 校验器，7 个子命令 `--check publish|assets|gating|channel|draft|absent|idempotent`；**不写死期望值**（资产名从响应体推导）；凭据从 `git credential fill` 取、**不落证据文件**；纯判定函数可被 Node 直接 import 做单测。
+  - `release-contract.test.js`：静态断言发布定义结构（触发条件 / 矩阵三平台 / 步骤顺序 / 冒烟四项 / 版本对齐调用 / 幂等分支 / 并发组区分 / `secrets.` 零命中 / `permissions:` 恰 1 条 / `skip-smoke|skip-gates` 零命中 / 无 `lipo` 装配）+ 对 `acc10-release-verify.mjs` 的判定函数做纯函数单测（给定模拟 REST 响应 → 给定判定）。
+  - `release-manual.md`：发布手册（触发方式、通道判定、试跑清理、失败重跑、人工核验清单、已知限制）。
+- **验收口径**：主责 **AC-38**（推 tag 即发布）、**AC-39**（三平台资产 + 校验和）、**AC-40**（门禁/冒烟不过不出包）、**AC-42**（试跑草稿）、**AC-43**（幂等重跑）；协作 AC-41（通道判定）、AC-44（冒烟脚本被引用）。逐条按需求同号 Then 判定
+- **可否并行**：否 —— 单线，合入后直接进 CI 首跑
+- **门禁附加**：`grep -REn "secrets\." .github/` **零命中（exit 1）**；`grep -REn "lipo|-target universal-apple-darwin|universal2-apple-darwin" .github/ scripts/` **零命中（exit 1）**；`grep -REn "skip-smoke|skip-gates" .github/ scripts/` **零命中（exit 1）**；`node -p "Object.keys(require('./package.json').dependencies||{}).length"` 仍为 0（发布面不得引入 npm 依赖）
+
+**AC → WP 满覆盖映射**
 | AC | 主责 WP | 协作 WP | 备注 |
 |---|---|---|---|
 | AC-01 | WP-1 | WP-3、WP-8 | 双击 3s 开窗停列表、A-1 两行逐字（BR-01/02/03） |
@@ -438,8 +486,15 @@ NODE_ENV=test node src/daemon/serve-entry.js --project "$ROOT" --desktop &      
 | AC-35 | WP-5 | WP-6、WP-7 | 看板未知态落被阻塞（BR-30/17） |
 | AC-36 | WP-1 | WP-8 | 重复双击单实例（BR-31/01） |
 | AC-37 | WP-2 | WP-4 | 角色与连接线齐变互不阻塞（BR-32/19） |
+| AC-38 | WP-12 | WP-10、WP-11 | 推 tag 即发布、零个人凭据（BR-33/35/39） |
+| AC-39 | WP-12 | WP-11 | 三平台资产 + SHA256SUMS 齐全对得上（BR-34/38） |
+| AC-40 | WP-12 | WP-11 | 门禁/冒烟不过不出包（BR-37） |
+| AC-41 | WP-10 | WP-12 | 版本单点与预发布/正式通道（BR-35/34） |
+| AC-42 | WP-12 | — | 试跑草稿不污染正式发布（BR-36） |
+| AC-43 | WP-12 | — | 重跑幂等、不产生重复 Release（BR-37/39） |
+| AC-44 | WP-11 | WP-10、WP-12 | 下载的包能装能开、与本机同一应用（BR-38/02/34） |
 
-> 覆盖核对：AC-01~AC-37 连续编号、一行一条、无缺号、无重号、无合并；每行恰好一个主责 WP；合计 **37/37**。主责 WP 分布：WP-1（AC-01/02/29/31/36）、WP-2（AC-08/09/10/37）、WP-3（AC-03/04/05/06/32）、WP-4（AC-07/14/15/16）、WP-5（AC-17/18/20/21/22/24/34/35）、WP-6（AC-11/12/13/19/23/25/33）、WP-8（AC-30）、WP-9（AC-26/27/28）；WP-7 无主责 AC、只承担文案协作（同 I1.9 的 WP-4 先例）。
+> 覆盖核对：AC-01~AC-44 连续编号、一行一条、无缺号、无重号、无合并；每行恰好一个主责 WP；合计 **44/44**。主责 WP 分布（AC-01~37）：WP-1（AC-01/02/29/31/36）、WP-2（AC-08/09/10/37）、WP-3（AC-03/04/05/06/32）、WP-4（AC-07/14/15/16）、WP-5（AC-17/18/20/21/22/24/34/35）、WP-6（AC-11/12/13/19/23/25/33）、WP-8（AC-30）、WP-9（AC-26/27/28）；WP-7 无主责 AC、只承担文案协作（同 I1.9 的 WP-4 先例）。发布面（AC-38~44）：**WP-12 主责 5 条**（AC-38/39/40/42/43）、**WP-10 主责 1 条**（AC-41）、**WP-11 主责 1 条**（AC-44）。
 
 ---
 
@@ -467,6 +522,13 @@ NODE_ENV=test node src/daemon/serve-entry.js --project "$ROOT" --desktop &      
 | `probe/acc10-f-lib.mjs` / `-common.mjs` / `-run.mjs` / `-final.mjs` | S3 验收脚手架四件套（**机检命令一律按 F-16 固化模板生成**：`test -f test/wp13/<file>.test.js && NODE_ENV=test node --test test/wp13/<file>.test.js` + 断言 `# pass ≥ 1`、`# fail 0`；禁全量 glob） | WP-9（S3，主控单独提交） |
 | `probe/acc10-cases/` / `acc10-f-parts/` / `acc10-f-results.jsonl` / `acc10-f-summary.json` / `acc10-f-blockers.md` | 逐 AC 用例（不带 `-f`）/ 核对表 / 结果 / 汇总 / 缺陷台账 | WP-9（S3，主控单独提交） |
 | `docs/iterations/iteration-10a/evidence/` | 逐 AC 原始帧（探针 JSONL、SSE 帧序、渲染导出、lsof/哈希输出等），每条至少 4 份 | WP-9（S3，主控单独提交） |
+| `scripts/desktop/version.mjs` + `build.mjs`（改） | 版本唯一读取入口（读 `package.json`）+ 三处值对齐断言；`build.mjs` 去字面量、加 ico 生成 | WP-10 |
+| `desktop/src-tauri/src/spawn.rs`（改） | 新增 `#[cfg(windows)]` 分支（HTTP 计数 + `taskkill`）；**Unix 路径逐字不动** | WP-10 |
+| `scripts/desktop/package-mac.mjs` / `package-win.mjs` / `smoke.mjs` | dmg 生成（`hdiutil`）/ Windows 安装包（`makensis`，本机缺失即报错）/ 产物冒烟四件套 | WP-11 |
+| `.github/workflows/release.yml` | 双通道（tag / dispatch）、三平台矩阵、门禁→构建→打包→冒烟→SHA256→汇总发布 | WP-12 |
+| `probe/acc10-release-verify.mjs` | 只读 REST 校验器（7 个 `--check`），不写死期望值 | WP-12 |
+| `docs/iterations/iteration-10a/release-manual.md` | 发布手册（触发、通道判定、试跑清理、重跑、人工核验清单、已知限制） | WP-12 |
+| `test/wp13/release-version.test.js` / `release-smoke.test.js` / `release-contract.test.js` | 发布面契约测试三件（版本单点 / 冒烟四件套 / 流水线结构 + 校验器纯函数单测） | WP-10 / WP-11 / WP-12 |
 | **只读基线（不改）** | `src/core/**`、`src/cli/{main,render}.js`、`src/persistence/**`、`src/templates/**`、`src/registry/**`、既有 `test/**`、`test/fixtures/**`、`bin/orch.js` | — |
 
 ---
@@ -485,13 +547,16 @@ WP-4 (图投影引擎，叶子) ────┼──> WP-2 (HTTP/SSE 通道) �
                             └──> WP-6                   │                                                   │
 WP-1 (桌面壳与打包，叶子) ───────────────────────────────┼───────────────────────────────────────────────────┤
 WP-1..WP-8 ─────────────────────────────────────────────┴────────────────────────────────> WP-9 (回归端到端汇合点)
+
+发布面（r3 追加，三段线）：
+WP-1 ──> WP-10 (版本单点 + 跨平台壳) ──> WP-11 (安装包 + 冒烟) ──> WP-12 (流水线 + 校验器) ──> CI 首跑
 ```
 
-叶子：WP-7 / WP-4 / WP-1；汇合点：WP-9。依赖编号 WP-1~WP-9 全部存在，箭头由小编号/叶子指向下游，无环。
+叶子：WP-7 / WP-4 / WP-1；汇合点：WP-9（AC-01~37）、WP-12（发布面）。依赖编号 WP-1~WP-12 全部存在，箭头由小编号/叶子指向下游，无环。发布面三包**全部单线**（T-02）：WP-10 改壳与构建脚本，WP-11 读其产物，WP-12 断言前两者产出。
 
 **注入依赖说明（S-02 / S-03，import 声称 ↔ DAG/批次三方一致的关键）**：`http/server.js`（WP-2）→ `routes.js`（WP-3）与 `http/labels.js`（WP-7）、`graph-dump.mjs`（WP-4）→ `legend.js`（WP-5）与 `highlight.js`（WP-6）均为**注入式 handler 表 / 惰性动态 import 依赖，非静态 import，不计入上述 DAG 边**；但计入**批次后置校验**——批次 3 整合检查点断言 REST 路由可用（routes.js 已落地）、批次 4 整合检查点断言 `graph-dump.mjs` 全量导出非 `null`（legend/highlight 已落地）、批次 5 WP-8 `errors.test.js` 端到端断言接缝可用。
 
-**分批顺序（一次最多 2 个大 Agent，模板 §2.3；相互独立才并行、修复类永远单线；共 6 批——S-01 修订：WP-8 依赖 WP-6 且自述「可否并行：否」，不得同批并行，改为单线后置）**
+**分批顺序（一次最多 2 个大 Agent，模板 §2.3；相互独立才并行、修复类永远单线；共 9 批——S-01 修订：WP-8 依赖 WP-6 且自述「可否并行：否」，不得同批并行，改为单线后置；r3 追加第 7~9 批为发布面三包，全部单线）**
 
 - **契约先冻结点（批次 0，由本文档定死，不占 Agent 名额）**：见下方清单；冻住后其余包才可并行。
 - **第 1 批（2 并行）**：WP-7（文案键）+ WP-4（图投影引擎）—— 两个最关键契约（键名全集 / nodes·edges·rev 形状）先落地。
@@ -500,6 +565,9 @@ WP-1..WP-8 ───────────────────────
 - **第 4 批（1，单线）**：WP-6（交互样式/行渲染）。
 - **第 5 批（1，单线）**：WP-8（界面装配与连接态；其依赖 WP-6 已于第 4 批合入，与 WP-8 自述「可否并行：否」一致）。
 - **第 6 批（1，单线）**：WP-9（回归守护与端到端，汇合点跑全量门禁）。
+- **第 7 批（1，单线，r3 追加）**：WP-10（版本单点 + 跨平台壳）—— 发布面起点；改 `Cargo.toml` / `build.mjs` / `spawn.rs`，必须独占。
+- **第 8 批（1，单线，r3 追加）**：WP-11（安装包生成 + 产物冒烟）—— 读 WP-10 的版本与 ico。
+- **第 9 批（1，单线，r3 追加）**：WP-12（发布流水线 + 只读校验器）—— 合并后**直接进 CI 首跑**；首跑失败属本批未完成，不得记为环境问题。
 
 **契约先冻结点**（必须先定死字段 / 签名 / 返回结构，冻住后其余包才可并行）：
 
@@ -512,7 +580,7 @@ WP-1..WP-8 ───────────────────────
 7. **布局常量与纯函数约束**：180 / 80 / 240 / 140 / 弧高 40；zoom ∈ [0.5, 2.0]；折叠阈值 > 12；`desktop/ui/graph/**` 与 `desktop/ui/board/**`、`desktop/ui/labels/**` 禁 DOM/fs/`Date.now`/`window`。
 8. **冻结基线**：`USAGE_LINES` 25 行、`dependencies = {}`、31 词纯净两轮、三主链逐字、D-10 不得修改清单、D-11 授权断言修改清单 = 无、`--host mock` 统一口径、夹具根一律 `$TMPDIR`。
 
-**整合检查点（每批合入后跑，命令见 §4 门禁四件套；预期数字汇总）**：37/37 AC 有判定归属、失败集合差集 = 0 且条数 ≥1157、0 运行时依赖、31 词两轮 `exit 0`、`USAGE_LINES` 25 行、`desktop/ui`+`desktop/harness` CJK 零命中、三主链输出逐字不变。第 2 批合入后追加桌面壳冒烟（`serve-entry.js --desktop` 起服 → Bearer 探针 → 关停删 `desktop.json`）；第 6 批合入后追加 `npm run desktop:build` 与 AC-26/29 的真机夹具实跑。
+**整合检查点（每批合入后跑，命令见 §4 门禁四件套；预期数字汇总）**：37/37 AC 有判定归属、失败集合差集 = 0 且条数 ≥1157、0 运行时依赖、31 词两轮 `exit 0`、`USAGE_LINES` 25 行、`desktop/ui`+`desktop/harness` CJK 零命中、三主链输出逐字不变。第 2 批合入后追加桌面壳冒烟（`serve-entry.js --desktop` 起服 → Bearer 探针 → 关停删 `desktop.json`）；第 6 批合入后追加 `npm run desktop:build` 与 AC-26/29 的真机夹具实跑。**发布面（r3）**：第 7 批后追加「版本三处值相等 + `scripts/desktop/**` 零版本字面量 + macOS 产物仍可严格验签」；第 8 批后追加「dmg 可 `hdiutil verify`、冒烟四件套在本机 macOS 面全过」；第 9 批后追加「`secrets.` / `lipo` / `skip-smoke` 三个零命中扫描 + `permissions:` 恰 1 条 + CI 首跑三平台全绿」。
 
 ---
 
@@ -534,13 +602,17 @@ WP-1..WP-8 ───────────────────────
 | 12 | 既有测试/核心文件被顺手修改 | D-9/D-10/D-11 红线破、回归面失控 | 逐 WP `git show --stat` 核对只动授权文件；`src/core/**` 等六目录零 diff 作为 WP-9 门禁；发现必须改核心 → 先回需求修订 |
 | 13 | 探针/ctl 接缝在生产启动生效或 `.done` 残留误触发 | 生产进程写探针文件、二次运行误触发 | WP-1 `probe.rs` 仅显式传参启用；ctl 文件触发后改名 `.done`；夹具清理逻辑处理 `.done` 残留（纪要 §5.1-3） |
 | 14 | 夹具快照启动顺序错，核心对账把 `running` 判成 `interrupted` | AC-03/04/26 等实例状态失真 | 一律按 §3.3 769 行铁序：先空根拉起核心（`instance status INST-001` 返回不存在）→ 再写 `state.json`（`schemaVersion: 2`）→ 最后开界面；每 AC 独立项目根 |
-| 15 | 一次并发超 2 个 Agent 触发平台 429 | 批次失控 | 分批固定 6 批、每批 ≤2 并行（§6）；修复类永远单线 |
+| 15 | 一次并发超 2 个 Agent 触发平台 429 | 批次失控 | 分批固定 9 批、每批 ≤2 并行（§6）；修复类永远单线 |
+| 16 | **Windows 面完全无法在本机验证**：壳层 `spawn.rs` 为 Unix-only，且实测 `cargo check --target x86_64-pc-windows-msvc` 两级阻断（先缺 `icons/icon.ico`、补后 `NotAttempted("llvm-rc")`） | AC-39/AC-44 的 Windows 面只能由 CI 证明；首跑必红，容易被误判为「环境问题」而放松判据 | WP-10 用 `#[cfg(windows)]` 隔离改动、**Unix 路径逐字不动**；ico 由 `build.mjs` 生成；需求 §3.3 已写明「唯一证明面是 `windows-latest`」；S2 交付后**直接进 CI 首跑**，红一次改一次，不得把「本机无法验证」当成通过理由 |
+| 17 | Windows 侧壳层为连 IPC 而读取 `.orch/core.json` 的 `pipeName` | 违反 `src/daemon/server.js:409` 明令，且把诊断文件变成协议 | WP-10 明确禁止；Windows 分支只走 HTTP 通道（`GET /instances`）+ `taskkill`；门禁 `grep -REn "core\.json" desktop/src-tauri/src/` 零命中 |
+| 18 | 发布面为了让流程"看起来绿"而放宽判定（`--skip-smoke`、门禁不复用既有全量判定、静态文件冒充真实 Release） | NF-8/NF-9 失效，用户拿到坏包 | WP-12 契约测试断言「冒烟步骤在上传之前」「门禁调用仓库既有判定」；`grep -REn "skip-smoke\|skip-gates" .github/ scripts/` 零命中；真实面一律走只读 REST，禁止用仓内文件冒充（`docs/index.md` 710 行第 3 条） |
+| 19 | 试跑通道与 tag 通道共用并发组，两次试跑互相取消 | AC-42 的试跑被判「失败」，看起来像流水线坏了 | WP-12 按需求 D-15（F-27）区分并发组：`dryrun-<ref>` / `release-<tag>`；契约测试断言两组成员不相等 |
 
 ---
 
 ## 8. 与需求的对齐声明 / 冲突清单
 
-本文档不新增需求条目；所有逐字文案、状态名、错误码、AC 编号均以 `requirement.md` v2 为准；两者冲突时**以需求为准**并在实现结论中指出。AC 一条不增、一条不减、一条不合并，`Then` 判定强度不放宽，范围内条目不挪到范围外，不夹带规划外能力。本文档不自行宣布「评审通过」，产出交独立拆分评审 Agent。
+本文档不新增需求条目；所有逐字文案、状态名、错误码、AC 编号均以 `requirement.md` **v4** 为准；两者冲突时**以需求为准**并在实现结论中指出。AC 一条不增、一条不减、一条不合并，`Then` 判定强度不放宽，范围内条目不挪到范围外，不夹带规划外能力。本文档不自行宣布「评审通过」，产出交独立拆分评审 Agent。
 
 ### 8.1 主控裁决 A~D 逐条落地
 
@@ -621,4 +693,19 @@ DAG 无环: true | 所有依赖编号存在: true | 注入依赖 2→3/2→7/4�
 批次: 1{7,4} 2{1,2} 3{3,5} 4{6} 5{8} 6{9}（共 6 批）| 批内依赖边: 0 | 上游批次均在前: true
 import 声称 ↔ DAG/批次 三方一致: true（S-02/S-03 四处跨包依赖均为注入/惰性动态 import，
   声明批次号与批次表一致，WP-2/WP-3/WP-8 三处同步齐备；残留静态 import 声称: 无）
+```
+
+机械自检输出（**r3 复跑**，发布面追加）：
+
+```
+拆分文档未覆盖的 AC: 无（AC-01..44 连续满覆盖 44 行，每行恰一个主责 WP）
+真实文件登记数: 83 | 去重后: 83 | 重叠数: 0 | 触碰不得修改清单: 无
+  （r2 的 73 + r3 新增 10：version.mjs / release-version.test.js / package-mac.mjs /
+    package-win.mjs / smoke.mjs / release-smoke.test.js / release.yml /
+    acc10-release-verify.mjs / release-contract.test.js / release-manual.md；
+    build.mjs / spawn.rs / Cargo.toml / tauri.conf.json 已在 r2 登记，不重复计数，
+    批次 7 起所有权移交 WP-10）
+DAG 无环: true | 所有依赖编号存在: true | 注入依赖 2→3/2→7/4→5/4→6 未计入 DAG 边: true
+批次: 1{7,4} 2{1,2} 3{3,5} 4{6} 5{8} 6{9} 7{10} 8{11} 9{12}（共 9 批）| 批内依赖边: 0 | 上游批次均在前: true
+跨平台事实登记: Windows 面唯一证明面 = CI（本机两级阻断已实测并写入需求 §3.3）: true
 ```

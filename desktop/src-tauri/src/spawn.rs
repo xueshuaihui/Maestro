@@ -3,7 +3,10 @@
 //! the existing IPC pipe, and drive the shutdown sequence.
 
 use serde_json::{json, Value};
-use std::io::{BufRead, BufReader, Write};
+#[cfg(unix)]
+use std::io::{BufRead, BufReader};
+use std::io::Write;
+#[cfg(unix)]
 use std::os::unix::net::UnixStream;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -24,6 +27,11 @@ pub fn resource_dir(app: &tauri::AppHandle) -> Option<PathBuf> {
 /// Returns the child pid (0 when the bundle is incomplete).
 pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
     let Some(resources) = resource_dir(app) else { return 0 };
+    // The bundled interpreter is `node` on Unix and `node.exe` on Windows; the
+    // Unix branch text is unchanged from before the cross-platform split.
+    #[cfg(windows)]
+    let node = resources.join("runtime").join("node.exe");
+    #[cfg(not(windows))]
     let node = resources.join("runtime").join("node");
     let entry = resources.join("src").join("daemon").join("serve-entry.js");
     if !node.is_file() || !entry.is_file() {
@@ -53,11 +61,13 @@ pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
 
 // ---------------------------------------------------------------- pipe client
 
+#[cfg(unix)]
 fn pipe_path(root: &Path) -> PathBuf {
     root.join(".orch").join("core.sock")
 }
 
 /// One request/response over the NDJSON pipe. `None` when the core is absent.
+#[cfg(unix)]
 pub fn ipc_request(root: &Path, method: &str, params: Value) -> Option<Value> {
     let id = format!("shell-{}", std::process::id());
     let frame = json!({ "v": 1, "kind": "req", "id": id, "method": method, "params": params });
@@ -80,6 +90,7 @@ pub fn ipc_request(root: &Path, method: &str, params: Value) -> Option<Value> {
 }
 
 /// Number of instances in `running`/`suspended` state (A-6 confirm trigger).
+#[cfg(unix)]
 pub fn running_instance_count(root: &Path) -> u32 {
     let Some(response) = ipc_request(root, "instance.list", json!({})) else { return 0 };
     let items = response
@@ -99,7 +110,33 @@ pub fn running_instance_count(root: &Path) -> u32 {
         .count() as u32
 }
 
+/// Windows: the core IPC endpoint is a named pipe whose name is derived inside
+/// the Node side, and `.orch/core.json` is explicitly off-limits as a lookup
+/// source (`src/daemon/server.js:409`). The desktop HTTP channel is the
+/// platform-neutral equivalent, so the count is read from `GET /instances`.
+#[cfg(windows)]
+pub fn running_instance_count(root: &Path) -> u32 {
+    let Some(meta) = crate::config::read_desktop_json(root) else { return 0 };
+    let Some(port) = meta.get("port").and_then(Value::as_u64) else { return 0 };
+    let Some(token) = meta.get("token").and_then(Value::as_str) else { return 0 };
+    let Some(payload) = http_get_json(port as u16, "/instances", token) else { return 0 };
+    payload
+        .get("items")
+        .and_then(Value::as_array)
+        .cloned()
+        .unwrap_or_default()
+        .iter()
+        .filter(|item| {
+            matches!(
+                item.get("phase").and_then(Value::as_str),
+                Some("running") | Some("suspended")
+            )
+        })
+        .count() as u32
+}
+
 /// Deliver a pre-encoded request frame without waiting for a response.
+#[cfg(unix)]
 pub fn send_frame(root: &Path, frame: &str) -> bool {
     match UnixStream::connect(pipe_path(root)) {
         Ok(mut stream) => stream.write_all(format!("{frame}\n").as_bytes()).is_ok(),
@@ -108,6 +145,7 @@ pub fn send_frame(root: &Path, frame: &str) -> bool {
 }
 
 /// Whether the core pipe still accepts connections.
+#[cfg(unix)]
 pub fn pipe_alive(root: &Path) -> bool {
     UnixStream::connect(pipe_path(root)).is_ok()
 }
@@ -115,6 +153,7 @@ pub fn pipe_alive(root: &Path) -> bool {
 /// Stop the daemon: the caller sends the encoded stop request frame, then we
 /// wait for the pipe to disappear, escalating to SIGTERM / SIGKILL on the
 /// child process as a backstop. Returns true when the pipe is gone.
+#[cfg(unix)]
 pub fn stop_daemon(root: &Path, frame: &str, child_pid: Option<u32>) -> bool {
     send_frame(root, frame);
     let deadline = Instant::now() + Duration::from_secs(5);
@@ -144,6 +183,7 @@ pub fn stop_daemon(root: &Path, frame: &str, child_pid: Option<u32>) -> bool {
 }
 
 /// Deliver a signal via `/bin/kill` (absolute path; no search-path lookup).
+#[cfg(unix)]
 fn signal(pid: u32, name: &str) {
     let _ = Command::new("/bin/kill")
         .args([format!("-{name}"), pid.to_string()])
@@ -152,6 +192,61 @@ fn signal(pid: u32, name: &str) {
         .status();
 }
 
+// ------------------------------------------------------------ windows branch
+
+/// Minimal HTTP/1.1 GET → JSON helper for the Windows branch (the Node desktop
+/// channel is the platform-neutral way to reach the daemon there). Kept local
+/// so this change stays inside `spawn.rs`.
+#[cfg(windows)]
+fn http_get_json(port: u16, path: &str, token: &str) -> Option<Value> {
+    use std::io::Read;
+    use std::net::TcpStream;
+
+    let mut stream = TcpStream::connect(("127.0.0.1", port)).ok()?;
+    stream.set_read_timeout(Some(Duration::from_secs(3))).ok()?;
+    let request = format!(
+        "GET {path} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\nAuthorization: Bearer {token}\r\nConnection: close\r\n\r\n"
+    );
+    stream.write_all(request.as_bytes()).ok()?;
+    let mut response = String::new();
+    stream.read_to_string(&mut response).ok()?;
+    let body = response.split("\r\n\r\n").nth(1)?;
+    let start = body.find('{')?;
+    let end = body.rfind('}')?;
+    serde_json::from_str(&body[start..=end]).ok()
+}
+
+/// Windows: the desktop channel descriptor is the liveness signal, since there
+/// is no socket file to probe (the named pipe name is not derivable here by
+/// design — see `running_instance_count`).
+#[cfg(windows)]
+fn desktop_channel_alive(root: &Path) -> bool {
+    crate::config::read_desktop_json(root).is_some()
+}
+
+/// Windows: there is no IPC frame to deliver (the pipe name lives on the Node
+/// side), so the child process tree is terminated directly and success is
+/// measured by the desktop channel descriptor disappearing.
+#[cfg(windows)]
+pub fn stop_daemon(root: &Path, _frame: &str, child_pid: Option<u32>) -> bool {
+    if let Some(pid) = child_pid {
+        let _ = Command::new("taskkill")
+            .args(["/PID", &pid.to_string(), "/T", "/F"])
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status();
+    }
+    let deadline = Instant::now() + Duration::from_secs(7);
+    while Instant::now() < deadline {
+        if !desktop_channel_alive(root) {
+            return true;
+        }
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    !desktop_channel_alive(root)
+}
+
+#[cfg(unix)]
 fn reap_child(child_pid: Option<u32>) {
     // The daemon child normally exits on its own after receiving the stop
     // request. `wait()` on the Child handle is performed by quit() so the OS

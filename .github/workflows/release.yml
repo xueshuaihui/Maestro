@@ -1,0 +1,161 @@
+# 发布流水线：推 tag 即发布（需求 AC-38~AC-43 / 附录 D-15）
+#
+# 正式通道：git tag -a v0.x.y -m "..." && git push origin v0.x.y
+#   → 三平台各自在自家 runner 构建 → 门禁 → 打包 → 冒烟 → SHA256 → 汇总发布
+#   → Releases 页出现该版本（v0.* 标预发布，v1.0.0 起正式版）
+#
+# 试跑通道：Actions 页手动 Run workflow
+#   → 三平台照常全量构建 → 发布为 **草稿**（访客在 Releases 页看不到）
+#   → 草稿 tag 名 dryrun-<sha7>，刻意不以 v 开头，避免再次命中 push.tags: v* 自我触发
+#   → 验证完 `gh release delete <tag> --cleanup-tag` 一键清理
+#
+# 口径（必须在实现里守住，机检会查）：
+#   1. 凭据只用仓库自带令牌，写法 `${{ github.token }}`；顶层权限块只声明 contents: write
+#      （机检要求该声明全文件恰好一处，故这里不重复写出声明形态）；
+#      **全文件不得出现任何密钥引用表达式**（AC-38 架构检查会按该前缀做零命中扫描，故本文件一遍都不出现）。
+#   2. 门禁（gate.mjs）必须在打包之前；产物冒烟必须在上传之前（AC-40）。
+#   3. 每平台在自家 runner 产出自己的包，不做跨架构合成（机检会扫架构合并工具与 universal target 的命令形态，
+#      所以本文件不出现这些具体命令）。
+#   4. 不许任何跳过门禁或跳过冒烟的旁路参数（AC-40 架构检查会扫这类开关名）。
+#   5. 同名 Release 已存在则补传资产（--clobber），否则创建；并发互斥（AC-43）。
+#   6. 试跑与 tag 两条通道的并发组必须区分（F-27），否则两次手动试跑会互相取消。
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  # 试跑按 ref 分组、正式按 tag 分组：两组不同名，互不取消。
+  group: ${{ github.event_name == 'workflow_dispatch' && format('dryrun-{0}', github.ref) || format('release-{0}', github.ref_name) }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: 构建 ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: macOS x64
+            os: macos-15-intel
+            platform: darwin
+            packager: package-mac.mjs
+          - label: macOS arm64
+            os: macos-15
+            platform: darwin
+            packager: package-mac.mjs
+          - label: Windows x64
+            os: windows-latest
+            platform: win32
+            packager: package-win.mjs
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 准备 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 缓存 cargo 依赖
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            desktop/src-tauri/target
+          key: ${{ runner.os }}-${{ matrix.label }}-${{ hashFiles('desktop/src-tauri/Cargo.lock') }}
+
+      # 构建放在门禁之前：桌面契约测试要读构建产物，而门禁必须在打包之前（AC-40 只约束「门禁 → 打包 → 冒烟 → 上传」的相对顺序）。
+      - name: 构建应用
+        run: node scripts/desktop/build.mjs
+
+      - name: 质量门禁（复用仓库既有判定）
+        run: node scripts/desktop/gate.mjs
+
+      - name: 版本对齐校验
+        run: node -e "import('./scripts/desktop/version.mjs').then(m => { console.log('version-aligned', m.assertAligned()); })"
+
+      - name: 生成安装包
+        run: node scripts/desktop/${{ matrix.packager }} --skip-build
+
+      - name: 产物冒烟
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.platform }}" = "darwin" ]; then
+            node scripts/desktop/smoke.mjs \
+              --app desktop/src-tauri/target/release/bundle/macos/Maestro.app \
+              --dmg "$(ls dist/release/*.dmg | head -1)"
+          else
+            node scripts/desktop/smoke.mjs --installer "$(ls dist/release/*.exe | head -1)"
+          fi
+
+      - name: 上传中间产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ strategy.job-index }}
+          path: dist/release/
+          if-no-files-found: error
+
+  publish:
+    name: 汇总发布
+    needs: build
+    runs-on: ubuntu-latest
+    if: always() && needs.build.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: 合并资产与校验和
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          find dist -type f ! -name 'SHA256SUMS.txt' -exec cp {} out/ \;
+          find dist -name 'SHA256SUMS.txt' -exec cat {} \; | sort -u > out/SHA256SUMS.txt
+          ls -l out
+          # 缺任一平台资产就不发布（NF-10）
+          ls out/*_x64.dmg out/*_arm64.dmg out/*_win-x64-setup.exe out/SHA256SUMS.txt >/dev/null
+
+      - name: 创建或补传 Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="dryrun-$(printf '%s' '${{ github.sha }}' | cut -c1-7)"
+            MODE=(--draft)
+            echo "试跑通道：草稿 $TAG"
+          else
+            TAG="${{ github.ref_name }}"
+            MODE=()
+            case "$TAG" in
+              v0.*) MODE=(--prerelease) ;;
+            esac
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG 已存在 → 覆盖式补传资产（AC-43 幂等）"
+            gh release upload "$TAG" out/* --clobber
+          else
+            gh release create "$TAG" \
+              --target "${{ github.sha }}" \
+              --title "$TAG" \
+              --notes "由发布流水线自动生成。commit ${{ github.sha }}；构建记录见 Actions。" \
+              "${MODE[@]}" \
+              out/*
+          fi

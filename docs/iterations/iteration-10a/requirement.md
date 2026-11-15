@@ -4,8 +4,8 @@
 - **依据章节**：`docs/index.md` 第一部分 §1.1 一句话定位（9–11 行）、§1.3 App 形态与桌面壳选型/使用体验（21–47 行）、§3.1 节点状态 9 态与看板 7 列（129–168 行）、§3.2 会话状态 6 态（170–193 行）、§3.3 角色状态 6 态与角色实例数据模型（195–222 行）、§3.4 交接包状态 7 态（224–246 行）、§4 能力域 2「子工作流折叠」（329–344 行，其中 342 行）、能力域 4「连接线数据模型 / 聚合规则 / 聚合状态与视觉编码 / 标签策略」（365–412 行，其中 377–410 行）、能力域 5「视图层次」（416–439 行）、「角色流程图」（441–477 行）、「数据接口与实时推送」（514–530 行）、「健康度规则」（532–541 行）、「边界」（543–547 行）、§5.1 运行时闭环（577–598 行）、§5.2 数据布局（600–614 行）、§6 边界声明第 7 / 9 / 10 条（626–629 行）；第二部分迭代规划 `#### I1.10a — 桌面应用壳 + 全局实例列表 + 角色流程图基础`（840–857 行）、范围外归属 `#### I1.10b`（861–874 行）与 `#### I1.11`（878–888 行）、阶段一退出条件（911–913 行）、每个迭代的固定产出（1023–1030 行）
 - **模板路径**：`docs/templates/requirement-template.md`（8 节 + 三条用户视角硬约束；本项目自 I1.2 起扩展为附录 A~D）
 - **格式样板**：`docs/iterations/iteration-9/requirement.md`（v7，1060 行，A~D 附录形态）与 `docs/iterations/iteration-7/requirement.md`（v2，已收口）
-- **版本**：v3
-- **状态**：v1/v2 已按 `review-round1.md` 的 F-01~F-14 修订并完成 S3/S4 收口。**v3（2026-11-15）按主控裁决追加「GitHub CI 构建与 Release」需求（BR-33~BR-39、AC-38~AC-44、NF-8~NF-10），需求重新进入待评审状态**：v2 的 37 条 AC 证据与 `final-verification.md` 的 PASS 结论**只对 AC-01~37 有效**，新增 7 条 AC 须重新走 S3 逐条取证与 S4 终验，补齐前不得再把该终验引用为「全迭代 PASS」。本文件不自行宣布通过。
+- **版本**：v4
+- **状态**：v1/v2 已按 `review-round1.md` 的 F-01~F-14 修订并完成 S3/S4 收口。**v3（2026-11-15）按主控裁决追加「GitHub CI 构建与 Release」需求（BR-33~BR-39、AC-38~AC-44、NF-8~NF-10）**；**v4 按 `review-round3.md` 的 F-20~F-28 修订**（阻断 5 项已修：Windows 可构建性缺口登记、AC-41 版本机检改为「单一来源 + 值相等 + 派生物零字面量」、AC-38 凭据机检改为 `secrets.` 零命中 + `permissions:` 正向断言、AC-39 架构检查改禁具体装配动作、`probe/acc10-release-verify.mjs` 明确为本迭代交付物）。**v2 的 37 条 AC 证据与 `final-verification.md` 的 PASS 结论只对 AC-01~37 有效**；AC-38~44 须走完 S1 拆分 → S2 实现 → S3 逐条取证 → S4 重做终验，补齐前不得把该终验引用为「全迭代 PASS」。本文件不自行宣布通过。
 - **v3 参考实现**：本机 `xueshuaihui/agent-task-board` 已实测跑通的发布链路（`.github/workflows/release.yml`、`scripts/package-release.sh` / `package-release-win.sh`、`docs/发布手册.md`；远端 18 个 Release，三平台安装包 + `SHA256SUMS.txt` 齐备）。其契约要点收录于**附录 D-15，仅供编码参考，不进入验收判定**；本需求的 AC 一律按用户视角书写，不照抄实现细节。
 - **一句话说明**：把已经存在 CLI 里的实例、健康度与角色级协作数据，第一次搬到一个可双击启动的桌面应用里——主窗口给出所有实例的健康度列表，点进任一实例即可看到角色流程图（角色节点、人工/升级/子工作流特殊节点、7 种聚合状态的连接线与回流弧线），关窗缩到托盘而守护进程继续运行。
 
@@ -345,6 +345,7 @@
 - **用户操作**：维护者在本地打一个带说明的 `vX.Y.Z` tag 并推送；或者在 Actions 页手动运行一次发布流水线做试跑。
 - **预期效果**：Actions 页能看到三个平台各自在构建；构建全绿后 Releases 页出现该版本条目，能下载三个安装包与 `SHA256SUMS.txt`，并看到它是预发布还是正式版；用户下载安装后双击即可进入实例列表，与本机双击 `Maestro.app` 看到的是同一个应用。
 - **异常情况**：门禁未过或产物冒烟未过 → 该次构建标红、**不产生新的 Release 资产**，维护者看到失败原因；某一平台构建失败 → 另两个平台的产物仍保留但 Release 不创建，修复后重跑补齐；同名 tag 重跑 → 更新已有 Release 而不是再建一个；试跑产物落在草稿里，访客看不到。
+- **验收工具（v4 新增，F-26）**：本迭代交付 `probe/acc10-release-verify.mjs` 作为**只读** REST 校验器（`--check publish|assets|gating|channel|draft|absent|idempotent`）。它只读远端事实、**不得写死期望值**（资产名从响应体推导，不预置清单）；其自身正确性由 `test/wp13/release-contract.test.js` 对它做纯函数单测（给定模拟响应体 → 给定判定）覆盖。**凭据不入证据**：`grep -REn "ghp_|github_pat_|Bearer [A-Za-z0-9]{20}" docs/iterations/iteration-10a/evidence/` **零命中（exit 1）**。
 - **边界说明**：真机安装/首启、Gatekeeper 放行、Developer ID 签名与公证不在自动化范围内（见 §1.3 范围外）；本能力不改变应用内任何界面、文案与既有交互，三条主链输出与 `dependencies` 仍逐字/原样不变。
 
 ---
@@ -785,7 +786,10 @@
 - **Then** 不需要任何人在本机构建或上传：构建记录出现在 Actions 页且可查看每一步结果；全绿后 Releases 页出现该版本条目并标为「预发布」；维护者全程没有填写过个人 token。
 - 机检：`test -f test/wp13/release-contract.test.js && NODE_ENV=test node --test test/wp13/release-contract.test.js` 静态断言发布定义存在、`v*` tag 是触发条件、所需权限仅仓库内容写权限、且**不含任何个人密钥引用**；`node probe/acc10-release-verify.mjs <tag> --check publish` 走只读 REST 断言该 tag 的 Release 存在且 `draft=false`；`# pass ≥ 1`、`# fail 0`。
 - 夹具：静态契约机检只用仓库内文件，不读写 `/tmp` 业务数据；真实面用一次性 `v0.x.y` 测试 tag（用后删除，取证帧保留在 `evidence/`）。
-- 架构检查：发布定义不得引入 `package.json` 的 `dependencies` / `devDependencies` 新条目（BR-22 红线）；不得改动 `src/**`、`desktop/ui/**` 的既有行为；`grep -REn "secrets\\.[A-Z]" .github/` 除仓库自带凭据外**零命中**。
+- 架构检查（**v4 修订，F-22**）：发布定义不得引入 `package.json` 的 `dependencies` / `devDependencies` 新条目（BR-22 红线）；不得改动 `src/**`、`desktop/ui/**` 的既有行为。凭据口径三条，全部可执行：
+  - `grep -REn "secrets\." .github/` **零命中（exit 1）**——即整份发布定义不出现任何 `secrets.` 引用（含 `secrets.GITHUB_TOKEN`）；令牌一律用 `${{ github.token }}` 表达式；
+  - `grep -REn "permissions:" .github/workflows/release.yml` **恰好 1 条命中（exit 0）**，且其下只声明 `contents: write`（`grep -A3 "permissions:" .github/workflows/release.yml` 中出现其它权限键即判失败）；
+  - `grep -REn "ghp_|github_pat_|password|token:" .github/` **零命中（exit 1）**（`github.token` 表达式不算命中，锚点只认字面密钥前缀与 `token:` 赋值形态）。
 
 **AC-39 · 三平台安装包与校验和齐全且对得上**
 - 场景类型：功能 / 产物分发（v3 新增）
@@ -793,10 +797,10 @@
 - 引用：BR-34, BR-38
 - **Given** 某次 tag 的构建全部完成，用户打开该版本的 Releases 页。
 - **When** 用户下载页面列出的安装包与校验和清单，并自行核对下载文件。
-- **Then** 能拿到 macOS Intel、macOS Apple Silicon、Windows x64 三个安装包，文件名带版本与架构；另有一份 `SHA256SUMS.txt`，清单里每一行都能对上实际下载到的文件、逐行校验一致；不出现「清单有但页面没有」或「页面有但清单漏掉」的条目。
+- **Then** 能拿到 macOS Intel、macOS Apple Silicon、Windows x64 三个安装包（**v4 点明格式，F-25**：macOS 为可挂载的磁盘映像 `.dmg`，Windows 为可执行的安装程序 `.exe`），文件名带版本与架构；另有一份 `SHA256SUMS.txt`，清单里每一行都能对上实际下载到的文件、逐行校验一致；不出现「清单有但页面没有」或「页面有但清单漏掉」的条目。
 - 机检：`node probe/acc10-release-verify.mjs <tag> --check assets` 取远端资产名与字节数，断言三平台包 + 清单共 4 项齐全、架构后缀齐全；下载后本地重算 SHA-256 与 `SHA256SUMS.txt` 逐行比对并落 `evidence/`。
 - 夹具：真实 Release 页面；不使用伪造的本地资产目录冒充。
-- 架构检查：三个平台各自在自家构建机上产出，不做跨架构装配（包内运行时架构与构建机架构必须一致，不一致即判失败）；`grep -REn "universal|fat-binary" .github/ scripts/` 零命中。
+- 架构检查（**v4 修订，F-23**）：三个平台各自在自家构建机上产出，不做跨架构装配（包内运行时架构与构建机架构必须一致，不一致即判失败）。机检只禁**具体装配动作**、不禁解释性文字：`grep -REn "lipo|-target universal-apple-darwin|universal2-apple-darwin" .github/ scripts/` **零命中（exit 1）**。口径说明：注释里解释「为什么不做跨架构装配」不构成命中——判定锚点是 `lipo` 与 universal target 的**命令行形态**，不是单词本身。
 
 **AC-40 · 门禁与产物冒烟不过就不出包**
 - 场景类型：非功能 / 发布可靠性（v3 新增）
@@ -805,9 +809,9 @@
 - **Given** 某次改动让质量门禁不过，或构建出的应用无法启动 / 鉴权守卫失效 / 签名丢失。
 - **When** 维护者照样推一个 tag 触发发布。
 - **Then** 构建记录显示失败并给出可读的失败环节；**该次发布不产生任何新的可下载资产**；用户不会在 Releases 页看到一个跑不起来的包；修复后重推同名 tag 能重新出包。
-- 机检：`test -f test/wp13/release-contract.test.js && NODE_ENV=test node --test test/wp13/release-contract.test.js` 静态断言门禁步骤在打包步骤之前、产物冒烟步骤在上传步骤之前、且冒烟覆盖「应用可启动 + 鉴权守卫 + 签名验签 + 安装包完整性」四项；`node probe/acc10-release-verify.mjs <tag> --check gating` 断言失败构建的 Release 资产数为 0。
-- 夹具：构造一次故意失败的试跑（走 AC-42 的草稿通道），保留失败原始帧，不污染正式 Releases。
-- 架构检查：质量门禁调用的是仓库既有判定命令（全量单测失败集合与基线差集为 0），不得为发布单开一套宽松判定；冒烟脚本不得用 `--skip-smoke` / `--skip-gates` 跳过。
+- 机检：`test -f test/wp13/release-contract.test.js && NODE_ENV=test node --test test/wp13/release-contract.test.js` 静态断言门禁步骤在打包步骤之前、产物冒烟步骤在上传步骤之前、且冒烟覆盖「应用可启动 + 鉴权守卫 + 签名验签 + 安装包完整性」四项；`node probe/acc10-release-verify.mjs <tag> --check gating` 断言失败构建的 Release 资产数为 **0**（**v4 修订，F-24**：判定点取「该次失败 run 的 `conclusion=failure`」+「同名 Release 的资产数在 run 前后相等」两个可读取事实，不依赖对失败原因的主观判读）。
+- 夹具：构造一次故意失败的试跑（走 AC-42 的草稿通道），保留失败原始帧，不污染正式 Releases。**v4 补充**：失败构造必须在**草稿通道**内进行（草稿对访客不可见，失败不会外泄）；确实无法构造真实红色 run 时，本 AC 判 **`阻塞`**，不得用静态断言替代真实失败帧。
+- 架构检查：质量门禁调用的是仓库既有判定命令（全量单测失败集合与基线差集为 0），不得为发布单开一套宽松判定；冒烟脚本不得用 `--skip-smoke` / `--skip-gates` 跳过（`grep -REn "skip-smoke|skip-gates" .github/ scripts/` **零命中，exit 1**）。
 
 **AC-41 · 版本与通道：包内版本一致、预发布与正式版不串档**
 - 场景类型：功能 / 版本管理（v3 新增）
@@ -818,7 +822,10 @@
 - **Then** 前者在 Releases 页标「预发布」、后者标正式版；两种情况下安装包文件名里的版本都与包内版本一致；改一处版本号后，产物名、包内版本、清单同步变化，不出现四处各写各的。
 - 机检：`test -f test/wp13/release-contract.test.js && NODE_ENV=test node --test test/wp13/release-contract.test.js` 断言版本单点（其余位置由同一来源派生或校验对齐）、`v0.* → 预发布` 与 `v1+ → 正式` 两条分支都在；`node probe/acc10-release-verify.mjs <tag> --check channel` 断言远端 `prerelease` 标记与 tag 前缀一致。
 - 夹具：两种 tag 各一次；静态契约机检不依赖网络。
-- 架构检查：版本号不得在四个位置各自硬编码；`grep -REn "0\\.1\\.0" package.json desktop/src-tauri/Cargo.toml desktop/src-tauri/tauri.conf.json scripts/desktop/build.mjs` 除唯一来源外零命中。
+- 架构检查（**v4 修订，F-21**：原「`grep 0.1.0` 除唯一来源外零命中」不可执行——`Cargo.toml` 的 `version` 是 cargo 必需元数据，无法省略）。现口径为**单一来源 + 值相等 + 派生不写字面量**三条，全部可执行：
+  - **来源唯一**：`node -p "require('./package.json').version"` 是版本号的唯一读取入口；`grep -c '^  "version"' package.json` **等于 1**（exit 0）。
+  - **值相等**：`node -e` 读取 `package.json` / `desktop/src-tauri/Cargo.toml` / `desktop/src-tauri/tauri.conf.json` 三处版本，断言三者**逐字相等**；不做 `grep` 字面量扫描（这样才允许 cargo 必需字段存在）。
+  - **派生物不写字面量**：`grep -REn "0\.[0-9]+\.[0-9]+" scripts/desktop/` **零命中（exit 1）**——构建/打包脚本不得再写死版本号，必须从 `package.json` 读取。
 
 **AC-42 · 试跑不污染正式发布**
 - 场景类型：功能 / 试运行通道（v3 新增）
@@ -827,7 +834,7 @@
 - **Given** 维护者想在正式打 tag 前验证整条流水线。
 - **When** 在 Actions 页手动运行一次发布流水线。
 - **Then** 三个平台照常构建；产物进入一个**访客在 Releases 页看不到**的草稿；这次试跑不会再触发一次新的发布；维护者验证完可以一键删除该草稿，正式 Releases 列表条数不变。
-- 机检：`test -f test/wp13/release-contract.test.js && NODE_ENV=test node --test test/wp13/release-contract.test.js` 断言手动通道产出草稿、且草稿标识不以 `v` 开头（避免再次命中 tag 触发）；`node probe/acc10-release-verify.mjs <dryrun-tag> --check draft` 断言远端 `draft=true` 且正式（非草稿）Release 数未增加。
+- 机检：`test -f test/wp13/release-contract.test.js && NODE_ENV=test node --test test/wp13/release-contract.test.js` 断言手动通道产出草稿、且草稿标识不以 `v` 开头（避免再次命中 tag 触发）；`node probe/acc10-release-verify.mjs <dryrun-tag> --check draft` 断言远端 `draft=true` 且正式（非草稿）Release 数未增加。**v4 补充（F-28）**：清理动作本身也要可验证——删除后再跑一次 `--check absent`，断言该草稿 tag 在 Releases 列表中计数为 **0**，且删除前后的 REST 响应**双向落证据**（删除前有、删除后无），避免「查不到」被误读成「没发过」。
 - 夹具：`workflow_dispatch` 一次，取证后按发布手册清理草稿与其 tag。
 - 架构检查：手动通道与 tag 通道共用同一套构建与冒烟步骤，不得为试跑另开一条宽松链路。
 
@@ -849,7 +856,10 @@
 - **Given** 用户从 Releases 页下载到与自己机器架构匹配的安装包。
 - **When** 用户按常规方式安装并双击打开（macOS 挂载安装包拖入应用目录；Windows 运行安装程序）。
 - **Then** 应用正常启动、3 秒内出现主窗口并停在实例列表；不报「已损坏，无法打开」；不需要预装 Node / Rust / 不需要开终端；看到的应用与本机 `npm run desktop:build` 产出的 `Maestro.app` 是同一版本、同一行为。
-- 机检：`test -f test/wp13/release-smoke.test.js && NODE_ENV=test node --test test/wp13/release-smoke.test.js` 断言产物冒烟四项（启动探针出现 `ready`、无凭据请求返回 401、`codesign --verify --deep --strict` 通过、安装包镜像完整性校验通过 + 挂载后再次验签）；`# pass ≥ 1`、`# fail 0`；架构一致性硬校验（包内运行时架构 == 构建机架构，不符即失败）。
+- 机检：`test -f test/wp13/release-smoke.test.js && NODE_ENV=test node --test test/wp13/release-smoke.test.js` 断言产物冒烟四项（启动探针出现 `ready`、无凭据请求返回 401、签名验签通过、安装包镜像完整性校验通过 + 挂载后再次验签）；`# pass ≥ 1`、`# fail 0`；架构一致性硬校验（包内运行时架构 == 构建机架构，不符即失败）。**v4 修订（F-20 连带，按平台分开判）**：
+  - **macOS 面**（本机与 CI 的 macOS runner 都能跑）：`codesign --verify --deep --strict` 对 `.app` 与「挂载 dmg 后镜像里那份 `.app`」各验一次，两次都 exit 0；`hdiutil verify` 校验镜像完整性。
+  - **Windows 面**（只能由 `windows-latest` 跑，本机无 `makensis`）：对 `.exe` 做**可安装性最小证明**——解包/静默安装到临时目录后，包内可执行文件存在且 `--probe` 能写出 `ready`、无凭据 `GET /ui/labels` 返回 401。NSIS 交互式安装流程与 SmartScreen 首启**明确不在自动判定内**（§1.3 已排除），不计入通过数。
+  - 两个平台各自的冒烟结果**分开记账**：macOS 面通过而 Windows 面未经真实运行时，本 AC 判 **`阻塞`**，不得用 macOS 面替 Windows 面签字。
 - 夹具：临时数据目录 + 独立端口，进程与挂载点退出时清理；不使用固定 `sleep` 判定就绪。
 - 架构检查：真机安装/首启、Gatekeeper 放行路径属人工核验项（§3.3 与附录 D-15），**不得**用本机自动化冒充已通过；冒烟脚本须覆盖「安装包里那份应用」而不是只验构建目录里的 `.app`。
 
@@ -881,6 +891,13 @@
 - **等待与轮询口径**：探针文件、推送帧、实例行出现一律用“条件成立即继续”的轮询（每 100ms 一次，上限 30 秒），**不使用固定 `sleep` 判定**；1 秒合并窗口的边界用注入时钟的单元测试覆盖，不在窗口级用真实时间赛跑。
 - **回归基线**：全量测试以 I1.9 收口 `1157 tests` 为对照，收口判据是“失败集合与 `docs/iterations/iteration-7/baseline-failures.txt` 的差集为 0”，不以“零失败”判定；测试条数只增不减。
 - **命令口径**：所有 CLI 命令在夹具目录内以 `node "$MAESTRO_REPO/bin/orch.js" ...` 执行；路径断言只用相对路径或结尾匹配，不断言 `/tmp` 与 `/private/tmp` 的差异。
+- **跨平台构建前置条件（v4 新增，F-20；Windows 面的真实工作量，不得隐藏）**：
+  - **事实**：当前壳层 `desktop/src-tauri/src/spawn.rs` 使用 `std::os::unix::net::UnixStream`（第 7、64、104、112 行）与 `/bin/kill`（第 148 行），**Windows 目标不可编译**；且两端点形态不同——Unix 为 `<root>/.orch/core.sock`，Windows 核心监听 `\\.\pipe\maestro-<sha256(realpath(root).toLowerCase()).slice(0,16)>`（`src/persistence/paths.js:135-142`）。
+  - **允许的做法**：可为 Windows 新增 `#[cfg(windows)]` 分支与必要实现（例如改用桌面 HTTP 通道的 `GET /instances` 统计运行中实例、改用 `taskkill` 终止子进程），**但 Unix 路径的代码与行为必须逐字不变**（AC-01~37 的判据与既有探针语义不得改动）。
+  - **本机能做到哪一步（v4 实测结论，比 v3 的假设更严格）**：macOS 产物本机可构建可验（`npm run desktop:build`）。**Windows 目标在本机连编译预演都跑不通**——实测 `cargo check --target x86_64-pc-windows-msvc` 两级阻断：① `tauri-build` 要求 `desktop/src-tauri/icons/icon.ico`（Windows 资源文件），仓内无此文件；② 补上 ico 后仍失败，`tauri-winres` 报 `NotAttempted("llvm-rc")`（本机无 `llvm-rc`，也未安装 LLVM toolchain）。因此 **Windows 侧的唯一证明面是 `windows-latest` 上的真实构建**；本机任何形式的"预演通过"都不存在，也不得被引用为证据。`icons/icon.ico` 由打包脚本在 `cargo build` 之前生成（纯 Node 写 PNG-in-ICO，不提交二进制、不引依赖）。
+  - **另需处理的平台差异（Windows 分支必修）**：`spawn.rs` 的 `UnixStream` 客户端与 `/bin/kill`；Windows 上改用桌面 HTTP 通道（`GET /instances` 统计运行中实例，`src/daemon/http/routes.js:310/317` 已有）与 `taskkill` 终止子进程。不得读 `.orch/core.json` 的 `pipeName` 定位端点（`src/daemon/server.js:409` 明令禁止）。
+  - **禁止**：不得读 `.orch/core.json` 的 `pipeName` 来定位端点（`src/daemon/server.js:409` 明令「客户端禁止据此决定连接地址」）。
+  - **取证分级**：macOS 面可标 `已实测（真实 GitHub 面）`；Windows 面在本机只能标 `mock 实测（编译预演）` 或 `阻塞`，真实通过必须在 CI 跑出后补证。
 - **发布面验收口径（v3 新增，与 B 类判定分开）**：AC-38~44 中「远端 Release 存在 / 资产集合 / 草稿可见性 / 预发布标记」属**真实 GitHub 面**，前置条件是仓库可访问、能推测试 tag、能读 Actions 与 Releases；取证一律走只读 REST（`api.github.com` 直连）+ `git credential fill` 取凭据，凭据不写入任何证据文件。按 `docs/index.md` 675 行口径，**DSH 是 AI 宿主依赖、GitHub 是发布通道依赖，两者是不同类别**：新增发布面真实取证**不改变本迭代 B 类判定**（B 类只约束「不接真实 DSH」）。禁止把真实面改写成静态文件存在来「变绿」（`docs/index.md` 710 行第 3 条）。
 - **发布面证据分级**：`已实测（真实 GitHub 面）` / `mock 实测（静态契约机检）` / `阻塞`；AC-38~44 每条都要标级别并留原始帧，静态契约机检不得单独判该 AC 通过。
 - **测试 tag 与草稿的清理**：一次性测试 tag 与试跑草稿在取证后删除，取证帧（REST 响应、构建记录链接、资产清单、SHA-256 对账结果）保留在 `docs/iterations/iteration-10a/evidence/release/`；删除动作本身也要留证，避免「查不到」被误读成「没发过」。
@@ -1205,11 +1222,11 @@
 - **U-10（不阻塞）**：折叠阈值固定为“可见角色节点 > 12”，分组键取角色 `group`，缺失时落“未分组”。基线 468 行只写“角色数 > 12 时按角色分组折叠为组节点”，未给分组键；本需求补全口径，若评审改阈值只影响常量。
 - **U-11（不阻塞）**：托盘“退出确认”属壳层行为，本迭代交付；托盘计数徽标、暂停、通知明确归 I1.11（`docs/index.md` 886 行），不与本迭代重复。
 - **U-12（不阻塞，评审口径）**：本轮任务书把架构扫描描述为“11 词并集”，仓库实际并集为 **31 词**（I1.9 定稿口径，`test/wp11/purity.test.js` 的 `WORDS_31`）。本文件按仓库实际 31 词执行并在附录 D-7 全文列出；若主控确认另有 11 词口径，请指出具体词表，本文件只需替换 `--forbid` 取值，不影响任何 AC。
-- **U-13（v3 新增，不阻塞，待评审确认）**：版本号单点来源定为哪一处（建议 `desktop/src-tauri/tauri.conf.json` 的 `version`，`package.json` / `Cargo.toml` / `Info.plist` 从它派生或由 AC-41 的机检对齐）。另需确认 **tag 与包版本是否强制一致**：参考项目把 tag 当「发布批次标识」、包版本可不变（打 `v0.0.x` 不必改 `0.1.0`）；BR-35 只要求「包内版本与产物名一致」，未要求与 tag 数字相等。若主控要求严格相等，AC-41 需补一条机检。
-- **U-14（v3 新增，不阻塞，待评审确认）**：正式版（`v1.0.0` 起）是否设真机验收门禁（参考项目要求 A3 真机清单全过）。本需求只约定「`v1+` 标正式版」，未把真机清单写成自动门禁；若要求设门禁，需补一份人工核验清单并登记阻塞项。
+- **U-13（v3 新增；v4 已裁决，写回本文件）**：版本号**唯一来源定为 `package.json` 的 `version`**（不用 `tauri.conf.json`：Node 构建脚本直接读 `package.json` 零成本，而 cargo 的 `version` 字段客观无法省略，只能走「值相等」）；`Cargo.toml` / `tauri.conf.json` 的值必须与来源逐字相等，由 AC-41 的「值相等」机检断言。**tag 与包版本不强制数字相等**（tag 是发布批次标识），故 AC-41 不加「tag 数字 == 包版本」机检，只要求在 tag 正文写明对应包版本。
+- **U-14（v3 新增；v4 已裁决）**：**不设** `v1+` 自动真机门禁。自动门禁无法验证真机安装（§1.3 已把真机安装/首启列为范围外），硬写会造出「假通过」判据。替代口径：`v1.0.0` 及以上的 annotated tag 正文必须列出人工核验清单（两平台真机安装首启、Gatekeeper、SmartScreen），由维护者在发布前确认；本迭代不为它写 AC。
 - **U-15（v3 新增，范围外归属）**：Developer ID 签名、Apple 公证、Gatekeeper 无拦截放行留待后续迭代。本迭代只要求 ad-hoc 签名 + 验签通过（AC-44）。**注意 v2 附录 D-14 末段曾写「本迭代不要求验证分发签名」，v3 已按主控裁决修订为「ad-hoc 签名纳入、公证仍排除」，以本条为准。**
-- **U-16（v3 新增，不阻塞）**：Windows 安装包是否签名。参考项目决定「无证书、不签名、首启 SmartScreen 按话术引导」；本需求 BR-38 只要求「可安装程序」，签名策略由拆分文档定，不影响 AC 判定。
-- **U-17（v3 新增，实现选择，不进验收判定）**：当前 `scripts/desktop/build.mjs` 手工拼 `.app`、`tauri.conf.json` 的 `bundle.active=false` / `targets=[]`；要产出 `.dmg` / NSIS `.exe`，可切到 tauri-bundler 或保留手工脚本并补安装包生成。两条路径都满足 AC-39/AC-44，由拆分文档按附录 D-15 裁决，不改任何 AC 判据。
+- **U-16（v3 新增；v4 已裁决）**：Windows 安装包**不签名**（无证书），以「可安装程序」为唯一判据；SmartScreen 首启引导属人工核验项，不计入自动通过数。
+- **U-17（v3 新增；v4 已裁决，实现选择，不进验收判定）**：**保留手工打包脚本并补安装包生成**（`hdiutil` 出 dmg、`makensis` 出 exe），**不切 tauri-bundler**。理由：切换需 `@tauri-apps/cli`（devDependency），与 BR-22 红线冲突；现有手工脚本本机已实测产出可严格验签的 `.app`（`codesign --verify --deep --strict` exit 0）。
 
 ---
 
@@ -1217,6 +1234,7 @@
 
 - v1（2026-11-12）：首次产出。依据 `docs/index.md` 第一部分 §1.1 / §1.3 / §3.1~§3.4 / §4 能力域 2、4、5 / §5.1 / §5.2 / §6，与第二部分 `#### I1.10a`（840–857 行）、`#### I1.10b`（861–874 行）、`#### I1.11`（878–888 行）、阶段一退出条件（911–913 行）、每个迭代的固定产出（1023–1030 行）撰写；8 节齐全，BR-01~BR-24、AC-01~AC-30 连续编号；附录 A~D 按本项目 A~D 口径。状态：待独立评审。
 - v3（2026-11-15，主控裁决「修订 I1.10a 需求为 v3」）：核查确认 v2 只要求**本机** `npm run desktop:build`，且附录 D-14 末段明确写「本迭代不要求验证分发签名 / Gatekeeper / CSP 等分发细节……不回写本需求」，37 条 AC / 32 条 BR 对 `GitHub / CI / release / tag / workflow` 零命中；`docs/index.md` 713 行仅把「桌面壳 CI 构建」列为本机保留项，不是需求、无判据。→ 补充发布侧需求，**参照本机 `agent-task-board` 已实测跑通的发布链路**（tag 触发、三平台矩阵、dmg/NSIS、ad-hoc 签名、产物冒烟、SHA-256、draft 试跑、prerelease 判定、发布手册）。逐项落点：§1.2 增目标 7、§1.3 范围内增「发版与安装包」并补 4 条范围外、§2.15 增 BR-33~BR-39、新增 §2.16、§3.1 增 AC-38~AC-44、§3.2 增 NF-8~NF-10、§3.3 增发布面验收口径与证据分级、附录 B 增 U-13~U-17、D-12 条数改 44/39、D-14 末段按 U-15 修订、新增 D-15 收录参考实现契约。**影响声明**：v2 的 S3 证据（37 目录 / 353 份）与 `final-verification.md` PASS 只对 AC-01~37 有效；AC-38~44 待 S0 评审 → S1 拆分（新增 WP）→ S2 实现 → S3 重新取证 → S4 重做终验。既有 37 条 AC 的判据、文案基线与三主链逐字断言**一字未改**。状态：待独立评审。
+- v4（2026-11-15，按 `review-round3.md` 修订）：第 3 轮独立评审对 v3 发布面给出 **FAIL（5 阻断 / 4 建议）**，本轮全部闭合。逐项落点：**F-20（阻断）** §3.3 新增「跨平台构建前置条件」段——登记壳层 `spawn.rs` 为 Unix-only（第 7/64/104/112/148 行）导致 Windows 目标不可编译；**并据实修正 v3 的乐观假设**：实测 `cargo check --target x86_64-pc-windows-msvc` 两级阻断（先缺 `icons/icon.ico`、补后仍报 `NotAttempted("llvm-rc")`），故「本机可做语法级预演」不成立，Windows 侧唯一证明面是 `windows-latest`；同时写明允许新增 `#[cfg(windows)]` 分支但 Unix 路径须逐字不变、ico 由打包脚本生成不提交、禁止读 `core.json` 的 `pipeName` 定位端点；AC-44 机检按 macOS / Windows 两面分开记账。**F-21（阻断）** AC-41 架构检查由「`grep 0.1.0` 零命中」改为三条可执行断言（`package.json` 唯一来源 / 三处值逐字相等 / `scripts/desktop/` 不再出现版本字面量），因 `Cargo.toml` 的 `version` 是 cargo 必需字段。**F-22（阻断）** AC-38 凭据口径改为 `grep -REn "secrets\." .github/` 零命中 + `permissions:` 恰好 1 条且只含 `contents: write`，令牌写法统一为 `${{ github.token }}`。**F-23（阻断）** AC-39 架构检查由「禁 universal 单词」改为禁具体装配动作（`lipo|-target universal-apple-darwin|universal2-apple-darwin`），并写明注释性解释不算命中。**F-24（建议）** AC-40 明确失败判定点（`conclusion=failure` + 资产数前后相等）与「构造不出真实红色 run 则判阻塞」。**F-25（建议）** AC-39 Then 点明 `.dmg` / `.exe` 格式。**F-26（阻断）** §2.16 新增「验收工具」条：`probe/acc10-release-verify.mjs` 为本迭代交付的只读校验器、不得写死期望值、其正确性由契约测试的纯函数单测覆盖、凭据不入证据。**F-27（建议）** D-15 增并发组区分（试跑与 tag 通道不得同组）。**F-28（建议）** AC-42 增 `--check absent` 与删除前后双向落证。另按 §7 建议裁决 **U-13**（`package.json` 为版本唯一来源、tag 与包版本不强制数字相等）、**U-14**（不设 `v1+` 自动真机门禁）、**U-16**（Windows 不签名）、**U-17**（保留手工脚本 + 补安装包生成，不切 tauri-bundler），四条由「待确认」改为「已裁决」。既有 AC-01~37 判据仍一字未改。状态：待 round4 复核。
 - v2（2026-11-12）：按 `review-round1.md` §5 的 F-01~F-14 修订（第 1 修复岗完成头部版本 v2、BR-25~BR-32、附录 D-9~D-13 重写与 F-06 机检 ERE 化；本岗接续收敛其余项）。逐项落点：**F-01** 附录 A-1 样例重排为“需关注 → 慢 → 正常 → 已结束”（INST-001→003→004→002），规则句不变；**F-02/F-03/F-05** 新增 AC-31~AC-37（引用 BR-25~BR-32，全部带三件套与 `机检 / 夹具 / 架构检查` 锚点），AC-06 增补“启动失败”路径，§3.3 的“项目 未指定”引用由 AC-30 改为 AC-31，`--ctl` 接缝补 `tray-open`；**F-04** §2.14 四条降级分支逐条标注对应 AC（AC-30 / AC-06 / AC-08）；**F-07** 附录 D-1 改走 `node src/daemon/serve-entry.js --project <root> --desktop` 桌面入口，明确不触碰 `src/cli/main.js` 的命令表、两层子命令表与 `USAGE_LINES`，D-10 / D-11 / D-13 与 D-1 复核一致，D-11 补“桌面通道不经 CLI 命令表”依据；**F-08** U-4 / U-6 转“已裁决”口径（§1.3 对应句同步）；**F-09** A-9 改为 `N 个活跃会话`（基线 449 行）、`服务 T-001, T-002`（基线 203 行），A-10 子工作流标签补全角冒号（基线 460 行），A-0 分隔符约定同步；**F-10** 判定口径 5 统一为“先 `test -f` 断言文件存在再运行”，AC-01 / AC-02 / AC-05 / AC-29 机检命令同步；**F-11** §1.3 升级面板跳转归属 I1.11 的表述复核确认、无 §2/§3 残留；**F-12** 数据布局登记复核确认（§1.3 已含 `desktop.json` / `views` / `projects.json`）；**F-13** §2.5 / §2.13 无“图版本号”残留（仅附录 B / D 与判定锚点保留）；**F-14** AC-29 保持用户视角，新增附录 D-14 收纳可选实现路径并注明不进验收判定，U-2 表述同步。D-12 更新为 v2 实际条数（AC 37 / BR 32）。状态：待 round2 复核。
 
 ---
@@ -1350,9 +1368,9 @@ task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,dev
 
 ### D-12 编号与标题形态
 
-- AC 标题沿用 `**AC-xx · …**` 形态；机械取号 `grep -cE '^\*\*AC-'`，**v3 为 44 条**（AC-01~AC-44 连续；v1 为 30 条，AC-31~AC-37 为 v2 追加，AC-38~AC-44 为 v3 追加）。
-- BR 取号 `grep -cE '^- \*\*BR-'`，**v3 为 39 条**（BR-01~BR-39 连续；v1 为 24 条，BR-25~BR-32 为 v2 追加，BR-33~BR-39 为 v3 追加）。
-- NF 取号 `grep -cE '^- \*\*NF-'`，**v3 为 10 条**（NF-1~NF-7 为 v2，NF-8~NF-10 为 v3 追加）。
+- AC 标题沿用 `**AC-xx · …**` 形态；机械取号 `grep -cE '^\*\*AC-'`，**v4 为 44 条**（AC-01~AC-44 连续；v1 为 30 条，AC-31~AC-37 为 v2 追加，AC-38~AC-44 为 v3 追加，v4 未增删条目）。
+- BR 取号 `grep -cE '^- \*\*BR-'`，**v4 为 39 条**（BR-01~BR-39 连续；v1 为 24 条，BR-25~BR-32 为 v2 追加，BR-33~BR-39 为 v3 追加，v4 未增删条目）。
+- NF 取号 `grep -cE '^- \*\*NF-'`，**v4 为 10 条**（NF-1~NF-7 为 v2，NF-8~NF-10 为 v3 追加，v4 未增删条目）。
 
 ### D-13 本迭代明确不动的既有行为
 
@@ -1377,11 +1395,12 @@ task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,dev
 - **步骤链**：拉取代码 → 准备 Node 22 与稳定 Rust → 依赖缓存 → **质量门禁** → 构建 → 装配随包运行时 → 打包 → **包元数据对齐校验**（应用标识 / 产品名 / 版本与配置一致） → **签名 + 验签** → 生成安装包 → **产物冒烟** → SHA-256 → 上传中间产物 → 汇总发布。
   - 产物冒烟四件套（参考项目靠它抓出过「缺依赖 / 未签名报已损坏 / dmg 装了旧包」三个真实缺陷）：应用能启动并打印就绪标记、无凭据请求被拒、签名验签通过、安装包镜像完整性 + **挂载后对镜像里那份应用再次验签**（不能只验构建目录里的 `.app`）。
   - 已知坑：打包工具若先出了未签名的安装包必须作废、签名后重新生成；每架构只生成一次镜像（二次生成会挤爆 runner 磁盘）；生成前先清理残留挂载点，否则报资源忙；包内运行时二进制的架构必须与构建机架构一致，不符直接失败。
-- **版本与通道**：版本号单点来源；`v0.x.*` 标预发布、`v1.0.0` 起标正式版；tag 一律 annotated 并写清发布口径与已知限制。是否强制 tag 数字 == 包版本见 U-13。
-- **凭据与幂等**：只用仓库自带 `GITHUB_TOKEN`（`contents: write`），不需要个人 token；同名 Release 已存在则补传资产（覆盖式）、否则创建；同版本并发互斥。
+- **版本与通道（v4 裁决 U-13）**：版本号**唯一来源 = `package.json` 的 `version`**；`Cargo.toml` / `tauri.conf.json` 的值必须与它相等（Cargo 字段无法省略，故只要求「值相等」而非「零字面量」），产物文件名与 `Info.plist` 元数据由打包脚本读该来源派生、脚本内不得再写版本字面量。`v0.x.*` 标预发布、`v1.0.0` 起标正式版；tag 一律 annotated 并写清发布口径与已知限制。**tag 与包版本不强制数字相等**（tag 是发布批次标识，包版本取自 `package.json`），但 tag 正文必须写明对应包版本。
+- **凭据与幂等（v4 修订，F-22）**：只用仓库自带令牌，写法为 `${{ github.token }}` 配合 workflow 级 `permissions: contents: write`；**整份发布定义不得出现 `secrets.` 引用**（含 `secrets.GITHUB_TOKEN`），也不需要个人 token。同名 Release 已存在则补传资产（覆盖式）、否则创建；同版本并发互斥。
+- **并发组（v4 新增，F-27）**：试跑通道与 tag 通道的并发组必须**区分**（例如分别以 `dryrun-<ref>` 与 `release-<tag>` 为组名），否则同名 ref 的两次手动试跑会互相取消，第二次把第一次的构建打断却看着像「失败」。
 - **Maestro 与参考项目的差异（实现阶段必须处理，但不改 AC）**：
-  1. 当前 `scripts/desktop/build.mjs` 手工拼 `.app`（复制运行时 + `cargo build` + `codesign`），`tauri.conf.json` 是 `bundle.active=false` / `targets=[]`；参考项目走 tauri-bundler（`targets=["app","dmg","nsis"]`）。是否切换见 U-17。
-  2. 当前产物路径与产品名、应用标识、版本散在 4 处硬编码；参考项目以 `tauri.conf.json` 的 `version` 为单点，并有一步元数据对齐硬校验。
+  1. 当前 `scripts/desktop/build.mjs` 手工拼 `.app`（复制运行时 + `cargo build` + `codesign`），`tauri.conf.json` 是 `bundle.active=false` / `targets=[]`；参考项目走 tauri-bundler（`targets=["app","dmg","nsis"]`）。**v4 裁决（U-17）：保留手工脚本 + 补安装包生成（`hdiutil` 出 dmg、`makensis` 出 exe），不切 tauri-bundler**——切换需要 `@tauri-apps/cli`（devDependency），与 BR-22「`dependencies` 为 `{}`、界面层零 npm 包」的红线解释成本更高。
+  2. 当前产物路径与产品名、应用标识、版本散在 4 处硬编码；**v4 裁决（U-13）**：以 `package.json` 的 `version` 为单点，其余位置由打包脚本派生，并有一步元数据对齐硬校验（`Cargo.toml` / `tauri.conf.json` 值必须与来源相等）。
   3. Maestro 的 `package.json` 只有 `test` / `desktop:build` 两个脚本、`dependencies` 必须为 `{}`、界面层零 npm 包（BR-22 红线）；**不得**为发布引入 npm 依赖。参考项目的 `devDependencies` 含 `@tauri-apps/cli`，这条不能照抄。
   4. Maestro 的质量门禁是「全量单测失败集合与判定基线差集为 0 + 测试条数只增不减」，不是参考项目的 typecheck/test；发布门禁必须复用既有判定，不得另开宽松口径（NF-6 / NF-8）。
   5. Maestro 已有壳面端到端探针（`test/wp13/acceptance-e2e.test.js`，`ready → rows → graph-shown → closed`），产物冒烟应复用同一套探针语义，而不是另写一套。

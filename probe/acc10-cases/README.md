@@ -1,7 +1,7 @@
 # probe/acc10-cases —— I1.10a S3 逐 AC 用例注册表
 
-一条 AC 一个文件（`ac01.mjs` ~ `ac37.mjs`，不带 `-f`）。用例内容由
-`node ../acc10-f-gen.mjs` 从 `docs/iterations/iteration-10a/requirement.md` v2 §3.1
+一条 AC 一个文件（`ac01.mjs` ~ `ac44.mjs`，不带 `-f`）。用例内容由
+`node ../acc10-f-gen.mjs` 从 `docs/iterations/iteration-10a/requirement.md` v4 §3.1
 **逐字抽取**：AC 号 / 标题 / 场景类型 / Given / When / Then / 机检 / 夹具 / 架构检查原文。
 生成器不放宽、不改写、不合并任何 Then；`--check` 可核对已生成用例与需求逐字一致。
 
@@ -13,6 +13,7 @@ node probe/acc10-f-run.mjs --batch a      # AC-01~10
 node probe/acc10-f-run.mjs --batch b      # AC-11~20
 node probe/acc10-f-run.mjs --batch c      # AC-21~30
 node probe/acc10-f-run.mjs --batch d      # AC-31~37
+node probe/acc10-f-run.mjs --batch r      # AC-38~44（发布面，r = release）
 node probe/acc10-f-final.mjs              # 重建汇总 / 验收报告
 ```
 

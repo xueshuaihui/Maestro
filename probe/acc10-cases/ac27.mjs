@@ -1,4 +1,4 @@
-// 由 node probe/acc10-f-gen.mjs 生成；判据原文逐字取自 requirement.md v2 §3.1 AC-27。
+// 由 node probe/acc10-f-gen.mjs 生成；判据原文逐字取自 requirement.md v4 §3.1 AC-27。
 // 禁止手工放宽 / 合并 / 改写任何 Then；改动请先改生成器并复跑 --check。
 import { runCase } from '../acc10-f-common.mjs';
 

@@ -105,6 +105,37 @@ const ARCH = {
   'AC-35': [h('grep -REn "default|未知" desktop/ui/board/board.js', '未知状态有显式默认分支')],
   'AC-36': [h('grep -REn "SingleInstance|single_instance|activate" desktop/src-tauri/src/', '单实例用应用级锁；二次启动激活已有窗口')],
   'AC-37': [h('grep -REn "now" src/daemon/http/stream.js', '合并调度器仍为可注入时钟的纯调度器（同 AC-09）')],
+  // ---- 发布面（需求 v4 AC-38~44；以真实 GitHub 面 + 静态契约双向取证）----
+  'AC-38': [
+    z('grep -REn "secrets\\." .github/', '整份发布定义零密钥引用（exit 1）'),
+    l('grep -REn "permissions:" .github/workflows/release.yml', 1, 'permissions 声明恰好 1 处'),
+    z('grep -REn "ghp_|github_pat_|password|token:" .github/', '无字面密钥前缀与 token: 赋值形态'),
+    h('grep -REn "github[.]token" .github/workflows/release.yml', '令牌走 ${{ github.token }} 表达式'),
+  ],
+  'AC-39': [
+    z('grep -REn "lipo|-target universal-apple-darwin|universal2-apple-darwin" .github/ scripts/', '不做跨架构装配（禁具体命令形态）'),
+    h('grep -REn "macos-15-intel|macos-15|windows-latest" .github/workflows/release.yml', '三平台各自在自家 runner 产出'),
+  ],
+  'AC-40': [
+    z('grep -REn "skip-smoke|skip-gates" .github/ scripts/', '无跳过门禁/冒烟的旁路开关'),
+    h('grep -REn "gate[.]mjs" .github/workflows/release.yml', '门禁调用仓库既有判定脚本'),
+  ],
+  'AC-41': [
+    z('grep -REn "0[.]1[.]0" scripts/desktop/', '派生物不写版本字面量（唯一来源 = package.json）'),
+    h('grep -REn "assertAligned|readVersion" scripts/desktop/version.mjs', '版本模块提供唯一读取入口与对齐断言'),
+  ],
+  'AC-42': [
+    h('grep -REn "dryrun-" .github/workflows/release.yml', '草稿标识不以 v 开头（dryrun- 前缀）'),
+    h('grep -REn "[-][-]draft" .github/workflows/release.yml', '试跑产出草稿'),
+  ],
+  'AC-43': [
+    h('grep -REn "gh release view|[-][-]clobber" .github/workflows/release.yml', '已存在则补传、覆盖式上传'),
+    h('grep -REn "fail-fast:[[:space:]]*false" .github/workflows/release.yml', '任一平台失败不阻塞其它平台产出'),
+  ],
+  'AC-44': [
+    h('grep -REn "hdiutil.*verify|镜像内应用复验" scripts/desktop/smoke.mjs', '镜像完整性与挂载后复验'),
+    z('grep -REn "0[.]0[.]0[.]0|listen.*all" scripts/desktop/smoke.mjs', '冒烟不绑定通配地址'),
+  ],
 };
 
 /** 证据等级：默认 mock 实测；R-12 的 AC-22 单列结构断言等级。 */
@@ -118,11 +149,49 @@ const NOTES = {
   'AC-04': 'R-08 已登记的时序竞态基线项；单文件机检若失败，须保留全部 attempt 原始帧并在 blockers 台账登记，不得改断言。',
   'AC-05': '需求架构检查原文 `grep -Rn "startRun" desktop/` 在本机包含 bundle 构建产物（`desktop/src-tauri/target/**` 内为产品源码副本）；判定以界面层作用域 `desktop/ui/ desktop/harness/` 零命中为准，原文形态仅留证。',
   'AC-11': '同上：需求 `grep -R "decideStatus" desktop/` 命中构建产物副本，判定以界面层作用域零命中为准。',
+  // ---- 发布面（v4 AC-38~44）：证据分级按需求 §3.3「发布面证据分级」----
+  'AC-38': [
+    '证据分级：`已实测（真实 GitHub 面）` 需一次真实 tag 推送 + Actions 记录 + Release 存在；静态契约（release-contract.test.js）只能证明「定义里写了什么」，不得单独判本条通过。',
+    '零个人凭据的判定点：`.github/` 内 `secrets.` 零命中 + `permissions:` 只含 `contents: write`；令牌表达式为 `${{ github.token }}`。',
+  ],
+  'AC-39': [
+    '静态契约由 release-contract.test.js 的 `judgeAssets` 单测承载（三平台 + 清单共 4 项、资产数恰为 4）；真实面由 `acc10-release-verify.mjs --check assets` 取远端资产名与字节数并本地重算 SHA-256。',
+    '禁止用仓内文件冒充远端资产（`docs/index.md` 710 行第 3 条）；缺任一平台即判不通过，不得用「另外两个平台已过」折抵。',
+  ],
+  'AC-40': [
+    '失败判定点（需求 v4 F-24）：该次 run `conclusion=failure` 且同名 Release 资产数在 run 前后相等；构造不出真实红色 run 时本条判 `阻塞`，不得用静态断言替代真实失败帧。',
+  ],
+  'AC-41': [
+    '静态契约三条（来源唯一 / 值相等 / 派生物零字面量）由 release-version.test.js 承载；真实面由 `--check channel` 断言 `v0.* → prerelease`、`v1+ → 正式`。',
+  ],
+  'AC-42': [
+    '真实面：`workflow_dispatch` 一次 → 草稿 `draft=true` 且正式条目数不增；清理后必须 `--check absent` 计数归零，删除前后的 REST 响应双向落证（F-28）。',
+  ],
+  'AC-43': [
+    '真实面：同名 Release 计数为 1 且资产齐全；静态契约断言「已存在则补传 / 否则创建」与 `--clobber` 覆盖式上传。',
+  ],
+  'AC-44': [
+    '本机 macOS 面可实测（冒烟四件套已跑通）；Windows 面只能由 `windows-latest` 证明（本机无 `makensis`、无 `llvm-rc`），macOS 面通过不得替 Windows 面签字（需求 v4 F-20 连带项）。',
+    '真机安装/首启、Gatekeeper 放行、SmartScreen 引导属人工核验，不计入自动通过数。',
+  ],
 };
 
 function fileList(jijian) {
   return [...new Set([...jijian.matchAll(/test\/wp13\/([\w.-]+\.test\.js)/g)].map((m) => m[1]))];
 }
+
+/**
+ * 发布面兜底（S3 口径，不改需求判据）：
+ * AC-39/42/43 的机检行以 `probe/acc10-release-verify.mjs`（真实面只读校验）为主，
+ * 未内联 `test/wp13/*.test.js`。这三条的**静态契约**由 `release-contract.test.js`
+ * 的纯函数单测承载（judgeAssets / judgeDraft / judgeIdempotent），故在此登记兜底，
+ * 避免生成器把「真实面校验器」误判成「没有测试」。
+ */
+const STATIC_FALLBACK = {
+  'AC-39': ['release-contract.test.js'],
+  'AC-42': ['release-contract.test.js'],
+  'AC-43': ['release-contract.test.js'],
+};
 
 function caseSource(b) {
   const ac = b.ac;
@@ -140,13 +209,13 @@ function caseSource(b) {
     jijian: b.jijian,
     fixture: b.fixture,
     archText: b.archText,
-    files: fileList(b.jijian),
+    files: fileList(b.jijian).length ? fileList(b.jijian) : STATIC_FALLBACK[ac] || [],
     arch: ARCH[ac] || [],
-    notes: NOTES[ac] ? [NOTES[ac]] : [],
+    notes: [].concat(NOTES[ac] ?? []),
     source: `docs/iterations/iteration-10a/requirement.md §3.1 ${ac}`,
   };
   return [
-    `// 由 node probe/acc10-f-gen.mjs 生成；判据原文逐字取自 requirement.md v2 §3.1 ${ac}。`,
+    `// 由 node probe/acc10-f-gen.mjs 生成；判据原文逐字取自 requirement.md v4 §3.1 ${ac}。`,
     `// 禁止手工放宽 / 合并 / 改写任何 Then；改动请先改生成器并复跑 --check。`,
     `import { runCase } from '../acc10-f-common.mjs';`,
     ``,
@@ -163,9 +232,12 @@ function caseSource(b) {
 }
 
 const blocks = requirementBlocks();
-if (blocks.length !== 37) throw new Error(`AC 数量异常：${blocks.length}（期望 37）`);
+if (blocks.length !== 44) throw new Error(`AC 数量异常：${blocks.length}（期望 44）`);
 for (const b of blocks) if (b.then.length === 0) throw new Error(`${b.ac} 未抽到 Then`);
-for (const b of blocks) if (fileList(b.jijian).length === 0) throw new Error(`${b.ac} 未抽到机检测试文件`);
+for (const b of blocks) {
+  const files = fileList(b.jijian);
+  if (files.length === 0 && !STATIC_FALLBACK[b.ac]) throw new Error(`${b.ac} 未抽到机检测试文件`);
+}
 
 if (process.argv.includes('--check')) {
   let bad = 0;
@@ -175,7 +247,7 @@ if (process.argv.includes('--check')) {
     const got = fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
     if (got !== want) { console.error(`MISMATCH ${p}`); bad++; }
   }
-  console.log(`check: ${blocks.length - bad}/${blocks.length} 用例与 requirement.md v2 §3.1 逐字一致`);
+  console.log(`check: ${blocks.length - bad}/${blocks.length} 用例与 requirement.md v4 §3.1 逐字一致`);
   process.exit(bad ? 1 : 0);
 }
 
@@ -187,8 +259,8 @@ for (const b of blocks) {
 const readme = [
   '# probe/acc10-cases —— I1.10a S3 逐 AC 用例注册表',
   '',
-  '一条 AC 一个文件（`ac01.mjs` ~ `ac37.mjs`，不带 `-f`）。用例内容由',
-  '`node ../acc10-f-gen.mjs` 从 `docs/iterations/iteration-10a/requirement.md` v2 §3.1',
+  '一条 AC 一个文件（`ac01.mjs` ~ `ac44.mjs`，不带 `-f`）。用例内容由',
+  '`node ../acc10-f-gen.mjs` 从 `docs/iterations/iteration-10a/requirement.md` v4 §3.1',
   '**逐字抽取**：AC 号 / 标题 / 场景类型 / Given / When / Then / 机检 / 夹具 / 架构检查原文。',
   '生成器不放宽、不改写、不合并任何 Then；`--check` 可核对已生成用例与需求逐字一致。',
   '',
@@ -200,6 +272,7 @@ const readme = [
   'node probe/acc10-f-run.mjs --batch b      # AC-11~20',
   'node probe/acc10-f-run.mjs --batch c      # AC-21~30',
   'node probe/acc10-f-run.mjs --batch d      # AC-31~37',
+  'node probe/acc10-f-run.mjs --batch r      # AC-38~44（发布面，r = release）',
   'node probe/acc10-f-final.mjs              # 重建汇总 / 验收报告',
   '```',
   '',
