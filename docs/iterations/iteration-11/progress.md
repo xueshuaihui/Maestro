@@ -77,3 +77,9 @@
 ## S2 批次 D 开工（2026-11-16）
 
 - 派出 WP-7（HTTP 面唯一负责人：server.js/routes.js/labels.js + 通知器生产接线 + __test__ 三接缝 + D-47 收敛）。契约冻结点：六模块签名已全部合入。
+- **WP-7 HTTP 面**（9305408）：routes.js +738 行挂 D-1 全量（只读 9 组 + 两条 SSE + 五条写接口经既有 CAS）；通知器生产接线（clock 注入 + D-46 替换呈现）；labels.js +140 行 A-11 键块、六模块 CJK 字面量归零；D-47 收敛（workflowDetailOf 导出）；18 测试 173 断言全绿；D-50（approvals 接缝覆盖层不入 totals + closeAllConnections 停机配套）。
+- **批次 D 门禁**：全量 1523 / 1518 pass / 4 fail 差集 0；tests >= 1505 ✓。
+
+## S2 批次 E 开工（2026-11-16）
+
+- 派出 WP-8（桌面 UI 五视图 + harness dump）与 WP-9（壳层托盘/通知/ctl 四动作）并行。
