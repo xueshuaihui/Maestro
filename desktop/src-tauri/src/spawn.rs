@@ -39,11 +39,19 @@ pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
         eprintln!("maestro-shell: bundled runtime incomplete (node/entry missing)");
         return 0;
     }
+    // 传给解释器的两段路径按平台规范化：
+    // Windows 侧统一成正斜杠并剥掉 `\\?\` 逐字前缀——Node 对二者都能解析，
+    // 但子进程曾崩在 `realpathSync('C:')`，说明原样传出去的字符串被解坏了。
+    #[cfg(windows)]
+    let (entry_arg, root_arg) = (win_path_arg(&entry), win_path_arg(root));
+    #[cfg(not(windows))]
+    let (entry_arg, root_arg) = (entry.clone(), root.to_path_buf());
+
     let mut command = Command::new(&node);
     command
-        .arg(&entry)
+        .arg(&entry_arg)
         .arg("--project")
-        .arg(root)
+        .arg(&root_arg)
         .arg("--desktop")
         .stdout(Stdio::null());
     // Windows: 子进程 cwd 显式设成项目根，并把 stderr 收进 `.orch/daemon-spawn.log`。
@@ -55,6 +63,19 @@ pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
     {
         command.current_dir(root);
         command.stderr(Stdio::piped());
+        // 路径口径留证：CI 实测子进程崩在 `realpathSync('C:')`，说明 node 收到的
+        // 入口不是完整路径。把壳这一侧真正传出去的三段字符串写进探针流，
+        // 才能分清是「壳给出的字符串就被改了」还是「CreateProcess 传参被打散」。
+        crate::probe::event(
+            "daemon-spawn",
+            json!({
+                "node": node.display().to_string(),
+                "entry": entry.display().to_string(),
+                "root": root.display().to_string(),
+                "entryArg": entry_arg,
+                "rootArg": root_arg,
+            }),
+        );
     }
     #[cfg(not(windows))]
     {
@@ -84,6 +105,22 @@ pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
             0
         }
     }
+}
+
+/// Windows 侧交给 Node 的路径形态：剥 `\\?\` 前缀 + 统一正斜杠。
+///
+/// 两种前缀都要处理：`\\?\C:\a` → `C:/a`，`\\?\UNC\srv\share` → `//srv/share`。
+#[cfg(windows)]
+fn win_path_arg(path: &Path) -> String {
+    let raw = path.display().to_string();
+    let stripped = if let Some(rest) = raw.strip_prefix(r"\\?\UNC\") {
+        format!("//{rest}")
+    } else if let Some(rest) = raw.strip_prefix(r"\\?\") {
+        rest.to_string()
+    } else {
+        raw
+    };
+    stripped.replace('\\', "/")
 }
 
 /// Drain the daemon's stderr into `<root>/.orch/daemon-spawn.log`（Windows only）。
