@@ -31,3 +31,14 @@
 - 工作分支：`feat/i1.11-notify-queue-assets`，从 `main`（`66e5a6b`）拉出。
 - `feat/i1.10b-drilldown` 由另一同学并行实现，**当前与 `66e5a6b` 无差异**（`git rev-list --count 66e5a6b..origin/feat/i1.10b-drilldown` = 0）。
 - I1.11 一律不假设 I1.10b 能力存在（D-15）；合入时预期冲突面在 `desktop/ui/app.js` 的视图键与 `desktop/src-tauri/src/probe.rs` 的 ctl 分发器，届时按「谁先合入谁保留结构、后者按 D-9 加动作」处理。
+
+## S0 收口与 S1 拆分（2026-11-16 追加）
+
+| 阶段 | 内容 | 角色 | 结果 | 产物 |
+|---|---|---|---|---|
+| S0 | round2 评审 → 修复 v3~v5 → round3 评审 → 修复 v6 → **round4 评审 PASS**（0 阻断 / 6 建议 I-01~I-06） | 独立评审 ×4 | **PASS** | `review-round2~4.md` |
+| S0 | v7 按 I-01~I-06 只补不减闭合（B-1/D-6 取不到输入口径、BR-25 三类、--no-notify 授权、删弱引 BR-12、A-4 括注、行号 900–912） | 主控 | 机械自检全绿 | requirement.md **v7**（49/37/8） |
+| S0 | 派单 C 需求理解（335 行 / 15 条关键裁决 / 接缝清单） | req-understanding | 完成 | `requirement-understanding.md` |
+| S0 | S0 Gate 13 条 DoR 全绿；D-44 裁决（条数下限归 test/wp14，不改 gate.mjs） | 主控 | **通过** | `decisions.md`（D-01~D-44） |
+| S1 | 拆分 `iteration-11.md`（8 节骨架 / 10 个 WP / 28 文件零重叠 / AC→WP 满覆盖映射 / 六批次 DAG） | 主控 | §1.5 自检全绿 | `docs/iterations/iteration-11.md` |
+
