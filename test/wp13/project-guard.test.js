@@ -148,7 +148,8 @@ async function launchAndCheck(t, { argvExtra, configDir, expectedView, expectedM
   assert.ok(quit, `quit event missing for view=${expectedView}`);
 }
 
-test('project-guard: missing / invalid / valid views (AC-31)', (t) => withShellLock(async () => {
+// 夹具走 macOS bundle 启动壳进程；非 darwin 无 `.app`，显式 SKIP（不冒充通过）。
+test('project-guard: missing / invalid / valid views (AC-31)', { skip: process.platform !== 'darwin' }, (t) => withShellLock(async () => {
   ensureBundle(t);
   const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-i10a-proj-'));
   t.after(() => fs.rmSync(fixture, { recursive: true, force: true }));

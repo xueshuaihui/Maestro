@@ -98,7 +98,10 @@ function exitAndWait(child) {
   });
 }
 
-test('bundle: artifacts + bundled node + narrowed-env launch + seams + quit', (t) => withShellLock(async () => {
+// Windows 上不存在 `.app` 包（打包走 NSIS 安装包，见 scripts/desktop/package-win.mjs），
+// 本条断言的对象是 macOS bundle 本身，故非 darwin 显式 SKIP 而不是 FAIL：
+// TAP 里以 SKIP 呈现，不冒充通过（AC-44 分区记账）。
+test('bundle: artifacts + bundled node + narrowed-env launch + seams + quit', { skip: process.platform !== 'darwin' }, (t) => withShellLock(async () => {
   ensureBundle(t);
   assert.equal(fs.existsSync(APP), true, 'Maestro.app missing');
   assert.equal(fs.existsSync(SHELL), true, 'shell binary missing');

@@ -100,7 +100,8 @@ function exitAndWait(child, timeoutMs = 30_000) {
   });
 }
 
-test('single-instance: no second ready, activated, pid equal, tray-open reopens (AC-36)', (t) => withShellLock(async () => {
+// 单实例锁是应用级（bundle identifier），Windows 侧由发行包另行验证；非 darwin 显式 SKIP。
+test('single-instance: no second ready, activated, pid equal, tray-open reopens (AC-36)', { skip: process.platform !== 'darwin' }, (t) => withShellLock(async () => {
   ensureBundle(t);
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-i10a-single-'));
   const probeFile = path.join(root, 'probe.jsonl');

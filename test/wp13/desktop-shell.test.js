@@ -124,7 +124,12 @@ function pipeAlive(root) {
   });
 }
 
-test('desktop-shell: ready probe + close-to-tray + quit confirm flow (AC-01/02)', (t) => withShellLock(async () => {
+// 本条走 `.app` 启动 + Unix socket（`.orch/core.sock`）观测；Windows 侧通道是 HTTP，
+// 故非 darwin 显式 SKIP，不冒充通过（AC-44 分区记账）。
+test(
+  'desktop-shell: ready probe + close-to-tray + quit confirm flow (AC-01/02)',
+  { skip: process.platform !== 'darwin' },
+  (t) => withShellLock(async () => {
   ensureBundle(t);
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-i10a-shell-'));
   const probeFile = path.join(root, 'probe.jsonl');
