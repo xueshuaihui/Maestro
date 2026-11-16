@@ -386,3 +386,13 @@
 - **触发点**：WP-9 回执 ⑦.1：`tray.rs::eval_open_queue`（:296）向 WebView eval `__MAESTRO_CTL__('open-queue', {selected})`，但 `desktop/ui/app.js` 的分发器（:2256）只处理 `refresh-list` / `open-instance`——真实点击通知/菜单「打开队列」在 WebView 内不切视图（`followNotification` API 存在但无调用点）。AC-04 的「点击通知停在队列并选中条目」在真窗口会挂。
 - **依据**：D-9 要求 `handle_ctl` 与真实菜单/点击调**同一函数**；壳侧已正确调用 `handle_notify_open`，缺口纯在 WebView 接线侧。属产品缺陷，非判定过严。
 - **决定**：`app.js` 的 `__MAESTRO_CTL__` 增 `open-queue` 分支：`void app.followNotification({ kind: 'escalation', ids: arg?.selected ? [arg.selected] : [] }).then(paint)`（复用既有 API，不新写导航逻辑）；无 selected 时只切到 queue 视图。新增 UI 测试断言该分支（从 `__MAESTRO_CTL__` 真实分发路径）。`config.rs` 的 `DESKTOP_NOTIFY_UNAVAILABLE` 最小字段补项（WP-9 回执 ⑦.2）确认为 D-11 的必要延伸。
+
+## D-53 · WP-11 四条口径裁决：读时健康度重算不计面板写；行号锚点改函数体；对象表不入白名单
+
+- **触发点**：WP-11 回执 ⑤ 四条。
+- **决定**：
+  1. **浏览零写 vs 读时健康度重算**（回执 ⑤.1）：`orchestrator.getStatus` 的首次受控健康度写是 I1.9 D-17 既有行为、D-14 明文不动；AC-39 的「浏览零写」Given 是**运行中且 health 已计算**实例，挂起+待处理现场触发的受控写**不计入面板写操作**。S3 严格按 AC-39 Given 验收；需求补一句口径（v10）。**不改核心**。
+  2. **live/磁盘快照脱节**（回执 ⑤.2）：D-45 已登记的引擎既有行为；AC-18/38 的数据侧断言统一用磁盘快照 + `buildQueue`，S3 同口径，不依赖 live 快照；如要修引擎另立裁决。
+  3. **`shapeSnapshot` 行号漂移**（回执 ⑤.3）：基线 `66e5a6b` 时 `server.js:900`，当前 HEAD 因 I1.11 新增会话级事件漂到 `:1018`；函数体逐字 diff = 0（609 字节）。**非回归**；S3 用 `test/wp14/regression.test.js:293` 的函数体逐字锚点，需求/拆分/任务书中的 `900–912` 改注为「函数体逐字锚点，行号随迭代漂移」（v10）。
+  4. **`DESKTOP_QUEUE_CONCLUSIONS` 对象表**（回执 ⑤.4）：D-51 白名单只含字符串文案模板，对象表刻意排除符合设计；S3 按 95/95 字符串键判读，勿按 96/96。
+- **影响面**：需求 v10（A-0/附录 D 注记）、S3 验收口径、`test/wp14/regression.test.js` 锚点方式（已实现）。
