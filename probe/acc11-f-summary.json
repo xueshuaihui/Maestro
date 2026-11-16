@@ -1,0 +1,319 @@
+{
+  "batch": "a",
+  "acFrom": "AC-01",
+  "acTo": "AC-13",
+  "head": "2732f86",
+  "通过": 11,
+  "不通过": 2,
+  "阻塞": 0,
+  "acCount": 13,
+  "missing": [],
+  "evidenceFileCount": 141,
+  "perAc": [
+    {
+      "id": "AC-01",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "升级待处理时托盘通知（规划验收句第 1 句）",
+      "face": "通知 / 机检 + 原始帧",
+      "checks": 18,
+      "ok": 18,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-02",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "实例完成时托盘通知",
+      "face": "通知 / 机检 + 原始帧",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-03",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "实例异常时托盘通知",
+      "face": "通知 / 异常 / 机检 + 原始帧",
+      "checks": 16,
+      "ok": 16,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-04",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测（app.js 源码锚点 + followNotification 行为断言；真窗口/CI 不可用）",
+      "title": "点击通知定位到队列条目",
+      "face": "通知 / 交互 / 源码锚点 + 行为断言",
+      "checks": 15,
+      "ok": 15,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-05",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "通知开关：总开关与三类分项，按本机记住",
+      "face": "设置 / 机检",
+      "checks": 17,
+      "ok": 17,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        },
+        {
+          "file": "prefs.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-06",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "去重与合并：10 秒同一升级一次，60 秒同类异常合并",
+      "face": "通知 / 节流 / 机检 + 原始帧",
+      "checks": 13,
+      "ok": 13,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-07",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "通知不可用：只提示一次，不阻断任何流程",
+      "face": "通知 / 异常 / 机检 + 原始帧",
+      "checks": 15,
+      "ok": 15,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        },
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-08",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "队列合并、排序与空态",
+      "face": "队列 / 投影 / 机检 + 原始帧",
+      "checks": 16,
+      "ok": 16,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-09",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "升级「继续」：终态节点让实例完成、非终态节点让实例续跑",
+      "face": "处置 / 机检（D-39 两现场）",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-10",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "升级「重派」：重新分配、轮次 +1",
+      "face": "处置 / 机检",
+      "checks": 8,
+      "ok": 8,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-11",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "升级「终止」：二次确认后取消实例",
+      "face": "处置 / 确认 / 机检",
+      "checks": 13,
+      "ok": 13,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-12",
+      "verdict": "不通过",
+      "evidenceLevel": "mock 实测",
+      "title": "审批「允许」与「拒绝」",
+      "face": "审批 / 机检",
+      "checks": 10,
+      "ok": 8,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-13",
+      "verdict": "不通过",
+      "evidenceLevel": "mock 实测",
+      "title": "跨实例两条目分别处置：互不影响，三处数字各自同步",
+      "face": "处置 / 一致性 / 机检",
+      "checks": 9,
+      "ok": 7,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    }
+  ],
+  "bad": [
+    {
+      "id": "AC-12",
+      "verdict": "不通过",
+      "failed": [
+        {
+          "text": "架构检查 #1：AC-12 架构：审批处置经 approval.resolve 且做会话校验，恰好 1 条命中（exit 0）",
+          "actual": "`grep -REn \"APPROVAL_SESSION_GONE\" src/daemon/queue.js` → exit 0 / 恰好 0 行；实测 exit 1 / 0 行"
+        },
+        {
+          "text": "Then #1（逐字，机检 + 架构检查复核）",
+          "actual": "两条分别在 2 秒内显示\"审批 APR-001 已通过 · 动作 write\"与\"审批 APR-002 已拒绝 · 动作 write\"（逐字见附录 A-4）；两条从队列消失；对应会话继续或被拒，实例状态按既有规则推进。"
+        }
+      ],
+      "notes": [
+        "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。",
+        "⚠ 架构检查字面未达预期：需求要求 `grep -REn \"APPROVAL_SESSION_GONE\" src/daemon/queue.js` 恰好 1 命中（exit 0），实测 0 命中（exit 1）。根因：实现把会话失效判定放在核心 approvals.js:104 / orchestrator.js:4961，queue.js:332 仅 `forward(root,\"approval.resolve\",...)` 转发，未在 queue.js 直接引用该常量。行为意图（审批经既有路径且做会话校验）由 queue.test.js 的两条用例验证通过。此差异交主控/终验裁决：属「架构检查锚点过时」还是「产品缺陷」；S3 不放宽断言、不改实现。",
+        "逐字断言由 test/wp14/queue.test.js 的「审批·允许」「审批·拒绝」用例承载（走真实等待会话）；需求机检原文点名 queue-actions.test.js，本分支合并进 queue.test.js。"
+      ]
+    },
+    {
+      "id": "AC-13",
+      "verdict": "不通过",
+      "failed": [
+        {
+          "text": "架构检查 #1：AC-13 架构：多选/成组处置已在 D-01 移出范围，零命中（exit 1）",
+          "actual": "`grep -REn \"batch|bulk|multiSelect|selectedRows\" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/` → exit 1 / 恰好 1 行；实测 exit 0 / 1 行"
+        },
+        {
+          "text": "Then #1（逐字，机检 + 架构检查复核）",
+          "actual": "第一次只影响 `INST-001`：该行腾出、实例回到\"运行中\"、该节点轮次变 2；`INST-002` 的实例状态、节点轮次与审批状态**完全不变**（仍待处理、仍占 1 行）。第二次只影响 `INST-002`：显示\"审批 APR-001 已通过 · 动作 write\"后该行消失，`INST-001` 不受影响。三处数字各自同步：处置升级后为「队列 1 · 托盘 0 · `INST-001` 0 / `INST-002` 1」，处置审批后为「队列 0 · 托盘 0 · `INST-002` 0」；两次都在 2 秒内看到结果，不出现\"点一次改了两条\"。"
+        }
+      ],
+      "notes": [
+        "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+        "差异登记：WP-2 测试（queue.test.js AC-13 用例）把实例角色对调——INST-001 持审批 APR-001、INST-002 持升级 ESC-001；处置升级（ESC-001 属 INST-002）后中间态为 [1,0,1,0]，故测试断言序列为 [[2,1,1,1],[1,0,1,0],[0,0,0,0]]。需求 v10 原文 Given 为 INST-001 升级/INST-002 审批，序列中间态为 [1,0,0,1]。第 3、4 位互换源于夹具角色对调，语义「互不影响 + 三处各自同步」在两序列下均成立。",
+        "⚠ 架构检查字面未达预期：需求要求 `grep -REn \"batch|bulk|multiSelect|selectedRows\" ...` 零命中（exit 1），实测 exit 0 / 1 行命中——命中位于 src/daemon/http/routes.js:20 的文档注释 `* (no batch), reach the orchestrator only through the existing decision /`，是「否定语境」注释，并非批量能力实现。按 S3 判定纪律（只认需求原文、不为绿放宽断言、代码与需求冲突判不通过），本条登记为不通过，命中原始帧见 arch-1.log。是否属「注释命中需调整扫描排除注释」由主控/终验裁决；S3 不改实现、不放宽断言。",
+        "需求机检原文点名 queue-cross.test.js，本分支（HEAD 2732f86）不存在该文件，AC-13 用例合并进 queue.test.js；本用例按实际存在文件机检并保留原始 TAP。三处数字「角色对调」差异请主控/终验按需求 Then Given 裁决；本验收不放宽任何断言。"
+      ]
+    }
+  ]
+}

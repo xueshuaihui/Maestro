@@ -1,0 +1,91 @@
+{
+  "ac": "AC-08",
+  "source": "buildQueue（与 test/wp14/queue.test.js 同模块同夹具）",
+  "order": [
+    "ESC-001",
+    "ESC-002",
+    "APR-001"
+  ],
+  "totals": {
+    "pendingEscalations": 2,
+    "pendingApprovals": 1
+  },
+  "items": [
+    {
+      "type": "escalation",
+      "id": "ESC-001",
+      "instanceId": "INST-001",
+      "nodeId": "T-001",
+      "role": "worker",
+      "round": 1,
+      "stateWord": "待处理",
+      "reasonSummary": "轮次超限：第 1 轮",
+      "createdAt": "2026-11-15T10:30:00.000Z"
+    },
+    {
+      "type": "escalation",
+      "id": "ESC-002",
+      "instanceId": "INST-002",
+      "nodeId": "T-001",
+      "role": "开发",
+      "round": 2,
+      "stateWord": "待处理",
+      "reasonSummary": "执行失败：命令超时",
+      "createdAt": "2026-11-15T10:30:00.000Z"
+    },
+    {
+      "type": "approval",
+      "id": "APR-001",
+      "instanceId": "INST-002",
+      "nodeId": "T-001",
+      "role": "开发",
+      "round": 2,
+      "stateWord": "待处理",
+      "reasonSummary": "动作 write",
+      "createdAt": "2026-11-15T10:32:00.000Z"
+    }
+  ],
+  "itemKeys": [
+    [
+      "type",
+      "id",
+      "instanceId",
+      "nodeId",
+      "role",
+      "round",
+      "stateWord",
+      "reasonSummary",
+      "createdAt"
+    ],
+    [
+      "type",
+      "id",
+      "instanceId",
+      "nodeId",
+      "role",
+      "round",
+      "stateWord",
+      "reasonSummary",
+      "createdAt"
+    ],
+    [
+      "type",
+      "id",
+      "instanceId",
+      "nodeId",
+      "role",
+      "round",
+      "stateWord",
+      "reasonSummary",
+      "createdAt"
+    ]
+  ],
+  "empty": {
+    "items": [],
+    "totals": {
+      "pendingEscalations": 0,
+      "pendingApprovals": 0
+    },
+    "emptyText": "待处理 无"
+  }
+}

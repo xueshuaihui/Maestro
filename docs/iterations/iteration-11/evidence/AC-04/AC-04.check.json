@@ -1,0 +1,126 @@
+{
+  "ac": "AC-04",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测（app.js 源码锚点 + followNotification 行为断言；真窗口/CI 不可用）",
+  "requirement": {
+    "ac": "AC-04",
+    "title": "点击通知定位到队列条目",
+    "given": "`/tmp/maestro-i11-notify-click` 项目根，队列已有一条待处理升级 `ESC-001`；应用在托盘（窗口隐藏）；探针已记录该通知。",
+    "when": "用户点击该通知（通过 `ctl/notify-open` 触发与真实点击相同的处理函数）。",
+    "then": [
+      "主窗口被唤到前台，停在人工干预队列，`ESC-001` 条目处于选中态并滚动到可见位置；界面不跳到别的视图、不打开节点详情。"
+    ],
+    "jijian": "`test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js`，断言探针序列含 `{\"event\":\"notify-open\",\"escalationId\":\"ESC-001\"}` 与 `{\"event\":\"nav\",\"view\":\"queue\",\"selected\":\"ESC-001\"}`、窗口 `visible === true`、视图中不存在 `node-detail` 事件；`# fail 0`。",
+    "fixture": "`mkdir /tmp/maestro-i11-notify-click/ctl/notify-open` 触发；探针轮询。",
+    "archText": "点击处理只做\"唤前 + 切视图 + 选中\"，不读资产、不改状态；`grep -REn \"saveState|instanceDir\" desktop/ui/queue/` 必须**零命中（exit 1）**。",
+    "refs": "BR-02",
+    "risk": "中（点了没反应会让通知形同虚设）"
+  },
+  "checks": [
+    {
+      "text": "机检 notify.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=不发过期意图\n  ---\n  duration_ms: 31.781468\n  type: 'test'\n  ...\n# Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制\nok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制\n  ---\n  duration_ms: 38.720611\n  type: 'test'\n  ...\n1..22\n# tests 22\n# suites 0\n# pass 22\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1054.409146\n",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 22 / # tests 22",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.262934\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 631.796822\n",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 31 / # tests 31",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-04 架构检查：点击处理只唤前+切视图+选中，不读资产不改状态，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"saveState|instanceDir\" desktop/ui/queue/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "D-52 锚点：app.js 的 __MAESTRO_CTL__ 分发器含 open-queue 分支（期望匹配 /action === ['\"]open-queue['\"]/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "/**\n * Desktop view assembly (I1.10a WP-8; split doc 2.2 / requirement AC-01 /\n * AC-26 / AC-30 / AC-31, collaboration AC-08 / AC-15 / AC-21 / AC-24 / AC-37).\n *\n * This module owns the seam between the pure modules and the window: it\n * decides which page is on screen (instance list, flow graph, node board or\n * project prompt), consumes the push stream by event type, binds the toolbar\n * and the keyboard, and hands drag offsets to the shell-side preference\n * store. It deliberately renders nothing itself:\n *\n * - list rows and the empty / unreadable lines come from `list/list.js`;\n * - health hover lines come from `list/health-hover.js`;\n * - the new-instance panel validation, start body and feedback come from\n *   `list/new-instance.js`;\n * - node positions come from `graph/layout.js` and the view transform from\n *   `graph/view.js` (no second layout here);\n * - folding comes from `graph/collapse.js` (the model, never the raw graph);\n * - opacity / stacking / pulse tokens come from `graph/style.js`;\n * - hover sets come from `graph/highlight.js`, always after folding;\n * - role / special / connection rows come from `graph/node-rows.js` and\n *   `graph/edge-rows.js`; connection names are annotated on the caller side\n *   (`fromTitle` / `toTitle`) because the projection carries ids only;\n * - the legend comes from `graph/legend.js`;\n * - label visibility comes from `labels/labels.js`;\n * - board columns and cards come from `board/board.js`.\n *\n * Stacking has one source only: `elementStyle().z`. The layout `z` is not\n * added on top (that would double-lift abnormal elements).\n *\n * Degradation discipline (AC-30): every failure becomes a notice object plus\n * at least one action (`back-to-list`, `retry-graph`, `retry-connection`).\n * The page never blanks, never prints a stack, and the last good content is\n * kept while a channel recovers.\n *\n * Zero CJK literals: all visible wording is read from the `/ui/labels` table.\n * The only authored glyphs are the two ASCII controls (back and retry).\n */\n\nimport { renderListEmpty, renderListRow, renderListUnreadable, sortInstances } from './list/list.js';\nimport { renderHealthHover } from './list/health-hover.js';\nimport {\n  buildStartRequest,\n  renderStartFailure,\n  renderStarted,\n  validateNewInstance,\n} from './list/new-instance.js';\nimport { computeLayout } from './graph/layout.js';\nimport { createViewState } from './graph/view.js';\nimport { autoCollapse, toggleGroup } from './graph/collapse.js';\nimport { elementStyle } from './graph/style.js';\nimport { hoverSet } from './graph/highlight.js';\nimport { renderRoleRow, renderSpecialRow } from './graph/node-rows.js';\nimport { renderEdgeRow } from './graph/edge-rows.js';\nimport { renderLegend } from './graph/legend.js';\nimport { resolveLabels, visibleLabels } from './labels/labels.js';\nimport { projectBoard } from './board/board.js';\nimport { createConnectionState } from './connection.js';\nimport { isProjectBlocked, projectMessage, resolveProject } from './project.js';\nimport {\n  CONTROLS,\n  renderQueueRow,\n  actionsFor,\n  emptyText as queueEmptyText,\n  disconnectedText as queueDisconnectedText,\n  confirmTexts,\n  outcomeOf,\n  prefsRows,\n} from './queue/queue.js';\nimport { ASSET_KINDS, tabText, countText, rowText as assetRowText,\n  dirUnreadableText, detailLines } from './assets/assets.js';\nimport { renderOccupancyRow, emptyText as occupancyEmptyText,\n  skippedText, disconnectedText as occupancyDisconnectedText } from './occupancy/occupancy.js';\nimport { titleText as canvasTitleText, validationBadge, degradeText as canvasDegradeText,\n  nodeRow as canvasNodeRow, edgeRow as canvasEdgeRow, graphEdges } from './canvas/canvas.js';\nimport { renderEvidence, RENDER_LIMIT_BYTES } from './evidence/evidence.js';\nimport { replaceIntent, queueTargetOf, stripEntryOf } from './notify/notify.js';\n\nconst DEFAULT_MODULES = Object.freeze({\n  renderListEmpty,\n  renderListRow,\n  renderListUnreadable,\n  sortInstances,\n  renderHealthHover,\n  buildStartRequest,",
+      "expected": "/action === ['\"]open-queue['\"]/"
+    },
+    {
+      "text": "D-52：open-queue 复用 followNotification（无第二条导航逻辑）（期望匹配 /app\\.followNotification\\(\\{ kind: ['\"]escalation['\"], ids: selected \\}\\)/）",
+      "ok": true,
+      "blocked": false,
+      "actual": "/**\n * Desktop view assembly (I1.10a WP-8; split doc 2.2 / requirement AC-01 /\n * AC-26 / AC-30 / AC-31, collaboration AC-08 / AC-15 / AC-21 / AC-24 / AC-37).\n *\n * This module owns the seam between the pure modules and the window: it\n * decides which page is on screen (instance list, flow graph, node board or\n * project prompt), consumes the push stream by event type, binds the toolbar\n * and the keyboard, and hands drag offsets to the shell-side preference\n * store. It deliberately renders nothing itself:\n *\n * - list rows and the empty / unreadable lines come from `list/list.js`;\n * - health hover lines come from `list/health-hover.js`;\n * - the new-instance panel validation, start body and feedback come from\n *   `list/new-instance.js`;\n * - node positions come from `graph/layout.js` and the view transform from\n *   `graph/view.js` (no second layout here);\n * - folding comes from `graph/collapse.js` (the model, never the raw graph);\n * - opacity / stacking / pulse tokens come from `graph/style.js`;\n * - hover sets come from `graph/highlight.js`, always after folding;\n * - role / special / connection rows come from `graph/node-rows.js` and\n *   `graph/edge-rows.js`; connection names are annotated on the caller side\n *   (`fromTitle` / `toTitle`) because the projection carries ids only;\n * - the legend comes from `graph/legend.js`;\n * - label visibility comes from `labels/labels.js`;\n * - board columns and cards come from `board/board.js`.\n *\n * Stacking has one source only: `elementStyle().z`. The layout `z` is not\n * added on top (that would double-lift abnormal elements).\n *\n * Degradation discipline (AC-30): every failure becomes a notice object plus\n * at least one action (`back-to-list`, `retry-graph`, `retry-connection`).\n * The page never blanks, never prints a stack, and the last good content is\n * kept while a channel recovers.\n *\n * Zero CJK literals: all visible wording is read from the `/ui/labels` table.\n * The only authored glyphs are the two ASCII controls (back and retry).\n */\n\nimport { renderListEmpty, renderListRow, renderListUnreadable, sortInstances } from './list/list.js';\nimport { renderHealthHover } from './list/health-hover.js';\nimport {\n  buildStartRequest,\n  renderStartFailure,\n  renderStarted,\n  validateNewInstance,\n} from './list/new-instance.js';\nimport { computeLayout } from './graph/layout.js';\nimport { createViewState } from './graph/view.js';\nimport { autoCollapse, toggleGroup } from './graph/collapse.js';\nimport { elementStyle } from './graph/style.js';\nimport { hoverSet } from './graph/highlight.js';\nimport { renderRoleRow, renderSpecialRow } from './graph/node-rows.js';\nimport { renderEdgeRow } from './graph/edge-rows.js';\nimport { renderLegend } from './graph/legend.js';\nimport { resolveLabels, visibleLabels } from './labels/labels.js';\nimport { projectBoard } from './board/board.js';\nimport { createConnectionState } from './connection.js';\nimport { isProjectBlocked, projectMessage, resolveProject } from './project.js';\nimport {\n  CONTROLS,\n  renderQueueRow,\n  actionsFor,\n  emptyText as queueEmptyText,\n  disconnectedText as queueDisconnectedText,\n  confirmTexts,\n  outcomeOf,\n  prefsRows,\n} from './queue/queue.js';\nimport { ASSET_KINDS, tabText, countText, rowText as assetRowText,\n  dirUnreadableText, detailLines } from './assets/assets.js';\nimport { renderOccupancyRow, emptyText as occupancyEmptyText,\n  skippedText, disconnectedText as occupancyDisconnectedText } from './occupancy/occupancy.js';\nimport { titleText as canvasTitleText, validationBadge, degradeText as canvasDegradeText,\n  nodeRow as canvasNodeRow, edgeRow as canvasEdgeRow, graphEdges } from './canvas/canvas.js';\nimport { renderEvidence, RENDER_LIMIT_BYTES } from './evidence/evidence.js';\nimport { replaceIntent, queueTargetOf, stripEntryOf } from './notify/notify.js';\n\nconst DEFAULT_MODULES = Object.freeze({\n  renderListEmpty,\n  renderListRow,\n  renderListUnreadable,\n  sortInstances,\n  renderHealthHover,\n  buildStartRequest,",
+      "expected": "/app\\.followNotification\\(\\{ kind: ['\"]escalation['\"], ids: selected \\}\\)/"
+    },
+    {
+      "text": "D-52：open-queue 未联动打开图/节点详情",
+      "ok": true,
+      "blocked": false,
+      "actual": "openGraph(selected) 命中数",
+      "expected": "0"
+    },
+    {
+      "text": "行为断言用例存在：AC-04 / followNotification navigates to queue and selects the row",
+      "ok": true,
+      "blocked": false,
+      "actual": "D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing | AC-04 / AC-49: followNotification navigates to queue and selects the row",
+      "expected": "含 AC-04 用例名"
+    },
+    {
+      "text": "Then 机检序列逐字（探针 notify-open + nav.queue.selected，无 node-detail）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"event\":\"notify-open\",\"escalationId\":\"ESC-001\"} 与 {\"event\":\"nav\",\"view\":\"queue\",\"selected\":\"ESC-001\"}；window.visible===true；无 node-detail",
+      "expected": "`test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js`，断言探针序列含 `{\"event\":\"notify-open\",\"escalationId\":\"ESC-001\"}` 与 `{\"event\":\"nav\",\"view\":\"queue\",\"selected\":\"ESC-001\"}`、窗口 `visible === true`、视图中不存在 `node-detail` 事件；`# fail 0`。"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "主窗口被唤到前台，停在人工干预队列，`ESC-001` 条目处于选中态并滚动到可见位置；界面不跳到别的视图、不打开节点详情。",
+      "expected": "主窗口被唤到前台，停在人工干预队列，`ESC-001` 条目处于选中态并滚动到可见位置；界面不跳到别的视图、不打开节点详情。"
+    }
+  ]
+}

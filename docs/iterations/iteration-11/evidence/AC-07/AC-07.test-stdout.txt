@@ -1,0 +1,229 @@
+===== notify.test.js (exit 0) =====
+TAP version 13
+# Subtest: DEDUP 窗口常量与 NOTIFY_LABELS 类别词符合附录 A-1 / A-2
+ok 1 - DEDUP 窗口常量与 NOTIFY_LABELS 类别词符合附录 A-1 / A-2
+  ---
+  duration_ms: 1.522272
+  type: 'test'
+  ...
+# Subtest: 架构锚点：notify.js 内无定时器直调 / 状态写 / 错误上抛字面量
+ok 2 - 架构锚点：notify.js 内无定时器直调 / 状态写 / 错误上抛字面量
+  ---
+  duration_ms: 0.84713
+  type: 'test'
+  ...
+# Subtest: AC-01: 升级待处理事件产生升级意图，标题与正文五段逐字
+ok 3 - AC-01: 升级待处理事件产生升级意图，标题与正文五段逐字
+  ---
+  duration_ms: 5.946285
+  type: 'test'
+  ...
+# Subtest: AC-01 变体: 状态里读不到的段渲染 — 不省略
+ok 4 - AC-01 变体: 状态里读不到的段渲染 — 不省略
+  ---
+  duration_ms: 7.220679
+  type: 'test'
+  ...
+# Subtest: AC-02: 实例完成事件产生完成意图，同一实例生命周期只一次
+ok 5 - AC-02: 实例完成事件产生完成意图，同一实例生命周期只一次
+  ---
+  duration_ms: 39.59125
+  type: 'test'
+  ...
+# Subtest: AC-02 变体: 实例不可读时完成意图仍产生，缺段渲染 —
+ok 6 - AC-02 变体: 实例不可读时完成意图仍产生，缺段渲染 —
+  ---
+  duration_ms: 6.665949
+  type: 'test'
+  ...
+# Subtest: AC-03: 实例中断产生异常意图（单条形态），2 秒内即发且只此一条
+ok 7 - AC-03: 实例中断产生异常意图（单条形态），2 秒内即发且只此一条
+  ---
+  duration_ms: 76.708451
+  type: 'test'
+  ...
+# Subtest: AC-03 变体: 窗口内的健康度刷新并入同组，去重后仍只算一条
+ok 8 - AC-03 变体: 窗口内的健康度刷新并入同组，去重后仍只算一条
+  ---
+  duration_ms: 50.99453
+  type: 'test'
+  ...
+# Subtest: AC-03 变体: 实例不可读时异常意图退化为事件自带的状态词
+ok 9 - AC-03 变体: 实例不可读时异常意图退化为事件自带的状态词
+  ---
+  duration_ms: 33.10423
+  type: 'test'
+  ...
+# Subtest: AC-05: 关掉分项后该类不产生意图，重开后恢复；总开关关掉全静默
+ok 10 - AC-05: 关掉分项后该类不产生意图，重开后恢复；总开关关掉全静默
+  ---
+  duration_ms: 69.675966
+  type: 'test'
+  ...
+# Subtest: AC-05 变体: 关掉升级分项不影响完成与异常两类
+ok 11 - AC-05 变体: 关掉升级分项不影响完成与异常两类
+  ---
+  duration_ms: 39.045444
+  type: 'test'
+  ...
+# Subtest: AC-06: 同一升级 9999ms 抑制、10001ms 放行（注入时钟边界）
+ok 12 - AC-06: 同一升级 9999ms 抑制、10001ms 放行（注入时钟边界）
+  ---
+  duration_ms: 46.407308
+  type: 'test'
+  ...
+# Subtest: AC-06: 不同升级编号互不影响去重窗口
+ok 13 - AC-06: 不同升级编号互不影响去重窗口
+  ---
+  duration_ms: 13.967389
+  type: 'test'
+  ...
+# Subtest: AC-06: 同一实例同类异常 60s 窗口内合并，mergedCount [1,2,3,4] 单调递增
+ok 14 - AC-06: 同一实例同类异常 60s 窗口内合并，mergedCount [1,2,3,4] 单调递增
+  ---
+  duration_ms: 66.525946
+  type: 'test'
+  ...
+# Subtest: AC-06: 异常窗口 59999ms 内并入、60001ms 起按新组即发
+ok 15 - AC-06: 异常窗口 59999ms 内并入、60001ms 起按新组即发
+  ---
+  duration_ms: 87.029828
+  type: 'test'
+  ...
+# Subtest: AC-07: 状态投影读失败不阻断后续意图（3 条不同升级逐条产生）
+ok 16 - AC-07: 状态投影读失败不阻断后续意图（3 条不同升级逐条产生）
+  ---
+  duration_ms: 64.363833
+  type: 'test'
+  ...
+# Subtest: AC-07: 偏好读取抛错按全开缺省处理，不阻断意图
+ok 17 - AC-07: 偏好读取抛错按全开缺省处理，不阻断意图
+  ---
+  duration_ms: 6.648347
+  type: 'test'
+  ...
+# Subtest: AC-07: 由新升级引起的异常信号被抑制，避免与升级意图重复
+ok 18 - AC-07: 由新升级引起的异常信号被抑制，避免与升级意图重复
+  ---
+  duration_ms: 140.809139
+  type: 'test'
+  ...
+# Subtest: dispose 后事件不再产生意图，窗口回调被取消
+ok 19 - dispose 后事件不再产生意图，窗口回调被取消
+  ---
+  duration_ms: 103.681483
+  type: 'test'
+  ...
+# Subtest: intents$ 与真实事件总线兼容：订阅侧记录不含 instanceId
+ok 20 - intents$ 与真实事件总线兼容：订阅侧记录不含 instanceId
+  ---
+  duration_ms: 9.068844
+  type: 'test'
+  ...
+# Subtest: 升级事件在状态里找不到待处理条目时不发过期意图
+ok 21 - 升级事件在状态里找不到待处理条目时不发过期意图
+  ---
+  duration_ms: 32.503252
+  type: 'test'
+  ...
+# Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制
+ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制
+  ---
+  duration_ms: 37.461282
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1053.084494
+
+
+===== shell-notify.test.js (exit 0) =====
+TAP version 13
+# Subtest: ctl 七动作清单：probe.rs 分发表恰好含既有三 + 新增四
+ok 1 - ctl 七动作清单：probe.rs 分发表恰好含既有三 + 新增四
+  ---
+  duration_ms: 1.618447
+  type: 'test'
+  ...
+# Subtest: tray-quit-confirm 通道不动：不在 CTL_ACTIONS，只由 wait_ctl_file 单独消费
+ok 2 - tray-quit-confirm 通道不动：不在 CTL_ACTIONS，只由 wait_ctl_file 单独消费
+  ---
+  duration_ms: 0.353205
+  type: 'test'
+  ...
+# Subtest: ctl 四动作双处分发：probe.rs 登记 + tray.rs 调真实处理函数
+ok 3 - ctl 四动作双处分发：probe.rs 登记 + tray.rs 调真实处理函数
+  ---
+  duration_ms: 0.367121
+  type: 'test'
+  ...
+# Subtest: --no-notify 只关投递层：开关置 false 但 SSE 订阅仍无条件启动
+ok 4 - --no-notify 只关投递层：开关置 false 但 SSE 订阅仍无条件启动
+  ---
+  duration_ms: 0.363292
+  type: 'test'
+  ...
+# Subtest: D-9 探针事件名齐全（壳层拥有部分）
+ok 5 - D-9 探针事件名齐全（壳层拥有部分）
+  ---
+  duration_ms: 0.392115
+  type: 'test'
+  ...
+# Subtest: 点击通知只走已落盘 handle_notify_open：main.rs 以 Some(id_override) 调用
+ok 6 - 点击通知只走已落盘 handle_notify_open：main.rs 以 Some(id_override) 调用
+  ---
+  duration_ms: 0.183115
+  type: 'test'
+  ...
+# Subtest: 通知依赖已宣告：Cargo.toml + Cargo.lock 均含 notify-rust 4 / preview-macos-un
+ok 7 - 通知依赖已宣告：Cargo.toml + Cargo.lock 均含 notify-rust 4 / preview-macos-un
+  ---
+  duration_ms: 1.045272
+  type: 'test'
+  ...
+# Subtest: config.rs：托盘六字段 + 通知不可用提示，均经 pick 覆盖且有中文默认值
+ok 8 - config.rs：托盘六字段 + 通知不可用提示，均经 pick 覆盖且有中文默认值
+  ---
+  duration_ms: 0.363659
+  type: 'test'
+  ...
+# Subtest: D-8 托盘数字刷新：main.rs 每 2 秒经 /instances 调 update_status
+ok 9 - D-8 托盘数字刷新：main.rs 每 2 秒经 /instances 调 update_status
+  ---
+  duration_ms: 0.420074
+  type: 'test'
+  ...
+# Subtest: 暂停汇总 + 退出语义：pause/resume 走 /control，core.stop 只一处
+ok 10 - 暂停汇总 + 退出语义：pause/resume 走 /control，core.stop 只一处
+  ---
+  duration_ms: 0.52254
+  type: 'test'
+  ...
+# Subtest: SSE 任务随 app 退出取消：stop 标志由 run 循环在 Exit 时翻转
+ok 11 - SSE 任务随 app 退出取消：stop 标志由 run 循环在 Exit 时翻转
+  ---
+  duration_ms: 0.219411
+  type: 'test'
+  ...
+# Subtest: 真实探针层：ctl 四动作触发事件并改名 .done（需当前源码构建产物）
+ok 12 - 真实探针层：ctl 四动作触发事件并改名 .done（需当前源码构建产物） # SKIP release 壳层二进制早于 main.rs（本轮改动未构建）；静态契约层已覆盖接缝
+  ---
+  duration_ms: 0.065355
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 109.586077
+

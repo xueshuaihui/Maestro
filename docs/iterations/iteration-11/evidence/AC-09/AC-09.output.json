@@ -1,0 +1,81 @@
+{
+  "ac": "AC-09",
+  "commands": [
+    {
+      "label": "机检 queue.test.js",
+      "cmd": "test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 6817,
+      "stdout": "TAP version 13\n# Subtest: buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\nok 1 - buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\n  ---\n  duration_ms: 1.969923\n  type: 'test'\n  ...\n# Subtest: buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\nok 2 - buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\n  ---\n  duration_ms: 0.413176\n  type: 'test'\n  ...\n# Subtest: buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\nok 3 - buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\n  ---\n  duration_ms: 0.20926\n  type: 'test'\n  ...\n# Subtest: 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\nok 4 - 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\n  ---\n  duration_ms: 346.676249\n  type: 'test'\n  ...\n# Subtest: 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\nok 5 - 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\n  ---\n  duration_ms: 492.910802\n  type: 'test'\n  ...\n# Subtest: 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\nok 6 - 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\n  ---\n  duration_ms: 371.501148\n  type: 'test'\n  ...\n# Subtest: 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\nok 7 - 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\n  ---\n  duration_ms: 310.322596\n  type: 'test'\n  ...\n# Subtest: 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\nok 8 - 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\n  ---\n  duration_ms: 202.791151\n  type: 'test'\n  ...\n# Subtest: 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\nok 9 - 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\n  ---\n  duration_ms: 371.867316\n  type: 'test'\n  ...\n# Subtest: 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\nok 10 - 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\n  ---\n  duration_ms: 59.124371\n  type: 'test'\n  ...\n# Subtest: 实例未挂起：固定结论且原状态不变（AC-16②）\nok 11 - 实例未挂起：固定结论且原状态不变（AC-16②）\n  ---\n  duration_ms: 218.981958\n  type: 'test'\n  ...\n# Subtest: 审批会话失效：返回已失效且行仍待处理（AC-16③）\nok 12 - 审批会话失效：返回已失效且行仍待处理（AC-16③）\n  ---\n  duration_ms: 191.653965\n  type: 'test'\n  ...\n# Subtest: 审批·允许：真实等待会话被放行并继续（AC-12 allow）\nok 13 - 审批·允许：真实等待会话被放行并继续（AC-12 allow）\n  ---\n  duration_ms: 1081.379012\n  type: 'test'\n  ...\n# Subtest: 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\nok 14 - 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\n  ---\n  duration_ms: 892.923407\n  type: 'test'\n  ...\n# Subtest: 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\nok 15 - 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\n  ---\n  duration_ms: 1603.543546\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 319.816035\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 6729.870415\n",
+      "stderr": ""
+    }
+  ],
+  "testRuns": [
+    {
+      "file": "queue.test.js",
+      "cmd": "test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\nok 1 - buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\n  ---\n  duration_ms: 1.969923\n  type: 'test'\n  ...\n# Subtest: buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\nok 2 - buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\n  ---\n  duration_ms: 0.413176\n  type: 'test'\n  ...\n# Subtest: buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\nok 3 - buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\n  ---\n  duration_ms: 0.20926\n  type: 'test'\n  ...\n# Subtest: 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\nok 4 - 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\n  ---\n  duration_ms: 346.676249\n  type: 'test'\n  ...\n# Subtest: 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\nok 5 - 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\n  ---\n  duration_ms: 492.910802\n  type: 'test'\n  ...\n# Subtest: 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\nok 6 - 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\n  ---\n  duration_ms: 371.501148\n  type: 'test'\n  ...\n# Subtest: 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\nok 7 - 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\n  ---\n  duration_ms: 310.322596\n  type: 'test'\n  ...\n# Subtest: 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\nok 8 - 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\n  ---\n  duration_ms: 202.791151\n  type: 'test'\n  ...\n# Subtest: 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\nok 9 - 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\n  ---\n  duration_ms: 371.867316\n  type: 'test'\n  ...\n# Subtest: 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\nok 10 - 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\n  ---\n  duration_ms: 59.124371\n  type: 'test'\n  ...\n# Subtest: 实例未挂起：固定结论且原状态不变（AC-16②）\nok 11 - 实例未挂起：固定结论且原状态不变（AC-16②）\n  ---\n  duration_ms: 218.981958\n  type: 'test'\n  ...\n# Subtest: 审批会话失效：返回已失效且行仍待处理（AC-16③）\nok 12 - 审批会话失效：返回已失效且行仍待处理（AC-16③）\n  ---\n  duration_ms: 191.653965\n  type: 'test'\n  ...\n# Subtest: 审批·允许：真实等待会话被放行并继续（AC-12 allow）\nok 13 - 审批·允许：真实等待会话被放行并继续（AC-12 allow）\n  ---\n  duration_ms: 1081.379012\n  type: 'test'\n  ...\n# Subtest: 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\nok 14 - 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\n  ---\n  duration_ms: 892.923407\n  type: 'test'\n  ...\n# Subtest: 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\nok 15 - 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\n  ---\n  duration_ms: 1603.543546\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 319.816035\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 6729.870415\n",
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 6729.870415,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）",
+          "buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）",
+          "buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）",
+          "升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）",
+          "升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）",
+          "升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）",
+          "升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）",
+          "继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）",
+          "已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）",
+          "动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）",
+          "实例未挂起：固定结论且原状态不变（AC-16②）",
+          "审批会话失效：返回已失效且行仍待处理（AC-16③）",
+          "审批·允许：真实等待会话被放行并继续（AC-12 allow）",
+          "审批·拒绝：真实等待会话被拒绝（AC-12 deny）",
+          "跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）",
+          "队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）"
+        ]
+      }
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"orchestrator.resolveEscalation\" src/daemon/queue.js",
+      "note": "AC-09 架构：处置走既有裁决入口，恰好 1 条命中（exit 0）",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "stdout": "307:  // 经既有裁决入口（IPC `escalation.resolve` → orchestrator.resolveEscalation",
+      "contains": null,
+      "expectLines": 1,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"escalations[.]push|resolution =\" src/daemon/queue.js",
+      "note": "AC-09 架构：不得直接改状态数组/自写决议，零命中（exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    }
+  ]
+}
