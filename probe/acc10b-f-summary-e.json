@@ -1,0 +1,194 @@
+{
+  "batch": "e",
+  "acRange": "AC-25, AC-33",
+  "total": 2,
+  "通过": 2,
+  "不通过": 0,
+  "阻塞": 0,
+  "evidenceFiles": 22,
+  "rerunSuggestions": [],
+  "perAc": [
+    {
+      "id": "AC-25",
+      "verdict": "通过",
+      "face": "真实宿主实测（进程）+ mock 实测（机检），C 类；人工核验项单列",
+      "title": "一键跳转：唤起宿主 + 会话标识可核对（剪贴板 + 与实例状态一致）· 裁决 A / 裁决 I 口径",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/host-jump.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16：exit 0（实测 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16：# pass ≥ 1（实测 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面①：点击前 DSH 进程数 = 0（AC-25.process-before / live-before）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面①：openHost() 真实触发返回 ok=true、host=dsh（非 mock，AC-25.live-log.json）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面①：点击后 DSH 进程数 ≥ 1（+0ms=1，PID 11508，evoked=true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面①：Then「3 秒内进程存在」——+250ms 仍为 1（exactlyOne=true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面①：触发后 newPids 由本脚本独占、未 kill，cleanup 帧进程数=0（无残留、不误伤用户进程）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面②：expected 由 maxBy(lastChangedAt) 从夹具派生，非写常量",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面②：expected.id === state.sessions.find(s=>s.sessionId===expected.id).sessionId（同源，裁决 I 第 2 条）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面②：button.label 含 expected.id（J-1 恢复）且 button.sessionId === expected.id",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面②：toasts 逐字两行且 line1 含 expected.id",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面③：三态翻转 SESS-C→SESS-A→SESS-C（order-flip recheck 通过）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "自动面③：SESS-A.lastChangedAt 三态片段 09:12:03→10:05:00→09:12:03 齐全",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "真实面入参：sessionId 从 ~/.dsh/sessions 真实目录派生，校验器不硬编码",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构①：grep -REn \"dsh\" src/daemon/drill.js src/daemon/http/routes.js 零命中（exit=1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构②：grep -REn \"hosts/\" src/adapter/host-open.js 命中 ≥1（exit=0，3 条）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 18,
+      "ok": 18,
+      "evidenceCount": 12
+    },
+    {
+      "id": "AC-33",
+      "verdict": "通过",
+      "face": "真实宿主实测（进程）+ mock 实测（机检），C 类；人工核验项单列",
+      "title": "打开宿主只在点击时发生，连点不产生第二个进程",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/host-jump.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16：exit 0（实测 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16：# pass ≥ 1（实测 6）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "autoSpawn === 0（停留 10s，真实面 stay10s.jsonl 11 个采样点全 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "autoSpawn === 0（机检模块面断言）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "jumpCalls === 1（机检去重后断言 jumpCallsAfterDedupe=1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "真实面两次点击：第二次 openHost sameObjectReused=true（复用首次结果，未起第二进程）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "toasts === 1（机检 toastPairs=1、second.toastPairs=0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "两次点击的 sessionId 都 = expected.id（机检，AC-25 同源）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "真实面进程计数恰好 1（+0ms=1，exactlyOne=true，PID 35104）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "停留期间无自动拉起（live-before=0，点击前未启动宿主）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：grep setInterval|setTimeout-open|useEffect-open desktop/ui/drill/host-jump.js 零命中（exit=1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清理后进程数=0，无残留（newPids=[]）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 14,
+      "ok": 14,
+      "evidenceCount": 10
+    }
+  ]
+}

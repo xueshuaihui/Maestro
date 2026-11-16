@@ -1,0 +1,28 @@
+{
+  "ac": "AC-10",
+  "title": "特殊节点卡片与未知类型兜底",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:25:09.964Z",
+  "finishedAt": "2026-11-16T17:25:10.394Z",
+  "durationMs": 430,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-10",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-10"
+    }
+  ],
+  "checks": 14,
+  "notes": [
+    "Then 逐字：A-3 五行特殊/异常逐字；U-001 按角色节点显示无类型前缀并保留编号；mystery 节点落「被阻塞」档、标题末尾「状态未知」且看板同归 blocked；卡片总数 5，无丢失无异常。",
+    "架构：类型只从定义层 node_type 读（裁决 D）；drill 对具体标题零命中。"
+  ]
+}

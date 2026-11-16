@@ -1,0 +1,30 @@
+{
+  "ac": "AC-46",
+  "title": "唤起宿主失败：提示可读、可重试、不改状态",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T18:05:19.602Z",
+  "finishedAt": "2026-11-16T18:05:20.012Z",
+  "durationMs": 411,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-46",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-46"
+    }
+  ],
+  "checks": 17,
+  "notes": [
+    "Then 逐字锚点（requirement.md:941-944）：提示「跳转失败 · <原因>」（原因取适配器返回的既有原文）；按钮恢复可点、可重试（机检 retryable===true）；实例状态不变、不产生 DSH 进程、界面不崩溃。",
+    "机检内部断言（非用户可见）：state.json 与 events.jsonl 的字节哈希不变；本批模块面以 fixture 快照 sha256 前后相等代理，真实落盘字节哈希属人工核验面。",
+    "Given 为 MAESTRO_DSH_EXE 指向存在但不可执行文件 → openHost 走非 ENOENT 的 spawnFailure 分支（src/adapter/host-open.js:58-64）；该分支产出「跳转失败 · <cause>」，与 ENOENT 的「未找到 DeepSeek Harness」分开。",
+    "架构检查：desktop/ui/drill/ 零 spawn(/execFile(，界面不直接起进程。"
+  ]
+}

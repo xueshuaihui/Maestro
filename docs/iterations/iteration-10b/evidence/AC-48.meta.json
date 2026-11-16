@@ -1,0 +1,29 @@
+{
+  "ac": "AC-48",
+  "title": "下钻期间角色状态词转「未参与」：界面不清空、不崩、不关",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:57:22.318Z",
+  "finishedAt": "2026-11-16T17:57:22.739Z",
+  "durationMs": 421,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-48",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-48"
+    }
+  ],
+  "checks": 17,
+  "notes": [
+    "Then 逐字锚点（requirement.md:963）：状态栏状态词转「未参与」；因接缝只覆盖角色状态词、不覆盖绑定与会话，其余四段（服务 …、宿主 …、最近 …）仍是最后一次投影的真实内容，不清空、不变成 undefined；卡片不消失、局部 DAG 不塌陷、下钻不关闭、可返回流程图。",
+    "机检内部断言：t_update - t_trigger ≤ 2000（裁决 H 第 5 条分层，非用户可见）。",
+    "裁决 H overlay 能力边界：POST /__test__/graph/pulse 接缝只能翻角色状态词（src/daemon/http/stream.js:255-275,586），不能清空 roleId 绑定；绑定归零后「任务 无」的形态由 AC-50 承担，本 AC 只判「状态词翻转、其余段保留」。"
+  ]
+}

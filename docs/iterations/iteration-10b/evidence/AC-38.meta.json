@@ -1,0 +1,28 @@
+{
+  "ac": "AC-38",
+  "title": "局部 DAG 的退化边界：单节点 0 线不塌陷",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:34:16.705Z",
+  "finishedAt": "2026-11-16T17:34:17.138Z",
+  "durationMs": 433,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-38",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-38"
+    }
+  ],
+  "checks": 12,
+  "notes": [
+    "Then 逐字锚点（requirement.md:853-854）：局部 DAG 恰好 1 个节点、0 条连线，图区仍有可见尺寸（bounds>0），节点可见、dangling=0、不出现替代文案。",
+    "「两次布局逐字节相等」由同文件 buildDag 两次调用 JSON.stringify 相等断言承载（drill-dag.test.js:53），且布局复用同一 computeLayout（裁决 F3-08）；AC-38 机检原文聚焦单节点退化不塌陷。"
+  ]
+}

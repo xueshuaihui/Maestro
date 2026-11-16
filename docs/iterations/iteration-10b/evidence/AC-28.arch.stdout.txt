@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] drill 层与 daemon 不写状态/不追加 span/不 emit
+$ grep -REn "saveState|appendSpan|emit\\(" "src/daemon/drill.js" "desktop/ui/drill/"
+expect=zero exit=1 hits=0 OK
+(零命中)

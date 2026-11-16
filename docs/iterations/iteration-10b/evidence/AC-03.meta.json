@@ -1,0 +1,28 @@
+{
+  "ac": "AC-03",
+  "title": "角色状态栏只出现五个状态词，已结束实例显示「未参与」",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:25:06.089Z",
+  "finishedAt": "2026-11-16T17:25:06.698Z",
+  "durationMs": 609,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-03",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-03"
+    }
+  ],
+  "checks": 11,
+  "notes": [
+    "Then 逐字：十行状态词只取「未参与/可用/服务中/冷却中/不可用」五词，INST-002 全「未参与」，任何位置不出现「已关闭」；机检把五词集合与界面全文扫描并列核对。",
+    "架构口径（裁决 H / A-10）：drill 不重算状态，中文值只在文案表，daemon 平铺下发键与词表。"
+  ]
+}

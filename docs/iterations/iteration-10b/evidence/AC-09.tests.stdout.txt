@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: AC-07 A-3 six lines verbatim for a normal and an empty card
+ok 1 - AC-07 A-3 six lines verbatim for a normal and an empty card
+  ---
+  duration_ms: 2.1336
+  type: 'test'
+  ...
+# Subtest: AC-08 eight-tier ordering: ranks [1..8,8], assigned folded only in display
+ok 2 - AC-08 eight-tier ordering: ranks [1..8,8], assigned folded only in display
+  ---
+  duration_ms: 0.474
+  type: 'test'
+  ...
+# Subtest: AC-09 seven indicator groups with exact token triples
+ok 3 - AC-09 seven indicator groups with exact token triples
+  ---
+  duration_ms: 8.4939
+  type: 'test'
+  ...
+# Subtest: AC-10 five special/exception lines verbatim
+ok 4 - AC-10 five special/exception lines verbatim
+  ---
+  duration_ms: 0.4243
+  type: 'test'
+  ...
+# Subtest: AC-35 elapsed from injected clock: 12m stable, 13m after 60s
+ok 5 - AC-35 elapsed from injected clock: 12m stable, 13m after 60s
+  ---
+  duration_ms: 0.3588
+  type: 'test'
+  ...
+# Subtest: AC-41 missing values use placeholder; TBD from projection passes through
+ok 6 - AC-41 missing values use placeholder; TBD from projection passes through
+  ---
+  duration_ms: 1.9906
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 112.2865

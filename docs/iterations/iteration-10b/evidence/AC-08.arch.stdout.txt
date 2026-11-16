@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] cards.js 排序不读时间/DOM
+$ grep -REn "sort\\(.*Date|updatedAt" "desktop/ui/drill/cards.js"
+expect=zero exit=1 hits=0 OK
+(零命中)

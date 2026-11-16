@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: AC-11 four sections verbatim, plus an all-empty detail preserving titles
+ok 1 - AC-11 four sections verbatim, plus an all-empty detail preserving titles
+  ---
+  duration_ms: 9.7378
+  type: 'test'
+  ...
+# Subtest: AC-12 timeline merges in chronological order regardless of input order
+ok 2 - AC-12 timeline merges in chronological order regardless of input order
+  ---
+  duration_ms: 0.3519
+  type: 'test'
+  ...
+# Subtest: AC-13 summary missing fields use placeholder, no undefined
+ok 3 - AC-13 summary missing fields use placeholder, no undefined
+  ---
+  duration_ms: 0.2076
+  type: 'test'
+  ...
+# Subtest: AC-14 evidence three states and copy action
+ok 4 - AC-14 evidence three states and copy action
+  ---
+  duration_ms: 0.8063
+  type: 'test'
+  ...
+# Subtest: AC-15 direction comes from definition edge kind, not handoff state
+ok 5 - AC-15 direction comes from definition edge kind, not handoff state
+  ---
+  duration_ms: 0.2975
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 114.5524

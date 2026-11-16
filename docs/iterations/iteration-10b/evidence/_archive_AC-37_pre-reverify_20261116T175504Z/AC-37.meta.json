@@ -1,0 +1,28 @@
+{
+  "ac": "AC-37",
+  "title": "角色在注册表中不存在时状态栏显示「不可用」，其余四项照常可读",
+  "face": "mock 实测",
+  "verdict": "不通过",
+  "startedAt": "2026-11-16T17:34:16.084Z",
+  "finishedAt": "2026-11-16T17:34:16.559Z",
+  "durationMs": 475,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-37",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-37"
+    }
+  ],
+  "checks": 17,
+  "notes": [
+    "用户可见 Then（状态栏逐字行「角色栏 外部审核 · 不可用 · 1 个活跃会话 · 服务 T-021 · 宿主 dsh · 最近 T-021 · 轮次 1/1 · 执行中」+ 卡片两张 + statusReason=unknown-role 透传）全部由机检源码承载并通过。",
+    "判定分歧点：需求机检逐字要求 roleBar.lastAction 为 5 字段对象（含 stateSince=2026-11-15T10:04:00.000Z），实测机检夹具/断言只有 4 字段——按不放宽断言纪律判该核对项不通过，AC 整体不通过，已登记 blockers.md 附原始帧。"
+  ]
+}

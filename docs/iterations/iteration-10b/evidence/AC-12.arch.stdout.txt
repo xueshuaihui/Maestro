@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] 时间线不读系统时间
+$ grep -REn "Date[.]now" "desktop/ui/drill/node-detail.js"
+expect=zero exit=1 hits=0 OK
+(零命中)

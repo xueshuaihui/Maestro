@@ -1,0 +1,28 @@
+{
+  "ac": "AC-06",
+  "title": "点击 DAG 任一节点都能滚动到对应卡片并高亮",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:25:07.847Z",
+  "finishedAt": "2026-11-16T17:25:08.272Z",
+  "durationMs": 425,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-06",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-06"
+    }
+  ],
+  "checks": 10,
+  "notes": [
+    "Then 逐字：依次点击 A、C、E，每次滚到对应卡片并高亮，三次都命中、卡片已在可视区也给高亮、高亮持续到下一次点击；「不用等」为内部断言 elapsed ≤ 200ms（注入时钟）。",
+    "联动只改视图状态，不触发重新取数（dag.js 零 fetch/request）。"
+  ]
+}

@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] 空卡片不清空面板、不短路渲染（if (!cards.length) return|return null 零命中）
+$ grep -REn "if \\(!cards\\.length\\) return|return null" "desktop/ui/drill/cards.js"
+expect=zero exit=1 hits=0 OK
+(零命中)

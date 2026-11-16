@@ -1,0 +1,28 @@
+{
+  "ac": "AC-01",
+  "title": "从角色流程图进入角色下钻，状态栏 / 局部 DAG / 卡片一次可用",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T23:03:15.023Z",
+  "finishedAt": "2026-11-16T23:03:15.634Z",
+  "durationMs": 611,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-01",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-01"
+    }
+  ],
+  "checks": 21,
+  "notes": [
+    "Then 逐字锚点：附录 A-1 第 7 行「角色栏 开发 · 服务中 · 2 个活跃会话 · 服务 T-001, T-002 · 宿主 dsh cursor · 最近 T-002 · 轮次 2/3 · 待校验」；源码由文案键拼行，逐字核对取拼行所需片段，机检 F-16 通过证明投影结果逐字相等。",
+    "内部断言：t_drill - t_click ≤ 1000（注入时钟 5000→5300，差 300ms）；进入前后 state.json 字节哈希不变（只读）。"
+  ]
+}

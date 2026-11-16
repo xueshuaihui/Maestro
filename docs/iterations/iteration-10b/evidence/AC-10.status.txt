@@ -1,0 +1,57 @@
+$ "(fixture) 独立项目根（%TEMP%，NODE_ENV=test，mock 宿主）"
+# label=夹具：独立项目根（%TEMP%，NODE_ENV=test，mock 宿主） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-10
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe --test D:\WWW\Maestro\test\wp14\drill-cards.test.js
+# label=node --test test/wp14/drill-cards.test.js cwd=D:\WWW\Maestro exit=0 184ms
+TAP version 13
+# Subtest: AC-07 A-3 six lines verbatim for a normal and an empty card
+ok 1 - AC-07 A-3 six lines verbatim for a normal and an empty card
+  ---
+  duration_ms: 2.0779
+  type: 'test'
+  ...
+# Subtest: AC-08 eight-tier ordering: ranks [1..8,8], assigned folded only in display
+ok 2 - AC-08 eight-tier ordering: ranks [1..8,8], assigned folded only in display
+  ---
+  duration_ms: 0.4501
+  type: 'test'
+  ...
+# Subtest: AC-09 seven indicator groups with exact token triples
+ok 3 - AC-09 seven indicator groups with exact token triples
+  ---
+  duration_ms: 8.2322
+  type: 'test'
+  ...
+# Subtest: AC-10 five special/exception lines verbatim
+ok 4 - AC-10 five special/exception lines verbatim
+  ---
+  duration_ms: 0.4331
+  type: 'test'
+  ...
+# Subtest: AC-35 elapsed from injected clock: 12m stable, 13m after 60s
+ok 5 - AC-35 elapsed from injected clock: 12m stable, 13m after 60s
+  ---
+  duration_ms: 0.3582
+  type: 'test'
+  ...
+# Subtest: AC-41 missing values use placeholder; TBD from projection passes through
+ok 6 - AC-41 missing values use placeholder; TBD from projection passes through
+  ---
+  duration_ms: 1.9872
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 105.4616
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-10 exit=0 103ms
+核心未在运行

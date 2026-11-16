@@ -1,0 +1,57 @@
+$ "(fixture) 独立项目根（%TEMP%，NODE_ENV=test，mock 宿主）"
+# label=夹具：独立项目根（%TEMP%，NODE_ENV=test，mock 宿主） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-46
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe --test D:\WWW\Maestro\test\wp14\host-jump.test.js
+# label=node --test test/wp14/host-jump.test.js cwd=D:\WWW\Maestro exit=0 190ms
+TAP version 13
+# Subtest: AC-25 expected derived from maxBy(lastChangedAt); same-source id; UI identifier == sessionId
+ok 1 - AC-25 expected derived from maxBy(lastChangedAt); same-source id; UI identifier == sessionId
+  ---
+  duration_ms: 1.4153
+  type: 'test'
+  ...
+# Subtest: AC-25 order-flip recheck: runtime rewrite of SESS-A.lastChangedAt, three-state evidence
+ok 2 - AC-25 order-flip recheck: runtime rewrite of SESS-A.lastChangedAt, three-state evidence
+  ---
+  duration_ms: 0.3256
+  type: 'test'
+  ...
+# Subtest: AC-26 three degradations verbatim (A-7); no process signal, state unchanged
+ok 3 - AC-26 three degradations verbatim (A-7); no process signal, state unchanged
+  ---
+  duration_ms: 0.6089
+  type: 'test'
+  ...
+# Subtest: AC-33 clicks only: autoSpawn 0, jumpCalls 1 after dedupe, one toast pair
+ok 4 - AC-33 clicks only: autoSpawn 0, jumpCalls 1 after dedupe, one toast pair
+  ---
+  duration_ms: 0.3855
+  type: 'test'
+  ...
+# Subtest: AC-46 launch failure: 跳转失败 · prefix + retryable + state hash unchanged
+ok 5 - AC-46 launch failure: 跳转失败 · prefix + retryable + state hash unchanged
+  ---
+  duration_ms: 0.1847
+  type: 'test'
+  ...
+# Subtest: AC-46 real adapter shape: DSH_SPAWN_FAILED + message routes to DRILL_HOST_FAILED verbatim
+ok 6 - AC-46 real adapter shape: DSH_SPAWN_FAILED + message routes to DRILL_HOST_FAILED verbatim
+  ---
+  duration_ms: 0.1897
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 100.2228
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-46 exit=0 101ms
+核心未在运行

@@ -1,0 +1,10 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] drill.js 无 saveState/appendSpan
+$ grep -REn "saveState|appendSpan" "src/daemon/drill.js"
+expect=zero exit=1 hits=0 OK
+(零命中)
+[2] drill.js 无宿主 if/switch 硬判
+$ grep -REn "if \\(.*[Hh]ost.*===|switch \\(.*[Hh]ost" "src/daemon/drill.js"
+expect=zero exit=1 hits=0 OK
+(零命中)

@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: AC-01: 进入下钻 view===drill，A-1 第 7 行逐字，DAG/卡片一次可用，注入时钟 ≤1000ms，state.json 哈希不变
+ok 1 - AC-01: 进入下钻 view===drill，A-1 第 7 行逐字，DAG/卡片一次可用，注入时钟 ≤1000ms，state.json 哈希不变
+  ---
+  duration_ms: 18.001
+  type: 'test'
+  ...
+# Subtest: AC-01: 独立 createDrillView 对相同投影输出同一行（装配只消费纯模块）
+ok 2 - AC-01: 独立 createDrillView 对相同投影输出同一行（装配只消费纯模块）
+  ---
+  duration_ms: 0.8341
+  type: 'test'
+  ...
+# Subtest: AC-02: 返回流程图保留五组 viewState 值逐字段相等，且 viewState 非 null
+ok 3 - AC-02: 返回流程图保留五组 viewState 值逐字段相等，且 viewState 非 null
+  ---
+  duration_ms: 2.0003
+  type: 'test'
+  ...
+# Subtest: AC-02: 三条静态锚点 —— app.js createViewState 恰好 2 处，drill 内零命中，drill 内零 backToList
+ok 4 - AC-02: 三条静态锚点 —— app.js createViewState 恰好 2 处，drill 内零命中，drill 内零 backToList
+  ---
+  duration_ms: 2.1494
+  type: 'test'
+  ...
+# Subtest: AC-03: 五词子集 + 零「已关闭」
+ok 5 - AC-03: 五词子集 + 零「已关闭」
+  ---
+  duration_ms: 1.6515
+  type: 'test'
+  ...
+# Subtest: AC-04: 第 4 / 2 / 3 行逐字（折叠 / 占位 / 多宿主 / 无绑定）
+ok 6 - AC-04: 第 4 / 2 / 3 行逐字（折叠 / 占位 / 多宿主 / 无绑定）
+  ---
+  duration_ms: 0.5833
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 152.8055

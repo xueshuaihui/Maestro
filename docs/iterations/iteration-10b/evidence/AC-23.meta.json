@@ -1,0 +1,29 @@
+{
+  "ac": "AC-23",
+  "title": "升级已处理 / 实例未挂起两种异常",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T23:03:17.802Z",
+  "finishedAt": "2026-11-16T23:03:19.034Z",
+  "durationMs": 1232,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-23",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-23"
+    }
+  ],
+  "checks": 23,
+  "notes": [
+    "Then ①逐字「升级 ESC-001 已处理 · 状态 已处理」（裁决 J-2：daemon 新增结构字段 stateLabel 取 CLI ESCALATION_LABEL.resolved，不再靠注入文案键；63 键冻结、两处 147+63 精确断言不变，逐字行由 extra 真机 evaluate 核对）；②「实例 未挂起 · 无法继续」，面板不关闭，两次都不崩、状态不变、不新增裁决。",
+    "机检内部断言：① 现场对同一实例连发两次 continue，第二次得 ESCALATION_NOT_PENDING 且提示与 ① 逐字一致（真守卫、非桩）；escalations[0].state 未被二次改写、events 中 escalation.resolved 计数不变。",
+    "Given 纪律：现场由既有 test.escalate + escalate resolve 产出，不手写 suspended+escalations；② 只换注入的 io.continueEscalation 桩（形状与 daemon 真实返回一致），不改 state.json。"
+  ]
+}

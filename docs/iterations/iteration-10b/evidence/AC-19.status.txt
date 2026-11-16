@@ -1,0 +1,51 @@
+$ "(fixture) 独立项目根（%TEMP%，NODE_ENV=test，mock 宿主）"
+# label=夹具：独立项目根（%TEMP%，NODE_ENV=test，mock 宿主） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-19
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe --test D:\WWW\Maestro\test\wp14\connection-panel.test.js
+# label=node --test test/wp14/connection-panel.test.js cwd=D:\WWW\Maestro exit=0 316ms
+TAP version 13
+# Subtest: AC-19 title line verbatim, four packages, descending last-activity order
+ok 1 - AC-19 title line verbatim, four packages, descending last-activity order
+  ---
+  duration_ms: 15.9607
+  type: 'test'
+  ...
+# Subtest: AC-19 HO-010 expanded timeline has exactly two reached states
+ok 2 - AC-19 HO-010 expanded timeline has exactly two reached states
+  ---
+  duration_ms: 0.4723
+  type: 'test'
+  ...
+# Subtest: AC-42 sixty handoffs: browse to the last row without blank lines
+ok 3 - AC-42 sixty handoffs: browse to the last row without blank lines
+  ---
+  duration_ms: 0.8776
+  type: 'test'
+  ...
+# Subtest: AC-43 expanded row stays expanded across a title refresh; anchor stays put
+ok 4 - AC-43 expanded row stays expanded across a title refresh; anchor stays put
+  ---
+  duration_ms: 0.4633
+  type: 'test'
+  ...
+# Subtest: AC-51 three connection lines always land on the handoff panel, never a write panel
+ok 5 - AC-51 three connection lines always land on the handoff panel, never a write panel
+  ---
+  duration_ms: 23.6871
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 199.8647
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-19 exit=0 143ms
+核心未在运行

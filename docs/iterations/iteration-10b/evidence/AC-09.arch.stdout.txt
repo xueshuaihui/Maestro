@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] desktop/ui 无硬编码 git_push
+$ grep -REn "git_push" "desktop/ui/"
+expect=zero exit=1 hits=0 OK
+(零命中)

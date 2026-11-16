@@ -1,0 +1,10 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] drill 层不重算状态（decideStatus|statusReason 零命中）
+$ grep -REn "decideStatus|statusReason" "desktop/ui/drill/"
+expect=zero exit=1 hits=0 OK
+(零命中)
+[2] drill 层不直接 import CLI 文案（cli/labels 零命中）
+$ grep -REn "cli/labels" "desktop/ui/drill/"
+expect=zero exit=1 hits=0 OK
+(零命中)

@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: A-10 新增键齐全：DRILL_* 键集合与全表精确相等（63 键，多键/少键都 fail）
+ok 1 - A-10 新增键齐全：DRILL_* 键集合与全表精确相等（63 键，多键/少键都 fail）
+  ---
+  duration_ms: 1.309
+  type: 'test'
+  ...
+# Subtest: A-10 逐字值：每个 DRILL_* 键值与冻结基线一字不差
+ok 2 - A-10 逐字值：每个 DRILL_* 键值与冻结基线一字不差
+  ---
+  duration_ms: 0.1316
+  type: 'test'
+  ...
+# Subtest: DRILL_ROLE_STATUS_TOKEN：JSON 承载且五 token 映射逐字（与 ROLE_INSTANCE_STATUS_LABEL 同值）
+ok 3 - DRILL_ROLE_STATUS_TOKEN：JSON 承载且五 token 映射逐字（与 ROLE_INSTANCE_STATUS_LABEL 同值）
+  ---
+  duration_ms: 0.1621
+  type: 'test'
+  ...
+# Subtest: 既有桌面键零改动：64 键的键名与值逐字不变（改即回归缺陷）
+ok 4 - 既有桌面键零改动：64 键的键名与值逐字不变（改即回归缺陷）
+  ---
+  duration_ms: 0.2091
+  type: 'test'
+  ...
+# Subtest: 既有复用键零改动：83 个平铺键与 src/cli/labels.js 对应成员逐字同源
+ok 5 - 既有复用键零改动：83 个平铺键与 src/cli/labels.js 对应成员逐字同源
+  ---
+  duration_ms: 0.4513
+  type: 'test'
+  ...
+# Subtest: 全集计数：UI_LABEL_KEYS = 既有 64 + 新增 63 + 复用 83 = 210
+ok 6 - 全集计数：UI_LABEL_KEYS = 既有 64 + 新增 63 + 复用 83 = 210
+  ---
+  duration_ms: 0.1145
+  type: 'test'
+  ...
+# Subtest: GET /ui/labels 下发载荷：形状仍为 { keys } 且覆盖全部 A-10 新增键
+ok 7 - GET /ui/labels 下发载荷：形状仍为 { keys } 且覆盖全部 A-10 新增键
+  ---
+  duration_ms: 0.455
+  type: 'test'
+  ...
+# Subtest: AC-30：desktop/ui 与 desktop/harness 的 CJK 命中数为 0（子目录缺失按 0 命中）
+ok 8 - AC-30：desktop/ui 与 desktop/harness 的 CJK 命中数为 0（子目录缺失按 0 命中）
+  ---
+  duration_ms: 9.4631
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 151.5624

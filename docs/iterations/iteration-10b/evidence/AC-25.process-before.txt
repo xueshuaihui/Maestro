@@ -1,0 +1,10 @@
+{
+  "check": "process",
+  "sessionId": "33333333-3333-4333-8333-333333333333",
+  "processName": "DeepSeek Harness",
+  "processCount": 0,
+  "evoked": false,
+  "exactlyOne": false,
+  "readOnly": true,
+  "note": "Current live host-process count; the identifier is the caller-supplied value, never hardcoded."
+}

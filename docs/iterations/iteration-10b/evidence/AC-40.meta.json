@@ -1,0 +1,28 @@
+{
+  "ac": "AC-40",
+  "title": "节点角色 ID 与注册表对不上：仍画出并按角色节点显示",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:34:17.743Z",
+  "finishedAt": "2026-11-16T17:34:18.193Z",
+  "durationMs": 450,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-40",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-40"
+    }
+  ],
+  "checks": 11,
+  "notes": [
+    "Then 逐字锚点（requirement.md:875）：T-032（roleId=ghost-role、执行中、直接上游）仍在 DAG 与卡片，类型显示「角色」不显示未知/空，编号与状态照常，卡片总数与节点集合一一对应。",
+    "拓扑矩阵口径：ghost-role 不在注册表仍保留节点；架构零命中证明不按注册表过滤。"
+  ]
+}
