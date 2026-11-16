@@ -370,3 +370,19 @@
   1. `POST /__test__/approvals` 用既有 `buildApproval` 构造内存覆盖行并入快照投影，**不写盘、不改状态、不计入 `totals.pendingApprovals`**；需要「可处置审批」的测试走「先起核再写盘 / mock 宿主真实等待会话」主路径（D-45）。接缝只覆盖轻量队列投影验证。
   2. `http/server.js` 的 `closeListener` 补 `closeAllConnections`：活跃 SSE 连接会令 `server.close()` 回调永不触发（诊断实测 close 卡 >3s，修复后 7ms），属停机确定性的必要配套，**不视为越权**；既有 8 路径行为不变。
 - **影响面**：`src/daemon/http/*`、WP-8/WP-9 的夹具口径（approvals 接缝仅轻量验证）。
+
+## D-51 · I1.11 文案键必须进 `/ui/labels` 下发链路；补五个视图导航键
+
+- **触发点**：WP-8 回执 ⑧.1/⑧.2。`src/cli/labels.js` 的 A-11 新键（`DESKTOP_QUEUE_*` / `DESKTOP_ASSET_*` / `DESKTOP_OCCUPANCY_*` / `DESKTOP_CANVAS_*` / `DESKTOP_EVIDENCE_*` / `DESKTOP_NOTIFY_*`）是**顶层 `export const`**，`src/daemon/http/labels.js` 的 `UI_LABEL_KEYS` 只 flatten 了 12 个对象表、未纳入这批单键（命中 0）——测试用 `buildLabels()` 从 CLI 常量绕过，**生产 app 只读 `/ui/labels`**，新视图会拿到 null 文案。另 `DESKTOP_VIEW_{QUEUE,ASSETS,OCCUPANCY,CANVAS,EVIDENCE}` 零定义，`paintViewNav` 安全跳过 → 五个导航按钮不渲染（用户无法切换）。
+- **依据**：A-11 明写所有新增文案键归属 `labels.js`；D-2/D-7 的设计就是 daemon 只读 import CLI 文案做下发，中文唯一来源不变。生产链路拿不到文案 = 产品缺陷（非判定过严），按 §2.6.2 主控裁决必须修。
+- **决定**：
+  1. **授权** WP-8 修改 `src/daemon/http/labels.js`（D-11 授权清单补项）：把 A-11 的 I1.11 顶层 `DESKTOP_*` 单键全量纳入 `UI_LABEL_KEYS`（按 `I11_DESKTOP_KEYS` 显式白名单 + `import * as cliLabels` 取值，不 flatten 无关对象、不改既有键语义）；冻结测试 `test/wp13/labels-desktop.test.js` 的精确键数按新增量更新（I1.9 D-27 先例：精确断言改期望不过滤）。
+  2. **补五个导航键**：`DESKTOP_VIEW_QUEUE` / `_ASSETS` / `_OCCUPANCY` / `_CANVAS` / `_EVIDENCE` 加到 `src/cli/labels.js` 末尾（A-11 追加，只补不减），中文值按既有视图命名风格（`人工干预队列` / `角色与技能库` / `角色占用` / `工作流画布` / `证据浏览`），经同一白名单下发；需求附录 A-11 加一行登记五键（v9）。
+  3. `GET/POST /ui/prefs`（WP-8 已新增，写仍由 `src/daemon/prefs.js` 独占）一并写入 D-11 授权补项。
+- **影响面**：`src/cli/labels.js`、`src/daemon/http/{labels,routes}.js`、`test/wp13/labels-desktop.test.js`、需求 v9、S3 逐字验收改用真实 `/ui/labels` 响应。
+
+## D-52 · `open-queue` 接入 `app.js` 的 `__MAESTRO_CTL__` 分发器
+
+- **触发点**：WP-9 回执 ⑦.1：`tray.rs::eval_open_queue`（:296）向 WebView eval `__MAESTRO_CTL__('open-queue', {selected})`，但 `desktop/ui/app.js` 的分发器（:2256）只处理 `refresh-list` / `open-instance`——真实点击通知/菜单「打开队列」在 WebView 内不切视图（`followNotification` API 存在但无调用点）。AC-04 的「点击通知停在队列并选中条目」在真窗口会挂。
+- **依据**：D-9 要求 `handle_ctl` 与真实菜单/点击调**同一函数**；壳侧已正确调用 `handle_notify_open`，缺口纯在 WebView 接线侧。属产品缺陷，非判定过严。
+- **决定**：`app.js` 的 `__MAESTRO_CTL__` 增 `open-queue` 分支：`void app.followNotification({ kind: 'escalation', ids: arg?.selected ? [arg.selected] : [] }).then(paint)`（复用既有 API，不新写导航逻辑）；无 selected 时只切到 queue 视图。新增 UI 测试断言该分支（从 `__MAESTRO_CTL__` 真实分发路径）。`config.rs` 的 `DESKTOP_NOTIFY_UNAVAILABLE` 最小字段补项（WP-9 回执 ⑦.2）确认为 D-11 的必要延伸。
