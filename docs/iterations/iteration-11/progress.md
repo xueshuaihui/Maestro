@@ -94,3 +94,8 @@
 ## S2 批次 F 开工（2026-11-16）
 
 - 派 WP-11（回归红线 + 整合验收：test/wp14/regression.test.js + contract.test.js + e2e.test.js）。
+- **WP-11**（本批提交）：35 测试全绿；三主链 6/6 逐字 diff 0；全量 1602 / 1595 pass / 4 fail 差集 0；D-53 四条口径裁决（读时健康度重算不计面板写 / live 快照不用于 AC-18/38 / shapeSnapshot 函数体锚点 / 对象表不入白名单）。
+
+## S2 收口 / S3 开工
+
+- S2 十个 WP 全部合入；进入 S3 逐 AC 取证（49 条）。
