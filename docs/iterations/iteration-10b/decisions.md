@@ -111,6 +111,35 @@ AC 里不得要求「36 个文件每个 `# fail 0`」这类在本机不可达的
 
 ---
 
+## 裁决 L：AC-51 机检断言的语义等价口径（2026-11-17）
+
+**事实**：产品测试 `test/wp14/connection-panel.test.js:188-190` 逐字写了 `assert.ok(st.view === 'connection-panel')`、`assert.ok(st.view !== 'escalation-panel')`、`assert.ok(st.view !== 'drill')` 三条断言；验收用例 `probe/acc10b-cases/ac51.mjs:30-32` 却用 `src.includes('assert.notEqual')` 作为「存在 `view !== ...` 断言」的唯一代理，于是把语义完全等价的 `assert.ok(x !== y)` 误判为缺项（17/18）。
+
+**裁决**：
+1. 需求 `AC-51` 的机检要求的是**断言语义**（三次 view 落点 + 不等于升级面板/下钻），不是某个 `node:assert` API 的字面拼写；验收脚本的 API 字面代理属实现细节，**不得优先于需求 Then**（铁律 1 / §3.4 红线 1）。
+2. 验收 Agent 把 `ac51.mjs` 的该项代理改为接受两种等价写法：`assert.notEqual(x, y)` 或 `assert.ok(x !== y)`（可用正则核 `!==` 语义）；**不得删掉该核对项、不得让其恒真**。
+3. 复跑 AC-51 → 18/18 后更新 `results.jsonl`（同 AC 取最后一条）、`acceptance-d.md`、`blockers.md`、`summary-d.json`，旧帧归档留痕。
+
+---
+
+## 裁决 K：AC-34「集合外新增红」的判定口径（2026-11-17）
+
+**背景**：批次 c 验收把允许集合严格取为 `baseline-failures-win32.txt` 的 16 条 + 隔离复跑通过的 flake，于是 `HANDOFF_EVIDENCE_ESCAPE：符号链接绕过` 与 `AC-04：空态…2 秒内…` 两条被判为「集合外新增红」，AC-34 判不通过；两条在文件级隔离复跑中**仍红**。
+
+**事实（需求自身的基线记录，非推断）**：
+- `requirement.md:1029` 明载 S0 开工基线三次实跑（同为 1425 条）中 `AC-04` 在前两次为红、`HANDOFF_EVIDENCE_ESCAPE` 出现在观测集合里，且「失败集合的成员在翻转」；
+- `requirement.md:1416`（F2-02）明确 `HANDOFF_EVIDENCE_ESCAPE` 是**平台/安全类既有失败**，只要求「不并入时序类」，从未把它认作本迭代新增；
+- 裁决 G 的判定对象是「**新增红**」，即相对开工基线新出现的失败，而非「不在 16 条清单里的所有红」。16 条清单是 I1.10a 某次 CI run 的登记项，不是穷尽的平台红全集。
+
+**裁决**：
+
+1. AC-34 的允许集合按裁决 G 的**目的性口径**解释：`16 条登记项 ∪ S0 开工基线已观测到的既有红（须有原始帧）∪ 文件级隔离复跑通过并留帧的 flake`。`HANDOFF_EVIDENCE_ESCAPE` 与 `AC-04` 属第二类，**不算本迭代新增红**。
+2. 验收 Agent 必须补两类原始帧才可改判：① `git worktree` 干净 HEAD（`818576f^`，即 S0/S1 基线）上这两条用例仍红的 TAP；② 本工作树文件级隔离复跑仍红的 TAP（已有 `evidence/flake-frames/`，可引用）。缺任一类不得改判。
+3. **不得**因本裁决放宽任何断言、删改任何 AC 的 Then；`tests ≥ 1425` 与「相对基线新增红 = 0」仍须成立。
+4. 补帧后由验收 Agent 重跑 AC-34 并把结果写回 `results.jsonl`（同 AC 取最后一条）+ `acceptance-c.md` + `blockers.md`；主控独立复核干净 HEAD 的 TAP。
+
+---
+
 ## 裁决 J：批次 3 两处逐字偏差的修法（2026-11-16）
 
 **事实（批次 3 两位实现 Agent 回报 + 主控实读代码复核）**：
