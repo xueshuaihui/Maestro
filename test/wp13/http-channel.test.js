@@ -7,7 +7,7 @@
  * listens on IPC only and no desktop.json ever appears.
  *
  * S-02 seam: /ui/labels is already live via the batch-1 labels.js lazy
- * import (frozen 147-key contract); routes.js (WP-3) is not landed in this
+ * import (frozen 147 + 63 key contract); routes.js (WP-3) is not landed in this
  * batch, so REST routes owned by WP-3 degrade to a structured 503 and the
  * injected handler table still works.
  */
@@ -128,7 +128,7 @@ test('missing or wrong bearer token yields 401 with a code-only body', async () 
   }
 });
 
-test('GET /ui/labels serves the frozen 147-key payload via the S-02 seam', async () => {
+test('GET /ui/labels serves the frozen 147 + 63 key payload via the S-02 seam', async () => {
   const root = makeRoot();
   try {
     const { server, meta } = await startDesktopServer(root, fakeOrchestrator());
@@ -139,7 +139,7 @@ test('GET /ui/labels serves the frozen 147-key payload via the S-02 seam', async
       assert.equal(res.status, 200);
       const payload = await res.json();
       assert.equal(typeof payload.keys, 'object');
-      assert.equal(Object.keys(payload.keys).length, 147);
+      assert.equal(Object.keys(payload.keys).length, 147 + 63);
       assert.deepEqual(Object.keys(payload.keys).sort(), Object.keys(labelKeysPayload().keys).sort());
     } finally {
       await server.close();

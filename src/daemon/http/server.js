@@ -47,7 +47,59 @@ import { writeJsonAtomic } from '../../persistence/atomic-write.js';
 import { parseYaml } from '../../registry/yaml-lite.js';
 import { GRAPHS } from '../../templates/index.js';
 import { buildGraph } from '../graph.js';
+import { openHost } from '../../adapter/host-open.js';
+import { COMMAND_ERROR, ERROR_TEMPLATE, ESCALATION_LABEL } from '../../cli/labels.js';
 import { createStreamHub, readBody } from './stream.js';
+
+/**
+ * I1.10b WP-2 (AC-23 / D-3): the escalation-continue route maps the existing
+ * core error codes to frozen label keys. The raw codes stay daemon-side; the
+ * UI branches on `messageKey` only (the mapping literals are frozen by the
+ * A-10 key contract, same source as WP-1's label table).
+ */
+const ESC_MESSAGE_KEYS = Object.freeze({
+  ESCALATION_NOT_PENDING: 'DRILL_ESC_ALREADY',
+  INSTANCE_NOT_SUSPENDED: 'DRILL_ESC_NOT_SUSPENDED',
+});
+
+/**
+ * Existing core error code -> CLI wording (the same source the CLI uses).
+ *
+ * Command-level codes (`ESCALATION_NOT_PENDING` / `INSTANCE_NOT_SUSPENDED`) live
+ * only in `COMMAND_ERROR`, never in `ERROR_TEMPLATE`; looking them up there
+ * made them fall through to `UNKNOWN_ERROR`. Resolve them from `COMMAND_ERROR`
+ * first so the response carries the CLI's verbatim wording (D-3). No Chinese
+ * literal lives in this layer: templates and state words both come from
+ * `src/cli/labels.js`, the project's single source of user-visible Chinese.
+ */
+export function escalationErrorText(code, params = {}) {
+  const isCommandError = typeof code === 'string'
+    && Object.prototype.hasOwnProperty.call(COMMAND_ERROR, code);
+  const known = isCommandError || (typeof code === 'string'
+    && Object.prototype.hasOwnProperty.call(ERROR_TEMPLATE, code));
+  const template = isCommandError ? COMMAND_ERROR[code]
+    : known ? ERROR_TEMPLATE[code]
+      : ERROR_TEMPLATE.UNKNOWN_ERROR;
+  const filled = { ...params };
+  if (isCommandError) {
+    // The CLI fills `{id}` with the escalation id (instance id only for
+    // INSTANCE_NOT_SUSPENDED); core params arrive as escalationId/instanceId.
+    if (filled.id === undefined || filled.id === null) {
+      filled.id = filled.escalationId ?? filled.instanceId ?? null;
+    }
+    // Mirror render.js COMMAND_ERROR_STATE_TABLE: `{state}` is a Chinese state
+    // word there, so the daemon returns the wording the CLI actually prints.
+    if (code === 'ESCALATION_NOT_PENDING' && typeof filled.state === 'string') {
+      filled.state = ESCALATION_LABEL[filled.state] ?? filled.state;
+    }
+  }
+  if (!known) filled.raw = code ?? null;
+  return String(template).replace(/\{(\w+)\}/g, (raw, name) => {
+    const value = filled[name];
+    if (value === undefined || value === null) return raw;
+    return String(value);
+  });
+}
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
@@ -203,7 +255,17 @@ export function createHttpServer({
         const mod = await import('./routes.js');
         const factory = typeof mod?.createRoutes === 'function' ? mod.createRoutes : mod?.default;
         if (typeof factory === 'function') {
-          const routes = factory({ orchestrator, loadWorkflowDef: resolveWorkflowDef });
+          // Split doc §1.1: the drill data plane receives the shared stream hub
+          // (contract A2 second call site) and the read-only instance readers
+          // through this same S-02 lazy seam; the overlay semantics themselves
+          // are untouched.
+          const routes = factory({
+            orchestrator,
+            loadWorkflowDef: resolveWorkflowDef,
+            root,
+            hub,
+            graph,
+          });
           if (typeof routes?.handle === 'function') {
             fallbackDispatcher = (req, res, url) => routes.handle(req, res, url);
           } else if (Array.isArray(routes)) {
@@ -349,6 +411,10 @@ export function createHttpServer({
       if (matchPattern('/instances/:id/graph', pathname) !== null) return true;
     }
     if (method === 'POST' && pathname === '/__test__/graph/pulse') return true;
+    // I1.10b WP-2 drill data plane: the two POST endpoints below are
+    // handler-owned (D-3), so the public static exception can never claim them.
+    if (method === 'POST' && matchPattern('/instances/:id/escalations/:escalationId/continue', pathname) !== null) return true;
+    if (method === 'POST' && pathname === '/hosts/open') return true;
     // Decision W: window-side probe events are handler-owned too, so the
     // public static exception can never swallow them.
     if (method === 'POST' && pathname === '/__test__/window-probe') return true;
@@ -385,6 +451,102 @@ export function createHttpServer({
     if (!meta) return false;
     const header = req.headers.authorization ?? '';
     return header === `Bearer ${meta.token}`;
+  }
+
+  // ------------------------------------------------- drill data plane (I1.10b WP-2)
+  //
+  // D-10 authorized dispatch additions: the only write route of the iteration
+  // (escalation continue, forwarding the existing orchestrator seam) and the
+  // host-open route (config-driven adapter). No state is written here directly.
+
+  /**
+   * `POST /instances/:id/escalations/:escalationId/continue`: forwards the
+   * existing `resolveEscalation({decision:'retry'})` seam (decision C — the
+   * same core path as `orch escalate resolve --decision retry`); this layer
+   * never mutates state fields itself (AC-22 architecture gate).
+   */
+  async function handleEscalationContinue(res, instanceId, escalationId) {
+    let result = null;
+    try {
+      result = await orchestrator.resolveEscalation({ instanceId, escalationId, decision: 'retry' });
+    } catch (err) {
+      result = {
+        ok: false,
+        code: typeof err?.code === 'string' && /^[A-Z0-9_]+$/.test(err.code) ? err.code : 'UNKNOWN_ERROR',
+        params: { cause: err?.message ?? String(err) },
+      };
+    }
+    if (result && result.ok === true) {
+      sendJson(res, 200, { ok: true, escalationId: result.escalationId ?? escalationId });
+      return;
+    }
+    const code = result?.code ?? 'UNKNOWN_ERROR';
+    const messageKey = Object.prototype.hasOwnProperty.call(ESC_MESSAGE_KEYS, code)
+      ? ESC_MESSAGE_KEYS[code]
+      : null;
+    sendJson(res, messageKey !== null ? 409 : 422, {
+      ok: false,
+      code,
+      ...(messageKey !== null ? { messageKey } : {}),
+      message: escalationErrorText(code, result?.params ?? {}),
+    });
+  }
+
+  /**
+   * `POST /hosts/open` (§3.7): body `{instanceId, sessionId}`. The host id is
+   * read from the instance state (`sessions[].hostId`); the daemon layer never
+   * branches on a host name. The adapter is config-driven and answers the
+   * contract error shapes (`HOST_UNSUPPORTED`, `DSH_SPAWN_FAILED`).
+   */
+  async function handleHostsOpen(req, res) {
+    let body;
+    try {
+      body = await readBody(req, BODY_LIMIT_BYTES);
+    } catch {
+      sendError(res, 413, 'PAYLOAD_TOO_LARGE');
+      return;
+    }
+    let params = null;
+    try {
+      params = body.length > 0 ? JSON.parse(body.toString('utf8')) : null;
+    } catch {
+      params = null;
+    }
+    if (!params || typeof params !== 'object' || Array.isArray(params)
+      || typeof params.instanceId !== 'string' || params.instanceId.length === 0
+      || typeof params.sessionId !== 'string' || params.sessionId.length === 0) {
+      sendError(res, 400, 'IPC_BAD_PARAMS');
+      return;
+    }
+    let hostId = null;
+    try {
+      const loaded = await graph.loadState(params.instanceId);
+      if (loaded && loaded.ok === true) {
+        const sessions = Array.isArray(loaded.state?.sessions) ? loaded.state.sessions : [];
+        const session = sessions.find((entry) => entry?.sessionId === params.sessionId) ?? null;
+        hostId = typeof session?.hostId === 'string' && session.hostId.length > 0 ? session.hostId : null;
+      }
+    } catch {
+      hostId = null;
+    }
+    if (hostId === null) {
+      sendError(res, 404, 'NOT_FOUND');
+      return;
+    }
+    let result;
+    try {
+      result = await openHost({
+        root,
+        hostId,
+        instanceId: params.instanceId,
+        sessionId: params.sessionId,
+        env: process.env,
+        clock: now,
+      });
+    } catch (err) {
+      result = { ok: false, code: 'DSH_SPAWN_FAILED', message: `跳转失败 · ${err?.message ?? String(err)}` };
+    }
+    sendJson(res, 200, result);
   }
 
   async function handleRequest(req, res) {
@@ -478,6 +640,20 @@ export function createHttpServer({
         await fs.mkdir(path.dirname(sink), { recursive: true });
         await fs.appendFile(sink, `${JSON.stringify(event)}\n`, 'utf8');
         sendJson(res, 200, { ok: true });
+        return;
+      }
+
+      // I1.10b WP-2 drill data plane dispatch additions (D-3): escalation
+      // continue (the single write route) and host open.
+      const continueMatch = req.method === 'POST'
+        ? matchPattern('/instances/:id/escalations/:escalationId/continue', pathname)
+        : null;
+      if (continueMatch !== null) {
+        await handleEscalationContinue(res, continueMatch.id, continueMatch.escalationId);
+        return;
+      }
+      if (req.method === 'POST' && pathname === '/hosts/open') {
+        await handleHostsOpen(req, res);
         return;
       }
 

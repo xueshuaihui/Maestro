@@ -109,7 +109,94 @@ export const DESKTOP_LABEL_KEYS = Object.freeze({
   DESKTOP_BOARD_UNKNOWN_STATE: '状态未知',
   // A-13 图数据异常提示（第一行沿用既有 renderInstanceMissing 文案形态）。
   DESKTOP_GRAPH_MISSING: '实例 {id} · 不存在',
-  DESKTOP_DEF_UNREADABLE: '流程图定义不可读 · 已按内置模板显示'
+  DESKTOP_DEF_UNREADABLE: '流程图定义不可读 · 已按内置模板显示',
+
+  // -----------------------------------------------------------------------
+  // I1.10b WP-1（需求附录 A-10 全表，冻结点 ①）：`DRILL_*` 下钻文案键。
+  // 逐字基线 = 附录 A-1 ~ A-9 的样例行（措辞一字不改）；占位符只做字面替换。
+  // `DRILL_ROLE_STATUS_TOKEN` 为五 token → 中文映射（A-10 逐字：键为图投影的
+  // 五种 token，值与 `ROLE_INSTANCE_STATUS_LABEL` 同值），以 JSON 字符串承载
+  // （键值表的值必须为字符串，渲染层 JSON.parse 后按键取值、不重算状态）。
+  // -----------------------------------------------------------------------
+
+  // 面包屑（A-8）：CRUMB_ROLE 含实例根段；` / ` 连接与 `实例 {id} / 节点 {node}`
+  // 等直接进入形态由渲染层按结构拼装（实例根段取自 CRUMB_ROLE 的首段）。
+  DRILL_CRUMB_ROLE: '实例 {id} / 角色 {role}',
+  DRILL_CRUMB_NODE: '节点 {node}',
+  DRILL_CRUMB_SUBFLOW: '子工作流 {title}',
+  // 角色状态栏与最近动作（A-1：`{last}` 取 LAST_ACTION 或 LAST_ACTION_MISSING）。
+  DRILL_ROLE_BAR:
+    '角色栏 {role} · {status} · {sessions} 个活跃会话 · 服务 {serving} · 宿主 {hosts} · 最近 {last}',
+  DRILL_ROLE_SERVING_MORE: '{first} 等 {n} 个',
+  DRILL_LAST_ACTION: '最近 {node} · 轮次 {round}/{maxRounds} · {state}',
+  DRILL_LAST_ACTION_MISSING: '最近 —',
+  // 局部 DAG（A-2：节点行三段固定 = 关系 / 类型 / 状态）。
+  DRILL_DAG_NODE: '局部节点 {node} · {relation} · {type} · {status}',
+  DRILL_DAG_EDGE: '局部连线 {from}→{to} · {direction} · {status}',
+  DRILL_DAG_REL_SELF: '本角色',
+  DRILL_DAG_REL_UP: '上游',
+  DRILL_DAG_REL_DOWN: '下游',
+  // 任务卡片（A-3：类型前缀键填入 CARD_TITLE 的 {node} 段；EMPTY 为无会话执行行整行）。
+  DRILL_CARD_TITLE: '卡片 {node} · {title} · 轮次 {round}/{maxRounds} · {status}',
+  DRILL_CARD_EXEC: '执行 {role} · {session} · 已运行 {elapsed} · 工具 {tool}',
+  DRILL_CARD_DEPS: '依赖 {deps} · 产物 {products} · 证据 {evidence}',
+  DRILL_CARD_TYPE_HUMAN: '人工节点 {node}',
+  DRILL_CARD_TYPE_ESCALATE: '升级节点 {node}',
+  DRILL_CARD_TYPE_SUBFLOW: '子工作流：{title} · 角色 {n}',
+  DRILL_CARD_EMPTY: '执行 {role} · 无会话 · — · 工具 —',
+  // 会话指示器（A-3 指示器表：标签复用 SESSION_LABEL 族；INPUT_DETAIL 为 `：<动作>`）。
+  DRILL_INDICATOR: '{label}{detail}',
+  DRILL_INDICATOR_INPUT_DETAIL: '：{action}',
+  DRILL_INDICATOR_NONE: '无会话',
+  // 节点详情（A-4：四段标题内嵌于内容行模板；NONE 为空段 `{section} 无记录`）。
+  DRILL_DETAIL_HEAD: '节点 {node} · {title} · {status} · 轮次 {round}/{maxRounds}',
+  DRILL_DETAIL_TIMELINE: '时间线 {time} {state}',
+  DRILL_DETAIL_SUMMARY: '摘要 命令 {command} · 退出码 {exitCode} · 关键输出 {lines} 行 · 日志 {log}',
+  DRILL_DETAIL_EVIDENCE: '证据 {index} · {ref} · {type} · {status}',
+  DRILL_DETAIL_HANDOFF: '交接 {id} · {direction} · 第 {round} 轮 · {state} · {time}',
+  DRILL_DETAIL_NONE: '{section} 无记录',
+  // 连接线面板（A-5：并行后缀 1 时省略；EMPTY 为整段空态，与详情段内 `无记录` 区分）。
+  DRILL_CONN_HEAD: '连接 {from}→{to} · {direction} · {status}',
+  DRILL_CONN_PARALLEL: ' · {n} 并行交接',
+  DRILL_CONN_HANDOFF: '交接 {id} · 第 {round} 轮 · {state} · {time}',
+  DRILL_CONN_EMPTY: '交接 无',
+  // 升级面板（A-6 + D-3 messageKey 映射：ALREADY / NOT_SUSPENDED / FAILED）。
+  DRILL_ESC_TITLE: '升级处理',
+  DRILL_ESC_COUNT: '本实例待处理升级 {n} 个',
+  DRILL_ESC_ROW: '升级 {id} · {state} · 节点 {node} {role} · 第 {round} 轮',
+  DRILL_ESC_REASON: '原因：{reason}',
+  DRILL_ESC_DEFECT: '缺陷：{summary}（证据 {evidence}）',
+  DRILL_ESC_CONTINUE: '继续',
+  DRILL_ESC_CANCEL: '取消',
+  DRILL_ESC_DONE: '已继续 · {id}',
+  DRILL_ESC_ALREADY: '升级 {id} 已处理 · 状态 {state}',
+  DRILL_ESC_NOT_SUSPENDED: '实例 未挂起 · 无法继续',
+  DRILL_ESC_FAILED: '继续失败 · {reason}',
+  // 打开宿主（A-7：成功两行成对；三种降级各一行）。
+  DRILL_HOST_OPEN: '打开宿主会话',
+  DRILL_HOST_OPENED: '已打开 DeepSeek Harness · 会话 {id}',
+  DRILL_HOST_HINT: '会话标识已复制 · 在 DSH 中按标识定位',
+  DRILL_HOST_NONE: '无可跳转会话',
+  DRILL_HOST_UNSUPPORTED: '宿主 {host} 不支持跳转',
+  DRILL_HOST_MISSING: '未找到 DeepSeek Harness',
+  DRILL_HOST_FAILED: '跳转失败 · {reason}',
+  // 视图控件（A-8）。
+  DRILL_VIEW_BACK_GRAPH: '返回流程图',
+  DRILL_VIEW_BACK_DRILL: '返回角色下钻',
+  DRILL_VIEW_BACK_LEVEL: '返回上一层',
+  DRILL_VIEW_ALL_NODES: '查看全部节点',
+  // 降级提示（A-9：`交接 无`（整段空态）与详情段内 `{section} 无记录` 是两处语境）。
+  DRILL_EMPTY_TASK: '任务 无',
+  DRILL_EMPTY_ROLE: '角色 无',
+  DRILL_EMPTY_RECORD: '交接 无',
+  DRILL_NO_SESSION: '无会话',
+  DRILL_UNKNOWN_STATE: '状态未知',
+  DRILL_NODE_MISSING: '节点 {node} · 不存在',
+  DRILL_ROLE_UNUSED: '角色 {role} · 本实例未使用',
+  DRILL_SUBFLOW_CYCLE: '子工作流定义存在循环 · 已停止下钻',
+  // 角色状态 token → 中文（A-10 逐字五 token 映射，与 ROLE_INSTANCE_STATUS_LABEL 同值）。
+  DRILL_ROLE_STATUS_TOKEN:
+    '{"available":"可用","serving":"服务中","cooldown":"冷却中","unavailable":"不可用","inactive":"未参与"}'
 });
 
 /**

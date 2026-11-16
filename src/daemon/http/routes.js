@@ -26,10 +26,21 @@
  * Chinese source, per split doc C-03), zero npm dependencies, no host branch.
  */
 
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { readBody } from './stream.js';
 import { ERROR_TEMPLATE, ROLE_LABEL, TEMPLATE_LABEL } from '../../cli/labels.js';
+import { parseYaml } from '../../registry/yaml-lite.js';
+import { GRAPHS } from '../../templates/index.js';
+import { buildGraph } from '../graph.js';
+import {
+  buildConnectionPanel,
+  buildDrill,
+  buildEscalationList,
+  buildNodeDetail,
+  buildSubflowGraph,
+} from '../drill.js';
 
 /** D-2: request body cap for `POST /instances`. */
 const BODY_LIMIT_BYTES = 32 * 1024;
@@ -41,6 +52,11 @@ function sendJson(res, status, payload) {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(payload));
   return res;
+}
+
+/** Error-only JSON body (mirrors the built-in route shape `{error: code}`). */
+function sendError(res, status, code) {
+  return sendJson(res, status, { error: code });
 }
 
 /** Literal placeholder replacement; a missing argument keeps `{xx}` verbatim. */
@@ -202,18 +218,31 @@ function resolveProjectRoot(explicit) {
  * @param {object} options.orchestrator the existing orchestrator surface
  *   (`listInstances` / `getStatus` / `startRun`)
  * @param {Function} [options.loadWorkflowDef] S-02 seam parameter, injected
- *   by `http/server.js`; kept for signature compatibility — the graph route
- *   stays a WP-2 built-in, so the WP-3 table does not consume it.
+ *   by `http/server.js` (`resolveWorkflowDef`); the drill/subflow routes
+ *   resolve definitions through it.
  * @param {string} [options.root] project root override (tests; production
  *   resolves it from the daemon argv)
+ * @param {object} [options.hub] the stream hub created by `http/server.js`
+ *   (split doc §1.1: injected through the same S-02 seam mechanism). The
+ *   drill route calls its existing `applyTestOverlay(graph, instanceId)` on
+ *   the graph payload it builds (contract A2, second call site) so the pulse
+ *   seam reaches the drill projections on the shared in-memory overlay.
+ * @param {object} [options.graph] read-only readers `{loadState, replayEvents,
+ *   readTraces}` injected by `http/server.js`; drill routes read the instance
+ *   exclusively through them (no health recompute, no store write).
  * @returns {Array<{method: string, pattern: string, handler: Function}>}
  */
-export function createRoutes({ orchestrator, loadWorkflowDef, root } = {}) {
+export function createRoutes({ orchestrator, loadWorkflowDef, root, hub, graph } = {}) {
   void loadWorkflowDef; // reserved by the frozen seam signature; see docblock
   const projectRoot = resolveProjectRoot(root);
   if (!orchestrator || typeof orchestrator.startRun !== 'function') {
     throw new TypeError('createRoutes: orchestrator.startRun is required');
   }
+  const drillReaders = graph !== null && typeof graph === 'object'
+    && typeof graph.loadState === 'function'
+    ? graph
+    : null;
+  const resolveDef = typeof loadWorkflowDef === 'function' ? loadWorkflowDef : null;
 
   /** `GET /instances`: `listInstances` + `getStatus` only, health verbatim. */
   async function handleList(res) {
@@ -304,6 +333,228 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root } = {}) {
     return res;
   }
 
+  // ------------------------------------------------- drill data plane (I1.10b WP-2)
+  //
+  // Five read-only GET routes (split doc §1.1, requirement D-3). Every handler
+  // assembles inputs from the injected read-only readers and the existing
+  // projections only; no state write, no event publish, no trace append.
+
+  /** Project-yaml then built-in-template resolution for an arbitrary ref. */
+  async function loadRefWorkflowDef(ref) {
+    if (typeof ref !== 'string' || ref.length === 0) return null;
+    const safeRef = path.basename(ref);
+    if (safeRef.length === 0 || projectRoot === null) {
+      return Object.prototype.hasOwnProperty.call(GRAPHS, ref) ? GRAPHS[ref] : null;
+    }
+    const file = path.join(projectRoot, '.orch', 'workflows', `${safeRef}.yaml`);
+    let def = null;
+    try {
+      const text = await fs.readFile(file, 'utf8');
+      const parsed = parseYaml(text);
+      if (parsed?.ok === true && parsed.value !== null && typeof parsed.value === 'object'
+        && !Array.isArray(parsed.value)) {
+        def = parsed.value;
+      }
+    } catch {
+      def = null;
+    }
+    if (!def && Object.prototype.hasOwnProperty.call(GRAPHS, ref)) def = GRAPHS[ref];
+    return def;
+  }
+
+  /**
+   * Child-definition resolution for the graph payload. Mirrors the graph
+   * snapshot path's semantics (project yaml by ref, then built-in template,
+   * depth limit 3) because that resolver lives inside `http/server.js` and is
+   * not importable; the behavior is identical rule by rule.
+   */
+  async function resolveChildWorkflows(def, depth = 0) {
+    const subWorkflows = new Map();
+    if (!def || depth > 3) return subWorkflows;
+    const refs = new Set();
+    for (const node of Array.isArray(def.nodes) ? def.nodes : []) {
+      const ref = typeof node?.workflow === 'string' && node.workflow.length > 0 ? node.workflow : null;
+      if (ref !== null && !subWorkflows.has(ref)) refs.add(ref);
+    }
+    for (const ref of refs) {
+      const child = await loadRefWorkflowDef(ref);
+      if (child) {
+        subWorkflows.set(ref, child);
+        const nested = await resolveChildWorkflows(child, depth + 1);
+        for (const [nestedRef, nestedDef] of nested) {
+          if (!subWorkflows.has(nestedRef)) subWorkflows.set(nestedRef, nestedDef);
+        }
+      }
+    }
+    return subWorkflows;
+  }
+
+  /** Read-only instance load through the injected readers; null on failure. */
+  async function loadInstanceState(instanceId) {
+    if (drillReaders === null) return null;
+    try {
+      const loaded = await drillReaders.loadState(instanceId);
+      if (!loaded || loaded.ok !== true) return { code: loaded?.code ?? 'NOT_FOUND' };
+      return { code: null, state: loaded.state ?? {} };
+    } catch {
+      return { code: 'NOT_FOUND' };
+    }
+  }
+
+  /** Read-only event replay with the same normalization as the graph route. */
+  async function loadInstanceEvents(instanceId) {
+    if (drillReaders === null || typeof drillReaders.replayEvents !== 'function') return [];
+    try {
+      const replayed = await drillReaders.replayEvents(instanceId);
+      return Array.isArray(replayed)
+        ? replayed
+        : Array.isArray(replayed?.events)
+          ? replayed.events
+          : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /** Read-only trace read; failures degrade to an empty span list. */
+  async function loadInstanceTraces(instanceId) {
+    if (drillReaders === null || typeof drillReaders.readTraces !== 'function') return [];
+    try {
+      const read = await drillReaders.readTraces(instanceId);
+      return Array.isArray(read?.spans) ? read.spans : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Shared drill assembly: snapshot + definition + events + traces -> graph
+   * payload -> the existing shared test overlay (contract A2, second call
+   * site; call only, overlay semantics untouched). Returns null when the
+   * readers are not wired (degrades to 503 like the S-02 seam).
+   */
+  async function assembleDrillContext(instanceId) {
+    if (drillReaders === null || resolveDef === null) return null;
+    const loaded = await loadInstanceState(instanceId);
+    if (loaded.code !== null) return { code: loaded.code };
+    const state = loaded.state;
+    const def = await resolveDef(state);
+    const [events, traces] = await Promise.all([
+      loadInstanceEvents(instanceId),
+      loadInstanceTraces(instanceId),
+    ]);
+    const subWorkflows = await resolveChildWorkflows(def);
+    const graphPayload = buildGraph({
+      state,
+      workflowDef: def,
+      roles: null, // absent registry -> declared roles stay known (D-3)
+      traces,
+      events,
+      subWorkflows,
+    });
+    if (hub && typeof hub.applyTestOverlay === 'function') {
+      hub.applyTestOverlay(graphPayload, instanceId);
+    }
+    return { code: null, state, def, events, graphPayload };
+  }
+
+  function drillUnavailable(res) {
+    sendJson(res, 503, { error: 'NOT_READY' });
+    return res;
+  }
+
+  function instanceMissing(res, code) {
+    sendError(res, code === 'STATE_CORRUPT' ? 422 : 404, code === 'STATE_CORRUPT' ? 'STATE_CORRUPT' : 'NOT_FOUND');
+    return res;
+  }
+
+  /** `GET /instances/:id/drill/:roleId` (§3.3). */
+  async function handleDrill(res, params) {
+    const context = await assembleDrillContext(params.id);
+    if (context === null) return drillUnavailable(res);
+    if (context.code !== null) return instanceMissing(res, context.code);
+    const payload = buildDrill({
+      state: context.state,
+      workflowDef: context.def,
+      roleId: params.roleId,
+      roles: null,
+      graph: context.graphPayload,
+    });
+    sendJson(res, 200, payload);
+    return res;
+  }
+
+  /** `GET /instances/:id/nodes/:nodeId` (§3.4). */
+  async function handleNodeDetail(res, params, url) {
+    const context = await assembleDrillContext(params.id);
+    if (context === null) return drillUnavailable(res);
+    if (context.code !== null) return instanceMissing(res, context.code);
+    void url;
+    const workspace = projectRoot === null
+      ? null
+      : path.join(projectRoot, '.orch', 'instances', params.id, 'workspace');
+    const payload = await buildNodeDetail({
+      state: context.state,
+      workflowDef: context.def,
+      events: context.events,
+      handoffs: Array.isArray(context.state.handoffs) ? context.state.handoffs : [],
+      nodeId: params.nodeId,
+      workspace,
+      cwd: typeof context.state.cwd === 'string' ? context.state.cwd : projectRoot,
+    });
+    sendJson(res, 200, payload);
+    return res;
+  }
+
+  /** `GET /instances/:id/connections/:edgeId` (§3.5). */
+  async function handleConnectionPanel(res, params) {
+    const context = await assembleDrillContext(params.id);
+    if (context === null) return drillUnavailable(res);
+    if (context.code !== null) return instanceMissing(res, context.code);
+    const payload = buildConnectionPanel({
+      state: context.state,
+      workflowDef: context.def,
+      handoffs: Array.isArray(context.state.handoffs) ? context.state.handoffs : [],
+      edgeId: params.edgeId,
+      graph: context.graphPayload,
+    });
+    if (payload === null) {
+      sendError(res, 404, 'NOT_FOUND');
+      return res;
+    }
+    sendJson(res, 200, payload);
+    return res;
+  }
+
+  /** `GET /instances/:id/escalations` (§3.6). */
+  async function handleEscalationList(res, params) {
+    const loaded = await loadInstanceState(params.id);
+    if (loaded === null) return drillUnavailable(res);
+    if (loaded.code !== null) return instanceMissing(res, loaded.code);
+    sendJson(res, 200, buildEscalationList({ state: loaded.state }));
+    return res;
+  }
+
+  /** `GET /instances/:id/subworkflow/:ref` (D-3). */
+  async function handleSubflowGraph(res, params, url) {
+    const loaded = await loadInstanceState(params.id);
+    if (loaded === null) return drillUnavailable(res);
+    if (loaded.code !== null) return instanceMissing(res, loaded.code);
+    const visitedParam = url?.searchParams?.get('visited') ?? '';
+    const visited = visitedParam.length > 0
+      ? visitedParam.split(',').filter((ref) => ref.length > 0)
+      : [];
+    const def = await loadRefWorkflowDef(params.ref);
+    const payload = buildSubflowGraph({
+      workflowDef: def,
+      ref: params.ref,
+      visited,
+      state: loaded.state,
+    });
+    sendJson(res, 200, payload);
+    return res;
+  }
+
   return [
     {
       method: 'GET',
@@ -324,6 +575,41 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root } = {}) {
       pattern: '/workflows',
       handler(_req, res) {
         return handleWorkflows(res);
+      },
+    },
+    {
+      method: 'GET',
+      pattern: '/instances/:id/drill/:roleId',
+      handler(_req, res, _url, params) {
+        return handleDrill(res, params);
+      },
+    },
+    {
+      method: 'GET',
+      pattern: '/instances/:id/nodes/:nodeId',
+      handler(_req, res, url, params) {
+        return handleNodeDetail(res, params, url);
+      },
+    },
+    {
+      method: 'GET',
+      pattern: '/instances/:id/connections/:edgeId',
+      handler(_req, res, _url, params) {
+        return handleConnectionPanel(res, params);
+      },
+    },
+    {
+      method: 'GET',
+      pattern: '/instances/:id/escalations',
+      handler(_req, res, _url, params) {
+        return handleEscalationList(res, params);
+      },
+    },
+    {
+      method: 'GET',
+      pattern: '/instances/:id/subworkflow/:ref',
+      handler(_req, res, url, params) {
+        return handleSubflowGraph(res, params, url);
       },
     },
   ];
