@@ -39,7 +39,7 @@ const ORCH = path.join(REPO, 'bin', 'orch.js');
 const MOCK = path.join(REPO, 'test', 'fixtures', 'mock-acp-agent.js');
 
 /**
- * The real `GET /ui/labels` key table (147 keys). Group display names are part
+ * The real `GET /ui/labels` key table (249 keys). Group display names are part
  * of it since the A-14 supplement (decision K / B-16), so the fixture never
  * fabricates `GROUP_LABEL_*` keys of its own.
  */

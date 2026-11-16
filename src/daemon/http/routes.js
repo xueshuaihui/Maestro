@@ -44,6 +44,7 @@
 import path from 'node:path';
 
 import { readBody, encodeSseFrame } from './stream.js';
+import { readPrefs, writePrefs } from '../prefs.js';
 import { buildApproval } from '../../core/approvals.js';
 import { buildQueue, decideEscalation, decideApproval, cancelInstance } from '../queue.js';
 import { listAssets, showAsset } from '../assets-view.js';
@@ -387,6 +388,43 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root, clock, notif
   function handleWorkflows(res) {
     const items = Object.keys(TEMPLATE_LABEL).map((id) => ({ id, title: TEMPLATE_LABEL[id] }));
     sendJson(res, 200, { items });
+    return res;
+  }
+
+  /**
+   * Notification preference seam (D-11 / D-42 / BR-25): the desktop window's
+   * queue-page toggle strip reads and writes `<root>/.orch/desktop/prefs.json`
+   * through `src/daemon/prefs.js` — the single owner of that file. No instance
+   * state is touched. A missing root degrades to 503 NOT_READY, same as the
+   * other I1.11 read routes.
+   */
+  async function handleGetPrefs(res) {
+    if (projectRoot === null) {
+      sendJson(res, 503, { error: 'NOT_READY' });
+      return res;
+    }
+    const prefs = await readPrefs(projectRoot);
+    sendJson(res, 200, prefs);
+    return res;
+  }
+
+  async function handlePostPrefs(req, res) {
+    if (projectRoot === null) {
+      sendJson(res, 503, { error: 'NOT_READY' });
+      return res;
+    }
+    const body = await readJsonBody(req, res);
+    if (body === undefined) return res;
+    try {
+      const merged = await writePrefs(projectRoot, body);
+      sendJson(res, 200, merged);
+    } catch (error) {
+      sendJson(res, 422, {
+        ok: false,
+        error: error?.code ?? 'IPC_BAD_PARAMS',
+        message: error?.message ?? String(error),
+      });
+    }
     return res;
   }
 
@@ -885,6 +923,21 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root, clock, notif
       pattern: '/workflows',
       handler(_req, res) {
         return handleWorkflows(res);
+      },
+    },
+    // ---- 通知开关偏好（D-11 / D-42；经 src/daemon/prefs.js 单一写入方）----
+    {
+      method: 'GET',
+      pattern: '/ui/prefs',
+      handler(_req, res) {
+        return handleGetPrefs(res);
+      },
+    },
+    {
+      method: 'POST',
+      pattern: '/ui/prefs',
+      handler(req, res) {
+        return handlePostPrefs(req, res);
       },
     },
     // ---- I1.11 D-1 只读面 ----

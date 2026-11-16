@@ -1020,3 +1020,11 @@ export const DESKTOP_TRAY_PAUSE = Object.freeze('暂停');
 export const DESKTOP_TRAY_RESUME = Object.freeze('继续');
 export const DESKTOP_TRAY_PAUSE_SUMMARY = Object.freeze('{n} 个实例已暂停，{m} 个已跳过');
 export const DESKTOP_TRAY_PAUSE_NONE = Object.freeze('没有可暂停的实例');
+
+// ---- A-11 v9 五个新视图导航键（D-51 追加；经 /ui/labels 白名单下发） ----
+
+export const DESKTOP_VIEW_QUEUE = Object.freeze('人工干预队列');
+export const DESKTOP_VIEW_ASSETS = Object.freeze('角色与技能库');
+export const DESKTOP_VIEW_OCCUPANCY = Object.freeze('角色占用');
+export const DESKTOP_VIEW_CANVAS = Object.freeze('工作流画布');
+export const DESKTOP_VIEW_EVIDENCE = Object.freeze('证据浏览');

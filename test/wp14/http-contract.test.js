@@ -282,6 +282,7 @@ test('D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内�
   const postPatterns = rows.filter(([method]) => method === 'POST').map(([, pattern]) => pattern);
   const allowedWrites = new Set([
     '/instances',
+    '/ui/prefs',
     '/queue/escalations/:id/decision',
     '/queue/approvals/:id/decision',
     '/instances/:id/cancel',
@@ -301,6 +302,7 @@ test('D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内�
   for (const expected of [
     '/instances',
     '/workflows',
+    '/ui/prefs',
     '/queue',
     '/queue/stream',
     '/assets/roles',

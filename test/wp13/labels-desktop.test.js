@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import {
+  APPROVAL_LABEL,
   COMMAND_ERROR,
   ERROR_TEMPLATE,
   HANDOFF_LABEL,
@@ -27,12 +28,15 @@ import {
   HEALTH_REASON,
   INSTANCE_LABEL,
   NODE_LABEL,
+  RESOLUTION_LABEL,
   ROLE_INSTANCE_STATUS_LABEL,
   TEMPLATE_LABEL,
   USAGE_LINES
 } from '../../src/cli/labels.js';
+import * as cliLabels from '../../src/cli/labels.js';
 import {
   DESKTOP_LABEL_KEYS,
+  I11_DESKTOP_KEYS,
   UI_LABELS_PATH,
   UI_LABEL_KEYS,
   createLabelsRoute,
@@ -56,7 +60,7 @@ function placeholders(template) {
 }
 
 // ---------------------------------------------------------------------------
-// 期望清单（冻结契约本体）：新增键 64 + 复用键 83 = 147。
+// 期望清单（冻结契约本体）：新增键 64 + 复用键 90 + I1.11 顶层键 95 = 249。
 // ---------------------------------------------------------------------------
 
 /** 桌面新增键（键名即契约；值逐字断言见 EXPECTED_DESKTOP_VALUES）。 */
@@ -272,6 +276,8 @@ const EXPECTED_DESKTOP_PLACEHOLDERS = Object.freeze({
 const REUSED_TABLES = Object.freeze([
   ['INSTANCE_LABEL', INSTANCE_LABEL, ['created', 'running', 'completed', 'failed', 'cancelled', 'interrupted', 'suspended']],
   ['NODE_LABEL', NODE_LABEL, ['pending', 'running', 'review', 'done', 'failed', 'cancelled', 'escalated']],
+  ['APPROVAL_LABEL', APPROVAL_LABEL, ['pending', 'approved', 'denied', 'withdrawn']],
+  ['RESOLUTION_LABEL', RESOLUTION_LABEL, ['pass', 'fail', 'retry']],
   ['HANDOFF_LABEL', HANDOFF_LABEL, ['created', 'delivered', 'pending', 'accepted', 'consumed', 'rejected', 'expired']],
   ['ROLE_INSTANCE_STATUS_LABEL', ROLE_INSTANCE_STATUS_LABEL, ['inactive', 'available', 'busy', 'cooldown', 'unavailable', 'retired']],
   ['HEALTH_LABEL', HEALTH_LABEL, ['normal', 'slow', 'attention', 'ended']],
@@ -293,7 +299,8 @@ function flatName(prefix, member) {
 
 /** 期望全集 = 新增键 + 复用键平铺（均来自上方显式清单，与实现无关）。 */
 const EXPECTED_ALL_KEYS = (() => {
-  const names = [...EXPECTED_DESKTOP_KEYS];
+  // D-51: I1.11 top-level keys are delivered by their own names (not flattened).
+  const names = [...EXPECTED_DESKTOP_KEYS, ...I11_DESKTOP_KEYS];
   for (const [prefix, , members] of REUSED_TABLES) {
     for (const member of members) names.push(flatName(prefix, member));
   }
@@ -307,7 +314,7 @@ const EXPECTED_ALL_KEYS = (() => {
 test('键全集冻结：下发键集合与期望清单精确相等（多键/少键都 fail）', () => {
   assert.deepEqual(Object.keys(UI_LABEL_KEYS).sort(), EXPECTED_ALL_KEYS);
   assert.equal(Object.keys(UI_LABEL_KEYS).length, EXPECTED_ALL_KEYS.length);
-  assert.equal(Object.keys(UI_LABEL_KEYS).length, 147, '新增 64 + 复用 83');
+  assert.equal(Object.keys(UI_LABEL_KEYS).length, 249, '新增 64 + 复用 90 + I1.11 顶层 95');
 });
 
 test('桌面新增键：DESKTOP_LABEL_KEYS 与期望值表逐字相等（A-14 新增段冻结）', () => {
@@ -326,6 +333,21 @@ test('键名纪律：全部 UPPER_SNAKE、值为非空字符串、两张表均�
   }
   assert.ok(Object.isFrozen(DESKTOP_LABEL_KEYS));
   assert.ok(Object.isFrozen(UI_LABEL_KEYS));
+});
+
+test('D-51：I1.11 白名单 95 键全量下发、值与 CLI 同源、对象表未混入', () => {
+  assert.equal(I11_DESKTOP_KEYS.length, 95);
+  assert.equal(new Set(I11_DESKTOP_KEYS).size, 95, '白名单无重复键');
+  for (const key of I11_DESKTOP_KEYS) {
+    assert.ok(key in UI_LABEL_KEYS, `白名单键未下发：${key}`);
+    assert.equal(UI_LABEL_KEYS[key], cliLabels[key], `${key} 与 CLI 源不同值`);
+  }
+  assert.ok(!('DESKTOP_QUEUE_CONCLUSIONS' in UI_LABEL_KEYS), '对象表不得混入下发键');
+  assert.ok(Object.isFrozen(I11_DESKTOP_KEYS));
+  for (const key of ['DESKTOP_QUEUE_ROW_ESC', 'DESKTOP_VIEW_QUEUE', 'DESKTOP_TRAY_STATUS']) {
+    assert.equal(typeof UI_LABEL_KEYS[key], 'string', `${key} 缺失或非中文文案`);
+    assert.ok(UI_LABEL_KEYS[key].length > 0);
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -702,7 +724,8 @@ test('AC-28：GET /ui/labels 覆盖 A-14 契约键集合（显式契约名 + 前
     assert.ok(count >= atLeast, `前缀族 ${prefix} 键数 ${count} 少于 ${atLeast}`);
   }
   const reusedPrefixes = [
-    'INSTANCE_LABEL_', 'NODE_LABEL_', 'HANDOFF_LABEL_', 'ROLE_INSTANCE_STATUS_LABEL_',
+    'INSTANCE_LABEL_', 'NODE_LABEL_', 'APPROVAL_LABEL_', 'RESOLUTION_LABEL_',
+    'HANDOFF_LABEL_', 'ROLE_INSTANCE_STATUS_LABEL_',
     'HEALTH_LABEL_', 'HEALTH_LINE_', 'HEALTH_REASON_', 'TEMPLATE_LABEL_',
     'ERROR_TEMPLATE_', 'COMMAND_ERROR_'
   ];

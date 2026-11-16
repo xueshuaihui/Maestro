@@ -13,7 +13,7 @@
  *   AC-26（graph-shown / closed 探针数据）、AC-08 / AC-37 / AC-10（推送分流）、
  *   AC-21（Esc 退出聚焦）、AC-15（未开始连接线开关）、AC-22（拖拽偏好形状）。
  * - S-02 批次后置端到端：起一次真实 `serve-entry --desktop`，断言 `/ui/labels`
- *   147 键、`/instances`、`/workflows`、`/instances/:id/graph` 经注入路由全量可用，
+ *   249 键、`/instances`、`/workflows`、`/instances/:id/graph` 经注入路由全量可用，
  *   且无凭据时 401。
  *
  * 纪律：夹具根在 `os.tmpdir()`；`NODE_ENV=test` 必注入；芯片数据先起核再写盘；
@@ -962,7 +962,7 @@ test('S-02: the desktop channel serves labels and all REST routes through the in
     const labels = await fetch(`${base}/ui/labels`, { headers });
     assert.equal(labels.status, 200);
     const payload = await labels.json();
-    assert.equal(Object.keys(payload.keys).length, 147);
+    assert.equal(Object.keys(payload.keys).length, 249);
     for (const key of [
       'DESKTOP_GRAPH_MISSING',
       'DESKTOP_DEF_UNREADABLE',
