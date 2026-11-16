@@ -1,0 +1,41 @@
+TAP version 13
+# Subtest: AC-03：四行按需关注→慢→正常→已结束排列且与 A-1 逐字相等
+ok 1 - AC-03：四行按需关注→慢→正常→已结束排列且与 A-1 逐字相等
+  ---
+  duration_ms: 471.7471
+  type: 'test'
+  ...
+# Subtest: AC-04：空态、不可读行不阻断、新实例 2 秒内由推送触发出现；F-18 脉冲后 2 秒内更新
+not ok 2 - AC-04：空态、不可读行不阻断、新实例 2 秒内由推送触发出现；F-18 脉冲后 2 秒内更新
+  ---
+  duration_ms: 1665.0357
+  type: 'test'
+  location: 'D:\\WWW\\Maestro\\test\\wp13\\instance-list.test.js:332:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'completed'
+    - 'running'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'running'
+  actual: 'completed'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/WWW/Maestro/test/wp13/instance-list.test.js:413:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 1
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2225.618
