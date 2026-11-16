@@ -83,3 +83,14 @@
 ## S2 批次 E 开工（2026-11-16）
 
 - 派出 WP-8（桌面 UI 五视图 + harness dump）与 WP-9（壳层托盘/通知/ctl 四动作）并行。
+
+### 批次 E 补记：429 中断后主控接管（2026-11-16）
+
+- WP-8/WP-9 首轮 Agent 因平台 429 额度耗尽中断（非代码问题）——已落盘成果不丢弃，配额恢复后单批续派补齐。
+- **WP-8**（ca5aed6）：视图模型 6 个纯函数模块 + app.js 五视图接线 + 5 个 harness + 30 条 UI 测试；D-51（/ui/labels 下发 95 个新键，154→249 + 五导航键）修复生产文案链路缺陷；D-52（open-queue ctl 分支）修复通知点击导航断点。
+- **WP-9**（02fdbca）：main.rs SSE 订阅 + (kind,instanceId) 替换投递 + --no-notify + 托盘 2s 轮询；11 静态契约测试 + 1 真实探针 SKIP（旧二进制）；cargo check exit 0。
+- **批次 E 门禁**：全量 1567 / 1561 pass / 4 fail 差集 0；tests >= 1554 ✓；purity ×2 exit 0；deps 0。
+
+## S2 批次 F 开工（2026-11-16）
+
+- 派 WP-11（回归红线 + 整合验收：test/wp14/regression.test.js + contract.test.js + e2e.test.js）。
