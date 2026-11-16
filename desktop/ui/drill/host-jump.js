@@ -71,7 +71,31 @@ export function buildHostJump(input, labels, options = {}) {
       reason: jumpState?.reason ?? '',
     }, missingLabels));
   } else if (code === 'DSH_SPAWN_FAILED') {
-    toasts.push(take(resolver, 'DRILL_HOST_MISSING', {}, missingLabels));
+    // The adapter returns two different `message` values under this one code:
+    // the "not found" shape (AC-26 third degradation) and the launch-failure
+    // shape (adapter prefix + cause, AC-46). Discriminate by the message instead
+    // of collapsing both into DRILL_HOST_MISSING.
+    //
+    // The discriminator is the DRILL_HOST_FAILED template prefix, derived from
+    // the live label by splitting on `{reason}` -- never a hardcoded literal.
+    const failedKey = 'DRILL_HOST_FAILED';
+    const reasonMarker = '{reason}';
+    const failedTemplate = resolver.get(failedKey);
+    const parts = failedTemplate === null ? null : failedTemplate.split(reasonMarker);
+    const prefix = parts !== null && parts.length > 1 ? parts[0] : null;
+    const message = typeof jumpState.message === 'string' ? jumpState.message : '';
+    if (prefix !== null && prefix.length > 0 && message.startsWith(prefix)) {
+      // reason = the adapter's original text after the derived prefix; the
+      // toast itself is still rendered from the frozen label template.
+      const reason = message.slice(prefix.length);
+      toasts.push(take(resolver, failedKey, { reason }, missingLabels));
+    } else {
+      // "not found" shape, or an unusable template: keep the verbatim AC-26
+      // third-degradation branch. Record an unusable label as missing; never
+      // invent text of our own here.
+      if (prefix === null && !missingLabels.includes(failedKey)) missingLabels.push(failedKey);
+      toasts.push(take(resolver, 'DRILL_HOST_MISSING', {}, missingLabels));
+    }
   } else if (jumpState !== null && jumpState.ok === false) {
     toasts.push(take(resolver, 'DRILL_HOST_FAILED', {
       reason: jumpState.reason ?? '',

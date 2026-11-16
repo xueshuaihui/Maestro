@@ -6,12 +6,15 @@
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import { UI_LABEL_KEYS } from '../../src/daemon/http/labels.js';
 import { buildHandoffPanel } from '../../desktop/ui/drill/handoff-panel.js';
+import { createApp } from '../../desktop/ui/app.js';
 
 const labels = { ...UI_LABEL_KEYS };
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -131,4 +134,69 @@ test('AC-51 three connection lines always land on the handoff panel, never a wri
     path.join(REPO, 'desktop/ui/drill/handoff-panel.js'), 'utf8',
   );
   assert.ok(!source.includes('escalation'));
+});
+
+// AC-51 view-level landing (the missing half of the module-only case above).
+// Drives the REAL createApp seam: the CTL `open-connection` action dispatches to
+// app.openConnectionPanel(arg). We mirror that dispatch here (same method, same
+// arg) and assert the landing on the view state, never escalation/drill.
+test('AC-51 view: red / orange / delivered lines land on connection-panel, never escalation-panel / drill, state hash unchanged', () => {
+  // Fixture state.json — read + hashed before/after the three clicks (internal
+  // assertion, never user-visible). Mirrors the AC-49 badge-jump hash seam.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-i10b-conn-'));
+  const stateFile = path.join(dir, 'state.json');
+  fs.writeFileSync(stateFile, JSON.stringify({
+    schemaVersion: 2, rev: 9, state: 'running',
+    handoffs: [
+      { handoffId: 'HO-C1', state: 'rejected', rejectReason: '下游拒绝' },
+      { handoffId: 'HO-E1', state: 'expired', rejectReason: '交接已过期' },
+      { handoffId: 'HO-D1', state: 'delivered', rejectReason: '' },
+    ],
+  }));
+  const stateHashBefore = createHash('sha256').update(fs.readFileSync(stateFile)).digest('hex');
+
+  const app = createApp({
+    labels: { keys: UI_LABEL_KEYS },
+    project: { view: 'graph', root: dir, source: 'test' },
+    io: { now: () => 0 },
+  });
+
+  // The assembly must expose the open-connection CTL route (the click -> panel
+  // routing that AC-51 requires); same seam as open-escalation, no new channel.
+  const appSource = fs.readFileSync(path.join(REPO, 'desktop/ui/app.js'), 'utf8');
+  assert.ok(appSource.includes("action === 'open-connection'"));
+  const ctl = (action, arg) => {
+    if (action === 'open-connection') app.openConnectionPanel(arg);
+  };
+
+  const cases = [
+    { edgeId: 'E-RED', aggregate: 'rejected', word: '已拒绝', reason: '下游拒绝', reasonWord: '拒绝' },
+    { edgeId: 'E-ORANGE', aggregate: 'expired', word: '已过期', reason: '交接已过期', reasonWord: '过期' },
+    { edgeId: 'E-GREEN', aggregate: 'delivered', word: '已投递', reason: '', reasonWord: null },
+  ];
+  for (const c of cases) {
+    const data = {
+      edge: {
+        id: c.edgeId, fromRole: '开发', toRole: '测试', direction: 'forward',
+        aggregateStatus: c.aggregate, parallelCount: 1,
+      },
+      handoffs: [ho('HO-001', 1, c.aggregate, '09:00:00', { rejectReason: c.reason })],
+    };
+    ctl('open-connection', { edgeId: c.edgeId, data });
+
+    const st = app.state();
+    assert.ok(st.view === 'connection-panel');
+    assert.ok(st.view !== 'escalation-panel');
+    assert.ok(st.view !== 'drill');
+
+    const panel = buildHandoffPanel(st.connectionPanel.data, UI_LABEL_KEYS, {});
+    assert.ok(panel.target === 'connection-panel');
+    assert.ok(panel.title.includes(c.word));
+    assert.ok(panel.rows[0].reason === c.reason);
+    if (c.reasonWord !== null) assert.ok(panel.rows[0].reason.includes(c.reasonWord));
+  }
+
+  const stateHashAfter = createHash('sha256').update(fs.readFileSync(stateFile)).digest('hex');
+  assert.ok(stateHashBefore === stateHashAfter);
+  fs.rmSync(dir, { recursive: true, force: true });
 });

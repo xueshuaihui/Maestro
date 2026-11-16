@@ -289,3 +289,40 @@ test('AC-46 launch failure: 跳转失败 · prefix + retryable + state hash unch
   // Instance state unchanged (byte-hash of the fixture snapshot).
   assert.equal(sha256(state), stateHashBefore);
 });
+
+test('AC-46 real adapter shape: DSH_SPAWN_FAILED + message routes to DRILL_HOST_FAILED verbatim', () => {
+  const state = makeState();
+  const expected = expectedFrom(state);
+  const stateHashBefore = sha256(state);
+  // Real shape returned by src/adapter/host-open.js:60-63 for a non-ENOENT
+  // spawn failure (permission / antivirus). The reason is the adapter's
+  // existing raw text, not a fixture-invented `reason` field.
+  const jumpState = {
+    ok: false,
+    code: 'DSH_SPAWN_FAILED',
+    message: '跳转失败 · 权限被拒',
+  };
+
+  const view = buildHostJump({
+    instanceId: 'INST-001', hostId: 'dsh',
+    activeSessions: activeSessionsOf(state), latestSessionId: expected.id,
+    jumpState,
+  }, labels);
+
+  // Verbatim toast: the adapter's reason survives unchanged, and the line is
+  // rendered from the frozen DRILL_HOST_FAILED template (no invented text).
+  assert.deepEqual(view.toasts, ['跳转失败 · 权限被拒']);
+  assert.equal(view.toasts[0], A7.failed('权限被拒'));
+  assert.equal(view.toasts[0].startsWith('跳转失败 · '), true);
+  assert.equal(view.toasts[0].slice('跳转失败 · '.length), '权限被拒');
+
+  // Retryable and no process signal.
+  assert.equal(view.button.enabled, true);
+  assert.equal(view.jumpCalls, 0);
+
+  // No label degradation: the frozen template was used, nothing recorded missing.
+  assert.deepEqual(view.missingLabels, []);
+
+  // Instance state unchanged (byte-hash of the fixture snapshot).
+  assert.equal(sha256(state), stateHashBefore);
+});

@@ -1944,6 +1944,11 @@ export function mountApp({
       } else if (action === 'open-escalation' && arg && typeof arg === 'object') {
         app.openEscalationPanel(arg);
         paint();
+      // I1.10b AC-51: a connection line opens the handoff panel, never the
+      // escalation panel / drill. Same seam as open-escalation, no new channel.
+      } else if (action === 'open-connection' && arg && typeof arg === 'object') {
+        app.openConnectionPanel(arg);
+        paint();
       } else if (action === 'continue-escalation' && arg && typeof arg === 'object') {
         void app.continueEscalation(arg).then(paint);
       }

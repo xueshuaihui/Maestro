@@ -84,7 +84,7 @@ test('AC-37: 未知角色状态栏「不可用」，其余四项照常，statusR
     roleBar: {
       roleTitle: '外部审核', statusToken: 'unavailable', statusReason: 'unknown-role',
       activeSessions: 1, servingNodes: ['T-021'], hostIcons: ['dsh'],
-      lastAction: { nodeId: 'T-021', round: 1, maxRounds: 1, state: 'running' },
+      lastAction: { nodeId: 'T-021', round: 1, maxRounds: 1, state: 'running', stateSince: '2026-11-15T10:04:00.000Z' },
     },
     dag: {
       nodes: [
@@ -111,7 +111,7 @@ test('AC-37: 未知角色状态栏「不可用」，其余四项照常，statusR
   ].join(' · '));
   assert.deepEqual(bar.servingNodes, ['T-021']);
   assert.deepEqual(bar.hostIcons, ['dsh']);
-  assert.deepEqual(bar.lastAction, { nodeId: 'T-021', round: 1, maxRounds: 1, state: 'running' });
+  assert.deepEqual(bar.lastAction, { nodeId: 'T-021', round: 1, maxRounds: 1, state: 'running', stateSince: '2026-11-15T10:04:00.000Z' });
   assert.equal(app.state().drillView.cards.length, 2);
   // 独立模块同证
   assert.equal(createDrillView({ labels: LABELS, data, interactions: {} }).roleBar.status, statusWord('unavailable'));
