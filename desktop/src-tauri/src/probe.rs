@@ -114,23 +114,59 @@ pub fn start_window_probe_watcher(root: PathBuf) {
     });
 }
 
+/// The ctl action dispatch list (I1.11 D-9): the three existing actions plus
+/// the four new ones. `tray-quit-confirm` is deliberately NOT in this list —
+/// it is consumed by `tray.rs` via `wait_ctl_file` while the quit confirm is
+/// pending; dispatching it here would rename the file `.done` before that
+/// wait ever sees it and break the I1.10a quit flow. `open-instance/` stays a
+/// separate two-segment path handled below.
+const CTL_ACTIONS: [&str; 7] = [
+    "close-window",
+    "tray-open",
+    "tray-quit",
+    "notify-open",
+    "tray-pause",
+    "tray-resume",
+    "queue-open",
+];
+
 /// Poll the ctl directory (100ms cadence) and dispatch triggers through the
 /// main-thread handler. Each trigger file is renamed to `.done` after firing.
+/// Unknown action names record `ctl-error` and are ignored (never dispatched,
+/// never panic); `tray-quit-confirm` is left untouched for the quit flow.
 pub fn start_ctl_watcher(app: tauri::AppHandle, dir: PathBuf) {
     std::thread::spawn(move || loop {
-        let tick = |result: std::io::Result<bool>, label: &str| {
-            if let Err(err) = result {
-                event("ctl-error", serde_json::json!({ "label": label, "cause": err.to_string() }));
-            }
-        };
-        for name in ["close-window", "tray-open", "tray-quit"] {
-            let path = dir.join(name);
-            if path.exists() {
-                event("ctl-fired", serde_json::json!({ "action": name }));
-                tick(std::fs::rename(&path, dir.join(format!("{name}.done"))).map(|_| true), name);
+        if let Ok(entries) = std::fs::read_dir(&dir) {
+            for entry in entries.flatten() {
+                let name = entry.file_name().to_string_lossy().to_string();
+                if name.ends_with(".done") || name == "open-instance" || name == "tray-quit-confirm"
+                {
+                    continue;
+                }
+                let path = entry.path();
+                let is_file = path.is_file();
+                if CTL_ACTIONS.contains(&name.as_str()) {
+                    event("ctl-fired", serde_json::json!({ "action": name }));
+                } else {
+                    // D-9: unknown actions are recorded and ignored, not dispatched.
+                    event(
+                        "ctl-error",
+                        serde_json::json!({ "action": name, "cause": "unknown-action" }),
+                    );
+                    if !is_file {
+                        continue; // leave unknown directories in place
+                    }
+                }
+                if std::fs::rename(&path, dir.join(format!("{name}.done"))).is_err() {
+                    event(
+                        "ctl-error",
+                        serde_json::json!({ "label": name, "cause": "rename-failed" }),
+                    );
+                    continue;
+                }
                 // Window methods are thread-safe in Tauri 2 (they dispatch to the
                 // main thread internally), so no run_on_main_thread hop is needed.
-                crate::tray::handle_ctl(&app, name);
+                crate::tray::handle_ctl(&app, &name);
             }
         }
         // `open-instance/` sub-directory: each entry (file or dir) is an instance id.

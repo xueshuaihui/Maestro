@@ -22,6 +22,14 @@ pub struct Labels {
     pub quit_confirm_cancel: String,
     pub project_missing: String,
     pub project_invalid: String,
+    pub tray_status: String,
+    pub tray_status_disconnected: String,
+    pub tray_pause: String,
+    pub tray_resume: String,
+    pub tray_pause_summary: String,
+    pub tray_pause_none: String,
+    /// A-2 提示：系统通知投递失败时显示一次（经 `/ui/labels` 下发）。
+    pub notify_unavailable: String,
 }
 
 impl Default for Labels {
@@ -34,6 +42,13 @@ impl Default for Labels {
             quit_confirm_cancel: "取消".into(),
             project_missing: "项目 未指定 · 请填写项目目录".into(),
             project_invalid: "项目 不可用 · {path}".into(),
+            tray_status: "实例 {n} · 待处理升级 {m}".into(),
+            tray_status_disconnected: "实例 — · 待处理升级 —".into(),
+            tray_pause: "暂停".into(),
+            tray_resume: "继续".into(),
+            tray_pause_summary: "{n} 个实例已暂停，{m} 个已跳过".into(),
+            tray_pause_none: "没有可暂停的实例".into(),
+            notify_unavailable: "通知不可用 · 队列仍可用".into(),
         }
     }
 }
@@ -50,6 +65,13 @@ impl Labels {
         if let Some(v) = pick("DESKTOP_QUIT_CONFIRM_CANCEL") { self.quit_confirm_cancel = v; }
         if let Some(v) = pick("DESKTOP_PROJECT_MISSING") { self.project_missing = v; }
         if let Some(v) = pick("DESKTOP_PROJECT_INVALID") { self.project_invalid = v; }
+        if let Some(v) = pick("DESKTOP_TRAY_STATUS") { self.tray_status = v; }
+        if let Some(v) = pick("DESKTOP_TRAY_STATUS_DISCONNECTED") { self.tray_status_disconnected = v; }
+        if let Some(v) = pick("DESKTOP_TRAY_PAUSE") { self.tray_pause = v; }
+        if let Some(v) = pick("DESKTOP_TRAY_RESUME") { self.tray_resume = v; }
+        if let Some(v) = pick("DESKTOP_TRAY_PAUSE_SUMMARY") { self.tray_pause_summary = v; }
+        if let Some(v) = pick("DESKTOP_TRAY_PAUSE_NONE") { self.tray_pause_none = v; }
+        if let Some(v) = pick("DESKTOP_NOTIFY_UNAVAILABLE") { self.notify_unavailable = v; }
     }
 
     pub fn quit_confirm_for(&self, running: u32) -> String {
@@ -58,6 +80,29 @@ impl Labels {
 
     pub fn project_invalid_for(&self, path: &str) -> String {
         self.project_invalid.replace("{path}", path)
+    }
+
+    /// 信息行文本：数字来自守护进程投影（D-36 壳层零计算），任一缺失
+    /// （断开 / 未就绪）即渲染断开形态「实例 — · 待处理升级 —」。
+    pub fn tray_status_for(&self, instances: Option<u32>, pending: Option<u32>) -> String {
+        match (instances, pending) {
+            (Some(n), Some(m)) => self
+                .tray_status
+                .replace("{n}", &n.to_string())
+                .replace("{m}", &m.to_string()),
+            _ => self.tray_status_disconnected.clone(),
+        }
+    }
+
+    /// 暂停汇总文案（A-9）：0 个成功时不出现数字句，固定「没有可暂停的实例」。
+    pub fn tray_pause_summary_for(&self, paused: u32, skipped: u32) -> String {
+        if paused == 0 {
+            self.tray_pause_none.clone()
+        } else {
+            self.tray_pause_summary
+                .replace("{n}", &paused.to_string())
+                .replace("{m}", &skipped.to_string())
+        }
     }
 }
 
