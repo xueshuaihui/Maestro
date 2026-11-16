@@ -59,3 +59,11 @@
 - 续错文案从 `ERROR_TEMPLATE.UNKNOWN_ERROR` 改为 `COMMAND_ERROR` 原文（`server.js:75-82`），`messageKey` 不变；测试断言升格为逐字（期望值从常量派生、零手写中文）。
 - 全量回归：1442 条（基线 1425 + 新增 17），16 条红全部落在允许集合；新红两条按 v6 D-11 扩授权修复，复评 `errors 24/24`、`http-channel` 唯一 lsof 平台红、差集 ∅。
 - 历史证据 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 曾被全量测试覆盖写，已用 `git -c core.autocrlf=false checkout-index -f` 恢复（内容 diff 空）。
+
+| S2 | 批次 2：WP-3 下钻 UI 纯模块 + drill-dump | impl-wp3 | review-batch2 | 完成 | 9 模块 + drill-dump + 5 契约测试（25/25）；全量 1468 条差集 0 | `review-batch2.md` | **PASS**（0 阻断 / 4 建议） | 进批次 3 |
+
+### 批次 2 关键事实
+- `createDrillView` 承载 `scrollTarget`（`index.js:93/99`），`buildDag` 无该字段；8 档 `rank[1..8,8]`、`assigned` 独立第 5 档且显示词折叠「执行中」；`host-jump.js` 只交付不判定（AC-25/26/33/46 归 WP-5）。
+- 63 键中纯模块直接用 53 个、10 个留下游宿主层（WP-4）消费；无增删键、无缺键。
+- 评审用干净 HEAD worktree 实跑证明新红 = 0，测试 1443→1468（+25 全来自 WP-3 且全绿）。
+- 建议 4 条移交批次 3/4：消费实际模块契约（第三参 options / breadcrumb 渲染层拼行）；两条环境/时序红补隔离帧纳入允许集合。
