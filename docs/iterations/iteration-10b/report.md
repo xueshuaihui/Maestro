@@ -4,18 +4,18 @@
 > **拆分**：`docs/iterations/iteration-10b.md` r?（6 WP：WP-1~WP-6，文件零交集，AC→WP 满覆盖 51/51；拆分评审 round2 PASS）。
 > **裁决**：`docs/iterations/iteration-10b/decisions.md` 裁决 A~L（12 条：一键跳转三段口径、窗口级取舍、回归差集、判据落真实投影、复判口径等）。
 > **S0**：需求五轮独立评审（round1~4 FAIL → **round5 PASS**，F 项清零、覆盖 13/13、锚点 30 组全符合）；`review-v6.md` PASS。
-> **S2**：4 个功能批次（b92270b / ab4f010 / 18438d6 / 818576f）+ 逐批独立评审，批次 1 复评 PASS、批次 2/3/4 PASS。
+> **S2**：4 个功能批次 + 逐批独立评审，批次 1 复评 PASS、批次 2/3/4 PASS。原提交 `b92270b`/`ab4f010`/`18438d6`/`818576f` 因终验第 6 项提交卫生整改，已重建为 `9a7a38f`/`a147553`/`163322c`/`725eb72`（树内容与原提交一致，仅剔除混入的验收产物）。
 > **S3 验收记录**：`acceptance-a.md`（AC-01~15）、`acceptance-b.md`（AC-16~30 除 25）、`acceptance-c.md`（AC-31~45 除 33）、`acceptance-d.md`（AC-46~51）、`acceptance-e.md`（AC-25/33 真实宿主面）；`evidence/`（含 `_archive_*` 复判留痕、`flake-frames/`）；`probe/acc10b-f-results.jsonl`、`summary*.json`、`blockers.md`。
-> **S4 终验**：`final-verification.md`（六项：5 PASS / 1 FAIL，第 6 项提交卫生）、`summary.json`（全局汇总）。
-> **HEAD**：`818576f`（S3 验收产物与 S4 文档待提交）。**生成时刻**：见 `summary.json.generatedAt`。
+> **S4 终验**：`final-verification.md`（六项初判 5 PASS / 1 FAIL → 提交卫生整改后 **6 PASS**）、`summary.json`（全局汇总）。
+> **HEAD**：`4f232e3`（S0~S4 全部产物已提交；整改前的原分支保留在 `backup/i1.10b-pre-hygiene`）。**生成时刻**：见 `summary.json.generatedAt`。
 
 ---
 
 ## 0. 总体结论
 
-**S3 验收判定：PASS；S4 终验判定：FAIL（仅第 6 项「提交范围」— 历史功能 commit 卷入验收产物，需分组整改）。**
+**S3 验收判定：PASS；S4 终验判定：PASS（初判第 6 项「提交范围」FAIL 已按 `final-verification.md` §6.2 重建提交历史整改，树内容不变、六项全绿）。**
 
-51 条 AC 逐条取证完成，**51 通过 / 0 不通过 / 0 阻塞**；766/766 条核对项通过；每条 AC ≥4 份非空原始帧（425 引用 / 423 unique）；门禁全绿（差集 0、tests≥1425、purity 双目录 31 词、零依赖、三主链 8/8）；缺陷台账四项均有裁决处置。唯一终验 FAIL 是提交卫生问题，不影响任何 AC 判定与门禁数字。
+51 条 AC 逐条取证完成，**51 通过 / 0 不通过 / 0 阻塞**；766/766 条核对项通过；每条 AC ≥4 份非空原始帧（425 引用 / 423 unique）；门禁全绿（差集 0、tests≥1425、purity 双目录 31 词、零依赖、三主链 8/8）；缺陷台账四项均有裁决处置。终验初判唯一 FAIL 为提交卫生（历史功能 commit 混入验收产物），已重建提交历史整改，不影响任何 AC 判定、门禁数字或证据有效性。
 
 | 项 | 数值 | 来源 |
 |---|---|---|
@@ -26,7 +26,7 @@
 | 全量回归（验收期帧） | `1524 / 1500 / 15 / 9`，差集 0 | `AC-34.fullrun.tap.txt` |
 | 静态门禁 | purity 双目录 31 词 exit 0；deps 0；三主链 8/8 | 本报告 §4 |
 | S0 需求评审 | 5 轮，最终 round5 PASS（F 清零、覆盖 13/13） | review-round5.md |
-| S4 终验 | 六项 5 PASS / 1 FAIL（提交范围） | final-verification.md §0 |
+| S4 终验 | 六项初判 5 PASS / 1 FAIL → 整改后 6 PASS（提交范围） | final-verification.md §0 / §6.2 |
 
 **能力结论**：点角色进下钻、看卡片/证据、点连线看交接包、特殊节点处置、子工作流逐层下钻、一键唤起宿主并给出可核对会话标识——全链路在应用内闭环；I1.10a 44 条 AC 判据与逐字文案基线无回归。最难一条 **AC-34 回归门禁**：在 17 条全量失败中逐条归类（13 允许集 + 2 S0 基线既有红 + 2 隔离确认 flake），差集 0，干净 HEAD 基线帧与隔离复跑帧双证据支撑复判通过。
 
@@ -146,7 +146,7 @@ git -c core.autocrlf=false checkout-index -f -- \
 - **O-1（非阻塞观察）**：真实宿主进程短命（点击 +0/+250ms=1，+1000ms 归零），系 `host-open.js` 的 `detached + stdio:ignore + unref`（D-4 不等待不轮询）下 ACP 短命进程行为，如实留帧、不夸大；满足 Then「3 秒内进程存在」（AC-25/33）。
 - **O-2（事实补注）**：C1「目录同名=sessionId」本机 8/8 一致（`AC-25.session-dir.txt`），按裁决 I/J-3 仅作附录 D-14 表 C1 补注，不回填判据、不改强度，报告不据此声称「打开对应会话」。
 - **O-3（人工核验面）**：窗口前置、剪贴板实际内容、窗口内 toast 可见性按裁决 B 属人工核验；需 Tauri 窗口环境人工点击确认，见 `acceptance-e.md` §6 建议。不影响自动面判定。
-- **O-4（提交卫生，终验第 6 项 FAIL）**：历史功能 commit `18438d6` 含 `probe/acc10b-jump-verify.mjs`、`818576f` 含 3 份 `evidence/flake-frames/*`。不影响 AC/门禁/证据，需主控按 `final-verification.md` §6.2 精确位置分组整改（或裁决登记例外）。
+- **O-4（提交卫生，初判 FAIL → 已整改 PASS）**：原功能 commit 混入 `probe/acc10b-jump-verify.mjs` 与 3 份 `evidence/flake-frames/*`，已按 `final-verification.md` §6.2 重建提交历史剔除，验收产物归 S3 验收 commit；最终树与原分支备份逐字节一致，未 push 远端。
 - **无未完成 AC 混入遗留**；遗留项均为不影响结论的观察项。
 
 ---

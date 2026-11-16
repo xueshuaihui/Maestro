@@ -153,14 +153,14 @@
       {
         "id": 6,
         "name": "提交范围",
-        "verdict": "FAIL",
-        "reason": "功能 commit 18438d6 含 probe/acc10b-jump-verify.mjs，818576f 含 3 份 evidence/flake-frames 文件，违反 §3.6 第 6 项「功能 commit 没卷进 evidence/**、probe/**」；均为历史提交，需主控分组整改"
+        "verdict": "PASS",
+        "reason": "初判 FAIL 已整改：从 c0e46aa 重放四个功能 commit 并过滤 probe/** 与 evidence/**（9a7a38f/a147553/163322c/725eb72 命中均为 0），验收产物归 S3 验收 commit（4d3e553/4f232e3）；git diff --stat HEAD backup/i1.10b-pre-hygiene 为空，树内容逐字节一致，未 push 远端"
       }
     ],
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
-  "verdict": "FAIL",
-  "verdictNote": "六项校验中五项 PASS；第 6 项「提交范围」FAIL（历史功能 commit 卷入验收产物，需分组整改）。AC 判定与门禁数字均 PASS。",
+  "verdict": "PASS",
+  "verdictNote": "初判六项中五项 PASS、第 6 项「提交范围」FAIL；主控按 final-verification.md §6.2 重建本地提交历史后六项全 PASS。AC 51/51 通过、门禁差集 0、树内容与原分支备份一致。",
   "perAc": [
     {
       "ac": "AC-01",

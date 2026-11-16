@@ -8,7 +8,7 @@
 
 ## 0. 总判
 
-**FAIL（六项校验：5 PASS / 1 FAIL）**
+**PASS（六项校验：6 PASS）** — 初判第 6 项 FAIL 已于 2026-11-17 整改，见 §6.2。
 
 | # | 校验项 | 结论 | 一句话依据 |
 |---|---|---|---|
@@ -17,9 +17,9 @@
 | 3 | 判定未被放宽 | **PASS** | 四个复判 AC（34/37/46/51）+ 两个人工核验 AC（25/33）断言期望与需求逐字一致、分级正确 |
 | 4 | 门禁与回归 | **PASS** | 实跑 1526/1500/17/9，tests≥1425，差集 0（15 允许集 + 2 隔离确认 flake）；purity 双目录 31 词 exit 0；deps 0；三主链 8/8 |
 | 5 | 缺陷与遗留 | **PASS** | blockers 四项（C-1.1/1.2/D-1.1/1.2）均有裁决处置结论；人工核验项单列；无未完成 AC 混入遗留 |
-| 6 | 提交范围 | **FAIL** | 两个历史功能 commit 卷入验收产物：`18438d6` 含 `probe/acc10b-jump-verify.mjs`，`818576f` 含 3 份 `evidence/flake-frames/`。精确整改位置见 §6 |
+| 6 | 提交范围 | **PASS（整改后）** | 原 FAIL 根因已消除：按 §6.2 重建本地提交历史，4 个功能 commit（`9a7a38f`/`a147553`/`163322c`/`725eb72`）零 `probe/**`、零 `evidence/**` 命中；验收产物落 `4d3e553`/`4f232e3`。重建树与备份分支 `backup/i1.10b-pre-hygiene` 逐字节一致（`git diff --stat HEAD backup/...` 空） |
 
-> **判定说明**：第 6 项是提交卫生问题（历史功能 commit 混入 `evidence/**`、`probe/**`，违反 §3.6 第 6 项与 §7 红线 3），按「不许为了 PASS 放宽判据」如实判 FAIL 并给出精确修改位置。它**不影响任何 AC 判定、门禁数字或证据有效性**；AC 判定与门禁均 PASS。主控按 §6 分组整改后可整迭代收口。
+> **判定说明（含整改留痕）**：终验 Agent 初判第 6 项 FAIL——历史功能 commit `18438d6` 混入 `probe/acc10b-jump-verify.mjs`、`818576f` 混入 3 份 `evidence/flake-frames/*`（违反 §3.6 第 6 项与 §7 红线 3）；该项**不影响任何 AC 判定、门禁数字或证据有效性**，AC 与门禁初判即全 PASS。主控随后按 §6.2 重建本地提交历史：从 `c0e46aa` 重放 4 个功能 commit 并过滤 `probe/**` 与 `evidence/**`，再按其原分组重放修复/裁决/S3/S4 提交，补齐 4 个验收产物；最终树与原分支备份逐字节一致。整改后六项全 PASS。原分支保留 `backup/i1.10b-pre-hygiene` 与 `feat/i1.10b-old-local` 供复核，**均未推送远端**。
 
 ---
 
@@ -185,14 +185,14 @@ git -c core.autocrlf=false checkout-index -f -- \
 
 ---
 
-## 6. 校验六 · 提交范围（FAIL）
+## 6. 校验六 · 提交范围（初判 FAIL → 整改后 PASS）
 
 **方法**：`git log` + `git show --name-status` 逐个核 I1.10b 的 4 个功能 commit 是否卷入 `evidence/**`、`probe/**`；核当前工作树可分组性；核报告数字与 results.jsonl 一致。
 
 ### 6.1 当前工作树可分组性 — 满足
 工作树现有 S2 修复（裁决 J/K/L 引起的 app.js / host-jump.js / 3 个 test 文件）、S3 验收产物（acceptance-*.md、evidence/**、probe/acc10b-*、results/summary/blockers）、S4 文档（本终验三件），可按 §6.4 清单分组提交。
 
-### 6.2 功能 commit 卷入验收产物 — **违规（FAIL 根因）**
+### 6.2 功能 commit 卷入验收产物 — **初判 FAIL 根因，已整改 PASS**
 
 | 功能 commit | 卷入的验收产物 | 违反 |
 |---|---|---|
@@ -204,7 +204,8 @@ git -c core.autocrlf=false checkout-index -f -- \
 **精确整改位置**（不改判据、只调提交边界）：
 1. 将 `probe/acc10b-jump-verify.mjs` 从 `18438d6` 移出，并入 S3 验收产物提交（与 `acc10b-e-*` 脚手架同批）。
 2. 将 `818576f` 中 3 份 `docs/iterations/iteration-10b/evidence/flake-frames/*` 移出，并入 S3 evidence 提交。
-3. 二者为**已提交历史**，移动需主控用交互式 rebase / 重建提交（属破坏性历史操作，本终验 Agent 不执行）；若选择保留历史，则须在主控裁决台账显式登记「验收产物随功能提交」的例外并说明不影响判定，但按 §3.6 字面该项仍计 FAIL。
+3. **整改执行（主控，2026-11-17）**：备份 `backup/i1.10b-pre-hygiene` → 从 `c0e46aa` 重放四个功能 commit（`git diff <c>^ <c> -- . ':(exclude)probe/**' ':(exclude)docs/iterations/iteration-10b/evidence/**' | git apply`），再重放 S2 修复 / 裁决 / S3 / S4 各提交 → 从备份恢复 4 个验收产物并以验收 commit 落盘（`4f232e3`）→ 分支重命名为 `feat/i1.10b-drilldown`。
+4. **整改复核**：四个功能 commit 的 `probe/**` + `evidence/**` 命中数均为 **0**；`git diff --stat HEAD backup/i1.10b-pre-hygiene` 为空（树内容逐字节一致）；本地分支领先远端 9 个提交，**未 push**，原分支仍可通过备份 ref 恢复。故第 6 项判 **PASS**。
 
 ### 6.3 报告数字一致性 — 满足
 results.jsonl 末条（51 / 766 核对项 / AC-25 18、AC-33 14）与 summary.json、report.md 三处数字一致；全量 1526/1500/17/9 与 §4 及 report.md 一致。
@@ -221,7 +222,7 @@ results.jsonl 末条（51 / 766 核对项 / AC-25 18、AC-33 14）与 summary.js
 
 > 历史 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 已恢复，**不入任何提交**。
 
-**结论**：当前工作树可分组、报告数字一致；但两个历史功能 commit 卷入验收产物 ⇒ **FAIL**（§6.2 给精确整改位置）。
+**结论（整改后）**：功能 commit 零卷入验收产物、验收产物归属 S3 验收 commit、报告数字与 `results.jsonl` 一致、树内容与原分支备份一致 ⇒ **PASS**（初判 FAIL 与整改过程见 §6.2）。
 
 ---
 

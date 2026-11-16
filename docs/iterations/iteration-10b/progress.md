@@ -67,3 +67,27 @@
 - 63 键中纯模块直接用 53 个、10 个留下游宿主层（WP-4）消费；无增删键、无缺键。
 - 评审用干净 HEAD worktree 实跑证明新红 = 0，测试 1443→1468（+25 全来自 WP-3 且全绿）。
 - 建议 4 条移交批次 3/4：消费实际模块契约（第三参 options / breadcrumb 渲染层拼行）；两条环境/时序红补隔离帧纳入允许集合。
+
+| S2 | 批次 3：WP-4 装配导航 + WP-5 一键跳转 | impl-wp4 / impl-wp5 | review-batch3 | 完成 | 40/40 测试；全量 1508 差集 0；C1 实测 8/8 一致 | `review-batch3.md` | **PASS**（0 阻断 / 4 建议） | 进批次 4 |
+| S2 | 批次 4：WP-6 回归守门 + D-14 C1 补注 | impl-wp6 / 需求补注 | review-batch4 | 完成 | 16/16；全量 1524 差集 0；flake 留帧 2 条 | `review-batch4.md` | **PASS**（0 阻断 / 2 建议） | 进 S3 |
+
+### S2 关键事实
+- 裁决 J：J-1 `sessionTag` 修法让 `button.label` 逐字含 id；J-2 daemon `continue` 响应新增 `stateLabel`（取 CLI `ESCALATION_LABEL.resolved`），UI 逐字 `升级 ESC-001 已处理 · 状态 已处理`，63 键冻结不变；J-3 C1 8/8 实测一致仅补注不回填判据。
+- 全量测试基线随新增测试增长：1425 → 1508 → 1524 → 1526（S4 实跑）；失败集合按裁决 G/K 差集始终 0。
+
+## S3 验收 / S4 终验
+
+| 阶段 | 任务 | 执行 Agent | 评审 Agent | 状态 | 门禁数字 | 证据路径 | 结论 | 下一步 |
+|---|---|---|---|---|---|---|---|---|
+| S3 | 四件套脚手架 + 批次 a（AC-01~15） | 验收 Agent | — | 完成 | 15/15；209 核对项；120 帧 | `acceptance-a.md` | 通过 | — |
+| S3 | 批次 b（AC-16~30 除 25） | 验收 Agent | — | 完成 | 14/14；231 核对项；114 帧 | `acceptance-b.md` | 通过 | — |
+| S3 | 批次 c（AC-31~45 除 33） | 验收 Agent | — | 完成 | 初判 12/14 → 复判 **14/14** | `acceptance-c.md` | 通过（AC-34 裁决 K、AC-37 stateSince 补齐） | — |
+| S3 | 批次 d（AC-46~51） | 验收 Agent | — | 完成 | 初判 5/6 → 复判 **6/6**；107 核对项 | `acceptance-d.md` | 通过（AC-46 真实映射、AC-51 裁决 L） | — |
+| S3 | 批次 e（AC-25/33 真实宿主） | 验收 Agent | — | 完成 | 2/2；32 自动核对项；真实 PID 0→1 | `acceptance-e.md` | 通过（人工核验项单列） | — |
+| S3 | 主控独立复跑 | 主控 | — | 完成 | AC-01/02/08/22/23/29 共 6/6 全绿 | `probe/acc10b-f-results.jsonl` | 与验收自述一致 | 进 S4 |
+| S4 | 终验（§3.6 六项） | 终验 Agent | 主控复核 | 完成 | 初判 5 PASS / 1 FAIL（提交卫生）→ 整改后 **6 PASS** | `final-verification.md`、`summary.json`、`report.md` | **PASS** | 收口 |
+
+### S4 收口事实
+- results.jsonl 51 unique AC、51 通过 / 0 不通过 / 0 阻塞；766/766 核对项；425 证据引用、每 AC ≥4 帧、零空帧。
+- 门禁：1526 tests / 1500 pass / 17 fail / 9 skipped，差集 0；purity 双目录 31 词 exit 0；零依赖；三主链 8/8。
+- 终验第 6 项整改：备份 `backup/i1.10b-pre-hygiene` → 从 `c0e46aa` 重放功能提交并过滤 `probe/**`/`evidence/**` → 验收产物归 S3 提交 → 树内容逐字节一致（`git diff --stat HEAD backup/...` 空）；本地领先远端 9 提交、未 push。
