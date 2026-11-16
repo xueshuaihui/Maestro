@@ -396,3 +396,14 @@
   3. **`shapeSnapshot` 行号漂移**（回执 ⑤.3）：基线 `66e5a6b` 时 `server.js:900`，当前 HEAD 因 I1.11 新增会话级事件漂到 `:1018`；函数体逐字 diff = 0（609 字节）。**非回归**；S3 用 `test/wp14/regression.test.js:293` 的函数体逐字锚点，需求/拆分/任务书中的 `900–912` 改注为「函数体逐字锚点，行号随迭代漂移」（v10）。
   4. **`DESKTOP_QUEUE_CONCLUSIONS` 对象表**（回执 ⑤.4）：D-51 白名单只含字符串文案模板，对象表刻意排除符合设计；S3 按 95/95 字符串键判读，勿按 96/96。
 - **影响面**：需求 v10（A-0/附录 D 注记）、S3 验收口径、`test/wp14/regression.test.js` 锚点方式（已实现）。
+
+## D-54 · S3 批次 A 两条不通过裁决：AC-12 锚点归位核心；AC-13 注释假阳性 + fixture 角色对调
+
+- **触发点**：S3 验收 Agent 批次 A：AC-12 架构检查 `grep APPROVAL_SESSION_GONE src/daemon/queue.js` 0 命中（判不通过）；AC-13 批量词 grep 命中否定的英文注释 + 数字序列角色对调（判不通过）。
+- **裁决依据**：模板 §2.6.2「判定过严 vs 产品缺陷」由主控回需求原文裁，不许放宽断言；D-11 禁改 `src/core/**`，D-1 要求处置经既有裁决入口不得绕过会话校验。
+- **决定**：
+  1. **AC-12 —— 架构锚点写错位置，需求 v11 改锚点（不放宽语义）**：会话失效判定的唯一事实在 `src/core/approvals.js:104` 与 `src/core/orchestrator.js:4961`（`APPROVAL_SESSION_GONE`），`queue.js` 按 D-1 只做 `forward('approval.resolve', …)`（:332），正是"经既有入口校验"的正确实现；核心不可改（D-11），字面量不可能也不应出现在 queue.js。AC-12 架构检查改为：`grep -REn "APPROVAL_SESSION_GONE" src/core/approvals.js src/core/orchestrator.js` **恰好 ≥1 命中**，且 `grep -REn "resolveApproval|approval\\.resolve" src/daemon/queue.js` 恰好 1 命中——两条合起来等价原语义（经既有路径 + 有会话校验）。**行为判定（allow/deny 两条逐字 + 状态 approved/denied + 队列减 2）不变**。
+  2. **AC-13 ① —— 否定语境注释是假阳性**：`routes.js:20` 的 `* (no batch)` 是"无批量"的声明，非批量实现；与 I1.8「英文注释也算」的禁词扫描不同，本检查的意图是**禁止批量能力存在**。机检改为对 grep 结果排除 `^\s*\*` 注释行后判零命中（保留对真实代码的零命中要求）。
+  3. **AC-13 ② —— fixture 角色对调**：需求 Given 明写 `INST-001` 升级 / `INST-002` 审批，期望序列 `[[2,1,1,1],[1,0,0,1],[0,0,0,0]]`；WP-2 测试把角色对调得 `[[2,1,1,1],[1,0,1,0],…]`。**改测试 fixture 回需求 Given 顺序**（在 `test/wp14/queue.test.js` 为 AC-13 单独构造 INST-001 升级 / INST-002 审批），使需求机检逐字成立；不改需求期望。
+  4. AC-09~13 机检文件名 `queue-actions.test.js` / `queue-cross.test.js` 与本分支实际 `queue.test.js` 不符——V7 前已合并；需求 v11 在机检行加注「或合并后的 `queue.test.js`」，判据不变。
+- **影响面**：需求 v11（AC-12/13 架构检查 + 机检文件名注记）、`test/wp14/queue.test.js`（AC-13 现场 fixture）、S3 批次 A 复验 AC-12/13。

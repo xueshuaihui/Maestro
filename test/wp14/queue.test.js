@@ -791,20 +791,13 @@ test('审批·拒绝：真实等待会话被拒绝（AC-12 deny）', async () =>
 test('跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）', async () => {
   const env = await boot('cross', { mockSwitches: ['--permission=ask'] });
   try {
-    // INST-001：真实等待审批（hold）。
-    assert.equal(env.orch.setApprovalPolicy('hold').ok, true);
-    const started = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, earlyReturn: true });
-    assert.equal(started.ok, true, JSON.stringify(started));
-    await waitFor(async () => {
-      const listed = await env.orch.listApprovals({ instanceId: 'INST-001' });
-      return (listed.approvals ?? []).some((row) => row?.state === 'pending');
-    });
-
-    // INST-002：先起核再写盘，造一条待处理升级（执行失败，第 1 轮）。
+    // D-54：按需求 Given 的实例号构造现场——INST-001 持升级、INST-002 持审批。
+    // 先写 INST-001（先起核再写盘，执行失败第 1 轮），让 startRun 的
+    // allocateInstanceId（现有最大 +1）把真实等待审批分到 INST-002。
     await env.store.save(
-      'INST-002',
+      'INST-001',
       craftedState({
-        instanceId: 'INST-002',
+        instanceId: 'INST-001',
         cwd: env.cwd,
         nodes: [escalatedNode()],
         sessions: [escalatedSession()],
@@ -812,21 +805,33 @@ test('跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-
       }),
     );
 
+    // INST-002：真实等待审批（hold）——会话校验依赖内存 respond 句柄，
+    // 必须走真实 startRun（手写 state 无法伪造，D-45）。
+    assert.equal(env.orch.setApprovalPolicy('hold').ok, true);
+    const started = await env.orch.startRun({ cwd: env.cwd, task: DOC_TASK, earlyReturn: true });
+    assert.equal(started.ok, true, JSON.stringify(started));
+    assert.equal(started.instanceId, 'INST-002', 'startRun 应分到 INST-002（INST-001 已占用）');
+    await waitFor(async () => {
+      const listed = await env.orch.listApprovals({ instanceId: 'INST-002' });
+      return (listed.approvals ?? []).some((row) => row?.state === 'pending');
+    });
+
     assert.deepEqual(await countsOf(env), [2, 1, 1, 1], '初始：队列 2 · 托盘 1 · 两实例各 1');
 
-    // 第一步只影响 INST-002：重派其升级，INST-001 的审批原样不动。
+    // 第一步只影响 INST-001：重派其升级，INST-002 的审批原样不动。
     assert.equal(env.orch.setApprovalPolicy('allow').ok, true);
     const retried = await decideEscalation(env.root, 'ESC-001', 'retry');
     assert.equal(retried.ok, true, JSON.stringify(retried));
     assert.equal(retried.result.resolution, 'retry');
 
-    const disk2 = (await env.store.load('INST-002')).state;
-    assert.equal(disk2.nodes[0].round, 2, 'INST-002 轮次变 2');
     const disk1 = (await env.store.load('INST-001')).state;
-    assert.equal(disk1.approvals[0].state, 'pending', 'INST-002 的处置不影响 INST-001 的审批');
-    assert.deepEqual(await countsOf(env), [1, 0, 1, 0], '处置升级后：队列 1 · 托盘 0');
+    assert.equal(disk1.nodes[0].round, 2, 'INST-001 轮次变 2');
+    const disk2 = (await env.store.load('INST-002')).state;
+    assert.equal(disk2.approvals[0].state, 'pending', 'INST-001 的处置不影响 INST-002 的审批');
+    // 需求机检序列：处置升级后 [队列 1 · 托盘 0 · INST-001 0 · INST-002 1]。
+    assert.deepEqual(await countsOf(env), [1, 0, 0, 1], '处置升级后：队列 1 · 托盘 0 · INST-001 清零 · INST-002 仍 1');
 
-    // 第二步只影响 INST-001：允许其审批。
+    // 第二步只影响 INST-002：允许其审批。
     const allowed = await decideApproval(env.root, 'APR-001', 'allow');
     assert.equal(allowed.ok, true, JSON.stringify(allowed));
     assert.equal(allowed.result.state, 'approved');
