@@ -56,6 +56,9 @@ import { resolveLabels, visibleLabels } from './labels/labels.js';
 import { projectBoard } from './board/board.js';
 import { createConnectionState } from './connection.js';
 import { isProjectBlocked, projectMessage, resolveProject } from './project.js';
+// I1.10b WP-4: the drill layer is a pure module; the assembly only feeds it
+// frozen projections plus label keys. No second renderer, no transport inside.
+import { createDrillView } from './drill/index.js';
 
 const DEFAULT_MODULES = Object.freeze({
   renderListEmpty,
@@ -81,6 +84,7 @@ const DEFAULT_MODULES = Object.freeze({
   visibleLabels,
   projectBoard,
   createConnectionState,
+  createDrillView,
 });
 
 /** Controls that carry no wording of their own (ASCII glyphs only). */
@@ -223,6 +227,32 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     frames: { role: 0, connection: 0, special: 0, session: 0, list: 0 },
     probes: [],
     lastError: null,
+
+    // ---- I1.10b WP-4: drill / subflow / detail / escalation-panel assembly ----
+    // The drill context is a pure description fed by `createDrillView`; the
+    // assembly never renders nor transports on its own.
+    drill: null,          // { instanceId, roleId, breadcrumbKey }
+    drillData: null,      // frozen projection payload used to build `drillView`
+    drillView: null,      // createDrillView output (scrollTarget/highlight/...)
+    subflowStack: [],     // sub-workflow level stack (AC-17/36)
+    detail: null,         // node detail context { nodeId, breadcrumb }
+    escalationPanel: null,// escalation panel context { instanceId, breadcrumb }
+    connectionPanel: null,// connection panel context { edgeId }
+    returnFromBoard: null,// view to restore after the shared board (AC-16)
+    escalationNotice: null,
+    // Injected-clock timing (internal assertions only, never user-visible).
+    drillTiming: { enteredAt: null, frameAt: null },
+    // Read-only / stability counters (AC-28 internal assertions).
+    opCount: 0,
+    fetchCount: 0,
+    fetchesThisView: 0,
+    maxFetchesPerView: 1,
+    crashCount: 0,
+    daemonRestarts: 0,
+    // Graph-stream seam (contract A5): tracked so the drill view can observe
+    // that the SAME graph stream was kept / reopened, without a new channel.
+    graphStreamOpens: 0,
+    graphStreamReopened: false,
   };
 
   if (isProjectBlocked(state.project)) state.view = 'project';
@@ -300,6 +330,76 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       } catch (error) {
         state.templates = state.templates;
       }
+      return api;
+    },
+
+    /**
+     * Contract A4: optional transport seam for the single write action. When
+     * a caller injects `io.continueEscalation` (shape identical to the daemon
+     * return) it is used verbatim; otherwise a real loopback POST is issued.
+     * The raw error codes never reach this layer: only `messageKey` selects a
+     * notice branch and `message` is passed through opaquely.
+     */
+    async continueEscalation({ instanceId, escalationId } = {}) {
+      let answer = null;
+      try {
+        if (typeof transport.continueEscalation === 'function') {
+          answer = await transport.continueEscalation({ instanceId, escalationId });
+        } else if (typeof transport.postContinueEscalation === 'function') {
+          answer = await transport.postContinueEscalation({ instanceId, escalationId });
+        }
+      } catch (error) {
+        answer = { ok: false, message: error?.message ?? String(error) };
+      }
+      const result = answer !== null && typeof answer === 'object' ? answer : { ok: false };
+      const id = result.escalationId ?? escalationId ?? '';
+      if (result.ok === true) {
+        state.escalationNotice = {
+          key: 'DRILL_ESC_DONE',
+          text: noticeText('DRILL_ESC_DONE', { id }),
+          retryable: false,
+        };
+      } else if (result.messageKey === 'DRILL_ESC_ALREADY') {
+        // Wording comes from the message key; the raw error code never reaches
+        // this layer and the daemon `message` is not re-authored here.
+        state.escalationNotice = {
+          key: result.messageKey,
+          text: noticeText('DRILL_ESC_ALREADY', {
+            id,
+            // J-2: {state} comes from the daemon's structural `stateLabel`
+            // (CLI labels is the single source of user-visible wording), not a
+            // key that is absent from the frozen 63-key table.
+            state: asText(result.stateLabel) ?? '',
+          }),
+          retryable: false,
+        };
+      } else if (result.messageKey === 'DRILL_ESC_NOT_SUSPENDED') {
+        state.escalationNotice = {
+          key: result.messageKey,
+          text: noticeText('DRILL_ESC_NOT_SUSPENDED', {}),
+          retryable: false,
+        };
+      } else {
+        // Failure passthrough: the `message` is the existing error text, never
+        // translated or invented here (AC-45).
+        state.escalationNotice = {
+          key: 'DRILL_ESC_FAILED',
+          text: noticeText('DRILL_ESC_FAILED', { reason: asText(result.message) ?? '' }),
+          retryable: true,
+        };
+      }
+      return result;
+    },
+
+    /**
+     * Graph-stream seam (contract A5). Called by `mountApp.ensureStreams()`
+     * whenever the SAME graph stream is opened or reopened,
+     * including while `view === 'drill'`. Tracking here lets the drill view
+     * observe a reopen without any second channel or new frame type.
+     */
+    noteGraphStreamOpen() {
+      state.graphStreamOpens += 1;
+      if (state.graphStreamOpens > 1) state.graphStreamReopened = true;
       return api;
     },
 
@@ -420,6 +520,139 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       return api;
     },
 
+    // --------------------------------------------------- I1.10b drill nav (WP-4)
+
+    /**
+     * Enter the role drill-down view. `data` is the frozen drill projection
+     * (breadcrumb / roleBar / dag / cards / ...); the assembly only builds the
+     * description object. Graph view state is deliberately left untouched so
+     * a later `backToGraph()` can restore it verbatim (contract A3 / AC-02).
+     */
+    openDrill({ instanceId, roleId, data, breadcrumbKey = 'DRILL_CRUMB_ROLE', now } = {}) {
+      const id = typeof instanceId === 'string' && instanceId.length > 0 ? instanceId : state.graphId;
+      state.drill = {
+        instanceId: id ?? null,
+        roleId: roleId ?? null,
+        breadcrumbKey,
+      };
+      state.drillData = data !== null && typeof data === 'object' ? data : {};
+      if (typeof now !== 'undefined') state.drillData.now = now;
+      state.detail = null;
+      state.escalationPanel = null;
+      state.subflowStack = [];
+      state.view = 'drill';
+      rebuildDrillView();
+      state.drillTiming.enteredAt = typeof transport.now === 'function' ? transport.now() : (now ?? null);
+      state.drillTiming.frameAt = state.drillTiming.enteredAt;
+      bumpOp();
+      beginViewFetch();
+      return api;
+    },
+
+    /**
+     * Contract A3: return from drill to the flow graph while preserving the
+     * five groups of view-state values (zoom / pan / offsets / collapse /
+     * focus). This is a NEW path; it never calls `backToList()` (which nulls
+     * `viewState`) nor `openGraph()` / `rebuildGraph()` (which recreate it).
+     */
+    backToGraph() {
+      state.view = 'graph';
+      state.drill = null;
+      state.drillData = null;
+      state.drillView = null;
+      state.detail = null;
+      state.escalationPanel = null;
+      state.connectionPanel = null;
+      state.subflowStack = [];
+      state.returnFromBoard = null;
+      bumpOp();
+      return api;
+    },
+
+    /** AC-16: switch to the shared 7-column board, remembering the drill. */
+    openAllNodes() {
+      if (state.drill !== null) state.returnFromBoard = 'drill';
+      state.view = 'board';
+      bumpOp();
+      beginViewFetch();
+      return api;
+    },
+
+    /** AC-16: return from the shared board to the drill (not the graph). */
+    backToDrill() {
+      state.view = state.returnFromBoard === 'drill' && state.drillView !== null ? 'drill' : 'graph';
+      state.returnFromBoard = null;
+      bumpOp();
+      return api;
+    },
+
+    /** Enter a node detail view (AC-20 human node / node from card). */
+    openNodeDetail({ nodeId, data, breadcrumbKey = 'DRILL_CRUMB_NODE' } = {}) {
+      state.detail = { nodeId: nodeId ?? data?.node?.nodeId ?? null, breadcrumbKey };
+      state.detail.data = data !== null && typeof data === 'object' ? data : {};
+      state.view = 'node-detail';
+      state.detail.view = finalizeBreadcrumb(m.createDrillView({
+        labels: state.labels,
+        data: { ...state.drillData, detail: state.detail.data },
+        interactions: { now: state.drillData?.now, clock: transport.now },
+      }));
+      bumpOp();
+      beginViewFetch();
+      return api;
+    },
+
+    /**
+     * Enter the escalation panel. Both entry points (escalate node AC-21 and
+     * escalated badge AC-49) land on THIS same view/state; only the breadcrumb
+     * differs. `view === 'escalation-panel'` is never `'drill'`.
+     */
+    openEscalationPanel({ instanceId, data, breadcrumbKey = 'DRILL_CRUMB_NODE' } = {}) {
+      state.escalationPanel = {
+        instanceId: instanceId ?? state.graphId ?? null,
+        breadcrumbKey,
+        data: data !== null && typeof data === 'object' ? data : {},
+      };
+      state.view = 'escalation-panel';
+      state.escalationPanel.view = finalizeBreadcrumb(m.createDrillView({
+        labels: state.labels,
+        data: { escalations: state.escalationPanel.data },
+        interactions: { clock: transport.now },
+      }));
+      state.escalationNotice = null;
+      bumpOp();
+      beginViewFetch();
+      return api;
+    },
+
+    /** Enter a connection / handoff panel (AC-19 / AC-51). */
+    openConnectionPanel({ edgeId, data } = {}) {
+      state.connectionPanel = {
+        edgeId: edgeId ?? null,
+        data: data !== null && typeof data === 'object' ? data : {},
+      };
+      state.view = 'connection-panel';
+      bumpOp();
+      beginViewFetch();
+      return api;
+    },
+
+    /** Push one sub-workflow level (AC-17 / AC-36). */
+    openSubflow({ data } = {}) {
+      state.subflowStack.push(data !== null && typeof data === 'object' ? data : {});
+      state.view = 'subflow';
+      bumpOp();
+      beginViewFetch();
+      return api;
+    },
+
+    /** Pop one sub-workflow level; empty stack returns to the flow graph. */
+    backSubflow() {
+      state.subflowStack.pop();
+      state.view = state.subflowStack.length > 0 ? 'subflow' : 'graph';
+      bumpOp();
+      return api;
+    },
+
     retryConnection() {
       state.connection.retry();
       return api;
@@ -513,11 +746,20 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       const key = asText(data?.key);
       const payload = data?.payload !== null && typeof data?.payload === 'object' ? data.payload : {};
       const rev = Number.isFinite(data?.rev) ? Number(data.rev) : null;
+      const inDrill = state.view === 'drill' && state.drillData !== null;
 
       // D-2: the first frame (and every reconnect frame) is
       // `event: graph.snapshot` with `data.type: "snapshot"`; a frame that
       // already carries the event name must land here as well (B-23).
+      // In drill view the reconnect first frame is a partial refetch: role
+      // bar + cards are replaced, the DAG is kept, and the graph view state
+      // is NOT replayed (AC-50 / F4-13). Outside drill the path is unchanged.
       if (type === 'graph.snapshot' || type === 'snapshot') {
+        if (inDrill) {
+          refetchDrill(payload);
+          state.graph = payload && typeof payload === 'object' ? payload : state.graph;
+          return { type, repaint: 'drill', refetch: false, indicatorOnly: false, rev };
+        }
         api.setGraph(payload, asText(data?.instanceId) ?? state.graphId);
         if (state.view === 'graph') emitGraphProbe();
         return { type, repaint: 'graph', refetch: false, indicatorOnly: false, rev: state.graph?.rev ?? null };
@@ -532,7 +774,8 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         const sessionKey = key ?? 'session';
         state.frames.session += 1;
         state.indicator[sessionKey] = { ...payload, rev };
-        return { type, repaint: 'none', refetch: false, indicatorOnly: true, rev };
+        const drillApplied = inDrill ? applyDrillFrame('session.indicator', payload) : false;
+        return { type, repaint: drillApplied ? 'drill' : 'none', refetch: false, indicatorOnly: true, rev };
       }
 
       if (type === 'role_instance.updated' || type === 'special_node.updated') {
@@ -540,14 +783,16 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         if (patched && rev !== null) state.graph.rev = Math.max(state.graph.rev ?? 0, rev);
         if (type === 'role_instance.updated') state.frames.role += 1;
         else state.frames.special += 1;
-        return { type, repaint: patched ? 'graph' : 'none', refetch: false, indicatorOnly: false, rev };
+        const drillApplied = inDrill ? applyDrillFrame(type, payload) : false;
+        return { type, repaint: drillApplied ? 'drill' : (patched ? 'graph' : 'none'), refetch: false, indicatorOnly: false, rev };
       }
 
       if (type === 'connection.updated') {
         const patched = patchEdge(state.graph, key, payload);
         if (patched && rev !== null) state.graph.rev = Math.max(state.graph.rev ?? 0, rev);
         state.frames.connection += 1;
-        return { type, repaint: patched ? 'graph' : 'none', refetch: false, indicatorOnly: false, rev };
+        const drillApplied = inDrill ? applyDrillFrame('connection.updated', payload) : false;
+        return { type, repaint: drillApplied ? 'drill' : (patched ? 'graph' : 'none'), refetch: false, indicatorOnly: false, rev };
       }
 
       return { type, repaint: 'none', refetch: false, indicatorOnly: false, rev };
@@ -666,6 +911,8 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
           cancelText: state.labels.DESKTOP_NEW_ACTION_CANCEL,
         },
         probe: state.graph === null ? null : buildGraphShownProbe(state.graph, state.graphId),
+        drill: null,
+        escalationNotice: state.escalationNotice,
       };
 
       if (!ready) return model;
@@ -704,6 +951,26 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         return model;
       }
 
+      if (view === 'drill' || view === 'node-detail' || view === 'escalation-panel'
+          || view === 'connection-panel' || view === 'subflow') {
+        const description = view === 'drill' ? state.drillView
+          : view === 'node-detail' ? state.detail?.view
+            : view === 'escalation-panel' ? state.escalationPanel?.view
+              : null;
+        model.drill = description ?? null;
+        model.breadcrumb = description?.breadcrumb ?? null;
+        model.escalationNotice = state.escalationNotice;
+        if (description && Array.isArray(description.missingLabels) && description.missingLabels.length > 0) {
+          model.notice = {
+            key: 'DRILL_EMPTY_RECORD',
+            text: noticeText('DRILL_EMPTY_RECORD', {}),
+            retryable: false,
+            returnable: true,
+          };
+        }
+        return model;
+      }
+
       return model;
     },
   };
@@ -713,6 +980,137 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
   /** One label line through the shared resolver (no local template dialect). */
   function noticeText(key, params) {
     return m.resolveLabels(state.labels).text(key, params);
+  }
+
+  /**
+   * A-8 breadcrumb assembly. The pure module fills the role crumb (which
+   * already carries the instance root); the node / escalation crumbs carry
+   * only their own segment, so the instance root is joined here, in the
+   * rendering layer. No Chinese is authored — every segment comes from keys.
+   */
+  function assembleBreadcrumb() {
+    const instanceId = state.escalationPanel?.instanceId ?? state.drill?.instanceId ?? state.graphId ?? '';
+    const roleTemplate = noticeText('DRILL_CRUMB_ROLE', { id: instanceId, role: '' });
+    const instanceRoot = typeof roleTemplate === 'string' ? roleTemplate.split(' / ')[0] : '';
+    const join = (segment) => (instanceRoot.length > 0 ? `${instanceRoot} / ${segment}` : segment);
+    if (state.view === 'node-detail' && state.detail) {
+      return join(noticeText('DRILL_CRUMB_NODE', { node: state.detail.nodeId ?? '' }) ?? '');
+    }
+    if (state.view === 'escalation-panel') {
+      return join(noticeText('DRILL_ESC_TITLE', {}) ?? '');
+    }
+    return null;
+  }
+
+  /** Apply the assembled breadcrumb to a drill description in place. */
+  function finalizeBreadcrumb(description) {
+    if (!description) return description;
+    const crumb = assembleBreadcrumb();
+    if (crumb !== null) description.breadcrumb = crumb;
+    return description;
+  }
+
+  /** AC-28 stability counters: one navigation action, one structured count. */
+  function bumpOp() {
+    state.opCount += 1;
+  }
+
+  function bumpFetch() {
+    state.fetchCount += 1;
+    state.fetchesThisView += 1;
+    if (state.fetchesThisView > state.maxFetchesPerView) {
+      state.maxFetchesPerView = state.fetchesThisView;
+    }
+  }
+
+  /** One structured data fetch for a freshly entered view (AC-28: per view = 1). */
+  function beginViewFetch() {
+    state.fetchesThisView = 0;
+    bumpFetch();
+  }
+
+  /**
+   * Rebuild the drill description from the frozen data that backs the active
+   * view. Only the named segment is touched by live frames, so a status-word
+   * flip (AC-48) never clears serving nodes / hosts / last action or cards,
+   * and a reconnect refetch (AC-50) replaces role bar + cards while keeping
+   * the previous DAG. No layout / view state is recomputed here.
+   */
+  function rebuildDrillView() {
+    const view = state.view;
+    if (view === 'drill') {
+      state.drillView = m.createDrillView({
+        labels: state.labels,
+        data: state.drillData ?? {},
+        interactions: { now: state.drillData?.now, clock: transport.now },
+      });
+      // Empty-card wording comes from the frozen label table, applied at the
+      // assembly layer (the pure module carries only structured data).
+      state.drillView.cardsEmptyText = state.drillView.cards.length === 0
+        ? (noticeText('DRILL_EMPTY_TASK', {}) ?? '') : null;
+    } else if (view === 'node-detail' && state.detail) {
+      state.detail.view = finalizeBreadcrumb(m.createDrillView({
+        labels: state.labels,
+        data: { ...state.drillData, detail: state.detail.data },
+        interactions: { clock: transport.now },
+      }));
+    } else if (view === 'escalation-panel' && state.escalationPanel) {
+      state.escalationPanel.view = finalizeBreadcrumb(m.createDrillView({
+        labels: state.labels,
+        data: { escalations: state.escalationPanel.data },
+        interactions: { clock: transport.now },
+      }));
+    }
+  }
+
+  /** Apply one live frame to the drill projection (status word / connection). */
+  function applyDrillFrame(kind, payload) {
+    if (state.drillData === null) return false;
+    if (kind === 'role_instance.updated' || kind === 'special_node.updated') {
+      const token = asText(payload?.status);
+      if (token === null) return false;
+      const roleBar = { ...(state.drillData.roleBar ?? {}), statusToken: token };
+      state.drillData = { ...state.drillData, roleBar };
+      rebuildDrillView();
+      state.drillTiming.frameAt = typeof transport.now === 'function' ? transport.now() : null;
+      return true;
+    }
+    if (kind === 'connection.updated') {
+      const aggregate = asText(payload?.aggregateStatus);
+      if (aggregate === null) return false;
+      const connection = { ...(state.drillData.connection ?? {}) };
+      if (connection.edge && typeof connection.edge === 'object') {
+        connection.edge = { ...connection.edge, aggregateStatus: aggregate };
+      } else {
+        connection.edge = { aggregateStatus: aggregate };
+      }
+      state.drillData = { ...state.drillData, connection };
+      rebuildDrillView();
+      state.drillTiming.frameAt = typeof transport.now === 'function' ? transport.now() : null;
+      return true;
+    }
+    if (kind === 'session.indicator') {
+      // Indicator-only: stored on `state.indicator`; never reorders cards.
+      rebuildDrillView();
+      return true;
+    }
+    return false;
+  }
+
+  /** AC-50: reconnect refetch replaces role bar + cards, keeps the DAG. */
+  function refetchDrill(payload) {
+    const previous = state.drillData ?? {};
+    const next = payload !== null && typeof payload === 'object' ? payload : {};
+    state.drillData = {
+      ...previous,
+      breadcrumb: next.breadcrumb ?? previous.breadcrumb,
+      roleBar: next.roleBar ?? previous.roleBar,
+      cards: Array.isArray(next.cards) ? next.cards : [],
+      // DAG is intentionally NOT replaced: keep the last frame (F4-13).
+      dag: previous.dag,
+    };
+    rebuildDrillView();
+    state.drillTiming.frameAt = typeof transport.now === 'function' ? transport.now() : null;
   }
 
   /**
@@ -1474,9 +1872,14 @@ export function mountApp({
       });
     }
     const current = app.state();
-    if (current.view === 'graph' && current.graphId !== null && current.graphId !== graphStreamId) {
+    // Contract A5: the drill view reuses the SAME graph stream. Opening it
+    // while `view === 'drill'` is a new call site, not a second channel and
+    // not a new frame type; graphStreamId keeps the existing de-dup.
+    if ((current.view === 'graph' || current.view === 'drill')
+        && current.graphId !== null && current.graphId !== graphStreamId) {
       if (graphClose) graphClose();
       graphStreamId = current.graphId;
+      app.noteGraphStreamOpen();
       graphClose = transport.openStream(
         `${origin()}/instances/${encodeURIComponent(current.graphId)}/graph/stream`,
         {
@@ -1523,6 +1926,26 @@ export function mountApp({
         void app.loadInstances().then(paint);
       } else if (action === 'open-instance' && typeof arg === 'string') {
         void app.openGraph(arg).then(paint);
+      // I1.10b WP-4 drill navigation actions. Capability seam only: the
+      // shell drives the same createApp methods the UI uses, never a test
+      // rendering branch.
+      } else if (action === 'open-drill' && arg && typeof arg === 'object') {
+        app.openDrill(arg);
+        paint();
+      } else if (action === 'back-graph') {
+        app.backToGraph();
+        paint();
+      } else if (action === 'all-nodes') {
+        app.openAllNodes();
+        paint();
+      } else if (action === 'back-drill') {
+        app.backToDrill();
+        paint();
+      } else if (action === 'open-escalation' && arg && typeof arg === 'object') {
+        app.openEscalationPanel(arg);
+        paint();
+      } else if (action === 'continue-escalation' && arg && typeof arg === 'object') {
+        void app.continueEscalation(arg).then(paint);
       }
     };
   }

@@ -111,6 +111,22 @@ AC 里不得要求「36 个文件每个 `# fail 0`」这类在本机不可达的
 
 ---
 
+## 裁决 J：批次 3 两处逐字偏差的修法（2026-11-16）
+
+**事实（批次 3 两位实现 Agent 回报 + 主控实读代码复核）**：
+
+1. `AC-25` 机检原文要求 `button.label` 含 `expected.id`；但 WP-3 `desktop/ui/drill/host-jump.js::sessionTag` 的 `text.slice(sep + 3, at)` 在 `DRILL_HOST_OPENED = '已打开 DeepSeek Harness · 会话 {id}'` 上只取到 `会话 `、**丢掉 `{id}` 占位符**，实测 `button.label === '打开宿主会话 · 会话 '`。WP-5 因此把该断言降级为 `button.sessionId` + toast 含 id——**属放宽既有 Then 的机检，不予接受**。
+2. `AC-23` Then 为 `升级 ESC-001 已处理 · 状态 已处理`，模板 `DRILL_ESC_ALREADY = '升级 {id} 已处理 · 状态 {state}'` 已冻结在 daemon 文案表（63 键）；WP-4 `app.js:369` 用 `noticeText('ESCALATION_LABEL_RESOLVED', {})` 取 `{state}`，但该键**不在下发键表里**，生产路径会得到空串，测试靠从 CLI 表注入该键才通过——**属人工补足缺失依赖，不予接受**。
+
+**裁决**：
+
+1. **J-1（button.label）**：修 WP-3 `sessionTag`——把 `text.slice(sep + 3, at)` 改为包含占位符的 `text.slice(sep + 3)` 再 `fillTemplate(part, { id })`，使 `button.label` 逐字成为 `打开宿主会话 · 会话 <id>`；WP-5 恢复 `button.label` 含 `expected.id` 的机检断言，与 `button.sessionId` / toast 双重同源。**不新增文案键、不改 AC-25 Then**。
+2. **J-2（升级状态词）**：**不新增文案键**（63 键冻结、两处 `147 + 63` 精确断言保持）。由 WP-2 daemon 的 `continue` 响应**新增结构化字段** `stateLabel`，值取既有 `src/cli/labels.js::ESCALATION_LABEL.resolved`（中文唯一来源不变）；WP-4 `app.js` 用 `result.stateLabel` 填 `DRILL_ESC_ALREADY` 的 `{state}`，删除对不存在键 `ESCALATION_LABEL_RESOLVED` 的依赖，测试不再从 CLI 表注入该键。**AC-23 Then 逐字不变**，`drill-fixtures.test.js` 的 `message` 逐字断言（COMMAND_ERROR 原文）也不变。
+3. **J-3（C1 待验事实已实测）**：WP-5 `--check session-dir` 本机实测 `total: 8, compared: 8, dirEqualsInternalIdCount: 8, c1: 一致`；按裁决 I 在附录 D-14 表 C1 **补注「已实测一致」**，**不回填为 AC 判据、不改 AC 强度**。
+4. 三处修复均属**实现缺陷回改**，走批次 3 修复与复评流程；不许借机改需求 AC / BR / Then、不许增删文案键。
+
+---
+
 ## 裁决 I：会话标识的核对方式（对应评审 round3 §⑥-1）
 
 **事实**：ACP `session/new` 返回的 `sessionId` 与宿主落盘目录 `~/.dsh/sessions/<工作区>/<目录名>/` 是否同一个 ID 空间，**本迭代尚未实测**（此前只核过两者"形态"都存在）。

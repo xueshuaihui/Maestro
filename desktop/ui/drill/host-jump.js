@@ -30,7 +30,10 @@ function sessionTag(resolver, id, missing) {
   const at = text.indexOf('{id}');
   if (at === -1) return text;
   const sep = text.lastIndexOf(' · ', at);
-  const part = sep === -1 ? text.slice(0, at) : text.slice(sep + 3, at);
+  // Keep the `{id}` placeholder in the extracted part so fillTemplate can
+  // substitute it; slicing up to `at` truncated the placeholder and dropped
+  // the identifier from button.label (decision J-1).
+  const part = sep === -1 ? text.slice(0) : text.slice(sep + 3);
   return fillTemplate(part, { id });
 }
 

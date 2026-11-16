@@ -488,6 +488,12 @@ export function createHttpServer({
       ok: false,
       code,
       ...(messageKey !== null ? { messageKey } : {}),
+      // J-2 (adjudication): structural state word for the frozen DRILL_ESC_ALREADY {state}
+      // placeholder. The value comes from the CLI labels (the single Chinese
+      // source); the verbatim COMMAND_ERROR `message`, the four existing fields
+      // and HTTP 409 are all unchanged. The UI fills {state} from this field
+      // instead of a key that is not in the frozen 63-key table.
+      ...(code === 'ESCALATION_NOT_PENDING' ? { stateLabel: ESCALATION_LABEL.resolved } : {}),
       message: escalationErrorText(code, result?.params ?? {}),
     });
   }
