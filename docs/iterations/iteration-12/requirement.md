@@ -258,7 +258,7 @@ I1.9 把运行过程沉淀成三层记录，I1.10a / I1.10b 把「看不见」�
 - 风险：高（规划验收句核心）
 - 引用：BR-01, BR-02
 - **Given** 用户在独立项目根 `%TEMP%/maestro-i112-verify` 用 `single` 模板跑完一个实例，得到一份不少于 3 条记录的事件日志；原件保留一份字节级副本，`NODE_ENV=test`。
-- **When** 用户在副本中改动中间一条记录的一个字符并保持记录仍可被解析，然后对原件与副本分别执行校验命令 `orch verify <实例>`。
+- **When** 用户在副本中改动中间一条记录的一个字符并保持记录仍可被解析（此处按 D-2 口径：直改第 2 条 `prev_event_hash` 字段得 `seq:2`；若改动第 2 条其它内容使其指纹变化，则首个失配出现在第 3 条的 `prev` 校验，见 D-2），然后对原件与副本分别执行校验命令 `orch verify <实例>`。
 - **Then** 原件校验通过并给出「链完整、共 N 条」；副本校验失败，指出第一条对不上的记录序号，退出码非 0；原件日志在前后的字节哈希一致，未被校验动作改写。
 - 机检：`cd "$MAESTRO_REPO" && NODE_ENV=test node --test "test/**/*.test.js"` 中断言：原件校验退出码 0、副本校验退出码非 0、失败提示含失配序号、原件日志前后 `sha256` 相等。
 - 夹具：`cd %TEMP%/maestro-i112-verify && NODE_ENV=test node "$MAESTRO_REPO/bin/orch.js" run --cwd . --template single --task "写一份说明"`，复制实例目录为 `good` / `bad`，改 `bad` 的中间行一个字符后分别对两份执行 `node "$MAESTRO_REPO/bin/orch.js" verify <实例>`（`verify` 命令名见 D-13 冻结；链校验目标为 `<实例>`，签名校验目标为 `<包>`）。

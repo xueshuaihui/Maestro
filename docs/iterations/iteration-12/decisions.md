@@ -40,3 +40,21 @@
 **对需求的影响**：仅扩 D-13 授权清单的授权文件段；无 AC / BR / NF 条目增删，无 Then 改动。修订由拆分修复 Agent 落到拆分文档 §8.2 与（如必要）需求附录 D-13 的授权补注，主控复核。
 
 ---
+
+## 裁决 C：verifyChain 冻结签名与篡改序号对外口径（2026-11-18）
+
+**背景**：批次 1 实现评审 `review-batch1.md` B1-01（阻断）：WP-1 把 `verifyChain` 实现为 `verifyChain(input)` 自持 I/O，与 §2.1/冻结点①逐字冻结的 `verifyChain({root, instanceId, fs})` + 「只 import createStore.readEvents」不符，实测按冻结签名调用抛 `TypeError`，WP-7 接线将崩溃。另评审独立发现需求内部矛盾：需求 §3.1 与拆分文档 236 行示例「改第 2 条 `to` → seq:2」，但 D-2 算法「与前一条记录自身规范化指纹比对」下，改第 2 条内容时首个 `prev` 校验失败在第 3 条。
+
+**事实核查**（主控实跑）：
+- `docs/iterations/iteration-12.md:154` 逐字冻结 `verifyChain({root, instanceId, fs})`，`fs` 可注入、只 import `createStore.readEvents`、对事件日志零写。
+- 当前 `src/core/audit-verify.js:81` 为 `verifyChain(input)`，内部 `toLines(input)` 自持 I/O 抽象；纯校验核心与 I/O 可分离。
+- D-2：`prev_event_hash` 取「前一条落盘记录的规范化指纹」，校验「与前一条记录自身的规范化指纹比对」。改第 2 条内容 → 第 2 条自身指纹变 → 第 3 条的 `prev` 失配，首个失配序号为 3；直改第 2 条 `prev` 字段 → 失配在第 2 条。两种操作都能被检出，仅「首处失配序号」指向不同。
+
+**裁决**：
+1. **签名以冻结为准，不改冻结点①**：`verifyChain` 恢复 `verifyChain({root, instanceId, fs})` 签名，内部只通过 `createStore.readEvents`（或注入 `fs` 的等价只读读路径）取事件，对事件日志零写；保留现有纯校验核心（parseLines/遍历/失配定位）作为内部函数，外层 const 入口适配冻结签名。B1-01 据此闭合。
+2. **篡改序号对外口径以 D-2 算法为准**：AC-01 Then「指出第一条对不上的记录序号」= 「首个 `prev` 校验失败的记录序号」（D-2 口径）。需求 §3.1 与拆分 236 行「改第 2 条 → seq:2」的示例，应理解为「**直改第 2 条 `prev` 字段**」才得 seq:2；若改第 2 条**内容**则首个失配在 seq:3。此解释不弱化任何 Then、不改 AC；由 S2 修复时把示例场景补一句限定（改的是 `prev` 字段还是内容），消除歧义，不改 D-2 算法。
+3. `CHAIN_COMPLETE` / `CHAIN_BROKEN` 两文案键名维持 WP-1 冻结（冻结点①授权），WP-7 必须在 `labels.js` 加键；缺键抛错、不回落硬编码中文的设计保留，不视为越界。
+
+**对需求的影响**：无 AC / BR / NF 增删、无 Then 改动；示例歧义由 S2 在需求 §3.1 / 拆分 236 行补一句限定语（补注，非改判据）。B1-01 由实现方按第 1 条修签名闭合。
+
+---

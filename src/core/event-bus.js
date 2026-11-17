@@ -9,8 +9,31 @@
  *
  * 注：`replay` 是拆分文档 §2.10 冻结的方法名，方法名沿用契约（不计入核心禁词）。
  */
+import { createHash } from 'node:crypto';
+
 // 审计链固定起点：首条事件 `prev_event_hash` 为 64 个 0（D-1 L940）。
-const ZERO_HASH = '0'.repeat(64);
+export const ZERO_HASH = '0'.repeat(64);
+
+/**
+ * 规范化 JSON 序列化：递归按键名排序、无多余空白，产出 UTF-8 串。
+ * 字节级镜像 src/persistence/instance-store.js:53-62 的私有 canonicalize
+ * （冻结点① / D-2）；对「前一条完整记录」整体规范化，不对原始行字节直接哈希。
+ */
+export function canonicalizeEvent(value) {
+  if (value === null || typeof value !== 'object') {
+    return JSON.stringify(value) ?? 'null';
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(canonicalizeEvent).join(',')}]`;
+  }
+  const keys = Object.keys(value).sort();
+  return `{${keys.map((k) => `${JSON.stringify(k)}:${canonicalizeEvent(value[k])}`).join(',')}}`;
+}
+
+/** 指纹算法：sha256(canonicalizeEvent(record), utf8).hex，与 instance-store 私有 hashRecord 同口径。 */
+export function eventFingerprint(record) {
+  return createHash('sha256').update(canonicalizeEvent(record), 'utf8').digest('hex');
+}
 
 export function createEventBus({ store, clock } = {}) {
   if (!store || typeof store.appendEvent !== 'function' || typeof store.nextSeq !== 'function') {

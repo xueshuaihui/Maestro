@@ -302,7 +302,149 @@ function validateBackflow(handoff) {
   return ok();
 }
 
-/** Fixed order: fields -> edge/target -> evidence -> backflow completeness. */
+/* ---------------------------------------------------------------------------
+ * I1.12 WP-3 / D-4: evidence-freshness step appended to the handoff chain.
+ * This block is additive only: CODES, the existing validators and their order
+ * are untouched. The injected `sha256Of` is doc-artifact.js::sha256Of (the one
+ * read-only fingerprint implementation); no file is written and no UI field is
+ * produced. The caller turns a rejection into exactly one escalation.
+ * ------------------------------------------------------------------------- */
+
+/** Machine code for the new governance verdict (kept OUT of the frozen CODES). */
+export const EVIDENCE_STALE = 'EVIDENCE_STALE';
+
+const DECLARED_HASH_KEYS = [
+  'sha256',
+  'declaredSha256',
+  'declaredFingerprint',
+  'expectedSha256',
+  'expectedFingerprint',
+  'fingerprint'
+];
+const STALE_REASONS = Object.freeze({
+  fingerprintMismatch: 'fingerprint_mismatch',
+  evidenceMissing: 'evidence_missing',
+  hashUnavailable: 'hash_unavailable'
+});
+
+function firstDeclaredHash(source) {
+  if (!source || typeof source !== 'object') return null;
+  for (const key of DECLARED_HASH_KEYS) {
+    const value = source[key];
+    if (typeof value === 'string' && value.length > 0) return value;
+  }
+  return null;
+}
+
+/** Pair each declared fingerprint with the artifact reference it describes. */
+function freshnessTargets(handoff) {
+  const targets = [];
+  const ar = handoff?.artifactRefs;
+  if (ar && typeof ar === 'object' && !Array.isArray(ar)) {
+    if (Array.isArray(ar.input)) {
+      ar.input.forEach((item, index) => {
+        if (item && typeof item === 'object' && typeof item.ref === 'string' && item.ref.length > 0) {
+          const hash = firstDeclaredHash(item);
+          if (hash) targets.push({ ref: item.ref, sha256: hash, source: 'input', index });
+        }
+      });
+    }
+    const prev = ar.previous;
+    if (prev && typeof prev === 'object' && typeof prev.ref === 'string' && prev.ref.length > 0) {
+      const hash = firstDeclaredHash(prev);
+      if (hash) targets.push({ ref: prev.ref, sha256: hash, source: 'previous', index: 0 });
+    }
+  }
+  const top = firstDeclaredHash(handoff);
+  if (top) {
+    const primary = evidenceRefsOf(handoff)[0];
+    if (primary && typeof primary.ref === 'string' && primary.ref.length > 0) {
+      const ref = primary.source === 'defect' ? stripLineSuffix(primary.ref) : primary.ref;
+      const already = targets.some(
+        (item) => item.ref === ref && item.sha256.toLowerCase() === top.toLowerCase()
+      );
+      if (!already) targets.unshift({ ref, sha256: top, source: 'declared', index: 0 });
+    }
+  }
+  return targets;
+}
+
+/**
+ * D-4 governance decision appended after the fixed handoff checks.
+ *
+ * @param {object} handoff
+ * @param {{workspaceDir?:string, cwd?:string, sourceNode?:object|string,
+ *          graph?:object, fs?:object, sha256Of?:Function}} options
+ * @returns {Promise<{ok:true, stale:false}|
+ *   {ok:false, code:'EVIDENCE_STALE', detail:string,
+ *    decision:{instanceId:string, handoffId:string, nodeId:string,
+ *              stale:true, reason:'fingerprint_mismatch'|'evidence_missing'|'hash_unavailable'}}>}
+ */
+export async function validateEvidenceFreshness(
+  handoff,
+  { workspaceDir, cwd, sourceNode, graph, fs, sha256Of } = {}
+) {
+  const targets = freshnessTargets(handoff);
+  if (targets.length === 0) {
+    // No declaration to compare: the existing presence/unreadable checks already
+    // own this handoff. Appending must not introduce a new rejection here.
+    return { ok: true, stale: false };
+  }
+
+  const io = fs ?? defaultIo;
+  const readFile = typeof io.readFile === 'function' ? io.readFile : defaultIo.readFile;
+  const hashOf = sha256Of ?? ((p) => defaultSha256Of(p, { readFile }));
+  const handoffId = typeof handoff?.handoffId === 'string' ? handoff.handoffId : '';
+  const instanceId = typeof handoff?.instanceId === 'string' ? handoff.instanceId : '';
+  const nodeId = typeof handoff?.fromNodeId === 'string' && handoff.fromNodeId
+    ? handoff.fromNodeId
+    : (typeof handoff?.toNodeId === 'string' ? handoff.toNodeId : '');
+
+  const stale = (reason, ref) => {
+    const decision = Object.freeze({ instanceId, handoffId, nodeId, stale: true, reason });
+    const detail = [EVIDENCE_STALE, reason, handoffId, nodeId, ref].filter(Boolean).join(':');
+    return { ok: false, code: EVIDENCE_STALE, detail, decision };
+  };
+
+  for (const item of targets) {
+    const resolved = resolveEvidenceRef(item.ref, { workspaceDir, cwd, sourceNode, graph });
+    if (!resolved.ok) return stale(STALE_REASONS.evidenceMissing, item.ref);
+
+    let stat;
+    try {
+      stat = await io.stat(resolved.path);
+    } catch {
+      return stale(STALE_REASONS.evidenceMissing, item.ref);
+    }
+    if (!stat || typeof stat.isFile !== 'function' || !stat.isFile()) {
+      return stale(STALE_REASONS.evidenceMissing, item.ref);
+    }
+
+    let digest;
+    try {
+      digest = await hashOf(resolved.path);
+    } catch {
+      return stale(STALE_REASONS.hashUnavailable, item.ref);
+    }
+    let actual;
+    if (typeof digest === 'string') {
+      actual = digest;
+    } else if (digest && typeof digest === 'object' && digest.ok === false) {
+      return stale(STALE_REASONS.hashUnavailable, item.ref);
+    } else if (digest && typeof digest === 'object' && typeof digest.sha256 === 'string') {
+      actual = digest.sha256;
+    } else {
+      return stale(STALE_REASONS.hashUnavailable, item.ref);
+    }
+    if (actual.length === 0) return stale(STALE_REASONS.hashUnavailable, item.ref);
+    if (actual.toLowerCase() !== item.sha256.toLowerCase()) {
+      return stale(STALE_REASONS.fingerprintMismatch, item.ref);
+    }
+  }
+  return { ok: true, stale: false };
+}
+
+/** Fixed order: fields -> edge/target -> evidence -> backflow completeness -> freshness. */
 export async function validateHandoff(handoff, opts = {}) {
   const fields = validateHandoffFields(handoff, opts);
   if (!fields.ok || fields.skipped) return fields;
@@ -310,5 +452,7 @@ export async function validateHandoff(handoff, opts = {}) {
   if (!evidence.ok) return evidence;
   const backflow = validateBackflow(handoff);
   if (!backflow.ok) return backflow;
+  const freshness = await validateEvidenceFreshness(handoff, opts);
+  if (!freshness.ok) return freshness;
   return ok();
 }

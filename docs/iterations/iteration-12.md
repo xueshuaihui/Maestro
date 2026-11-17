@@ -233,7 +233,7 @@
 ```
 
 异常态（同一文件内，机检分夹具构造、不混放第二条异常）：
-- **篡改**：副本第 2 条 `to` 由 `running` 改为 `frozen`（仍合法 JSON），`verifyChain` 重算 H1' ≠ 原 H1 → 返回 `{ok:false, code:'CHAIN_BROKEN', seq:2, ...}` + A-2 文案；原件前后 sha256 相等（AC-01）。
+- **篡改**：副本第 2 条 `to` 由 `running` 改为 `frozen`（仍合法 JSON），`verifyChain` 重算 H1' ≠ 原 H1 → 返回 `{ok:false, code:'CHAIN_BROKEN', seq:2, ...}` + A-2 文案；原件前后 sha256 相等（AC-01）。（此处 `seq:2` 指直接改动第 2 条 `prev_event_hash` 字段；若改动第 2 条其它内容使其指纹变化，则首个失配出现在第 3 条的 `prev` 校验，见 D-2。）
 - **不可读行 / 序号空洞**：某行非 JSON 或 `seq` 跳号 → `badLines + 1`、按 I1.9「历史」口径跳过，不算断点、不回填（D-2）。
 - **历史旧记录**：升级前无 `prev_event_hash` 的行按「历史」对待，不校验、不算断点（A-0 / AC-02）。
 
