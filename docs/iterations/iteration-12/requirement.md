@@ -5,7 +5,7 @@
 - **模板路径**：`docs/templates/requirement-template.md`（8 节结构 + 三条用户视角硬约束；本项目自 I1.2 起扩展为附录 A~D，口径见 `docs/templates/execution-template.md` §1.0.1）
 - **格式样板**：`docs/iterations/iteration-10b/requirement.md`（v6.1，51 AC，A~D 附录形态）与 `docs/iterations/iteration-9/requirement.md`（v7，27 AC，链式哈希基础）
 - **上游契约**：`docs/iterations/iteration-10b/requirement.md`（v6.1，界面 / 下钻 / 跳转契约，51 条 AC）、`docs/iterations/iteration-9/requirement.md`（v7，链式哈希与健康度基础，27 条 AC）、`docs/iterations/iteration-10a/summary.json`（发布面与证据分级口径）
-- **版本**：v2
+- **版本**：v2.1
 - **状态**：v1 经第 1 轮独立评审 PASS（0 阻断）；本 v2 在 v1 基础上吸收 `review-round1.md` §5 的六条建议（F1-01~F1-06）以提升可判定性，不修改任何 AC 的 Then 目标值、不删 AC/BR/NF、不挪动规划范围。本文件不自行宣布评审通过，也不声称覆盖表已由评审确认。
 - **一句话说明**：把「看得见、点得进、能跳转」之后的「信得过、管得住、带得走、扛得住」补齐——让事件日志能当场验出篡改、越权唤醒与过期证据在路由层被拦下并留痕、高风险节点必须经人工终审、审计只记该记的、并行与预算有上限且耗尽即暂停、包能带依赖闭包导出并经签名与版本校验后导入、`orch migrate` 升级派生引用、日志与追踪导出为开放格式、反模式有信号，并在 20 并发实例 / 50 活跃会话下给出可核对的 handoff 延迟。
 
@@ -617,6 +617,7 @@ I1.9 把运行过程沉淀成三层记录，I1.10a / I1.10b 把「看不见」�
 |---|---|---|---|
 | v1 | 2026-11-17 | 初稿：按三件套撰写完整 8 节；逐字落地规划 12 子项（§2.2~§2.13）+ 验收句 6 点（AC-01 / 04 / 06 / 14 / 16 / 20-21）；建立 BR-01~BR-19、AC-01~AC-23、NF-1~NF-5；显式处理四项边界（与 I1.11 不重叠 / 真实宿主性能证据分级 / 回归红线 / 链式哈希加固衔接）；登记未决 U-01~U-06。交独立评审，不自行宣布通过。 | 全文；头部版本 = 本表末行 |
 | v2 | 2026-11-17 | 来源：`review-round1.md` §5 六条建议（F1-01~F1-06）吸收，第 1 轮 0 阻断、打磨性提升可判定性。处置摘要：F1-01 AC-21 证据状态统一为「当前未取证→判阻塞并附试过路径、不得 mock 顶替/伪通过」的契约说明，Then 目标值（<2s、≥20 并发）不变，机检补阻塞出口锚点；F1-02 D-13 冻结命令名字面 `orch migrate` / `orch verify <包>` / `orch export <类型>`（经核与既有命令无冲突），U-06 改为已冻结（主控裁决），BR/AC 夹具统一引用；F1-03 D-3 新 reason 码由 `wake.denied` 改为不与 `labels.js:388` 既有 `wake.rejected` 冲突的 `wake.not-whitelisted`，AC-04 判定锚点同步；F1-04 BR-19/NF-4 改为「既有 25 行用法块逐字不变、新增命令独立用法块追加」，不放宽回归判据；F1-05 §2.2/§2.7/§2.11 异常段补 §2→AC 反向映射交叉引用；F1-06 D-13 补 `migrate`/`verify`/`export` 的 handler 挂载映射（main.js:188-192 FAMILY_MODULES）。AC 23 / BR 19 / NF 5 计数与全部 Then 行零改动。 | 头部版本/状态、§2.2/2.7/2.11、BR-14~16/19、AC-01/04/14/16/18/21、NF-4、附录 B U-06、附录 D-3/D-9/D-13；头部版本 = 本表末行 |
+| v2.1 | 2026-11-18 | 来源：`decisions.md` 裁决 B（2026-11-18）。处置：只扩附录 D-13 授权修改清单的授权文件段——追加 `src/cli/roles.js` 的 `exportRole` / `importRole` / `roleCommand` export/import 分发子段与 `src/cli/workflows.js` 的 `workflowCommand` export/import 子段，只加不改既有命令对外行为 / 文案键 / 失败码；AC 23 / BR 19 / NF 5 与全部 Then 零改动。 | 附录 D-13 授权补注；头部版本 = 本表末行 |
 
 ## 附录 D · 实现约束（技术要点，仅供编码参考，不进入需求判定）
 
@@ -708,6 +709,10 @@ I1.9 把运行过程沉淀成三层记录，I1.10a / I1.10b 把「看不见」�
 - `src/core/event-bus.js:111-116`：校验逻辑以独立只读模块接入（D-2），不改 `appendEvent` 失败不广播、单实例串行化的既有段落。
 - `src/core/escalation.js:244-348`：拒绝 / 升级事件复用既有 `emitMany` 与 `commitEscalation` 模式，不重写该文件既有判定；新增原因码在调用侧传入。
 - `src/core/orchestrator.js`：`orchestrator.transit()` 仍为状态迁移唯一入口；并行度 / 预算门禁在派发前调用，不新增第二套迁移实现。
+- **授权补注（裁决 B · 2026-11-18，效力最高；只扩本授权文件段）**：以下两条逐字引用 `docs/iterations/iteration-12/decisions.md` 裁决 B 第 1、2 条——
+  1. 「**正式扩 D-13 授权清单**：追加 `src/cli/roles.js` 的 `exportRole` / `importRole` / `roleCommand` 的 export/import 分发子段（约 852~945、1164~1165，以符号锚点定位、行号漂移以符号为准），以及 `src/cli/workflows.js` 的 `workflowCommand` 中与工作流包 export/import 相关的子段——仅这些 handler 段可改，用于承接 AC-13~17 的依赖闭包导出、签名校验、版本兼容与 `orch migrate` 引用升级。」
+  2. 「**只加不改**：既有 `role export` / `role import` / `workflow` 命令的对外行为、既有文案键（`ROLE_WRITE_TEXT` 等）、既有失败码逐字保持不变；新增校验以链末尾追加方式接入（与 D-4/D-13 既有授权段风格一致），不放宽任何既有断言。」
+  （本补注只扩授权文件段；无 AC / BR / NF 条目增删，无 Then 改动。）
 
 ### D-14 编号与标题形态
 

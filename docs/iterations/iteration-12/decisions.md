@@ -20,3 +20,23 @@
 **对需求的影响**：无 AC / BR / NF 条目增删，无 Then 改动；仅把 D-13 已有的「主控裁决」声明补上真实凭据，并锁定 AC-21 版本指代的争议出口。
 
 ---
+
+## 裁决 B：扩 D-13 授权清单 — roles.js / workflows.js 的导出导入 handler（2026-11-18）
+
+**背景**：拆分评审 `split-review.md` SR-01（阻断）指出：WP-4 把 `src/cli/roles.js` / `src/cli/workflows.js` 的 export/import 改动写进既定交付，但这两文件不在需求附录 D-13 授权清单，构成「在拆分里消化需求授权缺口」。与 I1.10b 的 v6 补授权同类——需求漏登记，不能靠删 WP 交付回避。
+
+**事实核查**（主控实跑）：
+- 真实路径是 `src/cli/roles.js`（40314 字节）与 `src/cli/workflows.js`（28566 字节），**不是** `src/registry/roles.js`（不存在）。拆分文档写的路径正确，评审已澄清。
+- `roles.js` 已有 export/import handler：`exportRole`（约 852~870 行，写 `exports/` 目录）、`importRole`（874 行起，含多处 `REASON/importRejected` 分支）、`roleCommand` 分发段（1164~1165 行 `sub === 'export' / 'import'`）。`workflows.js` 有 `workflowCommand`（792 行起）。
+- 规划 `docs/index.md:900`「角色包/工作流包导出：含依赖闭包」、901 行「签名校验 + 版本兼容检查」明确要求包导出/导入能力，AC-13~17 承接；需求 D-13 只授权了 `main.js` / `labels.js` / `handoff-schema.js` / `event-bus.js`，**漏点名** roles.js/workflows.js 的 export/import 段。
+- 模板 §2.8 优先级含「AC Then > 附录 D」，但授权清单是「只改授权段」纪律的尺子，越权需主控书面扩清单，不能仅凭优先级默认放行。
+
+**裁决**：
+1. **正式扩 D-13 授权清单**：追加 `src/cli/roles.js` 的 `exportRole` / `importRole` / `roleCommand` 的 export/import 分发子段（约 852~945、1164~1165，以符号锚点定位、行号漂移以符号为准），以及 `src/cli/workflows.js` 的 `workflowCommand` 中与工作流包 export/import 相关的子段——仅这些 handler 段可改，用于承接 AC-13~17 的依赖闭包导出、签名校验、版本兼容与 `orch migrate` 引用升级。
+2. **只加不改**：既有 `role export` / `role import` / `workflow` 命令的对外行为、既有文案键（`ROLE_WRITE_TEXT` 等）、既有失败码逐字保持不变；新增校验以链末尾追加方式接入（与 D-4/D-13 既有授权段风格一致），不放宽任何既有断言。
+3. WP-4 对这两文件的改动**维持既定交付**（拆分写法正确），SR-01 阻断据此闭合；拆分 §8.2 冲突 9 的状态从「请主控确认」改为「裁决 B 已授权」。
+4. `event-bus.js:111-116` 授权段漂移（SR-03 建议）：行号以符号锚点为准，新增导出落在 ZERO_HASH 附近若属同一只读校验模块的合理落点即可，不要求死守 111-116 行号。
+
+**对需求的影响**：仅扩 D-13 授权清单的授权文件段；无 AC / BR / NF 条目增删，无 Then 改动。修订由拆分修复 Agent 落到拆分文档 §8.2 与（如必要）需求附录 D-13 的授权补注，主控复核。
+
+---

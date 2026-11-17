@@ -7,7 +7,7 @@
 | 阶段 | 任务 | 负责角色 | 开始 | 结束 | 结论 | 产物 | 评审 |
 |---|---|---|---|---|---|---|---|
 | S0 | 需求生成与评审闭环 | 撰写/修复/理解 Agent | 2026-11-17 | 2026-11-18 | **PASS**（DoR 12 绿/1 黄/0 红，S0 Gate 满足） | `requirement.md` v2（23 AC / 19 BR / 5 NF）、`decisions.md`（裁决 A）、`review-round1/2.md`、`requirement-understanding.md` | round1 PASS（0 阻断/6 建议）→ 吸收建议出 v2 → round2 PASS（0 阻断/6 建议移交 S1 §7） |
-| S1 | 拆分 / 选型（8 节 + AC→WP 满覆盖） | 拆分 Agent | — | — | 待开始 | `iteration-12.md` | 待评审 |
+| S1 | 拆分 / 选型（8 节 + AC→WP 满覆盖） | 拆分 Agent | 2026-11-18 | 2026-11-18 | **PASS**（round1 FAIL 1 阻断 → 裁决 B 扩授权 → round2 PASS 0 阻断） | `iteration-12.md`（7 WP / 35 文件零交集 / 23/23 覆盖）、`split-review.md`、`split-review-round2.md` | round1 FAIL（SR-01 roles.js/workflows.js 授权缺口）→ 裁决 B → 修复 → round2 PASS（0 阻断/1 建议）|
 | S2 | 分批次实现 | 实现 Agent | — | — | 待开始 | `src/**` `test/**` | 逐批评审 |
 | S3 | 验收逐条取证 | 验收 Agent | — | — | 待开始 | `acceptance-*.md` `evidence/**` | 主控复跑 |
 | S4 | 终验与收口 | 终验 Agent | — | — | 待开始 | `final-verification.md` `report.md` `summary.json` | 六项校验 |
@@ -33,4 +33,5 @@
 - 2026-11-17：创建分支 `feat/i1.12-governance`（基线 `0b12bd8`），未带入 I1.11 改动。
 - 2026-11-17：S0 需求 v1（23 AC）→ round1 PASS（0 阻断/6 建议）→ 吸收建议出 v2 + 裁决 A → round2 PASS（0 阻断）。
 - 2026-11-18：需求理解纪要完成，13 条 DoR 12 绿/1 黄/0 红，S0 Gate 满足。
+- 2026-11-18：S1 拆分 round1 FAIL（SR-01：WP-4 用 roles.js/workflows.js 但 D-13 未授权）→ 裁决 B 正式扩 D-13 授权（只授权 export/import handler 段、只加不改）→ 需求 v2→v2.1 补授权 + 拆分修复 → round2 PASS（0 阻断）。修正拆分文档 4 处错误码笔误 `HAND_OFF_HASH_MISMATCH`→`HANDOFF_HASH_MISMATCH`（真实码，handoff-schema.js:24）。
 - 历史证据 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 曾被评审跑全量测试覆盖写，已用 `git -c core.autocrlf=false checkout-index -f` 恢复（内容 diff 空）。
