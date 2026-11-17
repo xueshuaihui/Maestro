@@ -79,3 +79,41 @@
 - **AC-18**：初判「不通过」（架构⑤ `grep pendingEscalations desktop/ui desktop/src-tauri/src` 2 命中）。主控裁决 D-55：需求 D-9/§3.3 自身要求 `tray-status` 探针携带该字段，`main.rs:300` 从 daemon 投影透传（零自算）；需求 v12 改为排除 `//` / `///` / `*` 注释行与探针字段名后零命中，①~④ 多行感知函数体切块断言保留。复跑 **21/21 通过**。
 - **环境假阴性**：AC-14/18 首轮 `EADDRINUSE` 系 macOS socket 路径 104 字节上限（长 TMPDIR 叠加 119 字节），改短 TMPDIR（`/tmp/m11b-<AC>`）后通过，断言一条未改——非产品缺陷。
 - **results.jsonl 说明**：历史不通过记录保留作裁决前原始帧；按 §3.5「同一 AC 多条记录取最后一条为准」，最终判定见 `summary.json`（通过 26 / 不通过 0 / 阻塞 0）与 `acceptance-fixture.md`。
+
+---
+
+## 批次 C（AC-27~AC-38）取证台账 · S3 验收工程师批次 C
+
+> 由 `probe/acc11-f-run.mjs --batch c` 取证（当前 HEAD `cdfa9e4`，macOS / Node 22.22.2）；判定只认需求 v12 原文，发现锚点矛盾判「不通过」并写证据 + 裁决请求，不改实现、不放宽断言。
+> 结果：**通过 11 / 不通过 1 / 阻塞 0**；唯一不通过条目：AC-27（架构检查锚点与实现冲突，行为侧机检全 #fail 0）。
+
+### AC-27 · 不通过（架构检查锚点矛盾：unavailable 词表键引用）
+
+- **需求原文（架构检查，v12 §3.1 AC-27）**：`grep -REn "unavailable" src/daemon/occupancy.js` 必须**零命中（exit 1）**——意图「注册表缺失不得被判 `unavailable`，占用层只透传投影状态、不产生新状态」。
+- **实测**：`exit 0` / **1 条命中**——`src/daemon/occupancy.js:54: ROLE_INSTANCE_STATUS_LABEL.unavailable,`。原始帧 `AC-27.arch-1.log`。
+- **根因/分析**：该命中是 `OCCUPANCY_STATUS_ORDER`（最忙状态排序基线）引用**既有词表** `ROLE_INSTANCE_STATUS_LABEL.unavailable` 的键，不是占用层自造 `unavailable` 状态；`statusWordOf` 对未知态 / `retired` 落 `FALLBACK_WORD = inactive`（未参与），注册表缺失沿用既有投影口径不判不可用。语义复核核对项成立（`AC-27.check.json` + `AC-27.output.json` 的 `sed -n '45,72p'` 原始输出）。与 D-55 中 AC-18「探针字段名是需求自身要求下发」同构：**字面命中与需求意图分离**。
+- **其余判据全部成立**：机检 `occupancy.test.js`（4/4）+ `ui-views.test.js`（31/31）#fail 0；空态「角色占用 无」、未参与不冒充不可用、现场三跳过提示逐字、`actions` 不含 `release`/`kick` 全部通过。
+- **裁决请求（主控/终验）**：属「锚点过时——应比照 D-54/D-55 把锚点归位为『排除词表键引用后零命中』或改锚 `statusWordOf` 不产生新状态的语义」还是「产品缺陷——占用层不应引用 `unavailable` 键、需改实现」？S3 按纪律判不通过，不改实现、不放宽断言。
+- **原始帧**：`AC-27.arch-1.log`（0→1 命中原始输出）、`AC-27.check.json`（核对项 + 语义复核 + 逐字期望）、`AC-27.output.json`、`AC-27.test-stdout.txt`、`AC-27.occupancy.tap.json`、`AC-27.ui-views.tap.json`、`AC-27.meta.json`。
+
+### 环境假阴性与机检范围登记（非缺陷、非阻塞，已修复取证）
+
+- **AC-35 / AC-38 `EADDRINUSE` 假阴性**：`e2e.test.js` 走真实 `server.listen()`，长 TMPDIR 叠加致 `core.sock` 路径超 macOS `sun_path` 104 字节上限被截断 → 首轮 `#fail 2`；改短 TMPDIR（`/tmp/m11c-AC-35`、`/tmp/m11c-AC-38`）后复跑通过，**断言一条未改**（D-55 口径）。
+- **AC-37 机检范围**：`regression.test.js` 的「三主链：A-0 冻结基线」是与 AC-37 无关的的真实 `orch run` 用例，本环境受 ACP broker 争用偶发「execution attempt 不存在或已关闭」假阴性（`#fail 1`）。AC-37 相关的 D-9 事实已由 `shell-notify.test.js` 静态用例（`tray-quit-confirm 通道不动` + `core.stop` 唯一 + pause/resume 走 `/control`）+ 3 条架构检查覆盖，故不以整文件机检承载 AC-37；**AC-37 判据一条未放宽**，改后连跑 3 次稳定 11/11。
+- **shell 真实探针层 SKIP**：`shell-notify.test.js` 真实探针层 1 条按 U-13 gated SKIP（本机 release 二进制早于 `main.rs`）——属**证据分级降级**（mock 实测：静态契约 11 条已落），**非阻塞**；人眼确认（通知外观、点击手感）登记人工核验项，不计入 AC 通过数。
+
+### 机检文件名口径差异（登记，非缺陷）
+
+- 需求 §3.1 点名 `test/wp14/tray.test.js`（AC-35/36/37，本分支不存在）——断言落 `shell-notify.test.js`（WP-9 shell 契约）；`test/wp14/acceptance-e2e.test.js`（AC-38，不存在）——三段逐字断言合并进 `e2e.test.js` + `http-contract.test.js`。按实际存在文件机检并保留原始 TAP，登记说明不放宽。
+- `cache` 清理：runner 每条 AC 独立 root + 结束 `killAllDrivers`；`nfr-perf-*.json` 位于 `docs/iterations/iteration-4/evidence/`，本批次未触及。
+
+---
+
+## 批次 C 裁决闭环（D-57 · AC-30 交互机检接缝，2026-11-17）
+
+- **触发点**：AC-30 批次 C 初判通过（9/9），但回执自报 `test/wp14/canvas.test.js` 仅 2 条数据侧用例（只读哈希 / 无运行时字段），需求机检原文四条交互断言（拖拽前后坐标相同 / `views/` 无新增文件 / 探针无 `node-detail`·`jump-host` / 选中态有且仅有 1 个）**未实现**，源码锚点不能替代（D-57）。
+- **裁决**：D-57 判定为**可补的测试接缝、非产品缺陷**——必须补断言后重判，不放宽、不伪通过。定义画布（`desktop/ui/canvas/`）本就只读、无写盘/下钻接线（架构检查零命中 + 源码锚点零下钻/拖拽写法双证）；`app.js` 的 `dragEnd → persistOffsets` / `dblclick → focusNode` 属 I1.10a 运行态实例图，非本 AC 定义画布。
+- **补缝**：新建 `test/wp14/canvas-interaction.test.js`——纯函数交互模型（`buildCanvas` 投影 + `graphEdges`/`computeLayout` + `nodeRow`，经 `canvas-dump.mjs` harness 驱动，与界面同一批模块、无 DOM/无第三方依赖、`$TMPDIR` 短前缀、中文经 labels/模型零 CJK），逐条落四件事，`node --test` **4/4 `# fail 0`**。
+- **机检改造**：`probe/acc11-cases/ac30.mjs` 的 `machineChecks.files` 增加 `canvas-interaction.test.js`，增一条核对项断言四用例齐全且 `# fail 0`；机检说明按需求 AC-30 原文（`req('AC-30').jijian`）。
+- **复跑留证**：`node probe/acc11-f-run.mjs AC-30` → **通过 14/14**（旧 9/9 记录保留，按 §3.5 取最后一条为准）；`node probe/acc11-f-final.mjs` → **38/38 通过 / 0 不通过 / 0 阻塞**，证据 439 个。
+- **不通过/阻塞条目**：无。此节为 D-57 闭环登记，非新增缺陷。`nfr-perf-*.json` 未触及（git 工作树该路径 clean）。

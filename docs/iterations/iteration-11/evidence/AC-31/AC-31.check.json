@@ -1,0 +1,98 @@
+{
+  "ac": "AC-31",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-31",
+    "title": "画布降级：定义不可读、定义 空与校验失败",
+    "given": "`/tmp/maestro-i11-canvas-degraded` 项目根，三个现场：① 工作流文件**存在但内容整体不可解析**（写入 `{{{{`）；② 工作流文件**不存在**（同一目录下无该文件，或以 `chmod 000` 使其不可读）；③ 工作流可解析但有一条边指向不存在的节点（结构可解析、校验失败）。",
+    "when": "分别打开三个现场的画布。",
+    "then": [
+      "现场一显示\"定义不可读 · 仅显示可解析部分\"，无任何可解析节点时画布为空但**保留返回入口**；现场二显示\"定义 空\"且没有任何节点块；现场三正常画出全部节点，标题旁标\"校验不通过\"；三者都不白屏、不打印堆栈，返回入口都在。"
+    ],
+    "jijian": "`test -f test/wp14/canvas.test.js && NODE_ENV=test node --test test/wp14/canvas.test.js`，断言现场一文案逐字且 `nodes.length === 0`、现场二文案逐字且 `nodes.length === 0`、现场三 `valid === false` 且 `nodes.length === 定义节点数`；三现场都能取到返回入口、`stderr` 无堆栈；`# fail 0`。",
+    "fixture": "三个独立项目根；现场一写 `{{{{`，现场二删文件（或 `chmod 000`，取证后恢复），现场三写入悬空边。",
+    "archText": "降级不得整块清空画布、不得把不可读当空定义静默处理；`grep -REn \"nodes = [][]\" desktop/ui/canvas/` 必须**零命中（exit 1）**；`grep -REn \"catch *[(][^)]*[)] *[{] *[}]\" desktop/ui/canvas/` 必须**零命中（exit 1）**（不得用空 catch 吞掉解析错误）。",
+    "refs": "BR-19, BR-32",
+    "risk": "中"
+  },
+  "checks": [
+    {
+      "text": "机检 canvas.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=id 全降级、重复 id 只画首个\n  ---\n  duration_ms: 90.594577\n  type: 'test'\n  ...\n# Subtest: 未知 id 与空 id 不抛错，按「定义 空」处理\nok 13 - 未知 id 与空 id 不抛错，按「定义 空」处理\n  ---\n  duration_ms: 38.520785\n  type: 'test'\n  ...\n1..13\n# tests 13\n# suites 0\n# pass 13\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 976.115935\n",
+      "expected": null
+    },
+    {
+      "text": "机检 canvas.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 canvas.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 13 / # tests 13",
+      "expected": null
+    },
+    {
+      "text": "机检 canvas.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-31 架构①：降级不得整块清空画布（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"nodes = [][]\" desktop/ui/canvas/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #2：AC-31 架构②：不得用空 catch 吞掉解析错误（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"catch *[(][^)]*[)] *[{] *[}]\" desktop/ui/canvas/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "现场一：文件存在但内容整体不可解析（{{{{）→「定义不可读 · 仅显示可解析部分」，无可解析节点时 nodes.length=0、保留返回入口",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-31 现场一：文件在但整体不可解析 → 定义不可读原因",
+      "expected": "文案逐字「定义不可读 · 仅显示可解析部分」；nodes.length === 0"
+    },
+    {
+      "text": "现场二：文件不存在 / 无读权限 →「定义 空」且 nodes.length=0（B-1：readable=true、零节点）",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-31 现场二：文件不存在 / 无读权限 → 定义 空（readable=true、零节点）",
+      "expected": "文案逐字「定义 空」；不显示「定义不可读」"
+    },
+    {
+      "text": "现场三：悬空边结构可解析、校验失败 → 正常画出全部节点、valid=false、标题旁标「校验不通过」",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-31 现场三：悬空边照常画出，标题旁标校验不通过（原因与 CLI 逐字）",
+      "expected": "valid === false 且 nodes.length === 定义节点数"
+    },
+    {
+      "text": "三现场都不白屏、不打印堆栈，返回入口都在；stderr 无堆栈",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 13 / # fail 0",
+      "expected": "三现场都能取到返回入口、stderr 无堆栈"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "现场一显示\"定义不可读 · 仅显示可解析部分\"，无任何可解析节点时画布为空但**保留返回入口**；现场二显示\"定义 空\"且没有任何节点块；现场三正常画出全部节点，标题旁标\"校验不通过\"；三者都不白屏、不打印堆栈，返回入口都在。",
+      "expected": "现场一显示\"定义不可读 · 仅显示可解析部分\"，无任何可解析节点时画布为空但**保留返回入口**；现场二显示\"定义 空\"且没有任何节点块；现场三正常画出全部节点，标题旁标\"校验不通过\"；三者都不白屏、不打印堆栈，返回入口都在。"
+    }
+  ]
+}

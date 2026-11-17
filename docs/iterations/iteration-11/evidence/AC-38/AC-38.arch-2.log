@@ -1,0 +1,7 @@
+49:import { buildQueue, decideEscalation, decideApproval, cancelInstance } from '../queue.js';
+51:import { buildOccupancy } from '../occupancy.js';
+53:import { buildEvidence } from '../evidence.js';
+546:    sendJson(res, 200, buildQueue(projectRoot, { instances }));
+556:    sendJson(res, 200, buildOccupancy(projectRoot, { instances }));
+580:        const payload = buildQueue(projectRoot, { instances });
+650:    const payload = await buildEvidence(projectRoot, instanceId, nodeId ?? null);

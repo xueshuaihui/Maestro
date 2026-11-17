@@ -1,0 +1,1 @@
+desktop/src-tauri/src/tray.rs:445:        "v": 1, "kind": "req", "id": "shell-stop", "method": "core.stop", "params": {}

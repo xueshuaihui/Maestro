@@ -1,0 +1,2 @@
+desktop/ui/canvas/canvas.js:26: *   caller can reuse `graph/layout.js` `computeLayout` without a second layout.
+desktop/ui/canvas/canvas.js:174: * Edges shaped for `graph/layout.js` `computeLayout` (D-4): stable ids plus a

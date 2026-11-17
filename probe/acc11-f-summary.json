@@ -1,14 +1,14 @@
 {
-  "batch": "a+b",
+  "batch": "a+b+c",
   "acFrom": "AC-01",
-  "acTo": "AC-26",
-  "head": "2a829da",
-  "通过": 26,
+  "acTo": "AC-38",
+  "head": "cdfa9e4",
+  "通过": 38,
   "不通过": 0,
   "阻塞": 0,
-  "acCount": 26,
+  "acCount": 38,
   "missing": [],
-  "evidenceFileCount": 291,
+  "evidenceFileCount": 439,
   "perAc": [
     {
       "id": "AC-01",
@@ -546,6 +546,276 @@
           "exit": 0,
           "fail": 0,
           "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-27",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "占用视图空态与\"未参与\"，不冒充\"不可用\"",
+      "face": "占用 / 边界 / 机检",
+      "checks": 17,
+      "ok": 17,
+      "testRuns": [
+        {
+          "file": "occupancy.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 4
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-28",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "占用随运行时变化更新且与流程图同源",
+      "face": "占用 / 实时 / 同源 / 机检",
+      "checks": 17,
+      "ok": 17,
+      "testRuns": [
+        {
+          "file": "occupancy.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 4
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-29",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "工作流画布：定义态角色图（规划验收句外的独立判据）",
+      "face": "画布 / 定义态 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "canvas.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 13
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-30",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "画布只读：不能拖拽保存、不能下钻",
+      "face": "画布 / 只读 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "canvas.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 13
+        },
+        {
+          "file": "canvas-interaction.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 4
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-31",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "画布降级：定义不可读、定义 空与校验失败",
+      "face": "画布 / 降级 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "canvas.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 13
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-32",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "证据视图：按节点看五项",
+      "face": "证据 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "evidence.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 5
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-33",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "缺项\"未提供\"与引用不可读",
+      "face": "证据 / 异常 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "evidence.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 5
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-34",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "证据不展示正文、不泄露会话内容",
+      "face": "证据 / 边界 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "evidence.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 5
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-35",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "托盘信息行：实例数与待处理升级数",
+      "face": "托盘 / 信息行 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        },
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-36",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "托盘暂停与继续",
+      "face": "托盘 / 暂停继续 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-37",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "暂停不改变退出语义，且暂停期间不产生新通知",
+      "face": "托盘 / 退出语义 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-38",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "规划验收句端到端（逐字三段）",
+      "face": "规划验收 / 端到端 / 机检",
+      "checks": 21,
+      "ok": 21,
+      "testRuns": [
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        },
+        {
+          "file": "http-contract.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 18
+        },
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
         }
       ],
       "evidenceCount": 5
