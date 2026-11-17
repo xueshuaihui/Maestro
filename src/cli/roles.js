@@ -851,6 +851,38 @@ async function editRole({ parsed, flags, ctx, out, registry, workflows }) {
 
 async function exportRole({ parsed, flags, ctx, out, registry }) {
   const id = parsed.positional;
+  // WP-4 / decision B (authorized segment): signed package export hook. It is
+  // active only with --package; the single-role YAML export below keeps its
+  // exact byte-for-byte behavior for every existing invocation.
+  if (flags.package === true) {
+    const pack = await import('../core/pack.js');
+    const built = pack.buildPackage({
+      asset: {
+        type: 'role',
+        id,
+        version: Number.isInteger(flags.version) ? flags.version : undefined
+      },
+      registry,
+      root: ctx.cwd
+    });
+    if (!built.ok) {
+      out(built.code);
+      return EXIT_FAILED;
+    }
+    const payload = JSON.stringify(
+      { manifest: built.manifest, files: built.files, compat: { min: 1, max: 99 } },
+      null,
+      2
+    );
+    if (typeof flags.out === 'string') {
+      const packed = await atomicWrite({ target: path.resolve(ctx.cwd, flags.out), text: payload });
+      if (!packed.ok) return writeFailure(out, packed.code);
+    } else {
+      out(payload);
+    }
+    out(fill(ROLE_WRITE_TEXT.exported, { id, file: flags.out ?? '' }));
+    return EXIT_OK;
+  }
   const entry = registry.roleMap.get(id);
   if (entry === undefined) {
     out(fill(ROLE_CLI_TEXT.notFoundRole, { id }));
@@ -873,6 +905,51 @@ async function exportRole({ parsed, flags, ctx, out, registry }) {
 
 async function importRole({ parsed, flags, ctx, out, registry, workflows }) {
   const fileArg = parsed.positional;
+  // WP-4 / decision B (authorized segment): package import gate, added before
+  // any write. A signed package is verified first; the existing YAML import
+  // body below is unchanged for every ordinary role file.
+  {
+    const raw = readTextFile(path.resolve(ctx.cwd, fileArg));
+    let pkg = null;
+    if (raw !== null) {
+      try {
+        const candidate = JSON.parse(raw);
+        if (candidate && candidate.manifest && candidate.signature && candidate.compat) {
+          pkg = candidate;
+        }
+      } catch {
+        // Not a package: fall through to the unchanged YAML import path.
+      }
+    }
+    if (pkg !== null) {
+      const pack = await import('../core/pack.js');
+      let key = flags['public-key'] ?? ctx.publicKey;
+      if (typeof key === 'string') key = readTextFile(path.resolve(ctx.cwd, key)) ?? key;
+      const systemVersion = Number.isInteger(flags.version)
+        ? flags.version
+        : Number.isInteger(ctx.systemVersion)
+          ? ctx.systemVersion
+          : undefined;
+      const checked = pack.verifyPackage({ pkg, publicKey: key, systemVersion });
+      if (!checked.ok) {
+        out(fill(ROLE_WRITE_TEXT.importRejected, { detail: checked.code, code: checked.code }));
+        return EXIT_FAILED;
+      }
+      const imported = await pack.importPackage({
+        pkg,
+        publicKey: key,
+        systemVersion,
+        root: ctx.cwd
+      });
+      if (!imported.ok) {
+        out(fill(ROLE_WRITE_TEXT.importRejected, { detail: imported.code, code: imported.code }));
+        return EXIT_FAILED;
+      }
+      out(fill(ROLE_WRITE_TEXT.installed, { file: fileArg }));
+      out(ROLE_WRITE_TEXT.checkPassed);
+      return EXIT_OK;
+    }
+  }
   const text = readTextFile(path.resolve(ctx.cwd, fileArg));
   if (text === null) {
     out(fill(ROLE_WRITE_TEXT.importFileMissing, { file: fileArg }));
@@ -1161,6 +1238,9 @@ export async function roleCommand(parsed, ctx) {
   const workflows = loadContractWorkflows(ctx.cwd).workflowMap;
   if (sub === 'create') return createRole({ parsed, flags, ctx, out, registry, workflows });
   if (sub === 'edit') return editRole({ parsed, flags, ctx, out, registry, workflows });
+  // WP-4 / decision B: the export/import handlers above route through pack.js
+  // for signed packages; the ordinary YAML path and every existing sentence,
+  // label key and failure code below stay byte-identical.
   if (sub === 'export') return exportRole({ parsed, flags, ctx, out, registry });
   if (sub === 'import') return importRole({ parsed, flags, ctx, out, registry, workflows });
   if (sub === 'diff') return diffRole({ parsed, flags, format, ctx, out, registry });

@@ -816,6 +816,89 @@ export async function workflowCommand(parsed, ctx) {
         id: positional,
         task: typeof flags.task === 'string' ? flags.task : ''
       });
+    // WP-4 / decision B (authorized segment): workflow package export/import.
+    // Only these two new cases are added; every existing case below is unchanged.
+    case 'export':
+    case 'import': {
+      const pack = await import('../core/pack.js');
+      if (parsed.sub === 'export') {
+        const workflow = collection.workflows.workflowMap.get(positional);
+        if (workflow === undefined) return notFound(out, positional);
+        const built = pack.buildPackage({
+          asset: {
+            type: 'workflow',
+            id: positional,
+            version: Number.isInteger(flags.version) ? flags.version : undefined
+          },
+          registry: collection.registry,
+          root: ctx.cwd
+        });
+        if (!built.ok) {
+          out(built.code);
+          return EXIT_FAILED;
+        }
+        const payload = JSON.stringify(
+          { manifest: built.manifest, files: built.files, compat: { min: 1, max: 99 } },
+          null,
+          2
+        );
+        if (typeof flags.out === 'string') {
+          const written = await atomicWrite({
+            target: path.resolve(ctx.cwd, flags.out),
+            text: payload
+          });
+          if (!written.ok) {
+            out(written.code);
+            return EXIT_FAILED;
+          }
+        } else {
+          out(payload);
+        }
+        out(fill(WORKFLOW_CLI_TEXT.created, { file: flags.out ?? '' }));
+        return EXIT_OK;
+      }
+
+      const raw = positional.length > 0 ? readText(path.resolve(ctx.cwd, positional)) : null;
+      let pkg = null;
+      if (raw !== null) {
+        try {
+          const candidate = JSON.parse(raw);
+          if (candidate && candidate.manifest && candidate.signature && candidate.compat) {
+            pkg = candidate;
+          }
+        } catch {
+          // Not a package: the command has no legacy workflow-import behavior.
+        }
+      }
+      if (pkg === null) {
+        out(render.renderUsage(WORKFLOW_CLI_TEXT.notImplemented));
+        return EXIT_USAGE;
+      }
+      let key = flags['public-key'] ?? ctx.publicKey;
+      if (typeof key === 'string') key = readText(path.resolve(ctx.cwd, key)) ?? key;
+      const systemVersion = Number.isInteger(flags.version)
+        ? flags.version
+        : Number.isInteger(ctx.systemVersion)
+          ? ctx.systemVersion
+          : undefined;
+      const checked = pack.verifyPackage({ pkg, publicKey: key, systemVersion });
+      if (!checked.ok) {
+        out(checked.code);
+        return EXIT_FAILED;
+      }
+      const imported = await pack.importPackage({
+        pkg,
+        publicKey: key,
+        systemVersion,
+        root: ctx.cwd
+      });
+      if (!imported.ok) {
+        out(imported.code);
+        return EXIT_FAILED;
+      }
+      out(`${checked.labelKey} ${imported.installed.length}`);
+      return EXIT_OK;
+    }
     default:
       // Unreachable: `parseArgs` rejects unknown subs before dispatch (WP-5).
       out(render.renderUsage(WORKFLOW_CLI_TEXT.notImplemented));
