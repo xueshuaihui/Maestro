@@ -407,3 +407,12 @@
   3. **AC-13 ② —— fixture 角色对调**：需求 Given 明写 `INST-001` 升级 / `INST-002` 审批，期望序列 `[[2,1,1,1],[1,0,0,1],[0,0,0,0]]`；WP-2 测试把角色对调得 `[[2,1,1,1],[1,0,1,0],…]`。**改测试 fixture 回需求 Given 顺序**（在 `test/wp14/queue.test.js` 为 AC-13 单独构造 INST-001 升级 / INST-002 审批），使需求机检逐字成立；不改需求期望。
   4. AC-09~13 机检文件名 `queue-actions.test.js` / `queue-cross.test.js` 与本分支实际 `queue.test.js` 不符——V7 前已合并；需求 v11 在机检行加注「或合并后的 `queue.test.js`」，判据不变。
 - **影响面**：需求 v11（AC-12/13 架构检查 + 机检文件名注记）、`test/wp14/queue.test.js`（AC-13 现场 fixture）、S3 批次 A 复验 AC-12/13。
+
+## D-55 · S3 批次 B 两条裁决：AC-15 结论词锚点归位；AC-18 探针字段零命中改为「零自算」
+
+- **触发点**：S3 验收 Agent 批次 B：AC-15 `grep ESCALATION_NOT_PENDING src/daemon/queue.js` 0 命中；AC-18 `grep pendingEscalations desktop/ui desktop/src-tauri/src` 2 命中（tray.rs:103 注释 + :113 探针字段）。两条行为侧/其余架构侧全部通过。
+- **裁决依据**：§2.6.2 主控回需求原文裁；D-11 禁改核心；D-36「界面零计算」的语义是**不自行计数**，不是不许出现下发字段名；需求自身 D-9/§3.3 明确要求 `tray-status` 探针携带 `pendingEscalations`。
+- **决定**：
+  1. **AC-15 —— 锚点过时（比照 D-54）**：`ESCALATION_NOT_PENDING` 的事实原子在核心 `src/core/escalation.js:89` / `orchestrator.js:5049`（D-11 禁改），queue.js 按 D-1 只做 `forward` 且用 `QUEUE_ERROR_CONCLUSIONS = DESKTOP_QUEUE_CONCLUSIONS`（:50）按 code 取结论词（:260）——正是「把核心返回的已处理映射为固定文案、不自行判重」的正确实现。需求 v12 架构检查改为：`grep -REn "ESCALATION_NOT_PENDING" src/core/escalation.js src/core/orchestrator.js | head -1` ≥1 命中（exit 0）且 `grep -REn "QUEUE_ERROR_CONCLUSIONS|DESKTOP_QUEUE_CONclusions" src/daemon/queue.js | head -1` ≥1 命中（exit 0）——合起来等价原语义。**行为判定（逐字提示 + 裁决次数 1 + 轮次 +1 + 队列清零）不变**。
+  2. **AC-18 —— 需求内部矛盾，架构⑤改为零自算**：需求 D-9/§3.3 要求 `tray-status` 探针字段 `pendingEscalations`，字面零命中不可能成立；两命中分别是**注释行**与**探针字段透传**（`main.rs:300` 从 daemon `/instances` 的 `item.pending.escalations` 读，未经壳层计数）。需求 v12 把架构⑤改为：`grep -REn "pendingEscalations" desktop/ui desktop/src-tauri/src | grep -vE ':\s*[0-9]+:\s*\*' | grep -vE '"pendingEscalations"\s*:'` 零命中（exit 1）——排除注释行与探针字段名，保留对真实自算表达式的零命中要求；配合既有 ①~④ 的多行感知 + 函数体切块断言（D-53），「界面/壳层零自算」语义**不放宽**。
+- **影响面**：需求 v12（AC-15/18 架构检查）、`probe/acc11-cases/ac15.mjs` / `ac18.mjs` 判据同步、S3 批次 B 复验。
