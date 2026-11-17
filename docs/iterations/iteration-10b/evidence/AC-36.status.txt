@@ -1,0 +1,39 @@
+$ "(fixture) 独立项目根（%TEMP%，NODE_ENV=test，mock 宿主）"
+# label=夹具：独立项目根（%TEMP%，NODE_ENV=test，mock 宿主） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-36
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe --test D:\WWW\Maestro\test\wp14\subworkflow-drill.test.js
+# label=node --test test/wp14/subworkflow-drill.test.js cwd=D:\WWW\Maestro exit=0 202ms
+TAP version 13
+# Subtest: AC-17 three-level breadcrumbs and reused computeLayout coordinates
+ok 1 - AC-17 three-level breadcrumbs and reused computeLayout coordinates
+  ---
+  duration_ms: 3.0454
+  type: 'test'
+  ...
+# Subtest: AC-18 three degradations: unreadable ref, cycle, empty
+ok 2 - AC-18 three degradations: unreadable ref, cycle, empty
+  ---
+  duration_ms: 0.2876
+  type: 'test'
+  ...
+# Subtest: AC-36 four breadcrumb levels 1/2/3/4 and three single-step returns
+ok 3 - AC-36 four breadcrumb levels 1/2/3/4 and three single-step returns
+  ---
+  duration_ms: 0.4011
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 108.9564
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-36 exit=0 114ms
+核心未在运行

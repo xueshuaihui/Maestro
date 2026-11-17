@@ -1,0 +1,10 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] 空卡片不清空面板、不短路渲染（与 AC-48 同一锚点）
+$ grep -REn "if \\(!cards\\.length\\) return|return null" "desktop/ui/drill/cards.js"
+expect=zero exit=1 hits=0 OK
+(零命中)
+[2] 重取路径不得写盘（saveState|appendSpan|emit( 零命中）
+$ grep -REn "saveState|appendSpan|emit\\(" "src/daemon/drill.js"
+expect=zero exit=1 hits=0 OK
+(零命中)

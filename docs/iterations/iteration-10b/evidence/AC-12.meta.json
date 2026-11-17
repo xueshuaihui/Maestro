@@ -1,0 +1,28 @@
+{
+  "ac": "AC-12",
+  "title": "会话状态时间线：跨会话按时间正序合并",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:25:11.020Z",
+  "finishedAt": "2026-11-16T17:25:11.432Z",
+  "durationMs": 412,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-12",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-12"
+    }
+  ],
+  "checks": 13,
+  "notes": [
+    "Then 逐字：5 行按 09:12:03 / 09:13:10 / 09:13:40 / 09:14:02 / 09:15:41 正序，每行形如「09:12:03 执行中」；机检断言时间列严格不降序、状态词序列逐项相等、行数 5、形态正则。",
+    "时间线只读事件回放，不读系统时间（Date.now 零命中）。"
+  ]
+}

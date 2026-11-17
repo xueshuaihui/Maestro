@@ -1,0 +1,28 @@
+{
+  "ac": "AC-19",
+  "title": "连接线面板：交接包列表、每包时间线、历史轮次",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:36:36.041Z",
+  "finishedAt": "2026-11-16T17:36:36.691Z",
+  "durationMs": 650,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-19",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-19"
+    }
+  ],
+  "checks": 16,
+  "notes": [
+    "Then 逐字：标题「连接 开发→测试 · 正向 · 已拒绝 · 2 并行交接」（按基线优先级聚合为已拒绝；2 并行指第 3 轮两包并行）；4 行倒序 HO-010/HO-011/HO-009/HO-008（行数=交接包个数=4，并行不合并行）。",
+    "HO-010 行时间=其最近活动 09:12:41=展开时间线末条 09:12:41（一致）；时间线恰好 [09:12:40 已构造, 09:12:41 已投递]，不补未发生的已接受；第 1、2 轮可展开显示拒绝/过期原因；「测试→协调者」显示「交接 无」。"
+  ]
+}

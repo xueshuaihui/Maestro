@@ -1,0 +1,28 @@
+{
+  "ac": "AC-41",
+  "title": "卡片缺值：标题或角色名缺失时显示 `—`",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:34:18.327Z",
+  "finishedAt": "2026-11-16T17:34:18.666Z",
+  "durationMs": 339,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-41",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-41"
+    }
+  ],
+  "checks": 10,
+  "notes": [
+    "Then 逐字锚点（requirement.md:886）：T-033 标题行「卡片 T-033 · — · 轮次 1/1 · 待执行」；T-034 执行行「执行 — · 执行中 · 已运行 3m · 工具 —」；两行不含空串/undefined/null。",
+    "语义断言（F4-12）：来源置换——把投影标题改为 TBD，卡片原样显示 TBD，证明卡片只渲染投影值、不自造 —/undefined/null；本 AC 不设 grep 锚点。"
+  ]
+}

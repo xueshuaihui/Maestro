@@ -1,0 +1,28 @@
+{
+  "ac": "AC-27",
+  "title": "下钻层实时更新，会话变化不重排",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:36:42.562Z",
+  "finishedAt": "2026-11-16T17:36:43.586Z",
+  "durationMs": 1024,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-27",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-27"
+    }
+  ],
+  "checks": 15,
+  "notes": [
+    "Then 逐字：状态词由可用转服务中（statusWord('serving')，用户不刷新即见）；5 次会话变化只让对应卡片指示器跟着变，卡片顺序 order_before===order_after、DAG 节点集合不变、不整体重绘。",
+    "内部断言（非用户可见）：roleAt-trigger≤2000ms；每张卡片 top/height 差集空、dagCoords 差集空、indicatorFrames≤5。取数路径复用同一 pulse overlay（裁决 H 第 2 条），只翻状态词不翻 servingNodes/hostIcons，属已知限制照实登记。"
+  ]
+}

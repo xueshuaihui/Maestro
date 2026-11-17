@@ -1,0 +1,28 @@
+{
+  "ac": "AC-39",
+  "title": "端点节点没有运行时状态时按「待执行」呈现",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:34:17.267Z",
+  "finishedAt": "2026-11-16T17:34:17.613Z",
+  "durationMs": 346,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-39",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-39"
+    }
+  ],
+  "checks": 11,
+  "notes": [
+    "Then 逐字锚点：T-031 同时在 DAG 与卡片出现、状态词「待执行」、色为待执行色；不隐藏、不显示「状态未知」。",
+    "语义断言（F4-12）：来源置换——把投影输出由 pending 改为 blocked（仅测试内注入），DAG 与卡片同步变「被阻塞」，证明卡片只渲染投影结果、不自造兜底；本 AC 不设 grep 锚点。"
+  ]
+}

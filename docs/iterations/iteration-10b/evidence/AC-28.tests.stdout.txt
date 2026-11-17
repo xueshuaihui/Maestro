@@ -1,0 +1,28 @@
+TAP version 13
+# Subtest: AC-28: 浏览全程三份文件哈希与四组状态不变，三处视图一致
+ok 1 - AC-28: 浏览全程三份文件哈希与四组状态不变，三处视图一致
+  ---
+  duration_ms: 48.0921
+  type: 'test'
+  ...
+# Subtest: AC-28 / NF-4: 40 次导航 opCount=40，fetchCount=30，maxFetchesPerView=1（内部断言）
+ok 2 - AC-28 / NF-4: 40 次导航 opCount=40，fetchCount=30，maxFetchesPerView=1（内部断言）
+  ---
+  duration_ms: 2.4612
+  type: 'test'
+  ...
+# Subtest: AC-28: 唯一写动作「继续」之后才出现状态变化提示（与只读分开记账）
+ok 3 - AC-28: 唯一写动作「继续」之后才出现状态变化提示（与只读分开记账）
+  ---
+  duration_ms: 0.6854
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 242.525

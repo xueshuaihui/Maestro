@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: AC-25 expected derived from maxBy(lastChangedAt); same-source id; UI identifier == sessionId
+ok 1 - AC-25 expected derived from maxBy(lastChangedAt); same-source id; UI identifier == sessionId
+  ---
+  duration_ms: 1.3767
+  type: 'test'
+  ...
+# Subtest: AC-25 order-flip recheck: runtime rewrite of SESS-A.lastChangedAt, three-state evidence
+ok 2 - AC-25 order-flip recheck: runtime rewrite of SESS-A.lastChangedAt, three-state evidence
+  ---
+  duration_ms: 0.3299
+  type: 'test'
+  ...
+# Subtest: AC-26 three degradations verbatim (A-7); no process signal, state unchanged
+ok 3 - AC-26 three degradations verbatim (A-7); no process signal, state unchanged
+  ---
+  duration_ms: 0.7927
+  type: 'test'
+  ...
+# Subtest: AC-33 clicks only: autoSpawn 0, jumpCalls 1 after dedupe, one toast pair
+ok 4 - AC-33 clicks only: autoSpawn 0, jumpCalls 1 after dedupe, one toast pair
+  ---
+  duration_ms: 0.6888
+  type: 'test'
+  ...
+# Subtest: AC-46 launch failure: 跳转失败 · prefix + retryable + state hash unchanged
+ok 5 - AC-46 launch failure: 跳转失败 · prefix + retryable + state hash unchanged
+  ---
+  duration_ms: 0.2598
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 99.5892

@@ -1,0 +1,79 @@
+{
+  "scenario": "ac33",
+  "sessionId": "00c5312e-783d-4915-982a-6c248a6c65b0",
+  "sessionIdSource": "derived-from~/.dsh/sessions (not hardcoded)",
+  "at": "2026-11-16T18:08:47.109Z",
+  "platform": "win32",
+  "trigger": "product openHost() -> resolveDshLaunch default -> real DeepSeek Harness.exe",
+  "steps": [
+    {
+      "phase": "before",
+      "processCount": 0,
+      "pids": []
+    },
+    {
+      "phase": "click-1",
+      "openResult": {
+        "ok": true,
+        "host": "dsh",
+        "sessionId": "00c5312e-783d-4915-982a-6c248a6c65b0",
+        "sessionChoice": "most-recent-active"
+      }
+    },
+    {
+      "phase": "click-2@150ms",
+      "openResult": {
+        "ok": true,
+        "host": "dsh",
+        "sessionId": "00c5312e-783d-4915-982a-6c248a6c65b0",
+        "sessionChoice": "most-recent-active"
+      },
+      "sameObjectReused": true
+    },
+    {
+      "phase": "after+0ms",
+      "processCount": 1,
+      "evoked": true,
+      "exactlyOne": true,
+      "pids": [
+        "35104"
+      ]
+    },
+    {
+      "phase": "after+250ms",
+      "processCount": 1,
+      "evoked": true,
+      "exactlyOne": true,
+      "pids": []
+    },
+    {
+      "phase": "after+1000ms",
+      "processCount": 0,
+      "evoked": false,
+      "exactlyOne": false,
+      "pids": []
+    },
+    {
+      "phase": "after-cleanup",
+      "processCount": 0,
+      "pids": []
+    }
+  ],
+  "openResults": {
+    "first": {
+      "ok": true,
+      "host": "dsh",
+      "sessionId": "00c5312e-783d-4915-982a-6c248a6c65b0",
+      "sessionChoice": "most-recent-active"
+    },
+    "second": {
+      "ok": true,
+      "host": "dsh",
+      "sessionId": "00c5312e-783d-4915-982a-6c248a6c65b0",
+      "sessionChoice": "most-recent-active"
+    },
+    "sameObjectReused": true
+  },
+  "newPids": [],
+  "killAttempts": []
+}

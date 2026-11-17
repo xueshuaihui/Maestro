@@ -1,0 +1,1221 @@
+{
+  "batch": "a",
+  "acRange": "AC-01~AC-15",
+  "total": 15,
+  "通过": 15,
+  "不通过": 0,
+  "阻塞": 0,
+  "evidenceFiles": 120,
+  "perAc": [
+    {
+      "id": "AC-01",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "从角色流程图进入角色下钻，状态栏 / 局部 DAG / 卡片一次可用",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：drill.js 无 saveState/appendSpan（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：drill.js 无宿主 if/switch 硬判（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(st.view, 'drill')（期望含 \"assert.equal(st.view, 'drill')\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'实例 INST-001 / 角色 开发'（期望含 \"'实例 INST-001 / 角色 开发'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'角色栏 开发'（期望含 \"'角色栏 开发'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'2 个活跃会话'（期望含 \"'2 个活跃会话'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'服务 T-001, T-002'（期望含 \"'服务 T-001, T-002'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'宿主 dsh cursor'（期望含 \"'宿主 dsh cursor'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：最近 T-002 · 轮次 2/3 · （期望含 \"最近 T-002 · 轮次 2/3 · \"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(view.cards.length, 5)（期望含 \"assert.equal(view.cards.length, 5)\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(view.cards[0].nodeId, 'T-001')（期望含 \"assert.equal(view.cards[0].nodeId, 'T-001')\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(view.roleBar.activeSessions, 2)（期望含 \"assert.equal(view.roleBar.activeSessions, 2)\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.deepEqual(view.roleBar.servingNodes, ['T-001', 'T-002'])（期望含 \"assert.deepEqual(view.roleBar.servingNodes, ['T-001', 'T-002'])\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.deepEqual(view.roleBar.hostIcons, ['dsh', 'cursor'])（期望含 \"assert.deepEqual(view.roleBar.hostIcons, ['dsh', 'cursor'])\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.ok(st.drillTiming.enteredAt - clickAt <= 1000)（期望含 \"assert.ok(st.drillTiming.enteredAt - clickAt <= 1000)\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(hash(stateFile), before)（期望含 \"assert.equal(hash(stateFile), before)\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 21,
+      "ok": 21,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-02",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "返回流程图后，流程图视图状态原样保留",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：app.js createViewState 恰好 2 处（expect=exact:2）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：drill 内零 new createViewState（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：drill 内零整图重放（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：drill 内零 backToList（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：vs.setZoom(1.5)（期望含 \"vs.setZoom(1.5)\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：vs.setPan(120, -40)（期望含 \"vs.setPan(120, -40)\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：vs.applyOffsets({ 'T-002': { dx: 40, dy: 60 } })（期望含 \"vs.applyOffsets({ 'T-002': { dx: 40, dy: 60 } })\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：vs.focus('T-003', 2)（期望含 \"vs.focus('T-003', 2)\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：app.backToGraph()（期望含 \"app.backToGraph()\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：s1.viewState !== null（期望含 \"s1.viewState !== null\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：s1.viewState.getZoom(), before.zoom（期望含 \"s1.viewState.getZoom(), before.zoom\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：s1.viewState.getPan(), before.pan（期望含 \"s1.viewState.getPan(), before.pan\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：s1.viewState.getOffsets(), before.offsets（期望含 \"s1.viewState.getOffsets(), before.offsets\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：s1.viewState.getFocus(), before.focus（期望含 \"s1.viewState.getFocus(), before.focus\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(hits.length, 2)（期望含 \"assert.equal(hits.length, 2)\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 20,
+      "ok": 20,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-03",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "角色状态栏只出现五个状态词，已结束实例显示「未参与」",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：drill 无自算状态语义（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：daemon 下发状态词表（expect=min1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：desktop/ui + harness 无「已关闭」（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'可用', '服务中', '冷却中', '不可用', '未参与'（期望含 \"'可用', '服务中', '冷却中', '不可用', '未参与'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：word('NODE_LABEL_REVIEW')（期望含 \"word('NODE_LABEL_REVIEW')\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：allUi.includes('已关闭'), false（期望含 \"allUi.includes('已关闭'), false\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 11,
+      "ok": 11,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-04",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "状态栏的折叠、占位与多宿主并列",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-entry.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：daemon 不拼折叠/省略文案（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'服务 T-001 等 3 个'（期望含 \"'服务 T-001 等 3 个'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'宿主 dsh cursor'（期望含 \"'宿主 dsh cursor'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'3 个活跃会话'（期望含 \"'3 个活跃会话'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：app.state().drillView.roleBar.servingFolded, true（期望含 \"app.state().drillView.roleBar.servingFolded, true\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：app.state().drillView.roleBar.servingNodes.length, 3（期望含 \"app.state().drillView.roleBar.servingNodes.length, 3\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'角色栏 测试'（期望含 \"'角色栏 测试'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'0 个活跃会话'（期望含 \"'0 个活跃会话'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：lastAction: { nodeId: 'T-010'（期望含 \"lastAction: { nodeId: 'T-010'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：最近 T-010 · 轮次 1/1 · （期望含 \"最近 T-010 · 轮次 1/1 · \"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：app.state().drillView.roleBar.hostIcons, []（期望含 \"app.state().drillView.roleBar.hostIcons, []\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'角色栏 协调者'（期望含 \"'角色栏 协调者'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：lastAction: null（期望含 \"lastAction: null\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：app.state().drillView.roleBar.lastAction, null（期望含 \"app.state().drillView.roleBar.lastAction, null\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 19,
+      "ok": 19,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-05",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "局部 DAG 只显示 1 跳，状态色 / 加粗 / 实线虚线正确",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：dag.js 不做图遍历 BFS（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：result.nodes.map((n) => n.nodeId), ['A', 'B', 'D', 'C', 'E']（期望含 \"result.nodes.map((n) => n.nodeId), ['A', 'B', 'D', 'C', 'E']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：result.nodes.filter((n) => n.bold).map((n) => n.nodeId), ['A', 'B', 'D']（期望含 \"result.nodes.filter((n) => n.bold).map((n) => n.nodeId), ['A', 'B', 'D']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：result.dangling, 0（期望含 \"result.dangling, 0\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：back.style, 'dashed'（期望含 \"back.style, 'dashed'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'局部连线 D→B · 回流 · 待执行'（期望含 \"'局部连线 D→B · 回流 · 待执行'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'局部连线 A→B · 正向 · 已完成'（期望含 \"'局部连线 A→B · 正向 · 已完成'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'solid'（期望含 \"'solid'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：JSON.stringify(a), JSON.stringify(b)（期望含 \"JSON.stringify(a), JSON.stringify(b)\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 14,
+      "ok": 14,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-06",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "点击 DAG 任一节点都能滚动到对应卡片并高亮",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-dag.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：dag.js 联动不重新取数（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：view.scrollTarget, target（期望含 \"view.scrollTarget, target\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：view.highlight, target（期望含 \"view.highlight, target\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：view.lastElapsed <= 200（期望含 \"view.lastElapsed <= 200\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：view.cards.length, view.dag.nodes.length（期望含 \"view.cards.length, view.dag.nodes.length\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 10,
+      "ok": 10,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-07",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "任务卡片三层信息逐字正确",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：drill 中文走文案键（无中文模板字面量）（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：卡片 T-003 · 实现登录 · 轮次 1/2 · 执行中（期望含 \"卡片 T-003 · 实现登录 · 轮次 1/2 · 执行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：执行 开发 · 执行中 · 已运行 12m · 工具 write（期望含 \"执行 开发 · 执行中 · 已运行 12m · 工具 write\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：依赖 T-001 已完成 · 产物 calc.js · 证据 2（期望含 \"依赖 T-001 已完成 · 产物 calc.js · 证据 2\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：卡片 T-001 · 需求澄清 · 轮次 1/1 · 已完成（期望含 \"卡片 T-001 · 需求澄清 · 轮次 1/1 · 已完成\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：执行 协调者 · 无会话 · — · 工具 —（期望含 \"执行 协调者 · 无会话 · — · 工具 —\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：依赖 — · 产物 — · 证据 0（期望含 \"依赖 — · 产物 — · 证据 0\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 12,
+      "ok": 12,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-08",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "卡片按状态优先级排序，同档按归属与编号",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：cards.js 排序不读时间/DOM（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'T-010', 'T-011', 'T-013', 'T-014', 'T-012', 'T-015', 'T-016', 'T-017', 'T-018'（期望含 \"'T-010', 'T-011', 'T-013', 'T-014', 'T-012', 'T-015', 'T-016', 'T-017', 'T-018'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.deepEqual(result.map((c) => c.rank), [1, 2, 3, 4, 5, 6, 7, 8, 8])（期望含 \"assert.deepEqual(result.map((c) => c.rank), [1, 2, 3, 4, 5, 6, 7, 8, 8])\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(result.find((c) => c.nodeId === 'T-012').tier, 'assigned')（期望含 \"assert.equal(result.find((c) => c.nodeId === 'T-012').tier, 'assigned')\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(result.find((c) => c.nodeId === 'T-012').displayStatus, '执行中')（期望含 \"assert.equal(result.find((c) => c.nodeId === 'T-012').displayStatus, '执行中')\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'escalated', 'failed', 'running', 'review', 'assigned', 'ready', 'blocked', 'done'（期望含 \"'escalated', 'failed', 'running', 'review', 'assigned', 'ready', 'blocked', 'done'\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 11,
+      "ok": 11,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-09",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "会话指示器 6 态与「等待审批：动作」文案",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：desktop/ui 无硬编码 git_push（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'等待审批：git_push'（期望含 \"'等待审批：git_push'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'：git_push'（期望含 \"'：git_push'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：['空闲', 'gray', 'none', null, '']（期望含 \"['空闲', 'gray', 'none', null, '']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：['执行中', 'blue', 'pulse', null, '']（期望含 \"['执行中', 'blue', 'pulse', null, '']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：['执行中', 'blue', 'pulse', 'tool', '']（期望含 \"['执行中', 'blue', 'pulse', 'tool', '']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：['等待下游', 'yellow', 'none', null, '']（期望含 \"['等待下游', 'yellow', 'none', null, '']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：['已升级', 'red', 'none', null, '']（期望含 \"['已升级', 'red', 'none', null, '']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：['无会话', 'gray', 'none', null, '']（期望含 \"['无会话', 'gray', 'none', null, '']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(result.length, 7)（期望含 \"assert.equal(result.length, 7)\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 15,
+      "ok": 15,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-10",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "特殊节点卡片与未知类型兜底",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/drill-cards.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：drill 不按标题猜类型（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：卡片 人工节点 H-001 · 人工验收 · 轮次 0/1 · 待执行（期望含 \"卡片 人工节点 H-001 · 人工验收 · 轮次 0/1 · 待执行\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：卡片 升级节点 X-001 · 人工裁决 · 轮次 2/2 · 已升级（期望含 \"卡片 升级节点 X-001 · 人工裁决 · 轮次 2/2 · 已升级\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：卡片 子工作流：发布子流程 · 角色 3 · 轮次 1/1 · 待执行（期望含 \"卡片 子工作流：发布子流程 · 角色 3 · 轮次 1/1 · 待执行\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：卡片 U-001 · 播报确认 · 轮次 1/1 · 待执行（期望含 \"卡片 U-001 · 播报确认 · 轮次 1/1 · 待执行\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：卡片 Z-001 · 未知任务 · 轮次 1/1 · 状态未知（期望含 \"卡片 Z-001 · 未知任务 · 轮次 1/1 · 状态未知\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：z.tier, 'blocked'（期望含 \"z.tier, 'blocked'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：z.boardColumn, 'blocked'（期望含 \"z.boardColumn, 'blocked'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(result.length, 5)（期望含 \"assert.equal(result.length, 5)\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 14,
+      "ok": 14,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-11",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "节点详情四段齐全，空段保留标题并给「无记录」",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：详情只读：drill.js 无写盘/发事件（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.equal(result.sections.length, 4)（期望含 \"assert.equal(result.sections.length, 4)\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：节点 T-003 · 实现登录 · 执行中 · 轮次 1/2（期望含 \"节点 T-003 · 实现登录 · 执行中 · 轮次 1/2\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：时间线 09:12:03 执行中（期望含 \"时间线 09:12:03 执行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：摘要 命令 npm test · 退出码 1 · 关键输出 12 行 · 日志 logs/T-003.log（期望含 \"摘要 命令 npm test · 退出码 1 · 关键输出 12 行 · 日志 logs/T-003.log\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：证据 1 · artifacts/code/calc.js · 产物 · 可解析（期望含 \"证据 1 · artifacts/code/calc.js · 产物 · 可解析\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：证据 2 · defects/d1.md · 缺陷 · 缺失（期望含 \"证据 2 · defects/d1.md · 缺陷 · 缺失\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：证据 3 · logs/T-003.log · 产物引用 · 可解析（期望含 \"证据 3 · logs/T-003.log · 产物引用 · 可解析\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：交接 HO-006 · 正向 · 第 1 轮 · 已完成 · 09:20:11（期望含 \"交接 HO-006 · 正向 · 第 1 轮 · 已完成 · 09:20:11\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：['时间线', '摘要', '证据', '交接']（期望含 \"['时间线', '摘要', '证据', '交接']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：'时间线 无记录', '摘要 无记录', '证据 无记录', '交接 无记录'（期望含 \"'时间线 无记录', '摘要 无记录', '证据 无记录', '交接 无记录'\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 16,
+      "ok": 16,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-12",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "会话状态时间线：跨会话按时间正序合并",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：时间线不读系统时间（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：时间线 09:12:03 执行中（期望含 \"时间线 09:12:03 执行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：时间线 09:13:10 执行中（期望含 \"时间线 09:13:10 执行中\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：时间线 09:13:40 已升级（期望含 \"时间线 09:13:40 已升级\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：时间线 09:14:02 空闲（期望含 \"时间线 09:14:02 空闲\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：时间线 09:15:41 待校验（期望含 \"时间线 09:15:41 待校验\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：['09:12:03', '09:13:10', '09:13:40', '09:14:02', '09:15:41']（期望含 \"['09:12:03', '09:13:10', '09:13:40', '09:14:02', '09:15:41']\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：/^\\d{2}:\\d{2}:\\d{2}$/（期望含 \"/^\\\\d{2}:\\\\d{2}:\\\\d{2}$/\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 13,
+      "ok": 13,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-13",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "ACP 事件摘要：四项齐全与缺项占位",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：UI 层不直接读 execution.summary（daemon 投影）（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：摘要 命令 npm test · 退出码 1 · 关键输出 12 行 · 日志 logs/T-003.log（期望含 \"摘要 命令 npm test · 退出码 1 · 关键输出 12 行 · 日志 logs/T-003.log\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：摘要 命令 npm test · 退出码 1 · 关键输出 — 行 · 日志 —（期望含 \"摘要 命令 npm test · 退出码 1 · 关键输出 — 行 · 日志 —\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：assert.ok(!/undefined/.test(line))（期望含 \"assert.ok(!/undefined/.test(line))\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 9,
+      "ok": 9,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-14",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "证据引用：可解析 / 缺失两态，可复制，不判过期",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：证据段不引入过期判定（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：证据状态不读过期/TTL（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：证据 1 · artifacts/code/calc.js · 产物 · 可解析（期望含 \"证据 1 · artifacts/code/calc.js · 产物 · 可解析\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：证据 2 · defects/d1.md · 缺陷 · 缺失（期望含 \"证据 2 · defects/d1.md · 缺陷 · 缺失\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：证据 3 · logs/T-003.log · 产物引用 · 可解析（期望含 \"证据 3 · logs/T-003.log · 产物引用 · 可解析\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：result.copyEvidence(1).copied, 'artifacts/code/calc.js'（期望含 \"result.copyEvidence(1).copied, 'artifacts/code/calc.js'\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 11,
+      "ok": 11,
+      "evidenceCount": 8
+    },
+    {
+      "id": "AC-15",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "title": "交接包历史：入/出双向、按最近活动倒序",
+      "checks": [
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：测试文件存在",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：exit 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# pass ≥ 1",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：# fail 0",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "机检 F-16（test/wp14/node-detail.test.js）：无 not ok",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：方向读定义边 kind（backflow 命中）（expect=min1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "架构：方向不由交接状态推断（expect=zero）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：交接 HO-007 · 回流 · 第 2 轮 · 已完成 · 09:20:00（期望含 \"交接 HO-007 · 回流 · 第 2 轮 · 已完成 · 09:20:00\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：交接 HO-006 · 正向 · 第 1 轮 · 已拒绝 · 09:14:00（期望含 \"交接 HO-006 · 正向 · 第 1 轮 · 已拒绝 · 09:14:00\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：direction: 'backflow'（期望含 \"direction: 'backflow'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：direction: 'forward'（期望含 \"direction: 'forward'\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：second[0].includes('回流')（期望含 \"second[0].includes('回流')\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "Then 逐字：second[1].includes('正向')（期望含 \"second[1].includes('正向')\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ],
+      "total": 13,
+      "ok": 13,
+      "evidenceCount": 8
+    }
+  ]
+}

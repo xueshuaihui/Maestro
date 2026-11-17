@@ -1,0 +1,29 @@
+{
+  "ac": "AC-16",
+  "title": "「查看全部节点」切到 7 列看板并能原路回到下钻",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:36:33.668Z",
+  "finishedAt": "2026-11-16T17:36:34.273Z",
+  "durationMs": 605,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-16",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-16"
+    }
+  ],
+  "checks": 15,
+  "notes": [
+    "Then 逐字：看板 7 列（被阻塞/可调度/执行中/待校验/已完成/失败/已升级）由 DESKTOP_BOARD_COLUMN_* 文案键逐项取值；返回后 view==='drill'（不是流程图），highlight/scrollTarget/DAG 选中态保持，面包屑切回「实例 INST-001 / 角色 开发」。",
+    "内部断言（非用户可见）：scrollTop 前后相等（scrollTarget 索引比对）；机检 # pass≥1、# fail 0。",
+    "架构锚点：下钻层 desktop/ui/drill/ 对 DESKTOP_BOARD_COLUMN_|被阻塞|可调度 零命中（exit 1），证明未复制第二套列名。"
+  ]
+}

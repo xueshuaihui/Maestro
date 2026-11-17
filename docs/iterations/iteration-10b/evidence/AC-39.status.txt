@@ -1,0 +1,57 @@
+$ "(fixture) 独立项目根（%TEMP%，NODE_ENV=test，mock 宿主）"
+# label=夹具：独立项目根（%TEMP%，NODE_ENV=test，mock 宿主） cwd=D:\WWW\Maestro exit=0 0ms
+C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-39
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe --test D:\WWW\Maestro\test\wp14\drill-dag.test.js
+# label=node --test test/wp14/drill-dag.test.js cwd=D:\WWW\Maestro exit=0 224ms
+TAP version 13
+# Subtest: AC-05 1-hop set: exactly A/B/C/D/E, bold only for own-role nodes
+ok 1 - AC-05 1-hop set: exactly A/B/C/D/E, bold only for own-role nodes
+  ---
+  duration_ms: 1.726
+  type: 'test'
+  ...
+# Subtest: AC-05 solid vs dashed lines, direction words, and byte-equal repeat layouts
+ok 2 - AC-05 solid vs dashed lines, direction words, and byte-equal repeat layouts
+  ---
+  duration_ms: 0.5768
+  type: 'test'
+  ...
+# Subtest: AC-06 clicking DAG nodes drives scrollTarget/highlight through createDrillView
+ok 3 - AC-06 clicking DAG nodes drives scrollTarget/highlight through createDrillView
+  ---
+  duration_ms: 10.6757
+  type: 'test'
+  ...
+# Subtest: AC-38 single node with zero edges does not collapse
+ok 4 - AC-38 single node with zero edges does not collapse
+  ---
+  duration_ms: 0.2515
+  type: 'test'
+  ...
+# Subtest: AC-39 missing runtime state defaults to pending and follows the projection on source swap
+ok 5 - AC-39 missing runtime state defaults to pending and follows the projection on source swap
+  ---
+  duration_ms: 0.6264
+  type: 'test'
+  ...
+# Subtest: AC-40 unknown role id keeps the node and renders it as a role node
+ok 6 - AC-40 unknown role id keeps the node and renders it as a role node
+  ---
+  duration_ms: 0.3289
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 140.5379
+
+
+$ C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js core stop
+# label=orch core stop cwd=C:\Users\xuesh\AppData\Local\Temp\maestro-i10b-acc10b-f\AC-39 exit=0 108ms
+核心未在运行

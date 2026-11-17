@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] 无重派/终止/允许/拒绝动作
+$ grep -REn "reassign|terminate|approve|deny" "desktop/ui/drill/" "src/daemon/drill.js"
+expect=zero exit=1 hits=0 OK
+(零命中)

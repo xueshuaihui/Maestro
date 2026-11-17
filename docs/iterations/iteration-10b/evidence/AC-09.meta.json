@@ -1,0 +1,28 @@
+{
+  "ac": "AC-09",
+  "title": "会话指示器 6 态与「等待审批：动作」文案",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:25:09.425Z",
+  "finishedAt": "2026-11-16T17:25:09.860Z",
+  "durationMs": 435,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-09",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-09"
+    }
+  ],
+  "checks": 15,
+  "notes": [
+    "Then 逐字：7 组 {label,color,animation,icon,detail} 逐项等于 A-3 指示器表；idle→空闲/灰、thinking→执行中/蓝/脉冲、tool_running→执行中/蓝/脉冲/工具图标、waiting_input→等待审批：git_push/黄、waiting_dependency→等待下游/黄、escalated→已升级/红、无会话→无会话/灰；每卡一个指示器。",
+    "动作名来自数据（approvals 记录），desktop/ui 对 git_push 零命中。"
+  ]
+}

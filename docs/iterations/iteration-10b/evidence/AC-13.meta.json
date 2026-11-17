@@ -1,0 +1,28 @@
+{
+  "ac": "AC-13",
+  "title": "ACP 事件摘要：四项齐全与缺项占位",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:25:11.549Z",
+  "finishedAt": "2026-11-16T17:25:12.002Z",
+  "durationMs": 453,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-13",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-13"
+    }
+  ],
+  "checks": 9,
+  "notes": [
+    "Then 逐字：T-003 摘要行逐字等于 A-4；T-005 缺关键输出/日志显示「—」；两行都不出现 undefined。",
+    "架构：摘要由 daemon 侧只读投影选定唯一一条，界面不直接读事件流（desktop/ui 对 execution.summary 零命中）。"
+  ]
+}

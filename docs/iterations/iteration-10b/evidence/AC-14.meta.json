@@ -1,0 +1,28 @@
+{
+  "ac": "AC-14",
+  "title": "证据引用：可解析 / 缺失两态，可复制，不判过期",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:25:12.110Z",
+  "finishedAt": "2026-11-16T17:25:12.678Z",
+  "durationMs": 568,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-14",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-14"
+    }
+  ],
+  "checks": 11,
+  "notes": [
+    "Then 逐字：三行逐字（可解析/缺失/可解析）；复制把引用原文放入剪贴板（copied === artifacts/code/calc.js）；证据段内不出现「已过期/过期」。",
+    "证据状态只由「引用能否解析到可读文件」决定；连接线面板里的「已过期」是交接包七态之一，不属本 AC 约束范围。"
+  ]
+}

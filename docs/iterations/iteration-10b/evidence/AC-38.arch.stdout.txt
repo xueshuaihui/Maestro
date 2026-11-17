@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] 边集为空不短路布局（if (!edges.length) return 零命中）
+$ grep -REn "if \\(!edges[.]length\\) return" "desktop/ui/drill/dag.js"
+expect=zero exit=1 hits=0 OK
+(零命中)

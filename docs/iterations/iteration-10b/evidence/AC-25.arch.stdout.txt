@@ -1,0 +1,11 @@
+# AC-25 架构检查原始帧（requirement.md:700）
+at=2026-11-16T18:10:26Z  repo=D:/WWW/Maestro
+
+## [3a] grep -REn 'dsh' src/daemon/drill.js src/daemon/http/routes.js  (期望 exit=1 零命中)
+exit=1  (hits=0)
+
+## [3b] grep -REn 'hosts/' src/adapter/host-open.js  (期望 exit=0 命中>=1)
+3:// 配置驱动：`<root>/.orch/hosts/<hostId>.json` 的 `open: {command, args}` 段
+33:  // basename 防御：hostId 只用于在 hosts/ 目录下定位同名 json。
+101: * @param {string} options.root 项目根（hosts/ 目录解析基准）
+exit=0

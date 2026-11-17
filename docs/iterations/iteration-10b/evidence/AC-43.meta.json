@@ -1,0 +1,28 @@
+{
+  "ac": "AC-43",
+  "title": "展开期间聚合状态变化：面板刷新，展开的包不跳走",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:34:19.236Z",
+  "finishedAt": "2026-11-16T17:34:19.689Z",
+  "durationMs": 453,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-43",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-43"
+    }
+  ],
+  "checks": 13,
+  "notes": [
+    "用户可见 Then（requirement.md:908）：刷新后标题聚合词变「已拒绝」；HO-010 仍处展开态、仍看得见、没从眼皮底下跳走；已展开时间线不被收起。",
+    "内部断言（非用户可见，裁决 H 第5条 / F2-11 / F4-14）：|anchorRowTopAfter - anchorRowTopBefore| ≤ 1（模型坐标+注入时钟的模拟值），scrollTop 仅记录不判方向；取数路径同 pulse overlay（D-14）。"
+  ]
+}

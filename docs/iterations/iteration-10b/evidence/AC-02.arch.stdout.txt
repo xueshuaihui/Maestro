@@ -1,0 +1,19 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] app.js createViewState 恰好 2 处
+$ grep -REn "createViewState\\(" "desktop/ui/app.js"
+expect=exact:2 exit=0 hits=2 OK
+496:      const next = m.createViewState({
+695:      const next = m.createViewState({
+[2] drill 内零 new createViewState
+$ grep -REn "createViewState\\(" "desktop/ui/drill/"
+expect=zero exit=1 hits=0 OK
+(零命中)
+[3] drill 内零整图重放
+$ grep -REn "openGraph\\(|rebuildGraph\\(|replayGraph|reapplySnapshot" "desktop/ui/drill/"
+expect=zero exit=1 hits=0 OK
+(零命中)
+[4] drill 内零 backToList
+$ grep -REn "backToList\\(" "desktop/ui/drill/"
+expect=zero exit=1 hits=0 OK
+(零命中)

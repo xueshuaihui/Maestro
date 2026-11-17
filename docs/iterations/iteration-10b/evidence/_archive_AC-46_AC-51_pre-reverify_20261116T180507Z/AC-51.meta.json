@@ -1,0 +1,30 @@
+{
+  "ac": "AC-51",
+  "title": "基线 477 连线侧的改道判定：红色 / 橙色连接线进交接包面板，不进升级面板",
+  "face": "mock 实测",
+  "verdict": "不通过",
+  "startedAt": "2026-11-16T17:57:23.433Z",
+  "finishedAt": "2026-11-16T17:57:23.882Z",
+  "durationMs": 449,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-51",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-51"
+    }
+  ],
+  "checks": 18,
+  "notes": [
+    "Then 逐字锚点（requirement.md:996）：三次都打开同一个交接包面板（左侧交接包列表、行内给拒绝/过期原因），任何一次都不进升级面板、也不进角色下钻；升级入口只有升级节点（AC-21）与 escalated 角标（AC-49）两处；三次点击都不改编排状态。",
+    "需求机检（requirement.md:997）：connection-panel.test.js 断言三次 view === connection-panel、view !== escalation-panel、view !== drill，标题聚合词依次为已拒绝/已过期/已投递，红/橙两次行内含拒绝/过期原因词。",
+    "取证发现（不通过依据）：实际 connection-panel.test.js 的 AC-51 用例只调用 buildHandoffPanel 纯模块、断言 panel.target === \"connection-panel\"（静态属性），源码无 view / createApp / escalation-panel / stateHash 任一机检断言；app.js 亦无 open-connection 点击路由（openConnectionPanel 已定义但无 click 委托调用）。故机检未覆盖 Then 的落点与不改状态口径。",
+    "架构检查：handoff-panel.js 零 escalation（交接包面板不复制升级跳转分支）成立。"
+  ]
+}

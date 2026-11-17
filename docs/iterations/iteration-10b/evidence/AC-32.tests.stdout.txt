@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: AC-27: 状态词 2s 内到达、会话 5 次变化只动指示器不重排
+ok 1 - AC-27: 状态词 2s 内到达、会话 5 次变化只动指示器不重排
+  ---
+  duration_ms: 15.0417
+  type: 'test'
+  ...
+# Subtest: AC-32: 同一节点四处 {title,status,color} 一致，看板 running 列、卡片 running 档
+ok 2 - AC-32: 同一节点四处 {title,status,color} 一致，看板 running 列、卡片 running 档
+  ---
+  duration_ms: 1.5568
+  type: 'test'
+  ...
+# Subtest: AC-47: 角色与连接线两条变化都到达、互不覆盖、顺序不变
+ok 3 - AC-47: 角色与连接线两条变化都到达、互不覆盖、顺序不变
+  ---
+  duration_ms: 0.695
+  type: 'test'
+  ...
+# Subtest: AC-48: 状态词翻成未参与，其余段逐项保留、卡片/DAG 不塌陷、下钻不关闭
+ok 4 - AC-48: 状态词翻成未参与，其余段逐项保留、卡片/DAG 不塌陷、下钻不关闭
+  ---
+  duration_ms: 0.7641
+  type: 'test'
+  ...
+# Subtest: AC-50: 同一图流保持/重开（A5）+ 重取后状态栏未参与/卡片清空/DAG 保留
+ok 5 - AC-50: 同一图流保持/重开（A5）+ 重取后状态栏未参与/卡片清空/DAG 保留
+  ---
+  duration_ms: 0.4842
+  type: 'test'
+  ...
+# Subtest: AC-50/A5: ensureStreams 只扩展条件到 drill，不新建通道 / 帧类型
+ok 6 - AC-50/A5: ensureStreams 只扩展条件到 drill，不新建通道 / 帧类型
+  ---
+  duration_ms: 2.4238
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 137.029

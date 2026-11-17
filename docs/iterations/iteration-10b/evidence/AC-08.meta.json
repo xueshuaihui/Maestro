@@ -1,0 +1,28 @@
+{
+  "ac": "AC-08",
+  "title": "卡片按状态优先级排序，同档按归属与编号",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T23:03:16.578Z",
+  "finishedAt": "2026-11-16T23:03:17.031Z",
+  "durationMs": 453,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-08",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-08"
+    }
+  ],
+  "checks": 11,
+  "notes": [
+    "Then 逐字：8 档顺序「已升级>失败>执行中>待校验>已分配>可调度>被阻塞>已完成」，assigned 独立一档位于 review 之后、ready 之前；rank 序列 [1,2,3,4,5,6,7,8,8] 单调不减（9 节点含 done 两例）；T-012 显示词「执行中」但档位 assigned。",
+    "显示词折叠 ≠ 排序档位折叠（F4-01）。"
+  ]
+}

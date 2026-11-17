@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] 面板标题只在一处产出（DRILL_ESC_TITLE 恰 1 条，| wc -l 口径）
+$ grep -REn "DRILL_ESC_TITLE" "desktop/ui/drill/"
+expect=exact:1 exit=0 hits=1 OK
+desktop/ui/drill/escalation-panel.js:70:  const title = take(resolver, 'DRILL_ESC_TITLE', {}, missingLabels);

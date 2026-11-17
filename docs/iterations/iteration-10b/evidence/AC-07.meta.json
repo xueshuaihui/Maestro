@@ -1,0 +1,28 @@
+{
+  "ac": "AC-07",
+  "title": "任务卡片三层信息逐字正确",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:25:08.383Z",
+  "finishedAt": "2026-11-16T17:25:08.796Z",
+  "durationMs": 413,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-07",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-07"
+    }
+  ],
+  "checks": 12,
+  "notes": [
+    "Then 逐字：A-3 六行（正常卡三行 + 空值卡三行）；已运行 12m 由注入时钟与 stateSince 得出。",
+    "卡片文本模板只来自文案表，drill 目录对「已运行/轮次/依赖」零命中。"
+  ]
+}

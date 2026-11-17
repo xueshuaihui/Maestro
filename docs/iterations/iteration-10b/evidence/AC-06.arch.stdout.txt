@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] dag.js 联动不重新取数
+$ grep -REn "fetch\\(|request\\(" "desktop/ui/drill/dag.js"
+expect=zero exit=1 hits=0 OK
+(零命中)

@@ -1,0 +1,6 @@
+架构检查（需求同号原文，grep -REn / ERE）
+
+[1] 人工节点详情不引用升级面板
+$ grep -REn "escalation" "desktop/ui/drill/node-detail.js"
+expect=zero exit=1 hits=0 OK
+(零命中)

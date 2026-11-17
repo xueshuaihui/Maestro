@@ -1,0 +1,28 @@
+{
+  "ac": "AC-31",
+  "title": "四类运行期异常提示：实例不存在 / 角色未使用 / 节点不存在 / 推送断开",
+  "face": "mock 实测",
+  "verdict": "通过",
+  "startedAt": "2026-11-16T17:33:55.242Z",
+  "finishedAt": "2026-11-16T17:33:55.699Z",
+  "durationMs": 457,
+  "platform": "win32",
+  "node": "v22.22.2",
+  "repo": "D:\\WWW\\Maestro",
+  "base": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f",
+  "env": {
+    "NODE_ENV": "test",
+    "host": "mock"
+  },
+  "roots": [
+    {
+      "case": "AC-31",
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-31"
+    }
+  ],
+  "checks": 15,
+  "notes": [
+    "四类异常逐字基线取自 A-9：实例 INST-999 · 不存在 / 角色 协调者 · 本实例未使用 / 节点 T-003 · 不存在 / 已断开 · 正在重连…；均由文案键派生，机检 F-16 逐字通过。",
+    "界面仍可操作由 compose().actions 的 back-to-list / retry-graph 探针 + view 在 drill→graph 间可迁移证明；不白屏、不抛栈。"
+  ]
+}
