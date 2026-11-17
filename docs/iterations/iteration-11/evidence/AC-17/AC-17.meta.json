@@ -1,0 +1,69 @@
+{
+  "ac": "AC-17",
+  "title": "队列与 CLI 同源：同一时点结论一致",
+  "face": "一致性 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2a829da",
+  "startedAt": "2026-11-17T15:29:06.665Z",
+  "finishedAt": "2026-11-17T15:29:13.438Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 12,
+    "ok": 12,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "queue.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"ESC-|APR-\" src/daemon/queue.js",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "cmd": "sed -n '1256,1280p' src/cli/render.js | grep -Ec \"join\\('  '\\)\"",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "index": 3,
+      "cmd": "grep -REn \"parts.join\\(' · '\\)\" src/cli/render.js",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检文件名口径：需求点名 test/wp14/queue-consistency.test.js（本分支不存在），AC-17 逐字断言合并进 test/wp14/queue.test.js「队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）」用例。按实际文件机检并登记说明，不放宽。",
+    "D-22/D-37 口径：不比整行字符串——CLI 升级行按两个空格（\\s{2,}）拆 5 段，桌面升级行按 · 拆 7 段，先归一化为 {编号,实例号,节点号,轮次,状态词,原因摘要} 再逐项相等；CLI 审批行按 · 拆只比 {编号,状态词,动作}，桌面审批行多出的实例/轮次/时间三字段须存在非空但不参与相等。CLI 分隔符基线由本用例两条 arch 锚点复核，未出现字符串相等断言。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-17"
+}

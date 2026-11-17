@@ -1,0 +1,81 @@
+{
+  "ac": "AC-14",
+  "title": "处理后续跑与计数同步（规划验收句第 2 句的收尾条件）",
+  "face": "处置 / 续跑 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2a829da",
+  "startedAt": "2026-11-17T15:28:41.471Z",
+  "finishedAt": "2026-11-17T15:28:51.471Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 19,
+    "ok": 19,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "e2e.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": []
+    },
+    {
+      "file": "queue.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": []
+    },
+    {
+      "file": "ui-views.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "A-4 / AC-14: result lines use the daemon conclusion vocabulary"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"workflow.resume\" src/daemon/queue.js",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 e2e.test.js：# tests 6 / # pass 6 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。",
+    "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。",
+    "机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检文件名口径：需求点名 test/wp14/queue-follow.test.js（本分支不存在）；续跑真链路逐字断言合并进 test/wp14/e2e.test.js 的「AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步」，重派数据侧在 test/wp14/queue.test.js 的「升级·重派」用例，A-4 结果行在 ui-views.test.js。按实际存在文件机检并保留原始 TAP，登记说明但不放宽。",
+    "D-36 数字口径：三处数字按投影字段读取（tray.pending / item.pending.escalations / queue.totals.pendingEscalations），不在界面重算；本用例逐字登记三处相等，机检由 AC-38 与 AC-13 两用例承载。t_resume - t_action ≤ 5000 时效由 AC-38 真链路（≤5s SSE + 重派后立即回运行）承载，未另设独立秒表断言，如实登记。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-14"
+}

@@ -1,0 +1,69 @@
+{
+  "ac": "AC-08",
+  "title": "队列合并、排序与空态",
+  "face": "队列 / 投影 / 机检 + 原始帧",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2732f86",
+  "startedAt": "2026-11-16T17:03:53.008Z",
+  "finishedAt": "2026-11-16T17:04:00.469Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 16,
+    "ok": 16,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "queue.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）",
+        "buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"saveState|appendEvent\" src/daemon/queue.js",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"renderApprovalLine\" desktop/ui/ src/daemon/queue.js",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    },
+    {
+      "index": 3,
+      "cmd": "grep -REn \"searchBox|filterBar|columnPicker|columnToggle\" desktop/ui/queue/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。",
+    "八字段逐字与降级/断线位由 test/wp14/queue.test.js 纯投影用例承载；本用例复跑取 buildQueue 原始投影帧，并用 desktop/harness/queue-dump.mjs 同模块渲染。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-08"
+}

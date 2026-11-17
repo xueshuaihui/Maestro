@@ -1,0 +1,343 @@
+===== notify.test.js (exit 0) =====
+TAP version 13
+# Subtest: DEDUP 窗口常量与 NOTIFY_LABELS 类别词符合附录 A-1 / A-2
+ok 1 - DEDUP 窗口常量与 NOTIFY_LABELS 类别词符合附录 A-1 / A-2
+  ---
+  duration_ms: 1.489396
+  type: 'test'
+  ...
+# Subtest: 架构锚点：notify.js 内无定时器直调 / 状态写 / 错误上抛字面量
+ok 2 - 架构锚点：notify.js 内无定时器直调 / 状态写 / 错误上抛字面量
+  ---
+  duration_ms: 1.240007
+  type: 'test'
+  ...
+# Subtest: AC-01: 升级待处理事件产生升级意图，标题与正文五段逐字
+ok 3 - AC-01: 升级待处理事件产生升级意图，标题与正文五段逐字
+  ---
+  duration_ms: 6.485249
+  type: 'test'
+  ...
+# Subtest: AC-01 变体: 状态里读不到的段渲染 — 不省略
+ok 4 - AC-01 变体: 状态里读不到的段渲染 — 不省略
+  ---
+  duration_ms: 5.998101
+  type: 'test'
+  ...
+# Subtest: AC-02: 实例完成事件产生完成意图，同一实例生命周期只一次
+ok 5 - AC-02: 实例完成事件产生完成意图，同一实例生命周期只一次
+  ---
+  duration_ms: 38.599612
+  type: 'test'
+  ...
+# Subtest: AC-02 变体: 实例不可读时完成意图仍产生，缺段渲染 —
+ok 6 - AC-02 变体: 实例不可读时完成意图仍产生，缺段渲染 —
+  ---
+  duration_ms: 6.826948
+  type: 'test'
+  ...
+# Subtest: AC-03: 实例中断产生异常意图（单条形态），2 秒内即发且只此一条
+ok 7 - AC-03: 实例中断产生异常意图（单条形态），2 秒内即发且只此一条
+  ---
+  duration_ms: 76.36864
+  type: 'test'
+  ...
+# Subtest: AC-03 变体: 窗口内的健康度刷新并入同组，去重后仍只算一条
+ok 8 - AC-03 变体: 窗口内的健康度刷新并入同组，去重后仍只算一条
+  ---
+  duration_ms: 50.909364
+  type: 'test'
+  ...
+# Subtest: AC-03 变体: 实例不可读时异常意图退化为事件自带的状态词
+ok 9 - AC-03 变体: 实例不可读时异常意图退化为事件自带的状态词
+  ---
+  duration_ms: 33.51804
+  type: 'test'
+  ...
+# Subtest: AC-05: 关掉分项后该类不产生意图，重开后恢复；总开关关掉全静默
+ok 10 - AC-05: 关掉分项后该类不产生意图，重开后恢复；总开关关掉全静默
+  ---
+  duration_ms: 71.401674
+  type: 'test'
+  ...
+# Subtest: AC-05 变体: 关掉升级分项不影响完成与异常两类
+ok 11 - AC-05 变体: 关掉升级分项不影响完成与异常两类
+  ---
+  duration_ms: 37.685653
+  type: 'test'
+  ...
+# Subtest: AC-06: 同一升级 9999ms 抑制、10001ms 放行（注入时钟边界）
+ok 12 - AC-06: 同一升级 9999ms 抑制、10001ms 放行（注入时钟边界）
+  ---
+  duration_ms: 46.523353
+  type: 'test'
+  ...
+# Subtest: AC-06: 不同升级编号互不影响去重窗口
+ok 13 - AC-06: 不同升级编号互不影响去重窗口
+  ---
+  duration_ms: 13.137729
+  type: 'test'
+  ...
+# Subtest: AC-06: 同一实例同类异常 60s 窗口内合并，mergedCount [1,2,3,4] 单调递增
+ok 14 - AC-06: 同一实例同类异常 60s 窗口内合并，mergedCount [1,2,3,4] 单调递增
+  ---
+  duration_ms: 65.42982
+  type: 'test'
+  ...
+# Subtest: AC-06: 异常窗口 59999ms 内并入、60001ms 起按新组即发
+ok 15 - AC-06: 异常窗口 59999ms 内并入、60001ms 起按新组即发
+  ---
+  duration_ms: 90.357071
+  type: 'test'
+  ...
+# Subtest: AC-07: 状态投影读失败不阻断后续意图（3 条不同升级逐条产生）
+ok 16 - AC-07: 状态投影读失败不阻断后续意图（3 条不同升级逐条产生）
+  ---
+  duration_ms: 62.311754
+  type: 'test'
+  ...
+# Subtest: AC-07: 偏好读取抛错按全开缺省处理，不阻断意图
+ok 17 - AC-07: 偏好读取抛错按全开缺省处理，不阻断意图
+  ---
+  duration_ms: 6.705322
+  type: 'test'
+  ...
+# Subtest: AC-07: 由新升级引起的异常信号被抑制，避免与升级意图重复
+ok 18 - AC-07: 由新升级引起的异常信号被抑制，避免与升级意图重复
+  ---
+  duration_ms: 139.836265
+  type: 'test'
+  ...
+# Subtest: dispose 后事件不再产生意图，窗口回调被取消
+ok 19 - dispose 后事件不再产生意图，窗口回调被取消
+  ---
+  duration_ms: 102.878933
+  type: 'test'
+  ...
+# Subtest: intents$ 与真实事件总线兼容：订阅侧记录不含 instanceId
+ok 20 - intents$ 与真实事件总线兼容：订阅侧记录不含 instanceId
+  ---
+  duration_ms: 10.691003
+  type: 'test'
+  ...
+# Subtest: 升级事件在状态里找不到待处理条目时不发过期意图
+ok 21 - 升级事件在状态里找不到待处理条目时不发过期意图
+  ---
+  duration_ms: 31.781468
+  type: 'test'
+  ...
+# Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制
+ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制
+  ---
+  duration_ms: 38.720611
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1054.409146
+
+
+===== ui-views.test.js (exit 0) =====
+TAP version 13
+# Subtest: A-2 / AC-05: notification toggles render in fixed order, default all on
+ok 1 - A-2 / AC-05: notification toggles render in fixed order, default all on
+  ---
+  duration_ms: 1.758818
+  type: 'test'
+  ...
+# Subtest: A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion
+ok 2 - A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion
+  ---
+  duration_ms: 0.496028
+  type: 'test'
+  ...
+# Subtest: A-3 / AC-08: escalation + approval rows keep all seven segments verbatim
+ok 3 - A-3 / AC-08: escalation + approval rows keep all seven segments verbatim
+  ---
+  duration_ms: 0.352029
+  type: 'test'
+  ...
+# Subtest: A-3 / AC-08: node-less degraded row keeps node/round segments
+ok 4 - A-3 / AC-08: node-less degraded row keeps node/round segments
+  ---
+  duration_ms: 0.218345
+  type: 'test'
+  ...
+# Subtest: A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed
+ok 5 - A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed
+  ---
+  duration_ms: 0.412149
+  type: 'test'
+  ...
+# Subtest: A-4 / AC-11: cancel is two-step with verbatim confirm line
+ok 6 - A-4 / AC-11: cancel is two-step with verbatim confirm line
+  ---
+  duration_ms: 0.165503
+  type: 'test'
+  ...
+# Subtest: A-4 / AC-14: result lines use the daemon conclusion vocabulary
+ok 7 - A-4 / AC-14: result lines use the daemon conclusion vocabulary
+  ---
+  duration_ms: 0.275212
+  type: 'test'
+  ...
+# Subtest: A-5: three tabs, count line, rows and unreadable banners are verbatim
+ok 8 - A-5: three tabs, count line, rows and unreadable banners are verbatim
+  ---
+  duration_ms: 0.390435
+  type: 'test'
+  ...
+# Subtest: A-5: detail lines render fixed order with missing markers
+ok 9 - A-5: detail lines render fixed order with missing markers
+  ---
+  duration_ms: 0.658515
+  type: 'test'
+  ...
+# Subtest: A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim
+ok 10 - A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim
+  ---
+  duration_ms: 0.679081
+  type: 'test'
+  ...
+# Subtest: A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges
+ok 11 - A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges
+  ---
+  duration_ms: 0.553525
+  type: 'test'
+  ...
+# Subtest: A-7 / AC-29: node rows reuse the instance-graph shape keys
+ok 12 - A-7 / AC-29: node rows reuse the instance-graph shape keys
+  ---
+  duration_ms: 0.19902
+  type: 'test'
+  ...
+# Subtest: A-8 / AC-32: five fields + round render verbatim, latest only
+ok 13 - A-8 / AC-32: five fields + round render verbatim, latest only
+  ---
+  duration_ms: 0.46295
+  type: 'test'
+  ...
+# Subtest: A-8 / AC-33: missing fields render the unprovided word
+ok 14 - A-8 / AC-33: missing fields render the unprovided word
+  ---
+  duration_ms: 0.106922
+  type: 'test'
+  ...
+# Subtest: A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak
+ok 15 - A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak
+  ---
+  duration_ms: 8.539365
+  type: 'test'
+  ...
+# Subtest: D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing
+ok 16 - D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing
+  ---
+  duration_ms: 0.377452
+  type: 'test'
+  ...
+# Subtest: AC-43 / setView: five new keys switch view, existing four unchanged
+ok 17 - AC-43 / setView: five new keys switch view, existing four unchanged
+  ---
+  duration_ms: 0.621655
+  type: 'test'
+  ...
+# Subtest: AC-04 / AC-49: followNotification navigates to queue and selects the row
+ok 18 - AC-04 / AC-49: followNotification navigates to queue and selects the row
+  ---
+  duration_ms: 0.438876
+  type: 'test'
+  ...
+# Subtest: AC-11: cancel confirm is two-step; dismiss leaves no pending confirm
+ok 19 - AC-11: cancel confirm is two-step; dismiss leaves no pending confirm
+  ---
+  duration_ms: 0.39089
+  type: 'test'
+  ...
+# Subtest: AC-05: prefs toggles write through the HTTP seam
+ok 20 - AC-05: prefs toggles write through the HTTP seam
+  ---
+  duration_ms: 0.236882
+  type: 'test'
+  ...
+# Subtest: AC-47: queue snapshot frame replaces content; disconnect keeps last rows
+ok 21 - AC-47: queue snapshot frame replaces content; disconnect keeps last rows
+  ---
+  duration_ms: 0.607779
+  type: 'test'
+  ...
+# Subtest: AC-42: seven anomaly wordings all resolve from the label table
+ok 22 - AC-42: seven anomaly wordings all resolve from the label table
+  ---
+  duration_ms: 0.190055
+  type: 'test'
+  ...
+# Subtest: D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)
+ok 23 - D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)
+  ---
+  duration_ms: 0.324467
+  type: 'test'
+  ...
+# Subtest: D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys
+ok 24 - D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys
+  ---
+  duration_ms: 0.207444
+  type: 'test'
+  ...
+# Subtest: BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)
+ok 25 - BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)
+  ---
+  duration_ms: 17.240601
+  type: 'test'
+  ...
+# Subtest: harness: queue-dump exports empty row + prefs verbatim
+ok 26 - harness: queue-dump exports empty row + prefs verbatim
+  ---
+  duration_ms: 92.889645
+  type: 'test'
+  ...
+# Subtest: harness: assets-dump exports tabs + count verbatim
+ok 27 - harness: assets-dump exports tabs + count verbatim
+  ---
+  duration_ms: 90.100357
+  type: 'test'
+  ...
+# Subtest: harness: occupancy-dump exports row + empty verbatim
+ok 28 - harness: occupancy-dump exports row + empty verbatim
+  ---
+  duration_ms: 94.263446
+  type: 'test'
+  ...
+# Subtest: harness: canvas-dump exports title + degradation + layout reuse
+ok 29 - harness: canvas-dump exports title + degradation + layout reuse
+  ---
+  duration_ms: 88.50733
+  type: 'test'
+  ...
+# Subtest: harness: evidence-dump exports A-8 lines + 64 KB gate
+ok 30 - harness: evidence-dump exports A-8 lines + 64 KB gate
+  ---
+  duration_ms: 91.238978
+  type: 'test'
+  ...
+# Subtest: D-52 / open-queue: shell ctl seam navigates the live window to queue
+ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue
+  ---
+  duration_ms: 1.262934
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 631.796822
+

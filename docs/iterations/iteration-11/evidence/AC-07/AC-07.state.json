@@ -1,0 +1,51 @@
+{
+  "ac": "AC07",
+  "source": "createNotifier + 注入时钟（与 test/wp14/notify.test.js 同模块同夹具）",
+  "intentCountRaw": 3,
+  "dedupeGroupCount": 3,
+  "groups": [
+    "escalation::INST-001",
+    "escalation::INST-002",
+    "escalation::INST-003"
+  ],
+  "mergedCounts": [
+    1,
+    1,
+    1
+  ],
+  "intents": [
+    {
+      "kind": "escalation",
+      "ids": [
+        "ESC-001"
+      ],
+      "instanceId": "INST-001",
+      "title": "通知 升级待处理 · INST-001",
+      "body": "实例 INST-001 · 升级 ESC-001 · 节点 T-001 执行者 · 第 1 轮 · 执行失败：测试未通过",
+      "mergedCount": 1,
+      "at": 0
+    },
+    {
+      "kind": "escalation",
+      "ids": [
+        "ESC-002"
+      ],
+      "instanceId": "INST-002",
+      "title": "通知 升级待处理 · INST-002",
+      "body": "实例 INST-002 · 升级 ESC-002 · 节点 T-001 执行者 · 第 1 轮 · 执行失败：命令超时",
+      "mergedCount": 1,
+      "at": 0
+    },
+    {
+      "kind": "escalation",
+      "ids": [
+        "ESC-003"
+      ],
+      "instanceId": "INST-003",
+      "title": "通知 升级待处理 · INST-003",
+      "body": "实例 INST-003 · 升级 ESC-003 · 节点 T-001 执行者 · 第 1 轮 · 执行失败：核对未过",
+      "mergedCount": 1,
+      "at": 0
+    }
+  ]
+}

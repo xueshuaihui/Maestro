@@ -1,0 +1,69 @@
+{
+  "ac": "AC-25",
+  "title": "库浏览只读：不改资产、不写状态",
+  "face": "只读 / 安全 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2a829da",
+  "startedAt": "2026-11-17T15:29:33.545Z",
+  "finishedAt": "2026-11-17T15:29:35.122Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 11,
+    "ok": 11,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "assets.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 10,
+        "pass": 10,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-25 库浏览只读：调用前后三个资产目录的哈希不变"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"fs[.]write|fs[.]unlink|assets-write\" desktop/ui/assets/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "cmd": "cat src/daemon/http/server.js src/daemon/http/routes.js | grep -Ec \"/assets/\"",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "index": 3,
+      "cmd": "grep -REn \"/assets/\" src/daemon/http/server.js src/daemon/http/routes.js | grep -E \"POST|PUT|DELETE\"",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检文件名口径：需求点名 test/wp14/assets-readonly.test.js（本分支不存在），AC-25 只读断言合并进 test/wp14/assets.test.js「AC-25 库浏览只读：调用前后三个资产目录的哈希不变」用例。按实际文件机检并登记说明，不放宽。",
+    "sha256 目录哈希锚定：hashTree 对 .orch/roles / .orch/skills / .orch/workflows 下全部文件按字节 sha256（路径→哈希），浏览三分页 + 打开若干详情 + 切占用 + 回列表后 after 深等于 before。架构路由计数按任务书用 server.js + routes.js 两文件合计（≥6，基线实跑 7），不单看 server.js；写方法零命中。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-25"
+}

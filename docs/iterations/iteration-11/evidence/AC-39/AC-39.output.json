@@ -1,0 +1,248 @@
+{
+  "ac": "AC-39",
+  "commands": [
+    {
+      "label": "机检 e2e.test.js",
+      "cmd": "test -f test/wp14/e2e.test.js && NODE_ENV=test node --test test/wp14/e2e.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 2876,
+      "stdout": "TAP version 13\n# Subtest: AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）\nok 1 - AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）\n  ---\n  duration_ms: 1448.8826\n  type: 'test'\n  ...\n# Subtest: AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH\nok 2 - AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH\n  ---\n  duration_ms: 2.629433\n  type: 'test'\n  ...\n# Subtest: AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写\nok 3 - AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写\n  ---\n  duration_ms: 940.129136\n  type: 'test'\n  ...\n# Subtest: AC-39 prefs：唯一写入方只写四键，多余键拒绝\nok 4 - AC-39 prefs：唯一写入方只写四键，多余键拒绝\n  ---\n  duration_ms: 96.197601\n  type: 'test'\n  ...\n# Subtest: AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源\nok 5 - AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源\n  ---\n  duration_ms: 25.538396\n  type: 'test'\n  ...\n# Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\nok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\n  ---\n  duration_ms: 1.858621\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2781.21407\n",
+      "stderr": ""
+    },
+    {
+      "label": "机检 http-contract.test.js",
+      "cmd": "test -f test/wp14/http-contract.test.js && NODE_ENV=test node --test test/wp14/http-contract.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 14135,
+      "stdout": "TAP version 13\n# Subtest: D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）\nok 1 - D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）\n  ---\n  duration_ms: 133.506407\n  type: 'test'\n  ...\n# Subtest: D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表\nok 2 - D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表\n  ---\n  duration_ms: 0.489699\n  type: 'test'\n  ...\n# Subtest: A-11 文案键逐字（抽查 + 键存在性）\nok 3 - A-11 文案键逐字（抽查 + 键存在性）\n  ---\n  duration_ms: 0.20083\n  type: 'test'\n  ...\n# Subtest: BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）\nok 4 - BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）\n  ---\n  duration_ms: 7.112495\n  type: 'test'\n  ...\n# Subtest: 既有面共存：/ui/labels、/instances、/workflows 行为不变\nok 5 - 既有面共存：/ui/labels、/instances、/workflows 行为不变\n  ---\n  duration_ms: 110.119435\n  type: 'test'\n  ...\n# Subtest: GET /queue：条目排序、totals 透传与单行状态不可读降级\nok 6 - GET /queue：条目排序、totals 透传与单行状态不可读降级\n  ---\n  duration_ms: 128.730557\n  type: 'test'\n  ...\n# Subtest: GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝\nok 7 - GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝\n  ---\n  duration_ms: 226.204669\n  type: 'test'\n  ...\n# Subtest: GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记\nok 8 - GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记\n  ---\n  duration_ms: 105.853843\n  type: 'test'\n  ...\n# Subtest: GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级\nok 9 - GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级\n  ---\n  duration_ms: 137.05173\n  type: 'test'\n  ...\n# Subtest: GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影\nok 10 - GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影\n  ---\n  duration_ms: 137.385375\n  type: 'test'\n  ...\n# Subtest: POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED\nok 11 - POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED\n  ---\n  duration_ms: 67.543035\n  type: 'test'\n  ...\n# Subtest: POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）\nok 12 - POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）\n  ---\n  duration_ms: 107.933588\n  type: 'test'\n  ...\n# Subtest: POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）\nok 13 - POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）\n  ---\n  duration_ms: 132.344586\n  type: 'test'\n  ...\n# Subtest: POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503\nok 14 - POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503\n  ---\n  duration_ms: 112.905779\n  type: 'test'\n  ...\n# Subtest: POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）\nok 15 - POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）\n  ---\n  duration_ms: 159.569731\n  type: 'test'\n  ...\n# Subtest: GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）\nok 16 - GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）\n  ---\n  duration_ms: 561.61933\n  type: 'test'\n  ...\n# Subtest: GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并\nok 17 - GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并\n  ---\n  duration_ms: 588.692893\n  type: 'test'\n  ...\n# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\nok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\n  ---\n  duration_ms: 9287.83765\n  type: 'test'\n  ...\n1..18\n# tests 18\n# suites 0\n# pass 18\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 14036.744227\n",
+      "stderr": ""
+    },
+    {
+      "label": "机检 prefs.test.js",
+      "cmd": "test -f test/wp14/prefs.test.js && NODE_ENV=test node --test test/wp14/prefs.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 732,
+      "stdout": "TAP version 13\n# Subtest: 缺文件 / 缺目录 → 全 true 缺省，不抛错\nok 1 - 缺文件 / 缺目录 → 全 true 缺省，不抛错\n  ---\n  duration_ms: 9.528223\n  type: 'test'\n  ...\n# Subtest: 文件损坏 / 非对象内容 → 全 true 缺省，不抛错\nok 2 - 文件损坏 / 非对象内容 → 全 true 缺省，不抛错\n  ---\n  duration_ms: 61.930526\n  type: 'test'\n  ...\n# Subtest: 缺键 → true；非法值 → 按 true；false 如实保留；多余键读侧忽略\nok 3 - 缺键 → true；非法值 → 按 true；false 如实保留；多余键读侧忽略\n  ---\n  duration_ms: 52.3326\n  type: 'test'\n  ...\n# Subtest: readPrefs 的 root 缺失直接抛 TypeError\nok 4 - readPrefs 的 root 缺失直接抛 TypeError\n  ---\n  duration_ms: 0.839712\n  type: 'test'\n  ...\n# Subtest: 合并写入：只传改动键，其余键保持既有值；文件恰为四键\nok 5 - 合并写入：只传改动键，其余键保持既有值；文件恰为四键\n  ---\n  duration_ms: 107.04999\n  type: 'test'\n  ...\n# Subtest: 首次写入自动建目录；内容可被 readPrefs 原样读回\nok 6 - 首次写入自动建目录；内容可被 readPrefs 原样读回\n  ---\n  duration_ms: 76.503692\n  type: 'test'\n  ...\n# Subtest: 多余键 / 非布尔值 / 非对象 patch → throw，且不落盘\nok 7 - 多余键 / 非布尔值 / 非对象 patch → throw，且不落盘\n  ---\n  duration_ms: 1.10895\n  type: 'test'\n  ...\n# Subtest: 原子写：无残留 tmp 文件，损坏的旧文件被整体替换\nok 8 - 原子写：无残留 tmp 文件，损坏的旧文件被整体替换\n  ---\n  duration_ms: 81.701129\n  type: 'test'\n  ...\n# Subtest: 写入只触碰 prefs.json：不产生其它文件、不改实例状态目录\nok 9 - 写入只触碰 prefs.json：不产生其它文件、不改实例状态目录\n  ---\n  duration_ms: 126.512847\n  type: 'test'\n  ...\n# Subtest: prefsPath 与 PREFS_KEYS 的形状契约\nok 10 - prefsPath 与 PREFS_KEYS 的形状契约\n  ---\n  duration_ms: 0.516336\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 637.180759\n",
+      "stderr": ""
+    },
+    {
+      "label": "语义复核：/ui/prefs 的 D-42/D-51 授权来源 vs D-1 名单字面",
+      "cmd": "grep -rn \"ui/prefs\" src/daemon/http/routes.js docs/iterations/iteration-11/decisions.md",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 194,
+      "stdout": "src/daemon/http/routes.js:931:      pattern: '/ui/prefs',\nsrc/daemon/http/routes.js:938:      pattern: '/ui/prefs',\ndocs/iterations/iteration-11/decisions.md:381:  3. `GET/POST /ui/prefs`（WP-8 已新增，写仍由 `src/daemon/prefs.js` 独占）一并写入 D-11 授权补项。\ndocs/iterations/iteration-11/decisions.md:440:## D-58 · `/ui/prefs` 纳入 D-1 写名单（第六类写），AC-39 架构名单字面同步\ndocs/iterations/iteration-11/decisions.md:442:- **触发点**：S3 批次 D：AC-39 架构④/⑥路由名单实测 `POST=10 violations=1 bad=[/ui/prefs]`（判不通过）。行为侧全部通过：浏览零写哈希、`actionCount=2` / `stateWrites=3` / `unexpected=0`、prefs 四键、错误形状、回环、shapeSnapshot 函数体锚点。\ndocs/iterations/iteration-11/decisions.md:443:- **裁决依据**：AC-39 的 Then 明写「通知开关偏好对 `.orch/desktop/prefs.json` 的写入不计入这三个数字，只写四键」；**D-51 决定第 3 条明写「GET/POST /ui/prefs 一并写入 D-11 授权补项」**——`/ui/prefs` 是需求自身授权的第六类写，D-1 名单字面漏同步（与 D-54/55/56「字面命中与意图分离」同构）。不放宽：名单外任何其它写仍判失败。\ndocs/iterations/iteration-11/decisions.md:444:- **决定**：需求 v14 把 D-1 写名单从「五条」扩为「六条」，追加 `GET|POST /ui/prefs`（仅四键、仅 `prefs.json`，写仍由 `src/daemon/prefs.js` 独占；不计入 AC-39 的三个数字）；AC-39 架构检查的两处名单字面同步追加 `/ui/prefs`。测试接缝 `/__test__/` 前缀规则不变。\n",
+      "stderr": ""
+    }
+  ],
+  "testRuns": [
+    {
+      "file": "e2e.test.js",
+      "cmd": "test -f test/wp14/e2e.test.js && NODE_ENV=test node --test test/wp14/e2e.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）\nok 1 - AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）\n  ---\n  duration_ms: 1448.8826\n  type: 'test'\n  ...\n# Subtest: AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH\nok 2 - AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH\n  ---\n  duration_ms: 2.629433\n  type: 'test'\n  ...\n# Subtest: AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写\nok 3 - AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写\n  ---\n  duration_ms: 940.129136\n  type: 'test'\n  ...\n# Subtest: AC-39 prefs：唯一写入方只写四键，多余键拒绝\nok 4 - AC-39 prefs：唯一写入方只写四键，多余键拒绝\n  ---\n  duration_ms: 96.197601\n  type: 'test'\n  ...\n# Subtest: AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源\nok 5 - AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源\n  ---\n  duration_ms: 25.538396\n  type: 'test'\n  ...\n# Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\nok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\n  ---\n  duration_ms: 1.858621\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2781.21407\n",
+      "tap": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 2781.21407,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）",
+          "AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH",
+          "AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写",
+          "AC-39 prefs：唯一写入方只写四键，多余键拒绝",
+          "AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源",
+          "NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致"
+        ]
+      }
+    },
+    {
+      "file": "http-contract.test.js",
+      "cmd": "test -f test/wp14/http-contract.test.js && NODE_ENV=test node --test test/wp14/http-contract.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）\nok 1 - D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）\n  ---\n  duration_ms: 133.506407\n  type: 'test'\n  ...\n# Subtest: D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表\nok 2 - D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表\n  ---\n  duration_ms: 0.489699\n  type: 'test'\n  ...\n# Subtest: A-11 文案键逐字（抽查 + 键存在性）\nok 3 - A-11 文案键逐字（抽查 + 键存在性）\n  ---\n  duration_ms: 0.20083\n  type: 'test'\n  ...\n# Subtest: BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）\nok 4 - BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）\n  ---\n  duration_ms: 7.112495\n  type: 'test'\n  ...\n# Subtest: 既有面共存：/ui/labels、/instances、/workflows 行为不变\nok 5 - 既有面共存：/ui/labels、/instances、/workflows 行为不变\n  ---\n  duration_ms: 110.119435\n  type: 'test'\n  ...\n# Subtest: GET /queue：条目排序、totals 透传与单行状态不可读降级\nok 6 - GET /queue：条目排序、totals 透传与单行状态不可读降级\n  ---\n  duration_ms: 128.730557\n  type: 'test'\n  ...\n# Subtest: GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝\nok 7 - GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝\n  ---\n  duration_ms: 226.204669\n  type: 'test'\n  ...\n# Subtest: GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记\nok 8 - GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记\n  ---\n  duration_ms: 105.853843\n  type: 'test'\n  ...\n# Subtest: GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级\nok 9 - GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级\n  ---\n  duration_ms: 137.05173\n  type: 'test'\n  ...\n# Subtest: GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影\nok 10 - GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影\n  ---\n  duration_ms: 137.385375\n  type: 'test'\n  ...\n# Subtest: POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED\nok 11 - POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED\n  ---\n  duration_ms: 67.543035\n  type: 'test'\n  ...\n# Subtest: POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）\nok 12 - POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）\n  ---\n  duration_ms: 107.933588\n  type: 'test'\n  ...\n# Subtest: POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）\nok 13 - POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）\n  ---\n  duration_ms: 132.344586\n  type: 'test'\n  ...\n# Subtest: POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503\nok 14 - POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503\n  ---\n  duration_ms: 112.905779\n  type: 'test'\n  ...\n# Subtest: POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）\nok 15 - POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）\n  ---\n  duration_ms: 159.569731\n  type: 'test'\n  ...\n# Subtest: GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）\nok 16 - GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）\n  ---\n  duration_ms: 561.61933\n  type: 'test'\n  ...\n# Subtest: GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并\nok 17 - GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并\n  ---\n  duration_ms: 588.692893\n  type: 'test'\n  ...\n# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\nok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\n  ---\n  duration_ms: 9287.83765\n  type: 'test'\n  ...\n1..18\n# tests 18\n# suites 0\n# pass 18\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 14036.744227\n",
+      "tap": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 14036.744227,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）",
+          "D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表",
+          "A-11 文案键逐字（抽查 + 键存在性）",
+          "BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）",
+          "既有面共存：/ui/labels、/instances、/workflows 行为不变",
+          "GET /queue：条目排序、totals 透传与单行状态不可读降级",
+          "GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝",
+          "GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记",
+          "GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级",
+          "GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影",
+          "POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED",
+          "POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）",
+          "POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）",
+          "POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503",
+          "POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）",
+          "GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）",
+          "GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并",
+          "daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图"
+        ]
+      }
+    },
+    {
+      "file": "prefs.test.js",
+      "cmd": "test -f test/wp14/prefs.test.js && NODE_ENV=test node --test test/wp14/prefs.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: 缺文件 / 缺目录 → 全 true 缺省，不抛错\nok 1 - 缺文件 / 缺目录 → 全 true 缺省，不抛错\n  ---\n  duration_ms: 9.528223\n  type: 'test'\n  ...\n# Subtest: 文件损坏 / 非对象内容 → 全 true 缺省，不抛错\nok 2 - 文件损坏 / 非对象内容 → 全 true 缺省，不抛错\n  ---\n  duration_ms: 61.930526\n  type: 'test'\n  ...\n# Subtest: 缺键 → true；非法值 → 按 true；false 如实保留；多余键读侧忽略\nok 3 - 缺键 → true；非法值 → 按 true；false 如实保留；多余键读侧忽略\n  ---\n  duration_ms: 52.3326\n  type: 'test'\n  ...\n# Subtest: readPrefs 的 root 缺失直接抛 TypeError\nok 4 - readPrefs 的 root 缺失直接抛 TypeError\n  ---\n  duration_ms: 0.839712\n  type: 'test'\n  ...\n# Subtest: 合并写入：只传改动键，其余键保持既有值；文件恰为四键\nok 5 - 合并写入：只传改动键，其余键保持既有值；文件恰为四键\n  ---\n  duration_ms: 107.04999\n  type: 'test'\n  ...\n# Subtest: 首次写入自动建目录；内容可被 readPrefs 原样读回\nok 6 - 首次写入自动建目录；内容可被 readPrefs 原样读回\n  ---\n  duration_ms: 76.503692\n  type: 'test'\n  ...\n# Subtest: 多余键 / 非布尔值 / 非对象 patch → throw，且不落盘\nok 7 - 多余键 / 非布尔值 / 非对象 patch → throw，且不落盘\n  ---\n  duration_ms: 1.10895\n  type: 'test'\n  ...\n# Subtest: 原子写：无残留 tmp 文件，损坏的旧文件被整体替换\nok 8 - 原子写：无残留 tmp 文件，损坏的旧文件被整体替换\n  ---\n  duration_ms: 81.701129\n  type: 'test'\n  ...\n# Subtest: 写入只触碰 prefs.json：不产生其它文件、不改实例状态目录\nok 9 - 写入只触碰 prefs.json：不产生其它文件、不改实例状态目录\n  ---\n  duration_ms: 126.512847\n  type: 'test'\n  ...\n# Subtest: prefsPath 与 PREFS_KEYS 的形状契约\nok 10 - prefsPath 与 PREFS_KEYS 的形状契约\n  ---\n  duration_ms: 0.516336\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 637.180759\n",
+      "tap": {
+        "tests": 10,
+        "pass": 10,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 637.180759,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "缺文件 / 缺目录 → 全 true 缺省，不抛错",
+          "文件损坏 / 非对象内容 → 全 true 缺省，不抛错",
+          "缺键 → true；非法值 → 按 true；false 如实保留；多余键读侧忽略",
+          "readPrefs 的 root 缺失直接抛 TypeError",
+          "合并写入：只传改动键，其余键保持既有值；文件恰为四键",
+          "首次写入自动建目录；内容可被 readPrefs 原样读回",
+          "多余键 / 非布尔值 / 非对象 patch → throw，且不落盘",
+          "原子写：无残留 tmp 文件，损坏的旧文件被整体替换",
+          "写入只触碰 prefs.json：不产生其它文件、不改实例状态目录",
+          "prefsPath 与 PREFS_KEYS 的形状契约"
+        ]
+      }
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"saveState|appendEvent|store[.]save\" src/daemon/http/",
+      "note": "AC-39 架构①：HTTP 层零直接写状态（零命中，exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"fs[.]write|writeFile\" desktop/ui/",
+      "note": "AC-39 架构②：界面层零直接写盘，偏好只能经 daemon prefs 模块（零命中，exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 3,
+      "cmd": "grep -REn \"PATCH\" src/daemon/http/",
+      "note": "AC-39 架构③：HTTP 层零 PATCH（零命中，exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 4,
+      "cmd": "node --input-type=module -e 'const m=await import(\"./src/daemon/http/routes.js\");const rows=m.createRoutes({orchestrator:{startRun:async()=>({ok:false}),listInstances:async()=>({ok:true,items:[]}),getStatus:async()=>({ok:false})},root:process.cwd()});const allowed=new Set([\"/instances\",\"/queue/escalations/:id/decision\",\"/queue/approvals/:id/decision\",\"/instances/:id/cancel\",\"/control/pause\",\"/control/resume\",\"/ui/prefs\"]);const writes=rows.filter(r=>r.method===\"POST\").map(r=>r.pattern);const bad=writes.filter(p=>!allowed.has(p)&&!p.startsWith(\"/__test__/\"));console.log(\"POST=\"+writes.length+\" violations=\"+bad.length+\" bad=[\"+bad.join(\",\")+\"]\");process.exit(bad.length?1:0)'",
+      "note": "AC-39 架构④：路由表 POST 行严格落在 D-1 六项业务写名单 + /ui/prefs内（脚本 violations=0 时 exit 0；字面含 /ui/prefs → violations>0 判失败）",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "stdout": "POST=10 violations=0 bad=[]",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 5,
+      "cmd": "grep -REn \"'POST' && pathname === '[^']+'\" src/daemon/http/server.js",
+      "note": "AC-39 架构⑤：server.js 的 POST pathname 字面量均为 /__test__/ 测试接缝（基线 4 行，exit 0）",
+      "expect": 0,
+      "exit": 0,
+      "lines": 4,
+      "stdout": "364:    if (method === 'POST' && pathname === '/__test__/graph/pulse') return true;\n367:    if (method === 'POST' && pathname === '/__test__/window-probe') return true;\n464:      if (req.method === 'POST' && pathname === '/__test__/graph/pulse') {\n472:      if (req.method === 'POST' && pathname === '/__test__/window-probe') {",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 6,
+      "cmd": "node --input-type=module -e 'const fs=await import(\"node:fs\");const q=String.fromCharCode(39);const allowed=new Set([\"/instances\",\"/queue/escalations/:id/decision\",\"/queue/approvals/:id/decision\",\"/instances/:id/cancel\",\"/control/pause\",\"/control/resume\",\"/ui/prefs\"]);const lines=fs.readFileSync(\"src/daemon/http/routes.js\",\"utf8\").split(\"\\n\");const pairs=[];for(let i=0;i<lines.length;i++){const l=lines[i].trim();if(l.startsWith(\"method:\")&&/POST|PUT|DELETE|PATCH/.test(l)){const p=lines[i+1]?.trim();if(p&&p.startsWith(\"pattern:\"))pairs.push(p.split(q)[1]);}}const bad=pairs.filter(p=>!allowed.has(p)&&!p.startsWith(\"/__test__/\"));console.log(\"writePatterns=\"+pairs.length+\" violations=\"+bad.length+\" bad=[\"+bad.join(\",\")+\"]\");process.exit(bad.length?1:0)'",
+      "note": "AC-39 架构⑥：routes.js 写方法 pattern 严格落在 D-1 六项业务写名单 + /ui/prefs内（脚本 violations=0 时 exit 0；不放宽）",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "stdout": "writePatterns=10 violations=0 bad=[]",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 7,
+      "cmd": "node --input-type=module -e 'import fs from \"node:fs\";import path from \"node:path\";const walk=(d)=>fs.readdirSync(d,{withFileTypes:true}).flatMap((e)=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]);const COUNT=/(\\.filter\\(|\\.reduce\\(|\\.length|\\+= *1|\\.push\\()/;const hits=[];for(const f of walk(\"src/daemon\").filter((x)=>x.endsWith(\".js\"))){const lines=fs.readFileSync(f,\"utf8\").split(\"\\n\");let fn=\"<top>\";for(let i=0;i<lines.length;i++){const m=lines[i].match(/^\\s*(?:export\\s+)?(?:async\\s+)?function\\s+([A-Za-z0-9_$]+)/);if(m)fn=m[1];if(!lines[i].includes(\"pendingEscalations\"))continue;hits.push({f,line:i+1,fn,count:COUNT.test(lines.slice(i,i+4).join(\"\\n\"))});}}const bad=hits.filter((h)=>h.count&&h.fn!==\"shapeSnapshot\");console.log(\"occurrences=\"+hits.length+\" countExpr=\"+hits.filter((h)=>h.count).length+\" outsideShapeSnapshot=\"+bad.length);process.exit(bad.length===0?0:1)'",
+      "note": "AC-39 架构⑦（D-53 函数体锚点）：daemon pendingEscalations 计数表达式只许在 shapeSnapshot 内，shapeSnapshot 未改",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "stdout": "occurrences=9 countExpr=2 outsideShapeSnapshot=0",
+      "contains": "outsideShapeSnapshot=0",
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 8,
+      "cmd": "grep -REn \"listen\\(0, .127.0.0.1.\\)|listen\\(.*0.0.0.0\" src/daemon/http/server.js",
+      "note": "AC-39 架构⑧：数据通道绑定本机回环 127.0.0.1，不监听 0.0.0.0",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "stdout": "572:      server.listen(0, '127.0.0.1');",
+      "contains": "127.0.0.1",
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

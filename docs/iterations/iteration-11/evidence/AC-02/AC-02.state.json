@@ -1,0 +1,23 @@
+{
+  "ac": "AC02",
+  "source": "createNotifier + 注入时钟（与 test/wp14/notify.test.js 同模块同夹具）",
+  "intentCountRaw": 1,
+  "dedupeGroupCount": 1,
+  "groups": [
+    "completed::INST-001"
+  ],
+  "mergedCounts": [
+    1
+  ],
+  "intents": [
+    {
+      "kind": "completed",
+      "ids": [],
+      "instanceId": "INST-001",
+      "title": "通知 实例完成 · INST-001",
+      "body": "实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已完成，单节点 1/1",
+      "mergedCount": 1,
+      "at": 0
+    }
+  ]
+}

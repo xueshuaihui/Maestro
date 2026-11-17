@@ -1,0 +1,112 @@
+{
+  "ac": "AC-45",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-45",
+    "title": "空定义：文件在、能解析、但一个节点都没有",
+    "given": "`/tmp/maestro-i11-canvas-empty` 项目根，两个现场：① 工作流 `empty-flow` 的定义文件存在且语法合法，但节点列表为空、边为空；② 工作流 `blank-flow` 的定义文件**存在但内容为空**（0 字节）；`NODE_ENV=test`。",
+    "when": "在画布上先打开 `empty-flow`，再打开 `blank-flow`。",
+    "then": [
+      "两处都显示\"定义 空\"（逐字见附录 A-7），不显示任何节点块、不显示\"定义不可读\"、不白屏，返回入口都在。"
+    ],
+    "jijian": "`test -f test/wp14/canvas.test.js && NODE_ENV=test node --test test/wp14/canvas.test.js`，用 `desktop/harness/canvas-dump.mjs` 导出，断言两个现场都 `nodes.length === 0`、`edges.length === 0`、`emptyText === '定义 空'`、返回入口存在、`stderr` 无堆栈；现场一另断言 `readable === true`（语法成功、零节点），现场二按 B-1 的 `readable` 三态口径断言 `emptyText === '定义 空'` 且**不出现**\"定义不可读\"；`# fail 0`。",
+    "fixture": "`.orch/workflows/empty-flow.yaml` 写 `nodes: []` / `edges: []`；`.orch/workflows/blank-flow.yaml` 写 0 字节（先起核再写盘）。",
+    "archText": "空定义不得被当成\"不可读\"：`grep -REn \"定义不可读\" desktop/ui/canvas/` 必须**零命中（exit 1）**（文案只能来自 labels，显示分支由 `{readable, nodes.length}` 两者共同选择，见附录 B-1）。",
+    "refs": "BR-19",
+    "risk": "中（空画布不说明原因会让人以为程序坏了）"
+  },
+  "checks": [
+    {
+      "text": "机检 canvas.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= 全降级、重复 id 只画首个\n  ---\n  duration_ms: 125.690404\n  type: 'test'\n  ...\n# Subtest: 未知 id 与空 id 不抛错，按「定义 空」处理\nok 13 - 未知 id 与空 id 不抛错，按「定义 空」处理\n  ---\n  duration_ms: 38.624252\n  type: 'test'\n  ...\n1..13\n# tests 13\n# suites 0\n# pass 13\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1227.799153\n",
+      "expected": null
+    },
+    {
+      "text": "机检 canvas.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 canvas.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 13 / # tests 13",
+      "expected": null
+    },
+    {
+      "text": "机检 canvas.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.496835\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 829.392642\n",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 31 / # tests 31",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-45 架构：画布目录零「定义不可读」硬编码（零命中，exit 1；文案只来自 labels，分支由 readable+nodes.length 选）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"定义不可读\" desktop/ui/canvas/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "现场一 empty-flow（nodes:[]/edges:[] 语法合法）显示「定义 空」，nodes=0/edges=0、readable=true、无节点块",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-45 空定义：nodes:[] 与 0 字节都按「定义 空」投影",
+      "expected": "现场一 nodes.length===0 && edges.length===0 && emptyText==='定义 空' && readable===true"
+    },
+    {
+      "text": "现场二 blank-flow（0 字节内容空）按 B-1 三态同样显示「定义 空」，不出现「定义不可读」",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass canvas 13 / arch exit 1",
+      "expected": "现场二 emptyText==='定义 空' 且不出现『定义不可读』，nodes.length===0"
+    },
+    {
+      "text": "两处都无堆栈、不白屏，返回入口都在；A-7 文案逐字由 ui-views 承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "ui-views #pass 31 / canvas #pass 13",
+      "expected": "stderr 无堆栈、返回入口存在；DESKTOP_CANVAS_EMPTY='定义 空'，DESKTOP_CANVAS_UNREADABLE='定义不可读 · 仅显示可解析部分' 分工明确"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "两处都显示\"定义 空\"（逐字见附录 A-7），不显示任何节点块、不显示\"定义不可读\"、不白屏，返回入口都在。",
+      "expected": "两处都显示\"定义 空\"（逐字见附录 A-7），不显示任何节点块、不显示\"定义不可读\"、不白屏，返回入口都在。"
+    }
+  ]
+}

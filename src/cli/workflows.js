@@ -86,7 +86,7 @@ function readText(file) {
  * of the four fixed sentences; the sub-cycle chain drops the repeated tail
  * before joining, same convention as the role side.
  */
-function workflowDetailOf(err) {
+export function workflowDetailOf(err) {
   const code = err?.code;
   const params = { ...(err?.params ?? {}) };
   if (code === 'YAML_PARSE_FAILED') {

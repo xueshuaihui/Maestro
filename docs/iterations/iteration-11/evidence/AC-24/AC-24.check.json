@@ -1,0 +1,91 @@
+{
+  "ac": "AC-24",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-24",
+    "title": "资产目录不可读与引用缺失的降级",
+    "given": "`/tmp/maestro-i11-assets-missing` 项目根，两个现场：① `.orch/roles/` 不可读（权限 000）；② 一个角色引用的技能不存在。",
+    "when": "打开角色库与详情。",
+    "then": [
+      "现场一显示\"资产不可读 · .orch/roles\"（逐字见附录 A-5），其它分页照常可用；现场二详情里该技能标\"缺失\"，其余字段照常；两种情况都可返回，不白屏。"
+    ],
+    "jijian": "`test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js`，断言两条降级文案逐字、其它分页行数不变、无堆栈输出；`# fail 0`。",
+    "fixture": "`chmod 000 .orch/roles`（取证后恢复）；缺失技能按 AC-19 构造。",
+    "archText": "降级不得删除其它分页数据；`grep -REn \"throw \" desktop/ui/assets/` 必须**零命中（exit 1）**。",
+    "refs": "BR-15, BR-32",
+    "risk": "中"
+  },
+  "checks": [
+    {
+      "text": "机检 assets.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=不可解析：那一行标不可读，其余照常\n  ---\n  duration_ms: 42.502966\n  type: 'test'\n  ...\n# Subtest: 未知 kind 与未知 id 按找不到处理，不抛错\nok 10 - 未知 kind 与未知 id 按找不到处理，不抛错\n  ---\n  duration_ms: 11.956642\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 877.461596\n",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # tests 10",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-24 架构：降级不删除其它分页数据、不抛堆栈，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"throw \" desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "AC-24 现场二（引用缺失）实跑并通过：技能标缺失、其余字段照常、其它分页行数不变",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-24 现场二：引用缺失的技能标缺失，其余字段照常",
+      "expected": "missing-skill missing=true；dirUnreadable=false；counts.project=1"
+    },
+    {
+      "text": "AC-24 现场一（目录不可读）非 root 实跑并显示「资产不可读 · .orch/roles」；root 环境按 skip 标注分级不阻塞",
+      "ok": true,
+      "blocked": false,
+      "actual": "现场一实跑；dirUnreadable=true；# pass 10 / # fail 0",
+      "expected": "非 root：dirUnreadable=true / 其它分页照常 / 恢复后可用；root：skip 但现场二成立，不算阻塞"
+    },
+    {
+      "text": "A-5 目录级降级文案逐字「资产不可读 · .orch/roles」（期望逐字 \"资产不可读 · .orch/roles\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"资产不可读 · .orch/roles\"",
+      "expected": "\"资产不可读 · .orch/roles\""
+    },
+    {
+      "text": "两种情况都可返回、不白屏、无堆栈输出（# fail 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # fail 0 / # skipped 0",
+      "expected": "# fail 0"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "现场一显示\"资产不可读 · .orch/roles\"（逐字见附录 A-5），其它分页照常可用；现场二详情里该技能标\"缺失\"，其余字段照常；两种情况都可返回，不白屏。",
+      "expected": "现场一显示\"资产不可读 · .orch/roles\"（逐字见附录 A-5），其它分页照常可用；现场二详情里该技能标\"缺失\"，其余字段照常；两种情况都可返回，不白屏。"
+    }
+  ]
+}

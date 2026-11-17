@@ -1,0 +1,119 @@
+{
+  "ac": "AC-33",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-33",
+    "title": "缺项\"未提供\"与引用不可读",
+    "given": "`/tmp/maestro-i11-evidence-missing` 项目根，三个节点：① 从未执行的节点（五项全缺）；② 产物路径不存在的节点；③ 日志引用不可读的节点；`NODE_ENV=test`。",
+    "when": "依次查看三个节点。",
+    "then": [
+      "①五项都显示\"未提供\"且行不省略；②产物项显示\"引用不可读\"、其余四项照常；③日志项显示\"引用不可读\"、其余四项照常；三次都可切到别的节点，不崩溃。"
+    ],
+    "jijian": "`test -f test/wp14/evidence.test.js && NODE_ENV=test node --test test/wp14/evidence.test.js`，断言\"未提供\"出现 5 次、两处\"引用不可读\"位置正确、切换后内容正确；`# fail 0`。",
+    "fixture": "三个节点在同一份 `state.json` 中构造；不存在的产物路径指向 `/tmp/maestro-i11-evidence-missing/nope.js`。",
+    "archText": "不可读只影响单项，不影响其它项；`grep -REn \"return null\" src/daemon/evidence.js` 的命中不得导致整体响应失败（由\"其余四项仍返回\"的行为断言兜底）。",
+    "refs": "BR-20, BR-21",
+    "risk": "中"
+  },
+  "checks": [
+    {
+      "text": "机检 evidence.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=est: 真实运行·产物引用：mock 宿主 --write-ref 后 artifactRefs 含校验时间且真实可读（数据源①端到端）\nok 5 - 真实运行·产物引用：mock 宿主 --write-ref 后 artifactRefs 含校验时间且真实可读（数据源①端到端）\n  ---\n  duration_ms: 789.166229\n  type: 'test'\n  ...\n1..5\n# tests 5\n# suites 0\n# pass 5\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2254.584035\n",
+      "expected": null
+    },
+    {
+      "text": "机检 evidence.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 evidence.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 5 / # tests 5",
+      "expected": null
+    },
+    {
+      "text": "机检 evidence.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.421524\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 764.277259\n",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 31 / # tests 31",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-33 架构（留证不判）：return null 命中不得导致整体响应失败，由「其余四项仍返回」行为断言兜底",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"return null\" src/daemon/evidence.js` → 留证不判；实测 exit 0 / 1 行",
+      "expected": "112:  if (summary === null) return null;"
+    },
+    {
+      "text": "现场①从未执行：五项都显示「未提供」且行不省略（出现 5 次）",
+      "ok": true,
+      "blocked": false,
+      "actual": "buildEvidence：从未执行 / 产物缺失 / 日志缺失三现场，缺项 null、单项不可读不牵连（AC-33 / BR-21）",
+      "expected": "五项都显示「未提供」且行不省略；缺项 null"
+    },
+    {
+      "text": "现场②产物路径不存在：产物项显示「引用不可读」，其余四项照常",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 5 / # fail 0",
+      "expected": "产物项 unreadable；其余四项仍返回"
+    },
+    {
+      "text": "现场③日志引用不可读：日志项显示「引用不可读」，其余四项照常；三次都可切到别的节点不崩溃",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 5 / # fail 0",
+      "expected": "日志项 unreadable；切换后内容正确"
+    },
+    {
+      "text": "A-8 缺项渲染逐字（unprovided）由 ui-views.test.js 承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "A-8 / AC-33: missing fields render the unprovided word",
+      "expected": "「命令 未提供 / 退出码 未提供 / 关键输出 未提供 / 日志 未提供 / 产物 未提供」逐字"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "①五项都显示\"未提供\"且行不省略；②产物项显示\"引用不可读\"、其余四项照常；③日志项显示\"引用不可读\"、其余四项照常；三次都可切到别的节点，不崩溃。",
+      "expected": "①五项都显示\"未提供\"且行不省略；②产物项显示\"引用不可读\"、其余四项照常；③日志项显示\"引用不可读\"、其余四项照常；三次都可切到别的节点，不崩溃。"
+    }
+  ]
+}

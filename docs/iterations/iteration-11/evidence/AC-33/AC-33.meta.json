@@ -1,0 +1,69 @@
+{
+  "ac": "AC-33",
+  "title": "缺项\"未提供\"与引用不可读",
+  "face": "证据 / 异常 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "cdfa9e4",
+  "startedAt": "2026-11-17T15:46:54.885Z",
+  "finishedAt": "2026-11-17T15:46:58.350Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 14,
+    "ok": 14,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "evidence.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 5,
+        "pass": 5,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "buildEvidence：从未执行 / 产物缺失 / 日志缺失三现场，缺项 null、单项不可读不牵连（AC-33 / BR-21）"
+      ]
+    },
+    {
+      "file": "ui-views.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "A-8 / AC-33: missing fields render the unprovided word"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"return null\" src/daemon/evidence.js",
+      "expect": null,
+      "exit": 0,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 evidence.test.js：# tests 5 / # pass 5 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "夹具：三个节点在同一份 state.json 构造；不存在的产物路径指向 /tmp/maestro-i11-evidence-missing/nope.js。架构 return null 命中按需求留证不判（expect null），整体响应由机检行为断言兜底，不放宽。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-33"
+}

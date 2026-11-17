@@ -1,0 +1,3 @@
+6: *   实例快照（`state.json` 形态，D-40）调用既有 `buildRoleInstances` —— 与实例
+27:import { buildRoleInstances } from '../registry/role-instances.js';
+190:    const built = buildRoleInstances({

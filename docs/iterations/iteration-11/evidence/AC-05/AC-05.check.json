@@ -1,0 +1,140 @@
+{
+  "ac": "AC-05",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-05",
+    "title": "通知开关：总开关与三类分项，按本机记住",
+    "given": "`/tmp/maestro-i11-notify-toggle` 项目根；应用已启动并停在人工干预队列页；页顶部设置区的三项分项默认全开、总开关默认开；`NODE_ENV=test`。",
+    "when": "依次：关掉\"实例完成\"分项 → 触发一次完成事件；重新打开该分项 → 再触发一次；关掉总开关 → 触发一次升级事件；重启应用后查看设置。",
+    "then": [
+      "第一次不产生完成通知（探针无 `kind=completed` 的 `notify`）；第二次产生；第三次不产生升级通知；重启后总开关仍为关闭、三个分项保持各自状态；四次操作期间队列与托盘数字照常更新。"
+    ],
+    "jijian": "`test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js`，断言三次触发的 `notify` 计数分别为 0 / 1 / 0；`.orch/desktop/prefs.json` 的开关字段与界面一致；`tray-status` 数字在三次触发后都更新；`# fail 0`。",
+    "fixture": "开关通过界面设置入口写入（等价 harness 调用同一设置模块），触发事件用 `POST /__test__/notify-trigger`（仅 `NODE_ENV=test`）；重启用同一 `--project` 再次启动。",
+    "archText": "开关只影响\"是否显示通知\"，不得影响事件产生与队列投影；`grep -REn \"notify\" src/daemon/queue.js` 必须**零命中（exit 1）**（队列不得依赖通知状态）。",
+    "refs": "BR-03",
+    "risk": "中（关不掉的通知会让人把整个应用静音）"
+  },
+  "checks": [
+    {
+      "text": "机检 notify.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=目时不发过期意图\n  ---\n  duration_ms: 32.44606\n  type: 'test'\n  ...\n# Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制\nok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制\n  ---\n  duration_ms: 38.830794\n  type: 'test'\n  ...\n1..22\n# tests 22\n# suites 0\n# pass 22\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1048.04445\n",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 22 / # tests 22",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.257074\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 634.222009\n",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 31 / # tests 31",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 prefs.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=它文件、不改实例状态目录\n  ---\n  duration_ms: 79.070615\n  type: 'test'\n  ...\n# Subtest: prefsPath 与 PREFS_KEYS 的形状契约\nok 10 - prefsPath 与 PREFS_KEYS 的形状契约\n  ---\n  duration_ms: 0.488713\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 438.128935\n",
+      "expected": null
+    },
+    {
+      "text": "机检 prefs.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 prefs.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # tests 10",
+      "expected": null
+    },
+    {
+      "text": "机检 prefs.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-05 架构检查：开关只影响是否显示通知，队列不依赖通知状态，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"notify\" src/daemon/queue.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "AC-05 意图用例存在（关分项/重开/总开关三次触发 → 0/1/0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-05: 关掉分项后该类不产生意图，重开后恢复；总开关关掉全静默 | AC-05 变体: 关掉升级分项不影响完成与异常两类",
+      "expected": "notify 计数 0 / 1 / 0"
+    },
+    {
+      "text": "A-2 开关固定顺序用例存在（通知/升级待处理/实例完成/实例异常 默认全开）",
+      "ok": true,
+      "blocked": false,
+      "actual": "A-2 / AC-05: notification toggles render in fixed order, default all on | A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion | AC-05: prefs toggles write through the HTTP seam",
+      "expected": "A-2 固定顺序"
+    },
+    {
+      "text": "prefs.json 只写四键、合并写不触碰其它文件（按本机记住）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # fail 0",
+      "expected": "# fail 0"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "第一次不产生完成通知（探针无 `kind=completed` 的 `notify`）；第二次产生；第三次不产生升级通知；重启后总开关仍为关闭、三个分项保持各自状态；四次操作期间队列与托盘数字照常更新。",
+      "expected": "第一次不产生完成通知（探针无 `kind=completed` 的 `notify`）；第二次产生；第三次不产生升级通知；重启后总开关仍为关闭、三个分项保持各自状态；四次操作期间队列与托盘数字照常更新。"
+    }
+  ]
+}

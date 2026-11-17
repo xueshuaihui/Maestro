@@ -1,0 +1,147 @@
+{
+  "ac": "AC-42",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-42",
+    "title": "七种异常提示：断开、已处理、状态不可读、资产不可读、定义不可读、引用不可读、通知不可用",
+    "given": "七个现场各准备一份：守护进程被停掉；条目已被别处处置；某实例状态文件损坏；`.orch/roles` 不可读；某工作流文件内容整体不可解析；产物路径不存在；系统通知被构造为不可用。",
+    "when": "依次触发对应界面动作。",
+    "then": [
+      "依次显示：`已断开 · 正在重连…`、`已处理（重新分配），无需再次处理`、`实例 INST-004 · 状态不可读`、`资产不可读 · .orch/roles`、`定义不可读 · 仅显示可解析部分`、`引用不可读`、`通知不可用 · 队列仍可用`（逐字见附录 **A-3** / A-2 / A-5：断开与状态不可读在 A-3，已处理与通知不可用在 A-2，其余在 A-5）；全部不白屏、不打印堆栈，界面仍可返回或重试。"
+    ],
+    "jijian": "`test -f test/wp14/errors.test.js && NODE_ENV=test node --test test/wp14/errors.test.js`，逐条断言文本与\"界面仍可操作\"的探针状态；`# fail 0`。",
+    "fixture": "七份独立项目根 / 进程状态，逐条构造（通知不可用用 `--no-notify`；状态不可读写非法 `state.json`）。",
+    "archText": "降级不得删除或跳过其它正常元素；`grep -REn \"console[.]error\" desktop/ui` 必须**零命中（exit 1）**。",
+    "refs": "BR-32, BR-05, BR-19, BR-21, BR-36",
+    "risk": "中（异常静默会让人误以为数据就是这样）"
+  },
+  "checks": [
+    {
+      "text": "机检 ui-views.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.519733\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 844.424887\n",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 31 / # tests 31",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= ...\n# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\nok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\n  ---\n  duration_ms: 9275.972805\n  type: 'test'\n  ...\n1..18\n# tests 18\n# suites 0\n# pass 18\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 14055.36821\n",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 18 / # tests 18",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-42 架构：界面层降级不打印堆栈（console.error 零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"console[.]error\" desktop/ui` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "① 断开 逐字「已断开 · 正在重连…」由 labels 冻结键 + ui-views 分支解析承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "A11 ok / ui-views #pass 31 / 关键词 已断开",
+      "expected": "已断开 · 正在重连…"
+    },
+    {
+      "text": "② 已处理 逐字「已处理（重新分配），无需再次处理」由 labels 冻结键 + ui-views 分支解析承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "A11 ok / ui-views #pass 31 / 关键词 已处理（重新分配",
+      "expected": "已处理（重新分配），无需再次处理"
+    },
+    {
+      "text": "③ 状态不可读 逐字「实例 INST-004 · 状态不可读」由 labels 冻结键 + ui-views 分支解析承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "A11 ok / ui-views #pass 31 / 关键词 实例 INST-",
+      "expected": "实例 INST-004 · 状态不可读"
+    },
+    {
+      "text": "④ 资产不可读 逐字「资产不可读 · .orch/roles」由 labels 冻结键 + ui-views 分支解析承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "A11 ok / ui-views #pass 31 / 关键词 资产不可读",
+      "expected": "资产不可读 · .orch/roles"
+    },
+    {
+      "text": "⑤ 定义不可读 逐字「定义不可读 · 仅显示可解析部分」由 labels 冻结键 + ui-views 分支解析承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "A11 ok / ui-views #pass 31 / 关键词 定义不可读",
+      "expected": "定义不可读 · 仅显示可解析部分"
+    },
+    {
+      "text": "⑥ 引用不可读 逐字「引用不可读」由 labels 冻结键 + ui-views 分支解析承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "A11 ok / ui-views #pass 31 / 关键词 引用不可读",
+      "expected": "引用不可读"
+    },
+    {
+      "text": "⑦ 通知不可用 逐字「通知不可用 · 队列仍可用」由 labels 冻结键 + ui-views 分支解析承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "A11 ok / ui-views #pass 31 / 关键词 通知不可用",
+      "expected": "通知不可用 · 队列仍可用"
+    },
+    {
+      "text": "七现场都不白屏、不打印堆栈，界面仍可返回或重试（console.error 零命中 + 降级分支保留正常元素）",
+      "ok": true,
+      "blocked": false,
+      "actual": "arch exit 1 / ui-views #pass 31",
+      "expected": "降级不删其它元素、不打印堆栈、仍可返回/重试"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "依次显示：`已断开 · 正在重连…`、`已处理（重新分配），无需再次处理`、`实例 INST-004 · 状态不可读`、`资产不可读 · .orch/roles`、`定义不可读 · 仅显示可解析部分`、`引用不可读`、`通知不可用 · 队列仍可用`（逐字见附录 **A-3** / A-2 / A-5：断开与状态不可读在 A-3，已处理与通知不可用在 A-2，其余在 A-5）；全部不白屏、不打印堆栈，界面仍可返回或重试。",
+      "expected": "依次显示：`已断开 · 正在重连…`、`已处理（重新分配），无需再次处理`、`实例 INST-004 · 状态不可读`、`资产不可读 · .orch/roles`、`定义不可读 · 仅显示可解析部分`、`引用不可读`、`通知不可用 · 队列仍可用`（逐字见附录 **A-3** / A-2 / A-5：断开与状态不可读在 A-3，已处理与通知不可用在 A-2，其余在 A-5）；全部不白屏、不打印堆栈，界面仍可返回或重试。"
+    }
+  ]
+}

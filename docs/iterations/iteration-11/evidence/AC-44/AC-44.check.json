@@ -1,0 +1,98 @@
+{
+  "ac": "AC-44",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-44",
+    "title": "「继续」只对轮次超限可用：置灰、悬停说明、点了也不生效",
+    "given": "`/tmp/maestro-i11-queue-pass-guard` 项目根，两个实例：`INST-001` 因**执行失败**挂起（待处理升级 `ESC-001`），`INST-002` 因**轮次超限**挂起（待处理升级 `ESC-002`）；队列已打开；`NODE_ENV=test`。",
+    "when": "看 `ESC-001` 行的三个按钮；把鼠标停在\"继续\"上；再强行点它（经 harness 调用与按钮完全相同的动作入口）；最后对 `ESC-002` 点\"继续\"。",
+    "then": [
+      "`ESC-001` 行的\"继续\"是**置灰不可点**的，悬停文案逐字\"该升级只能重派或终止\"；强行点击后没有任何结果行、`ESC-001` 仍是\"待处理\"、`INST-001` 仍\"已挂起\"；只有 `ESC-002` 点得动并显示\"已处理（通过）\"；整条队列里\"判通过\"只发生在 `ESC-002` 上。"
+    ],
+    "jijian": "`test -f test/wp14/queue-actions.test.js && NODE_ENV=test node --test test/wp14/queue-actions.test.js`，断言 `ESC-001` 行 `continue.disabled === true`、`continue.tooltip === '该升级只能重派或终止'`、强行点击后 `ESC-001.resolution === 'pending'` 且实例状态仍为\"已挂起\"、`counters.pass === 1` 且发生在 `ESC-002`；`# fail 0`。",
+    "fixture": "两条升级分别经 `POST /__test__/escalations` 以 `reasonCode: \"execution_failed\"` 与 `\"rounds_exceeded\"` 构造；按钮态从 harness 导出的动作视图读。",
+    "archText": "置灰必须由核心返回的\"该升级可选动作\"驱动，界面不得靠原因文案猜；`grep -REn \"rounds_exceeded\" desktop/ui/queue/` 必须**零命中（exit 1）**；悬停文案不得在界面层硬编码：`grep -REn \"该升级只能重派或终止\" desktop/ui/` 必须**零命中（exit 1）**。",
+    "refs": "BR-08",
+    "risk": "高（误把\"该重做的失败\"判成通过，等于把问题按掉了）"
+  },
+  "checks": [
+    {
+      "text": "机检 queue.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=879.856945\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 493.322775\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 8568.195074\n",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 16 / # tests 16",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-44 架构①：界面不靠原因文案猜置灰（rounds_exceeded 零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"rounds_exceeded\" desktop/ui/queue/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #2：AC-44 架构②：悬停文案不硬编码，来自 labels（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"该升级只能重派或终止\" desktop/ui/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "执行失败升级 ESC-001 的「继续」置灰不可点：返回 ACTION_NOT_SUPPORTED，强行点击无结果行",
+      "ok": true,
+      "blocked": false,
+      "actual": "继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）",
+      "expected": "ESC-001.resolution 仍 pending、INST-001 仍「已挂起」、无结果行、continue.disabled===true"
+    },
+    {
+      "text": "置灰悬停文案逐字「该升级只能重派或终止」，由核心返回可选动作驱动、非界面猜测",
+      "ok": true,
+      "blocked": false,
+      "actual": "arch① exit 1 / arch② exit 1",
+      "expected": "continue.tooltip === 该升级只能重派或终止；rounds_exceeded 与文案字面在 UI 零命中"
+    },
+    {
+      "text": "仅轮次超限 ESC-002 点「继续」显示「已处理（通过）」；counters.pass===1 且只发生在 ESC-002",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass queue 16 / # fail 0",
+      "expected": "counters.pass === 1；整条队列里判通过只发生在轮次超限那条"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`ESC-001` 行的\"继续\"是**置灰不可点**的，悬停文案逐字\"该升级只能重派或终止\"；强行点击后没有任何结果行、`ESC-001` 仍是\"待处理\"、`INST-001` 仍\"已挂起\"；只有 `ESC-002` 点得动并显示\"已处理（通过）\"；整条队列里\"判通过\"只发生在 `ESC-002` 上。",
+      "expected": "`ESC-001` 行的\"继续\"是**置灰不可点**的，悬停文案逐字\"该升级只能重派或终止\"；强行点击后没有任何结果行、`ESC-001` 仍是\"待处理\"、`INST-001` 仍\"已挂起\"；只有 `ESC-002` 点得动并显示\"已处理（通过）\"；整条队列里\"判通过\"只发生在 `ESC-002` 上。"
+    },
+    {
+      "text": "语义复核：tooltip 来自 labels DESKTOP_QUEUE_DISABLED_HINT，可点性来自核心动作列表（非原因文案）",
+      "ok": true,
+      "blocked": false,
+      "actual": "src/cli/labels.js:944:export const DESKTOP_QUEUE_DISABLED_HINT = Object.freeze('该升级只能重派或终止'); | test/wp14/queue.test.js:562:test('继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）', async () => { | test/wp14/queue.test.js:581:    assert.equal(denied.code, 'ACTION_NOT_SUPPORTED'); | test/wp14/queue.test.js:634:test('动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）', async () => { | test/wp14/queue.test.js:652:  assert.equal(wrongType.code, 'ACTION_NOT_SUPPORTED', '升级动作打到审批条目 → 显式不支持'); | test/wp14/queue.test.js:656:  assert.equal(wrongType2.code, 'ACTION_NOT_SUPPORTED', '审批动作打到升级条目 → 显式不支持');",
+      "expected": "界面消费下发文案 + 核心可选动作，不硬编码"
+    }
+  ]
+}

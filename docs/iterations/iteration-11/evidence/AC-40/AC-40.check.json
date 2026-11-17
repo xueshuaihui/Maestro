@@ -1,0 +1,182 @@
+{
+  "ac": "AC-40",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-40",
+    "title": "非功能：零依赖、无打包器、中文唯一来源、纯净扫描",
+    "given": "本迭代实现完成，`NODE_ENV=test`。",
+    "when": "检查依赖、打包器、中文来源、禁词与宿主分支。",
+    "then": [
+      "`dependencies` 为 `{}`；`desktop/ui` 与 `desktop/harness` 零中文字面量，文案均经 `GET /ui/labels` 下发；壳层的中文字符串字面量**只出现在 `desktop/src-tauri/src/config.rs`**（`Labels` 的 baked-in 默认值），其余壳层文件零中文字符串；`desktop/ui` 无打包器配置文件、无 npm 裸模块 import；`src/core` / `src/daemon` 零命中 31 词、无 `if host ==` / `switch (host)`。"
+    ],
+    "jijian": "`cd \"$MAESTRO_REPO\" && node -p \"Object.keys(require('./package.json').dependencies||{}).length\"` 输出 `0`；`test -f test/wp14/labels-desktop.test.js && NODE_ENV=test node --test test/wp14/labels-desktop.test.js` 断言 `desktop/ui` 与 `desktop/harness` 的 CJK 命中数为 0、`/ui/labels` 覆盖界面引用到的全部键；`# fail 0`。",
+    "fixture": "本 AC 是仓库静态检查，不使用业务夹具；命令从仓库根执行。",
+    "archText": "CJK 扫描按**分层口径**（D-04）分三条，基线实跑结果写在括号里：",
+    "refs": "BR-26, BR-28",
+    "risk": "高（违反即阻断合入）"
+  },
+  "checks": [
+    {
+      "text": "机检 e2e.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=中文唯一来源\n  ---\n  duration_ms: 28.243495\n  type: 'test'\n  ...\n# Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\nok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\n  ---\n  duration_ms: 2.12129\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2856.444177\n",
+      "expected": null
+    },
+    {
+      "text": "机检 e2e.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 e2e.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 6 / # tests 6",
+      "expected": null
+    },
+    {
+      "text": "机检 e2e.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 regression.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= Subtest: 三主链：A-0 归一化后逐字命中 I1.1/I1.3 冻结基线（single/code-loop/task-loop）\nok 13 - 三主链：A-0 归一化后逐字命中 I1.1/I1.3 冻结基线（single/code-loop/task-loop）\n  ---\n  duration_ms: 10527.9429\n  type: 'test'\n  ...\n1..13\n# tests 13\n# suites 0\n# pass 12\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 11051.897512\n",
+      "expected": null
+    },
+    {
+      "text": "机检 regression.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 regression.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 12 / # tests 13",
+      "expected": null
+    },
+    {
+      "text": "机检 regression.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-40 架构①：界面层与验收层零 CJK 命中（零命中，exit 1；基线 0 文件）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REl \"[一-龥]\" desktop/ui desktop/harness` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #2：AC-40 架构②：壳层中文字符串只在 config.rs（排除 // /// * 注释假阳性后恰好 1 行，exit 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn '\"[^\"]*[一-龥][^\"]*\"' desktop/src-tauri/src | grep -vE ':\\s*[0-9]+:\\s*(//|\\*)' | cut -d: -f1 | sort -u` → exit 0 / 恰好 1 行 / 含「config.rs」；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #3：AC-40 架构③：src/core + src/daemon 31 词零命中（exit 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #4：AC-40 架构④：desktop/ui 禁词零命中（exit 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`node test/fixtures/purity-check.mjs --dirs desktop/ui` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #5：AC-40 架构⑤：package.json 无打包器配置（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"\\\"vite\\\"|\\\"webpack\\\"|\\\"rollup\\\"|\\\"esbuild\\\"|\\\"parcel\\\"\" package.json` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #6：AC-40 架构⑥：desktop/ui 无 npm 裸模块 import（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"^import .* from '[^./]' desktop/ui` → exit 1 / 恰好 2 行；实测 exit 1 / 2 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #7：AC-40 架构⑦：src/core + src/daemon 无 host 分支（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"if host ==|switch [(]host[)]\" src/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #8：AC-40 架构⑧：dependencies 为 {}（输出 0，exit 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`node -p \"Object.keys(require('./package.json').dependencies||{}).length\"` → exit 0 / 恰好 1 行 / 含「0」；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "dependencies 为 {}（输出 0），无打包器配置、界面无裸 import",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass e2e 6 / deps 0",
+      "expected": "dependencies=0 / 无 vite|webpack|rollup|esbuild|parcel / 界面零裸 import"
+    },
+    {
+      "text": "desktop/ui + desktop/harness 零 CJK 字面量，文案均经 /ui/labels 下发（249 键全量）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass e2e 6 / regression 12",
+      "expected": "界面/验收层 CJK 命中数 0；/ui/labels 覆盖界面引用全部键（I11 95 顶层键 + 复用键 = 249）"
+    },
+    {
+      "text": "壳层中文字符串只出现在 config.rs 的 Labels 默认值，其余壳层文件零中文字符串",
+      "ok": true,
+      "blocked": false,
+      "actual": "desktop/src-tauri/src/config.rs",
+      "expected": "排除注释假阳性后 shell 中文字符串文件集合 = {config.rs}"
+    },
+    {
+      "text": "src/core + src/daemon 31 词零命中、desktop/ui 禁词零命中、无 if host==/switch(host)",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass regression 12",
+      "expected": "purity-check 双扫 exit 0；31 词零命中；host 分支零命中"
+    },
+    {
+      "text": "既有键 USAGE_LINES 仍 25 行（逐字基线不变）",
+      "ok": true,
+      "blocked": false,
+      "actual": "dependencies=0 且 USAGE_LINES 仍 25 行（D-12 / D-14）",
+      "expected": "USAGE_LINES.length === 25"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`dependencies` 为 `{}`；`desktop/ui` 与 `desktop/harness` 零中文字面量，文案均经 `GET /ui/labels` 下发；壳层的中文字符串字面量**只出现在 `desktop/src-tauri/src/config.rs`**（`Labels` 的 baked-in 默认值），其余壳层文件零中文字符串；`desktop/ui` 无打包器配置文件、无 npm 裸模块 import；`src/core` / `src/daemon` 零命中 31 词、无 `if host ==` / `switch (host)`。",
+      "expected": "`dependencies` 为 `{}`；`desktop/ui` 与 `desktop/harness` 零中文字面量，文案均经 `GET /ui/labels` 下发；壳层的中文字符串字面量**只出现在 `desktop/src-tauri/src/config.rs`**（`Labels` 的 baked-in 默认值），其余壳层文件零中文字符串；`desktop/ui` 无打包器配置文件、无 npm 裸模块 import；`src/core` / `src/daemon` 零命中 31 词、无 `if host ==` / `switch (host)`。"
+    },
+    {
+      "text": "语义复核：config.rs 中文均在 Labels 默认值 + merge_payload pick(DESKTOP_TRAY_*)（壳层例外按 D-04/BR-26）",
+      "ok": true,
+      "blocked": false,
+      "actual": "36:    fn default() -> Self { | 56:impl Labels { | 61:        if let Some(v) = pick(\"DESKTOP_TRAY_OPEN\") { self.tray_open = v; } | 62:        if let Some(v) = pick(\"DESKTOP_TRAY_QUIT\") { self.tray_quit = v; } | 68:        if let Some(v) = pick(\"DESKTOP_TRAY_STATUS\") { self.tray_status = v; } | 69:        if let Some(v) = pick(\"DESKTOP_TRAY_STATUS_DISCONNECTED\") { self.tray_status_disconnected = v; }",
+      "expected": "壳层中文只在 config.rs 的 Labels baked-in 默认值与 pick 段"
+    }
+  ]
+}

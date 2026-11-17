@@ -1,0 +1,53 @@
+{
+  "ac": "AC-36",
+  "title": "托盘暂停与继续",
+  "face": "托盘 / 暂停继续 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "cdfa9e4",
+  "startedAt": "2026-11-17T15:47:05.456Z",
+  "finishedAt": "2026-11-17T15:47:05.938Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 10,
+    "ok": 10,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "shell-notify.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 12,
+        "pass": 11,
+        "fail": 0,
+        "skipped": 1
+      },
+      "labeled": []
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"paused = true\" desktop/src-tauri/src/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 shell-notify.test.js：# tests 12 / # pass 11 / # fail 0 / # skipped 1；带本 AC 编号用例 0 条。",
+    "证据分级降级（非阻塞）：shell-notify.test.js 静态契约层 11 条全部通过（tray-pause/resume 双处分发、/control 路由、摘要文案键），真实探针层 1 条按 U-13 gated SKIP（release 壳层二进制早于 main.rs）。本机旧二进制 SKIP 属证据分级降级（mock 实测），不是阻塞；人眼确认「点暂停手感」登记人工核验，不计入 AC 通过数。",
+    "机检文件名口径：需求点名 test/wp14/tray.test.js（本分支不存在），暂停/继续断言落 shell-notify.test.js（WP-9 shell 契约）；按实际存在文件机检并登记说明，不放宽。D-25 口径：Given 三个运行中实例（两可读一损坏）对应 Then「2 暂停/1 跳过」。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-36"
+}

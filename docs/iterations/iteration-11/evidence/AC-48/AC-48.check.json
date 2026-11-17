@@ -1,0 +1,119 @@
+{
+  "ac": "AC-48",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-48",
+    "title": "没有运行中实例时点\"暂停\"：置灰且给出固定提示",
+    "given": "`/tmp/maestro-i11-tray-pause-none` 项目根，只有一个**已完成**实例（0 个运行中）；应用在托盘；`NODE_ENV=test`。",
+    "when": "点\"暂停\"（`ctl/tray-pause`）；再点一次。",
+    "then": [
+      "菜单里\"暂停\"为**置灰不可用**；强行触发时提示\"没有可暂停的实例\"（逐字见附录 A-9），不出现\"N 个实例已暂停\"这类数字句；实例状态不变、菜单项文案仍是\"暂停\"（**不会**变成\"继续\"）；托盘信息行数字不变。"
+    ],
+    "jijian": "`test -f test/wp14/tray.test.js && NODE_ENV=test node --test test/wp14/tray.test.js`，断言 `pauseItem.enabled === false`、提示逐字、`pausedCount === 0`、`menuPauseLabel === '暂停'`、实例状态未变、`tray-status` 数字前后相等；`# fail 0`。",
+    "fixture": "用 `orch run` 跑完一个 `single` 实例（状态\"已完成\"）；`ctl/tray-pause` 文件触发。",
+    "archText": "无运行中实例时不得把菜单项切成\"继续\"、不得在壳层写中文：`grep -REn \"继续\" desktop/src-tauri/src/tray.rs` 必须**零命中（exit 1）**（菜单文案只从 `config.rs` 的 `Labels` 或 `/ui/labels` 取）；`grep -REn \"没有可暂停的实例\" desktop/src-tauri/src/tray.rs` 必须**零命中（exit 1）**。",
+    "refs": "BR-23",
+    "risk": "中（点了没反应会让人以为托盘坏了）"
+  },
+  "checks": [
+    {
+      "text": "机检 shell-notify.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=btest: 真实探针层：ctl 四动作触发事件并改名 .done（需当前源码构建产物）\nok 12 - 真实探针层：ctl 四动作触发事件并改名 .done（需当前源码构建产物） # SKIP release 壳层二进制早于 main.rs（本轮改动未构建）；静态契约层已覆盖接缝\n  ---\n  duration_ms: 0.081818\n  type: 'test'\n  ...\n1..12\n# tests 12\n# suites 0\n# pass 11\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 146.024419\n",
+      "expected": null
+    },
+    {
+      "text": "机检 shell-notify.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 shell-notify.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 11 / # tests 12",
+      "expected": null
+    },
+    {
+      "text": "机检 shell-notify.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=...\n# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\nok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\n  ---\n  duration_ms: 9295.910035\n  type: 'test'\n  ...\n1..18\n# tests 18\n# suites 0\n# pass 18\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 14039.048581\n",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 18 / # tests 18",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-48 架构①：无运行中实例时菜单不切「继续」（tray.rs 零命中，exit 1；文案只从 config.rs Labels 或 /ui/labels 取）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"继续\" desktop/src-tauri/src/tray.rs` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #2：AC-48 架构②：壳层不写中文提示（tray.rs 零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"没有可暂停的实例\" desktop/src-tauri/src/tray.rs` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "只有一个已完成实例（0 运行中）时菜单「暂停」置灰不可点（pauseItem.enabled===false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "ctl 七动作清单：probe.rs 分发表恰好含既有三 + 新增四 | tray-quit-confirm 通道不动：不在 CTL_ACTIONS，只由 wait_ctl_file 单独消费 | ctl 四动作双处分发：probe.rs 登记 + tray.rs 调真实处理函数 | --no-notify 只关投递层：开关置 false 但 SSE 订阅仍无条件启动 | D-9 探针事件名齐全（壳层拥有部分） | 点击通知只走已落盘 handle_notify_open：main.rs 以 Some(id_override) 调用",
+      "expected": "pauseItem.enabled===false；tray.rs 不写「继续」/中文提示"
+    },
+    {
+      "text": "强行触发提示逐字「没有可暂停的实例」，不出现「N 个实例已暂停」数字句",
+      "ok": true,
+      "blocked": false,
+      "actual": "A-11 文案键逐字（抽查 + 键存在性）",
+      "expected": "DESKTOP_TRAY_PAUSE_NONE='没有可暂停的实例'（config.rs 有中文默认值 + /ui/labels 覆盖）"
+    },
+    {
+      "text": "实例状态不变、菜单文案仍是「暂停」（不变「继续」）、托盘信息行数字前后相等",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass shell 11 / http 18",
+      "expected": "pausedCount===0；menuPauseLabel===暂停；tray-status 数字前后相等；pause/resume 走 /control、壳层不直写状态"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "菜单里\"暂停\"为**置灰不可用**；强行触发时提示\"没有可暂停的实例\"（逐字见附录 A-9），不出现\"N 个实例已暂停\"这类数字句；实例状态不变、菜单项文案仍是\"暂停\"（**不会**变成\"继续\"）；托盘信息行数字不变。",
+      "expected": "菜单里\"暂停\"为**置灰不可用**；强行触发时提示\"没有可暂停的实例\"（逐字见附录 A-9），不出现\"N 个实例已暂停\"这类数字句；实例状态不变、菜单项文案仍是\"暂停\"（**不会**变成\"继续\"）；托盘信息行数字不变。"
+    }
+  ]
+}

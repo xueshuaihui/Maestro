@@ -1,0 +1,92 @@
+{
+  "ac": "AC-41",
+  "commands": [
+    {
+      "label": "机检 regression.test.js",
+      "cmd": "test -f test/wp14/regression.test.js && NODE_ENV=test node --test test/wp14/regression.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 11395,
+      "stdout": "TAP version 13\n# Subtest: 全量用例结构下限不低于 I1.11 收口（只增不减，不写死条数）\nok 1 - 全量用例结构下限不低于 I1.11 收口（只增不减，不写死条数）\n  ---\n  duration_ms: 75.964692\n  type: 'test'\n  ...\n# Subtest: 判定基线清单存在且为 8 物理条 + R-08 的 AC-04 = 9 条（差集口径）\nok 2 - 判定基线清单存在且为 8 物理条 + R-08 的 AC-04 = 9 条（差集口径）\n  ---\n  duration_ms: 0.866647\n  type: 'test'\n  ...\n# Subtest: 全量门禁摘要（可选）：tests >= 1567 且失败集合差集 0（禁 fail===0）\nok 3 - 全量门禁摘要（可选）：tests >= 1567 且失败集合差集 0（禁 fail===0） # SKIP 未找到全量 gate 摘要；请在门禁命令后生成摘要（见回执 §6），权威差集判定由门禁命令本身承担，本测试不自递归跑全量。\n  ---\n  duration_ms: 0.29361\n  type: 'test'\n  ...\n# Subtest: 31 词纯净扫描双扫：src/core,src/daemon 与 desktop/ui 均 exit 0\nok 4 - 31 词纯净扫描双扫：src/core,src/daemon 与 desktop/ui 均 exit 0\n  ---\n  duration_ms: 255.594188\n  type: 'test'\n  ...\n# Subtest: desktop/ui + desktop/harness CJK 代码行零命中（剥注释）\nok 5 - desktop/ui + desktop/harness CJK 代码行零命中（剥注释）\n  ---\n  duration_ms: 39.386088\n  type: 'test'\n  ...\n# Subtest: dependencies=0 且 USAGE_LINES 仍 25 行（D-12 / D-14）\nok 6 - dependencies=0 且 USAGE_LINES 仍 25 行（D-12 / D-14）\n  ---\n  duration_ms: 0.768716\n  type: 'test'\n  ...\n# Subtest: CLI 命令表与两层子命令表未变（D-14 冻结，锚点取 src/cli/main.js）\nok 7 - CLI 命令表与两层子命令表未变（D-14 冻结，锚点取 src/cli/main.js）\n  ---\n  duration_ms: 1.742129\n  type: 'test'\n  ...\n# Subtest: 既有 8 条 HTTP 路径与 2 个测试接缝锚点仍在（逐字、D-11/拆分 §2.8）\nok 8 - 既有 8 条 HTTP 路径与 2 个测试接缝锚点仍在（逐字、D-11/拆分 §2.8）\n  ---\n  duration_ms: 1.578837\n  type: 'test'\n  ...\n# Subtest: shapeSnapshot 函数体逐字未改（D-36：禁止为凑「一处」改它）\nok 9 - shapeSnapshot 函数体逐字未改（D-36：禁止为凑「一处」改它）\n  ---\n  duration_ms: 1.167978\n  type: 'test'\n  ...\n# Subtest: escalations.filter|reduce 在 src/daemon 恰 1 条基线（shapeSnapshot 回退）\nok 10 - escalations.filter|reduce 在 src/daemon 恰 1 条基线（shapeSnapshot 回退）\n  ---\n  duration_ms: 12.791228\n  type: 'test'\n  ...\n# Subtest: pendingEscalations 在 http 仅既有透传 1 条（零重算表达式）\nok 11 - pendingEscalations 在 http 仅既有透传 1 条（零重算表达式）\n  ---\n  duration_ms: 3.622727\n  type: 'test'\n  ...\n# Subtest: tray-quit-confirm 仅由 wait_ctl_file 消费、不在 CTL_ACTIONS（D-9）\nok 12 - tray-quit-confirm 仅由 wait_ctl_file 消费、不在 CTL_ACTIONS（D-9）\n  ---\n  duration_ms: 1.813911\n  type: 'test'\n  ...\n# Subtest: 三主链：A-0 归一化后逐字命中 I1.1/I1.3 冻结基线（single/code-loop/task-loop）\nok 13 - 三主链：A-0 归一化后逐字命中 I1.1/I1.3 冻结基线（single/code-loop/task-loop）\n  ---\n  duration_ms: 10773.315772\n  type: 'test'\n  ...\n1..13\n# tests 13\n# suites 0\n# pass 12\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 11294.703049\n",
+      "stderr": ""
+    },
+    {
+      "label": "语义复核：test/ 相对基线 66e5a6b 的改动文件清单",
+      "cmd": "git diff --name-only 66e5a6b -- test/",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 36,
+      "stdout": "test/wp13/errors.test.js\ntest/wp13/graph-collapse.test.js\ntest/wp13/http-channel.test.js\ntest/wp13/labels-desktop.test.js\ntest/wp14/assets.test.js\ntest/wp14/canvas-interaction.test.js\ntest/wp14/canvas.test.js\ntest/wp14/contract.test.js\ntest/wp14/e2e.test.js\ntest/wp14/evidence.test.js\ntest/wp14/http-contract.test.js\ntest/wp14/notify.test.js\ntest/wp14/occupancy.test.js\ntest/wp14/prefs.test.js\ntest/wp14/queue.test.js\ntest/wp14/regression.test.js\ntest/wp14/shell-notify.test.js\ntest/wp14/ui-views.test.js\n",
+      "stderr": ""
+    },
+    {
+      "label": "语义复核：4 个 wp13 文案契约文件的删除行（应只含 147 键数/期望清单更新）",
+      "cmd": "git diff 66e5a6b -- test/wp13/errors.test.js test/wp13/graph-collapse.test.js test/wp13/http-channel.test.js test/wp13/labels-desktop.test.js | grep '^-' | grep -v '^---'",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 198,
+      "stdout": "- *   147 键、`/instances`、`/workflows`、`/instances/:id/graph` 经注入路由全量可用，\n-    assert.equal(Object.keys(payload.keys).length, 147);\n- * The real `GET /ui/labels` key table (147 keys). Group display names are part\n- * import (frozen 147-key contract); routes.js (WP-3) is not landed in this\n-test('GET /ui/labels serves the frozen 147-key payload via the S-02 seam', async () => {\n-      assert.equal(Object.keys(payload.keys).length, 147);\n-// 期望清单（冻结契约本体）：新增键 64 + 复用键 83 = 147。\n-  const names = [...EXPECTED_DESKTOP_KEYS];\n-  assert.equal(Object.keys(UI_LABEL_KEYS).length, 147, '新增 64 + 复用 83');\n-    'INSTANCE_LABEL_', 'NODE_LABEL_', 'HANDOFF_LABEL_', 'ROLE_INSTANCE_STATUS_LABEL_',\n",
+      "stderr": ""
+    }
+  ],
+  "testRuns": [
+    {
+      "file": "regression.test.js",
+      "cmd": "test -f test/wp14/regression.test.js && NODE_ENV=test node --test test/wp14/regression.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: 全量用例结构下限不低于 I1.11 收口（只增不减，不写死条数）\nok 1 - 全量用例结构下限不低于 I1.11 收口（只增不减，不写死条数）\n  ---\n  duration_ms: 75.964692\n  type: 'test'\n  ...\n# Subtest: 判定基线清单存在且为 8 物理条 + R-08 的 AC-04 = 9 条（差集口径）\nok 2 - 判定基线清单存在且为 8 物理条 + R-08 的 AC-04 = 9 条（差集口径）\n  ---\n  duration_ms: 0.866647\n  type: 'test'\n  ...\n# Subtest: 全量门禁摘要（可选）：tests >= 1567 且失败集合差集 0（禁 fail===0）\nok 3 - 全量门禁摘要（可选）：tests >= 1567 且失败集合差集 0（禁 fail===0） # SKIP 未找到全量 gate 摘要；请在门禁命令后生成摘要（见回执 §6），权威差集判定由门禁命令本身承担，本测试不自递归跑全量。\n  ---\n  duration_ms: 0.29361\n  type: 'test'\n  ...\n# Subtest: 31 词纯净扫描双扫：src/core,src/daemon 与 desktop/ui 均 exit 0\nok 4 - 31 词纯净扫描双扫：src/core,src/daemon 与 desktop/ui 均 exit 0\n  ---\n  duration_ms: 255.594188\n  type: 'test'\n  ...\n# Subtest: desktop/ui + desktop/harness CJK 代码行零命中（剥注释）\nok 5 - desktop/ui + desktop/harness CJK 代码行零命中（剥注释）\n  ---\n  duration_ms: 39.386088\n  type: 'test'\n  ...\n# Subtest: dependencies=0 且 USAGE_LINES 仍 25 行（D-12 / D-14）\nok 6 - dependencies=0 且 USAGE_LINES 仍 25 行（D-12 / D-14）\n  ---\n  duration_ms: 0.768716\n  type: 'test'\n  ...\n# Subtest: CLI 命令表与两层子命令表未变（D-14 冻结，锚点取 src/cli/main.js）\nok 7 - CLI 命令表与两层子命令表未变（D-14 冻结，锚点取 src/cli/main.js）\n  ---\n  duration_ms: 1.742129\n  type: 'test'\n  ...\n# Subtest: 既有 8 条 HTTP 路径与 2 个测试接缝锚点仍在（逐字、D-11/拆分 §2.8）\nok 8 - 既有 8 条 HTTP 路径与 2 个测试接缝锚点仍在（逐字、D-11/拆分 §2.8）\n  ---\n  duration_ms: 1.578837\n  type: 'test'\n  ...\n# Subtest: shapeSnapshot 函数体逐字未改（D-36：禁止为凑「一处」改它）\nok 9 - shapeSnapshot 函数体逐字未改（D-36：禁止为凑「一处」改它）\n  ---\n  duration_ms: 1.167978\n  type: 'test'\n  ...\n# Subtest: escalations.filter|reduce 在 src/daemon 恰 1 条基线（shapeSnapshot 回退）\nok 10 - escalations.filter|reduce 在 src/daemon 恰 1 条基线（shapeSnapshot 回退）\n  ---\n  duration_ms: 12.791228\n  type: 'test'\n  ...\n# Subtest: pendingEscalations 在 http 仅既有透传 1 条（零重算表达式）\nok 11 - pendingEscalations 在 http 仅既有透传 1 条（零重算表达式）\n  ---\n  duration_ms: 3.622727\n  type: 'test'\n  ...\n# Subtest: tray-quit-confirm 仅由 wait_ctl_file 消费、不在 CTL_ACTIONS（D-9）\nok 12 - tray-quit-confirm 仅由 wait_ctl_file 消费、不在 CTL_ACTIONS（D-9）\n  ---\n  duration_ms: 1.813911\n  type: 'test'\n  ...\n# Subtest: 三主链：A-0 归一化后逐字命中 I1.1/I1.3 冻结基线（single/code-loop/task-loop）\nok 13 - 三主链：A-0 归一化后逐字命中 I1.1/I1.3 冻结基线（single/code-loop/task-loop）\n  ---\n  duration_ms: 10773.315772\n  type: 'test'\n  ...\n1..13\n# tests 13\n# suites 0\n# pass 12\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 11294.703049\n",
+      "tap": {
+        "tests": 13,
+        "pass": 12,
+        "fail": 0,
+        "skipped": 1,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 11294.703049,
+        "notOk": [],
+        "skips": [
+          {
+            "name": "全量门禁摘要（可选）：tests >= 1567 且失败集合差集 0（禁 fail===0）",
+            "note": "未找到全量 gate 摘要；请在门禁命令后生成摘要（见回执 §6），权威差集判定由门禁命令本身承担，本测试不自递归跑全量。"
+          }
+        ],
+        "subtests": [
+          "全量用例结构下限不低于 I1.11 收口（只增不减，不写死条数）",
+          "判定基线清单存在且为 8 物理条 + R-08 的 AC-04 = 9 条（差集口径）",
+          "全量门禁摘要（可选）：tests >= 1567 且失败集合差集 0（禁 fail===0）",
+          "31 词纯净扫描双扫：src/core,src/daemon 与 desktop/ui 均 exit 0",
+          "desktop/ui + desktop/harness CJK 代码行零命中（剥注释）",
+          "dependencies=0 且 USAGE_LINES 仍 25 行（D-12 / D-14）",
+          "CLI 命令表与两层子命令表未变（D-14 冻结，锚点取 src/cli/main.js）",
+          "既有 8 条 HTTP 路径与 2 个测试接缝锚点仍在（逐字、D-11/拆分 §2.8）",
+          "shapeSnapshot 函数体逐字未改（D-36：禁止为凑「一处」改它）",
+          "escalations.filter|reduce 在 src/daemon 恰 1 条基线（shapeSnapshot 回退）",
+          "pendingEscalations 在 http 仅既有透传 1 条（零重算表达式）",
+          "tray-quit-confirm 仅由 wait_ctl_file 消费、不在 CTL_ACTIONS（D-9）",
+          "三主链：A-0 归一化后逐字命中 I1.1/I1.3 冻结基线（single/code-loop/task-loop）"
+        ]
+      }
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "git diff --name-only 66e5a6b -- test/",
+      "note": "AC-41 架构（人工核对留证）：既有测试文件不得修改，只允许 test/wp14/ + D-51 授权的 4 个 wp13 文案契约文件",
+      "expect": null,
+      "exit": 0,
+      "lines": 18,
+      "stdout": "test/wp13/errors.test.js\ntest/wp13/graph-collapse.test.js\ntest/wp13/http-channel.test.js\ntest/wp13/labels-desktop.test.js\ntest/wp14/assets.test.js\ntest/wp14/canvas-interaction.test.js\ntest/wp14/canvas.test.js\ntest/wp14/contract.test.js\ntest/wp14/e2e.test.js\ntest/wp14/evidence.test.js\ntest/wp14/http-contract.test.js\ntest/wp14/notify.test.js\ntest/wp14/occupancy.test.js\ntest/wp14/prefs.test.js\ntest/wp14/queue.test.js\ntest/wp14/regression.test.js\ntest/wp14/shell-notify.test.js\ntest/wp14/ui-views.test.js",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": true
+    }
+  ]
+}

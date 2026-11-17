@@ -1,0 +1,147 @@
+{
+  "ac": "AC-01",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-01",
+    "title": "升级待处理时托盘通知（规划验收句第 1 句）",
+    "given": "`/tmp/maestro-i11-notify` 项目根，mock 宿主，应用已启动并缩到托盘（主窗口不可见），探针文件已就绪；一个运行中的实例 `INST-001`（`single` 模板，唯一节点 `T-001` 已派发，角色 `worker` / 中文名「执行者」，第 1 轮）；`NODE_ENV=test`。",
+    "when": "经测试接缝让 `T-001` 升级（`reasonCode: \"execution_failed\"`，等价于真实\"执行失败\"触发的升级创建）。",
+    "then": [
+      "2 秒内系统托盘出现一条通知，标题为附录 A-1 的升级标题，正文为 A-1 的**五段固定段序**且逐字匹配：`实例 INST-001 · 升级 ESC-001 · 节点 T-001 执行者 · 第 1 轮 · {原因摘要}`（第 5 段取夹具 `reasonDetail` 的实际值，按 A-0 可变值替换）；探针追加一条通知意图事件与一条投递结果事件；正文里没有任何会话内容、日志正文或产物内容；**触发通知前后，该实例的节点 / 会话 / 交接包 / 升级 / 审批五组状态逐值不变**（通知只触达、不改状态）。"
+    ],
+    "jijian": "`test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js`，断言探针出现 `{\"event\":\"notify\",\"kind\":\"escalation\",\"instanceId\":\"INST-001\",\"escalationId\":\"ESC-001\"}` 且 `notify.t - trigger.t ≤ 2000`；紧随其后出现 `{\"event\":\"notify-delivered\",\"kind\":\"escalation\"}`；通知标题与正文逐字匹配附录 A-1（可变值按 A-0 替换），并断言正文按 ` · ` 切分**恰为 5 段**、第 1 段 `实例 INST-001`、第 2 段 `升级 ESC-001`、第 3 段逐字 `节点 T-001 执行者`、第 4 段 `第 1 轮`；五组状态在触发前后的导出 `deepEqual`；`# pass ≥ 1`、`# fail 0`。",
+    "fixture": "`cd /tmp/maestro-i11-notify && NODE_ENV=test node \"$MAESTRO_REPO/bin/orch.js\" run --cwd . --template single --host mock --task \"写一份说明\"` 起实例；升级经 `NODE_ENV=test` 下注册的 `POST /__test__/escalations`（`{\"instanceId\":\"INST-001\",\"nodeId\":\"T-001\",\"reasonCode\":\"execution_failed\"}`，内部调用既有 `test.escalate` 接缝，不写新逻辑）触发；探针轮询每 100ms 一次、上限 30 秒。",
+    "archText": "通知只能由守护进程的既有事件总线派生；`grep -REn \"new EventEmitter|setInterval\" src/daemon/notify.js` 必须**零命中（exit 1）**。",
+    "refs": "BR-01, BR-33",
+    "risk": "高（\"升级请求触发托盘通知\"是 888 行第一句的直接判据）"
+  },
+  "checks": [
+    {
+      "text": "机检 notify.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=时不发过期意图\n  ---\n  duration_ms: 32.444031\n  type: 'test'\n  ...\n# Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制\nok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制\n  ---\n  duration_ms: 39.19095\n  type: 'test'\n  ...\n1..22\n# tests 22\n# suites 0\n# pass 22\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1041.782534\n",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 22 / # tests 22",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-01 架构检查：notify.js 无定时器/事件总线直调，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"new EventEmitter|setInterval\" src/daemon/notify.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "意图 kind=escalation（逐字）（期望逐字 \"escalation\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"escalation\"",
+      "expected": "\"escalation\""
+    },
+    {
+      "text": "意图 instanceId=INST-001（逐字）（期望逐字 \"INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"INST-001\"",
+      "expected": "\"INST-001\""
+    },
+    {
+      "text": "标题逐字 A-1 升级标题（期望逐字 \"通知 升级待处理 · INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"通知 升级待处理 · INST-001\"",
+      "expected": "\"通知 升级待处理 · INST-001\""
+    },
+    {
+      "text": "正文逐字 A-1 五段（single：T-001 执行者 / 第 1 轮 / reasonDetail）（期望逐字 \"实例 INST-001 · 升级 ESC-001 · 节点 T-001 执行者 · 第 1 轮 · 执行失败：测试未通过\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 · 升级 ESC-001 · 节点 T-001 执行者 · 第 1 轮 · 执行失败：测试未通过\"",
+      "expected": "\"实例 INST-001 · 升级 ESC-001 · 节点 T-001 执行者 · 第 1 轮 · 执行失败：测试未通过\""
+    },
+    {
+      "text": "正文按 \" · \" 切分恰为 5 段（期望逐字 5）",
+      "ok": true,
+      "blocked": false,
+      "actual": "5",
+      "expected": "5"
+    },
+    {
+      "text": "第 1 段逐字 实例 INST-001（期望逐字 \"实例 INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001\"",
+      "expected": "\"实例 INST-001\""
+    },
+    {
+      "text": "第 2 段逐字 升级 ESC-001（期望逐字 \"升级 ESC-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"升级 ESC-001\"",
+      "expected": "\"升级 ESC-001\""
+    },
+    {
+      "text": "第 3 段逐字 节点 T-001 执行者（期望逐字 \"节点 T-001 执行者\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"节点 T-001 执行者\"",
+      "expected": "\"节点 T-001 执行者\""
+    },
+    {
+      "text": "第 4 段逐字 第 1 轮（期望逐字 \"第 1 轮\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"第 1 轮\"",
+      "expected": "\"第 1 轮\""
+    },
+    {
+      "text": "意图计数 1（单条升级）（期望逐字 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1",
+      "expected": "1"
+    },
+    {
+      "text": "去重组计数 1（期望逐字 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1",
+      "expected": "1"
+    },
+    {
+      "text": "mergedCount=1（期望逐字 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1",
+      "expected": "1"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2 秒内系统托盘出现一条通知，标题为附录 A-1 的升级标题，正文为 A-1 的**五段固定段序**且逐字匹配：`实例 INST-001 · 升级 ESC-001 · 节点 T-001 执行者 · 第 1 轮 · {原因摘要}`（第 5 段取夹具 `reasonDetail` 的实际值，按 A-0 可变值替换）；探针追加一条通知意图事件与一条投递结果事件；正文里没有任何会话内容、日志正文或产物内容；**触发通知前后，该实例的节点 / 会话 / 交接包 / 升级 / 审批五组状态逐值不变**（通知只触达、不改状态）。",
+      "expected": "2 秒内系统托盘出现一条通知，标题为附录 A-1 的升级标题，正文为 A-1 的**五段固定段序**且逐字匹配：`实例 INST-001 · 升级 ESC-001 · 节点 T-001 执行者 · 第 1 轮 · {原因摘要}`（第 5 段取夹具 `reasonDetail` 的实际值，按 A-0 可变值替换）；探针追加一条通知意图事件与一条投递结果事件；正文里没有任何会话内容、日志正文或产物内容；**触发通知前后，该实例的节点 / 会话 / 交接包 / 升级 / 审批五组状态逐值不变**（通知只触达、不改状态）。"
+    }
+  ]
+}

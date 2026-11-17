@@ -1,0 +1,242 @@
+===== e2e.test.js (exit 0) =====
+TAP version 13
+# Subtest: AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）
+ok 1 - AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）
+  ---
+  duration_ms: 1448.8826
+  type: 'test'
+  ...
+# Subtest: AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH
+ok 2 - AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH
+  ---
+  duration_ms: 2.629433
+  type: 'test'
+  ...
+# Subtest: AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写
+ok 3 - AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写
+  ---
+  duration_ms: 940.129136
+  type: 'test'
+  ...
+# Subtest: AC-39 prefs：唯一写入方只写四键，多余键拒绝
+ok 4 - AC-39 prefs：唯一写入方只写四键，多余键拒绝
+  ---
+  duration_ms: 96.197601
+  type: 'test'
+  ...
+# Subtest: AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源
+ok 5 - AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源
+  ---
+  duration_ms: 25.538396
+  type: 'test'
+  ...
+# Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致
+ok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致
+  ---
+  duration_ms: 1.858621
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2781.21407
+
+
+===== http-contract.test.js (exit 0) =====
+TAP version 13
+# Subtest: D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）
+ok 1 - D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）
+  ---
+  duration_ms: 133.506407
+  type: 'test'
+  ...
+# Subtest: D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表
+ok 2 - D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表
+  ---
+  duration_ms: 0.489699
+  type: 'test'
+  ...
+# Subtest: A-11 文案键逐字（抽查 + 键存在性）
+ok 3 - A-11 文案键逐字（抽查 + 键存在性）
+  ---
+  duration_ms: 0.20083
+  type: 'test'
+  ...
+# Subtest: BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）
+ok 4 - BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）
+  ---
+  duration_ms: 7.112495
+  type: 'test'
+  ...
+# Subtest: 既有面共存：/ui/labels、/instances、/workflows 行为不变
+ok 5 - 既有面共存：/ui/labels、/instances、/workflows 行为不变
+  ---
+  duration_ms: 110.119435
+  type: 'test'
+  ...
+# Subtest: GET /queue：条目排序、totals 透传与单行状态不可读降级
+ok 6 - GET /queue：条目排序、totals 透传与单行状态不可读降级
+  ---
+  duration_ms: 128.730557
+  type: 'test'
+  ...
+# Subtest: GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝
+ok 7 - GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝
+  ---
+  duration_ms: 226.204669
+  type: 'test'
+  ...
+# Subtest: GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记
+ok 8 - GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记
+  ---
+  duration_ms: 105.853843
+  type: 'test'
+  ...
+# Subtest: GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级
+ok 9 - GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级
+  ---
+  duration_ms: 137.05173
+  type: 'test'
+  ...
+# Subtest: GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影
+ok 10 - GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影
+  ---
+  duration_ms: 137.385375
+  type: 'test'
+  ...
+# Subtest: POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED
+ok 11 - POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED
+  ---
+  duration_ms: 67.543035
+  type: 'test'
+  ...
+# Subtest: POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）
+ok 12 - POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）
+  ---
+  duration_ms: 107.933588
+  type: 'test'
+  ...
+# Subtest: POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）
+ok 13 - POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）
+  ---
+  duration_ms: 132.344586
+  type: 'test'
+  ...
+# Subtest: POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503
+ok 14 - POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503
+  ---
+  duration_ms: 112.905779
+  type: 'test'
+  ...
+# Subtest: POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）
+ok 15 - POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）
+  ---
+  duration_ms: 159.569731
+  type: 'test'
+  ...
+# Subtest: GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）
+ok 16 - GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）
+  ---
+  duration_ms: 561.61933
+  type: 'test'
+  ...
+# Subtest: GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并
+ok 17 - GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并
+  ---
+  duration_ms: 588.692893
+  type: 'test'
+  ...
+# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图
+ok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图
+  ---
+  duration_ms: 9287.83765
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14036.744227
+
+
+===== prefs.test.js (exit 0) =====
+TAP version 13
+# Subtest: 缺文件 / 缺目录 → 全 true 缺省，不抛错
+ok 1 - 缺文件 / 缺目录 → 全 true 缺省，不抛错
+  ---
+  duration_ms: 9.528223
+  type: 'test'
+  ...
+# Subtest: 文件损坏 / 非对象内容 → 全 true 缺省，不抛错
+ok 2 - 文件损坏 / 非对象内容 → 全 true 缺省，不抛错
+  ---
+  duration_ms: 61.930526
+  type: 'test'
+  ...
+# Subtest: 缺键 → true；非法值 → 按 true；false 如实保留；多余键读侧忽略
+ok 3 - 缺键 → true；非法值 → 按 true；false 如实保留；多余键读侧忽略
+  ---
+  duration_ms: 52.3326
+  type: 'test'
+  ...
+# Subtest: readPrefs 的 root 缺失直接抛 TypeError
+ok 4 - readPrefs 的 root 缺失直接抛 TypeError
+  ---
+  duration_ms: 0.839712
+  type: 'test'
+  ...
+# Subtest: 合并写入：只传改动键，其余键保持既有值；文件恰为四键
+ok 5 - 合并写入：只传改动键，其余键保持既有值；文件恰为四键
+  ---
+  duration_ms: 107.04999
+  type: 'test'
+  ...
+# Subtest: 首次写入自动建目录；内容可被 readPrefs 原样读回
+ok 6 - 首次写入自动建目录；内容可被 readPrefs 原样读回
+  ---
+  duration_ms: 76.503692
+  type: 'test'
+  ...
+# Subtest: 多余键 / 非布尔值 / 非对象 patch → throw，且不落盘
+ok 7 - 多余键 / 非布尔值 / 非对象 patch → throw，且不落盘
+  ---
+  duration_ms: 1.10895
+  type: 'test'
+  ...
+# Subtest: 原子写：无残留 tmp 文件，损坏的旧文件被整体替换
+ok 8 - 原子写：无残留 tmp 文件，损坏的旧文件被整体替换
+  ---
+  duration_ms: 81.701129
+  type: 'test'
+  ...
+# Subtest: 写入只触碰 prefs.json：不产生其它文件、不改实例状态目录
+ok 9 - 写入只触碰 prefs.json：不产生其它文件、不改实例状态目录
+  ---
+  duration_ms: 126.512847
+  type: 'test'
+  ...
+# Subtest: prefsPath 与 PREFS_KEYS 的形状契约
+ok 10 - prefsPath 与 PREFS_KEYS 的形状契约
+  ---
+  duration_ms: 0.516336
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 637.180759
+

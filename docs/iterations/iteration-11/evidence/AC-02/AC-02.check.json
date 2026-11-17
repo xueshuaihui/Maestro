@@ -1,0 +1,119 @@
+{
+  "ac": "AC-02",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-02",
+    "title": "实例完成时托盘通知",
+    "given": "`/tmp/maestro-i11-notify-done` 项目根，mock 宿主，应用在托盘；一个 `single` 模板实例尚在运行；`NODE_ENV=test`。",
+    "when": "该实例自然跑完（mock 宿主返回成功，实例进入\"已完成\"）。",
+    "then": [
+      "2 秒内出现完成通知，标题为附录 A-1 的完成标题，正文为 A-1 的五段固定段序：`实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已完成，单节点 1/1`（取不到的升级编号段渲染 `—`，不省略；节点与角色取 `single` 的唯一节点 `T-001` 与角色「执行者」）；同一实例后续再没有任何\"完成\"通知重复出现。"
+    ],
+    "jijian": "`test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js`，断言探针出现 `{\"event\":\"notify\",\"kind\":\"completed\",\"instanceId\":\"INST-001\"}`、`notify.t - completed.t ≤ 2000`、`grep -c '\"kind\":\"completed\"'` 计数恰好 1；正文按 ` · ` 切分恰为 5 段、第 1 段 `实例 INST-001`、第 2 段 `升级 —`、第 5 段含 `已完成` 与工作流名 `单节点`；`# fail 0`。",
+    "fixture": "同 AC-01 的启动命令，等待实例状态变为\"已完成\"（轮询 `orch instance status`，上限 30 秒）。",
+    "archText": "完成通知的检测点只读实例状态变化，不改写状态；`grep -REn \"saveState\" src/daemon/notify.js` 必须**零命中（exit 1）**。",
+    "refs": "BR-01, BR-04",
+    "risk": "中（完成通知缺失会让人反复回来确认）"
+  },
+  "checks": [
+    {
+      "text": "机检 notify.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=不发过期意图\n  ---\n  duration_ms: 31.543171\n  type: 'test'\n  ...\n# Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制\nok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制\n  ---\n  duration_ms: 36.048386\n  type: 'test'\n  ...\n1..22\n# tests 22\n# suites 0\n# pass 22\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1042.623765\n",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 22 / # tests 22",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-02 架构检查：完成通知检测点只读状态不写盘，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"saveState\" src/daemon/notify.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "意图 kind=completed（逐字）（期望逐字 \"completed\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"completed\"",
+      "expected": "\"completed\""
+    },
+    {
+      "text": "标题逐字 A-1 完成标题（期望逐字 \"通知 实例完成 · INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"通知 实例完成 · INST-001\"",
+      "expected": "\"通知 实例完成 · INST-001\""
+    },
+    {
+      "text": "正文逐字 A-1 完成五段（single：升级 — / T-001 执行者 / 第 1 轮 / 已完成，单节点 1/1）（期望逐字 \"实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已完成，单节点 1/1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已完成，单节点 1/1\"",
+      "expected": "\"实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已完成，单节点 1/1\""
+    },
+    {
+      "text": "正文按 \" · \" 切分恰为 5 段（期望逐字 5）",
+      "ok": true,
+      "blocked": false,
+      "actual": "5",
+      "expected": "5"
+    },
+    {
+      "text": "第 2 段逐字 升级 —（缺段不省略）（期望逐字 \"升级 —\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"升级 —\"",
+      "expected": "\"升级 —\""
+    },
+    {
+      "text": "第 5 段含 已完成 与工作流名 单节点（期望含 \"已完成\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "已完成，单节点 1/1",
+      "expected": "已完成"
+    },
+    {
+      "text": "第 5 段含 1/1（期望含 \"1/1\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "已完成，单节点 1/1",
+      "expected": "1/1"
+    },
+    {
+      "text": "同一实例完成通知只 1 条（生命周期一次）（期望逐字 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1",
+      "expected": "1"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2 秒内出现完成通知，标题为附录 A-1 的完成标题，正文为 A-1 的五段固定段序：`实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已完成，单节点 1/1`（取不到的升级编号段渲染 `—`，不省略；节点与角色取 `single` 的唯一节点 `T-001` 与角色「执行者」）；同一实例后续再没有任何\"完成\"通知重复出现。",
+      "expected": "2 秒内出现完成通知，标题为附录 A-1 的完成标题，正文为 A-1 的五段固定段序：`实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已完成，单节点 1/1`（取不到的升级编号段渲染 `—`，不省略；节点与角色取 `single` 的唯一节点 `T-001` 与角色「执行者」）；同一实例后续再没有任何\"完成\"通知重复出现。"
+    }
+  ]
+}

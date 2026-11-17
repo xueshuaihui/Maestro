@@ -23,6 +23,10 @@ import { writeJsonAtomic } from '../persistence/atomic-write.js';
 import { createStore } from '../persistence/instance-store.js';
 import { createEventBus } from '../core/event-bus.js';
 import * as traceLog from '../core/trace.js';
+import { loadRegistry } from '../registry/index.js';
+import { TEMPLATE_LABEL } from '../cli/labels.js';
+import { createNotifier } from './notify.js';
+import { readPrefs } from './prefs.js';
 import { createFrameDecoder, encodeFrame, validateFrame } from './ipc-frames.js';
 
 /** 核心协议版本（写进 `core.json` 与 `core.ping`，不是产品版本号）。 */
@@ -73,6 +77,81 @@ export function createServer({
   // Read-only store for `instance.trace`: it never writes state and never enters the
   // health write path that `instance.get` owns.
   const traceStore = createStore({ root });
+
+  // ------------------------------------------------- I1.11 通知器实例状态源（WP-7）
+  // 只读：既有实例枚举（store.list）+ store.load 磁盘快照（D-45 口径），组装
+  // WP-1 ⑥ 的字段形状（instanceId / state / health.level / nodes[]（roleName
+  // 经注册表中文映射）/ escalations[] / workflowName）。不重算任何 pending 计数。
+
+  const notifierStore = createStore({ root });
+
+  /** 注册表中文名映射；加载失败按空表降级（正文相应段渲染 `—`）。 */
+  function loadRoleNames() {
+    try {
+      const registry = loadRegistry({ root });
+      return registry?.roleMap instanceof Map ? registry.roleMap : new Map();
+    } catch {
+      return new Map();
+    }
+  }
+
+  /** 单实例 → 通知器快照形状；字段可缺，由通知器按缺省渲染。 */
+  function notifyStateOf(state, instanceId, roleMap) {
+    const nodesSrc = Array.isArray(state?.nodes) ? state.nodes : [];
+    const nodes = [];
+    for (const node of nodesSrc) {
+      const roleId = typeof node?.roleId === 'string' ? node.roleId : null;
+      const role = roleId !== null ? roleMap.get(roleId) : null;
+      nodes.push({
+        nodeId: typeof node?.nodeId === 'string' ? node.nodeId : null,
+        roleName: typeof role?.name === 'string' && role.name.length > 0 ? role.name : null,
+        round: Number.isInteger(node?.round) ? node.round : null,
+        state: typeof node?.state === 'string' ? node.state : null,
+      });
+    }
+    const escalations = [];
+    const escalationRows = Array.isArray(state?.escalations) ? state.escalations : [];
+    for (const row of escalationRows) {
+      escalations.push({
+        escalationId: typeof row?.escalationId === 'string' ? row.escalationId : null,
+        state: typeof row?.state === 'string' ? row.state : null,
+        nodeId: typeof row?.nodeId === 'string' ? row.nodeId : null,
+        round: Number.isInteger(row?.round) ? row.round : null,
+        reasonDetail: typeof row?.reasonDetail === 'string' ? row.reasonDetail : null,
+      });
+    }
+    const template =
+      typeof state?.template === 'string' && state.template.length > 0 ? state.template : null;
+    const workflowName =
+      template !== null && Object.prototype.hasOwnProperty.call(TEMPLATE_LABEL, template)
+        ? TEMPLATE_LABEL[template]
+        : typeof state?.workflowRef === 'string' && state.workflowRef.length > 0
+          ? state.workflowRef
+          : template;
+    return {
+      instanceId,
+      state: typeof state?.state === 'string' ? state.state : null,
+      health: { level: state?.health?.level ?? null },
+      nodes,
+      escalations,
+      workflowName,
+    };
+  }
+
+  /** 通知器的 getInstanceStates：全部实例的通知快照数组（读失败跳过该实例）。 */
+  async function collectInstanceStates() {
+    const listed = await notifierStore.list();
+    if (!listed || listed.ok !== true || !Array.isArray(listed.items)) return [];
+    const roleMap = loadRoleNames();
+    const states = [];
+    for (const item of listed.items) {
+      if (!item || item.readable !== true) continue;
+      const loaded = await notifierStore.load(item.instanceId);
+      if (!loaded || loaded.ok !== true || !loaded.state) continue;
+      states.push(notifyStateOf(loaded.state, item.instanceId, roleMap));
+    }
+    return states;
+  }
 
   /** @type {Set<{socket: net.Socket, decoder: ReturnType<typeof createFrameDecoder>, unsubscribes: Set<Function>}>} */
   const connections = new Set();
@@ -566,16 +645,44 @@ export function createServer({
   // untouched. Everything here degrades to a log line on failure so the IPC
   // main channel can never be affected (D-1).
   let desktopChannel = null;
+  let notifier = null;
+
+  /** 通知器时钟：setTimeout + `.unref()`，延迟回调不阻止进程退出（WP-1 ②）。 */
+  function notifierClock() {
+    return {
+      now: () => (typeof clock === 'function' ? clock() : Date.now()),
+      schedule: (fn, ms) => {
+        const timer = setTimeout(fn, ms);
+        if (typeof timer.unref === 'function') timer.unref();
+        return () => clearTimeout(timer);
+      },
+    };
+  }
 
   async function startDesktopChannel() {
     try {
       const { createHttpServer } = await import('./http/server.js');
+      // I1.11 通知器生产接线（WP-7）：订阅既有事件总线、时钟调度（注入的
+      // setTimeout + unref）、偏好读取（prefs.js 唯一写入方的读侧）。创建失败
+      // 只降级（/notifications/stream 503），绝不影响 IPC 主通道（D-1）。
+      try {
+        notifier = createNotifier({
+          bus: activeBus,
+          getInstanceStates: collectInstanceStates,
+          clock: notifierClock(),
+          prefsRead: () => readPrefs(root),
+        });
+      } catch (err) {
+        notifier = null;
+        await log('warn', 'DESKTOP_NOTIFIER_START_FAILED', { cause: err?.message ?? String(err) });
+      }
       const channel = createHttpServer({
         root,
         orchestrator,
         bus: activeBus,
         logger: log,
         clock: typeof clock === 'function' ? clock : Date.now,
+        notifier,
         generation: gen,
         startedAt,
         graph: {
@@ -603,6 +710,17 @@ export function createServer({
   async function stopDesktopChannel() {
     const channel = desktopChannel;
     desktopChannel = null;
+    // I1.11：通知器生命周期随桌面通道走同一停止路径（core.stop / SIGTERM），
+    // dispose 取消未决合并窗口定时器并结束意图流。
+    const activeNotifier = notifier;
+    notifier = null;
+    if (activeNotifier) {
+      try {
+        activeNotifier.dispose();
+      } catch (err) {
+        await log('warn', 'DESKTOP_NOTIFIER_DISPOSE_FAILED', { cause: err?.message ?? String(err) });
+      }
+    }
     if (!channel) return;
     try {
       await channel.close();

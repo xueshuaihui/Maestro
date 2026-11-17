@@ -1,0 +1,1 @@
+src/daemon/assets-view.js:75:export const BODY_PREVIEW_LINES = 20;

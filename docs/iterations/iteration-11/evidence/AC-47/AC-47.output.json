@@ -1,0 +1,190 @@
+{
+  "ac": "AC-47",
+  "commands": [
+    {
+      "label": "机检 ui-views.test.js",
+      "cmd": "test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 901,
+      "stdout": "TAP version 13\n# Subtest: A-2 / AC-05: notification toggles render in fixed order, default all on\nok 1 - A-2 / AC-05: notification toggles render in fixed order, default all on\n  ---\n  duration_ms: 2.285714\n  type: 'test'\n  ...\n# Subtest: A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion\nok 2 - A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion\n  ---\n  duration_ms: 0.624141\n  type: 'test'\n  ...\n# Subtest: A-3 / AC-08: escalation + approval rows keep all seven segments verbatim\nok 3 - A-3 / AC-08: escalation + approval rows keep all seven segments verbatim\n  ---\n  duration_ms: 0.421267\n  type: 'test'\n  ...\n# Subtest: A-3 / AC-08: node-less degraded row keeps node/round segments\nok 4 - A-3 / AC-08: node-less degraded row keeps node/round segments\n  ---\n  duration_ms: 0.239605\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed\nok 5 - A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed\n  ---\n  duration_ms: 0.49692\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-11: cancel is two-step with verbatim confirm line\nok 6 - A-4 / AC-11: cancel is two-step with verbatim confirm line\n  ---\n  duration_ms: 0.198832\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-14: result lines use the daemon conclusion vocabulary\nok 7 - A-4 / AC-14: result lines use the daemon conclusion vocabulary\n  ---\n  duration_ms: 0.296141\n  type: 'test'\n  ...\n# Subtest: A-5: three tabs, count line, rows and unreadable banners are verbatim\nok 8 - A-5: three tabs, count line, rows and unreadable banners are verbatim\n  ---\n  duration_ms: 0.510174\n  type: 'test'\n  ...\n# Subtest: A-5: detail lines render fixed order with missing markers\nok 9 - A-5: detail lines render fixed order with missing markers\n  ---\n  duration_ms: 0.790123\n  type: 'test'\n  ...\n# Subtest: A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim\nok 10 - A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim\n  ---\n  duration_ms: 0.737153\n  type: 'test'\n  ...\n# Subtest: A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges\nok 11 - A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges\n  ---\n  duration_ms: 0.653602\n  type: 'test'\n  ...\n# Subtest: A-7 / AC-29: node rows reuse the instance-graph shape keys\nok 12 - A-7 / AC-29: node rows reuse the instance-graph shape keys\n  ---\n  duration_ms: 0.240984\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-32: five fields + round render verbatim, latest only\nok 13 - A-8 / AC-32: five fields + round render verbatim, latest only\n  ---\n  duration_ms: 0.588471\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-33: missing fields render the unprovided word\nok 14 - A-8 / AC-33: missing fields render the unprovided word\n  ---\n  duration_ms: 0.141142\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak\nok 15 - A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak\n  ---\n  duration_ms: 10.675151\n  type: 'test'\n  ...\n# Subtest: D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing\nok 16 - D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing\n  ---\n  duration_ms: 0.354643\n  type: 'test'\n  ...\n# Subtest: AC-43 / setView: five new keys switch view, existing four unchanged\nok 17 - AC-43 / setView: five new keys switch view, existing four unchanged\n  ---\n  duration_ms: 0.76401\n  type: 'test'\n  ...\n# Subtest: AC-04 / AC-49: followNotification navigates to queue and selects the row\nok 18 - AC-04 / AC-49: followNotification navigates to queue and selects the row\n  ---\n  duration_ms: 0.490652\n  type: 'test'\n  ...\n# Subtest: AC-11: cancel confirm is two-step; dismiss leaves no pending confirm\nok 19 - AC-11: cancel confirm is two-step; dismiss leaves no pending confirm\n  ---\n  duration_ms: 0.449658\n  type: 'test'\n  ...\n# Subtest: AC-05: prefs toggles write through the HTTP seam\nok 20 - AC-05: prefs toggles write through the HTTP seam\n  ---\n  duration_ms: 0.292214\n  type: 'test'\n  ...\n# Subtest: AC-47: queue snapshot frame replaces content; disconnect keeps last rows\nok 21 - AC-47: queue snapshot frame replaces content; disconnect keeps last rows\n  ---\n  duration_ms: 0.750841\n  type: 'test'\n  ...\n# Subtest: AC-42: seven anomaly wordings all resolve from the label table\nok 22 - AC-42: seven anomaly wordings all resolve from the label table\n  ---\n  duration_ms: 0.283474\n  type: 'test'\n  ...\n# Subtest: D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)\nok 23 - D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)\n  ---\n  duration_ms: 0.465606\n  type: 'test'\n  ...\n# Subtest: D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys\nok 24 - D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys\n  ---\n  duration_ms: 0.244762\n  type: 'test'\n  ...\n# Subtest: BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)\nok 25 - BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)\n  ---\n  duration_ms: 19.556853\n  type: 'test'\n  ...\n# Subtest: harness: queue-dump exports empty row + prefs verbatim\nok 26 - harness: queue-dump exports empty row + prefs verbatim\n  ---\n  duration_ms: 120.753787\n  type: 'test'\n  ...\n# Subtest: harness: assets-dump exports tabs + count verbatim\nok 27 - harness: assets-dump exports tabs + count verbatim\n  ---\n  duration_ms: 121.644712\n  type: 'test'\n  ...\n# Subtest: harness: occupancy-dump exports row + empty verbatim\nok 28 - harness: occupancy-dump exports row + empty verbatim\n  ---\n  duration_ms: 119.106489\n  type: 'test'\n  ...\n# Subtest: harness: canvas-dump exports title + degradation + layout reuse\nok 29 - harness: canvas-dump exports title + degradation + layout reuse\n  ---\n  duration_ms: 125.627799\n  type: 'test'\n  ...\n# Subtest: harness: evidence-dump exports A-8 lines + 64 KB gate\nok 30 - harness: evidence-dump exports A-8 lines + 64 KB gate\n  ---\n  duration_ms: 120.841084\n  type: 'test'\n  ...\n# Subtest: D-52 / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.497469\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 808.920497\n",
+      "stderr": ""
+    },
+    {
+      "label": "机检 queue.test.js",
+      "cmd": "test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 8891,
+      "stdout": "TAP version 13\n# Subtest: buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\nok 1 - buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\n  ---\n  duration_ms: 2.350931\n  type: 'test'\n  ...\n# Subtest: buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\nok 2 - buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\n  ---\n  duration_ms: 0.495057\n  type: 'test'\n  ...\n# Subtest: buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\nok 3 - buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\n  ---\n  duration_ms: 0.249334\n  type: 'test'\n  ...\n# Subtest: 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\nok 4 - 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\n  ---\n  duration_ms: 483.074822\n  type: 'test'\n  ...\n# Subtest: 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\nok 5 - 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\n  ---\n  duration_ms: 692.990892\n  type: 'test'\n  ...\n# Subtest: 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\nok 6 - 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\n  ---\n  duration_ms: 486.629652\n  type: 'test'\n  ...\n# Subtest: 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\nok 7 - 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\n  ---\n  duration_ms: 421.12615\n  type: 'test'\n  ...\n# Subtest: 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\nok 8 - 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\n  ---\n  duration_ms: 329.731352\n  type: 'test'\n  ...\n# Subtest: 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\nok 9 - 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\n  ---\n  duration_ms: 474.777384\n  type: 'test'\n  ...\n# Subtest: 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\nok 10 - 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\n  ---\n  duration_ms: 112.855774\n  type: 'test'\n  ...\n# Subtest: 实例未挂起：固定结论且原状态不变（AC-16②）\nok 11 - 实例未挂起：固定结论且原状态不变（AC-16②）\n  ---\n  duration_ms: 301.522055\n  type: 'test'\n  ...\n# Subtest: 审批会话失效：返回已失效且行仍待处理（AC-16③）\nok 12 - 审批会话失效：返回已失效且行仍待处理（AC-16③）\n  ---\n  duration_ms: 328.521838\n  type: 'test'\n  ...\n# Subtest: 审批·允许：真实等待会话被放行并继续（AC-12 allow）\nok 13 - 审批·允许：真实等待会话被放行并继续（AC-12 allow）\n  ---\n  duration_ms: 1351.371137\n  type: 'test'\n  ...\n# Subtest: 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\nok 14 - 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\n  ---\n  duration_ms: 1153.774677\n  type: 'test'\n  ...\n# Subtest: 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\nok 15 - 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\n  ---\n  duration_ms: 1842.868169\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 457.472597\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 8797.329922\n",
+      "stderr": ""
+    },
+    {
+      "label": "机检 http-contract.test.js",
+      "cmd": "test -f test/wp14/http-contract.test.js && NODE_ENV=test node --test test/wp14/http-contract.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 14096,
+      "stdout": "TAP version 13\n# Subtest: D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）\nok 1 - D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）\n  ---\n  duration_ms: 132.239942\n  type: 'test'\n  ...\n# Subtest: D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表\nok 2 - D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表\n  ---\n  duration_ms: 0.525105\n  type: 'test'\n  ...\n# Subtest: A-11 文案键逐字（抽查 + 键存在性）\nok 3 - A-11 文案键逐字（抽查 + 键存在性）\n  ---\n  duration_ms: 0.214412\n  type: 'test'\n  ...\n# Subtest: BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）\nok 4 - BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）\n  ---\n  duration_ms: 7.120172\n  type: 'test'\n  ...\n# Subtest: 既有面共存：/ui/labels、/instances、/workflows 行为不变\nok 5 - 既有面共存：/ui/labels、/instances、/workflows 行为不变\n  ---\n  duration_ms: 112.609168\n  type: 'test'\n  ...\n# Subtest: GET /queue：条目排序、totals 透传与单行状态不可读降级\nok 6 - GET /queue：条目排序、totals 透传与单行状态不可读降级\n  ---\n  duration_ms: 140.811049\n  type: 'test'\n  ...\n# Subtest: GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝\nok 7 - GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝\n  ---\n  duration_ms: 160.247382\n  type: 'test'\n  ...\n# Subtest: GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记\nok 8 - GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记\n  ---\n  duration_ms: 99.107976\n  type: 'test'\n  ...\n# Subtest: GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级\nok 9 - GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级\n  ---\n  duration_ms: 158.094541\n  type: 'test'\n  ...\n# Subtest: GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影\nok 10 - GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影\n  ---\n  duration_ms: 154.583961\n  type: 'test'\n  ...\n# Subtest: POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED\nok 11 - POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED\n  ---\n  duration_ms: 67.007734\n  type: 'test'\n  ...\n# Subtest: POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）\nok 12 - POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）\n  ---\n  duration_ms: 87.889281\n  type: 'test'\n  ...\n# Subtest: POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）\nok 13 - POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）\n  ---\n  duration_ms: 131.738561\n  type: 'test'\n  ...\n# Subtest: POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503\nok 14 - POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503\n  ---\n  duration_ms: 145.921016\n  type: 'test'\n  ...\n# Subtest: POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）\nok 15 - POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）\n  ---\n  duration_ms: 168.801881\n  type: 'test'\n  ...\n# Subtest: GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）\nok 16 - GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）\n  ---\n  duration_ms: 569.667969\n  type: 'test'\n  ...\n# Subtest: GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并\nok 17 - GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并\n  ---\n  duration_ms: 585.713677\n  type: 'test'\n  ...\n# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\nok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\n  ---\n  duration_ms: 9292.121227\n  type: 'test'\n  ...\n1..18\n# tests 18\n# suites 0\n# pass 18\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 14002.752643\n",
+      "stderr": ""
+    }
+  ],
+  "testRuns": [
+    {
+      "file": "ui-views.test.js",
+      "cmd": "test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: A-2 / AC-05: notification toggles render in fixed order, default all on\nok 1 - A-2 / AC-05: notification toggles render in fixed order, default all on\n  ---\n  duration_ms: 2.285714\n  type: 'test'\n  ...\n# Subtest: A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion\nok 2 - A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion\n  ---\n  duration_ms: 0.624141\n  type: 'test'\n  ...\n# Subtest: A-3 / AC-08: escalation + approval rows keep all seven segments verbatim\nok 3 - A-3 / AC-08: escalation + approval rows keep all seven segments verbatim\n  ---\n  duration_ms: 0.421267\n  type: 'test'\n  ...\n# Subtest: A-3 / AC-08: node-less degraded row keeps node/round segments\nok 4 - A-3 / AC-08: node-less degraded row keeps node/round segments\n  ---\n  duration_ms: 0.239605\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed\nok 5 - A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed\n  ---\n  duration_ms: 0.49692\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-11: cancel is two-step with verbatim confirm line\nok 6 - A-4 / AC-11: cancel is two-step with verbatim confirm line\n  ---\n  duration_ms: 0.198832\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-14: result lines use the daemon conclusion vocabulary\nok 7 - A-4 / AC-14: result lines use the daemon conclusion vocabulary\n  ---\n  duration_ms: 0.296141\n  type: 'test'\n  ...\n# Subtest: A-5: three tabs, count line, rows and unreadable banners are verbatim\nok 8 - A-5: three tabs, count line, rows and unreadable banners are verbatim\n  ---\n  duration_ms: 0.510174\n  type: 'test'\n  ...\n# Subtest: A-5: detail lines render fixed order with missing markers\nok 9 - A-5: detail lines render fixed order with missing markers\n  ---\n  duration_ms: 0.790123\n  type: 'test'\n  ...\n# Subtest: A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim\nok 10 - A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim\n  ---\n  duration_ms: 0.737153\n  type: 'test'\n  ...\n# Subtest: A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges\nok 11 - A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges\n  ---\n  duration_ms: 0.653602\n  type: 'test'\n  ...\n# Subtest: A-7 / AC-29: node rows reuse the instance-graph shape keys\nok 12 - A-7 / AC-29: node rows reuse the instance-graph shape keys\n  ---\n  duration_ms: 0.240984\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-32: five fields + round render verbatim, latest only\nok 13 - A-8 / AC-32: five fields + round render verbatim, latest only\n  ---\n  duration_ms: 0.588471\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-33: missing fields render the unprovided word\nok 14 - A-8 / AC-33: missing fields render the unprovided word\n  ---\n  duration_ms: 0.141142\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak\nok 15 - A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak\n  ---\n  duration_ms: 10.675151\n  type: 'test'\n  ...\n# Subtest: D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing\nok 16 - D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing\n  ---\n  duration_ms: 0.354643\n  type: 'test'\n  ...\n# Subtest: AC-43 / setView: five new keys switch view, existing four unchanged\nok 17 - AC-43 / setView: five new keys switch view, existing four unchanged\n  ---\n  duration_ms: 0.76401\n  type: 'test'\n  ...\n# Subtest: AC-04 / AC-49: followNotification navigates to queue and selects the row\nok 18 - AC-04 / AC-49: followNotification navigates to queue and selects the row\n  ---\n  duration_ms: 0.490652\n  type: 'test'\n  ...\n# Subtest: AC-11: cancel confirm is two-step; dismiss leaves no pending confirm\nok 19 - AC-11: cancel confirm is two-step; dismiss leaves no pending confirm\n  ---\n  duration_ms: 0.449658\n  type: 'test'\n  ...\n# Subtest: AC-05: prefs toggles write through the HTTP seam\nok 20 - AC-05: prefs toggles write through the HTTP seam\n  ---\n  duration_ms: 0.292214\n  type: 'test'\n  ...\n# Subtest: AC-47: queue snapshot frame replaces content; disconnect keeps last rows\nok 21 - AC-47: queue snapshot frame replaces content; disconnect keeps last rows\n  ---\n  duration_ms: 0.750841\n  type: 'test'\n  ...\n# Subtest: AC-42: seven anomaly wordings all resolve from the label table\nok 22 - AC-42: seven anomaly wordings all resolve from the label table\n  ---\n  duration_ms: 0.283474\n  type: 'test'\n  ...\n# Subtest: D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)\nok 23 - D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)\n  ---\n  duration_ms: 0.465606\n  type: 'test'\n  ...\n# Subtest: D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys\nok 24 - D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys\n  ---\n  duration_ms: 0.244762\n  type: 'test'\n  ...\n# Subtest: BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)\nok 25 - BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)\n  ---\n  duration_ms: 19.556853\n  type: 'test'\n  ...\n# Subtest: harness: queue-dump exports empty row + prefs verbatim\nok 26 - harness: queue-dump exports empty row + prefs verbatim\n  ---\n  duration_ms: 120.753787\n  type: 'test'\n  ...\n# Subtest: harness: assets-dump exports tabs + count verbatim\nok 27 - harness: assets-dump exports tabs + count verbatim\n  ---\n  duration_ms: 121.644712\n  type: 'test'\n  ...\n# Subtest: harness: occupancy-dump exports row + empty verbatim\nok 28 - harness: occupancy-dump exports row + empty verbatim\n  ---\n  duration_ms: 119.106489\n  type: 'test'\n  ...\n# Subtest: harness: canvas-dump exports title + degradation + layout reuse\nok 29 - harness: canvas-dump exports title + degradation + layout reuse\n  ---\n  duration_ms: 125.627799\n  type: 'test'\n  ...\n# Subtest: harness: evidence-dump exports A-8 lines + 64 KB gate\nok 30 - harness: evidence-dump exports A-8 lines + 64 KB gate\n  ---\n  duration_ms: 120.841084\n  type: 'test'\n  ...\n# Subtest: D-52 / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.497469\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 808.920497\n",
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 808.920497,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "A-2 / AC-05: notification toggles render in fixed order, default all on",
+          "A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion",
+          "A-3 / AC-08: escalation + approval rows keep all seven segments verbatim",
+          "A-3 / AC-08: node-less degraded row keeps node/round segments",
+          "A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed",
+          "A-4 / AC-11: cancel is two-step with verbatim confirm line",
+          "A-4 / AC-14: result lines use the daemon conclusion vocabulary",
+          "A-5: three tabs, count line, rows and unreadable banners are verbatim",
+          "A-5: detail lines render fixed order with missing markers",
+          "A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim",
+          "A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges",
+          "A-7 / AC-29: node rows reuse the instance-graph shape keys",
+          "A-8 / AC-32: five fields + round render verbatim, latest only",
+          "A-8 / AC-33: missing fields render the unprovided word",
+          "A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak",
+          "D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing",
+          "AC-43 / setView: five new keys switch view, existing four unchanged",
+          "AC-04 / AC-49: followNotification navigates to queue and selects the row",
+          "AC-11: cancel confirm is two-step; dismiss leaves no pending confirm",
+          "AC-05: prefs toggles write through the HTTP seam",
+          "AC-47: queue snapshot frame replaces content; disconnect keeps last rows",
+          "AC-42: seven anomaly wordings all resolve from the label table",
+          "D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)",
+          "D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys",
+          "BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)",
+          "harness: queue-dump exports empty row + prefs verbatim",
+          "harness: assets-dump exports tabs + count verbatim",
+          "harness: occupancy-dump exports row + empty verbatim",
+          "harness: canvas-dump exports title + degradation + layout reuse",
+          "harness: evidence-dump exports A-8 lines + 64 KB gate",
+          "D-52 / open-queue: shell ctl seam navigates the live window to queue"
+        ]
+      }
+    },
+    {
+      "file": "queue.test.js",
+      "cmd": "test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\nok 1 - buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\n  ---\n  duration_ms: 2.350931\n  type: 'test'\n  ...\n# Subtest: buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\nok 2 - buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\n  ---\n  duration_ms: 0.495057\n  type: 'test'\n  ...\n# Subtest: buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\nok 3 - buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\n  ---\n  duration_ms: 0.249334\n  type: 'test'\n  ...\n# Subtest: 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\nok 4 - 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\n  ---\n  duration_ms: 483.074822\n  type: 'test'\n  ...\n# Subtest: 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\nok 5 - 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\n  ---\n  duration_ms: 692.990892\n  type: 'test'\n  ...\n# Subtest: 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\nok 6 - 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\n  ---\n  duration_ms: 486.629652\n  type: 'test'\n  ...\n# Subtest: 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\nok 7 - 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\n  ---\n  duration_ms: 421.12615\n  type: 'test'\n  ...\n# Subtest: 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\nok 8 - 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\n  ---\n  duration_ms: 329.731352\n  type: 'test'\n  ...\n# Subtest: 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\nok 9 - 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\n  ---\n  duration_ms: 474.777384\n  type: 'test'\n  ...\n# Subtest: 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\nok 10 - 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\n  ---\n  duration_ms: 112.855774\n  type: 'test'\n  ...\n# Subtest: 实例未挂起：固定结论且原状态不变（AC-16②）\nok 11 - 实例未挂起：固定结论且原状态不变（AC-16②）\n  ---\n  duration_ms: 301.522055\n  type: 'test'\n  ...\n# Subtest: 审批会话失效：返回已失效且行仍待处理（AC-16③）\nok 12 - 审批会话失效：返回已失效且行仍待处理（AC-16③）\n  ---\n  duration_ms: 328.521838\n  type: 'test'\n  ...\n# Subtest: 审批·允许：真实等待会话被放行并继续（AC-12 allow）\nok 13 - 审批·允许：真实等待会话被放行并继续（AC-12 allow）\n  ---\n  duration_ms: 1351.371137\n  type: 'test'\n  ...\n# Subtest: 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\nok 14 - 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\n  ---\n  duration_ms: 1153.774677\n  type: 'test'\n  ...\n# Subtest: 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\nok 15 - 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\n  ---\n  duration_ms: 1842.868169\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 457.472597\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 8797.329922\n",
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 8797.329922,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）",
+          "buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）",
+          "buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）",
+          "升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）",
+          "升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）",
+          "升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）",
+          "升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）",
+          "继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）",
+          "已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）",
+          "动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）",
+          "实例未挂起：固定结论且原状态不变（AC-16②）",
+          "审批会话失效：返回已失效且行仍待处理（AC-16③）",
+          "审批·允许：真实等待会话被放行并继续（AC-12 allow）",
+          "审批·拒绝：真实等待会话被拒绝（AC-12 deny）",
+          "跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）",
+          "队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）"
+        ]
+      }
+    },
+    {
+      "file": "http-contract.test.js",
+      "cmd": "test -f test/wp14/http-contract.test.js && NODE_ENV=test node --test test/wp14/http-contract.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）\nok 1 - D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）\n  ---\n  duration_ms: 132.239942\n  type: 'test'\n  ...\n# Subtest: D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表\nok 2 - D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表\n  ---\n  duration_ms: 0.525105\n  type: 'test'\n  ...\n# Subtest: A-11 文案键逐字（抽查 + 键存在性）\nok 3 - A-11 文案键逐字（抽查 + 键存在性）\n  ---\n  duration_ms: 0.214412\n  type: 'test'\n  ...\n# Subtest: BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）\nok 4 - BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）\n  ---\n  duration_ms: 7.120172\n  type: 'test'\n  ...\n# Subtest: 既有面共存：/ui/labels、/instances、/workflows 行为不变\nok 5 - 既有面共存：/ui/labels、/instances、/workflows 行为不变\n  ---\n  duration_ms: 112.609168\n  type: 'test'\n  ...\n# Subtest: GET /queue：条目排序、totals 透传与单行状态不可读降级\nok 6 - GET /queue：条目排序、totals 透传与单行状态不可读降级\n  ---\n  duration_ms: 140.811049\n  type: 'test'\n  ...\n# Subtest: GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝\nok 7 - GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝\n  ---\n  duration_ms: 160.247382\n  type: 'test'\n  ...\n# Subtest: GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记\nok 8 - GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记\n  ---\n  duration_ms: 99.107976\n  type: 'test'\n  ...\n# Subtest: GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级\nok 9 - GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级\n  ---\n  duration_ms: 158.094541\n  type: 'test'\n  ...\n# Subtest: GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影\nok 10 - GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影\n  ---\n  duration_ms: 154.583961\n  type: 'test'\n  ...\n# Subtest: POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED\nok 11 - POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED\n  ---\n  duration_ms: 67.007734\n  type: 'test'\n  ...\n# Subtest: POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）\nok 12 - POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）\n  ---\n  duration_ms: 87.889281\n  type: 'test'\n  ...\n# Subtest: POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）\nok 13 - POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）\n  ---\n  duration_ms: 131.738561\n  type: 'test'\n  ...\n# Subtest: POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503\nok 14 - POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503\n  ---\n  duration_ms: 145.921016\n  type: 'test'\n  ...\n# Subtest: POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）\nok 15 - POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）\n  ---\n  duration_ms: 168.801881\n  type: 'test'\n  ...\n# Subtest: GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）\nok 16 - GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）\n  ---\n  duration_ms: 569.667969\n  type: 'test'\n  ...\n# Subtest: GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并\nok 17 - GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并\n  ---\n  duration_ms: 585.713677\n  type: 'test'\n  ...\n# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\nok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\n  ---\n  duration_ms: 9292.121227\n  type: 'test'\n  ...\n1..18\n# tests 18\n# suites 0\n# pass 18\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 14002.752643\n",
+      "tap": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 14002.752643,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）",
+          "D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表",
+          "A-11 文案键逐字（抽查 + 键存在性）",
+          "BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）",
+          "既有面共存：/ui/labels、/instances、/workflows 行为不变",
+          "GET /queue：条目排序、totals 透传与单行状态不可读降级",
+          "GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝",
+          "GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记",
+          "GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级",
+          "GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影",
+          "POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED",
+          "POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）",
+          "POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）",
+          "POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503",
+          "POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）",
+          "GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）",
+          "GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并",
+          "daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图"
+        ]
+      }
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"已断开\" desktop/ui/queue/",
+      "note": "AC-47 架构①：断线文案不硬编码，来自 labels（UI queue 目录零命中，exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"rows = \\[\\]|clearRows\" desktop/ui/queue/",
+      "note": "AC-47 架构②：断线不清空队列（rows=[]/clearRows 零命中，exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "ac": "AC-07",
+  "title": "通知不可用：只提示一次，不阻断任何流程",
+  "face": "通知 / 异常 / 机检 + 原始帧",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2732f86",
+  "startedAt": "2026-11-16T17:03:51.202Z",
+  "finishedAt": "2026-11-16T17:03:52.897Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 15,
+    "ok": 15,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "notify.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 22,
+        "pass": 22,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-07: 状态投影读失败不阻断后续意图（3 条不同升级逐条产生）",
+        "AC-07: 偏好读取抛错按全开缺省处理，不阻断意图",
+        "AC-07: 由新升级引起的异常信号被抑制，避免与升级意图重复"
+      ]
+    },
+    {
+      "file": "shell-notify.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 12,
+        "pass": 11,
+        "fail": 0,
+        "skipped": 1
+      },
+      "labeled": []
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"throw new Error\" src/daemon/notify.js",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 notify.test.js：# tests 22 / # pass 22 / # fail 0 / # skipped 0；带本 AC 编号用例 3 条。",
+    "机检 shell-notify.test.js：# tests 12 / # pass 11 / # fail 0 / # skipped 1；带本 AC 编号用例 0 条。",
+    "A-2 提示「通知不可用 · 队列仍可用」逐字见 config.rs（shell-notify.test.js 锚点）；无头环境系统通知投递失败属预期，判定只看意图已产生且流程未受阻。同条目 10s 内重复去重属 BR-04，由 AC-06 注入时钟单测覆盖，不在本 AC 混计。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-07"
+}

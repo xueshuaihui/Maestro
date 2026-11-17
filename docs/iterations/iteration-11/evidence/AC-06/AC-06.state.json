@@ -1,0 +1,53 @@
+{
+  "ac": "AC06",
+  "source": "createNotifier + 注入时钟（与 test/wp14/notify.test.js 同模块同夹具）",
+  "intentCountRaw": 4,
+  "dedupeGroupCount": 1,
+  "groups": [
+    "anomaly::INST-001"
+  ],
+  "mergedCounts": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "intents": [
+    {
+      "kind": "anomaly",
+      "ids": [],
+      "instanceId": "INST-001",
+      "title": "通知 实例异常 · INST-001",
+      "body": "实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已中断，需关注",
+      "mergedCount": 1,
+      "at": 0
+    },
+    {
+      "kind": "anomaly",
+      "ids": [],
+      "instanceId": "INST-001",
+      "title": "通知 实例异常 · INST-001",
+      "body": "实例 INST-001 · 升级 — · 节点 — · 第 — 轮 · 已中断，共 2 次，最近：会话 mock-sess-12345-1 崩溃",
+      "mergedCount": 2,
+      "at": 5000
+    },
+    {
+      "kind": "anomaly",
+      "ids": [],
+      "instanceId": "INST-001",
+      "title": "通知 实例异常 · INST-001",
+      "body": "实例 INST-001 · 升级 — · 节点 — · 第 — 轮 · 已中断，共 3 次，最近：会话 mock-sess-12345-1 崩溃",
+      "mergedCount": 3,
+      "at": 10000
+    },
+    {
+      "kind": "anomaly",
+      "ids": [],
+      "instanceId": "INST-001",
+      "title": "通知 实例异常 · INST-001",
+      "body": "实例 INST-001 · 升级 — · 节点 — · 第 — 轮 · 已中断，共 4 次，最近：会话 mock-sess-12345-1 崩溃",
+      "mergedCount": 4,
+      "at": 15000
+    }
+  ]
+}
