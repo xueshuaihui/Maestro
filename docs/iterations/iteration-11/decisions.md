@@ -416,3 +416,23 @@
   1. **AC-15 —— 锚点过时（比照 D-54）**：`ESCALATION_NOT_PENDING` 的事实原子在核心 `src/core/escalation.js:89` / `orchestrator.js:5049`（D-11 禁改），queue.js 按 D-1 只做 `forward` 且用 `QUEUE_ERROR_CONCLUSIONS = DESKTOP_QUEUE_CONCLUSIONS`（:50）按 code 取结论词（:260）——正是「把核心返回的已处理映射为固定文案、不自行判重」的正确实现。需求 v12 架构检查改为：`grep -REn "ESCALATION_NOT_PENDING" src/core/escalation.js src/core/orchestrator.js | head -1` ≥1 命中（exit 0）且 `grep -REn "QUEUE_ERROR_CONCLUSIONS|DESKTOP_QUEUE_CONclusions" src/daemon/queue.js | head -1` ≥1 命中（exit 0）——合起来等价原语义。**行为判定（逐字提示 + 裁决次数 1 + 轮次 +1 + 队列清零）不变**。
   2. **AC-18 —— 需求内部矛盾，架构⑤改为零自算**：需求 D-9/§3.3 要求 `tray-status` 探针字段 `pendingEscalations`，字面零命中不可能成立；两命中分别是**注释行**与**探针字段透传**（`main.rs:300` 从 daemon `/instances` 的 `item.pending.escalations` 读，未经壳层计数）。需求 v12 把架构⑤改为：`grep -REn "pendingEscalations" desktop/ui desktop/src-tauri/src | grep -vE ':\s*[0-9]+:\s*\*' | grep -vE '"pendingEscalations"\s*:'` 零命中（exit 1）——排除注释行与探针字段名，保留对真实自算表达式的零命中要求；配合既有 ①~④ 的多行感知 + 函数体切块断言（D-53），「界面/壳层零自算」语义**不放宽**。
 - **影响面**：需求 v12（AC-15/18 架构检查）、`probe/acc11-cases/ac15.mjs` / `ac18.mjs` 判据同步、S3 批次 B 复验。
+
+## D-56 · AC-27 `unavailable` 锚点归位：禁的是「自造状态」，不是引用既有词表键
+
+- **触发点**：S3 验收批次 C：AC-27 架构检查 `grep -REn "unavailable" src/daemon/occupancy.js` 零命中，实测 1 命中 `occupancy.js:54: ROLE_INSTANCE_STATUS_LABEL.unavailable,`（判不通过）。
+- **裁决依据**：需求 Then 的意图是「注册表缺失不得被判 unavailable、占用层只透传投影状态不产生新状态」；D-48 已定 `OCCUPANCY_STATUS_ORDER` 为五档最忙排序基线（服务中>可用>冷却中>**不可用**>未参与），必须引用既有词表键 `ROLE_INSTANCE_STATUS_LABEL.unavailable` 才完整——字面命中与意图分离，与 D-54/D-55 同构。D-11 禁改核心，`ROLE_INSTANCE_STATUS_LABEL` 来自既有注册表。
+- **决定**：
+  1. 需求 v13 把 AC-27 架构检查改为两条：① `grep -REn "unavailable" src/daemon/occupancy.js | grep -v "ROLE_INSTANCE_STATUS_LABEL.unavailable"` 零命中（exit 1）——**占用层不自造 unavailable 状态词/字面量**；② `grep -REn "FALLBACK_WORD\\s*=\\s*ROLE_INSTANCE_STATUS_LABEL\\.inactive" src/daemon/occupancy.js` ≥1 命中（exit 0）——**注册表缺失/未知态落「未参与」而非「不可用」**。两条合起来等价原语义「注册表缺失不得判 unavailable」，且保留五档排序的完整性。
+  2. 机检 `unavailable 计数为 0` 是对**渲染出的行状态**的断言（`status === '未参与'`），不是对源码字符串计数的断言——WP-4 测试已通过，行为判定不变。
+  3. 不放宽：若占用层出现任何非词表引用的 `unavailable` 字面量，或 FALLBACK_WORD 改为 unavailable，仍判不通过。
+- **影响面**：需求 v13、`probe/acc11-cases/ac27.mjs` 锚点、S3 批次 C 复验。
+
+## D-57 · AC-30 手势机检缺口：补 `canvas.test.js` 的交互接缝用例（不放宽）
+
+- **触发点**：S3 批次 C，AC-30 初判通过（11/11 含 9/9 核对项），但回执 ③ 自报：`test/wp14/canvas.test.js` 仅 2 条 AC-30 数据侧用例（`.orch` 哈希不变 / 无运行时字段），需求机检明写「断言拖拽前后坐标相同、`views/` 无新增文件、探针无 `node-detail`/`jump-host` 事件、选中态有且仅有 1 个」——**这些断言未实现**，用源码锚点覆盖不能替代。
+- **依据**：模板 §3.4「只认需求原文的 Then/机检，不许为了绿而放宽断言」；需求 AC-30 明定机检断言与夹具「画布经 harness 驱动（与界面同一批模块）」。手势不可观测不能伪通过；但这是**可补的测试接缝**，不是产品缺陷（画布本就只读、无写盘/下钻接线，源码锚点已证）。
+- **决定**：
+  1. AC-30 暂不改判（保留批次 C 当前记录的 9/9），但**必须补交互接缝用例**后重判才算终验有效；主控派单给 WP-8 侧补 `test/wp14/canvas.test.js`（或新 `test/wp14/canvas-interaction.test.js`）：用 harness 驱动的纯函数交互模型断言四件事——①`computeLayout` 结果 + 拖拽偏移不落盘（同一输入两次布局坐标相同、拖拽后坐标不变）；②`views/` 目录无新增文件；③交互事件流无 `node-detail` / `jump-host`；④单击选中恰 1 个、双击不聚焦。
+  2. 若补接缝后发现产品行为与需求冲突 → 判不通过并登记实现缺陷；若能实现 → 补断言后复跑 AC-30，旧记录保留、取最后一条为准（§3.5）。
+  3. 手势「手感」类（真实鼠标缩放平移体感）按 U-13 留人工核验，不属机检范围——但**机检四件事必须落**。
+- **影响面**：`test/wp14/canvas.test.js`（或新增交互用例）、`probe/acc11-cases/ac30.mjs` 机检文件列表、S3 批次 C 复验、S4 终验判据。
