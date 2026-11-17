@@ -6,6 +6,7 @@
  *   node probe/acc11-f-run.mjs --batch a        # a = AC-01~13（本批 13 条）
  *   node probe/acc11-f-run.mjs --batch b        # b = AC-14~26（本批 13 条）
  *   node probe/acc11-f-run.mjs --batch c        # c = AC-27~38（本批 12 条）
+ *   node probe/acc11-f-run.mjs --batch d        # d = AC-39~49（本批 11 条）
  *   node probe/acc11-f-run.mjs --all             # 现有全部已登记用例
  *   node probe/acc11-f-run.mjs --list
  *
@@ -33,13 +34,14 @@ const range = (a, b) => ALL.filter((id) => { const n = Number(id.slice(3)); retu
 const BATCHES = {
   a: range(1, 13),  // 批次 A：AC-01~AC-13
   b: range(14, 26), // 批次 B：AC-14~AC-26
-  c: range(27, 38)  // 批次 C：AC-27~AC-38（12 条）
+  c: range(27, 38),  // 批次 C：AC-27~AC-38（12 条）
+  d: range(39, 49)   // 批次 D：AC-39~AC-49（11 条）
 };
 
 function usage() {
   return [
-    '用法：node probe/acc11-f-run.mjs <AC-xx ...> | --batch a|b|c | --all | --list',
-    `批次：a=${BATCHES.a[0]}~${BATCHES.a.at(-1)}（13 条）、b=${BATCHES.b[0]}~${BATCHES.b.at(-1)}（13 条）、c=${BATCHES.c[0]}~${BATCHES.c.at(-1)}（12 条）；单 AC 限时 ${CASE_TIMEOUT_MS / 1000}s。`
+    '用法：node probe/acc11-f-run.mjs <AC-xx ...> | --batch a|b|c|d | --all | --list',
+    `批次：a=${BATCHES.a[0]}~${BATCHES.a.at(-1)}（13 条）、b=${BATCHES.b[0]}~${BATCHES.b.at(-1)}（13 条）、c=${BATCHES.c[0]}~${BATCHES.c.at(-1)}（12 条）、d=${BATCHES.d[0]}~${BATCHES.d.at(-1)}（11 条）；单 AC 限时 ${CASE_TIMEOUT_MS / 1000}s。`
   ].join('\n');
 }
 

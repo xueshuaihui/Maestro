@@ -1,0 +1,5 @@
+
+--- STDERR ---
+fatal: ambiguous argument '66e5a6b..origin/feat/i1.10b-drilldown': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'

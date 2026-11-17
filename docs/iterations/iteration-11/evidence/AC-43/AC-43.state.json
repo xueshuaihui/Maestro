@@ -1,0 +1,39 @@
+{
+  "ac": "AC-43",
+  "note": "本 AC 为机检型，原始帧见同名 *.log / *.tap.json / arch-*.log；此对象为占位索引。",
+  "testRuns": [
+    {
+      "file": "contract.test.js",
+      "exit": 0,
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 345.001745,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "§2.1 notify.js：createNotifier 返回 intents$ + dispose，DEDUP 双窗口",
+          "§2.2 prefs.js：四键读写，缺文件全 true 缺省",
+          "§2.3 queue.js：buildQueue 返回 items + totals（两计数键）",
+          "§2.4 assets-view.js：listAssets/showAsset 导出 + items/unreadable 形状",
+          "§2.5 occupancy.js：buildOccupancy 返回 rows + skipped",
+          "§2.6 canvas.js：buildCanvas 返回 title/readable/valid/nodes/edges",
+          "§2.7 evidence.js：buildEvidence 返回 instanceId + items（五项键冻结）",
+          "D-46 ① notify 意图：7 键规范形 + 源端逐键构造",
+          "D-46 ② SSE 帧：event=notify，data 为意图本体（零包装）",
+          "D-46 ③ UI replaceIntent：按 (kind, instanceId) 替换，形状与意图一致",
+          "D-46 ④ 壳层替换 id：派生自同一 (kind, instanceId) 键",
+          "D-36：desktop/ui 不出现 pendingEscalations 重算（grep 计数 = 0）",
+          "A-11：/ui/labels 249 键含全部 DESKTOP_* 字符串常量（白名单 100%）",
+          "A-11：USAGE_LINES 未混入 /ui/labels（键与值都不含用法行）",
+          "AC-43 源码级：desktop/ui + harness 不 import 下钻/节点详情/跳转类模块",
+          "AC-43 行为级：open-queue 只展开本条、不跳转、不下钻"
+        ]
+      }
+    }
+  ]
+}

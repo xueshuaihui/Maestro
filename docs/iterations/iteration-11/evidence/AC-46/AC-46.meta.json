@@ -1,0 +1,62 @@
+{
+  "ac": "AC-46",
+  "title": "单个资产不可解析：那一行标\"不可读\"，其余照常",
+  "face": "资产库 / 异常 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "e598e43",
+  "startedAt": "2026-11-17T16:25:26.177Z",
+  "finishedAt": "2026-11-17T16:25:28.316Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 10,
+    "ok": 10,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "assets.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 10,
+        "pass": 10,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-46 单个资产不可解析：那一行标不可读，其余照常"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"资产不可读\" desktop/ui/assets/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"filter.*readable\" desktop/ui/assets/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检文件名口径：需求点名 test/wp14/assets.test.js（本分支存在），AC-46 逐字断言由其中「AC-46 单个资产不可解析：那一行标不可读，其余照常」用例承载；按实际文件机检并登记，不放宽。",
+    "A-5/D-13 口径：单资产不可解析用 `不可读`（DESKTOP_ASSET_ITEM_UNREADABLE=『{kind} {id} · 不可读』），区别于目录级 `资产不可读 · {dir}`（DESKTOP_ASSET_UNREADABLE，仅目录级失败用）；坏文件写 {{{{ 使整体不可解析，先起核再写盘，独立根 /tmp/m11d-AC-46。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-46"
+}

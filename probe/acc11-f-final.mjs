@@ -3,7 +3,7 @@
  * I1.11 S3 验收 · 由 results.jsonl + parts/ 重建
  *   docs/iterations/iteration-11/acceptance-fixture.md
  *   probe/acc11-f-summary.json
- * 覆盖 AC-01~AC-38（批次 A + 批次 B + 批次 C）。取证请跑 probe/acc11-f-run.mjs --batch a / --batch b / --batch c。
+ * 覆盖 AC-01~AC-49（批次 A + 批次 B + 批次 C + 批次 D）。取证请跑 probe/acc11-f-run.mjs --batch a / --batch b / --batch c / --batch d。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -12,7 +12,7 @@ import {
   lastResults, gitHead, forceKillCore, readJson
 } from './acc11-f-common.mjs';
 
-const AC_ORDER = Array.from({ length: 38 }, (_, i) => `AC-${String(i + 1).padStart(2, '0')}`);
+const AC_ORDER = Array.from({ length: 49 }, (_, i) => `AC-${String(i + 1).padStart(2, '0')}`);
 
 const results = lastResults();
 const part = (id) => {
@@ -60,12 +60,12 @@ const covered = new Set(evidenceFiles.map(acOfFile).filter(Boolean));
 const cell = (s, n = 240) => String(s ?? '').replace(/\r?\n/g, '<br>').replace(/\|/g, '\\|').slice(0, n);
 
 const head = [
-  '# I1.11 验收记录 · 批次 A+B+C（AC-01~AC-38）', '',
-  '> 依据：`docs/iterations/iteration-11/requirement.md` v10 §3.1（AC-01~13 逐字 Given/When/Then/机检/夹具/架构检查）、附录 A-1~A-4（输出逐字基线）、`decisions.md`（D-39 / D-45 / D-46 / D-52 / D-53）。',
+  '# I1.11 验收记录 · 批次 A+B+C+D（AC-01~AC-49）', '',
+  '> 依据：`docs/iterations/iteration-11/requirement.md` v13 §3.1（AC-01~49 逐字 Given/When/Then/机检/夹具/架构检查）、附录 A-1~A-12（输出逐字基线）、`decisions.md`（D-39 / D-45 / D-46 / D-52 / D-53 / D-57）。',
   `> 执行：${process.platform} / Node ${process.version} / 仓库 \`${REPO}\` / HEAD \`${gitHead()}\`；每条 AC 一个独立根，机检「先 test -f 再 node --test」，一律 \`NODE_ENV=test\`。`,
   '> 生成：`probe/acc11-f-run.mjs --batch a` 逐条取证（evidence + parts + results.jsonl）→ 本脚本重建。判定只认需求 Then/And；证据分级：已实测（真实宿主）/ mock 实测 / 阻塞。', '',
   '## 0. 总判', '',
-  `**批次 A+B+C 38 条：通过 ${stat.通过} / 不通过 ${stat.不通过} / 阻塞 ${stat.阻塞}**`, '',
+  `**批次 A+B+C+D 49 条：通过 ${stat.通过} / 不通过 ${stat.不通过} / 阻塞 ${stat.阻塞}**`, '',
   `- 已产出证据：${AC_ORDER.length - missing.length} 条；未登记或未执行：${missing.length ? missing.join('、') : '无'}。`,
   `- 证据文件：\`docs/iterations/iteration-11/evidence/\` 下 ${evidenceFiles.length} 个（覆盖 ${covered.size} 条 AC）。`,
   `- 不通过 / 阻塞条目：${bad.length ? bad.map((b) => `${b.id}（${b.verdict}）`).join('、') : '无'}。`,
@@ -105,14 +105,14 @@ const doc = [...head, ...sections, ...section2, ...section3].join('\n');
 fs.writeFileSync(REPORT, doc, 'utf8');
 
 fs.writeFileSync(SUMMARY, JSON.stringify({
-  batch: 'a+b+c', acFrom: 'AC-01', acTo: 'AC-38', head: gitHead(),
+  batch: 'a+b+c+d', acFrom: 'AC-01', acTo: 'AC-49', head: gitHead(),
   通过: stat.通过, 不通过: stat.不通过, 阻塞: stat.阻塞,
   acCount: AC_ORDER.length, missing,
   evidenceFileCount: evidenceFiles.length,
   perAc, bad
 }, null, 2) + '\n', 'utf8');
 
-console.log(`[final] 批次 A+B+C ${AC_ORDER.length} 条：通过 ${stat.通过} / 不通过 ${stat.不通过} / 阻塞 ${stat.阻塞}（未登记 ${missing.length}）`);
+console.log(`[final] 批次 A+B+C+D ${AC_ORDER.length} 条：通过 ${stat.通过} / 不通过 ${stat.不通过} / 阻塞 ${stat.阻塞}（未登记 ${missing.length}）`);
 console.log(`[final] 报告：${path.relative(REPO, REPORT)}；汇总：${path.relative(REPO, SUMMARY)}；证据 ${evidenceFiles.length} 个`);
 if (bad.length) console.log(`[final] 非通过：${bad.map((b) => `${b.id}:${b.verdict}`).join(', ')}`);
 

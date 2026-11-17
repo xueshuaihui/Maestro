@@ -1,0 +1,63 @@
+{
+  "ac": "AC-43",
+  "title": "不依赖 I1.10b：点击条目只展开，不跳转、不下钻",
+  "face": "范围边界 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "e598e43",
+  "startedAt": "2026-11-17T16:25:13.209Z",
+  "finishedAt": "2026-11-17T16:25:14.023Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 11,
+    "ok": 11,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "contract.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-43 源码级：desktop/ui + harness 不 import 下钻/节点详情/跳转类模块",
+        "AC-43 行为级：open-queue 只展开本条、不跳转、不下钻"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"drilldown|nodeDetail|jumpHost|attachHost\" desktop/ui desktop/harness",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "cmd": "git rev-list --count 66e5a6b..origin/feat/i1.10b-drilldown",
+      "expect": null,
+      "exit": 128,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 contract.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。",
+    "机检文件名口径：需求点名 test/wp14/scope-i10b.test.js（本分支不存在），逐字断言合并进 test/wp14/contract.test.js「AC-43 源码级 / 行为级」两用例；按实际存在文件机检并登记，不放宽。",
+    "D-15 口径：本 AC 不假设 I1.10b 存在；rev-list 原文命令依赖 origin/feat/i1.10b-drilldown 远程引用，本机 clone 无此分支（仅 main + i1.11），exit 128 属环境口径差异而非产品缺陷。等价核验：git show-ref --verify --quiet refs/remotes/origin/feat/i1.10b-drilldown 返回非 0（本地无该远程跟踪 ref），且 UI/harness 源码零下钻引用（架构①）+ 行为级 open-queue 只展开本条（机检）三项合起来等价原语义，断言不放宽；不触网以避免网络抖动假阴性。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-43"
+}

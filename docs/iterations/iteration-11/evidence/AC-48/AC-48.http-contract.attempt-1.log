@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）
+ok 1 - D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）
+  ---
+  duration_ms: 133.551524
+  type: 'test'
+  ...
+# Subtest: D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表
+ok 2 - D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表
+  ---
+  duration_ms: 0.486195
+  type: 'test'
+  ...
+# Subtest: A-11 文案键逐字（抽查 + 键存在性）
+ok 3 - A-11 文案键逐字（抽查 + 键存在性）
+  ---
+  duration_ms: 0.206681
+  type: 'test'
+  ...
+# Subtest: BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）
+ok 4 - BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）
+  ---
+  duration_ms: 6.750343
+  type: 'test'
+  ...
+# Subtest: 既有面共存：/ui/labels、/instances、/workflows 行为不变
+ok 5 - 既有面共存：/ui/labels、/instances、/workflows 行为不变
+  ---
+  duration_ms: 111.977577
+  type: 'test'
+  ...
+# Subtest: GET /queue：条目排序、totals 透传与单行状态不可读降级
+ok 6 - GET /queue：条目排序、totals 透传与单行状态不可读降级
+  ---
+  duration_ms: 136.675833
+  type: 'test'
+  ...
+# Subtest: GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝
+ok 7 - GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝
+  ---
+  duration_ms: 170.716873
+  type: 'test'
+  ...
+# Subtest: GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记
+ok 8 - GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记
+  ---
+  duration_ms: 96.477615
+  type: 'test'
+  ...
+# Subtest: GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级
+ok 9 - GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级
+  ---
+  duration_ms: 147.918413
+  type: 'test'
+  ...
+# Subtest: GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影
+ok 10 - GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影
+  ---
+  duration_ms: 146.640288
+  type: 'test'
+  ...
+# Subtest: POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED
+ok 11 - POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED
+  ---
+  duration_ms: 89.062551
+  type: 'test'
+  ...
+# Subtest: POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）
+ok 12 - POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）
+  ---
+  duration_ms: 96.598652
+  type: 'test'
+  ...
+# Subtest: POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）
+ok 13 - POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）
+  ---
+  duration_ms: 135.684709
+  type: 'test'
+  ...
+# Subtest: POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503
+ok 14 - POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503
+  ---
+  duration_ms: 121.265683
+  type: 'test'
+  ...
+# Subtest: POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）
+ok 15 - POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）
+  ---
+  duration_ms: 172.408166
+  type: 'test'
+  ...
+# Subtest: GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）
+ok 16 - GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）
+  ---
+  duration_ms: 567.335841
+  type: 'test'
+  ...
+# Subtest: GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并
+ok 17 - GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并
+  ---
+  duration_ms: 592.894694
+  type: 'test'
+  ...
+# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图
+ok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图
+  ---
+  duration_ms: 9295.910035
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14039.048581

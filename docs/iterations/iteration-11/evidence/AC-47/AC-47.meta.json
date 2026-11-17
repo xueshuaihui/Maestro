@@ -1,0 +1,88 @@
+{
+  "ac": "AC-47",
+  "title": "断线保留旧内容并标注，恢复后自动补全",
+  "face": "队列 / 异常 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "e598e43",
+  "startedAt": "2026-11-17T16:25:28.427Z",
+  "finishedAt": "2026-11-17T16:25:52.798Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 18,
+    "ok": 18,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "ui-views.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-47: queue snapshot frame replaces content; disconnect keeps last rows"
+      ]
+    },
+    {
+      "file": "queue.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": []
+    },
+    {
+      "file": "http-contract.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": []
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"已断开\" desktop/ui/queue/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"rows = \\[\\]|clearRows\" desktop/ui/queue/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。",
+    "机检 http-contract.test.js：# tests 18 / # pass 18 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。",
+    "机检文件名口径：需求点名 test/wp14/queue-reconnect.test.js（本分支不存在），逐字断言合并进 test/wp14/ui-views.test.js「AC-47: queue snapshot frame replaces content; disconnect keeps last rows」+ test/wp14/queue.test.js（断线文案）+ test/wp14/http-contract.test.js（A-11 文案键逐字）；按实际存在文件机检并登记，不放宽。",
+    "D-10/BR-36/G-08 口径：断线保留最后成功内容、不把旧数字当最新（托盘「—」）、恢复自动补全；无需「刷新」按钮。A-3 补「已断开 · 正在重连…」（队列级标注，条目保留）与「实例 INST-004 · 状态不可读」（单行级标注），两者不互相替代。轮询判定用「条件成立即继续」，不用固定 sleep（§3.3）。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-47"
+}

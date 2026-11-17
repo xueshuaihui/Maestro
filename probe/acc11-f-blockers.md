@@ -117,3 +117,34 @@
 - **机检改造**：`probe/acc11-cases/ac30.mjs` 的 `machineChecks.files` 增加 `canvas-interaction.test.js`，增一条核对项断言四用例齐全且 `# fail 0`；机检说明按需求 AC-30 原文（`req('AC-30').jijian`）。
 - **复跑留证**：`node probe/acc11-f-run.mjs AC-30` → **通过 14/14**（旧 9/9 记录保留，按 §3.5 取最后一条为准）；`node probe/acc11-f-final.mjs` → **38/38 通过 / 0 不通过 / 0 阻塞**，证据 439 个。
 - **不通过/阻塞条目**：无。此节为 D-57 闭环登记，非新增缺陷。`nfr-perf-*.json` 未触及（git 工作树该路径 clean）。
+
+---
+
+## 批次 D（AC-39~AC-49）取证台账 · S3 验收工程师批次 D
+
+> 由 `probe/acc11-f-run.mjs --batch d` 取证（HEAD `e598e43`，macOS / Node 22.22.2）；判定只认需求 v13 原文，发现锚点矛盾判「不通过」并写证据 + 裁决请求，不改实现、不放宽断言。
+> 结果：**通过 10 / 不通过 1 / 阻塞 0**；唯一不通过条目：AC-39（架构检查 D-1 写名单锚点与 D-51 授权的 /ui/prefs 冲突；机检行为侧全 #fail 0）。
+
+### AC-39 · 不通过（架构检查锚点矛盾：D-1 六项名单字面不含 D-51 授权的 /ui/prefs）
+
+- **需求原文（架构检查④/⑥，v13 §3.1 AC-39）**：提取路由表后，POST 行必须全部落在 D-1 六项名单 `{/instances, /queue/escalations/:id/decision, /queue/approvals/:id/decision, /instances/:id/cancel, /control/pause, /control/resume}` 之内；routes.js 写方法 pattern 每行都必须在该名单找到对应 pattern。
+- **实测**：架构④ `POST=10 violations=1 bad=[/ui/prefs]`、架构⑥ `writePatterns=10 violations=1 bad=[/ui/prefs]`（`AC-39.arch-4.log` / `AC-39.arch-6.log`）；`/ui/prefs` 的 GET/POST 两行在 `src/daemon/http/routes.js:931,938`。
+- **根因/分析**：`/ui/prefs` 是需求自身授权链写入的第六类写——`decisions.md` D-42 授权 `prefs.json` 为通知开关唯一写入方，**D-51 决定第 3 条明写「`GET/POST /ui/prefs`（WP-8 已新增，写仍由 `src/daemon/prefs.js` 独占）一并写入 D-11 授权补项」**；AC-39 自己的 Then 也明写「通知开关偏好对 prefs.json 的写入不计入这三个数字，但必须只写四个开关字段」。实现（`routes.js` + `test/wp14/e2e.test.js` 静态面 allowed 含 `/ui/prefs` 并注 `// D-51：通知开关四键，独立第三类写`）与 AC-39 Then、D-42/D-51 一致，属**架构检查名单过时（字面未随 D-51 补 /ui/prefs）**，非产品缺陷。与 D-54/D-55/D-56 中「字面命中与需求意图分离」同构。
+- **其余判据全部成立**：机检 e2e.test.js（6/6）+ http-contract.test.js（18/18）+ prefs.test.js #fail 0；浏览零写哈希相等、actionCount=2 / stateWrites=3 / unexpected=0、prefs 只写四键多余键拒绝、错误形状 400/422/503/404、回环 127.0.0.1、HTTP/UI 零直写盘、无 PATCH、shapeSnapshot 函数体锚点（D-53）全部通过（`AC-39.check.json`）。
+- **裁决请求（主控/终验）**：属「锚点过时——把 /ui/prefs 纳入 D-1 写名单，或按 D-51 把 prefs 明确为独立第六类写、不进该名单（比照 D-54/55/56 归位，需求补一句口径不放宽语义）」还是「产品缺陷——/ui/prefs 写接口应删除」？S3 按纪律严格执行字面名单 → 判不通过，不改实现、不放宽断言。
+- **原始帧**：`AC-39.arch-4.log`、`AC-39.arch-6.log`、`AC-39.check.json`（含语义复核）、`AC-39.output.json`、`AC-39.test-stdout.txt`、`AC-39.meta.json`。
+
+### 环境口径与机检范围登记（非缺陷、非阻塞）
+
+- **全量测试 >90s**：AC-41 全量命令 `env -u NODE_OPTIONS NODE_ENV=test node --test --test-concurrency=1 "test/**/*.test.js"` 实测 306s（`# tests 1606` / `# pass 1600` / `# fail 4` / `# skipped 2`），超单 AC 90s 限时；按 regression.test.js 自身「读摘要不递归跑全量」口径，案外跑完整 TAP 生成摘要（`tests >= 1425` + 失败集合与判定基线差集 0），用例读取断言。4 条失败全部落在判定基线（R-08 的 AC-04 + 历史 core.stop / main：--cwd / task-loop 审核提示词），差集 0。
+- **AC-43 rev-list 远程引用缺失**：本机 clone 仅 `origin/main` + `origin/feat/i1.11-*`，`origin/feat/i1.10b-drilldown` 不存在 → 原文 `git rev-list --count 66e5a6b..origin/feat/i1.10b-drilldown` exit 128；按 D-15「不依赖本地分支是否存在」用本地 `git show-ref --verify --quiet refs/remotes/origin/feat/i1.10b-drilldown`（exit 非 0 = 无该远程跟踪 ref）做等价零分叉核验，不触网以避免网络抖动；UI/harness 源码零下钻引用 + 行为级 open-queue 只展开本条为正判据。
+- **AC-40 架构②注释假阳性**：需求原文注「注释不算、spawn.rs 19 行中文注释属既有事实」，但字面 grep 把 `main.rs:196` 注释行中文带出；按 blockers.md 已裁决的注释假阳性排除口径用 `grep -vE ':\s*[0-9]+:\s*(//|\*)'` 排除后，shell 中文字符串文件集合恰为 `{config.rs}`，对真实字面量的零命中不放宽。
+- **AC-41 架构人工核对**：`git diff --name-only 66e5a6b -- test/` 含 `test/wp14/**` + 4 个 `test/wp13/**` 文案契约文件（errors/graph-collapse/http-channel/labels-desktop），均为 D-51 授权的 147→249 文案键数冻结更新（I1.9 D-27 先例，精确断言改期望不过滤），删除行只涉及键数/期望清单，未放宽既有断言；其余路径即判失败。
+- **U-13 shell 真实探针 SKIP**：全量第 1110 条 `真实探针层：ctl 四动作触发事件并改名 .done` 按 gated SKIP（本机 release 二进制早于 main.rs），属证据分级降级（静态契约层已覆盖接缝），非阻塞；人眼确认登记人工核验项。
+- **机检文件名口径差异（登记非缺陷）**：需求点名 `readonly-local.test.js`（AC-39）/`errors.test.js`（AC-42）/`scope-i10b.test.js`（AC-43）/`queue-actions.test.js`（AC-44）/`queue-reconnect.test.js`（AC-47）/`tray.test.js`（AC-48）本分支不存在，逐字断言合并进 e2e/http-contract/prefs、ui-views、contract、queue、shell-notify 等实际存在文件；`labels-desktop.test.js` 冻结测试在 test/wp13 而非 test/wp14。按实际文件机检并保留原始 TAP，登记说明不放宽。
+
+## 批次 D 裁决闭环（D-58，2026-11-17）
+
+- **AC-39**：初判「不通过」（架构④/⑥ D-1 写名单 `POST=10 violations=1 bad=[/ui/prefs]`）。主控裁决 D-58：`/ui/prefs` 是 D-42/D-51 明确授权的本地偏好写（仅四键、仅 prefs.json、不计入 AC-39 三个数字），D-1 名单字面漏同步——需求 v14 把名单扩为六条含 `/ui/prefs`，名单外任何写仍零命中。复跑 **28/28 通过**。
+- results.jsonl 历史不通过记录保留作裁决前原始帧；按 §3.5 取最后一条为准，最终判定见 summary.json（49 通过 / 0 不通过 / 0 阻塞）与 acceptance-fixture.md。
+- 批次 D 全量 1606/1600/4（差集 0）、purity ×2 exit 0、deps 0（验收 Agent 实测数字）。

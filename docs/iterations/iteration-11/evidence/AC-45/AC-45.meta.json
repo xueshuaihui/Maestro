@@ -1,0 +1,70 @@
+{
+  "ac": "AC-45",
+  "title": "空定义：文件在、能解析、但一个节点都没有",
+  "face": "画布 / 边界 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "e598e43",
+  "startedAt": "2026-11-17T16:25:23.567Z",
+  "finishedAt": "2026-11-17T16:25:26.066Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 13,
+    "ok": 13,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "canvas.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 13,
+        "pass": 13,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-45 空定义：nodes:[] 与 0 字节都按「定义 空」投影"
+      ]
+    },
+    {
+      "file": "ui-views.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"定义不可读\" desktop/ui/canvas/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 canvas.test.js：# tests 13 / # pass 13 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检文件名口径：需求点名 test/wp14/canvas.test.js（本分支存在），A-7 文案逐字由 test/wp14/ui-views.test.js「A-7 / AC-29 AC-31 AC-45」承载；按实际文件机检并登记，不放宽。",
+    "H-11/D-23 口径：AC-45 增 0 字节现场；BR-19/§2.7/A-7 同步「内容为空→定义 空」。现场一语法成功零节点 readable=true、现场二按 B-1 三态（readable 缺省但 nodes.length=0）也走「定义 空」，两处都不显示「定义不可读」、不白屏、返回入口在。先起核再写盘（snapshot 启动顺序），夹具在 /tmp/m11d-AC-45 独立根。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-45"
+}

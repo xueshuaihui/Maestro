@@ -1,0 +1,217 @@
+{
+  "ac": "AC-39",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-39",
+    "title": "只读与本地性：唯一写操作清单",
+    "given": "`/tmp/maestro-i11-readonly` 项目根，一个运行中实例；记下实例 `state.json`、`events.jsonl` 哈希与节点/会话/交接包/升级/审批五组状态；`NODE_ENV=test`。",
+    "when": "依次浏览队列页顶部的通知设置区、队列、三个资产分页、占用、画布、证据；然后**只**执行一次\"允许\"审批，再做**一个**托盘暂停/继续周期；再检查监听地址。",
+    "then": [
+      "纯浏览阶段五组状态与两份哈希全不变；此后的写入分三个**互相独立**的数字判定，任何一个不符即失败：① **写操作数 = 2**（一次「允许」+ 一个暂停/继续周期，按用户动作计）；② **状态写入次数 = 3**（审批 1 次 + 暂停 1 次 + 继续 1 次，按落到状态的动作计）；③ 上述之外的状态写入 = 0，界面层没有任何其他写入口。**通知开关偏好对 `.orch/desktop/prefs.json` 的写入不计入这三个数字**（它只改本机偏好，不碰实例状态、不追加事件、不写资产），但必须只写该文件的四个开关字段（BR-25 / D-42），写其它键即判失败。数据通道只在本机回环地址可达，监听地址不出现 `0.0.0.0` / `*`。"
+    ],
+    "jijian": "`test -f test/wp14/readonly-local.test.js && NODE_ENV=test node --test test/wp14/readonly-local.test.js`，断言浏览阶段哈希相等、五组状态深比较相等、`writes.actionCount === 2`、`writes.stateWrites === 3`、`writes.unexpected === 0`、`writes.prefsWrites` 单独计数且 `prefs.json` 的键集合 ⊆ `{总开关, 升级待处理, 实例完成, 实例异常}`、`lsof -nP -iTCP:<port> -sTCP:LISTEN` 的本地地址全为 `127.0.0.1:<port>` 且对 `0.0.0.0` 零命中（exit 1）；`# fail 0`。",
+    "fixture": "端口与凭据从 `.orch/desktop.json` 读取；状态在浏览前后各导出一份；写操作计数由探针 `action` 事件与状态写入事件分别汇总，两个计数器互不折算。",
+    "archText": "HTTP 层不得直接写状态、写接口只允许 D-1 列出的六条（含 D-51 授权的 /ui/prefs）；`grep -REn \"saveState|appendEvent|store[.]save\" src/daemon/http/` 必须**零命中（exit 1）**；`grep -REn \"fs[.]write|writeFile\" desktop/ui/` 必须**零命中（exit 1）**（偏好只能经壳层命令或 daemon 的 `prefs` 模块写入，界面层不直接碰盘）；`grep -REn \"PATCH\" src/daemon/http/` 必须**零命中（exit 1）**。写路径的判定**不靠带上下文的行匹配**（`-A1` 会把注释行与 `if (process.env.NODE_ENV !== 'test')` 一起带出，基线即假失败），改为**提取路由表后按 method/pattern 断言，并同时扫两个文件**：",
+    "refs": "BR-25, BR-13, BR-29",
+    "risk": "高（面板误写会污染编排状态）"
+  },
+  "checks": [
+    {
+      "text": "机检 e2e.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=中文唯一来源\n  ---\n  duration_ms: 25.538396\n  type: 'test'\n  ...\n# Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\nok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\n  ---\n  duration_ms: 1.858621\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2781.21407\n",
+      "expected": null
+    },
+    {
+      "text": "机检 e2e.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 e2e.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 6 / # tests 6",
+      "expected": null
+    },
+    {
+      "text": "机检 e2e.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= ...\n# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\nok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\n  ---\n  duration_ms: 9287.83765\n  type: 'test'\n  ...\n1..18\n# tests 18\n# suites 0\n# pass 18\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 14036.744227\n",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 18 / # tests 18",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 prefs.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=文件、不改实例状态目录\n  ---\n  duration_ms: 126.512847\n  type: 'test'\n  ...\n# Subtest: prefsPath 与 PREFS_KEYS 的形状契约\nok 10 - prefsPath 与 PREFS_KEYS 的形状契约\n  ---\n  duration_ms: 0.516336\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 637.180759\n",
+      "expected": null
+    },
+    {
+      "text": "机检 prefs.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 prefs.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # tests 10",
+      "expected": null
+    },
+    {
+      "text": "机检 prefs.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-39 架构①：HTTP 层零直接写状态（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"saveState|appendEvent|store[.]save\" src/daemon/http/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #2：AC-39 架构②：界面层零直接写盘，偏好只能经 daemon prefs 模块（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"fs[.]write|writeFile\" desktop/ui/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #3：AC-39 架构③：HTTP 层零 PATCH（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"PATCH\" src/daemon/http/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #4：AC-39 架构④：路由表 POST 行严格落在 D-1 六项业务写名单 + /ui/prefs内（脚本 violations=0 时 exit 0；字面含 /ui/prefs → violations>0 判失败）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`node --input-type=module -e 'const m=await import(\"./src/daemon/http/routes.js\");const rows=m.createRoutes({orchestrator:{startRun:async()=>({ok:false}),listInstances:async()=>({ok:true,items:[]}),getStatus:async()=>({ok:false})},root:process.cwd()});const allowed=new Set([\"/instances\",\"/queue/escalations/:id/decision\",\"/queue/approvals/:id/decision\",\"/instances/:id/cancel\",\"/control/pause\",\"/control/resume\",\"/ui/prefs\"]);const writes=rows.filter(r=>r.method===\"POST\").map(r=>r.pattern);const bad=writes.filter(p=>!allowed.has(p)&&!p.startsWith(\"/__test__/\"));console.log(\"POST=\"+writes.length+\" violations=\"+bad.length+\" bad=[\"+bad.join(\",\")+\"]\");process.exit(bad.length?1:0)'` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #5：AC-39 架构⑤：server.js 的 POST pathname 字面量均为 /__test__/ 测试接缝（基线 4 行，exit 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"'POST' && pathname === '[^']+'\" src/daemon/http/server.js` → exit 0 / 恰好 4 行；实测 exit 0 / 4 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #6：AC-39 架构⑥：routes.js 写方法 pattern 严格落在 D-1 六项业务写名单 + /ui/prefs内（脚本 violations=0 时 exit 0；不放宽）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`node --input-type=module -e 'const fs=await import(\"node:fs\");const q=String.fromCharCode(39);const allowed=new Set([\"/instances\",\"/queue/escalations/:id/decision\",\"/queue/approvals/:id/decision\",\"/instances/:id/cancel\",\"/control/pause\",\"/control/resume\",\"/ui/prefs\"]);const lines=fs.readFileSync(\"src/daemon/http/routes.js\",\"utf8\").split(\"\\n\");const pairs=[];for(let i=0;i<lines.length;i++){const l=lines[i].trim();if(l.startsWith(\"method:\")&&/POST|PUT|DELETE|PATCH/.test(l)){const p=lines[i+1]?.trim();if(p&&p.startsWith(\"pattern:\"))pairs.push(p.split(q)[1]);}}const bad=pairs.filter(p=>!allowed.has(p)&&!p.startsWith(\"/__test__/\"));console.log(\"writePatterns=\"+pairs.length+\" violations=\"+bad.length+\" bad=[\"+bad.join(\",\")+\"]\");process.exit(bad.length?1:0)'` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #7：AC-39 架构⑦（D-53 函数体锚点）：daemon pendingEscalations 计数表达式只许在 shapeSnapshot 内，shapeSnapshot 未改",
+      "ok": true,
+      "blocked": false,
+      "actual": "`node --input-type=module -e 'import fs from \"node:fs\";import path from \"node:path\";const walk=(d)=>fs.readdirSync(d,{withFileTypes:true}).flatMap((e)=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]);const COUNT=/(\\.filter\\(|\\.reduce\\(|\\.length|\\+= *1|\\.push\\()/;const hits=[];for(const f of walk(\"src/daemon\").filter((x)=>x.endsWith(\".js\"))){const lines=fs.readFileSync(f,\"utf8\").split(\"\\n\");let fn=\"<top>\";for(let i=0;i<lines.length;i++){const m=lines[i].match(/^\\s*(?:export\\s+)?(?:async\\s+)?function\\s+([A-Za-z0-9_$]+)/);if(m)fn=m[1];if(!lines[i].includes(\"pendingEscalations\"))continue;hits.push({f,line:i+1,fn,count:COUNT.test(lines.slice(i,i+4).join(\"\\n\"))});}}const bad=hits.filter((h)=>h.count&&h.fn!==\"shapeSnapshot\");console.log(\"occurrences=\"+hits.length+\" countExpr=\"+hits.filter((h)=>h.count).length+\" outsideShapeSnapshot=\"+bad.length);process.exit(bad.length===0?0:1)'` → exit 0 / 恰好 1 行 / 含「outsideShapeSnapshot=0」；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #8：AC-39 架构⑧：数据通道绑定本机回环 127.0.0.1，不监听 0.0.0.0",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"listen\\(0, .127.0.0.1.\\)|listen\\(.*0.0.0.0\" src/daemon/http/server.js` → exit 0 / 恰好 1 行 / 含「127.0.0.1」；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "纯浏览阶段 state/events 哈希全不变、五组状态深比较相等（D-53 Given：运行中且 health 已计算）",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写",
+      "expected": "浏览队列/资产/占用/画布/证据后 state/events 哈希与五组状态逐值不变"
+    },
+    {
+      "text": "写操作数=2（一次允许 + 一个暂停/继续周期，按用户动作计）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass e2e 6 / # fail 0",
+      "expected": "writes.actionCount === 2"
+    },
+    {
+      "text": "状态写入次数=3（审批 1 + 暂停 1 + 继续 1）、上述之外 unexpected=0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass e2e 6 / # fail 0",
+      "expected": "writes.stateWrites === 3 且 writes.unexpected === 0，两个计数器互不折算"
+    },
+    {
+      "text": "prefs.json 唯一写入方只写四键、多余键拒绝、不碰实例状态（D-42，不计入三个数字）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass prefs 10 / e2e 6",
+      "expected": "PREFS_KEYS=[enabled,escalate,completed,anomaly]，键集合 ⊆ 四键，多余键 throw"
+    },
+    {
+      "text": "错误形状 400（缺 decision/坏 JSON）、422（非法 decision）、503（核心不在）、404（穿越 id）",
+      "ok": true,
+      "blocked": false,
+      "actual": "GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝 | POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED | POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传） | POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503",
+      "expected": "写接口参数校验 400 / 非法 422 / 核心不在 503 / 穿越 404；错误码透传不改状态"
+    },
+    {
+      "text": "数据通道只在本机回环可达：server.listen(0,127.0.0.1)，监听地址无 0.0.0.0 / *",
+      "ok": true,
+      "blocked": false,
+      "actual": "572:      server.listen(0, '127.0.0.1');",
+      "expected": "127.0.0.1:<port>，对 0.0.0.0 零命中"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "纯浏览阶段五组状态与两份哈希全不变；此后的写入分三个**互相独立**的数字判定，任何一个不符即失败：① **写操作数 = 2**（一次「允许」+ 一个暂停/继续周期，按用户动作计）；② **状态写入次数 = 3**（审批 1 次 + 暂停 1 次 + 继续 1 次，按落到状态的动作计）；③ 上述之外的状态写入 = 0，界面层没有任何其他写入口。**通知开关偏好对 `.orch/desktop/prefs.json` 的写入不计入这三个数字**（它只改本机偏好，不碰实例状态、不追加事件、不写资产），但必须只写该文件的四个开关字段（BR-25 / D-42），写其它键即判失败。数据通道只在本机回环地址可达，监听地址不出现 `0.0.0.0` / `*`。",
+      "expected": "纯浏览阶段五组状态与两份哈希全不变；此后的写入分三个**互相独立**的数字判定，任何一个不符即失败：① **写操作数 = 2**（一次「允许」+ 一个暂停/继续周期，按用户动作计）；② **状态写入次数 = 3**（审批 1 次 + 暂停 1 次 + 继续 1 次，按落到状态的动作计）；③ 上述之外的状态写入 = 0，界面层没有任何其他写入口。**通知开关偏好对 `.orch/desktop/prefs.json` 的写入不计入这三个数字**（它只改本机偏好，不碰实例状态、不追加事件、不写资产），但必须只写该文件的四个开关字段（BR-25 / D-42），写其它键即判失败。数据通道只在本机回环地址可达，监听地址不出现 `0.0.0.0` / `*`。"
+    },
+    {
+      "text": "语义复核：/ui/prefs 为 D-42/D-51 授权的本地偏好写（不计入三个数字），但 D-1 v14 名单已含 /ui/prefs（D-58 裁决）",
+      "ok": true,
+      "blocked": false,
+      "actual": "src/daemon/http/routes.js:931:      pattern: '/ui/prefs', | src/daemon/http/routes.js:938:      pattern: '/ui/prefs', | docs/iterations/iteration-11/decisions.md:381:  3. `GET/POST /ui/prefs`（WP-8 已新增，写仍由 `src/daemon/prefs.js` 独占）一并写入 D-11 授权补项。 | docs/iterations/iteration-11/decisions.md:440:## D-58 · `/ui/prefs` 纳入 D-1 写名单（第六类写），AC-39 架构名单字面同步 | docs/iterations/iteration-11/decisions.md:442:- **触发点**：S3 批次 D：AC-39 架构④/⑥路由名单实测 `POST=10 violations=1 bad=[/ui/prefs]`（判不通过）。行为侧全部通过：浏览零写哈希、`actionCount=2` / `stateWrites=3` / `unexpected=0`、prefs 四键、错误形状、回环、shapeSnapshot 函数体锚点。 | docs/iterations/iteration-11/decisions.md:443:- **裁决依据**：AC-39 的 Then 明写「通知开关偏好对 `.orch/desktop/prefs.json` 的写入不计入这三个数字，只写四键」；**D-51 决定第 3 条明写「GET/POST /ui/prefs 一并写入 D-11 授权补项」**——`/ui/prefs` 是需求自身授权的第六类写，D-1 名单字面漏同步（与 D-54/55/56「字面命中与意图分离」同构）。不放宽：名单外任何其它写仍判失败。 | docs/iterations/iteration-11/decisions.md:444:- **决定**：需求 v14 把 D-1 写名单从「五条」扩为「六条」，追加 `GET|POST /ui/prefs`（仅四键、仅 `prefs.json`，写仍由 `src/daemon/prefs.js` 独占；不计入 AC-39 的三个数字）；AC-39 架构检查的两处名单字面同步追加 `/ui/prefs`。测试接缝 `/__test__/` 前缀规则不变。",
+      "expected": "需求 v14 把 /ui/prefs 纳入 D-1 名单（D-58）；实现按 D-42/D-51 授权仅写 prefs 四键、不计入三个数字"
+    }
+  ]
+}
