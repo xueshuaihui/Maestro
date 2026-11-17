@@ -1,0 +1,54 @@
+{
+  "ac": "AC-20",
+  "title": "角色详情：契约要点与技能引用",
+  "face": "资产库 / 详情 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2a829da",
+  "startedAt": "2026-11-17T15:29:26.748Z",
+  "finishedAt": "2026-11-17T15:29:27.915Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 10,
+    "ok": 10,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "assets.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 10,
+        "pass": 10,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"worktree|versioned|snapshot\" desktop/ui/assets/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "逐字断言由 test/wp14/assets.test.js 的 AC-20 用例承载（详情字段透传、missing-skill 标缺失、reason 与 src/cli/roles.js detailOf 同一函数）；A-5 角色详情块逐字见 requirement 附录 A-5，ui-views.test.js「A-5: detail lines render fixed order with missing markers」复核「缺失/校验」渲染。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-20"
+}

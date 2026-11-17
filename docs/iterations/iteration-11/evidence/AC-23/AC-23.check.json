@@ -1,0 +1,98 @@
+{
+  "ac": "AC-23",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-23",
+    "title": "校验不通过的资产可浏览并标注原因",
+    "given": "`/tmp/maestro-i11-assets-invalid` 项目根，一个角色引用了不存在的技能、一个技能正文为空、一个工作流有悬空边；`NODE_ENV=test`。",
+    "when": "依次打开三个分页与三条详情。",
+    "then": [
+      "三条都出现在列表里并标\"不通过\"；详情给出各自原因（与 CLI `validate` 原文一致）；其它资产照常可用；界面不崩溃、不隐藏坏项。"
+    ],
+    "jijian": "`test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js`，断言三条 `status === '不通过'`、原因字符串与 CLI 输出逐字相同、列表条数未因坏项减少；`# fail 0`。",
+    "fixture": "三个坏资产同时写入，再用 `orch role validate` / `skill validate` / `workflow validate` 取原文对照。",
+    "archText": "坏资产不得被过滤出列表；`grep -REn \"filter.*valid\" desktop/ui/assets/` 必须**零命中（exit 1）**。",
+    "refs": "BR-14, BR-32",
+    "risk": "中（隐藏坏资产会让人以为它不存在）"
+  },
+  "checks": [
+    {
+      "text": "机检 assets.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=不可解析：那一行标不可读，其余照常\n  ---\n  duration_ms: 42.535698\n  type: 'test'\n  ...\n# Subtest: 未知 kind 与未知 id 按找不到处理，不抛错\nok 10 - 未知 kind 与未知 id 按找不到处理，不抛错\n  ---\n  duration_ms: 11.492003\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 841.946674\n",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # tests 10",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-23 架构：坏资产不得被过滤出列表，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"filter.*valid\" desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "AC-23 三条坏资产照常出现在列表并标不通过（角色缺技能/技能空正文/工作流悬空边）",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）",
+      "expected": "三条 status === 不通过；列表条数未因坏项减少"
+    },
+    {
+      "text": "A-5 角色原因逐字「引用的技能不存在：missing-skill」（期望逐字 \"引用的技能不存在：missing-skill\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"引用的技能不存在：missing-skill\"",
+      "expected": "\"引用的技能不存在：missing-skill\""
+    },
+    {
+      "text": "A-5 技能原因逐字「技能正文为空：empty-skill」（期望逐字 \"技能正文为空：empty-skill\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"技能正文为空：empty-skill\"",
+      "expected": "\"技能正文为空：empty-skill\""
+    },
+    {
+      "text": "A-5 工作流原因逐字「边不合法：endpoint: T-001->T-009」（期望逐字 \"边不合法：endpoint: T-001->T-009\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"边不合法：endpoint: T-001->T-009\"",
+      "expected": "\"边不合法：endpoint: T-001->T-009\""
+    },
+    {
+      "text": "详情给出各自原因且与 CLI 输出逐字相同（reason/reasons 同源），界面不崩溃不隐藏",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # fail 0",
+      "expected": "三条 detail.reason 与 orch validate 原文逐字；counts.total === builtin + project"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "三条都出现在列表里并标\"不通过\"；详情给出各自原因（与 CLI `validate` 原文一致）；其它资产照常可用；界面不崩溃、不隐藏坏项。",
+      "expected": "三条都出现在列表里并标\"不通过\"；详情给出各自原因（与 CLI `validate` 原文一致）；其它资产照常可用；界面不崩溃、不隐藏坏项。"
+    }
+  ]
+}

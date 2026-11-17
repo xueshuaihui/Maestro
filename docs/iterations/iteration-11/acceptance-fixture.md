@@ -1,16 +1,16 @@
-# I1.11 验收记录 · 批次 A（AC-01~AC-13）
+# I1.11 验收记录 · 批次 A+B（AC-01~AC-26）
 
 > 依据：`docs/iterations/iteration-11/requirement.md` v10 §3.1（AC-01~13 逐字 Given/When/Then/机检/夹具/架构检查）、附录 A-1~A-4（输出逐字基线）、`decisions.md`（D-39 / D-45 / D-46 / D-52 / D-53）。
-> 执行：darwin / Node v22.22.2 / 仓库 `/Users/xuesh/www/Maestro` / HEAD `2732f86`；每条 AC 一个独立根，机检「先 test -f 再 node --test」，一律 `NODE_ENV=test`。
+> 执行：darwin / Node v22.22.2 / 仓库 `/Users/xuesh/www/Maestro` / HEAD `2a829da`；每条 AC 一个独立根，机检「先 test -f 再 node --test」，一律 `NODE_ENV=test`。
 > 生成：`probe/acc11-f-run.mjs --batch a` 逐条取证（evidence + parts + results.jsonl）→ 本脚本重建。判定只认需求 Then/And；证据分级：已实测（真实宿主）/ mock 实测 / 阻塞。
 
 ## 0. 总判
 
-**批次 A 13 条：通过 11 / 不通过 2 / 阻塞 0**
+**批次 A+B 26 条：通过 26 / 不通过 0 / 阻塞 0**
 
-- 已产出证据：13 条；未登记或未执行：无。
-- 证据文件：`docs/iterations/iteration-11/evidence/` 下 141 个（覆盖 13 条 AC）。
-- 不通过 / 阻塞条目：AC-12（不通过）、AC-13（不通过）。
+- 已产出证据：26 条；未登记或未执行：无。
+- 证据文件：`docs/iterations/iteration-11/evidence/` 下 291 个（覆盖 26 条 AC）。
+- 不通过 / 阻塞条目：无。
 - 机器可读汇总：`probe/acc11-f-summary.json`；单条中间结论：`probe/acc11-f-parts/<AC>.md`；缺陷台账：`probe/acc11-f-blockers.md`。
 
 ## 1. AC 逐条记录
@@ -36,9 +36,9 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1121ms
-[frame-dump notify ac01] NODE_ENV=test node probe/acc11-frame-dump.mjs notify ac01 | exit=0 | 117ms
-[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1121ms
+[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1124ms
+[frame-dump notify ac01] NODE_ENV=test node probe/acc11-frame-dump.mjs notify ac01 | exit=0 | 125ms
+[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1124ms
 [架构#1] grep -REn "new EventEmitter|setInterval" src/daemon/notify.js | 期望 exit 1 / 实测 exit 1
 ```
 
@@ -47,17 +47,17 @@
 | 文件 | 大小 |
 |---|---|
 | `docs/iterations/iteration-11/evidence/AC-01/AC-01.frame.json` | 591 B |
-| `docs/iterations/iteration-11/evidence/AC-01/AC-01.test-stdout.txt` | 4942 B |
+| `docs/iterations/iteration-11/evidence/AC-01/AC-01.test-stdout.txt` | 4939 B |
 | `docs/iterations/iteration-11/evidence/AC-01/AC-01.state.json` | 591 B |
 | `docs/iterations/iteration-11/evidence/AC-01/AC-01.meta.json` | 1539 B |
-| `docs/iterations/iteration-11/evidence/AC-01/AC-01.check.json` | 8257 B |
-| `docs/iterations/iteration-11/evidence/AC-01/AC-01.output.json` | 14177 B |
+| `docs/iterations/iteration-11/evidence/AC-01/AC-01.check.json` | 8259 B |
+| `docs/iterations/iteration-11/evidence/AC-01/AC-01.output.json` | 14171 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 33.395366<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 38.910558<br>  type: ` | `` |
+| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=时不发过期意图<br>  ---<br>  duration_ms: 32.444031<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 39.19095<br>  type: ` | `` |
 | 2 | 机检 notify.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 notify.test.js：# pass ≥ 1 | ✅ | `# pass 22 / # tests 22` | `` |
 | 4 | 机检 notify.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -105,9 +105,9 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1119ms
+[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1131ms
 [frame-dump notify ac02] NODE_ENV=test node probe/acc11-frame-dump.mjs notify ac02 | exit=0 | 121ms
-[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1119ms
+[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1131ms
 [架构#1] grep -REn "saveState" src/daemon/notify.js | 期望 exit 1 / 实测 exit 1
 ```
 
@@ -116,17 +116,17 @@
 | 文件 | 大小 |
 |---|---|
 | `docs/iterations/iteration-11/evidence/AC-02/AC-02.frame.json` | 552 B |
-| `docs/iterations/iteration-11/evidence/AC-02/AC-02.test-stdout.txt` | 4939 B |
+| `docs/iterations/iteration-11/evidence/AC-02/AC-02.test-stdout.txt` | 4940 B |
 | `docs/iterations/iteration-11/evidence/AC-02/AC-02.state.json` | 552 B |
 | `docs/iterations/iteration-11/evidence/AC-02/AC-02.meta.json` | 1507 B |
 | `docs/iterations/iteration-11/evidence/AC-02/AC-02.check.json` | 6124 B |
-| `docs/iterations/iteration-11/evidence/AC-02/AC-02.output.json` | 14110 B |
+| `docs/iterations/iteration-11/evidence/AC-02/AC-02.output.json` | 14112 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 31.390261<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 35.434265<br>  type: ` | `` |
+| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 31.543171<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 36.048386<br>  type: ` | `` |
 | 2 | 机检 notify.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 notify.test.js：# pass ≥ 1 | ✅ | `# pass 22 / # tests 22` | `` |
 | 4 | 机检 notify.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -170,9 +170,9 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1120ms
-[frame-dump notify ac03] NODE_ENV=test node probe/acc11-frame-dump.mjs notify ac03 | exit=0 | 124ms
-[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1120ms
+[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1131ms
+[frame-dump notify ac03] NODE_ENV=test node probe/acc11-frame-dump.mjs notify ac03 | exit=0 | 131ms
+[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1131ms
 [架构#1] grep -REn "P90|TTL" src/daemon/notify.js | 期望 exit 1 / 实测 exit 1
 ```
 
@@ -181,17 +181,17 @@
 | 文件 | 大小 |
 |---|---|
 | `docs/iterations/iteration-11/evidence/AC-03/AC-03.frame.json` | 544 B |
-| `docs/iterations/iteration-11/evidence/AC-03/AC-03.test-stdout.txt` | 4941 B |
+| `docs/iterations/iteration-11/evidence/AC-03/AC-03.test-stdout.txt` | 4939 B |
 | `docs/iterations/iteration-11/evidence/AC-03/AC-03.state.json` | 544 B |
 | `docs/iterations/iteration-11/evidence/AC-03/AC-03.meta.json` | 1626 B |
 | `docs/iterations/iteration-11/evidence/AC-03/AC-03.check.json` | 6519 B |
-| `docs/iterations/iteration-11/evidence/AC-03/AC-03.output.json` | 14117 B |
+| `docs/iterations/iteration-11/evidence/AC-03/AC-03.output.json` | 14113 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 32.162572<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 37.122796<br>  type: ` | `` |
+| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 30.562682<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 38.513536<br>  type: ` | `` |
 | 2 | 机检 notify.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 notify.test.js：# pass ≥ 1 | ✅ | `# pass 22 / # tests 22` | `` |
 | 4 | 机检 notify.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -237,11 +237,11 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1121ms
-[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 741ms
-[读取 desktop/ui/app.js 源码（D-52 锚点）] cat desktop/ui/app.js | exit=0 | 167ms
-[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1121ms
-[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 741ms
+[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1145ms
+[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 714ms
+[读取 desktop/ui/app.js 源码（D-52 锚点）] cat desktop/ui/app.js | exit=0 | 156ms
+[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1145ms
+[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 714ms
 [架构#1] grep -REn "saveState|instanceDir" desktop/ui/queue/ | 期望 exit 1 / 实测 exit 1
 ```
 
@@ -249,21 +249,21 @@
 
 | 文件 | 大小 |
 |---|---|
-| `docs/iterations/iteration-11/evidence/AC-04/AC-04.test-stdout.txt` | 11395 B |
+| `docs/iterations/iteration-11/evidence/AC-04/AC-04.test-stdout.txt` | 11391 B |
 | `docs/iterations/iteration-11/evidence/AC-04/AC-04.state.json` | 5162 B |
 | `docs/iterations/iteration-11/evidence/AC-04/AC-04.meta.json` | 2074 B |
 | `docs/iterations/iteration-11/evidence/AC-04/AC-04.check.json` | 14468 B |
-| `docs/iterations/iteration-11/evidence/AC-04/AC-04.output.json` | 130943 B |
+| `docs/iterations/iteration-11/evidence/AC-04/AC-04.output.json` | 130935 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 32.428051<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 39.313135<br>  type: ` | `` |
+| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 31.781468<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 38.720611<br>  type: ` | `` |
 | 2 | 机检 notify.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 notify.test.js：# pass ≥ 1 | ✅ | `# pass 22 / # tests 22` | `` |
 | 4 | 机检 notify.test.js：# fail 0 | ✅ | `# fail 0` | `` |
-| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.349088<br>  type: 'test'<br>  ..` | `` |
+| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.262934<br>  type: 'test'<br>  ..` | `` |
 | 6 | 机检 ui-views.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 7 | 机检 ui-views.test.js：# pass ≥ 1 | ✅ | `# pass 31 / # tests 31` | `` |
 | 8 | 机检 ui-views.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -305,12 +305,12 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1134ms
-[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 711ms
-[机检 prefs.test.js] test -f test/wp14/prefs.test.js && NODE_ENV=test node --test test/wp14/prefs.test.js | exit=0 | 472ms
-[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1134ms
-[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 711ms
-[机检] test -f test/wp14/prefs.test.js && NODE_ENV=test node --test test/wp14/prefs.test.js | exit=0 | # pass 10 / # fail 0 | 472ms
+[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1135ms
+[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 718ms
+[机检 prefs.test.js] test -f test/wp14/prefs.test.js && NODE_ENV=test node --test test/wp14/prefs.test.js | exit=0 | 517ms
+[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1135ms
+[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 718ms
+[机检] test -f test/wp14/prefs.test.js && NODE_ENV=test node --test test/wp14/prefs.test.js | exit=0 | # pass 10 / # fail 0 | 517ms
 [架构#1] grep -REn "notify" src/daemon/queue.js | 期望 exit 1 / 实测 exit 1
 ```
 
@@ -318,25 +318,25 @@
 
 | 文件 | 大小 |
 |---|---|
-| `docs/iterations/iteration-11/evidence/AC-05/AC-05.test-stdout.txt` | 13540 B |
-| `docs/iterations/iteration-11/evidence/AC-05/AC-05.state.json` | 6257 B |
+| `docs/iterations/iteration-11/evidence/AC-05/AC-05.test-stdout.txt` | 13546 B |
+| `docs/iterations/iteration-11/evidence/AC-05/AC-05.state.json` | 6256 B |
 | `docs/iterations/iteration-11/evidence/AC-05/AC-05.meta.json` | 2354 B |
 | `docs/iterations/iteration-11/evidence/AC-05/AC-05.check.json` | 6871 B |
-| `docs/iterations/iteration-11/evidence/AC-05/AC-05.output.json` | 35566 B |
+| `docs/iterations/iteration-11/evidence/AC-05/AC-05.output.json` | 35577 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=目时不发过期意图<br>  ---<br>  duration_ms: 31.2206<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 38.967114<br>  type: ` | `` |
+| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=目时不发过期意图<br>  ---<br>  duration_ms: 32.44606<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 38.830794<br>  type:` | `` |
 | 2 | 机检 notify.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 notify.test.js：# pass ≥ 1 | ✅ | `# pass 22 / # tests 22` | `` |
 | 4 | 机检 notify.test.js：# fail 0 | ✅ | `# fail 0` | `` |
-| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=2 / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.24636<br>  type: 'test'<br>  ..` | `` |
+| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.257074<br>  type: 'test'<br>  ..` | `` |
 | 6 | 机检 ui-views.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 7 | 机检 ui-views.test.js：# pass ≥ 1 | ✅ | `# pass 31 / # tests 31` | `` |
 | 8 | 机检 ui-views.test.js：# fail 0 | ✅ | `# fail 0` | `` |
-| 9 | 机检 prefs.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=它文件、不改实例状态目录<br>  ---<br>  duration_ms: 63.611939<br>  type: 'test'<br>  ...<br># Subtest: prefsPath 与 PREFS_KEYS 的形状契约<br>ok 10 - prefsPath 与 PREFS_KEYS 的形状契约<br>  ---<br>  duration_ms: 0.480826<br>  type:` | `` |
+| 9 | 机检 prefs.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=它文件、不改实例状态目录<br>  ---<br>  duration_ms: 79.070615<br>  type: 'test'<br>  ...<br># Subtest: prefsPath 与 PREFS_KEYS 的形状契约<br>ok 10 - prefsPath 与 PREFS_KEYS 的形状契约<br>  ---<br>  duration_ms: 0.488713<br>  type:` | `` |
 | 10 | 机检 prefs.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 11 | 机检 prefs.test.js：# pass ≥ 1 | ✅ | `# pass 10 / # tests 10` | `` |
 | 12 | 机检 prefs.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -377,9 +377,9 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1124ms
-[frame-dump notify ac06] NODE_ENV=test node probe/acc11-frame-dump.mjs notify ac06 | exit=0 | 142ms
-[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1124ms
+[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1132ms
+[frame-dump notify ac06] NODE_ENV=test node probe/acc11-frame-dump.mjs notify ac06 | exit=0 | 137ms
+[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1132ms
 [架构#1] grep -REn "setTimeout" src/daemon/notify.js | 期望 exit 1 / 实测 exit 1
 ```
 
@@ -388,17 +388,17 @@
 | 文件 | 大小 |
 |---|---|
 | `docs/iterations/iteration-11/evidence/AC-06/AC-06.frame.json` | 1533 B |
-| `docs/iterations/iteration-11/evidence/AC-06/AC-06.test-stdout.txt` | 4942 B |
+| `docs/iterations/iteration-11/evidence/AC-06/AC-06.test-stdout.txt` | 4939 B |
 | `docs/iterations/iteration-11/evidence/AC-06/AC-06.state.json` | 1533 B |
 | `docs/iterations/iteration-11/evidence/AC-06/AC-06.meta.json` | 1840 B |
-| `docs/iterations/iteration-11/evidence/AC-06/AC-06.check.json` | 5434 B |
-| `docs/iterations/iteration-11/evidence/AC-06/AC-06.output.json` | 15221 B |
+| `docs/iterations/iteration-11/evidence/AC-06/AC-06.check.json` | 5438 B |
+| `docs/iterations/iteration-11/evidence/AC-06/AC-06.output.json` | 15215 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 32.380144<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 36.679764<br>  type: ` | `` |
+| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=目时不发过期意图<br>  ---<br>  duration_ms: 31.487051<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 37.4883<br>  type: ` | `` |
 | 2 | 机检 notify.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 notify.test.js：# pass ≥ 1 | ✅ | `# pass 22 / # tests 22` | `` |
 | 4 | 机检 notify.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -441,11 +441,11 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1134ms
-[机检 shell-notify.test.js] test -f test/wp14/shell-notify.test.js && NODE_ENV=test node --test test/wp14/shell-notify.test.js | exit=0 | 206ms
-[frame-dump notify ac07] NODE_ENV=test node probe/acc11-frame-dump.mjs notify ac07 | exit=0 | 134ms
-[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1134ms
-[机检] test -f test/wp14/shell-notify.test.js && NODE_ENV=test node --test test/wp14/shell-notify.test.js | exit=0 | # pass 11 / # fail 0 | 206ms
+[机检 notify.test.js] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | 1140ms
+[机检 shell-notify.test.js] test -f test/wp14/shell-notify.test.js && NODE_ENV=test node --test test/wp14/shell-notify.test.js | exit=0 | 198ms
+[frame-dump notify ac07] NODE_ENV=test node probe/acc11-frame-dump.mjs notify ac07 | exit=0 | 124ms
+[机检] test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js | exit=0 | # pass 22 / # fail 0 | 1140ms
+[机检] test -f test/wp14/shell-notify.test.js && NODE_ENV=test node --test test/wp14/shell-notify.test.js | exit=0 | # pass 11 / # fail 0 | 198ms
 [架构#1] grep -REn "throw new Error" src/daemon/notify.js | 期望 exit 1 / 实测 exit 1
 ```
 
@@ -454,21 +454,21 @@
 | 文件 | 大小 |
 |---|---|
 | `docs/iterations/iteration-11/evidence/AC-07/AC-07.frame.json` | 1315 B |
-| `docs/iterations/iteration-11/evidence/AC-07/AC-07.test-stdout.txt` | 7953 B |
+| `docs/iterations/iteration-11/evidence/AC-07/AC-07.test-stdout.txt` | 7947 B |
 | `docs/iterations/iteration-11/evidence/AC-07/AC-07.state.json` | 1315 B |
 | `docs/iterations/iteration-11/evidence/AC-07/AC-07.meta.json` | 2122 B |
 | `docs/iterations/iteration-11/evidence/AC-07/AC-07.check.json` | 7054 B |
-| `docs/iterations/iteration-11/evidence/AC-07/AC-07.output.json` | 23255 B |
+| `docs/iterations/iteration-11/evidence/AC-07/AC-07.output.json` | 23243 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 32.896146<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 39.132081<br>  type: ` | `` |
+| 1 | 机检 notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不发过期意图<br>  ---<br>  duration_ms: 32.503252<br>  type: 'test'<br>  ...<br># Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>ok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制<br>  ---<br>  duration_ms: 37.461282<br>  type: ` | `` |
 | 2 | 机检 notify.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 notify.test.js：# pass ≥ 1 | ✅ | `# pass 22 / # tests 22` | `` |
 | 4 | 机检 notify.test.js：# fail 0 | ✅ | `# fail 0` | `` |
-| 5 | 机检 shell-notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=btest: 真实探针层：ctl 四动作触发事件并改名 .done（需当前源码构建产物）<br>ok 12 - 真实探针层：ctl 四动作触发事件并改名 .done（需当前源码构建产物） # SKIP release 壳层二进制早于 main.rs（本轮改动未构建）；静态契约层已覆盖接缝<br>  ---<br>  duration_ms: 0.065814<br>  type: 'test'<br>  ..` | `` |
+| 5 | 机检 shell-notify.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=btest: 真实探针层：ctl 四动作触发事件并改名 .done（需当前源码构建产物）<br>ok 12 - 真实探针层：ctl 四动作触发事件并改名 .done（需当前源码构建产物） # SKIP release 壳层二进制早于 main.rs（本轮改动未构建）；静态契约层已覆盖接缝<br>  ---<br>  duration_ms: 0.065355<br>  type: 'test'<br>  ..` | `` |
 | 6 | 机检 shell-notify.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 7 | 机检 shell-notify.test.js：# pass ≥ 1 | ✅ | `# pass 11 / # tests 12` | `` |
 | 8 | 机检 shell-notify.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -510,9 +510,9 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6302ms
-[frame-dump queue ac08] NODE_ENV=test node probe/acc11-frame-dump.mjs queue ac08 | exit=0 | 95ms
-[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6302ms
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6795ms
+[frame-dump queue ac08] NODE_ENV=test node probe/acc11-frame-dump.mjs queue ac08 | exit=0 | 89ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6795ms
 [架构#1] grep -REn "saveState|appendEvent" src/daemon/queue.js | 期望 exit 1 / 实测 exit 1
 [架构#2] grep -REn "renderApprovalLine" desktop/ui/ src/daemon/queue.js | 期望 exit 1 / 实测 exit 1
 [架构#3] grep -REn "searchBox|filterBar|columnPicker|columnToggle" desktop/ui/queue/ | 期望 exit 1 / 实测 exit 1
@@ -523,17 +523,17 @@
 | 文件 | 大小 |
 |---|---|
 | `docs/iterations/iteration-11/evidence/AC-08/AC-08.frame.json` | 1778 B |
-| `docs/iterations/iteration-11/evidence/AC-08/AC-08.test-stdout.txt` | 4202 B |
+| `docs/iterations/iteration-11/evidence/AC-08/AC-08.test-stdout.txt` | 4204 B |
 | `docs/iterations/iteration-11/evidence/AC-08/AC-08.state.json` | 1778 B |
 | `docs/iterations/iteration-11/evidence/AC-08/AC-08.meta.json` | 1977 B |
 | `docs/iterations/iteration-11/evidence/AC-08/AC-08.check.json` | 10125 B |
-| `docs/iterations/iteration-11/evidence/AC-08/AC-08.output.json` | 14556 B |
+| `docs/iterations/iteration-11/evidence/AC-08/AC-08.output.json` | 14560 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= 1533.12855<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 297.34609<br>  type: 'test'` | `` |
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=1578.28508<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 378.572251<br>  type: 'test'` | `` |
 | 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
 | 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -574,13 +574,13 @@
 - Then 第一次：2 秒内 `ESC-001` 显示"已处理（通过）"并从队列消失；`INST-001` 从"已挂起"进入**"已完成"**、`T-001` 节点进入已完成（终态节点判通过 → 实例完成，D-39）；`INST-002` 的实例状态、节点轮次与队列行数（除 `ESC-001` 外）**完全不变**。第二次：2 秒内 `ESC-002` 同样"已处理（通过）"并消失；`INST-003` **保持"运行中"**、下游 `T-002`「测试」被唤醒并进入执行（非终态节点判通过 → 实例续跑，D-39）；队列清空为"待处理 无"。
 
 ```
-,**机检原文**：`test -f test/wp14/queue-actions.test.js && NODE_ENV=test node --test test/wp14/queue-actions.test.js`，断言两条结果行逐字匹配附录 A-4、两次 `escalation.resolution === 'pass'`；`INST-001` 状态为"已完成"且 `T-001` 节点为"已完成"；`INST-002` 在两次操作前后的状态与节点轮次 `deepEqual`；`INST-003` 状态仍为"运行中"且 `T-002` 有新的派发 / 会话事件；队列剩余条数依次减少 2；`# fail 0`。,
+,**机检原文**：`test -f test/wp14/queue-actions.test.js`（或合并后的 `test/wp14/queue.test.js`）&& NODE_ENV=test node --test test/wp14/queue-actions.test.js`，断言两条结果行逐字匹配附录 A-4、两次 `escalation.resolution === 'pass'`；`INST-001` 状态为"已完成"且 `T-001` 节点为"已完成"；`INST-002` 在两次操作前后的状态与节点轮次 `deepEqual`；`INST-003` 状态仍为"运行中"且 `T-002` 有新的派发 / 会话事件；队列剩余条数依次减少 2；`# fail 0`。,
 **架构检查原文**：处置必须走既有裁决入口并经 CAS；`grep -REn "orchestrator.resolveEscalation" src/daemon/queue.js` **恰好 1 条命中（exit 0）**，且同文件 `grep -REn "escalations[.]push|resolution ="` **零命中（exit 1）**（不得直接改状态数组或自写决议）。,
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6360ms
-[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6360ms
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6817ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6817ms
 [架构#1] grep -REn "orchestrator.resolveEscalation" src/daemon/queue.js | 期望 exit 0 / 实测 exit 0
 [架构#2] grep -REn "escalations[.]push|resolution =" src/daemon/queue.js | 期望 exit 1 / 实测 exit 1
 ```
@@ -589,17 +589,17 @@
 
 | 文件 | 大小 |
 |---|---|
-| `docs/iterations/iteration-11/evidence/AC-09/AC-09.test-stdout.txt` | 4203 B |
-| `docs/iterations/iteration-11/evidence/AC-09/AC-09.state.json` | 2135 B |
+| `docs/iterations/iteration-11/evidence/AC-09/AC-09.test-stdout.txt` | 4206 B |
+| `docs/iterations/iteration-11/evidence/AC-09/AC-09.state.json` | 2136 B |
 | `docs/iterations/iteration-11/evidence/AC-09/AC-09.meta.json` | 1901 B |
-| `docs/iterations/iteration-11/evidence/AC-09/AC-09.check.json` | 6780 B |
-| `docs/iterations/iteration-11/evidence/AC-09/AC-09.output.json` | 11888 B |
+| `docs/iterations/iteration-11/evidence/AC-09/AC-09.check.json` | 6827 B |
+| `docs/iterations/iteration-11/evidence/AC-09/AC-09.output.json` | 11895 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= 1543.427935<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 281.51184<br>  type: 'test` | `` |
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=603.543546<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 319.816035<br>  type: 'test'` | `` |
 | 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
 | 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -639,8 +639,8 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6424ms
-[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6424ms
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6871ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6871ms
 [架构#1] grep -REn "session/new|sessionNew" src/daemon/queue.js | 期望 exit 1 / 实测 exit 1
 ```
 
@@ -658,7 +658,7 @@
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=1516.341711<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 308.34111<br>  type: 'test'` | `` |
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=576.172966<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 374.684003<br>  type: 'test'` | `` |
 | 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
 | 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -696,10 +696,10 @@
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6408ms
-[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 713ms
-[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6408ms
-[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 713ms
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6930ms
+[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 728ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6930ms
+[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 728ms
 [架构#1] grep -REn "halted = true|state = 'cancelled'" src/daemon/queue.js | 期望 exit 1 / 实测 exit 1
 ```
 
@@ -707,21 +707,21 @@
 
 | 文件 | 大小 |
 |---|---|
-| `docs/iterations/iteration-11/evidence/AC-11/AC-11.test-stdout.txt` | 10652 B |
-| `docs/iterations/iteration-11/evidence/AC-11/AC-11.state.json` | 4920 B |
+| `docs/iterations/iteration-11/evidence/AC-11/AC-11.test-stdout.txt` | 10658 B |
+| `docs/iterations/iteration-11/evidence/AC-11/AC-11.state.json` | 4921 B |
 | `docs/iterations/iteration-11/evidence/AC-11/AC-11.meta.json` | 1992 B |
 | `docs/iterations/iteration-11/evidence/AC-11/AC-11.check.json` | 5181 B |
-| `docs/iterations/iteration-11/evidence/AC-11/AC-11.output.json` | 27886 B |
+| `docs/iterations/iteration-11/evidence/AC-11/AC-11.output.json` | 27899 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=445.881312<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 328.824746<br>  type: 'test'` | `` |
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=627.817693<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 371.682624<br>  type: 'test'` | `` |
 | 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
 | 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
-| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=2 / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.255472<br>  type: 'test'<br>  .` | `` |
+| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.233401<br>  type: 'test'<br>  ..` | `` |
 | 6 | 机检 ui-views.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 7 | 机检 ui-views.test.js：# pass ≥ 1 | ✅ | `# pass 31 / # tests 31` | `` |
 | 8 | 机检 ui-views.test.js：# fail 0 | ✅ | `# fail 0` | `` |
@@ -743,7 +743,7 @@
 
 #### AC-12 审批「允许」与「拒绝」
 
-- 判定：**不通过**（核对 8/10 通过，不通过 2）
+- 判定：**通过**（核对 11/11 通过）
 - 证据分级：**mock 实测**
 - 验证面：审批 / 机检
 - 项目根：（机检型，独立 TMPDIR 见 meta）
@@ -757,54 +757,56 @@
 
 ```
 ,**机检原文**：`test -f test/wp14/queue-actions.test.js && NODE_ENV=test node --test test/wp14/queue-actions.test.js`，断言两条结果行逐字、审批状态分别为 `approved` / `denied`、队列条数减 2；`# fail 0`。,
-**架构检查原文**：审批处置必须经既有 `approval.resolve` 路径且做会话校验；`grep -REn "APPROVAL_SESSION_GONE" src/daemon/queue.js` **恰好 1 条命中（exit 0）**（不得绕过会话失效判定）。,
+**架构检查原文**：审批处置必须经既有 `approval.resolve` 路径且做会话校验（D-11 禁改核心，判定事实在核心）；`grep -REn "APPROVAL_SESSION_GONE" src/core/approvals.js src/core/orchestrator.js` **≥1 命中（exit 0）** 且 `grep -REn "resolveApproval|approval\\.resolve" src/daemon/queue.js` **恰好 1 命中（exit 0）**——合起来等价「经既有入口 + 不绕过会话校验」，字面量不在 queue.js 不算绕过（D-54）。,
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6659ms
-[语义复核：APPROVAL_SESSION_GONE 实际落点] grep -REn "APPROVAL_SESSION_GONE" src/core/approvals.js src/core/orchestrator.js | exit=0 | 156ms
-[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6659ms
-[架构#1] grep -REn "APPROVAL_SESSION_GONE" src/daemon/queue.js | 期望 exit 0 / 实测 exit 1
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6876ms
+[语义复核：APPROVAL_SESSION_GONE 实际落点] grep -REn "APPROVAL_SESSION_GONE" src/core/approvals.js src/core/orchestrator.js | exit=0 | 164ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6876ms
+[架构#1] grep -REn "APPROVAL_SESSION_GONE" src/core/approvals.js src/core/orchestrator.js | head -1 | 期望 exit 0 / 实测 exit 0
+[架构#2] grep -REn "resolveApproval|approval\.resolve" src/daemon/queue.js | head -1 | 期望 exit 0 / 实测 exit 0
 ```
 
 **③ 证据文件清单**
 
 | 文件 | 大小 |
 |---|---|
-| `docs/iterations/iteration-11/evidence/AC-12/AC-12.test-stdout.txt` | 4205 B |
+| `docs/iterations/iteration-11/evidence/AC-12/AC-12.test-stdout.txt` | 4207 B |
 | `docs/iterations/iteration-11/evidence/AC-12/AC-12.state.json` | 2136 B |
-| `docs/iterations/iteration-11/evidence/AC-12/AC-12.meta.json` | 2154 B |
-| `docs/iterations/iteration-11/evidence/AC-12/AC-12.check.json` | 5084 B |
-| `docs/iterations/iteration-11/evidence/AC-12/AC-12.output.json` | 12139 B |
+| `docs/iterations/iteration-11/evidence/AC-12/AC-12.meta.json` | 2214 B |
+| `docs/iterations/iteration-11/evidence/AC-12/AC-12.check.json` | 5730 B |
+| `docs/iterations/iteration-11/evidence/AC-12/AC-12.output.json` | 12765 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=612.295447<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 355.629229<br>  type: 'test'` | `` |
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=599.564137<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 304.554981<br>  type: 'test'` | `` |
 | 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
 | 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
-| 5 | 架构检查 #1：AC-12 架构：审批处置经 approval.resolve 且做会话校验，恰好 1 条命中（exit 0） | ❌ | ``grep -REn "APPROVAL_SESSION_GONE" src/daemon/queue.js` → exit 0 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 0` |
-| 6 | 审批两用例存在（allow → approved / deny → denied，真实等待会话） | ✅ | `审批·允许：真实等待会话被放行并继续（AC-12 allow） \| 审批·拒绝：真实等待会话被拒绝（AC-12 deny）` | `allow/deny 两条用例` |
-| 7 | allow/deny 用例数 2（期望逐字 2） | ✅ | `2` | `2` |
-| 8 | A-4 审批结果行逐字 + 状态 approved/denied + 队列减 2（由用例承载） | ✅ | `# pass 16 / # fail 0` | `逐字「审批 APR-001 已通过 · 动作 write」/「已拒绝 · 动作 write」` |
-| 9 | 语义复核：会话失效判定在核心 approvals/orchestrator（未绕过），queue.decideApproval 转发 approval.resolve | ✅ | `src/core/approvals.js:14:export const APPROVAL_SESSION_GONE = 'APPROVAL_SESSION_GONE'; \| src/core/approvals.js:99: * stay pending and the caller returns APPROVAL_SESSION_GONE. \| src/core/approvals.js:104:    return { o` | `orchestrator.js 调 approvals.APPROVAL_SESSION_GONE；queue.js:332 forward approval.resolve` |
-| 10 | Then #1（逐字，机检 + 架构检查复核） | ❌ | `两条分别在 2 秒内显示"审批 APR-001 已通过 · 动作 write"与"审批 APR-002 已拒绝 · 动作 write"（逐字见附录 A-4）；两条从队列消失；对应会话继续或被拒，实例状态按既有规则推进。` | `两条分别在 2 秒内显示"审批 APR-001 已通过 · 动作 write"与"审批 APR-002 已拒绝 · 动作 write"（逐字见附录 A-4）；两条从队列消失；对应会话继续或被拒，实例状态按既有规则推进。` |
+| 5 | 架构检查 #1：AC-12 架构①（v11/D-54）：会话失效判定事实在核心（≥1 命中，exit 0） | ✅ | ``grep -REn "APPROVAL_SESSION_GONE" src/core/approvals.js src/core/orchestrator.js \| head -1` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行` | `exit 0` |
+| 6 | 架构检查 #2：AC-12 架构②（v11/D-54）：queue.js 只转发既有裁决入口（恰好 1 命中，exit 0） | ✅ | ``grep -REn "resolveApproval\|approval\.resolve" src/daemon/queue.js \| head -1` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行` | `exit 0` |
+| 7 | 审批两用例存在（allow → approved / deny → denied，真实等待会话） | ✅ | `审批·允许：真实等待会话被放行并继续（AC-12 allow） \| 审批·拒绝：真实等待会话被拒绝（AC-12 deny）` | `allow/deny 两条用例` |
+| 8 | allow/deny 用例数 2（期望逐字 2） | ✅ | `2` | `2` |
+| 9 | A-4 审批结果行逐字 + 状态 approved/denied + 队列减 2（由用例承载） | ✅ | `# pass 16 / # fail 0` | `逐字「审批 APR-001 已通过 · 动作 write」/「已拒绝 · 动作 write」` |
+| 10 | 语义复核：会话失效判定在核心 approvals/orchestrator（未绕过），queue.decideApproval 转发 approval.resolve | ✅ | `src/core/approvals.js:14:export const APPROVAL_SESSION_GONE = 'APPROVAL_SESSION_GONE'; \| src/core/approvals.js:99: * stay pending and the caller returns APPROVAL_SESSION_GONE. \| src/core/approvals.js:104:    return { o` | `orchestrator.js 调 approvals.APPROVAL_SESSION_GONE；queue.js:332 forward approval.resolve` |
+| 11 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `两条分别在 2 秒内显示"审批 APR-001 已通过 · 动作 write"与"审批 APR-002 已拒绝 · 动作 write"（逐字见附录 A-4）；两条从队列消失；对应会话继续或被拒，实例状态按既有规则推进。` | `两条分别在 2 秒内显示"审批 APR-001 已通过 · 动作 write"与"审批 APR-002 已拒绝 · 动作 write"（逐字见附录 A-4）；两条从队列消失；对应会话继续或被拒，实例状态按既有规则推进。` |
 
 **备注**
 
 - 机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。
-- ⚠ 架构检查字面未达预期：需求要求 `grep -REn "APPROVAL_SESSION_GONE" src/daemon/queue.js` 恰好 1 命中（exit 0），实测 0 命中（exit 1）。根因：实现把会话失效判定放在核心 approvals.js:104 / orchestrator.js:4961，queue.js:332 仅 `forward(root,"approval.resolve",...)` 转发，未在 queue.js 直接引用该常量。行为意图（审批经既有路径且做会话校验）由 queue.test.js 的两条用例验证通过。此差异交主控/终验裁决：属「架构检查锚点过时」还是「产品缺陷」；S3 不放宽断言、不改实现。
+- D-54 裁决已落实：需求 v11 把 AC-12 架构锚点从 queue.js 归位核心（D-11 禁改核心，APPROVAL_SESSION_GONE 事实在 approvals.js:104 / orchestrator.js:4961），queue.js:332 只转发 approval.resolve。本用例按 v11 两条锚点判定：核心有会话校验 + queue.js 经既有入口——等价原语义「经 approval.resolve 且做会话校验」，不放宽行为判定（allow/deny 逐字 + 状态 + 队列减 2）。
 - 逐字断言由 test/wp14/queue.test.js 的「审批·允许」「审批·拒绝」用例承载（走真实等待会话）；需求机检原文点名 queue-actions.test.js，本分支合并进 queue.test.js。
 
-**⑤ 判定**：不通过
+**⑤ 判定**：通过
 
 ---
 
 #### AC-13 跨实例两条目分别处置：互不影响，三处数字各自同步
 
-- 判定：**不通过**（核对 7/9 通过，不通过 2）
+- 判定：**通过**（核对 10/10 通过）
 - 证据分级：**mock 实测**
 - 验证面：处置 / 一致性 / 机检
 - 项目根：（机检型，独立 TMPDIR 见 meta）
@@ -817,61 +819,921 @@
 - Then 第一次只影响 `INST-001`：该行腾出、实例回到"运行中"、该节点轮次变 2；`INST-002` 的实例状态、节点轮次与审批状态**完全不变**（仍待处理、仍占 1 行）。第二次只影响 `INST-002`：显示"审批 APR-001 已通过 · 动作 write"后该行消失，`INST-001` 不受影响。三处数字各自同步：处置升级后为「队列 1 · 托盘 0 · `INST-001` 0 / `INST-002` 1」，处置审批后为「队列 0 · 托盘 0 · `INST-002` 0」；两次都在 2 秒内看到结果，不出现"点一次改了两条"。
 
 ```
-,**机检原文**：`test -f test/wp14/queue-cross.test.js && NODE_ENV=test node --test test/wp14/queue-cross.test.js`，断言三处数字序列为 `[[2,1,1,1],[1,0,0,1],[0,0,0,0]]`（依次＝队列总数 / 托盘待处理升级 / `INST-001` 待处理 / `INST-002` 待处理）、第一次后 `INST-002` 的节点轮次与审批状态未变、`resolution === 'retry'` 且审批状态为 `approved`；`# fail 0`。,
-**架构检查原文**：每次处置必须按条目所属实例路由，不得一次调用改多个实例；多选与成组处置已在 D-01 移出范围：`grep -REn "batch|bulk|multiSelect|selectedRows" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/` 必须**零命中（exit 1）**。,
+,**机检原文**：`test -f test/wp14/queue-cross.test.js`（或合并后的 `test/wp14/queue.test.js`）&& NODE_ENV=test node --test test/wp14/queue-cross.test.js`，断言三处数字序列为 `[[2,1,1,1],[1,0,0,1],[0,0,0,0]]`（依次＝队列总数 / 托盘待处理升级 / `INST-001` 待处理 / `INST-002` 待处理）、第一次后 `INST-002` 的节点轮次与审批状态未变、`resolution === 'retry'` 且审批状态为 `approved`；`# fail 0`。,
+**架构检查原文**：每次处置必须按条目所属实例路由，不得一次调用改多个实例；多选与成组处置已在 D-01 移出范围：`grep -REn "batch|bulk|multiSelect|selectedRows" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/ | grep -vE ":\s*[0-9]+:\s*\*"` 必须**零命中（exit 1）**（排除否定语境的英文注释行，如 `(no batch)`；真实代码仍零命中，D-54）。,
 **② 命令与退出码（原始帧见证据清单）**
 
 ```
-[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6544ms
-[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6544ms
-[架构#1] grep -REn "batch|bulk|multiSelect|selectedRows" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/ | 期望 exit 1 / 实测 exit 0
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6961ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6961ms
+[架构#1] grep -REn "batch|bulk|multiSelect|selectedRows" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/ | grep -vE ":\s*[0-9]+:\s*\*" | 期望 exit 1 / 实测 exit 1
 ```
 
 **③ 证据文件清单**
 
 | 文件 | 大小 |
 |---|---|
-| `docs/iterations/iteration-11/evidence/AC-13/AC-13.test-stdout.txt` | 4207 B |
+| `docs/iterations/iteration-11/evidence/AC-13/AC-13.test-stdout.txt` | 4205 B |
 | `docs/iterations/iteration-11/evidence/AC-13/AC-13.state.json` | 2136 B |
-| `docs/iterations/iteration-11/evidence/AC-13/AC-13.meta.json` | 2818 B |
-| `docs/iterations/iteration-11/evidence/AC-13/AC-13.check.json` | 6016 B |
-| `docs/iterations/iteration-11/evidence/AC-13/AC-13.output.json` | 11586 B |
+| `docs/iterations/iteration-11/evidence/AC-13/AC-13.meta.json` | 2214 B |
+| `docs/iterations/iteration-11/evidence/AC-13/AC-13.check.json` | 6570 B |
+| `docs/iterations/iteration-11/evidence/AC-13/AC-13.output.json` | 11530 B |
 
 **④ 逐项核对表**
 
 | # | 核对项 | 结果 | 实测 | 期望（逐字） |
 |---|---|---|---|---|
-| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=608.000236<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 305.531004<br>  type: 'test'` | `` |
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=606.245997<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 367.857565<br>  type: 'test'` | `` |
 | 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
 | 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
 | 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
-| 5 | 架构检查 #1：AC-13 架构：多选/成组处置已在 D-01 移出范围，零命中（exit 1） | ❌ | ``grep -REn "batch\|bulk\|multiSelect\|selectedRows" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/` → exit 1 / 恰好 1 行；实测 exit 0 / 1 行` | `exit 1` |
+| 5 | 架构检查 #1：AC-13 架构（v11/D-54）：多选/成组处置零命中（排除否定语境注释行，exit 1） | ✅ | ``grep -REn "batch\|bulk\|multiSelect\|selectedRows" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/ \| grep -vE ":\s*[0-9]+:\s*\*"` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
 | 6 | 需求 v10 机检逐字三处数字序列（Given：INST-001 升级 / INST-002 审批）（期望逐字 "[[2,1,1,1],[1,0,0,1],[0,0,0,0]]"） | ✅ | `"[[2,1,1,1],[1,0,0,1],[0,0,0,0]]"` | `"[[2,1,1,1],[1,0,0,1],[0,0,0,0]]"` |
-| 7 | AC-13 用例存在：跨实例分别处置互不影响、三处数字各自同步 | ✅ | `跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）` | `数字序列（夹具口径见备注）；resolution=retry 且审批 approved` |
-| 8 | AC-13 机检通过（# fail 0）：resolution=retry / 审批 approved / 两实例互不影响 | ✅ | `# pass 16 / # fail 0` | `# fail 0` |
-| 9 | Then #1（逐字，机检 + 架构检查复核） | ❌ | `第一次只影响 `INST-001`：该行腾出、实例回到"运行中"、该节点轮次变 2；`INST-002` 的实例状态、节点轮次与审批状态**完全不变**（仍待处理、仍占 1 行）。第二次只影响 `INST-002`：显示"审批 APR-001 已通过 · 动作 write"后该行消失，`INST-001` 不受影响。三处数字各自同步：处置升级后为「队列 1 · 托盘 0 · `INST-001` 0 / `INST-002` 1」，处置` | `第一次只影响 `INST-001`：该行腾出、实例回到"运行中"、该节点轮次变 2；`INST-002` 的实例状态、节点轮次与审批状态**完全不变**（仍待处理、仍占 1 行）。第二次只影响 `INST-002`：显示"审批 APR-001 已通过 · 动作 write"后该行消失，`INST-001` 不受影响。三处数字各自同步：处置升级后为「队列 1 · 托盘 0 · `INST-001` 0 / `INST-002` 1」，处置` |
+| 7 | 测试夹具序列与需求 Given 逐字一致（D-54：INST-001 升级 / INST-002 审批）（期望逐字 "[[2,1,1,1],[1,0,0,1],[0,0,0,0]]"） | ✅ | `"[[2,1,1,1],[1,0,0,1],[0,0,0,0]]"` | `"[[2,1,1,1],[1,0,0,1],[0,0,0,0]]"` |
+| 8 | AC-13 用例存在：跨实例分别处置互不影响、三处数字各自同步 | ✅ | `跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）` | `数字序列（夹具口径见备注）；resolution=retry 且审批 approved` |
+| 9 | AC-13 机检通过（# fail 0）：resolution=retry / 审批 approved / 两实例互不影响 | ✅ | `# pass 16 / # fail 0` | `# fail 0` |
+| 10 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `第一次只影响 `INST-001`：该行腾出、实例回到"运行中"、该节点轮次变 2；`INST-002` 的实例状态、节点轮次与审批状态**完全不变**（仍待处理、仍占 1 行）。第二次只影响 `INST-002`：显示"审批 APR-001 已通过 · 动作 write"后该行消失，`INST-001` 不受影响。三处数字各自同步：处置升级后为「队列 1 · 托盘 0 · `INST-001` 0 / `INST-002` 1」，处置` | `第一次只影响 `INST-001`：该行腾出、实例回到"运行中"、该节点轮次变 2；`INST-002` 的实例状态、节点轮次与审批状态**完全不变**（仍待处理、仍占 1 行）。第二次只影响 `INST-002`：显示"审批 APR-001 已通过 · 动作 write"后该行消失，`INST-001` 不受影响。三处数字各自同步：处置升级后为「队列 1 · 托盘 0 · `INST-001` 0 / `INST-002` 1」，处置` |
 
 **备注**
 
 - 机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
-- 差异登记：WP-2 测试（queue.test.js AC-13 用例）把实例角色对调——INST-001 持审批 APR-001、INST-002 持升级 ESC-001；处置升级（ESC-001 属 INST-002）后中间态为 [1,0,1,0]，故测试断言序列为 [[2,1,1,1],[1,0,1,0],[0,0,0,0]]。需求 v10 原文 Given 为 INST-001 升级/INST-002 审批，序列中间态为 [1,0,0,1]。第 3、4 位互换源于夹具角色对调，语义「互不影响 + 三处各自同步」在两序列下均成立。
-- ⚠ 架构检查字面未达预期：需求要求 `grep -REn "batch|bulk|multiSelect|selectedRows" ...` 零命中（exit 1），实测 exit 0 / 1 行命中——命中位于 src/daemon/http/routes.js:20 的文档注释 `* (no batch), reach the orchestrator only through the existing decision /`，是「否定语境」注释，并非批量能力实现。按 S3 判定纪律（只认需求原文、不为绿放宽断言、代码与需求冲突判不通过），本条登记为不通过，命中原始帧见 arch-1.log。是否属「注释命中需调整扫描排除注释」由主控/终验裁决；S3 不改实现、不放宽断言。
+- D-54 裁决已落实：queue.test.js 的 AC-13 现场改为 INST-001 持升级、INST-002 持真实等待审批（startRun 分配 INST-002），三处数字序列 [[2,1,1,1],[1,0,0,1],[0,0,0,0]] 与需求 Given 逐字一致。
+- D-54 裁决已落实：需求 v11 的架构检查排除否定语境注释行（`* (no batch)` 是「无批量」声明，非批量能力实现），真实代码零命中要求不放宽——按新锚点判定。原始命中帧仍留证于 arch-1.log。
 - 需求机检原文点名 queue-cross.test.js，本分支（HEAD 2732f86）不存在该文件，AC-13 用例合并进 queue.test.js；本用例按实际存在文件机检并保留原始 TAP。三处数字「角色对调」差异请主控/终验按需求 Then Given 裁决；本验收不放宽任何断言。
 
-**⑤ 判定**：不通过
+**⑤ 判定**：通过
+
+---
+
+#### AC-14 处理后续跑与计数同步（规划验收句第 2 句的收尾条件）
+
+- 判定：**通过**（核对 19/19 通过）
+- 证据分级：**mock 实测**
+- 验证面：处置 / 续跑 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-queue-follow` 项目根，`INST-001` 因一次执行失败挂起、只有 1 条待处理升级；托盘显示待处理升级 1；列表该行"待处理 1"；`NODE_ENV=test`。
+- When 点"重派"。
+- Then 2 秒内条目消失；5 秒内实例自动继续推进（状态"运行中"、有新的会话事件），**不需要**再点任何"恢复"；托盘待处理升级数变为 0；列表该行"待处理 0"。
+
+```
+,**机检原文**：`test -f test/wp14/queue-follow.test.js && NODE_ENV=test node --test test/wp14/queue-follow.test.js`，断言 `t_resume - t_action ≤ 5000`、实例状态"运行中"、`tray-status.pendingEscalations === 0`、列表行"待处理 0"；三处数字相等；`# fail 0`。,
+**架构检查原文**：续跑只能由既有裁决路径触发，队列层不得再调一次"恢复"；`grep -REn "workflow.resume" src/daemon/queue.js` 必须**零命中（exit 1）**。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 e2e.test.js] test -f test/wp14/e2e.test.js && NODE_ENV=test node --test test/wp14/e2e.test.js | exit=0 | 2477ms
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6443ms
+[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 819ms
+[机检] test -f test/wp14/e2e.test.js && NODE_ENV=test node --test test/wp14/e2e.test.js | exit=0 | # pass 6 / # fail 0 | 2477ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6443ms
+[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 819ms
+[架构#1] grep -REn "workflow.resume" src/daemon/queue.js | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-14/AC-14.test-stdout.txt` | 12144 B |
+| `docs/iterations/iteration-11/evidence/AC-14/AC-14.state.json` | 5766 B |
+| `docs/iterations/iteration-11/evidence/AC-14/AC-14.meta.json` | 2754 B |
+| `docs/iterations/iteration-11/evidence/AC-14/AC-14.check.json` | 7163 B |
+| `docs/iterations/iteration-11/evidence/AC-14/AC-14.output.json` | 32164 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 e2e.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=文唯一来源<br>  ---<br>  duration_ms: 26.493235<br>  type: 'test'<br>  ...<br># Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致<br>ok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致<br>  ---<br>  duration_ms: 1.899262<br>  typ` | `` |
+| 2 | 机检 e2e.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 e2e.test.js：# pass ≥ 1 | ✅ | `# pass 6 / # tests 6` | `` |
+| 4 | 机检 e2e.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=615.071721<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 333.698715<br>  type: 'test'` | `` |
+| 6 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 7 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
+| 8 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 9 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.908791<br>  type: 'test'<br>  ..` | `` |
+| 10 | 机检 ui-views.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 11 | 机检 ui-views.test.js：# pass ≥ 1 | ✅ | `# pass 31 / # tests 31` | `` |
+| 12 | 机检 ui-views.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 13 | 架构检查 #1：AC-14 架构：续跑只由既有裁决路径触发，队列层不再调一次恢复，零命中（exit 1） | ✅ | ``grep -REn "workflow.resume" src/daemon/queue.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 14 | 续跑真链路存在：AC-38 通知→队列处置→后续跑+三处数字同步 | ✅ | `AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）` | `含 AC-38 真链路用例` |
+| 15 | 重派后实例自动继续推进（disk.state=running / resolution=retry / 无需点恢复） | ✅ | `# pass 6 / # fail 0` | `disk.state === running；resolution === retry；无额外恢复动作` |
+| 16 | 三处数字同源：处置后队列计数 0 / 列表待处理 0 / 托盘「实例 1 · 待处理升级 0」 | ✅ | `# pass 6 / # fail 0` | `队列 pendingEscalations=0；item.pending.escalations=0；托盘「实例 1 · 待处理升级 0」` |
+| 17 | D-39 重派数据侧：AC-10 retry 轮次+1 / 新会话 / 回运行中 / 队列条目消失 | ✅ | `升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）` | `resolution retry / round 2 / sessionId 非空 / state running / items 空` |
+| 18 | A-4 结果行逐字由 daemon 结论词（ui-views A-4/AC-14 用例承载） | ✅ | `A-4 / AC-14: result lines use the daemon conclusion vocabulary` | `「升级 E-1 已处理（通过）」逐字，复用 RESOLUTION_LABEL` |
+| 19 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `2 秒内条目消失；5 秒内实例自动继续推进（状态"运行中"、有新的会话事件），**不需要**再点任何"恢复"；托盘待处理升级数变为 0；列表该行"待处理 0"。` | `2 秒内条目消失；5 秒内实例自动继续推进（状态"运行中"、有新的会话事件），**不需要**再点任何"恢复"；托盘待处理升级数变为 0；列表该行"待处理 0"。` |
+
+**备注**
+
+- 机检 e2e.test.js：# tests 6 / # pass 6 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。
+- 机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。
+- 机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 机检文件名口径：需求点名 test/wp14/queue-follow.test.js（本分支不存在）；续跑真链路逐字断言合并进 test/wp14/e2e.test.js 的「AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步」，重派数据侧在 test/wp14/queue.test.js 的「升级·重派」用例，A-4 结果行在 ui-views.test.js。按实际存在文件机检并保留原始 TAP，登记说明但不放宽。
+- D-36 数字口径：三处数字按投影字段读取（tray.pending / item.pending.escalations / queue.totals.pendingEscalations），不在界面重算；本用例逐字登记三处相等，机检由 AC-38 与 AC-13 两用例承载。t_resume - t_action ≤ 5000 时效由 AC-38 真链路（≤5s SSE + 重派后立即回运行）承载，未另设独立秒表断言，如实登记。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-15 重复 / 冲突处理：已处理就不重复写
+
+- 判定：**通过**（核对 16/16 通过）
+- 证据分级：**mock 实测**
+- 验证面：异常 / 重复处置 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-queue-conflict` 项目根，`INST-001`（`single`）有 1 条待处理升级 `ESC-001`，固定 `reasonCode: "rounds_exceeded"`（使"继续"可点，避免与 AC-44 的置灰规则冲突）；队列已打开；`NODE_ENV=test`。
+- When 先在终端处置该条（`--decision retry`），再在面板上对仍显示的同一条点"继续"。
+- Then 面板提示"已处理（重新分配），无需再次处理"（逐字见附录 **A-2**）；不产生第二次裁决；队列在 2 秒内自动刷新（该行消失）；实例状态与轮次只按终端那次变化。
+
+```
+,**机检原文**：`test -f test/wp14/queue-conflict.test.js && NODE_ENV=test node --test test/wp14/queue-conflict.test.js`，断言提示逐字、`counters` 中裁决次数为 1、节点轮次只 +1、队列刷新后条数为 0；`# fail 0`。,
+**架构检查原文**：面板必须把核心返回的"已处理"状态映射为固定文案，不得自行判重（D-11 禁改核心，错误码事实在核心）；`grep -REn "ESCALATION_NOT_PENDING" src/core/escalation.js src/core/orchestrator.js | head -1` **≥1 命中（exit 0）** 且 `grep -REn "QUEUE_ERROR_CONCLUSIONS|DESKTOP_QUEUE_CONCLUSIONS" src/daemon/queue.js | head -1` **≥1 命中（exit 0）**——合起来等价「核心判重兜底 + 面板映射固定文案」，字面量不在 queue.js 不算绕过（D-55）。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 5979ms
+[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 812ms
+[语义复核：错误码与结论词实际落点] grep -REn "ESCALATION_NOT_PENDING" src/core/escalation.js src/core/orchestrator.js src/cli/labels.js | exit=0 | 189ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 5979ms
+[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 812ms
+[架构#1] grep -REn "ESCALATION_NOT_PENDING" src/core/escalation.js src/core/orchestrator.js | head -1 | 期望 exit 0 / 实测 exit 0
+[架构#2] grep -REn "QUEUE_ERROR_CONCLUSIONS|DESKTOP_QUEUE_CONCLUSIONS" src/daemon/queue.js | head -1 | 期望 exit 0 / 实测 exit 0
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-15/AC-15.test-stdout.txt` | 10661 B |
+| `docs/iterations/iteration-11/evidence/AC-15/AC-15.state.json` | 4921 B |
+| `docs/iterations/iteration-11/evidence/AC-15/AC-15.meta.json` | 2621 B |
+| `docs/iterations/iteration-11/evidence/AC-15/AC-15.check.json` | 7284 B |
+| `docs/iterations/iteration-11/evidence/AC-15/AC-15.output.json` | 29334 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=1481.159504<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 257.60199<br>  type: 'test'` | `` |
+| 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
+| 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.422994<br>  type: 'test'<br>  ..` | `` |
+| 6 | 机检 ui-views.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 7 | 机检 ui-views.test.js：# pass ≥ 1 | ✅ | `# pass 31 / # tests 31` | `` |
+| 8 | 机检 ui-views.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 9 | 架构检查 #1：AC-15 架构①（v12/D-55）：错误码事实在核心（≥1 命中，exit 0） | ✅ | ``grep -REn "ESCALATION_NOT_PENDING" src/core/escalation.js src/core/orchestrator.js \| head -1` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行` | `exit 0` |
+| 10 | 架构检查 #2：AC-15 架构②（v12/D-55）：queue.js 按 code 映射固定结论词（≥1 命中，exit 0） | ✅ | ``grep -REn "QUEUE_ERROR_CONCLUSIONS\|DESKTOP_QUEUE_CONCLUSIONS" src/daemon/queue.js \| head -1` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行` | `exit 0` |
+| 11 | AC-15 已处理不重复写用例存在：二次处置返回 ESCALATION_NOT_PENDING / conclusion 已处理 | ✅ | `已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）` | `second.code === ESCALATION_NOT_PENDING；second.conclusion === 已处理` |
+| 12 | 只按终端首次处置变化：轮次只 +1 / resolution 仍 retry / 无第二次裁决 | ✅ | `# pass 16 / # fail 0` | `round===2；escalations[0].resolution===retry；状态不变` |
+| 13 | A-2 提示逐字「已处理（重新分配），无需再次处理」由 ui-views A-2/AC-49 用例承载 | ✅ | `A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion` | `outcome.text === 已处理（重新分配），无需再次处理` |
+| 14 | 队列 2 秒内自动刷新该行消失 | ✅ | `# pass 16 / # fail 0` | `处置后队列条数为 0` |
+| 15 | 语义复核：错误码在核心产生、结论词由 labels.js 映射（queue.js 经 QUEUE_ERROR_CONCLUSIONS 透传） | ✅ | `src/core/escalation.js:89:  if (!entry \|\| entry.state !== 'pending') return { ok: false, code: 'ESCALATION_NOT_PENDING' }; \| src/core/orchestrator.js:5049:      return fail('ESCALATION_NOT_PENDING', { escalationId, st` | `core 产生错误码；labels.js:949 ESCALATION_NOT_PENDING: 已处理；queue.js:50 QUEUE_ERROR_CONCLUSIONS 同源引用` |
+| 16 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `面板提示"已处理（重新分配），无需再次处理"（逐字见附录 **A-2**）；不产生第二次裁决；队列在 2 秒内自动刷新（该行消失）；实例状态与轮次只按终端那次变化。` | `面板提示"已处理（重新分配），无需再次处理"（逐字见附录 **A-2**）；不产生第二次裁决；队列在 2 秒内自动刷新（该行消失）；实例状态与轮次只按终端那次变化。` |
+
+**备注**
+
+- 机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。
+- 机检文件名口径：需求点名 test/wp14/queue-conflict.test.js（本分支不存在），AC-15 逐字断言合并进 test/wp14/queue.test.js「已处理不重复写」用例；提示文案逐字由 ui-views.test.js「A-2 / AC-49: already-resolved notice is verbatim」承载。按实际文件机检并登记说明，不放宽。
+- D-55 裁决已落实：需求 v12 把 AC-15 架构锚点从 queue.js 归位核心（D-11 禁改核心：错误码在 escalation.js:89 / orchestrator.js:5049），queue.js:50 以 QUEUE_ERROR_CONCLUSIONS = DESKTOP_QUEUE_CONCLUSIONS 同源引用、:260 按 code 取「已处理」——两条新锚点合起来等价原语义「核心判重兜底 + 面板映射固定文案」，行为判定不放宽。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-16 动作与类型错配、实例未挂起、审批会话失效三条异常
+
+- 判定：**通过**（核对 19/19 通过）
+- 证据分级：**mock 实测**
+- 验证面：异常 / 边界 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-queue-invalid` 项目根，三个现场：① 一条审批行被刷新成升级行（模拟数据错配）；② 升级条目存在但实例已被别处恢复为"运行中"；③ 审批条目存在但对应会话已结束。
+- When 依次点动作；随后清点队列行上提供的动作，并检查是否存在"判失败""改轮次上限""改超时""调并发"一类入口。
+- Then 依次显示"升级 ESC-002 不支持该动作"、`实例 INST-001 当前不是挂起状态，不能处理升级`、`审批 APR-003 已失效：会话不在运行`（逐字见附录 A-5）；三次都不改变实例状态、不关闭队列、不清空已展开的那一条（一次只处置一条，不存在多选状态），且**状态词逐字不变**——`INST-001` 仍为「运行中」、`ESC-002` 仍为「待处理」、`APR-003` 仍为「待处理」（BR-27）；队列提供的动作恰为继续 / 重派 / 终止 / 允许 / 拒绝五种，界面上不存在判失败、轮次上限、超时、并发等编辑入口。
+
+```
+,**机检原文**：`test -f test/wp14/queue-conflict.test.js && NODE_ENV=test node --test test/wp14/queue-conflict.test.js`，断言三条文案逐字、三次操作后实例状态与审批状态不变、**三条状态词逐字不变（`运行中` / `待处理` / `待处理`）**、已展开条目的详情仍在、动作集合恰为 5 个且不含 `fail` / `round` / `timeout` / `concurrency` 键；`# fail 0`。,
+**架构检查原文**：三条错误文案必须来自既有 `ERROR_TEMPLATE` / `COMMAND_ERROR` 或 `labels.js` 新增键，不得在界面层拼接中文；`grep -REn "不能处理|已失效" desktop/ui` 必须**零命中（exit 1）**。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6026ms
+[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 803ms
+[语义复核：APPROVAL_SESSION_GONE 实际落点在核心] grep -REn "APPROVAL_SESSION_GONE" src/core/approvals.js src/core/orchestrator.js | exit=0 | 184ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6026ms
+[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 803ms
+[架构#1] grep -REn "不能处理|已失效" desktop/ui | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-16/AC-16.test-stdout.txt` | 10661 B |
+| `docs/iterations/iteration-11/evidence/AC-16/AC-16.state.json` | 4921 B |
+| `docs/iterations/iteration-11/evidence/AC-16/AC-16.meta.json` | 2452 B |
+| `docs/iterations/iteration-11/evidence/AC-16/AC-16.check.json` | 9549 B |
+| `docs/iterations/iteration-11/evidence/AC-16/AC-16.output.json` | 28623 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=531.004115<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 283.341213<br>  type: 'test'` | `` |
+| 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
+| 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.430783<br>  type: 'test'<br>  ..` | `` |
+| 6 | 机检 ui-views.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 7 | 机检 ui-views.test.js：# pass ≥ 1 | ✅ | `# pass 31 / # tests 31` | `` |
+| 8 | 机检 ui-views.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 9 | 架构检查 #1：AC-16 架构：错误文案来自既有 ERROR_TEMPLATE/labels.js，不在界面层拼接中文，零命中（exit 1） | ✅ | ``grep -REn "不能处理\|已失效" desktop/ui` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 10 | AC-16① 动作错配：返回 ACTION_NOT_SUPPORTED 且状态不变 | ✅ | `动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）` | `wrongType.code === ACTION_NOT_SUPPORTED；state suspended 不变` |
+| 11 | AC-16② 未挂起：返回 INSTANCE_NOT_SUSPENDED、结论「不是挂起状态」、原状态不变 | ✅ | `实例未挂起：固定结论且原状态不变（AC-16②）` | `code === INSTANCE_NOT_SUSPENDED；conclusion === 不是挂起状态；state running 不变` |
+| 12 | AC-16③ 会话失效：返回 APPROVAL_SESSION_GONE、结论已失效、行仍待处理（D-54 锚点在核心） | ✅ | `审批会话失效：返回已失效且行仍待处理（AC-16③）` | `code === APPROVAL_SESSION_GONE；conclusion === 已失效；approvals[0].state === pending` |
+| 13 | A-5 三条文案①逐字「升级 ESC-002 不支持该动作」（期望逐字 "升级 ESC-002 不支持该动作"） | ✅ | `"升级 ESC-002 不支持该动作"` | `"升级 ESC-002 不支持该动作"` |
+| 14 | A-5 三条文案②逐字「实例 INST-001 当前不是挂起状态，不能处理升级」（期望逐字 "实例 INST-001 当前不是挂起状态，不能处理升级"） | ✅ | `"实例 INST-001 当前不是挂起状态，不能处理升级"` | `"实例 INST-001 当前不是挂起状态，不能处理升级"` |
+| 15 | A-5 三条文案③逐字「审批 APR-003 已失效：会话不在运行」（期望逐字 "审批 APR-003 已失效：会话不在运行"） | ✅ | `"审批 APR-003 已失效：会话不在运行"` | `"审批 APR-003 已失效：会话不在运行"` |
+| 16 | 三条状态词逐字不变（BR-27）：INST-001 运行中 / ESC-002 待处理 / APR-003 待处理 | ✅ | `# pass 16 / # fail 0` | `三次操作后 state/approvals/escalations 均不变、状态词逐字不变` |
+| 17 | 动作集合恰为 5 个（继续/重派/终止/允许/拒绝），不含 fail/round/timeout/concurrency | ✅ | `A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed` | `CONTROLS 闭合动作表恰 5，界面无判失败/轮次上限/超时/并发入口` |
+| 18 | D-54：会话失效判定事实在核心 approvals/orchestrator（不在界面层拼接） | ✅ | `src/core/approvals.js:14:export const APPROVAL_SESSION_GONE = 'APPROVAL_SESSION_GONE'; \| src/core/approvals.js:99: * stay pending and the caller returns APPROVAL_SESSION_GONE. \| src/core/approvals.js:104:    return { o` | `core/approvals.js 与 core/orchestrator.js 引用 APPROVAL_SESSION_GONE` |
+| 19 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `依次显示"升级 ESC-002 不支持该动作"、`实例 INST-001 当前不是挂起状态，不能处理升级`、`审批 APR-003 已失效：会话不在运行`（逐字见附录 A-5）；三次都不改变实例状态、不关闭队列、不清空已展开的那一条（一次只处置一条，不存在多选状态），且**状态词逐字不变**——`INST-001` 仍为「运行中」、`ESC-002` 仍为「待处理」、`APR-003` 仍为「待处理」（BR-27）；队列提供的动作恰为继` | `依次显示"升级 ESC-002 不支持该动作"、`实例 INST-001 当前不是挂起状态，不能处理升级`、`审批 APR-003 已失效：会话不在运行`（逐字见附录 A-5）；三次都不改变实例状态、不关闭队列、不清空已展开的那一条（一次只处置一条，不存在多选状态），且**状态词逐字不变**——`INST-001` 仍为「运行中」、`ESC-002` 仍为「待处理」、`APR-003` 仍为「待处理」（BR-27）；队列提供的动作恰为继` |
+
+**备注**
+
+- 机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 3 条。
+- 机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。
+- 机检文件名口径：需求点名 test/wp14/queue-conflict.test.js（本分支不存在），AC-16 三异常逐字断言合并进 test/wp14/queue.test.js 三条「AC-16①/②/③」用例；动作集合与状态词由 ui-views.test.js「A-4 / AC-08: CONTROLS」承载。按实际文件机检并登记说明，不放宽。
+- D-54 裁决已落实：会话失效码 APPROVAL_SESSION_GONE 的判定事实在核心（approvals.js / orchestrator.js），queue.js 只经既有裁决入口；本用例按 v11 口径核对「核心有会话校验 + 界面不拼接中文」，不放宽三条异常的逐字结论与状态词断言。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-17 队列与 CLI 同源：同一时点结论一致
+
+- 判定：**通过**（核对 12/12 通过）
+- 证据分级：**mock 实测**
+- 验证面：一致性 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-queue-consistency` 项目根，两个实例各有待处理升级与审批；`NODE_ENV=test`。
+- When 同一时点分别导出队列行与执行 `orch escalate list` / `orch status --instance`。
+- Then **条目集合与字段值**完全一致：编号集合、实例号、节点号、轮次、状态词、结论逐项相等；**审批行只比字段值、不比字符串**——桌面审批行按 A-3 的自有模板渲染，段序与分隔符按桌面约定（` · `），比 CLI 多出实例号 / 轮次 / 产生时间三个字段，**不与 CLI 逐字相同**（CLI 输出本身不改，见 BR-31）；升级行同样只比字段值（分隔符按桌面约定，CLI 保留既有两空格）。不存在"某条目只在面板出现、CLI 查不到"或反之。
+
+```
+,**机检原文**：`test -f test/wp14/queue-consistency.test.js && NODE_ENV=test node --test test/wp14/queue-consistency.test.js`，断言两侧条目编号集合相等；**两侧行各按本侧分隔符拆**（D-37）：CLI 升级行按**两个空格**（`\s{2,}`）拆成 5 段（`升级 {编号}` / `实例 {实例号}` / `节点 {节点号} {角色} · 第 {n} 轮` / `状态词` / `原因摘要`），桌面升级行按 ` · ` 拆成 7 段；两侧先归一化为 `{编号, 实例号, 节点号, 轮次, 状态词, 原因摘要}` 再**逐项相等**。CLI 审批行按 ` · ` 拆、只比 `{编号, 状态词, 动作}`；桌面审批行按 ` · ` 拆 7 段，多出的实例号 / 轮次 / 时间三字段**不参与**与 CLI 的相等比较，但必须存在且非空；**不出现「审批行字符串相等」这类断言**；`# fail 0`。CLI 侧分隔符的基线事实（实跑）：`sed -n '1256,1280p' src/cli/render.js | grep -Ec "join\('  '\)"` → **1**（`renderEscalationListRow` 的两个空格拼接）；`grep -REn "parts.join\(' · '\)" src/cli/render.js` 命中 4 处，其中 `1155` 是 `renderApprovalLine`。,
+**架构检查原文**：队列与 CLI 必须消费同一份核心快照字段，不得各算一套；`grep -REn "ESC-|APR-" src/daemon/queue.js` 必须**零命中（exit 1）**（不得用编号格式推断状态）。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6142ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6142ms
+[架构#1] grep -REn "ESC-|APR-" src/daemon/queue.js | 期望 exit 1 / 实测 exit 1
+[架构#2] sed -n '1256,1280p' src/cli/render.js | grep -Ec "join\('  '\)" | 期望 exit 0 / 实测 exit 0
+[架构#3] grep -REn "parts.join\(' · '\)" src/cli/render.js | 期望 exit 0 / 实测 exit 0
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-17/AC-17.test-stdout.txt` | 4204 B |
+| `docs/iterations/iteration-11/evidence/AC-17/AC-17.state.json` | 2136 B |
+| `docs/iterations/iteration-11/evidence/AC-17/AC-17.meta.json` | 2397 B |
+| `docs/iterations/iteration-11/evidence/AC-17/AC-17.check.json` | 7281 B |
+| `docs/iterations/iteration-11/evidence/AC-17/AC-17.output.json` | 12306 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=546.385656<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 292.755603<br>  type: 'test'` | `` |
+| 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
+| 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 架构检查 #1：AC-17 架构：不得用编号格式推断状态，零命中（exit 1） | ✅ | ``grep -REn "ESC-\|APR-" src/daemon/queue.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 6 | 架构检查 #2：AC-17 CLI 基线①：renderEscalationListRow 两个空格拼接恰好 1 处（exit 0） | ✅ | ``sed -n '1256,1280p' src/cli/render.js \| grep -Ec "join\('  '\)"` → exit 0 / 恰好 1 行 / 含「1」；实测 exit 0 / 1 行` | `exit 0` |
+| 7 | 架构检查 #3：AC-17 CLI 基线②：parts.join( · ) 命中 4 处，含 1155 renderApprovalLine（exit 0） | ✅ | ``grep -REn "parts.join\(' · '\)" src/cli/render.js` → exit 0 / 恰好 4 行；实测 exit 0 / 4 行` | `exit 0` |
+| 8 | AC-17 同源用例存在：条目编号集合相等、字段值逐项相等 | ✅ | `队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）` | `两侧编号集合 [ESC-001, APR-001] 相等；六字段逐项相等` |
+| 9 | D-37 两侧按本侧分隔符拆：CLI 升级行两空格 5 段 / 桌面 · 7 段，归一化为六元组逐项相等 | ✅ | `# pass 16 / # fail 0` | `CLI escParts.length===5；queue 条目逐项 deepEqual` |
+| 10 | 审批行只比字段值不比字符串：CLI 审批 3 段只比 {编号,状态词,动作}；桌面多出实例/轮次/时间三字段但不参与相等 | ✅ | `# pass 16 / # fail 0` | `aprParts.length===3；assert.notEqual(cliApproval, queueReasonSummary)；桌面三字段非空` |
+| 11 | 不存在「某条目只在面板出现、CLI 查不到」或反之 | ✅ | `# pass 16 / # fail 0` | `编号集合相等；# fail 0` |
+| 12 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `**条目集合与字段值**完全一致：编号集合、实例号、节点号、轮次、状态词、结论逐项相等；**审批行只比字段值、不比字符串**——桌面审批行按 A-3 的自有模板渲染，段序与分隔符按桌面约定（` · `），比 CLI 多出实例号 / 轮次 / 产生时间三个字段，**不与 CLI 逐字相同**（CLI 输出本身不改，见 BR-31）；升级行同样只比字段值（分隔符按桌面约定，CLI 保留既有两空格）。不存在"某条目只在面板出现、CLI 查不到` | `**条目集合与字段值**完全一致：编号集合、实例号、节点号、轮次、状态词、结论逐项相等；**审批行只比字段值、不比字符串**——桌面审批行按 A-3 的自有模板渲染，段序与分隔符按桌面约定（` · `），比 CLI 多出实例号 / 轮次 / 产生时间三个字段，**不与 CLI 逐字相同**（CLI 输出本身不改，见 BR-31）；升级行同样只比字段值（分隔符按桌面约定，CLI 保留既有两空格）。不存在"某条目只在面板出现、CLI 查不到` |
+
+**备注**
+
+- 机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 机检文件名口径：需求点名 test/wp14/queue-consistency.test.js（本分支不存在），AC-17 逐字断言合并进 test/wp14/queue.test.js「队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）」用例。按实际文件机检并登记说明，不放宽。
+- D-22/D-37 口径：不比整行字符串——CLI 升级行按两个空格（\s{2,}）拆 5 段，桌面升级行按 · 拆 7 段，先归一化为 {编号,实例号,节点号,轮次,状态词,原因摘要} 再逐项相等；CLI 审批行按 · 拆只比 {编号,状态词,动作}，桌面审批行多出的实例/轮次/时间三字段须存在非空但不参与相等。CLI 分隔符基线由本用例两条 arch 锚点复核，未出现字符串相等断言。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-18 三处数字一致：队列、托盘、列表
+
+- 判定：**通过**（核对 21/21 通过）
+- 证据分级：**mock 实测**
+- 验证面：一致性 / 计数 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-queue-count` 项目根，`INST-001` 有 2 条待处理升级 + 1 条待审批，`INST-002` 有 1 条待审批；`NODE_ENV=test`。
+- When 同一时点读取队列总条数、托盘信息行、列表两行的"待处理数"；然后处置一条升级，再处置一条审批。
+- Then 初始队列 = 4，且**队列总条数恰等于各实例「待处理数」之和**（3 + 1 = 4）；托盘"待处理升级 M"中的 M = 2（只数升级）；列表 `INST-001` 为 3、`INST-002` 为 1；处置一条升级后 2 秒内队列 3、托盘 1、`INST-001` 行 2；再处置一条审批后队列 2、托盘仍为 1（审批不计入托盘升级数）、`INST-001` 行 1。
+
+```
+,**机检原文**：`test -f test/wp14/queue-count.test.js && NODE_ENV=test node --test test/wp14/queue-count.test.js`，断言三处数字集合与处置前后的差值，并断言同一时点 `queue.total === instances.map(i => i.pendingCount).reduce((a, b) => a + b, 0)`；`# fail 0`。,
+**架构检查原文**：三处数字必须来自同一份投影，不得各自计数。`pendingEscalations` 的基线事实是 **`src/daemon` 5 行、全仓 3 处计数**：核心 `src/core/orchestrator.js:4180`（内存快照）与持久化 `src/persistence/instance-store.js:482–485`（磁盘回退）各算一次，**daemon 的 `shapeSnapshot`（`src/daemon/server.js:900–912`）还有一处 `: escalations.filter(...).length` 回退计数**。因此断言锁定的是「界面零计算 + daemon 的计数只许留在 `shapeSnapshot` 内」，不是「daemon 一律只透传」：,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 queue.test.js] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | 6745ms
+[机检 e2e.test.js] test -f test/wp14/e2e.test.js && NODE_ENV=test node --test test/wp14/e2e.test.js | exit=0 | 2526ms
+[语义复核：arch⑤ 桌面壳层命中原文] grep -REn "pendingEscalations" desktop/ui desktop/src-tauri/src | exit=0 | 197ms
+[语义复核：tray.pending 取值来源（daemon 投影 vs 壳层自算）] sed -n '296,306p' desktop/src-tauri/src/main.rs | exit=0 | 183ms
+[机检] test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js | exit=0 | # pass 16 / # fail 0 | 6745ms
+[机检] test -f test/wp14/e2e.test.js && NODE_ENV=test node --test test/wp14/e2e.test.js | exit=0 | # pass 6 / # fail 0 | 2526ms
+[架构#1] grep -REn "pendingEscalations" src/daemon/ | 期望 exit 0 / 实测 exit 0
+[架构#2] grep -REn -A3 "pendingEscalations" src/daemon/ | 期望 exit 0 / 实测 exit 0
+[架构#3] node --input-type=module -e 'import fs from "node:fs";import path from "node:path";const walk=(d)=>fs.readdirSync(d,{withFileTypes:true}).flatMap((e)=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]);const COUNT=/(\.filter\(|\.reduce\(|\.length|\+= *1|\.push\()/;const hits=[];for(const f of walk("src/daemon").filter((x)=>x.endsWith(".js"))){const lines=fs.readFileSync(f,"utf8").split("\n");let fn="<top>";for(let i=0;i<lines.length;i++){const m=lines[i].match(/^\s*(?:export\s+)?(?:async\s+)?function\s+([A-Za-z0-9_$]+)/);if(m)fn=m[1];if(!lines[i].includes("pendingEscalations"))continue;hits.push({f,line:i+1,fn,count:COUNT.test(lines.slice(i,i+4).join("\n"))});}}const bad=hits.filter((h)=>h.count&&h.fn!=="shapeSnapshot");console.log("occurrences="+hits.length+" countExpr="+hits.filter((h)=>h.count).length+" outsideShapeSnapshot="+bad.length);process.exit(bad.length===0?0:1)' | 期望 exit 0 / 实测 exit 0
+[架构#4] grep -REn "escalations[.]filter|escalations[.]reduce" src/daemon/ | 期望 exit 0 / 实测 exit 0
+[架构#5] grep -REn "pendingEscalations" desktop/ui desktop/src-tauri/src | grep -vE ":\s*[0-9]+:\s*(//|\*)" | grep -vE "\"pendingEscalations\"\s*:" | 期望 exit 1 / 实测 exit 1
+[架构#6] grep -REn "escalations[.]filter" desktop/ui/ | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-18/AC-18.test-stdout.txt` | 5691 B |
+| `docs/iterations/iteration-11/evidence/AC-18/AC-18.state.json` | 2981 B |
+| `docs/iterations/iteration-11/evidence/AC-18/AC-18.meta.json` | 4693 B |
+| `docs/iterations/iteration-11/evidence/AC-18/AC-18.check.json` | 11031 B |
+| `docs/iterations/iteration-11/evidence/AC-18/AC-18.output.json` | 23331 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 queue.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=666.098726<br>  type: 'test'<br>  ...<br># Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>ok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）<br>  ---<br>  duration_ms: 215.537691<br>  type: 'test'` | `` |
+| 2 | 机检 queue.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 queue.test.js：# pass ≥ 1 | ✅ | `# pass 16 / # tests 16` | `` |
+| 4 | 机检 queue.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 机检 e2e.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=文唯一来源<br>  ---<br>  duration_ms: 24.905719<br>  type: 'test'<br>  ...<br># Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致<br>ok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致<br>  ---<br>  duration_ms: 1.845495<br>  typ` | `` |
+| 6 | 机检 e2e.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 7 | 机检 e2e.test.js：# pass ≥ 1 | ✅ | `# pass 6 / # tests 6` | `` |
+| 8 | 机检 e2e.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 9 | 架构检查 #1：AC-18 架构①：daemon 透传行存在（基线 5 行；D-53 行号漂移后实测 9 行，允许新增同类透传，不得新增计数表达式），有命中 exit 0 | ✅ | ``grep -REn "pendingEscalations" src/daemon/` → exit 0 / 恰好 9 行；实测 exit 0 / 9 行` | `exit 0` |
+| 10 | 架构检查 #2：AC-18 架构②：多行感知检出跨行计数表达式（server.js shapeSnapshot 回退，基线 905→现 1023 行按 D-53 漂移） | ✅ | ``grep -REn -A3 "pendingEscalations" src/daemon/` → exit 0 / 恰好 34 行 / 含「escalations.filter((entry) => entry?.state === 'pending').length」；实测 exit 0 / 34 行` | `exit 0` |
+| 11 | 架构检查 #3：AC-18 架构③：函数体切块——daemon 计数表达式只许在 shapeSnapshot 内（D-36，单行 grep 假阴性已弃用） | ✅ | ``node --input-type=module -e 'import fs from "node:fs";import path from "node:path";const walk=(d)=>fs.readdirSync(d,{withFileTypes:true}).flatMap((e)=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]);con` | `exit 0` |
+| 12 | 架构检查 #4：AC-18 架构④：escalations.filter/reduce 恰好 1 条（server.js:1023 回退计数），不得新增第二条 | ✅ | ``grep -REn "escalations[.]filter\|escalations[.]reduce" src/daemon/` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行` | `exit 0` |
+| 13 | 架构检查 #5：AC-18 架构⑤（v12/D-55）：界面与壳层零自算——排除 //、///、* 注释行与 D-9 要求下发的 tray-status 探针字段名（真实计数表达式仍零命中，exit 1） | ✅ | ``grep -REn "pendingEscalations" desktop/ui desktop/src-tauri/src \| grep -vE ":\s*[0-9]+:\s*(//\|\*)" \| grep -vE "\"pendingEscalations\"\s*:"` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 14 | 架构检查 #6：AC-18 架构⑥：界面不按条目数组自行过滤计数，零命中（exit 1） | ✅ | ``grep -REn "escalations[.]filter" desktop/ui/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 15 | 三处数字逐字（需求 Then）：初始 队列4 / 托盘2 / INST-001=3 / INST-002=1（3+1=4） | ✅ | `queue # pass 16 / e2e # pass 6` | `queue.total === Σ instances.pendingCount = 3+1 = 4；tray 待处理升级 M=2（只数升级）` |
+| 16 | 处置一条升级后：队列 3 / 托盘 1 / INST-001 行 2（2 秒内同步） | ✅ | `# pass queue 16 / e2e 6` | `处置升级后 队列3 / 托盘1 / INST-001 行2` |
+| 17 | 再处置一条审批后：队列 2 / 托盘仍 1（审批不计入托盘升级数）/ INST-001 行 1 | ✅ | `# pass queue 16 / e2e 6` | `处置审批后 队列2 / 托盘1 / INST-001 行1` |
+| 18 | D-36 数据侧：queue.test.js totals 只读快照字段不重算（pendingEscalations=5 直接透传） | ✅ | `buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）` | `queue.totals.pendingEscalations === 5（快照字段，非 filter 计数）` |
+| 19 | AC-13 三处数字各自同步用例存在（机检序列由该用例 + AC-38 承载） | ✅ | `跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）` | `countsOf 三处数字序列；机检由 queue.test.js 承载` |
+| 20 | 语义复核：arch⑤ 命中为探针字段名/注释，pending 来自 daemon 投影 item.pending.escalations（非壳层自算） | ✅ | `desktop/src-tauri/src/tray.rs:103:/// Emit the `tray-status` probe line (D-9: instances / pendingEscalations / \| desktop/src-tauri/src/tray.rs:113:            "pendingEscalations": tray.pending, \|\| let token = meta.ge` | `tray.rs:103 注释 + tray.rs:113 探针字段名（§3.3 要求）；main.rs 读 item.pending.escalations 下发` |
+| 21 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `初始队列 = 4，且**队列总条数恰等于各实例「待处理数」之和**（3 + 1 = 4）；托盘"待处理升级 M"中的 M = 2（只数升级）；列表 `INST-001` 为 3、`INST-002` 为 1；处置一条升级后 2 秒内队列 3、托盘 1、`INST-001` 行 2；再处置一条审批后队列 2、托盘仍为 1（审批不计入托盘升级数）、`INST-001` 行 1。` | `初始队列 = 4，且**队列总条数恰等于各实例「待处理数」之和**（3 + 1 = 4）；托盘"待处理升级 M"中的 M = 2（只数升级）；列表 `INST-001` 为 3、`INST-002` 为 1；处置一条升级后 2 秒内队列 3、托盘 1、`INST-001` 行 2；再处置一条审批后队列 2、托盘仍为 1（审批不计入托盘升级数）、`INST-001` 行 1。` |
+
+**备注**
+
+- 机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 机检 e2e.test.js：# tests 6 / # pass 6 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。
+- 机检文件名口径：需求点名 test/wp14/queue-count.test.js（本分支不存在），三处数字断言合并进 test/wp14/queue.test.js「跨实例分别处置互不影响，三处数字各自同步（AC-13）」+「buildQueue totals 只读快照字段（D-36 / AC-18 数据侧）」+ test/wp14/e2e.test.js「AC-38 三处数字同步」真链路。按实际文件机检并登记说明，不放宽。
+- D-36/D-53 口径：单行 grep 判零计数是假阴性（server.js:905 跨行表达式漏检），已改用函数体切块脚本（arch③）；shapeSnapshot 行号随迭代漂移（基线 900→当前 1018），按函数体锚点而非行号判定。arch③ 实测 occurrences=9 / countExpr=2 / outsideShapeSnapshot=0（基线 occurrences=5，新增 4 行均为同类透传，D-36 允许）；core/persistence 既有计数与 shapeSnapshot 未改（D-36/D-11 未授权改）。
+- D-55 裁决已落实：需求 v12 把架构⑤从「pendingEscalations 字面零命中」改为「零自算」——排除注释行与 D-9/§3.3 明确要求下发的 tray-status 探针字段名（main.rs:300 从 daemon 投影 item.pending.escalations 读取，壳层不计数）。①~④ 多行感知 + 函数体切块 + 真实计数表达式零命中断言全部保留，界面/壳层零自算语义不放宽。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-19 角色库列表：来源、分组与校验状态
+
+- 判定：**通过**（核对 14/14 通过）
+- 证据分级：**mock 实测**
+- 验证面：资产库 / 列表 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-assets` 项目根，内置角色若干 + 2 个项目角色（1 个校验通过、1 个技能引用缺失）；另有内置技能若干 + 1 个项目技能、内置工作流若干 + 1 个项目工作流；`NODE_ENV=test`。
+- When 依次打开角色库分页、技能库分页、工作流库分页。
+- Then **三个分页各自的计数行**都显示出来并自洽：`角色 {total} 个（内置 {builtin} · 项目 {project}）`、`技能 {total} 个（内置 {builtin} · 项目 {project}）`、`工作流 {total} 个（内置 {builtin} · 项目 {project}）`；角色行给出名称、分组、来源、校验状态（通过 / 不通过），逐字匹配附录 A-5；两个项目角色都在列表里，缺失技能的那个标"不通过"。
+
+```
+,**机检原文**：`test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js`，用 `desktop/harness/assets-dump.mjs` 导出**三个分页**的计数行与列表，逐字比对附录 A-5；断言三处计数行的 `total === builtin + project` 且与各自行数自洽；`# fail 0`。,
+**架构检查原文**：列表投影复用既有注册表读取与校验结果，不在界面层重跑 schema 校验；`grep -REn "yaml|readFile" desktop/ui/assets/` 必须**零命中（exit 1）**。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 assets.test.js] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | 1040ms
+[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 836ms
+[机检] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | # pass 10 / # fail 0 | 1040ms
+[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 836ms
+[架构#1] grep -REn "yaml|readFile" desktop/ui/assets/ | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-19/AC-19.test-stdout.txt` | 8781 B |
+| `docs/iterations/iteration-11/evidence/AC-19/AC-19.state.json` | 4119 B |
+| `docs/iterations/iteration-11/evidence/AC-19/AC-19.meta.json` | 1941 B |
+| `docs/iterations/iteration-11/evidence/AC-19/AC-19.check.json` | 6509 B |
+| `docs/iterations/iteration-11/evidence/AC-19/AC-19.output.json` | 23291 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 assets.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不可解析：那一行标不可读，其余照常<br>  ---<br>  duration_ms: 41.147353<br>  type: 'test'<br>  ...<br># Subtest: 未知 kind 与未知 id 按找不到处理，不抛错<br>ok 10 - 未知 kind 与未知 id 按找不到处理，不抛错<br>  ---<br>  duration_ms: 12.767729<br>  type:` | `` |
+| 2 | 机检 assets.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 assets.test.js：# pass ≥ 1 | ✅ | `# pass 10 / # tests 10` | `` |
+| 4 | 机检 assets.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.464133<br>  type: 'test'<br>  ..` | `` |
+| 6 | 机检 ui-views.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 7 | 机检 ui-views.test.js：# pass ≥ 1 | ✅ | `# pass 31 / # tests 31` | `` |
+| 8 | 机检 ui-views.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 9 | 架构检查 #1：AC-19 架构：列表投影复用既有注册表读取与校验结果，不在界面层重跑 schema 校验，零命中（exit 1） | ✅ | ``grep -REn "yaml\|readFile" desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 10 | AC-19 三类列表用例存在：来源/分组/校验状态与计数自洽 | ✅ | `AC-19 三类列表：来源、分组、校验状态与计数自洽` | `三处分页 total === builtin + project 且与行数自洽` |
+| 11 | 三个分页计数行自洽：角色/技能/工作流各自 total = builtin + project | ✅ | `# pass 10 / # fail 0` | `roles/skills/workflows 三处 counts.total === builtin + project` |
+| 12 | 角色行给名称/分组/来源/校验状态，缺失技能那个标不通过 | ✅ | `# pass 10 / # fail 0` | `proj-coder 通过 / proj-gap（skills:[not-exist]）不通过` |
+| 13 | A-5 计数行逐字「角色 {total} 个（内置 {builtin} · 项目 {project}）」等三处（ui-views 逐字用例承载） | ✅ | `A-5: three tabs, count line, rows and unreadable banners are verbatim` | `「角色 12 个（内置 9 · 项目 3）」逐字；资产行「角色 开发 · 编码工程 · 项目 · 通过」` |
+| 14 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `**三个分页各自的计数行**都显示出来并自洽：`角色 {total} 个（内置 {builtin} · 项目 {project}）`、`技能 {total} 个（内置 {builtin} · 项目 {project}）`、`工作流 {total} 个（内置 {builtin} · 项目 {project}）`；角色行给出名称、分组、来源、校验状态（通过 / 不通过），逐字匹配附录 A-5；两个项目角色都在列表里，缺失技能的那个标"不通过` | `**三个分页各自的计数行**都显示出来并自洽：`角色 {total} 个（内置 {builtin} · 项目 {project}）`、`技能 {total} 个（内置 {builtin} · 项目 {project}）`、`工作流 {total} 个（内置 {builtin} · 项目 {project}）`；角色行给出名称、分组、来源、校验状态（通过 / 不通过），逐字匹配附录 A-5；两个项目角色都在列表里，缺失技能的那个标"不通过` |
+
+**备注**
+
+- 机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。
+- 逐字断言由 test/wp14/assets.test.js 的 AC-19 用例（计数自洽、来源/分组/校验状态）与 ui-views.test.js 的「A-5: three tabs, count line, rows and unreadable banners are verbatim」承载；harness assets-dump 同模块导出计数行（ui-views「harness: assets-dump exports tabs + count verbatim」复核）。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-20 角色详情：契约要点与技能引用
+
+- 判定：**通过**（核对 10/10 通过）
+- 证据分级：**mock 实测**
+- 验证面：资产库 / 详情 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-assets-role` 项目根，一个角色声明：分组编码工程、产物类型 `code`、副作用 `high`、最大并发 2、技能两个（其中一个缺失）、工具集 3 项、唤醒白名单 2 项；`NODE_ENV=test`。
+- When 打开该角色详情。
+- Then 逐项显示上述字段；缺失技能标"缺失"并给出该技能名；校验状态为"不通过"且给出原因（复用既有校验文案原文）。
+
+```
+,**机检原文**：`test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js`，断言详情字段逐字匹配附录 A-5 的详情块、缺失标记存在、校验原因与 `orch role validate` 原文相同；`# fail 0`。,
+**架构检查原文**：详情字段只读注册表与校验输出，不新增派生结论；`grep -REn "worktree|versioned|snapshot" desktop/ui/assets/` 必须**零命中（exit 1）**（不得在界面层推断产物隔离方式）。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 assets.test.js] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | 928ms
+[机检] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | # pass 10 / # fail 0 | 928ms
+[架构#1] grep -REn "worktree|versioned|snapshot" desktop/ui/assets/ | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-20/AC-20.test-stdout.txt` | 2324 B |
+| `docs/iterations/iteration-11/evidence/AC-20/AC-20.state.json` | 1334 B |
+| `docs/iterations/iteration-11/evidence/AC-20/AC-20.meta.json` | 1643 B |
+| `docs/iterations/iteration-11/evidence/AC-20/AC-20.check.json` | 4624 B |
+| `docs/iterations/iteration-11/evidence/AC-20/AC-20.output.json` | 6832 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 assets.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不可解析：那一行标不可读，其余照常<br>  ---<br>  duration_ms: 38.364735<br>  type: 'test'<br>  ...<br># Subtest: 未知 kind 与未知 id 按找不到处理，不抛错<br>ok 10 - 未知 kind 与未知 id 按找不到处理，不抛错<br>  ---<br>  duration_ms: 11.958591<br>  type:` | `` |
+| 2 | 机检 assets.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 assets.test.js：# pass ≥ 1 | ✅ | `# pass 10 / # tests 10` | `` |
+| 4 | 机检 assets.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 架构检查 #1：AC-20 架构：详情字段只读注册表与校验输出，不在界面层推断产物隔离方式，零命中（exit 1） | ✅ | ``grep -REn "worktree\|versioned\|snapshot" desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 6 | AC-20 角色详情用例存在：契约要点逐项显示（分组/产物/副作用/并发/技能/工具/唤醒） | ✅ | `AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致` | `artifactType=code / sideEffect=write / maxConcurrentSessions=2 / tools 3 项 / wakeAllow 2 项` |
+| 7 | A-5 详情块逐字：产物 code · 副作用 write · 并发 2 / 技能引用 2 个 / 工具 / 唤醒 | ✅ | `# pass 10 / # fail 0` | `「角色 开发 · 编码工程 · 产物 code · 副作用 write · 并发 2」等 A-5 详情块逐字` |
+| 8 | 缺失技能标「缺失」并给出技能名（A-5 状态词） | ✅ | `# pass 10 / # fail 0` | `skills[1] === { id: missing-skill, missing: true }；界面渲染「s2 · 缺失」` |
+| 9 | 校验状态「不通过」且原因与 CLI `orch role validate` 原文逐字相同 | ✅ | `# pass 10 / # fail 0` | `reason === 引用的技能不存在：missing-skill（与 detailOf 同一组装函数）` |
+| 10 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `逐项显示上述字段；缺失技能标"缺失"并给出该技能名；校验状态为"不通过"且给出原因（复用既有校验文案原文）。` | `逐项显示上述字段；缺失技能标"缺失"并给出该技能名；校验状态为"不通过"且给出原因（复用既有校验文案原文）。` |
+
+**备注**
+
+- 机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 逐字断言由 test/wp14/assets.test.js 的 AC-20 用例承载（详情字段透传、missing-skill 标缺失、reason 与 src/cli/roles.js detailOf 同一函数）；A-5 角色详情块逐字见 requirement 附录 A-5，ui-views.test.js「A-5: detail lines render fixed order with missing markers」复核「缺失/校验」渲染。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-21 技能库列表与详情
+
+- 判定：**通过**（核对 11/11 通过）
+- 证据分级：**mock 实测**
+- 验证面：资产库 / 技能 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-assets-skill` 项目根，内置技能若干 + 1 个项目技能；`NODE_ENV=test`。
+- When 打开技能库分页并点开项目技能。
+- Then 计数行显示 `技能 {total} 个（内置 {builtin} · 项目 {project}）`；列表**每行**给名称、适用分组（即分组）、**来源（内置 / 项目）**、命令数、校验状态（逐字见附录 A-5）——项目技能那行来源必须是"项目"，内置技能那行必须是"内置"；详情给中文名、适用分组、命令、摘要与正文摘要（前若干行），并有校验状态；正文不整篇铺开。
+
+```
+,**机检原文**：`test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js`，断言计数行与列表行、详情块逐字匹配附录 A-5；断言列表每行按 ` · ` 切分后段数一致、第 3 段只取"内置"或"项目"、`来源` 计数与计数行的 `builtin` / `project` 相等；正文摘要行数 **≤ 20 行**（`BODY_PREVIEW_LINES = 20`，常量落在 `src/daemon` 侧、界面侧只消费）；`# fail 0`。,
+**架构检查原文**：正文摘要由一处具名常量截断，不把整篇正文传给界面；`grep -REn "BODY_PREVIEW_LINES" src/daemon desktop/ui` **恰好 2 条命中（exit 0）**（常量定义 1 条 + 使用 1 条），且 `grep -REn "BODY_PREVIEW_LINES =" src/daemon desktop/ui` **恰好 1 条命中（exit 0）**。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 assets.test.js] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | 941ms
+[机检] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | # pass 10 / # fail 0 | 941ms
+[架构#1] grep -REn "BODY_PREVIEW_LINES" src/daemon desktop/ui | 期望 exit 0 / 实测 exit 0
+[架构#2] grep -REn "BODY_PREVIEW_LINES =" src/daemon desktop/ui | 期望 exit 0 / 实测 exit 0
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-21/AC-21.test-stdout.txt` | 2324 B |
+| `docs/iterations/iteration-11/evidence/AC-21/AC-21.state.json` | 1334 B |
+| `docs/iterations/iteration-11/evidence/AC-21/AC-21.meta.json` | 1679 B |
+| `docs/iterations/iteration-11/evidence/AC-21/AC-21.check.json` | 5856 B |
+| `docs/iterations/iteration-11/evidence/AC-21/AC-21.output.json` | 7361 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 assets.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=产不可解析：那一行标不可读，其余照常<br>  ---<br>  duration_ms: 39.563375<br>  type: 'test'<br>  ...<br># Subtest: 未知 kind 与未知 id 按找不到处理，不抛错<br>ok 10 - 未知 kind 与未知 id 按找不到处理，不抛错<br>  ---<br>  duration_ms: 12.32755<br>  type:` | `` |
+| 2 | 机检 assets.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 assets.test.js：# pass ≥ 1 | ✅ | `# pass 10 / # tests 10` | `` |
+| 4 | 机检 assets.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 架构检查 #1：AC-21 架构①：BODY_PREVIEW_LINES 恰好 2 命中（定义 1 + 使用 1，exit 0） | ✅ | ``grep -REn "BODY_PREVIEW_LINES" src/daemon desktop/ui` → exit 0 / 恰好 2 行；实测 exit 0 / 2 行` | `exit 0` |
+| 6 | 架构检查 #2：AC-21 架构②：BODY_PREVIEW_LINES 定义恰好 1 条（exit 0） | ✅ | ``grep -REn "BODY_PREVIEW_LINES =" src/daemon desktop/ui` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行` | `exit 0` |
+| 7 | AC-21 技能列表与详情用例存在：计数行/每行来源命令数校验状态/详情字段 | ✅ | `AC-21 技能列表与详情：正文摘要按上限截断` | `项目技能来源=项目 / 内置技能来源=内置；每行按 · 切分段数一致` |
+| 8 | A-5 计数行与列表行逐字：「技能 {total} 个（内置 {builtin} · 项目 {project}）」；来源计数相等 | ✅ | `# pass 10 / # fail 0` | `counts.total === builtin + project；第 3 段只取内置/项目` |
+| 9 | 详情给中文名/分组/命令/摘要/正文摘要，正文不整篇铺开（≤20 行） | ✅ | `# pass 10 / # fail 0` | `bodyPreviewLines <= 20；40 行正文只取前 20 行；不含第 40 行正文` |
+| 10 | BODY_PREVIEW_LINES = 20 常量在 src/daemon 侧、界面只消费（用例内 assert.equal(BODY_PREVIEW_LINES, 20) 承载） | ✅ | `# pass 10 / # fail 0` | `BODY_PREVIEW_LINES === 20；assets-view.js 定义 + 使用` |
+| 11 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `计数行显示 `技能 {total} 个（内置 {builtin} · 项目 {project}）`；列表**每行**给名称、适用分组（即分组）、**来源（内置 / 项目）**、命令数、校验状态（逐字见附录 A-5）——项目技能那行来源必须是"项目"，内置技能那行必须是"内置"；详情给中文名、适用分组、命令、摘要与正文摘要（前若干行），并有校验状态；正文不整篇铺开。` | `计数行显示 `技能 {total} 个（内置 {builtin} · 项目 {project}）`；列表**每行**给名称、适用分组（即分组）、**来源（内置 / 项目）**、命令数、校验状态（逐字见附录 A-5）——项目技能那行来源必须是"项目"，内置技能那行必须是"内置"；详情给中文名、适用分组、命令、摘要与正文摘要（前若干行），并有校验状态；正文不整篇铺开。` |
+
+**备注**
+
+- 机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 逐字断言由 test/wp14/assets.test.js 的 AC-21 用例承载（计数行/列表行来源命令数校验状态/详情字段/正文摘要行数上限 20）；两条 BODY_PREVIEW_LINES 架构锚点按需求 §3.1 AC-21 原文核对（定义 1 + 使用 1 = 2 命中）。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-22 工作流库列表与详情
+
+- 判定：**通过**（核对 10/10 通过）
+- 证据分级：**mock 实测**
+- 验证面：资产库 / 工作流 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-assets-workflow` 项目根，一个项目工作流 `release-flow`：5 个角色节点（`T-001`/`T-002`/`T-003`/`T-004`/`T-005`）、1 个人工节点（`H-001`）、1 个子工作流（`S-001`），共 **7 节点**；**正向 6 条 + 回流 2 条 = 8 条边**（与附录 A-5 / A-7 的同一份 `release-flow` 完全一致）；`NODE_ENV=test`。
+- When 打开工作流库并点开该工作流。
+- Then 计数行显示 `工作流 {total} 个（内置 {builtin} · 项目 {project}）`；列表行给名称、**来源（内置 / 项目）**、节点数 `7`、边数 `8`、校验状态（逐字见附录 A-5；工作流定义无分组字段，故本行不含分组，见 BR-14）；详情给名称、节点数、边数、节点清单（类型按角色节点 / 人工节点 / 升级节点 / 子工作流，**与 A-5 的 7 行同序逐字**）、回流条数、校验状态，逐字匹配附录 A-5。
+
+```
+,**机检原文**：`test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js`，断言计数行、列表行（含 `7 节点 · 8 条边`）与详情块逐字、列表行第 2 段只取"内置"或"项目"、来源计数与计数行相等、节点清单条数 = 7 且行序与 A-5 相同、回流条数 = 2；`# fail 0`。,
+**架构检查原文**：节点类型只从定义 `node_type` 读，不按标题猜；`grep -REn "人工验收|人工裁决" desktop/ui/assets/` 必须**零命中（exit 1）**。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 assets.test.js] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | 1044ms
+[机检] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | # pass 10 / # fail 0 | 1044ms
+[架构#1] grep -REn "人工验收|人工裁决" desktop/ui/assets/ | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-22/AC-22.test-stdout.txt` | 2325 B |
+| `docs/iterations/iteration-11/evidence/AC-22/AC-22.state.json` | 1334 B |
+| `docs/iterations/iteration-11/evidence/AC-22/AC-22.meta.json` | 1663 B |
+| `docs/iterations/iteration-11/evidence/AC-22/AC-22.check.json` | 6341 B |
+| `docs/iterations/iteration-11/evidence/AC-22/AC-22.output.json` | 6805 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 assets.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不可解析：那一行标不可读，其余照常<br>  ---<br>  duration_ms: 41.284891<br>  type: 'test'<br>  ...<br># Subtest: 未知 kind 与未知 id 按找不到处理，不抛错<br>ok 10 - 未知 kind 与未知 id 按找不到处理，不抛错<br>  ---<br>  duration_ms: 13.303127<br>  type:` | `` |
+| 2 | 机检 assets.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 assets.test.js：# pass ≥ 1 | ✅ | `# pass 10 / # tests 10` | `` |
+| 4 | 机检 assets.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 架构检查 #1：AC-22 架构：节点类型只从定义 node_type 读，不按标题猜，零命中（exit 1） | ✅ | ``grep -REn "人工验收\|人工裁决" desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 6 | AC-22 工作流列表与详情用例存在：计数行/来源/7 节点 8 边/校验状态 | ✅ | `AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条` | `列表行含 7 节点 · 8 条边；第 2 段只取内置/项目；来源计数相等` |
+| 7 | A-5 列表行逐字「工作流 release-flow · 项目 · 7 节点 · 8 条边 · 通过」（工作流行不含分组，BR-14） | ✅ | `# pass 10 / # fail 0` | `nodeCount=7 / edgeCount=8 / group=null / source=项目` |
+| 8 | A-5 详情块逐字：7 节点清单同序（角色/人工/子工作流）、回流 2 条、校验通过 | ✅ | `# pass 10 / # fail 0` | `节点序列 ['T-001','T-002','T-003','H-001','S-001','T-004','T-005']；backflowCount=2` |
+| 9 | 节点类型按 node_type 读（角色 5 / 人工 1 / 子工作流 1），sub-flow 真实存在不报 WORKFLOW_SUB_UNKNOWN | ✅ | `# pass 10 / # fail 0` | `byType role=5 / human=1 / subworkflow=1；校验通过` |
+| 10 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `计数行显示 `工作流 {total} 个（内置 {builtin} · 项目 {project}）`；列表行给名称、**来源（内置 / 项目）**、节点数 `7`、边数 `8`、校验状态（逐字见附录 A-5；工作流定义无分组字段，故本行不含分组，见 BR-14）；详情给名称、节点数、边数、节点清单（类型按角色节点 / 人工节点 / 升级节点 / 子工作流，**与 A-5 的 7 行同序逐字**）、回流条数、校验状态，逐字匹配附录 A-5` | `计数行显示 `工作流 {total} 个（内置 {builtin} · 项目 {project}）`；列表行给名称、**来源（内置 / 项目）**、节点数 `7`、边数 `8`、校验状态（逐字见附录 A-5；工作流定义无分组字段，故本行不含分组，见 BR-14）；详情给名称、节点数、边数、节点清单（类型按角色节点 / 人工节点 / 升级节点 / 子工作流，**与 A-5 的 7 行同序逐字**）、回流条数、校验状态，逐字匹配附录 A-5` |
+
+**备注**
+
+- 机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 逐字断言由 test/wp14/assets.test.js 的 AC-22 用例承载；夹具按 H-17 写两份定义（release-flow 7 节点 8 边 + sub-flow 供 S-001 引用），5 个角色节点 role 取注册表内置 id（developer/tester/reviewer/code-reviewer/writer），避免 WORKFLOW_ROLE_UNKNOWN / WORKFLOW_SUB_UNKNOWN。A-5 详情块与 A-7/AC-29 同一份 release-flow（D-31）。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-23 校验不通过的资产可浏览并标注原因
+
+- 判定：**通过**（核对 11/11 通过）
+- 证据分级：**mock 实测**
+- 验证面：资产库 / 异常 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-assets-invalid` 项目根，一个角色引用了不存在的技能、一个技能正文为空、一个工作流有悬空边；`NODE_ENV=test`。
+- When 依次打开三个分页与三条详情。
+- Then 三条都出现在列表里并标"不通过"；详情给出各自原因（与 CLI `validate` 原文一致）；其它资产照常可用；界面不崩溃、不隐藏坏项。
+
+```
+,**机检原文**：`test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js`，断言三条 `status === '不通过'`、原因字符串与 CLI 输出逐字相同、列表条数未因坏项减少；`# fail 0`。,
+**架构检查原文**：坏资产不得被过滤出列表；`grep -REn "filter.*valid" desktop/ui/assets/` 必须**零命中（exit 1）**。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 assets.test.js] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | 939ms
+[机检] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | # pass 10 / # fail 0 | 939ms
+[架构#1] grep -REn "filter.*valid" desktop/ui/assets/ | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-23/AC-23.test-stdout.txt` | 2325 B |
+| `docs/iterations/iteration-11/evidence/AC-23/AC-23.state.json` | 1334 B |
+| `docs/iterations/iteration-11/evidence/AC-23/AC-23.meta.json` | 1574 B |
+| `docs/iterations/iteration-11/evidence/AC-23/AC-23.check.json` | 4841 B |
+| `docs/iterations/iteration-11/evidence/AC-23/AC-23.output.json` | 6769 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 assets.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不可解析：那一行标不可读，其余照常<br>  ---<br>  duration_ms: 42.535698<br>  type: 'test'<br>  ...<br># Subtest: 未知 kind 与未知 id 按找不到处理，不抛错<br>ok 10 - 未知 kind 与未知 id 按找不到处理，不抛错<br>  ---<br>  duration_ms: 11.492003<br>  type:` | `` |
+| 2 | 机检 assets.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 assets.test.js：# pass ≥ 1 | ✅ | `# pass 10 / # tests 10` | `` |
+| 4 | 机检 assets.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 架构检查 #1：AC-23 架构：坏资产不得被过滤出列表，零命中（exit 1） | ✅ | ``grep -REn "filter.*valid" desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 6 | AC-23 三条坏资产照常出现在列表并标不通过（角色缺技能/技能空正文/工作流悬空边） | ✅ | `AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）` | `三条 status === 不通过；列表条数未因坏项减少` |
+| 7 | A-5 角色原因逐字「引用的技能不存在：missing-skill」（期望逐字 "引用的技能不存在：missing-skill"） | ✅ | `"引用的技能不存在：missing-skill"` | `"引用的技能不存在：missing-skill"` |
+| 8 | A-5 技能原因逐字「技能正文为空：empty-skill」（期望逐字 "技能正文为空：empty-skill"） | ✅ | `"技能正文为空：empty-skill"` | `"技能正文为空：empty-skill"` |
+| 9 | A-5 工作流原因逐字「边不合法：endpoint: T-001->T-009」（期望逐字 "边不合法：endpoint: T-001->T-009"） | ✅ | `"边不合法：endpoint: T-001->T-009"` | `"边不合法：endpoint: T-001->T-009"` |
+| 10 | 详情给出各自原因且与 CLI 输出逐字相同（reason/reasons 同源），界面不崩溃不隐藏 | ✅ | `# pass 10 / # fail 0` | `三条 detail.reason 与 orch validate 原文逐字；counts.total === builtin + project` |
+| 11 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `三条都出现在列表里并标"不通过"；详情给出各自原因（与 CLI `validate` 原文一致）；其它资产照常可用；界面不崩溃、不隐藏坏项。` | `三条都出现在列表里并标"不通过"；详情给出各自原因（与 CLI `validate` 原文一致）；其它资产照常可用；界面不崩溃、不隐藏坏项。` |
+
+**备注**
+
+- 机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- D-45 口径：坏资产按手写坏 YAML 构造（缺技能引用 / 空正文 / 悬空边）；原因字符串由 src/cli/roles.js detailOf 同一组装函数生成，与 CLI validate 原文逐字相同。逐字断言由 test/wp14/assets.test.js 的 AC-23 用例承载。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-24 资产目录不可读与引用缺失的降级
+
+- 判定：**通过**（核对 10/10 通过）
+- 证据分级：**mock 实测**
+- 验证面：资产库 / 降级 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-assets-missing` 项目根，两个现场：① `.orch/roles/` 不可读（权限 000）；② 一个角色引用的技能不存在。
+- When 打开角色库与详情。
+- Then 现场一显示"资产不可读 · .orch/roles"（逐字见附录 A-5），其它分页照常可用；现场二详情里该技能标"缺失"，其余字段照常；两种情况都可返回，不白屏。
+
+```
+,**机检原文**：`test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js`，断言两条降级文案逐字、其它分页行数不变、无堆栈输出；`# fail 0`。,
+**架构检查原文**：降级不得删除其它分页数据；`grep -REn "throw " desktop/ui/assets/` 必须**零命中（exit 1）**。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 assets.test.js] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | 974ms
+[机检] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | # pass 10 / # fail 0 | 974ms
+[架构#1] grep -REn "throw " desktop/ui/assets/ | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-24/AC-24.test-stdout.txt` | 2325 B |
+| `docs/iterations/iteration-11/evidence/AC-24/AC-24.state.json` | 1334 B |
+| `docs/iterations/iteration-11/evidence/AC-24/AC-24.meta.json` | 2048 B |
+| `docs/iterations/iteration-11/evidence/AC-24/AC-24.check.json` | 4435 B |
+| `docs/iterations/iteration-11/evidence/AC-24/AC-24.output.json` | 6777 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 assets.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不可解析：那一行标不可读，其余照常<br>  ---<br>  duration_ms: 42.502966<br>  type: 'test'<br>  ...<br># Subtest: 未知 kind 与未知 id 按找不到处理，不抛错<br>ok 10 - 未知 kind 与未知 id 按找不到处理，不抛错<br>  ---<br>  duration_ms: 11.956642<br>  type:` | `` |
+| 2 | 机检 assets.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 assets.test.js：# pass ≥ 1 | ✅ | `# pass 10 / # tests 10` | `` |
+| 4 | 机检 assets.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 架构检查 #1：AC-24 架构：降级不删除其它分页数据、不抛堆栈，零命中（exit 1） | ✅ | ``grep -REn "throw " desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 6 | AC-24 现场二（引用缺失）实跑并通过：技能标缺失、其余字段照常、其它分页行数不变 | ✅ | `AC-24 现场二：引用缺失的技能标缺失，其余字段照常` | `missing-skill missing=true；dirUnreadable=false；counts.project=1` |
+| 7 | AC-24 现场一（目录不可读）非 root 实跑并显示「资产不可读 · .orch/roles」；root 环境按 skip 标注分级不阻塞 | ✅ | `现场一实跑；dirUnreadable=true；# pass 10 / # fail 0` | `非 root：dirUnreadable=true / 其它分页照常 / 恢复后可用；root：skip 但现场二成立，不算阻塞` |
+| 8 | A-5 目录级降级文案逐字「资产不可读 · .orch/roles」（期望逐字 "资产不可读 · .orch/roles"） | ✅ | `"资产不可读 · .orch/roles"` | `"资产不可读 · .orch/roles"` |
+| 9 | 两种情况都可返回、不白屏、无堆栈输出（# fail 0） | ✅ | `# pass 10 / # fail 0 / # skipped 0` | `# fail 0` |
+| 10 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `现场一显示"资产不可读 · .orch/roles"（逐字见附录 A-5），其它分页照常可用；现场二详情里该技能标"缺失"，其余字段照常；两种情况都可返回，不白屏。` | `现场一显示"资产不可读 · .orch/roles"（逐字见附录 A-5），其它分页照常可用；现场二详情里该技能标"缺失"，其余字段照常；两种情况都可返回，不白屏。` |
+
+**备注**
+
+- 机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。
+- 证据分级说明：本机 uid=501（非 root），AC-24 现场一（chmod 000 目录不可读）实际执行；若主控在 root 环境复跑，assets.test.js 的现场一用例带 { skip: isRoot } 会被跳过，此时判定由现场二（引用缺失标缺失）承载，现场一标注为「root 环境不可观测」，按纪律不算阻塞（有现场二），证据分级如实登记。原始 skip 状态见 .tap.json 的 skipped/skips 字段。
+- 逐字断言由 test/wp14/assets.test.js 的「AC-24 现场一/现场二」用例承载；A-5 区分目录级「资产不可读 · {目录}」与文件级「角色 broken-role · 不可读」（后者属 AC-46，不在此混用）。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-25 库浏览只读：不改资产、不写状态
+
+- 判定：**通过**（核对 11/11 通过）
+- 证据分级：**mock 实测**
+- 验证面：只读 / 安全 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-assets-readonly` 项目根；记下 `.orch/roles/`、`.orch/skills/`、`.orch/workflows/` 下全部文件的字节哈希，以及实例 `state.json` / `events.jsonl` 的哈希；`NODE_ENV=test`。
+- When 依次浏览三个分页、打开若干详情、切到运行时占用、再回到列表。
+- Then 全部哈希不变；界面没有"新建 / 编辑 / 导入 / 导出 / 删除 / 校验"按钮；实例状态与事件日志不变。
+
+```
+,**机检原文**：`test -f test/wp14/assets-readonly.test.js && NODE_ENV=test node --test test/wp14/assets-readonly.test.js`，断言哈希集合前后相等、界面动作清单只含只读动作、无写接口被调用（探针记录 `writes=0`）；`# fail 0`。,
+**架构检查原文**：`grep -REn "fs[.]write|fs[.]unlink|assets-write" desktop/ui/assets/` 必须**零命中（exit 1）**；资产只读接口的注册点可能在 `server.js` 也可能在 `routes.js`（既有 REST 路由表在 `routes.js`），因此计数必须**两个文件合计**：`cat src/daemon/http/server.js src/daemon/http/routes.js | grep -Ec "/assets/"` 的输出必须 **≥ 6**（列表 3 + 详情 3；基线实跑为 `0`，exit 1）；写方法不得落在资产路径上：`grep -REn "/assets/" src/daemon/http/server.js src/daemon/http/routes.js | grep -E "POST|PUT|DELETE"` 必须**零命中（exit 1）**。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 assets.test.js] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | 953ms
+[机检] test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js | exit=0 | # pass 10 / # fail 0 | 953ms
+[架构#1] grep -REn "fs[.]write|fs[.]unlink|assets-write" desktop/ui/assets/ | 期望 exit 1 / 实测 exit 1
+[架构#2] cat src/daemon/http/server.js src/daemon/http/routes.js | grep -Ec "/assets/" | 期望 exit 0 / 实测 exit 0
+[架构#3] grep -REn "/assets/" src/daemon/http/server.js src/daemon/http/routes.js | grep -E "POST|PUT|DELETE" | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-25/AC-25.test-stdout.txt` | 2325 B |
+| `docs/iterations/iteration-11/evidence/AC-25/AC-25.state.json` | 1334 B |
+| `docs/iterations/iteration-11/evidence/AC-25/AC-25.meta.json` | 2347 B |
+| `docs/iterations/iteration-11/evidence/AC-25/AC-25.check.json` | 5286 B |
+| `docs/iterations/iteration-11/evidence/AC-25/AC-25.output.json` | 7661 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 assets.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=不可解析：那一行标不可读，其余照常<br>  ---<br>  duration_ms: 40.025512<br>  type: 'test'<br>  ...<br># Subtest: 未知 kind 与未知 id 按找不到处理，不抛错<br>ok 10 - 未知 kind 与未知 id 按找不到处理，不抛错<br>  ---<br>  duration_ms: 11.084245<br>  type:` | `` |
+| 2 | 机检 assets.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 assets.test.js：# pass ≥ 1 | ✅ | `# pass 10 / # tests 10` | `` |
+| 4 | 机检 assets.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 架构检查 #1：AC-25 架构①：界面资产层无直写盘，零命中（exit 1） | ✅ | ``grep -REn "fs[.]write\|fs[.]unlink\|assets-write" desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 6 | 架构检查 #2：AC-25 架构②：/assets/ 两文件合计 ≥6（列表 3 + 详情 3；基线实跑 7，exit 0），计数须两文件合计不单看 server.js | ✅ | ``cat src/daemon/http/server.js src/daemon/http/routes.js \| grep -Ec "/assets/"` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行` | `exit 0` |
+| 7 | 架构检查 #3：AC-25 架构③：资产路径上无写方法，零命中（exit 1） | ✅ | ``grep -REn "/assets/" src/daemon/http/server.js src/daemon/http/routes.js \| grep -E "POST\|PUT\|DELETE"` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 8 | AC-25 只读用例存在：浏览三分页/打开详情/切占用后，三个资产目录 sha256 哈希集合前后相等 | ✅ | `AC-25 库浏览只读：调用前后三个资产目录的哈希不变` | `hashTree(roles/skills/workflows) after === before；hashTree 按字节 sha256` |
+| 9 | 界面没有新建/编辑/导入/导出/删除/校验按钮（只读动作清单），实例状态与事件日志不变 | ✅ | `# pass 10 / # fail 0` | `只读接口；无写接口被调用；探针 writes=0` |
+| 10 | /assets/ 两文件合计计数 ≥6（列表 3 + 详情 3），基线实跑 7 | ✅ | `实测合计 7` | `≥ 6` |
+| 11 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `全部哈希不变；界面没有"新建 / 编辑 / 导入 / 导出 / 删除 / 校验"按钮；实例状态与事件日志不变。` | `全部哈希不变；界面没有"新建 / 编辑 / 导入 / 导出 / 删除 / 校验"按钮；实例状态与事件日志不变。` |
+
+**备注**
+
+- 机检 assets.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 机检文件名口径：需求点名 test/wp14/assets-readonly.test.js（本分支不存在），AC-25 只读断言合并进 test/wp14/assets.test.js「AC-25 库浏览只读：调用前后三个资产目录的哈希不变」用例。按实际文件机检并登记说明，不放宽。
+- sha256 目录哈希锚定：hashTree 对 .orch/roles / .orch/skills / .orch/workflows 下全部文件按字节 sha256（路径→哈希），浏览三分页 + 打开若干详情 + 切占用 + 回列表后 after 深等于 before。架构路由计数按任务书用 server.js + routes.js 两文件合计（≥6，基线实跑 7），不单看 server.js；写方法零命中。
+
+**⑤ 判定**：通过
+
+---
+
+#### AC-26 全局角色占用：跨实例聚合
+
+- 判定：**通过**（核对 16/16 通过）
+- 证据分级：**mock 实测**
+- 验证面：占用 / 聚合 / 机检
+- 项目根：（机检型，独立 TMPDIR 见 meta）
+
+**① 需求原文（Given / When / Then，逐字）**
+
+```gherkin
+- Given `/tmp/maestro-i11-occupy` 项目根，两个实例：`INST-001` 里"开发"（`developer`）服务 T-001、2 条活跃会话；`INST-002` 里"开发"服务 T-004、1 条活跃会话；`INST-001` 里"审核者"（`reviewer`）服务 T-002 / T-003 / T-005 三个节点、1 条活跃会话；另有"测试"（`tester`）角色在 `INST-001` 处于冷却中；`NODE_ENV=test`。
+- When 在角色库切到"运行时占用"。
+- Then "开发"一行显示参与 2 个实例、3 条活跃会话、服务 T-001, T-004（**≤ 2 个逐个列出**）、状态"服务中"；"审核者"一行显示服务 `T-002 等 3 个`（**超 2 个折叠**，保留首个 + `等 N 个`）、1 条活跃会话、状态"服务中"；"测试"一行显示参与 1 个实例、0 条活跃会话、状态"冷却中"；排序为服务中在前（同档按角色名升序），其次冷却中；逐字匹配附录 A-6。
+
+```
+,**机检原文**：`test -f test/wp14/occupancy.test.js && NODE_ENV=test node --test test/wp14/occupancy.test.js`，用 `desktop/harness/occupancy-dump.mjs` 导出并逐字比对附录 A-6；断言"开发"的实例数 2、会话数 3、服务节点集合正确且**未折叠**；断言"审核者"的 `servingNodes.length === 3`、文案为 `服务 T-002 等 3 个`（折叠阈值 2）；`# fail 0`。,
+**架构检查原文**：占用必须由各实例的运行时投影聚合，不得读注册表充当运行时；`grep -REn "roles/" src/daemon/occupancy.js` 必须**零命中（exit 1）**。,
+**② 命令与退出码（原始帧见证据清单）**
+
+```
+[机检 occupancy.test.js] test -f test/wp14/occupancy.test.js && NODE_ENV=test node --test test/wp14/occupancy.test.js | exit=0 | 2759ms
+[机检 ui-views.test.js] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | 906ms
+[机检] test -f test/wp14/occupancy.test.js && NODE_ENV=test node --test test/wp14/occupancy.test.js | exit=0 | # pass 4 / # fail 0 | 2759ms
+[机检] test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js | exit=0 | # pass 31 / # fail 0 | 906ms
+[架构#1] grep -REn "roles/" src/daemon/occupancy.js | 期望 exit 1 / 实测 exit 1
+```
+
+**③ 证据文件清单**
+
+| 文件 | 大小 |
+|---|---|
+| `docs/iterations/iteration-11/evidence/AC-26/AC-26.test-stdout.txt` | 7659 B |
+| `docs/iterations/iteration-11/evidence/AC-26/AC-26.state.json` | 3692 B |
+| `docs/iterations/iteration-11/evidence/AC-26/AC-26.meta.json` | 2486 B |
+| `docs/iterations/iteration-11/evidence/AC-26/AC-26.check.json` | 8295 B |
+| `docs/iterations/iteration-11/evidence/AC-26/AC-26.output.json` | 20535 B |
+
+**④ 逐项核对表**
+
+| # | 核对项 | 结果 | 实测 | 期望（逐字） |
+|---|---|---|---|---|
+| 1 | 机检 occupancy.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr=<br>  ...<br># Subtest: buildOccupancy：占用随真实派发更新且与流程图同源（AC-28 / BR-37 数据侧 / D-40）<br>ok 4 - buildOccupancy：占用随真实派发更新且与流程图同源（AC-28 / BR-37 数据侧 / D-40）<br>  ---<br>  duration_ms: 1850.265184<br>  type: 'test'` | `` |
+| 2 | 机检 occupancy.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 3 | 机检 occupancy.test.js：# pass ≥ 1 | ✅ | `# pass 4 / # tests 4` | `` |
+| 4 | 机检 occupancy.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 5 | 机检 ui-views.test.js：test -f 前置断言（文件存在） | ✅ | `exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue<br>ok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue<br>  ---<br>  duration_ms: 1.534759<br>  type: 'test'<br>  ..` | `` |
+| 6 | 机检 ui-views.test.js：exit 0 | ✅ | `实际 exit=0` | `` |
+| 7 | 机检 ui-views.test.js：# pass ≥ 1 | ✅ | `# pass 31 / # tests 31` | `` |
+| 8 | 机检 ui-views.test.js：# fail 0 | ✅ | `# fail 0` | `` |
+| 9 | 架构检查 #1：AC-26 架构：占用由各实例运行时投影聚合，不读注册表充当运行时，零命中（exit 1） | ✅ | ``grep -REn "roles/" src/daemon/occupancy.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行` | `exit 1` |
+| 10 | AC-26 跨实例聚合用例存在：五字段模板（roleId/name/group/instances/activeSessions/servingNodes/status/hosts） | ✅ | `buildOccupancy：跨实例聚合五字段与最忙状态序（AC-26 / BR-16 / D-5 / D-48）` | `八字段键序逐字（D-48）；未绑定节点不缩字段` |
+| 11 | 开发行：参与 2 实例 / 3 活跃会话（2+1）/ 服务 T-001,T-004 未折叠（≤2 逐个列出）/ 服务中 / 宿主 mock | ✅ | `# pass 4 / # fail 0` | `dev.instances===2 / activeSessions===3 / servingNodes=[T-001,T-004] / hosts=[mock]` |
+| 12 | 审核者行：服务节点 3 个数组保留、文案折叠「服务 T-002 等 3 个」（阈值 2）/ 1 会话 / 服务中（D-48 hosts） | ✅ | `# pass 4 / # fail 0` | `rev.servingNodes.length===3 / 首个 T-002 / 折叠文案由 ui-views 渲染 / hosts=[mock]` |
+| 13 | 测试行：参与 1 实例 / 0 会话 / 冷却中；排序服务中在前（开发<审核者）其次冷却中（A-6） | ✅ | `# pass 4 / # fail 0` | `tst.activeSessions=0 / status 冷却中；索引 developer<reviewer<tester` |
+| 14 | A-6 占用行逐字（含 hosts 段）由 ui-views.test.js 承载：「宿主 mock」/ 未参与行「宿主 —」 | ✅ | `A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim` | `「角色 开发 · 服务中 · 参与 2 个实例 · 3 个活跃会话 · 服务 T-001, T-004 · 宿主 mock」逐字` |
+| 15 | 同源断言：同一份 state.json 喂给 buildRoleInstances / buildGraph，运行时角色集合一致（D-40 禁 pulse） | ✅ | `# pass 4 / # fail 0` | `occupancyRuntimeRoleIds === runtimeRoleIds（含节点绑定的 reviewer）；夹具 nodes[].roleId=developer/reviewer/tester、sessions[].hostId=mock、template=code-loop` |
+| 16 | Then #1（逐字，机检 + 架构检查复核） | ✅ | `"开发"一行显示参与 2 个实例、3 条活跃会话、服务 T-001, T-004（**≤ 2 个逐个列出**）、状态"服务中"；"审核者"一行显示服务 `T-002 等 3 个`（**超 2 个折叠**，保留首个 + `等 N 个`）、1 条活跃会话、状态"服务中"；"测试"一行显示参与 1 个实例、0 条活跃会话、状态"冷却中"；排序为服务中在前（同档按角色名升序），其次冷却中；逐字匹配附录 A-6。` | `"开发"一行显示参与 2 个实例、3 条活跃会话、服务 T-001, T-004（**≤ 2 个逐个列出**）、状态"服务中"；"审核者"一行显示服务 `T-002 等 3 个`（**超 2 个折叠**，保留首个 + `等 N 个`）、1 条活跃会话、状态"服务中"；"测试"一行显示参与 1 个实例、0 条活跃会话、状态"冷却中"；排序为服务中在前（同档按角色名升序），其次冷却中；逐字匹配附录 A-6。` |
+
+**备注**
+
+- 机检 occupancy.test.js：# tests 4 / # pass 4 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- 机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。
+- D-48 口径：行含 hosts 字段并逐字渲染宿主段；宿主并集取参与实例会话宿主（A-0 夹具一律 --host mock → 「宿主 mock」，未参与行无运行时 → 「宿主 —」）。折叠阈值 2：≤2 逐个列出、>2「首个 + 等 N 个」；数组始终保留全部节点，折叠是界面职责。
+- D-40 夹具红线：占用投影读实例 state.json，graph/pulse 只写 overlay 不写 state，全程禁 pulse；用例手写 state.json（先起核再写盘）+ test.dispatch 真实派发。template=code-loop 声明 coordinator 作「未参与」行属预期，本用例只断言开发/审核者/测试三行字段与相对顺序。逐字行由 ui-views.test.js「A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim」承载。
+
+**⑤ 判定**：通过
 
 ---
 
 ## 2. 未通过 / 阻塞项汇总
 
-| AC | 判定 | 未成立 / 阻塞的核对项 | 备注 |
-|---|---|---|---|
-| AC-12 | 不通过 | - 架构检查 #1：AC-12 架构：审批处置经 approval.resolve 且做会话校验，恰好 1 条命中（exit 0）：``grep -REn "APPROVAL_SESSION_GONE" src/daemon/queue.js` → exit 0 / 恰好 0 行；实测 exit 1 / 0 行`<br>- Then #1（逐字，机检 + 架构检查复核）：`两条分别在 2 秒内显示"审批 APR-001 已通过 · 动作 write"与"审批 APR-002 已拒绝 · 动作 write"（逐字见附录 A-4）；两条从队列消失；对应会话继续或被拒，实例状态按既有规则推进。` | 机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。；⚠ 架构检查字面未达预期：需求要求 `grep -REn "APPROVAL_SESSION_GONE" src/daemon/queue.js` 恰好 1 命中（exit 0），实测 0 命中（exit 1）。根因：实现把会话失效判定放 |
-| AC-13 | 不通过 | - 架构检查 #1：AC-13 架构：多选/成组处置已在 D-01 移出范围，零命中（exit 1）：``grep -REn "batch\|bulk\|multiSelect\|selectedRows" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/` → exit 1 / 恰好 1 行；实测 exit 0 / 1 行`<br>- Then #1（逐字，机检 + 架构检查复核）：`第一次只影响 `INST-001`：该行腾出、实例回到"运行中"、该节点轮次变 2；`INST-002` 的实例状态、节点轮次与审批状态**完全不变**（仍待处理、仍占 1 行）。第二次只影响 `INST-002`：显示"审批 APR-001 已通过 · 动作 write"后该行消失，`INST-001` 不受影响。三处数字各自同步：处置升级后为「队列 1 · 托盘 0 · `INST-001` ` | 机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。；差异登记：WP-2 测试（queue.test.js AC-13 用例）把实例角色对调——INST-001 持审批 APR-001、INST-002 持升级 ESC-001；处置升级（ESC-001 属 INST-002）后中间态为 [1 |
+（无未通过 / 阻塞项）
 
 ## 3. 证据索引
 
-共 141 个文件；每条 AC 至少 `<AC>.test-stdout.txt` / `<AC>.meta.json` / `<AC>.state.json` / `<AC>.check.json` / `<AC>.output.json`。
+共 291 个文件；每条 AC 至少 `<AC>.test-stdout.txt` / `<AC>.meta.json` / `<AC>.state.json` / `<AC>.check.json` / `<AC>.output.json`。
 
 | AC | 证据文件 |
 |---|---|
@@ -886,5 +1748,18 @@
 | AC-09 | `evidence/AC-09/AC-09.arch-1.log`<br>`evidence/AC-09/AC-09.arch-2.log`<br>`evidence/AC-09/AC-09.check.json`<br>`evidence/AC-09/AC-09.meta.json`<br>`evidence/AC-09/AC-09.output.json`<br>`evidence/AC-09/AC-09.queue.attempt-1.log`<br>`evidence/AC-09/AC-09.queue.log`<br>`evidence/AC-09/AC-09.queue.tap.json`<br>`evidence/AC-09/AC-09.state.json`<br>`evidence/AC-09/AC-09.test-stdout.txt` |
 | AC-10 | `evidence/AC-10/AC-10.arch-1.log`<br>`evidence/AC-10/AC-10.check.json`<br>`evidence/AC-10/AC-10.meta.json`<br>`evidence/AC-10/AC-10.output.json`<br>`evidence/AC-10/AC-10.queue.attempt-1.log`<br>`evidence/AC-10/AC-10.queue.log`<br>`evidence/AC-10/AC-10.queue.tap.json`<br>`evidence/AC-10/AC-10.state.json`<br>`evidence/AC-10/AC-10.test-stdout.txt` |
 | AC-11 | `evidence/AC-11/AC-11.arch-1.log`<br>`evidence/AC-11/AC-11.check.json`<br>`evidence/AC-11/AC-11.meta.json`<br>`evidence/AC-11/AC-11.output.json`<br>`evidence/AC-11/AC-11.queue.attempt-1.log`<br>`evidence/AC-11/AC-11.queue.log`<br>`evidence/AC-11/AC-11.queue.tap.json`<br>`evidence/AC-11/AC-11.state.json`<br>`evidence/AC-11/AC-11.test-stdout.txt`<br>`evidence/AC-11/AC-11.ui-views.attempt-1.log`<br>`evidence/AC-11/AC-11.ui-views.log`<br>`evidence/AC-11/AC-11.ui-views.tap.json` |
-| AC-12 | `evidence/AC-12/AC-12.arch-1.log`<br>`evidence/AC-12/AC-12.check.json`<br>`evidence/AC-12/AC-12.meta.json`<br>`evidence/AC-12/AC-12.output.json`<br>`evidence/AC-12/AC-12.queue.attempt-1.log`<br>`evidence/AC-12/AC-12.queue.log`<br>`evidence/AC-12/AC-12.queue.tap.json`<br>`evidence/AC-12/AC-12.state.json`<br>`evidence/AC-12/AC-12.test-stdout.txt` |
+| AC-12 | `evidence/AC-12/AC-12.arch-1.log`<br>`evidence/AC-12/AC-12.arch-2.log`<br>`evidence/AC-12/AC-12.check.json`<br>`evidence/AC-12/AC-12.meta.json`<br>`evidence/AC-12/AC-12.output.json`<br>`evidence/AC-12/AC-12.queue.attempt-1.log`<br>`evidence/AC-12/AC-12.queue.log`<br>`evidence/AC-12/AC-12.queue.tap.json`<br>`evidence/AC-12/AC-12.state.json`<br>`evidence/AC-12/AC-12.test-stdout.txt` |
 | AC-13 | `evidence/AC-13/AC-13.arch-1.log`<br>`evidence/AC-13/AC-13.check.json`<br>`evidence/AC-13/AC-13.meta.json`<br>`evidence/AC-13/AC-13.output.json`<br>`evidence/AC-13/AC-13.queue.attempt-1.log`<br>`evidence/AC-13/AC-13.queue.log`<br>`evidence/AC-13/AC-13.queue.tap.json`<br>`evidence/AC-13/AC-13.state.json`<br>`evidence/AC-13/AC-13.test-stdout.txt` |
+| AC-14 | `evidence/AC-14/AC-14.arch-1.log`<br>`evidence/AC-14/AC-14.check.json`<br>`evidence/AC-14/AC-14.e2e.attempt-1.log`<br>`evidence/AC-14/AC-14.e2e.log`<br>`evidence/AC-14/AC-14.e2e.tap.json`<br>`evidence/AC-14/AC-14.meta.json`<br>`evidence/AC-14/AC-14.output.json`<br>`evidence/AC-14/AC-14.queue.attempt-1.log`<br>`evidence/AC-14/AC-14.queue.log`<br>`evidence/AC-14/AC-14.queue.tap.json`<br>`evidence/AC-14/AC-14.state.json`<br>`evidence/AC-14/AC-14.test-stdout.txt`<br>`evidence/AC-14/AC-14.ui-views.attempt-1.log`<br>`evidence/AC-14/AC-14.ui-views.log`<br>`evidence/AC-14/AC-14.ui-views.tap.json` |
+| AC-15 | `evidence/AC-15/AC-15.arch-1.log`<br>`evidence/AC-15/AC-15.arch-2.log`<br>`evidence/AC-15/AC-15.check.json`<br>`evidence/AC-15/AC-15.meta.json`<br>`evidence/AC-15/AC-15.output.json`<br>`evidence/AC-15/AC-15.queue.attempt-1.log`<br>`evidence/AC-15/AC-15.queue.log`<br>`evidence/AC-15/AC-15.queue.tap.json`<br>`evidence/AC-15/AC-15.state.json`<br>`evidence/AC-15/AC-15.test-stdout.txt`<br>`evidence/AC-15/AC-15.ui-views.attempt-1.log`<br>`evidence/AC-15/AC-15.ui-views.log`<br>`evidence/AC-15/AC-15.ui-views.tap.json` |
+| AC-16 | `evidence/AC-16/AC-16.arch-1.log`<br>`evidence/AC-16/AC-16.check.json`<br>`evidence/AC-16/AC-16.meta.json`<br>`evidence/AC-16/AC-16.output.json`<br>`evidence/AC-16/AC-16.queue.attempt-1.log`<br>`evidence/AC-16/AC-16.queue.log`<br>`evidence/AC-16/AC-16.queue.tap.json`<br>`evidence/AC-16/AC-16.state.json`<br>`evidence/AC-16/AC-16.test-stdout.txt`<br>`evidence/AC-16/AC-16.ui-views.attempt-1.log`<br>`evidence/AC-16/AC-16.ui-views.log`<br>`evidence/AC-16/AC-16.ui-views.tap.json` |
+| AC-17 | `evidence/AC-17/AC-17.arch-1.log`<br>`evidence/AC-17/AC-17.arch-2.log`<br>`evidence/AC-17/AC-17.arch-3.log`<br>`evidence/AC-17/AC-17.check.json`<br>`evidence/AC-17/AC-17.meta.json`<br>`evidence/AC-17/AC-17.output.json`<br>`evidence/AC-17/AC-17.queue.attempt-1.log`<br>`evidence/AC-17/AC-17.queue.log`<br>`evidence/AC-17/AC-17.queue.tap.json`<br>`evidence/AC-17/AC-17.state.json`<br>`evidence/AC-17/AC-17.test-stdout.txt` |
+| AC-18 | `evidence/AC-18/AC-18.arch-1.log`<br>`evidence/AC-18/AC-18.arch-2.log`<br>`evidence/AC-18/AC-18.arch-3.log`<br>`evidence/AC-18/AC-18.arch-4.log`<br>`evidence/AC-18/AC-18.arch-5.log`<br>`evidence/AC-18/AC-18.arch-6.log`<br>`evidence/AC-18/AC-18.check.json`<br>`evidence/AC-18/AC-18.e2e.attempt-1.log`<br>`evidence/AC-18/AC-18.e2e.log`<br>`evidence/AC-18/AC-18.e2e.tap.json`<br>`evidence/AC-18/AC-18.meta.json`<br>`evidence/AC-18/AC-18.output.json`<br>`evidence/AC-18/AC-18.queue.attempt-1.log`<br>`evidence/AC-18/AC-18.queue.log`<br>`evidence/AC-18/AC-18.queue.tap.json`<br>`evidence/AC-18/AC-18.state.json`<br>`evidence/AC-18/AC-18.test-stdout.txt` |
+| AC-19 | `evidence/AC-19/AC-19.arch-1.log`<br>`evidence/AC-19/AC-19.assets.attempt-1.log`<br>`evidence/AC-19/AC-19.assets.log`<br>`evidence/AC-19/AC-19.assets.tap.json`<br>`evidence/AC-19/AC-19.check.json`<br>`evidence/AC-19/AC-19.meta.json`<br>`evidence/AC-19/AC-19.output.json`<br>`evidence/AC-19/AC-19.state.json`<br>`evidence/AC-19/AC-19.test-stdout.txt`<br>`evidence/AC-19/AC-19.ui-views.attempt-1.log`<br>`evidence/AC-19/AC-19.ui-views.log`<br>`evidence/AC-19/AC-19.ui-views.tap.json` |
+| AC-20 | `evidence/AC-20/AC-20.arch-1.log`<br>`evidence/AC-20/AC-20.assets.attempt-1.log`<br>`evidence/AC-20/AC-20.assets.log`<br>`evidence/AC-20/AC-20.assets.tap.json`<br>`evidence/AC-20/AC-20.check.json`<br>`evidence/AC-20/AC-20.meta.json`<br>`evidence/AC-20/AC-20.output.json`<br>`evidence/AC-20/AC-20.state.json`<br>`evidence/AC-20/AC-20.test-stdout.txt` |
+| AC-21 | `evidence/AC-21/AC-21.arch-1.log`<br>`evidence/AC-21/AC-21.arch-2.log`<br>`evidence/AC-21/AC-21.assets.attempt-1.log`<br>`evidence/AC-21/AC-21.assets.log`<br>`evidence/AC-21/AC-21.assets.tap.json`<br>`evidence/AC-21/AC-21.check.json`<br>`evidence/AC-21/AC-21.meta.json`<br>`evidence/AC-21/AC-21.output.json`<br>`evidence/AC-21/AC-21.state.json`<br>`evidence/AC-21/AC-21.test-stdout.txt` |
+| AC-22 | `evidence/AC-22/AC-22.arch-1.log`<br>`evidence/AC-22/AC-22.assets.attempt-1.log`<br>`evidence/AC-22/AC-22.assets.log`<br>`evidence/AC-22/AC-22.assets.tap.json`<br>`evidence/AC-22/AC-22.check.json`<br>`evidence/AC-22/AC-22.meta.json`<br>`evidence/AC-22/AC-22.output.json`<br>`evidence/AC-22/AC-22.state.json`<br>`evidence/AC-22/AC-22.test-stdout.txt` |
+| AC-23 | `evidence/AC-23/AC-23.arch-1.log`<br>`evidence/AC-23/AC-23.assets.attempt-1.log`<br>`evidence/AC-23/AC-23.assets.log`<br>`evidence/AC-23/AC-23.assets.tap.json`<br>`evidence/AC-23/AC-23.check.json`<br>`evidence/AC-23/AC-23.meta.json`<br>`evidence/AC-23/AC-23.output.json`<br>`evidence/AC-23/AC-23.state.json`<br>`evidence/AC-23/AC-23.test-stdout.txt` |
+| AC-24 | `evidence/AC-24/AC-24.arch-1.log`<br>`evidence/AC-24/AC-24.assets.attempt-1.log`<br>`evidence/AC-24/AC-24.assets.log`<br>`evidence/AC-24/AC-24.assets.tap.json`<br>`evidence/AC-24/AC-24.check.json`<br>`evidence/AC-24/AC-24.meta.json`<br>`evidence/AC-24/AC-24.output.json`<br>`evidence/AC-24/AC-24.state.json`<br>`evidence/AC-24/AC-24.test-stdout.txt` |
+| AC-25 | `evidence/AC-25/AC-25.arch-1.log`<br>`evidence/AC-25/AC-25.arch-2.log`<br>`evidence/AC-25/AC-25.arch-3.log`<br>`evidence/AC-25/AC-25.assets.attempt-1.log`<br>`evidence/AC-25/AC-25.assets.log`<br>`evidence/AC-25/AC-25.assets.tap.json`<br>`evidence/AC-25/AC-25.check.json`<br>`evidence/AC-25/AC-25.meta.json`<br>`evidence/AC-25/AC-25.output.json`<br>`evidence/AC-25/AC-25.state.json`<br>`evidence/AC-25/AC-25.test-stdout.txt` |
+| AC-26 | `evidence/AC-26/AC-26.arch-1.log`<br>`evidence/AC-26/AC-26.check.json`<br>`evidence/AC-26/AC-26.meta.json`<br>`evidence/AC-26/AC-26.occupancy.attempt-1.log`<br>`evidence/AC-26/AC-26.occupancy.log`<br>`evidence/AC-26/AC-26.occupancy.tap.json`<br>`evidence/AC-26/AC-26.output.json`<br>`evidence/AC-26/AC-26.state.json`<br>`evidence/AC-26/AC-26.test-stdout.txt`<br>`evidence/AC-26/AC-26.ui-views.attempt-1.log`<br>`evidence/AC-26/AC-26.ui-views.log`<br>`evidence/AC-26/AC-26.ui-views.tap.json` |

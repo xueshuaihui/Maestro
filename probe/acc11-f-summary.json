@@ -1,14 +1,14 @@
 {
-  "batch": "a",
+  "batch": "a+b",
   "acFrom": "AC-01",
-  "acTo": "AC-13",
-  "head": "2732f86",
-  "通过": 11,
-  "不通过": 2,
+  "acTo": "AC-26",
+  "head": "2a829da",
+  "通过": 26,
+  "不通过": 0,
   "阻塞": 0,
-  "acCount": 13,
+  "acCount": 26,
   "missing": [],
-  "evidenceFileCount": 141,
+  "evidenceFileCount": 291,
   "perAc": [
     {
       "id": "AC-01",
@@ -240,12 +240,12 @@
     },
     {
       "id": "AC-12",
-      "verdict": "不通过",
+      "verdict": "通过",
       "evidenceLevel": "mock 实测",
       "title": "审批「允许」与「拒绝」",
       "face": "审批 / 机检",
-      "checks": 10,
-      "ok": 8,
+      "checks": 11,
+      "ok": 11,
       "testRuns": [
         {
           "file": "queue.test.js",
@@ -258,62 +258,298 @@
     },
     {
       "id": "AC-13",
-      "verdict": "不通过",
+      "verdict": "通过",
       "evidenceLevel": "mock 实测",
       "title": "跨实例两条目分别处置：互不影响，三处数字各自同步",
       "face": "处置 / 一致性 / 机检",
-      "checks": 9,
-      "ok": 7,
+      "checks": 10,
+      "ok": 10,
       "testRuns": [
         {
           "file": "queue.test.js",
           "exit": 0,
           "fail": 0,
           "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-14",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "处理后续跑与计数同步（规划验收句第 2 句的收尾条件）",
+      "face": "处置 / 续跑 / 机检",
+      "checks": 19,
+      "ok": 19,
+      "testRuns": [
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        },
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-15",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "重复 / 冲突处理：已处理就不重复写",
+      "face": "异常 / 重复处置 / 机检",
+      "checks": 16,
+      "ok": 16,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-16",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "动作与类型错配、实例未挂起、审批会话失效三条异常",
+      "face": "异常 / 边界 / 机检",
+      "checks": 19,
+      "ok": 19,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-17",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "队列与 CLI 同源：同一时点结论一致",
+      "face": "一致性 / 机检",
+      "checks": 12,
+      "ok": 12,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-18",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "三处数字一致：队列、托盘、列表",
+      "face": "一致性 / 计数 / 机检",
+      "checks": 21,
+      "ok": 21,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-19",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "角色库列表：来源、分组与校验状态",
+      "face": "资产库 / 列表 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-20",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "角色详情：契约要点与技能引用",
+      "face": "资产库 / 详情 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-21",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "技能库列表与详情",
+      "face": "资产库 / 技能 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-22",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "工作流库列表与详情",
+      "face": "资产库 / 工作流 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-23",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "校验不通过的资产可浏览并标注原因",
+      "face": "资产库 / 异常 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-24",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "资产目录不可读与引用缺失的降级",
+      "face": "资产库 / 降级 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-25",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "库浏览只读：不改资产、不写状态",
+      "face": "只读 / 安全 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-26",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "全局角色占用：跨实例聚合",
+      "face": "占用 / 聚合 / 机检",
+      "checks": 16,
+      "ok": 16,
+      "testRuns": [
+        {
+          "file": "occupancy.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 4
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
         }
       ],
       "evidenceCount": 5
     }
   ],
-  "bad": [
-    {
-      "id": "AC-12",
-      "verdict": "不通过",
-      "failed": [
-        {
-          "text": "架构检查 #1：AC-12 架构：审批处置经 approval.resolve 且做会话校验，恰好 1 条命中（exit 0）",
-          "actual": "`grep -REn \"APPROVAL_SESSION_GONE\" src/daemon/queue.js` → exit 0 / 恰好 0 行；实测 exit 1 / 0 行"
-        },
-        {
-          "text": "Then #1（逐字，机检 + 架构检查复核）",
-          "actual": "两条分别在 2 秒内显示\"审批 APR-001 已通过 · 动作 write\"与\"审批 APR-002 已拒绝 · 动作 write\"（逐字见附录 A-4）；两条从队列消失；对应会话继续或被拒，实例状态按既有规则推进。"
-        }
-      ],
-      "notes": [
-        "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。",
-        "⚠ 架构检查字面未达预期：需求要求 `grep -REn \"APPROVAL_SESSION_GONE\" src/daemon/queue.js` 恰好 1 命中（exit 0），实测 0 命中（exit 1）。根因：实现把会话失效判定放在核心 approvals.js:104 / orchestrator.js:4961，queue.js:332 仅 `forward(root,\"approval.resolve\",...)` 转发，未在 queue.js 直接引用该常量。行为意图（审批经既有路径且做会话校验）由 queue.test.js 的两条用例验证通过。此差异交主控/终验裁决：属「架构检查锚点过时」还是「产品缺陷」；S3 不放宽断言、不改实现。",
-        "逐字断言由 test/wp14/queue.test.js 的「审批·允许」「审批·拒绝」用例承载（走真实等待会话）；需求机检原文点名 queue-actions.test.js，本分支合并进 queue.test.js。"
-      ]
-    },
-    {
-      "id": "AC-13",
-      "verdict": "不通过",
-      "failed": [
-        {
-          "text": "架构检查 #1：AC-13 架构：多选/成组处置已在 D-01 移出范围，零命中（exit 1）",
-          "actual": "`grep -REn \"batch|bulk|multiSelect|selectedRows\" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/` → exit 1 / 恰好 1 行；实测 exit 0 / 1 行"
-        },
-        {
-          "text": "Then #1（逐字，机检 + 架构检查复核）",
-          "actual": "第一次只影响 `INST-001`：该行腾出、实例回到\"运行中\"、该节点轮次变 2；`INST-002` 的实例状态、节点轮次与审批状态**完全不变**（仍待处理、仍占 1 行）。第二次只影响 `INST-002`：显示\"审批 APR-001 已通过 · 动作 write\"后该行消失，`INST-001` 不受影响。三处数字各自同步：处置升级后为「队列 1 · 托盘 0 · `INST-001` 0 / `INST-002` 1」，处置审批后为「队列 0 · 托盘 0 · `INST-002` 0」；两次都在 2 秒内看到结果，不出现\"点一次改了两条\"。"
-        }
-      ],
-      "notes": [
-        "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
-        "差异登记：WP-2 测试（queue.test.js AC-13 用例）把实例角色对调——INST-001 持审批 APR-001、INST-002 持升级 ESC-001；处置升级（ESC-001 属 INST-002）后中间态为 [1,0,1,0]，故测试断言序列为 [[2,1,1,1],[1,0,1,0],[0,0,0,0]]。需求 v10 原文 Given 为 INST-001 升级/INST-002 审批，序列中间态为 [1,0,0,1]。第 3、4 位互换源于夹具角色对调，语义「互不影响 + 三处各自同步」在两序列下均成立。",
-        "⚠ 架构检查字面未达预期：需求要求 `grep -REn \"batch|bulk|multiSelect|selectedRows\" ...` 零命中（exit 1），实测 exit 0 / 1 行命中——命中位于 src/daemon/http/routes.js:20 的文档注释 `* (no batch), reach the orchestrator only through the existing decision /`，是「否定语境」注释，并非批量能力实现。按 S3 判定纪律（只认需求原文、不为绿放宽断言、代码与需求冲突判不通过），本条登记为不通过，命中原始帧见 arch-1.log。是否属「注释命中需调整扫描排除注释」由主控/终验裁决；S3 不改实现、不放宽断言。",
-        "需求机检原文点名 queue-cross.test.js，本分支（HEAD 2732f86）不存在该文件，AC-13 用例合并进 queue.test.js；本用例按实际存在文件机检并保留原始 TAP。三处数字「角色对调」差异请主控/终验按需求 Then Given 裁决；本验收不放宽任何断言。"
-      ]
-    }
-  ]
+  "bad": []
 }

@@ -1,0 +1,75 @@
+{
+  "ac": "AC-21",
+  "commands": [
+    {
+      "label": "机检 assets.test.js",
+      "cmd": "test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 941,
+      "stdout": "TAP version 13\n# Subtest: AC-19 三类列表：来源、分组、校验状态与计数自洽\nok 1 - AC-19 三类列表：来源、分组、校验状态与计数自洽\n  ---\n  duration_ms: 106.839956\n  type: 'test'\n  ...\n# Subtest: AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致\nok 2 - AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致\n  ---\n  duration_ms: 28.671136\n  type: 'test'\n  ...\n# Subtest: AC-21 技能列表与详情：正文摘要按上限截断\nok 3 - AC-21 技能列表与详情：正文摘要按上限截断\n  ---\n  duration_ms: 39.883483\n  type: 'test'\n  ...\n# Subtest: AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条\nok 4 - AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条\n  ---\n  duration_ms: 50.358756\n  type: 'test'\n  ...\n# Subtest: AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）\nok 5 - AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）\n  ---\n  duration_ms: 125.844804\n  type: 'test'\n  ...\n# Subtest: AC-24 现场一：角色目录不可读整页降级，其它分页照常\nok 6 - AC-24 现场一：角色目录不可读整页降级，其它分页照常\n  ---\n  duration_ms: 55.696882\n  type: 'test'\n  ...\n# Subtest: AC-24 现场二：引用缺失的技能标缺失，其余字段照常\nok 7 - AC-24 现场二：引用缺失的技能标缺失，其余字段照常\n  ---\n  duration_ms: 42.918875\n  type: 'test'\n  ...\n# Subtest: AC-25 库浏览只读：调用前后三个资产目录的哈希不变\nok 8 - AC-25 库浏览只读：调用前后三个资产目录的哈希不变\n  ---\n  duration_ms: 176.918219\n  type: 'test'\n  ...\n# Subtest: AC-46 单个资产不可解析：那一行标不可读，其余照常\nok 9 - AC-46 单个资产不可解析：那一行标不可读，其余照常\n  ---\n  duration_ms: 39.563375\n  type: 'test'\n  ...\n# Subtest: 未知 kind 与未知 id 按找不到处理，不抛错\nok 10 - 未知 kind 与未知 id 按找不到处理，不抛错\n  ---\n  duration_ms: 12.32755\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 842.108644\n",
+      "stderr": ""
+    }
+  ],
+  "testRuns": [
+    {
+      "file": "assets.test.js",
+      "cmd": "test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: AC-19 三类列表：来源、分组、校验状态与计数自洽\nok 1 - AC-19 三类列表：来源、分组、校验状态与计数自洽\n  ---\n  duration_ms: 106.839956\n  type: 'test'\n  ...\n# Subtest: AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致\nok 2 - AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致\n  ---\n  duration_ms: 28.671136\n  type: 'test'\n  ...\n# Subtest: AC-21 技能列表与详情：正文摘要按上限截断\nok 3 - AC-21 技能列表与详情：正文摘要按上限截断\n  ---\n  duration_ms: 39.883483\n  type: 'test'\n  ...\n# Subtest: AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条\nok 4 - AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条\n  ---\n  duration_ms: 50.358756\n  type: 'test'\n  ...\n# Subtest: AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）\nok 5 - AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）\n  ---\n  duration_ms: 125.844804\n  type: 'test'\n  ...\n# Subtest: AC-24 现场一：角色目录不可读整页降级，其它分页照常\nok 6 - AC-24 现场一：角色目录不可读整页降级，其它分页照常\n  ---\n  duration_ms: 55.696882\n  type: 'test'\n  ...\n# Subtest: AC-24 现场二：引用缺失的技能标缺失，其余字段照常\nok 7 - AC-24 现场二：引用缺失的技能标缺失，其余字段照常\n  ---\n  duration_ms: 42.918875\n  type: 'test'\n  ...\n# Subtest: AC-25 库浏览只读：调用前后三个资产目录的哈希不变\nok 8 - AC-25 库浏览只读：调用前后三个资产目录的哈希不变\n  ---\n  duration_ms: 176.918219\n  type: 'test'\n  ...\n# Subtest: AC-46 单个资产不可解析：那一行标不可读，其余照常\nok 9 - AC-46 单个资产不可解析：那一行标不可读，其余照常\n  ---\n  duration_ms: 39.563375\n  type: 'test'\n  ...\n# Subtest: 未知 kind 与未知 id 按找不到处理，不抛错\nok 10 - 未知 kind 与未知 id 按找不到处理，不抛错\n  ---\n  duration_ms: 12.32755\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 842.108644\n",
+      "tap": {
+        "tests": 10,
+        "pass": 10,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 842.108644,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "AC-19 三类列表：来源、分组、校验状态与计数自洽",
+          "AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致",
+          "AC-21 技能列表与详情：正文摘要按上限截断",
+          "AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条",
+          "AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）",
+          "AC-24 现场一：角色目录不可读整页降级，其它分页照常",
+          "AC-24 现场二：引用缺失的技能标缺失，其余字段照常",
+          "AC-25 库浏览只读：调用前后三个资产目录的哈希不变",
+          "AC-46 单个资产不可解析：那一行标不可读，其余照常",
+          "未知 kind 与未知 id 按找不到处理，不抛错"
+        ]
+      }
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"BODY_PREVIEW_LINES\" src/daemon desktop/ui",
+      "note": "AC-21 架构①：BODY_PREVIEW_LINES 恰好 2 命中（定义 1 + 使用 1，exit 0）",
+      "expect": 0,
+      "exit": 0,
+      "lines": 2,
+      "stdout": "src/daemon/assets-view.js:75:export const BODY_PREVIEW_LINES = 20;\nsrc/daemon/assets-view.js:523:  const preview = lines.slice(0, BODY_PREVIEW_LINES);",
+      "contains": null,
+      "expectLines": 2,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"BODY_PREVIEW_LINES =\" src/daemon desktop/ui",
+      "note": "AC-21 架构②：BODY_PREVIEW_LINES 定义恰好 1 条（exit 0）",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "stdout": "src/daemon/assets-view.js:75:export const BODY_PREVIEW_LINES = 20;",
+      "contains": null,
+      "expectLines": 1,
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

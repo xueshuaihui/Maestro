@@ -29,13 +29,14 @@ const CASE_TIMEOUT_MS = Number(process.env.ACC11_CASE_TIMEOUT_MS) > 0
 const ALL = Array.from({ length: 49 }, (_, i) => `AC-${String(i + 1).padStart(2, '0')}`);
 const range = (a, b) => ALL.filter((id) => { const n = Number(id.slice(3)); return n >= a && n <= b; });
 const BATCHES = {
-  a: range(1, 13)   // 本批：AC-01~AC-13
+  a: range(1, 13),  // 批次 A：AC-01~AC-13
+  b: range(14, 26)  // 批次 B：AC-14~AC-26
 };
 
 function usage() {
   return [
-    '用法：node probe/acc11-f-run.mjs <AC-xx ...> | --batch a | --all | --list',
-    `批次：a=${BATCHES.a[0]}~${BATCHES.a.at(-1)}（本批 13 条）；单 AC 限时 ${CASE_TIMEOUT_MS / 1000}s。`
+    '用法：node probe/acc11-f-run.mjs <AC-xx ...> | --batch a|b | --all | --list',
+    `批次：a=${BATCHES.a[0]}~${BATCHES.a.at(-1)}（13 条）、b=${BATCHES.b[0]}~${BATCHES.b.at(-1)}（13 条）；单 AC 限时 ${CASE_TIMEOUT_MS / 1000}s。`
   ].join('\n');
 }
 

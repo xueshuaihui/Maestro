@@ -1,0 +1,154 @@
+{
+  "ac": "AC-14",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-14",
+    "title": "处理后续跑与计数同步（规划验收句第 2 句的收尾条件）",
+    "given": "`/tmp/maestro-i11-queue-follow` 项目根，`INST-001` 因一次执行失败挂起、只有 1 条待处理升级；托盘显示待处理升级 1；列表该行\"待处理 1\"；`NODE_ENV=test`。",
+    "when": "点\"重派\"。",
+    "then": [
+      "2 秒内条目消失；5 秒内实例自动继续推进（状态\"运行中\"、有新的会话事件），**不需要**再点任何\"恢复\"；托盘待处理升级数变为 0；列表该行\"待处理 0\"。"
+    ],
+    "jijian": "`test -f test/wp14/queue-follow.test.js && NODE_ENV=test node --test test/wp14/queue-follow.test.js`，断言 `t_resume - t_action ≤ 5000`、实例状态\"运行中\"、`tray-status.pendingEscalations === 0`、列表行\"待处理 0\"；三处数字相等；`# fail 0`。",
+    "fixture": "`single` 模板 + mock 宿主；失败由 mock 返回失败构造；托盘数字从探针 `tray-status` 读。",
+    "archText": "续跑只能由既有裁决路径触发，队列层不得再调一次\"恢复\"；`grep -REn \"workflow.resume\" src/daemon/queue.js` 必须**零命中（exit 1）**。",
+    "refs": "BR-10, BR-12",
+    "risk": "高（处理完还得手动恢复，等于没闭环）"
+  },
+  "checks": [
+    {
+      "text": "机检 e2e.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=文唯一来源\n  ---\n  duration_ms: 26.493235\n  type: 'test'\n  ...\n# Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\nok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\n  ---\n  duration_ms: 1.899262\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2381.968304\n",
+      "expected": null
+    },
+    {
+      "text": "机检 e2e.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 e2e.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 6 / # tests 6",
+      "expected": null
+    },
+    {
+      "text": "机检 e2e.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=615.071721\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 333.698715\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 6349.827855\n",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 16 / # tests 16",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.908791\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 721.894209\n",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 31 / # tests 31",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-14 架构：续跑只由既有裁决路径触发，队列层不再调一次恢复，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"workflow.resume\" src/daemon/queue.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "续跑真链路存在：AC-38 通知→队列处置→后续跑+三处数字同步",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）",
+      "expected": "含 AC-38 真链路用例"
+    },
+    {
+      "text": "重派后实例自动继续推进（disk.state=running / resolution=retry / 无需点恢复）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 6 / # fail 0",
+      "expected": "disk.state === running；resolution === retry；无额外恢复动作"
+    },
+    {
+      "text": "三处数字同源：处置后队列计数 0 / 列表待处理 0 / 托盘「实例 1 · 待处理升级 0」",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 6 / # fail 0",
+      "expected": "队列 pendingEscalations=0；item.pending.escalations=0；托盘「实例 1 · 待处理升级 0」"
+    },
+    {
+      "text": "D-39 重派数据侧：AC-10 retry 轮次+1 / 新会话 / 回运行中 / 队列条目消失",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）",
+      "expected": "resolution retry / round 2 / sessionId 非空 / state running / items 空"
+    },
+    {
+      "text": "A-4 结果行逐字由 daemon 结论词（ui-views A-4/AC-14 用例承载）",
+      "ok": true,
+      "blocked": false,
+      "actual": "A-4 / AC-14: result lines use the daemon conclusion vocabulary",
+      "expected": "「升级 E-1 已处理（通过）」逐字，复用 RESOLUTION_LABEL"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2 秒内条目消失；5 秒内实例自动继续推进（状态\"运行中\"、有新的会话事件），**不需要**再点任何\"恢复\"；托盘待处理升级数变为 0；列表该行\"待处理 0\"。",
+      "expected": "2 秒内条目消失；5 秒内实例自动继续推进（状态\"运行中\"、有新的会话事件），**不需要**再点任何\"恢复\"；托盘待处理升级数变为 0；列表该行\"待处理 0\"。"
+    }
+  ]
+}
