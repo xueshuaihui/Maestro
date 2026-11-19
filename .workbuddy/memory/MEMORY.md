@@ -55,6 +55,10 @@
     `usage_update` 等噪声；cancel 非即时（实测 4.3s），容忍迟到 update。
 15. 指纹由核心自算；`artifactRef` 只从 `tool_call.rawInput.file_path` 提取；判定只认 `verdict`。
 16. 发布面：`makensis` 预装但不在 PATH；Windows 路径剥 `\\?\` 前缀；证据原始帧不得 strip 空白。
+17. **跨迭代合入的两个坑**（I1.12 合 I1.11 实证）：① 前序迭代的「冻结锚点」测试（整表 `deepEqual`）会被本迭代
+    合法扩项撞红 → 改为「前缀逐字不变 + 尾部精确清单」+ 新增项单列断言，**不放松为子集**；② 差集口径必须
+    对照 `git worktree` 出来的 `origin/main` 基线树红名单，**不是**对照本分支合入前的旧帧（main 自身的 25 条红不能
+    算到本迭代头上）。③ `git diff HEAD` 型用例（AC-23 #3 之类）在合并未提交时必然报红，提交后才归零，别在合并中途判失败。
 
 ## 迭代状态（全部已收口）
 | 迭代 | 结论 | 关键基线 |
@@ -65,8 +69,12 @@
 | I1.10a | PASS（44/44 AC、1425 测试、终验 PASS，远端 `9c30f61`） | 桌面壳 + 实例列表 + 角色流程图 + GitHub CI Release |
 | I1.10b | PASS（51/51 AC、1526 测试、425 证据、终验 PASS，merge `d17090f`） | 角色下钻与节点详情下钻；文案键 147→210 |
 | I1.11 | PASS（49/49 AC、1606 测试/4 允许失败差集 0、588 证据、三主链 diff 0、终验 PASS） | 通知队列与只读浏览面；文案键并集 312 |
+| I1.12 | **BLOCKED（未收口）**：22 通过 / 0 不通过 / 1 阻塞（AC-21）、322/322 核对项、153 证据、终验总判 FAIL → 已合入 main（`85c5a8b`），但 §4.5 Done 未达成 | 四道治理门禁进控制流 + `orch verify/export/migrate` + 性能基线 mock 管线；AC-21 真实宿主 20/50 口径未取证（裁决 F 停在试点） |
 
-- **当前主线 = main**（I1.11 合入后），全量测试基线 **1606 条**，Windows 平台噪声 4 条已裁决失败，门禁按「失败集合差集 = 0」。
+- **当前主线 = main**（2026-11-19 合入 I1.12 后），HEAD `85c5a8b`；全量 **1841 条 / 1808 pass / 22 fail / 11 skip**，
+  差集口径改为「对照 `origin/main` 基线树（`b1fb82c`：1707/1671/25/11）红名单」，新增红 0。
+- **I1.12 遗留**：AC-21 阻塞（`blocked=1` 未抹）；裁决 F 记录「本机有真实宿主 0.2.2-rc.3、试点 5/5 最大 1473ms<2s，
+  但未达 D-11 的 20 实例/50 会话」→ 解除只能靠补满取证或用户书面豁免。
 - **I1.11 边界**：无逐 AC 真实宿主面（全 mock 实测，U-13 降级非阻塞）；壳层真探针需 `npm run desktop:build` 后不再 SKIP；若提供 `cursor-agent` CLI 可补 ACP 真实宿主取证。
 - **发布面**：`.github/workflows/release.yml`（tag `v*` + `workflow_dispatch`，`permissions: contents: write` 仅此一项，
   只用 `${{ github.token }}`）；三平台矩阵出 `.dmg`/NSIS `.exe` + `SHA256SUMS.txt`；`v0.*` → prerelease。
