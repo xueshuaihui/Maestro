@@ -18,13 +18,13 @@
 | 批次 | 范围 | 通过 | 不通过 | 阻塞 | 核对项 | 唯一证据 |
 |---|---|---|---|---|---|---|
 | A | AC-01~AC-12 | 12 | 0 | 0 | 194/194 | 79 |
-| B | AC-13~AC-23 | 10 | 0 | 1 | 128/128 | 71 |
-| 总计 | AC-01~AC-23 | 22 | 0 | 1 | 322/322 | 150 |
+| B | AC-13~AC-23 | 10 | 0 | 1 | 128/128 | 74 |
+| 总计 | AC-01~AC-23 | 22 | 0 | 1 | 322/322 | 153 |
 
 - 核对项 322 = A 194 + B 128，与预期一致（未出现以 results 修正预期的情况）。
 - `checksFailed=0`；AC-21 的 5/5 是「阻塞出口」核对项（级别 `PERF_LEVEL_PENDING`、`blocked=true`、
   文案逐字、`realHostCollected=false`、triedPaths 非空），按契约成立，计为通过核对，但 AC 判定仍为阻塞。
-- 唯一证据 150 份：按文件名去重、排除 0 字节；A 79 + B 71。
+- 唯一证据 153 份：按文件名去重、排除 0 字节；A 79 + B 74（S3 小修新增 AC-22 过程/最终帧与 flake 帧）。
 
 ## 2. 每 AC 判定与证据数
 
@@ -62,7 +62,7 @@
 
 - 规则：每个 AC ≥4 份非空 `AC-XX.*`；按文件名去重；0 字节不计。
 - 结果：23/23 条 AC 全部 ≥4 份（最小 4：AC-03/04/19/21/23），0 字节 0 个，重名 0 个，
-  跨 AC 串号 0 个（每份文件前缀与所属 AC 一致），总 150 份。
+  跨 AC 串号 0 个（每份文件前缀与所属 AC 一致），总 153 份（含 S3 小修新增的 AC-22 最终/过程/flake 帧）。
 - AC-01 核对：`AC-01.verify.bad.stdout.txt` = 「链已断：第 2 条记录与前一条指纹不匹配」，
   `AC-01.verify.module-result.json` 的 `seq/firstMismatch/badIndex` 均为 2，与裁决 E 及 22/22 通过一致。
 
@@ -76,8 +76,8 @@
    属核对表展示瑕疵。上述文件在禁改清单内，本次未改动，仅登记。
 2. **B 段 AC-22 证据数存在两个口径**：`acceptance-fixture-b.md` 表格计 8（本批新采），
    其索引与目录实有 11 份（另 3 份 `AC-22.index.*` 复用主控历史帧，B 段标题已注明「68 份 + 复用 3 份」）。
-   合并时按唯一文件名计 11，B 批合计 71；B 段内文字按原文保留，未改写其数字，口径差异在本回执与
-   合并说明中标注。
+   合并时按唯一文件名计 11；S3 小修后又新增 AC-22 最终帧/过程 flake 帧等 3 份，B 批合计 74；
+   B 段内文字按原文保留，未改写其数字，口径差异在本回执与合并说明中标注。
 3. **HEAD 时点差异（非异常，说明性）**：B 段记录其取证时点 HEAD=`d20fccc`；A 批 AC-01 在
    `d1fce53`（裁决 E 修复提交）复跑为 22/22。合并件顶层统一标注合并时 HEAD=`d1fce53`，
    B 段内保留其原始时点记录，未追溯改写。
@@ -91,7 +91,7 @@
   缺任一 AC（或判定非法、证据为空、同批矛盾判定）即非零退出且不落盘。
 - `probe/acc12-f-summary.json`：`generatedAt` / `head`（实取）/ `acTotal=23` / `pass=22` /
   `fail=0` / `blocked=1` / `checksTotal=322` / `checksPassed=322` / `checksFailed=0` /
-  `evidenceFileCount=150` / `evidenceFiles` / `batches.a|b` / `perAc`（ac、verdict、grading、checks、
+  `evidenceFileCount=153` / `evidenceFiles` / `batches.a|b` / `perAc`（ac、verdict、grading、checks、
   evidence、blocker）。
 - `docs/iterations/iteration-12/acceptance-fixture.md`：顶层写总判与 A/B/总计合计表；
   `BATCH-A` 段按 A results 重建（AC-01 22/22 通过）；`BATCH-B` 段嵌入 `acceptance-fixture-b.md` 原文
@@ -108,7 +108,7 @@ I1.12 A+B 结果合并完成
   AC 23（A 12 / B 11）
   通过 22 / 不通过 0 / 阻塞 1
   核对项 322/322（A 194/194 + B 128/128）
-  唯一证据 150 份（A 79 + B 71），空文件 0 个
+  唯一证据 153 份（A 79 + B 74），空文件 0 个
   阻塞：AC-21
   报告：docs/iterations/iteration-12/acceptance-fixture.md
   摘要：probe/acc12-f-summary.json
@@ -118,7 +118,7 @@ exit 0
 - 连续两次运行：除 `generatedAt` / A 段「生成时间」外，summary 与报告的归一化内容哈希完全一致
   （`cce4b2986d3129d3` / `ddbbf80e1ac3360a`）；23 条 AC 无重复、无空证据、顺序稳定（AC-01→AC-23）。
 - summary 校验：`acTotal=23`、`perAc.length=23`、`unique=23`、`pass+fail+blocked=22+0+1=23`、
-  `checksPassed=checksTotal=322`、`checksFailed=0`、`evidenceFiles` 150 条且互不重复。
+  `checksPassed=checksTotal=322`、`checksFailed=0`、`evidenceFiles` 153 条且互不重复。
 - 合并件校验：AC 表格行 23 条且排序唯一；`BATCH-B` 嵌入内容与 `acceptance-fixture-b.md` 正文逐字相等；
   唯一「阻塞」行是 AC-21。
 - `git diff --check` exit 0；`src/**`、`test/**` 无改动（`git status` 仅有本任务白名单内的新增/修改）。
@@ -136,7 +136,7 @@ exit 0
 - 重跑 `NODE_ENV=test node probe/acc12-cases/AC-21.mjs`：判定仍 **阻塞**、5/5 核对项、
   `realHostCollected=false`、`triedPaths` 非空（5 条），非通过/非不通过。
 - 重跑 `node probe/acc12-f-final.mjs`：总判仍 **22 / 0 / 1**，核对项 **322/322**
-  （A 194/194 + B 128/128），唯一证据 **150**（A 79 + B 71），与修前一致。
+  （A 194/194 + B 128/128），唯一证据 **153**（A 79 + B 74），与修前一致。
 - 门禁：`git diff --check` exit 0；`src/**`、`test/**` 无改动；本小修仅触及 AC-21 自有的
   case 脚本、part、results-b 行、summary/fixture 重生成件与本记录。
 
@@ -154,6 +154,6 @@ exit 0
   - 修前：5 项中 AC-23 #3 失败（offender `…gate-queued.json`）。
   - 修后：**5/5 通过**、0 失败；改动清单中已无任何命中 I1.11 特征的路径。
 - 重跑 `node probe/acc12-f-final.mjs`：总判仍 **22 / 0 / 1**，核对项 **322/322**
-  （A 194/194 + B 128/128），唯一证据 **150**（A 79 + B 71），空文件 0，阻塞仅 AC-21。
+  （A 194/194 + B 128/128），唯一证据 **153**（A 79 + B 74），空文件 0，阻塞仅 AC-21。
 - 影响面：`src/**`、`test/**` 无改动；仅触及 AC-11 自有 case 脚本、part、`acc12-f-results.jsonl` 追加重跑行、
   summary/fixture 重生成件、被重命名的单个证据文件与本记录。
