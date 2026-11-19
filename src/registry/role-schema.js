@@ -7,7 +7,8 @@
  *
  * Returned arrays are already in output order (D-3 steps 3..7):
  *   required keys -> id / file name -> group -> artifact_type -> side_effect
- *   -> max_concurrent_sessions ; skills additionally check applies_to.
+ *   -> max_concurrent_sessions -> session_policy ; skills additionally check
+ *   applies_to.
  */
 
 export const ROLE_SCHEMA_VERSION = 'role/v1';
@@ -41,8 +42,12 @@ export const ROLE_OPTIONAL_KEYS = Object.freeze([
   'wake_allow',
   'inputs',
   'outputs',
-  'dispatchable'
+  'dispatchable',
+  'session_policy'
 ]);
+
+/** Session reuse policy (D-13): `fresh` is the default and is never written back. */
+export const SESSION_POLICIES = Object.freeze(['reuse', 'fresh']);
 
 export const SKILL_REQUIRED_KEYS = Object.freeze(['schema', 'id', 'name', 'summary']);
 export const SKILL_OPTIONAL_KEYS = Object.freeze(['applies_to', 'commands']);
@@ -142,6 +147,15 @@ export function checkRoleShape(obj, { fileId } = {}) {
         params: { value }
       });
     }
+  }
+  // D-13: the optional key stays absent unless the source file declares it; the
+  // default `fresh` is applied by the dispatcher, never injected here for rendering.
+  if (has(source, 'session_policy') && !SESSION_POLICIES.includes(source.session_policy)) {
+    out.push({
+      code: 'ROLE_SESSION_POLICY_INVALID',
+      field: 'session_policy',
+      params: { value: source.session_policy }
+    });
   }
 
   return out;

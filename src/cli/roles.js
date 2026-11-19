@@ -46,6 +46,7 @@ import {
   ROLE_CLI_TEXT,
   ROLE_PERMISSION_TEXT,
   ROLE_REASON_TEXT,
+  ROLE_SESSION_POLICY_INVALID,
   ROLE_WRITE_SUPPLEMENT,
   ROLE_WRITE_TEXT,
   YAML_DETAIL
@@ -110,6 +111,11 @@ const CONTRACT_SIDE = ROLE_WRITE_SUPPLEMENT.contractSide;
  */
 export function detailOf(err) {
   const code = err?.code;
+  // A-10: the session-policy reason code has its own template (not in
+  // `ROLE_REASON_TEXT`, which is frozen at the seven I1.6 codes).
+  if (code === 'ROLE_SESSION_POLICY_INVALID') {
+    return fill(ROLE_SESSION_POLICY_INVALID, { ...(err?.params ?? {}) });
+  }
   if (typeof ROLE_REASON_TEXT[code] === 'string') {
     const params = { ...(err?.params ?? {}) };
     if (code === 'ROLE_PERMISSION_MISMATCH') {
@@ -436,6 +442,12 @@ async function showRole({ registry, flags, format, ctx, out, roleId }) {
   }
 
   const roleJson = toRoleJson(role);
+  // D-13: the reuse line is driven by the *source file*, not by a loader default —
+  // the loader never injects `fresh`, so only an explicit `session_policy` shows up.
+  const sourceAsset = assetObjectOf(role, ctx.cwd);
+  const sessionPolicy = Object.prototype.hasOwnProperty.call(sourceAsset, 'session_policy')
+    ? sourceAsset.session_policy
+    : null;
   // The contract line is rendered from the same template as `role list`, so the two
   // are byte-identical (A-3).
   const baseLines = render.renderRoleShow({
@@ -444,7 +456,8 @@ async function showRole({ registry, flags, format, ctx, out, roleId }) {
     skills: role.skills,
     tools: role.tools,
     wake: role.wakeAllow,
-    source: { kind: role.source, file: roleJson.file }
+    source: { kind: role.source, file: roleJson.file },
+    sessionPolicy
   });
 
   let instance = null;
@@ -589,7 +602,8 @@ const DERIVE_INHERIT_KEYS = Object.freeze([
   'inputs',
   'outputs',
   'dispatchable',
-  'max_concurrent_sessions'
+  'max_concurrent_sessions',
+  'session_policy'
 ]);
 
 const EDITABLE_KEYS = Object.freeze([
@@ -605,7 +619,8 @@ const EDITABLE_KEYS = Object.freeze([
   'inputs',
   'outputs',
   'dispatchable',
-  'max_concurrent_sessions'
+  'max_concurrent_sessions',
+  'session_policy'
 ]);
 
 /** `--unset` on these is a usage error (AC-56). */
@@ -832,6 +847,9 @@ async function editRole({ parsed, flags, ctx, out, registry, workflows }) {
     else if (key === 'derived_from') delete role.derived_from;
     else if (key === 'dispatchable') role.dispatchable = true;
     else if (key === 'max_concurrent_sessions') role.max_concurrent_sessions = 1;
+    // D-13: `--unset` means "back to the default", and the default `fresh` must not
+    // be written into the file — dropping the key is what the renderer expects.
+    else if (key === 'session_policy') delete role.session_policy;
   }
 
   const issues = candidateIssues({ candidate: role, fileId: id, registry, cwd: ctx.cwd, workflows });

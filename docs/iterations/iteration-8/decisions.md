@@ -76,3 +76,14 @@
 | 裁-10c | `selectReusableSession` 由 `orchestrator.js:145` 顶层导出并在返回对象中暴露，但 `main.js` 无调用点 | 拆分 §6 冻结点 10 只要求「唯一新增导出、供 WP-3 import」；派发路径在内核、不新增 CLI 命令（AC-55）。**接受**，WP-3 直接 `import { selectReusableSession }` 消费 |
 | 裁-10d | 批次 3 全量首轮出现 3 条差集外红：`--host-error 早返回`、`三主链：无新增可见词`、`reconcileOnBoot：v2 旧 generation…` | 前两条隔离复跑全绿（`probe/i18-s2/flake-host-error.isolated.log`、`probe/i18-s2/wp4-three-chains.isolated.log` 8/8），为 Windows `EBUSY` 清理与三主链时序负载 flake，**不计新增红**；第三条是 **D-9 授权的预期红**（`test/wp4/orchestrator.test.js:585` 的 `core.gone` 断言），按拆分 §6 冻结点 8「改后必红是预期」留待 WP-7 末批改测试。二轮全量 **1908 / 1875 / 22 / 11**，差集恰为这一条 |
 | 裁-10e | WP-4 自述的未完成项：AC-58（e2e 需 spawn + `SIGKILL` 冷启动）、AC-24（角色目录不可读整页降级，属基线既有红）、AC-35 的 `delivered→accepted` 段依赖宿主首帧 | **不在 S2 掩盖**：AC-58 由 S3 用 `recovery-driver.mjs --scenario e2e` 真实取证；AC-24 作为**基线既有红**登记（非 I1.8 引入，`014fa6a` 基线红名单已含同名项）；AC-35 的 `accepted` 段在 S3 说明「依赖宿主首帧、mock 适配器不发真实 turn 帧」，按 `pending→delivered` 判据取证。三条均写入 S4 报告 §5 观察项 |
+
+## 八、S2 第 4 批（WP-3）实现口径确认与 flake 复核（裁-11）
+
+| 编号 | 事项 | 主控决定 |
+|---|---|---|
+| 裁-11a | `ROLE_DIFF_KEYS`（`src/cli/roles.js`）未纳入 `session_policy`，`role diff` 不比较该键 | D-13 只点名 `DERIVE_INHERIT_KEYS` / `EDITABLE_KEYS` / `ROLE_ALIASES` / `ROLE_KEY_ORDER` / `ROLE_OPTIONAL_KEYS`，**未要求 diff 键集**。按「不夹带规划外能力」**不扩范围**；S4 报告 §5 登记为观察项 |
+| 裁-11b | `role show --format json` 不新增 `session_policy` 键 | A-6 冻结「十键 role 对象」；需求只要求文本行可见（A-5）。**接受** |
+| 裁-11c | AC-49 的复用行用角色 **id** 填充（`会话 复用 sess-003（角色 developer）`），而 `labels.RECOVERY_TEXT.sessionReuse` 的占位名写作「角色中文名」（WP-5 交付） | 裁决优先级「AC Then > 附录 A」：AC-49 原文逐字就是 `（角色 developer）`，**按 id 填充正确**。文案本身逐字未改，故 S3 不改 labels；**登记为观察项**（模板占位名与实际填充语义不符），S4 报告 §5 列明，避免后续误用中文名填充 |
+| 裁-11d | 批次 4 全量 **1921 / 1885 pass / 25 fail / 11 skip**；新增红 4 条 | 拆解：`declares nine required role keys and five optional ones`（`test/wp11/role-schema.test.js:57`）与 `reconcileOnBoot：v2 旧 generation…`（`test/wp4/orchestrator.test.js:585`）**均为 D-9 授权预期红**；`--host-error 早返回` 与 `三主链：无新增可见词` 为已知负载 flake，本批隔离复跑 **6/6** 与 **8/8** 全绿。**剔除后差集 = 0** |
+| 裁-11e | `role-schema.js` 新增导出 `SESSION_POLICIES = Object.freeze(['reuse','fresh'])` | 与 `GROUPS` / `ARTIFACT_TYPES` / `SIDE_EFFECTS` 同风格的值域常量，零 CJK、零资产名；D-13 未禁止。**接受** |
+| 裁-11f | `role-instances.js` 按裁-10a 收窄：仅排除 `state==='running' && phase==='assigned'`，`review` 与无 `phase` 的旧快照行为不变 | 与 D-2 的位置语义一致（`assigned` 是「已分配、会话待重建」，不是在服务）；既有 67 条实例用例全绿。**接受** |

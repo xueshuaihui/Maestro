@@ -46,7 +46,8 @@ const ROLE_KEY_ORDER = Object.freeze([
   'inputs',
   'outputs',
   'dispatchable',
-  'max_concurrent_sessions'
+  'max_concurrent_sessions',
+  'session_policy'
 ]);
 
 /** camelCase aliases accepted on the input object (loader definitions use them). */
@@ -55,7 +56,8 @@ const ROLE_ALIASES = Object.freeze({
   side_effect: 'sideEffect',
   derived_from: 'derivedFrom',
   wake_allow: 'wakeAllow',
-  max_concurrent_sessions: 'maxConcurrentSessions'
+  max_concurrent_sessions: 'maxConcurrentSessions',
+  session_policy: 'sessionPolicy'
 });
 
 const SKILL_KEY_ORDER = Object.freeze(['schema', 'id', 'name', 'summary', 'applies_to', 'commands']);

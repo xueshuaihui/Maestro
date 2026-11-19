@@ -9,7 +9,7 @@
 |---|---|---|
 | **S0 需求** | **PASS**（提交 `760b8a1`） | 需求 v3（1419 行 / 67 AC / 54 BR / 8 NFR / M-8 / C-18 / 附录 A~D）；**3 轮干净评审**：r1 FAIL（F-01~F-24）、r2 FAIL（N-01~N-05）、**r3 PASS**（阻断 0 / 建议 0，DoR 13/13、覆盖表 15/15、反向扫描无夹带缺漏）；`requirement-understanding.md` 596 行（8 节 + 67 条 Given 可构造性核查） |
 | **S1 拆分** | **PASS**（提交 `ae89f27`） | `docs/iterations/iteration-8.md` 812 行 / 8 节 / 7 WP / AC 67/67 满覆盖 / 文件零交集 / DAG 无环 / 10 个契约冻结点；**2 轮独立评审**：r1 FAIL（A⑤ 唯一判据 FAIL + S-01~S-07 建议）、**r2 PASS**（23/23 判据、阻断 0 / 建议 0） |
-| **S2 实现** | 进行中（第 1/2/3 批已落地：WP-1/WP-2、WP-5/WP-6、WP-4） | 5 批：① WP-1+WP-2 ✅ → ② WP-5+WP-6 ✅ → ③ WP-4 ✅ → ④ WP-3 → ⑤ WP-7（末批单线）。每批主控复跑门禁后提交。**遗留**：门禁 ④「三主链逐字基线」的对照口径已改（见下方批次 2/3 段）：`d4b0f94` 之后 main 已依次合入 I1.7~I1.12，全量与三主链统一改用「I1.8 开工点」`014fa6a` 作对照，O-I2 据此闭合 |
+| **S2 实现** | 进行中（第 1/2/3/4 批已落地：WP-1/WP-2、WP-5/WP-6、WP-4、WP-3） | 5 批：① WP-1+WP-2 ✅ → ② WP-5+WP-6 ✅ → ③ WP-4 ✅ → ④ WP-3 ✅ → ⑤ WP-7（末批单线，含 D-9 两行授权断言 + 真实宿主面）。每批主控复跑门禁后提交。**遗留**：门禁 ④「三主链逐字基线」的对照口径已改（见下方批次 2/3 段）：`d4b0f94` 之后 main 已依次合入 I1.7~I1.12，全量与三主链统一改用「I1.8 开工点」`014fa6a` 作对照，O-I2 据此闭合 |
 | **S3 验收** | 未开始 | `probe/acc8-f-*` 四件套 + `acc8-cases/` 67 用例 + `evidence/`；主控独立复跑全部批次 |
 | **S4 收口** | 未开始 | 终验 Agent + `report.md` / `final-verification.md` / `acceptance-*.md`，Done 七项判定 |
 
@@ -75,6 +75,26 @@ mock 能力广告用 `{}` 形态、`--prompt-failures` 双来源、flake 归因�
 
 **拆分遗漏补派（裁-10a）**：`src/registry/role-instances.js` 未被任何 WP 覆盖，而 AC-28 的 Then 要求 CLI 显示 `服务节点 —`；**补派 WP-3**，授权仅限「服务节点」判定按 9 位置收窄。
 
+### S2 第 4 批（WP-3 会话复用）门禁实跑（主控，2026-11-19）
+
+| 门禁 | 结果 |
+|---|---|
+| 全量（对照 `baseline-014fa6a-reds.txt`） | **1921 / 1885 pass / 25 fail / 11 skip**（基线 1841 → **+80 条** = 批次 2 的 31 + 批次 3 的 36 + 本批 13）；帧 `probe/i18-s2/batch4-full.log` |
+| 失败集合差集 | 新增红 4 条 = **2 条 D-9 授权预期红**（`test/wp11/role-schema.test.js:57` 的 `ROLE_OPTIONAL_KEYS` 元素数、`test/wp4/orchestrator.test.js:585` 的 `core.gone`）+ **2 条已知 flake**（`--host-error` 6/6、`三主链` 8/8，本批隔离复跑全绿）。**剔除后差集 = 0**（裁-11d） |
+| `test/wp13/**` | 本批新增 `session-reuse.test.js` **13/13**（含冻结键序、枚举、D-13 红线、AC-28 补派） |
+| 键序 / 可选键（主控实读） | `ROLE_KEY_ORDER` 末位为 `session_policy`（在 `max_concurrent_sessions` 之后）；`ROLE_OPTIONAL_KEYS` 末尾追加；`ROLE_ALIASES.session_policy = 'sessionPolicy'`；新增 `SESSION_POLICIES = ['reuse','fresh']` |
+| D-11 五条 | #1 45 文件 exit 0；#2 `src/registry` 11 文件 exit 0；#3 三文件 exit 0；#4 `dependencies` = 0；#5 `OK: no CJK`。帧 `probe/i18-s2/gates-batch4.txt` |
+| 资产 / 命令冻结面 | `role validate` 仍 `校验资产 26 个：全部通过（角色 16 · 技能 10）`；`--help` 31 行；`orch recover` 退 2 |
+| 拆分遗漏补派落地 | `role-instances.js` 按裁-10a 收窄「服务节点」：`running + phase=assigned` 不计入，AC-28 的 `服务节点 —` 可达成；既有 67 条实例用例全绿 |
+
+**实现口径裁决 裁-11a~11f**：`ROLE_DIFF_KEYS` 不纳入（不扩范围）、`role show --format json` 不加键、AC-49 用角色 **id** 填充（AC Then 优先，模板占位名不符登记为观察项）、flake 构成、`SESSION_POLICIES` 导出、`role-instances` 收窄边界。
+
+### WP-7 任务书必须吸收的三条（批次 4 交付时的接口约定）
+
+1. **D-9 两行授权改动**现在是**两条预期红**：`test/wp11/role-schema.test.js:57`（`ROLE_OPTIONAL_KEYS` 末尾追加 `'session_policy'`）与 `test/wp4/orchestrator.test.js:480/575/578/580/584~586`（改为「按实例记录恢复」）；`:588~592` 的 v1 一字不改断言保持原样。
+2. **真实宿主面可真验**：I1.8 需求按「本机无 DSH CLI」写的阻塞口径，已被 I1.12 证伪——本机真实宿主导 `0.2.2-rc.3`，配方见 `probe/acc12-perf-pilot.mjs`（隔离 `DSH_HOME` + 复制 `~/.dsh/.credentials.yaml` 用完即删 + patch 层同时覆盖 `agent-default-model` 与 `acp` 两个 provider 到 `deepseek-account`）。AC-25/26/27/57 应**优先取证**，取不到才判阻塞并留帧。
+3. **AC-52 三主链基线口径**：`d4b0f94` 之后已合入 I1.7~I1.12，逐字基线改以 **I1.8 开工点 `014fa6a`** 的工作树对照；同时保留 `test/wp9/i19-regression.test.js` 的 8 条三主链断言全绿作为机检锚点。
+
 ### WP-3 任务书必须吸收的两条（批次 3 交付时的接口约定）
 
 1. `import { selectReusableSession } from '../core/orchestrator.js'` 直接消费（裁-10c），签名冻结为 `(sessionList, { instanceId, roleId, hostId, nodeId }) → session | null`。
@@ -93,7 +113,7 @@ mock 能力广告用 `{}` 形态、`--prompt-failures` 双来源、flake 归因�
 
 ## 裁决台账（`decisions.md`）
 
-裁-1（状态机 7 项 + 9 态投影）/ 裁-2（D-11 三文件口径）/ 裁-3（会话 `escalated` 沿用既有指示器）/ 裁-4（AC-54 内嵌 D-11 逐字副本）/ 裁-5（D-9 行号 `:588~592`）/ 裁-6（`session_policy` 命名）/ 裁-7（§8 措辞同步「已裁决」）/ **裁-8a~8f（批次 1 实现口径）/ 裁-9a~9h（批次 2 实现口径）/ 裁-10a~10e（批次 3 + 拆分遗漏补派 + flake 归因 + 未完成项转 S3）**。
+裁-1（状态机 7 项 + 9 态投影）/ 裁-2（D-11 三文件口径）/ 裁-3（会话 `escalated` 沿用既有指示器）/ 裁-4（AC-54 内嵌 D-11 逐字副本）/ 裁-5（D-9 行号 `:588~592`）/ 裁-6（`session_policy` 命名）/ 裁-7（§8 措辞同步「已裁决」）/ **裁-8a~8f（批次 1）/ 裁-9a~9h（批次 2）/ 裁-10a~10e（批次 3 + 补派 + flake）/ 裁-11a~11f（批次 4）**。
 
 ## S2 批次与门禁口径
 

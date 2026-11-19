@@ -23,6 +23,17 @@ const TERMINAL = new Set(['completed', 'failed', 'cancelled', 'interrupted']);
 const SERVING_NODE_STATES = new Set(['running', 'review']);
 const DONE_NODE_STATE = 'done';
 
+/**
+ * `running` + `phase: 'assigned'` means the round is open but the session has not
+ * started serving yet (D-2), so the node must not be reported as a serving node
+ * (AC-28 expects an empty serving-node list there). Every other `running` /
+ * `review` node keeps counting.
+ */
+function isServingNode(node) {
+  if (!SERVING_NODE_STATES.has(node.state)) return false;
+  return !(node.state === 'running' && node.phase === 'assigned');
+}
+
 function compareText(a, b) {
   if (a < b) return -1;
   if (a > b) return 1;
@@ -153,7 +164,7 @@ export function buildRoleInstances({ state, graph, roles } = {}) {
     const role = registry.get(roleId);
     const known = role !== undefined;
     const bound = nodes.filter((node) => node.roleId === roleId);
-    const serving = bound.filter((node) => SERVING_NODE_STATES.has(node.state));
+    const serving = bound.filter(isServingNode);
     const boundNodeIds = new Set(bound.map((node) => node.nodeId));
 
     // AC-29 takes precedence over the D-5 pseudo-code's plain filter: the mapping
