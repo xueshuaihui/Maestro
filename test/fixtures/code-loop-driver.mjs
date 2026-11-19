@@ -420,13 +420,13 @@ function usage() {
   ].join('\n');
 }
 
-function hostConfigFor(root, scenario) {
+function hostConfigFor(root, scenario, extraArgs = []) {
   return {
     id: 'mock',
     transport: 'stdio',
     launch: {
       command: process.execPath,
-      args: [MOCK_AGENT_PATH, '--root', root, '--scenario', scenario],
+      args: [MOCK_AGENT_PATH, '--root', root, '--scenario', scenario, ...extraArgs],
     },
   };
 }
@@ -437,7 +437,7 @@ function writeJson(filePath, value) {
 }
 
 /** 准备现场：清 `.mock/`（可选）→ cursor.json → `.orch/hosts/mock.json`。 */
-export function prepareScene({ root, scenario, reset = false }) {
+export function prepareScene({ root, scenario, reset = false, mockArgs = [] }) {
   const mockDir = path.join(root, '.mock');
   if (reset) fs.rmSync(mockDir, { recursive: true, force: true });
   fs.mkdirSync(mockDir, { recursive: true });
@@ -448,26 +448,69 @@ export function prepareScene({ root, scenario, reset = false }) {
   fs.writeFileSync(cursorPath, JSON.stringify({ next: 1 }), 'utf8');
 
   const hostPath = path.join(root, '.orch', 'hosts', 'mock.json');
-  writeJson(hostPath, hostConfigFor(root, scenario));
+  writeJson(hostPath, hostConfigFor(root, scenario, mockArgs));
 
   return {
     mockDir,
     cursorPath,
     hostPath,
     cursor: { next: 1 },
-    host: hostConfigFor(root, scenario),
+    host: hostConfigFor(root, scenario, mockArgs),
   };
 }
 
 // ---------------------------------------------------------------- 核心驱动
 
-function cleanEnv(extra = {}) {
-  const env = { ...process.env };
+export const MOCK_CAPS_VALUES = Object.freeze(['resume', 'load', 'both', 'none']);
+export const MOCK_CRASH_VALUES = Object.freeze(['after_first_update', 'twice']);
+
+/**
+ * I1.8 / M-7: translate the frozen `MAESTRO_MOCK_*` environment names into the
+ * mock agent's existing CLI switches. Only `NODE_ENV=test` is honoured.
+ * `MAESTRO_TEST_PAUSE` / `MAESTRO_FAULT` / `MAESTRO_TEST_SLOW_MS` /
+ * `MAESTRO_TEST_RECOVERY_HOLD` / `MAESTRO_TEST_GRAPH` are product-side seams and
+ * are passed through `buildRunEnv` byte-for-byte, never rewritten here.
+ */
+export function mockArgsFromEnv(env = process.env) {
+  if (env?.NODE_ENV !== 'test') return [];
+  const args = [];
+  if (MOCK_CAPS_VALUES.includes(env.MAESTRO_MOCK_CAPS)) args.push('--caps', env.MAESTRO_MOCK_CAPS);
+  if (env.MAESTRO_MOCK_RESUME === 'fail') args.push('--resume-fail');
+  if (env.MAESTRO_MOCK_LOAD === 'fail') args.push('--load-fail');
+  if (env.MAESTRO_MOCK_NEW_FAIL === '1') args.push('--new-fail');
+  if (MOCK_CRASH_VALUES.includes(env.MAESTRO_MOCK_CRASH)) args.push('--crash', env.MAESTRO_MOCK_CRASH);
+  if (env.MAESTRO_MOCK_SLOW === '1') args.push('--slow');
+  if (env.MAESTRO_MOCK_SPAWN_FAIL_ON_RECOVER === '1') args.push('--spawn-fail-on-recover');
+  const failures = Number(env.MAESTRO_MOCK_PROMPT_FAILURES);
+  if (Number.isInteger(failures) && failures > 0) args.push('--prompt-failures', String(failures));
+  if (typeof env.MAESTRO_MOCK_PROMPT_LOG === 'string' && env.MAESTRO_MOCK_PROMPT_LOG.length > 0) {
+    args.push('--prompt-log', env.MAESTRO_MOCK_PROMPT_LOG);
+  }
+  // Optional attribution for the NDJSON prompt log (AC-08 / AC-09 / AC-24).
+  if (typeof env.MAESTRO_MOCK_NODE_ID === 'string' && env.MAESTRO_MOCK_NODE_ID.length > 0) {
+    args.push('--node-id', env.MAESTRO_MOCK_NODE_ID);
+  }
+  const round = Number(env.MAESTRO_MOCK_ROUND);
+  if (Number.isInteger(round) && round > 0) args.push('--round', String(round));
+  return args;
+}
+
+/**
+ * The child environment used by `orch run`. Exported so the fixture contract
+ * test can prove the existing `MAESTRO_TEST_PAUSE` values are forwarded
+ * byte-for-byte (no fixture-side reinterpretation).
+ */
+export function buildRunEnv(env = process.env, extra = {}) {
+  const next = { ...env };
   // 环境覆盖优先级高于 host 配置；残留会让 mock 静默变回真实 DSH。
-  delete env.MAESTRO_DSH_EXE;
-  delete env.MAESTRO_DSH_BIN;
-  delete env.MAESTRO_DSH_ARGS;
-  return { ...env, NODE_ENV: 'test', ...extra };
+  delete next.MAESTRO_DSH_EXE;
+  delete next.MAESTRO_DSH_BIN;
+  delete next.MAESTRO_DSH_ARGS;
+  return { ...next, NODE_ENV: 'test', ...extra };
+}
+
+function cleanEnv(extra = {}) {
+  return buildRunEnv(process.env, extra);
 }
 
 function stopCore(root, env) {
@@ -691,7 +734,12 @@ async function main(argv) {
   const cwd = path.resolve(opts.cwd ?? path.join(root, 'demo-code-pass'));
   const task = opts.task ?? DEFAULT_TASK;
 
-  const prepared = prepareScene({ root, scenario: opts.scenario, reset: opts.reset });
+  const prepared = prepareScene({
+    root,
+    scenario: opts.scenario,
+    reset: opts.reset,
+    mockArgs: mockArgsFromEnv(buildRunEnv(process.env)),
+  });
 
   if (opts.prepareOnly) {
     const summary = {

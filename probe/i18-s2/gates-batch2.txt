@@ -1,0 +1,25 @@
+#1 core/daemon
+OK: 扫描 45 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+EXIT:0
+#2 registry
+OK: 扫描 11 个文件，src/registry 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+EXIT:0
+#3 三文件
+OK: 扫描 3 个文件，src/cli/roles.js, src/cli/skills.js, src/cli/workflows.js 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+EXIT:0
+#4 deps
+0
+#5 no CJK
+OK: no CJK
+---
+help lines:
+31
+recover exit:
+2
+diff-check:
+warning: in the working copy of 'docs/iterations/iteration-4/evidence/nfr-perf-atomic.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/iterations/iteration-4/evidence/nfr-perf-batch.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/iterations/iteration-4/evidence/nfr-perf-render.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test/fixtures/code-loop-driver.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test/fixtures/task-loop-driver.mjs', LF will be replaced by CRLF the next time Git touches it
+EXIT:0

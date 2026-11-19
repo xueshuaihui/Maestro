@@ -51,3 +51,18 @@
 | 裁-8f | `canResume` / `canLoad` 既是 `normalizeCapabilities` 的布尔出参字段、又是模块级谓词导出；`initialize()` 增一行只读 `lastInitializeResult` 缓存 | 两者并存、初始化返回结构未变；接受，不收敛 |
 
 **真实宿主面**：AC-25/26/27/57 本机无 DSH CLI，按 BR-48 判「阻塞」，WP-2 只做能力归一化与方言回退机检面，未用夹具冒充（留 WP-7 末批取证）。
+
+## 六、S2 第 2 批（WP-5 / WP-6）实现口径确认（裁-9）
+
+> 两个 WP 均无契约偏差，以下为主控对「实现比冻结口径更简 / 形态略有差异」的书面确认，供 WP-4 / WP-3 接线与 S3 取证遵循；**需求 v3 与拆分文档均不改动**。
+
+| 编号 | 事项 | 主控决定 |
+|---|---|---|
+| 裁-9a | WP-5 `NODE_PHASE_LABEL` 只有 4 个键（`blocked` / `ready` / `assigned` / `running`），不是 9 键表；9 个位置由 `nodeStateLabel()` 在缺省 `phase` 时回落既有 `NODE_LABEL` | 符合 D-2：`phase` 的取值域恰为这 4 个，9 态是 `state + phase` 投影。**不追加 5 个与 `NODE_LABEL` 同值的冗余键**；S3 按「9 位置全部可达、显示词逐字正确」取证，不按「表有 9 键」取证 |
+| 裁-9b | A-7（`handoff list` / 状态块）未新增任何导出，沿用既有 `HANDOFF_LABEL.pending` + `HANDOFF_RETRY_SUFFIX` | 需求 A-7 明写「不改既有行格式、不新增字段」，恢复后的 `待投递` 与 `重投 n/2` 本已由既有常量承载。**接受，不视为漏项** |
+| 裁-9c | 恢复摘要的数据来源 = `snapshot.recovery = {checkpointAt, skipped, round, maxRounds}`（与拆分 §3.4 冻结键同名）+ 缺省按节点推算兜底 | 键名与冻结契约一致。**约束 WP-4：必须显式设置 `recovery` 与 `recoveredAt` 两者**，不得只设 `recoveredAt`；否则 `maxRounds` 会退化为当前轮次、渲染出 `轮次 2/2` 而非 `2/3`。此条写进 WP-4 任务书 |
+| 裁-9d | A-3 的「事件 → 文案行」映射未在 `render.js` 实现，留 `main.js`（WP-4）接线 | 拆分 §2.10 已把 `main.js` 归 WP-4；WP-5 只交付 17 条模板与 `fill()`，避免与 WP-4 重复输出。**接受** |
+| 裁-9e | `renderGraphJson` 的 `nodes[]` 元素在节点带 `phase` 时透出 `phase` 键 | A-9 只冻结顶层 11 / 13 键，未冻结节点元素键集合；非 `phase` 节点（含全部既有内建快照）键集合逐字不变。**接受**；S3 按「非恢复实例节点形状逐字不变」取证 |
+| 裁-9f | mock agent 的能力广告实际形态为 `{close:{},list:{},resume:{}}`，不是 `{close:true,...}` | 与既有 mock 及真实 DSH 的 ACP 能力形态一致；D-4 归一化用 `Boolean(...)`，两种形态等价；键集严格为 `close/list/resume` 且 `resume` 分支不含 `load`。**接受** |
+| 裁-9g | `--prompt-failures` / `MAESTRO_MOCK_PROMPT_FAILURES` 增加第二个来源 `opts.promptFailures`，使场景模式也生效 | 缺省 0 时 `shouldFailPrompt(0, n)` 短路为 false，**既有场景分支逐字不变**；佐证：`test/wp11/fixture-delivery.test.js` 6/6、`test/wp13/**` 300 条（4 条既有红）、全量差集 0。**接受** |
+| 裁-9h | 批次 2 首轮全量出现 `--host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）` 红 | 失败原因是测试 `after` 钩子 `EBUSY: resource busy or locked, rmdir %TEMP%/maestro-wp7-hosterr-*`，堆栈指向沙箱 `node-safe-delete-shim.cjs`，**非产品逻辑**。隔离复跑 6/6 全绿（帧 `probe/i18-s2/flake-host-error.isolated.log`），第二次全量未复现。**按 flake 登记，不计新增红** |

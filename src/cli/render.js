@@ -78,6 +78,15 @@ import {
   SUMMARY_FAIL_LINE,
   SUMMARY_LOG_LINE,
   EVENTS_SKIPPED,
+  // I1.8 WP-5：节点精确位置、恢复 / 连接线 / 会话失败 / 复用行（附录 A-1 ~ A-6）。
+  NODE_PHASE_LABEL,
+  NODE_PHASE_SUFFIX,
+  RECOVERY_TEXT,
+  RECOVERY_GRAPH_TEXT,
+  CONNECTION_AGGREGATE_LABEL,
+  SESSION_FAILURE_TEXT,
+  ROLE_SESSION_POLICY_LINE,
+  fill,
 } from './labels.js';
 
 const STATE_LABEL = Object.freeze({
@@ -114,6 +123,21 @@ function stateLabel(object, state) {
   if (typeof state !== 'string' || state.length === 0) return null;
   const table = STATE_LABEL[object];
   return table?.[state] ?? state;
+}
+
+/**
+ * I1.8 A-1 / D-2：节点显示词优先取精确位置 `phase`（只在 `pending` / `running`
+ * 上出现），缺省 `phase` 的旧节点仍按 `state` 走既有 `NODE_LABEL`，逐字不变。
+ */
+function nodeStateLabel(node) {
+  const label = stateLabel('node', node?.state);
+  if (!label) return null;
+  const phase = node?.phase;
+  if (typeof phase === 'string' && phase.length > 0) {
+    const projected = NODE_PHASE_LABEL[phase];
+    if (typeof projected === 'string' && projected.length > 0) return projected;
+  }
+  return label;
 }
 
 function layerName(object) {
@@ -530,7 +554,7 @@ function codeBranchFragment(node) {
  */
 function renderNodeRow(node, snapshot, template, { forceQualifier = null, noDuration = false, includeBranch = false } = {}) {
   if (!node) return null;
-  const label = stateLabel('node', node.state);
+  const label = nodeStateLabel(node);
   if (!label) return null;
 
   const productPolicy = productPolicyOf(snapshot, template);
@@ -1308,6 +1332,8 @@ function graphNodes(snapshot, graph) {
         state: node?.state ?? 'pending',
         round: Number.isInteger(node?.round) ? node.round : 0,
       };
+      // I1.8 A-1：恢复实例的精确位置只在带 `phase` 时透出；旧节点键集合不变。
+      if (typeof node?.phase === 'string' && node.phase.length > 0) out.phase = node.phase;
       if (typeof node?.branch === 'string' && node.branch.length > 0) out.branch = node.branch;
       if (typeof node?.mergeStatus === 'string' && node.mergeStatus.length > 0) out.mergeStatus = node.mergeStatus;
       return out;
@@ -1323,6 +1349,8 @@ function graphNodes(snapshot, graph) {
       state: live?.state ?? 'pending',
       round: Number.isInteger(live?.round) ? live.round : 0,
     };
+    // I1.8 A-1：`phase` 只在真实存在时追加，非恢复实例的节点形状逐字不变。
+    if (typeof live?.phase === 'string' && live.phase.length > 0) node.phase = live.phase;
     // AC-12：把 code 角色节点的分支名与合并状态透出到图视图（仅 `orch instance graph`，非 run 路径）。
     if (typeof live?.branch === 'string' && live.branch.length > 0) node.branch = live.branch;
     if (typeof live?.mergeStatus === 'string' && live.mergeStatus.length > 0) node.mergeStatus = live.mergeStatus;
@@ -1397,6 +1425,12 @@ export function renderGraphJson(snapshot, graph) {
     approvals: projectById(snapshot?.approvals, 'approvalId'),
     current: graphCurrent(snapshot),
   };
+  // I1.8 M-8 / A-9：只在恢复实例上、`current` 之后追加 `recovery` / `connections`；
+  // 非恢复实例仍是上面这 11 个顶层键且顺序不变（A-9 / D-12）。
+  if (isRecovered(snapshot)) {
+    obj.recovery = recoveryJson(snapshot, graph);
+    obj.connections = connectionJson(snapshot);
+  }
   return JSON.stringify(obj, null, 2);
 }
 
@@ -1415,13 +1449,37 @@ export function renderGraphText(snapshot, graph) {
   const pausedSuffix = snapshot?.paused === true ? INSTANCE_PAUSED_SUFFIX : '';
   const lines = [`${LAYER.instance} ${id} · ${templateName} · ${state}${pausedSuffix}`];
 
+  // I1.8 A-4：恢复实例在实例行之后、节点行之前追加恢复摘要 + 连接线聚合；
+  // 非恢复实例 `renderRecoveryBlock` 返回空数组，版式逐字不变（D-12）。
+  for (const line of renderRecoveryBlock(snapshot, graph)) lines.push(line);
+
+  // I1.8 A-1：人工节点判定只用于文本行后缀，不把 `nodeType` 写进图 JSON 节点形状。
+  const nodeTypeById = new Map();
+  for (const def of graph?.nodes ?? []) {
+    const key = def?.nodeId ?? def?.id;
+    if (typeof key === 'string' && typeof def?.nodeType === 'string') nodeTypeById.set(key, def.nodeType);
+  }
+  for (const item of snapshotView(snapshot).nodes) {
+    const key = nodeIdOf(item);
+    if (key && typeof item?.nodeType === 'string' && !nodeTypeById.has(key)) nodeTypeById.set(key, item.nodeType);
+  }
+
   for (const node of graphNodes(snapshot, graph)) {
     const role = node.title ?? roleLabel(node.roleId) ?? '';
-    const nodeState = stateLabel('node', node.state) ?? '-';
+    const nodeState = nodeStateLabel(node) ?? '-';
     // A-3：节点号与角色之间用空格，其余字段之间用 ` · `。
     const head = [node.nodeId, role].filter((part) => typeof part === 'string' && part.length > 0).join(' ');
     const rest = [nodeState, `第 ${node.round} 轮`].filter((part) => typeof part === 'string' && part.length > 0).join(' · ');
     let line = rest ? `${head} · ${rest}` : head;
+    // I1.8 A-1：已分配节点追加「等待重新分配会话」；人工节点 `running` 追加「等待人工」。
+    const nodeType = nodeTypeById.get(node.nodeId);
+    const positionSuffix =
+      node.phase === 'assigned'
+        ? NODE_PHASE_SUFFIX.assigned
+        : nodeType === 'human' && node.state === 'running'
+          ? NODE_PHASE_SUFFIX.human
+          : null;
+    if (positionSuffix) line += ` · ${positionSuffix}`;
     // AC-12：code 角色节点追加分支名 + 合并状态片段（`graph` 视图专属，不进 run 路径）。
     const frag = codeBranchFragment(node);
     if (frag) line += ` ${frag}`;
@@ -1505,10 +1563,11 @@ export function renderRoleList({ counts, groups, rows }) {
  * 三种空态一律用 `ROLE_CLI_TEXT.placeholder`（`—`），不各自造占位符。
  *
  * @param {{roleRow:string, duty:string, skills:string[], tools:string[], wake:string[],
- *          source:{kind:'builtin'|'project', file:string}, instanceLine?:string|null}} input
+ *          source:{kind:'builtin'|'project', file:string}, instanceLine?:string|null,
+ *          sessionPolicy?:'reuse'|'fresh'|null}} input
  * @returns {string[]}
  */
-export function renderRoleShow({ roleRow, duty, skills, tools, wake, source, instanceLine }) {
+export function renderRoleShow({ roleRow, duty, skills, tools, wake, source, instanceLine, sessionPolicy }) {
   const placeholder = ROLE_CLI_TEXT.placeholder;
   const join = (values) => {
     const list = Array.isArray(values) ? values : [];
@@ -1523,8 +1582,12 @@ export function renderRoleShow({ roleRow, duty, skills, tools, wake, source, ins
     replaceAll(ROLE_CLI_TEXT.showSkills, { skills: join(skills) }),
     replaceAll(ROLE_CLI_TEXT.showTools, { tools: join(tools) }),
     replaceAll(ROLE_CLI_TEXT.showWake, { wake: join(wake) }),
-    replaceAll(template, { file: source?.file ?? placeholder })
   ];
+  // I1.8 A-5：只在角色文件显式声明 `session_policy` 时插入，位置固定在
+  // 「可唤醒」之后、「来源」之前；未声明时输出逐字不变（D-13）。
+  const policyLine = renderRoleSessionPolicyLine(sessionPolicy);
+  if (policyLine) lines.push(policyLine);
+  lines.push(replaceAll(template, { file: source?.file ?? placeholder }));
   if (typeof instanceLine === 'string' && instanceLine.length > 0) lines.push(instanceLine);
   return lines;
 }
@@ -2232,5 +2295,198 @@ export function renderTraceShow(payload) {
     }
   }
   return lines.join('\n');
+}
+
+// ===========================================================================
+// I1.8 WP-5 — 恢复行 / 恢复块 / 连接线 / 会话失败行（需求附录 A-2 ~ A-6）。
+//
+// 纪律：
+// 1. 全部为条件追加：只有实例带 `recoveredAt` 或对应数据存在时才产出内容；
+//    非恢复实例的既有渲染结果逐字不变（BR-44 / D-12）。
+// 2. 本段零中文：所有措辞来自 `labels.js`，`render.js` 只负责取数与占位替换。
+// 3. 不读盘、不发 IPC；输入是核心 / CLI 已组装好的快照。
+// ===========================================================================
+
+/** 恢复实例的唯一判据（A-2 / A-4 / A-9 / M-8）。 */
+function isRecovered(snapshot) {
+  return Boolean(snapshot?.recoveredAt);
+}
+
+/** 跳过数量：优先核心给出的 `recovery.skipped`，缺省按已完成节点数推算。 */
+function recoverySkipped(snapshot) {
+  const declared = snapshot?.recovery?.skipped;
+  if (Number.isInteger(declared)) return declared;
+  const { nodes } = snapshotView(snapshot);
+  return nodes.filter((node) => node?.state === 'done').length;
+}
+
+/** 轮次：优先核心给出的 `recovery.round`，缺省取节点里的最大轮次。 */
+function recoveryRound(snapshot) {
+  const declared = snapshot?.recovery?.round;
+  if (Number.isInteger(declared)) return declared;
+  const { nodes } = snapshotView(snapshot);
+  let round = 0;
+  for (const node of nodes) {
+    if (Number.isInteger(node?.round) && node.round > round) round = node.round;
+  }
+  return round;
+}
+
+/** 轮次上限：`recovery.maxRounds` → 快照 `maxRounds` → 图声明（取各节点上限的最大值）。 */
+function recoveryMaxRounds(snapshot, graph) {
+  const declared = snapshot?.recovery?.maxRounds;
+  if (Number.isInteger(declared)) return declared;
+  if (Number.isInteger(snapshot?.maxRounds)) return snapshot.maxRounds;
+  const table = graph?.maxRounds;
+  if (table && typeof table === 'object') {
+    let max = 0;
+    for (const value of Object.values(table)) {
+      if (Number.isInteger(value) && value > max) max = value;
+    }
+    if (max > 0) return max;
+  }
+  return null;
+}
+
+/** A-2：检查点时刻取 `HH:MM:SS`；已是时钟串时原样使用。 */
+function recoveryClock(snapshot) {
+  const raw = snapshot?.recovery?.checkpointAt ?? snapshot?.checkpointAt ?? snapshot?.recoveredAt;
+  if (typeof raw === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(raw)) return raw;
+  return formatClock(raw) ?? '--:--:--';
+}
+
+/**
+ * A-2 / A-3 第 1 行：`恢复：检查点 10:30:00 · 跳过 1 个已完成节点 · 轮次 2/3`。
+ * 非恢复实例返回 null（不打印该行）。上限缺失时退回当前轮次，避免打出悬空 `/`。
+ *
+ * @param {object} snapshot
+ * @param {object} [graph] 仅用于从图声明推算 `maxRounds`
+ * @returns {string|null}
+ */
+export function renderRecoveryLine(snapshot, graph) {
+  if (!isRecovered(snapshot)) return null;
+  const round = recoveryRound(snapshot);
+  const maxRounds = recoveryMaxRounds(snapshot, graph) ?? round;
+  return fill(RECOVERY_TEXT.summary, {
+    clock: recoveryClock(snapshot),
+    skipped: recoverySkipped(snapshot),
+    round,
+    maxRounds,
+  });
+}
+
+/** 连接线列表：核心按交接包优先级重算后放进快照的只读投影。 */
+function connectionList(snapshot) {
+  const list = Array.isArray(snapshot?.connections) ? snapshot.connections : [];
+  return list.filter((item) => item && typeof item === 'object');
+}
+
+/** 连接线方向：`from→to（回流）`；from/to 允许是节点号或角色 id。 */
+function connectionDirection(connection, snapshot) {
+  const { nodes } = snapshotView(snapshot);
+  const roleText = (value) => {
+    if (typeof value !== 'string' || value.length === 0) return null;
+    if (typeof ROLE_LABEL[value] === 'string') return ROLE_LABEL[value];
+    const node = nodes.find((item) => nodeIdOf(item) === value);
+    return roleLabel(node?.roleId);
+  };
+  const from = roleText(connection?.from) ?? String(connection?.from ?? '');
+  const to = roleText(connection?.to) ?? String(connection?.to ?? '');
+  const kind = typeof connection?.kind === 'string' ? connection.kind : 'forward';
+  return formatHandoffDirection(from, to, kind);
+}
+
+/**
+ * A-4：`连接线：测试→开发（回流） 待投递（重投中）`。
+ * 无方向信息时退回原始 from→to，绝不静默丢行。
+ */
+export function renderConnectionLine(connection, snapshot) {
+  const aggregate = connection?.aggregate;
+  const aggregateLabel =
+    (typeof aggregate === 'string' ? CONNECTION_AGGREGATE_LABEL[aggregate] : null) ?? aggregate ?? '';
+  return fill(RECOVERY_GRAPH_TEXT.connectionLine, {
+    direction: connectionDirection(connection, snapshot),
+    aggregateLabel,
+  });
+}
+
+/**
+ * A-4：`orch instance graph` 的恢复块（恢复摘要 + 每条连接线一行）。
+ * 非恢复实例返回 `[]`；恢复实例没有连接线时只有摘要行（不打印 `连接线：` 段）。
+ *
+ * @returns {string[]}
+ */
+export function renderRecoveryBlock(snapshot, graph) {
+  if (!isRecovered(snapshot)) return [];
+  const lines = [renderRecoveryLine(snapshot, graph)];
+  for (const connection of connectionList(snapshot)) {
+    lines.push(renderConnectionLine(connection, snapshot));
+  }
+  return lines.filter((line) => typeof line === 'string' && line.length > 0);
+}
+
+/**
+ * AC-10：`orch status --instance` / `orch instance status` 的实例头两行。
+ * WP-4 接线时用本函数替换单行 `renderInstanceLine`，保证恢复行只出现一次。
+ *
+ * @returns {string[]}
+ */
+export function renderInstanceStatusLines(snapshot, graph) {
+  const lines = [renderInstanceLine(snapshot)];
+  const recovery = renderRecoveryLine(snapshot, graph);
+  if (recovery) lines.push(recovery);
+  return lines;
+}
+
+/** A-9 / §3.4：`recovery` 恰 4 键（顺序固定）。 */
+function recoveryJson(snapshot, graph) {
+  return {
+    checkpointAt:
+      snapshot?.recovery?.checkpointAt ?? snapshot?.checkpointAt ?? snapshot?.recoveredAt ?? null,
+    skipped: recoverySkipped(snapshot),
+    round: recoveryRound(snapshot),
+    maxRounds: recoveryMaxRounds(snapshot, graph),
+  };
+}
+
+/** A-9 / §3.4：`connections[]` 每项恰 4 键（`from` / `to` / `kind` / `aggregate`）。 */
+function connectionJson(snapshot) {
+  return connectionList(snapshot).map((connection) => ({
+    from: connection?.from ?? null,
+    to: connection?.to ?? null,
+    kind: typeof connection?.kind === 'string' ? connection.kind : 'forward',
+    aggregate: connection?.aggregate ?? null,
+  }));
+}
+
+/** A-6 第 1 行：`会话进程已退出：正在重建会话（节点 T-003 · 轮次 2/3）`。 */
+export function renderSessionCrashLine({ nodeId, round, maxRounds } = {}) {
+  return fill(SESSION_FAILURE_TEXT.crash, { nodeId, round, maxRounds });
+}
+
+/** A-6 第 2 行：`会话已重建 sess-005（节点 T-003 · 轮次 2/3）`。 */
+export function renderSessionRebuiltLine({ sessionId, nodeId, round, maxRounds } = {}) {
+  return fill(SESSION_FAILURE_TEXT.rebuilt, { sessionId, nodeId, round, maxRounds });
+}
+
+/** A-6 第 3 行：`会话重建失败：已升级人工（节点 T-003 · 轮次 2/3）`。 */
+export function renderSessionRebuildFailedLine({ nodeId, round, maxRounds } = {}) {
+  return fill(SESSION_FAILURE_TEXT.rebuildFailed, { nodeId, round, maxRounds });
+}
+
+/** A-6 第 4 行：`会话无进展：判定为运行慢，不重建会话（节点 T-003 · 已等待 10m）`。 */
+export function renderSessionSlowLine({ nodeId, minutes } = {}) {
+  return fill(SESSION_FAILURE_TEXT.slow, { nodeId, minutes });
+}
+
+/** A-6 第 5 行：`节点 T-003 超时：按运行慢处理，已升级人工（节点 T-003 · 轮次 2/3）`。 */
+export function renderNodeTimeoutLine({ nodeId, round, maxRounds } = {}) {
+  return fill(SESSION_FAILURE_TEXT.timeout, { nodeId, round, maxRounds });
+}
+
+/** A-5：`  会话复用：复用（reuse）` / `  会话复用：每任务新会话（fresh）`；未声明返回 null。 */
+export function renderRoleSessionPolicyLine(policy) {
+  if (policy !== 'reuse' && policy !== 'fresh') return null;
+  return ROLE_SESSION_POLICY_LINE[policy];
 }
 

@@ -180,13 +180,13 @@ function usage() {
 }
 
 /** 宿主配置：mock agent 走与 DSH 完全相同的 `host-config → stdio → acp-client` 路径。 */
-export function hostConfigFor(root, scenario) {
+export function hostConfigFor(root, scenario, extraArgs = []) {
   return {
     id: HOST_ID,
     transport: 'stdio',
     launch: {
       command: process.execPath,
-      args: [MOCK_AGENT_PATH, '--root', root, '--suite', SUITE, '--scenario', scenario],
+      args: [MOCK_AGENT_PATH, '--root', root, '--suite', SUITE, '--scenario', scenario, ...extraArgs],
     },
   };
 }
@@ -200,7 +200,7 @@ function writeJson(filePath, value) {
  * 准备现场：清 `.mock/`（可选）→ cursor.json → `.orch/hosts/dsh.json`。
  * 只碰这两处，不创建实例、不写 state.json。
  */
-export function prepareTaskScene({ root, scenario, reset = false }) {
+export function prepareTaskScene({ root, scenario, reset = false, mockArgs = [] }) {
   const mockDir = path.join(root, '.mock');
   if (reset) fs.rmSync(mockDir, { recursive: true, force: true });
   fs.mkdirSync(mockDir, { recursive: true });
@@ -211,7 +211,7 @@ export function prepareTaskScene({ root, scenario, reset = false }) {
   fs.writeFileSync(cursorPath, JSON.stringify({ next: 1 }), 'utf8');
 
   const hostPath = path.join(root, '.orch', 'hosts', `${HOST_ID}.json`);
-  const host = hostConfigFor(root, scenario);
+  const host = hostConfigFor(root, scenario, mockArgs);
   writeJson(hostPath, host);
 
   return { mockDir, cursorPath, hostPath, cursor: { next: 1 }, host };
@@ -219,13 +219,49 @@ export function prepareTaskScene({ root, scenario, reset = false }) {
 
 // ---------------------------------------------------------------- 核心驱动
 
+export const MOCK_CAPS_VALUES = Object.freeze(['resume', 'load', 'both', 'none']);
+export const MOCK_CRASH_VALUES = Object.freeze(['after_first_update', 'twice']);
+
+/**
+ * I1.8 / M-7：把冻结的 `MAESTRO_MOCK_*` 环境名转成 mock agent 既有/新增的
+ * CLI 开关（`--prompt-failures` 等）；仅 `NODE_ENV=test` 生效。
+ * `MAESTRO_TEST_*` 产品侧接缝由 `buildRunEnv` 原样透传，不做任何改写。
+ */
+export function mockArgsFromEnv(env = process.env) {
+  if (env?.NODE_ENV !== 'test') return [];
+  const args = [];
+  if (MOCK_CAPS_VALUES.includes(env.MAESTRO_MOCK_CAPS)) args.push('--caps', env.MAESTRO_MOCK_CAPS);
+  if (env.MAESTRO_MOCK_RESUME === 'fail') args.push('--resume-fail');
+  if (env.MAESTRO_MOCK_LOAD === 'fail') args.push('--load-fail');
+  if (env.MAESTRO_MOCK_NEW_FAIL === '1') args.push('--new-fail');
+  if (MOCK_CRASH_VALUES.includes(env.MAESTRO_MOCK_CRASH)) args.push('--crash', env.MAESTRO_MOCK_CRASH);
+  if (env.MAESTRO_MOCK_SLOW === '1') args.push('--slow');
+  if (env.MAESTRO_MOCK_SPAWN_FAIL_ON_RECOVER === '1') args.push('--spawn-fail-on-recover');
+  const failures = Number(env.MAESTRO_MOCK_PROMPT_FAILURES);
+  if (Number.isInteger(failures) && failures > 0) args.push('--prompt-failures', String(failures));
+  if (typeof env.MAESTRO_MOCK_PROMPT_LOG === 'string' && env.MAESTRO_MOCK_PROMPT_LOG.length > 0) {
+    args.push('--prompt-log', env.MAESTRO_MOCK_PROMPT_LOG);
+  }
+  if (typeof env.MAESTRO_MOCK_NODE_ID === 'string' && env.MAESTRO_MOCK_NODE_ID.length > 0) {
+    args.push('--node-id', env.MAESTRO_MOCK_NODE_ID);
+  }
+  const round = Number(env.MAESTRO_MOCK_ROUND);
+  if (Number.isInteger(round) && round > 0) args.push('--round', String(round));
+  return args;
+}
+
+/** `orch run` 的子进程环境；导出供夹具契约测试验证既有暂停值原样透传。 */
+export function buildRunEnv(env = process.env, extra = {}) {
+  const next = { ...env };
+  delete next.MAESTRO_DSH_EXE;
+  delete next.MAESTRO_DSH_BIN;
+  delete next.MAESTRO_DSH_ARGS;
+  return { ...next, NODE_ENV: 'test', ...extra };
+}
+
 /** 环境覆盖优先级高于 host 配置；残留会让 mock 静默变回真实 DSH。 */
 function cleanEnv(extra = {}) {
-  const env = { ...process.env };
-  delete env.MAESTRO_DSH_EXE;
-  delete env.MAESTRO_DSH_BIN;
-  delete env.MAESTRO_DSH_ARGS;
-  return { ...env, NODE_ENV: 'test', ...extra };
+  return buildRunEnv(process.env, extra);
 }
 
 function stopCore(root, env) {
@@ -357,7 +393,12 @@ async function main(argv) {
   const cwd = path.resolve(opts.cwd ?? path.join(root, 'demo-doc'));
   const task = opts.task ?? DEFAULT_TASK;
 
-  const prepared = prepareTaskScene({ root, scenario: opts.scenario, reset: opts.reset });
+  const prepared = prepareTaskScene({
+    root,
+    scenario: opts.scenario,
+    reset: opts.reset,
+    mockArgs: mockArgsFromEnv(buildRunEnv(process.env)),
+  });
 
   if (opts.prepareOnly) {
     process.stdout.write(`${JSON.stringify({

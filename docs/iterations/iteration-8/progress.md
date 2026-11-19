@@ -9,7 +9,7 @@
 |---|---|---|
 | **S0 需求** | **PASS**（提交 `760b8a1`） | 需求 v3（1419 行 / 67 AC / 54 BR / 8 NFR / M-8 / C-18 / 附录 A~D）；**3 轮干净评审**：r1 FAIL（F-01~F-24）、r2 FAIL（N-01~N-05）、**r3 PASS**（阻断 0 / 建议 0，DoR 13/13、覆盖表 15/15、反向扫描无夹带缺漏）；`requirement-understanding.md` 596 行（8 节 + 67 条 Given 可构造性核查） |
 | **S1 拆分** | **PASS**（提交 `ae89f27`） | `docs/iterations/iteration-8.md` 812 行 / 8 节 / 7 WP / AC 67/67 满覆盖 / 文件零交集 / DAG 无环 / 10 个契约冻结点；**2 轮独立评审**：r1 FAIL（A⑤ 唯一判据 FAIL + S-01~S-07 建议）、**r2 PASS**（23/23 判据、阻断 0 / 建议 0） |
-| **S2 实现** | 进行中（第 1 批 WP-1/WP-2 已随本提交落地） | 5 批：① WP-1+WP-2 ✅ → ② WP-5+WP-6 → ③ WP-4（单线）→ ④ WP-3 → ⑤ WP-7（末批单线）。每批主控复跑门禁后提交。**遗留**：门禁 ④「三主链与集成版 `d4b0f94` 归一化 diff 为空」需按集成版重建逐字基线后补证（见下方补记），S2 收口前必须闭合 |
+| **S2 实现** | 进行中（第 1 批 WP-1/WP-2、第 2 批 WP-5/WP-6 已落地） | 5 批：① WP-1+WP-2 ✅ → ② WP-5+WP-6 ✅ → ③ WP-4（单线）→ ④ WP-3 → ⑤ WP-7（末批单线）。每批主控复跑门禁后提交。**遗留**：门禁 ④「三主链与集成版 `d4b0f94` 归一化 diff 为空」需按集成版重建逐字基线后补证（见下方补记），S2 收口前必须闭合。**口径补充**：`d4b0f94` 之后 main 已依次合入 I1.7~I1.12，三主链与全量的对照基线统一改用「I1.8 开工点」`014fa6a`（见下方批次 2 门禁段），避免把前序迭代的合法变更记成 I1.8 回归 |
 | **S3 验收** | 未开始 | `probe/acc8-f-*` 四件套 + `acc8-cases/` 67 用例 + `evidence/`；主控独立复跑全部批次 |
 | **S4 收口** | 未开始 | 终验 Agent + `report.md` / `final-verification.md` / `acceptance-*.md`，Done 七项判定 |
 
@@ -36,9 +36,42 @@
 - **处置声明**：本批复跑覆盖的 `docs/iterations/iteration-6/evidence/AC-49.*`、`probe/acc6-f-parts/AC-49.md`、`probe/acc6-f-results.jsonl` 已**恢复为 HEAD**，I1.6 已 PASS 的 65/65 证据链不被「不通过」结果污染；重跑原始帧另存本迭代 `evidence/gate-batch1/` 供复核。
 - **门禁 ④ 尚未闭合**：§2.5 要求「与集成版 `d4b0f94` 归一化 diff 为空」，本批用 `0cd113b` 存量基线的探索性复跑不能替代该判据；S2 收口前须以 `d4b0f94` 重建三链逐字基线并补证，S4 报告需列 O-I2。
 
+### S2 第 2 批（WP-5 / WP-6）门禁实跑（主控，2026-11-19）
+
+**对照基线口径**：本批开工点 = `014fa6a`（当前 main，已含 I1.7~I1.12）。基线全量帧与红名单固化在
+`probe/i18-s2/baseline-014fa6a-{full.log,reds.txt}`：**1841 / 1808 pass / 22 fail / 11 skip**。
+不再使用 `992` 条旧基线（那是 I1.9 之前的规模），也不把 `d4b0f94` 当作全量对照（其后已有 4 个迭代合法改输出）。
+
+| 门禁 | 结果 |
+|---|---|
+| 全量 `node --test --test-concurrency=1 --test-timeout=120000 --test-force-exit "test/**/*.test.js"` | **1872 / 1840 pass / 21 fail / 11 skip**（基线 1841 条 → **+31 条** = WP-5 的 12 + WP-6 的 19）；帧 `probe/i18-s2/batch2-full.log` |
+| 失败集合差集 | **新增红 0**（21 条全部 ⊆ 基线 22 条）；基线红 `live 取消` 本批消失（帧 `probe/i18-s2/batch2-reds.txt`） |
+| 首轮全量的 1 条额外红 | `--host-error 早返回（-32603）`，失败在测试 `after` 钩子 `EBUSY: rmdir`（沙箱 `node-safe-delete-shim.cjs`）。隔离复跑 **6/6 全绿**（帧 `probe/i18-s2/flake-host-error.isolated.log`），第二次全量未复现 → 按 flake 登记，不计新增红（裁-9h） |
+| `test/wp13/**` 全量 | **300 条 / 287 pass / 4 fail / 9 skip**；4 条（`AC-04`、`AC-27`、`S-07`、`desktop port listen`）**逐条命中基线红名单**，非本批引入 |
+| 既有基线锁死 | `test/wp2/labels.test.js` **29/29**、`test/wp15/**` **134/134** 全绿（I1.11 / I1.12 冻结键零破坏） |
+| D-11 五条纯净门禁 | #1 `src/core,src/daemon`（45 文件）exit 0；#2 `src/registry`（11 文件）exit 0；#3 三文件口径（3 文件）exit 0；#4 `dependencies` = **0**；#5 输出 `OK: no CJK`。帧 `probe/i18-s2/gates-batch2.txt` |
+| 用法块 / 命令树 | `USAGE_LINES` 仍 **25 行**、`--help` 31 行（25 + I1.12 的 6）；`orch recover` 仍退 **2**（未新增 CLI 命令） |
+| 行尾 / 空白 | 交付文件统一 LF（提交时由 `core.autocrlf` 规范化）；`git diff --check` exit 0 |
+| 历史证据污染 | `test/wp10/perf.test.js` 覆盖 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 的老问题复现，已用 `git -c core.autocrlf=false checkout-index -f -- <三路径>` 恢复，`git diff --stat` 为空 |
+
+**实现口径裁决 裁-9a~9h**（`decisions.md` 第六节）：`NODE_PHASE_LABEL` 保持 4 键、A-7 不新增导出、
+恢复摘要须由 WP-4 同时设 `recovery` 与 `recoveredAt`、A-3 事件映射留 `main.js`、节点元素按需透出 `phase`、
+mock 能力广告用 `{}` 形态、`--prompt-failures` 双来源、flake 归因。
+
+### WP-4 任务书必须吸收的三条（批次 2 交付时的接口约定）
+
+1. **`parsePauseSpec` 白名单**扩 `after_assign[:<节点>]` / `after_handoff_created[:<包号>]`，既有三值语义不变；同样新增 `MAESTRO_FAULT=checkpoint_write:fail`、`MAESTRO_TEST_SLOW_MS`、`MAESTRO_TEST_RECOVERY_HOLD=after_assign`、`MAESTRO_TEST_GRAPH`（仅 `NODE_ENV=test` + 绝对存在的文件）。
+2. **恢复摘要数据契约**：`state.recovery = {checkpointAt, skipped, round, maxRounds}` 与 `recoveredAt` **必须同时写**（裁-9c）；`render.js` 从 `snapshot.recovery` 读，缺该对象会退回按节点推算，可能渲染出 `轮次 2/2`。
+3. **`main.js` 接线点**：`instance status` / `instance graph` 用 `renderInstanceStatusLines` / `renderRecoveryBlock`；
+   `instance log` 的 `recovery.*` / `session.crash` / `session.slow` / `session.rebuild_failed` / `checkpoint.write_failed`
+   事件行由 WP-4 在 `main.js` 前置分派，模板取 `RECOVERY_TEXT` / `SESSION_FAILURE_TEXT`。
+   另：`MAESTRO_MOCK_NEW_FAIL` / `MAESTRO_MOCK_SPAWN_FAIL_ON_RECOVER` 只在「重建/恢复现场」生效，**首次派发不会失败**，不要据此写 AC-43 的首次路径。
+
+
+
 ## 裁决台账（`decisions.md`）
 
-裁-1（状态机 7 项 + 9 态投影）/ 裁-2（D-11 三文件口径）/ 裁-3（会话 `escalated` 沿用既有指示器）/ 裁-4（AC-54 内嵌 D-11 逐字副本）/ 裁-5（D-9 行号 `:588~592`）/ 裁-6（`session_policy` 命名）/ 裁-7（§8 措辞同步「已裁决」）。
+裁-1（状态机 7 项 + 9 态投影）/ 裁-2（D-11 三文件口径）/ 裁-3（会话 `escalated` 沿用既有指示器）/ 裁-4（AC-54 内嵌 D-11 逐字副本）/ 裁-5（D-9 行号 `:588~592`）/ 裁-6（`session_policy` 命名）/ 裁-7（§8 措辞同步「已裁决」）/ **裁-8a~8f（批次 1 实现口径）/ 裁-9a~9h（批次 2 实现口径）**。
 
 ## S2 批次与门禁口径
 

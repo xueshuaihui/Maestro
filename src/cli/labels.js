@@ -1148,3 +1148,137 @@ export const DESKTOP_VIEW_ASSETS = Object.freeze('角色与技能库');
 export const DESKTOP_VIEW_OCCUPANCY = Object.freeze('角色占用');
 export const DESKTOP_VIEW_CANVAS = Object.freeze('工作流画布');
 export const DESKTOP_VIEW_EVIDENCE = Object.freeze('证据浏览');
+
+// ===========================================================================
+// I1.8 WP-5 — 实例恢复的用户可见文案（需求附录 A-1 ~ A-6 / A-10 逐字）。
+//
+// 纪律（M-6 / D-11）：
+// 1. 只在文件末尾追加；上面所有既有表（六张状态表 / USAGE_LINES / REASON_LABEL …）
+//    一个键都不加不改。
+// 2. 本文件是中文唯一来源；`render.js` 与本迭代其它消费者只引用这里的键。
+// 3. 恢复相关行只在实例带 `recoveredAt`（或对应数据）时由 `render.js` 追加；
+//    非恢复路径的输出逐字不变（BR-44 / D-12）。
+// 4. 占位符沿用既有 `{n}` / `{id}` / `{role}` 风格；A-3 / A-6 的模板逐字取自
+//    需求附录，保留文档里的中文占位名（`{节点号}` / `{轮}` / `{上限}` …）。
+//    `fill()` 同时接受文档占位名与 `nodeId` / `round` / `maxRounds` 等 ASCII 别名，
+//    调用方不必手写中文键。
+// 5. 所有新增常量一律 `Object.freeze`。
+// ===========================================================================
+
+/**
+ * A-1 / D-2：节点「精确位置」显示词。`phase` 只允许出现在 `pending` / `running`
+ * 上，故只有四个取值；缺省 `phase` 的旧节点仍走既有 `NODE_LABEL`（不改那张表）。
+ */
+export const NODE_PHASE_LABEL = Object.freeze({
+  blocked: '待执行',
+  ready: '待执行',
+  assigned: '已分配',
+  running: '执行中'
+});
+
+/** A-1：`orch instance graph` 节点行的条件后缀（已分配 / 人工节点等待人工）。 */
+export const NODE_PHASE_SUFFIX = Object.freeze({
+  assigned: '等待重新分配会话',
+  human: '等待人工'
+});
+
+/**
+ * A-2 / A-3 / A-4：恢复摘要、方言、角色 / 交接包 / 人工节点恢复、降级兜底与
+ * 检查点写失败的逐字短语。`summary` 同时是 A-2 的状态行与 A-3 的第 1 行。
+ */
+export const RECOVERY_TEXT = Object.freeze({
+  summary: '恢复：检查点 {HH:MM:SS} · 跳过 {N} 个已完成节点 · 轮次 {轮}/{上限}',
+  sessionResume: '恢复：会话 {会话号} · session/resume（不回放）',
+  sessionLoad: '恢复：会话 {会话号} · session/load（回放）',
+  sessionNew: '恢复：会话 {会话号} · session/new（新建）',
+  fallbackResumeToLoad: '恢复：session/resume 失败，回退 session/load（回放）',
+  fallbackLoadToNew: '恢复：session/load 失败，回退 session/new（新建）',
+  roleUnrecoverable: '恢复：角色 {角色中文名} · 服务中 → 可用（会话不可恢复）',
+  roleRebuilt: '恢复：角色 {角色中文名} · 不可用 → 可用（会话已重建）',
+  handoffCreated: '恢复：交接包 {包号} 已构造 → 继续投递',
+  sessionReuse: '会话 复用 {会话号}（角色 {角色中文名}）',
+  connectionRedeliver: '恢复：连接线 {方向} 已投递 → 待投递（重投）',
+  humanHeld: '恢复：人工节点 {节点号} 保持等待人工（不重派）',
+  recordFallback: '按实例记录恢复（可能重跑当前轮）',
+  legacyNoCheckpoint: '旧实例无检查点：已中断（如需继续请新建实例）',
+  failed: '恢复失败：{原因}；实例已中断（可执行 orch instance log 查看详情）',
+  checkpointWriteFailed: '检查点写入失败：{原因}；本次进展已保存，崩溃恢复可能回退到上一个检查点',
+  reverify: '重新核对：{节点号} · 证据重新校验（不重放会话）'
+});
+
+/** A-4：`orch instance graph` 的连接线聚合行（每条连接线一行）。 */
+export const RECOVERY_GRAPH_TEXT = Object.freeze({
+  connectionLine: '连接线：{方向} {聚合}'
+});
+
+/**
+ * A-4 / D-6：连接线聚合状态 → 文本行里的显示词。优先级由核心重算，
+ * 这里只负责逐字映射；`not_started` 与 I1.10 的既有桌面词一致（未开始）。
+ */
+export const CONNECTION_AGGREGATE_LABEL = Object.freeze({
+  not_started: '未开始',
+  rejected: '已拒绝',
+  expired: '已过期',
+  pending: '待投递（重投中）',
+  delivered: '已投递',
+  accepted: '已接受',
+  consumed: '已完成'
+});
+
+/** A-6：会话崩溃 / 重建 / 运行慢 / 超时的五行逐字文案。 */
+export const SESSION_FAILURE_TEXT = Object.freeze({
+  crash: '会话进程已退出：正在重建会话（节点 {节点号} · 轮次 {轮}/{上限}）',
+  rebuilt: '会话已重建 {会话号}（节点 {节点号} · 轮次 {轮}/{上限}）',
+  rebuildFailed: '会话重建失败：已升级人工（节点 {节点号} · 轮次 {轮}/{上限}）',
+  slow: '会话无进展：判定为运行慢，不重建会话（节点 {节点号} · 已等待 {N}m）',
+  timeout: '节点 {节点号} 超时：按运行慢处理，已升级人工（节点 {节点号} · 轮次 {轮}/{上限}）'
+});
+
+/** A-5：`orch role show` 的会话复用行（只在角色显式声明 `session_policy` 时显示）。 */
+export const ROLE_SESSION_POLICY_LINE = Object.freeze({
+  reuse: '  会话复用：复用（reuse）',
+  fresh: '  会话复用：每任务新会话（fresh）'
+});
+
+/** A-10：角色校验新原因码的明细文案（`ROLE_SESSION_POLICY_INVALID`）。 */
+export const ROLE_SESSION_POLICY_INVALID = Object.freeze('会话复用策略不合法：{value}（可选 reuse / fresh）');
+
+/**
+ * 文档占位名 → 调用方常用 ASCII 键的别名表。`{N}` 的取值按模板语境在 `fill()`
+ * 内单独解析（`N` / `n` / `skipped` / `minutes`）。
+ */
+const PLACEHOLDER_ALIASES = Object.freeze({
+  'HH:MM:SS': 'clock',
+  '会话号': 'sessionId',
+  '角色中文名': 'role',
+  '包号': 'handoffId',
+  '方向': 'direction',
+  '原因': 'reason',
+  '节点号': 'nodeId',
+  '轮': 'round',
+  '上限': 'maxRounds',
+  '聚合': 'aggregateLabel'
+});
+
+/**
+ * 占位替换（唯一实现；`render.js` 与本迭代消费者共用）。支持 `{name}` 形式的
+ * 任意占位（含 `{HH:MM:SS}` / `{轮}` 这类非 `\w` 字符），未知占位替换为空串。
+ *
+ * @param {string} template
+ * @param {object} [vars]
+ * @returns {string}
+ */
+export function fill(template, vars = {}) {
+  const values = vars && typeof vars === 'object' ? vars : {};
+  return String(template).replace(/\{([^{}]+)\}/g, (match, key) => {
+    let value = values[key];
+    if (value === undefined || value === null) {
+      const alias = PLACEHOLDER_ALIASES[key];
+      if (alias) value = values[alias];
+    }
+    if ((value === undefined || value === null) && key === 'N') {
+      value = values.N ?? values.n ?? values.skipped ?? values.minutes;
+    }
+    return value === undefined || value === null ? '' : String(value);
+  });
+}

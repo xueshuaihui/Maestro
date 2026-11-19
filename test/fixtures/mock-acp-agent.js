@@ -71,6 +71,19 @@ function parseArgv(argv) {
     scenario: null,
     suite: null,
     consumeOnly: false,
+    // I1.8 / M-7 (test-only, additive): capability advertisement and fault
+    // injection. All default to the pre-I1.8 behaviour, so existing scenarios
+    // and assertions are untouched.
+    caps: null,
+    resumeFail: false,
+    loadFail: false,
+    newFail: false,
+    crash: null,
+    slow: false,
+    spawnFailOnRecover: false,
+    promptLog: null,
+    nodeId: null,
+    round: null,
     help: false,
   };
   const nextValue = (i, inline) => (inline !== undefined ? inline : argv[i + 1]);
@@ -142,6 +155,53 @@ function parseArgv(argv) {
       case '--consume-only':
         opts.consumeOnly = true;
         break;
+      // I1.8 / M-7: additive switches. They never alter an existing switch.
+      case '--caps': {
+        const value = nextValue(i, inline);
+        if (inline === undefined) i += 1;
+        if (['resume', 'load', 'both', 'none'].includes(value)) opts.caps = value;
+        break;
+      }
+      case '--crash': {
+        const value = nextValue(i, inline);
+        if (inline === undefined) i += 1;
+        if (['after_first_update', 'twice'].includes(value)) opts.crash = value;
+        break;
+      }
+      case '--prompt-log': {
+        const value = nextValue(i, inline);
+        if (inline === undefined) i += 1;
+        opts.promptLog = value ?? null;
+        break;
+      }
+      case '--node-id': {
+        const value = nextValue(i, inline);
+        if (inline === undefined) i += 1;
+        opts.nodeId = value ?? null;
+        break;
+      }
+      case '--round': {
+        const value = nextValue(i, inline);
+        if (inline === undefined) i += 1;
+        const n = Number(value);
+        opts.round = Number.isInteger(n) && n > 0 ? n : null;
+        break;
+      }
+      case '--resume-fail':
+        opts.resumeFail = true;
+        break;
+      case '--load-fail':
+        opts.loadFail = true;
+        break;
+      case '--new-fail':
+        opts.newFail = true;
+        break;
+      case '--slow':
+        opts.slow = true;
+        break;
+      case '--spawn-fail-on-recover':
+        opts.spawnFailOnRecover = true;
+        break;
       case '--help':
         opts.help = true;
         break;
@@ -180,6 +240,45 @@ function parseArgv(argv) {
 
 const opts = parseArgv(process.argv.slice(2));
 
+/**
+ * I1.8 / M-7 environment fallback.
+ *
+ * The two drivers translate `MAESTRO_MOCK_*` into the CLI switches above; this
+ * fallback exists so a fixture test can also spawn the agent directly with the
+ * frozen environment names. It is a no-op unless `NODE_ENV=test`, and explicit
+ * CLI switches always win. Production paths never read these names.
+ */
+function applyMockEnv(env) {
+  if (env?.NODE_ENV !== 'test') return;
+  if (opts.caps === null && ['resume', 'load', 'both', 'none'].includes(env.MAESTRO_MOCK_CAPS)) {
+    opts.caps = env.MAESTRO_MOCK_CAPS;
+  }
+  if (env.MAESTRO_MOCK_RESUME === 'fail') opts.resumeFail = true;
+  if (env.MAESTRO_MOCK_LOAD === 'fail') opts.loadFail = true;
+  if (env.MAESTRO_MOCK_NEW_FAIL === '1') opts.newFail = true;
+  if (opts.crash === null && ['after_first_update', 'twice'].includes(env.MAESTRO_MOCK_CRASH)) {
+    opts.crash = env.MAESTRO_MOCK_CRASH;
+  }
+  if (env.MAESTRO_MOCK_SLOW === '1') opts.slow = true;
+  if (env.MAESTRO_MOCK_SPAWN_FAIL_ON_RECOVER === '1') opts.spawnFailOnRecover = true;
+  if (opts.promptFailures === 0) {
+    const n = Number(env.MAESTRO_MOCK_PROMPT_FAILURES);
+    if (Number.isInteger(n) && n > 0) opts.promptFailures = n;
+  }
+  if (opts.promptLog === null && typeof env.MAESTRO_MOCK_PROMPT_LOG === 'string' && env.MAESTRO_MOCK_PROMPT_LOG.length > 0) {
+    opts.promptLog = env.MAESTRO_MOCK_PROMPT_LOG;
+  }
+  if (opts.nodeId === null && typeof env.MAESTRO_MOCK_NODE_ID === 'string' && env.MAESTRO_MOCK_NODE_ID.length > 0) {
+    opts.nodeId = env.MAESTRO_MOCK_NODE_ID;
+  }
+  if (opts.round === null) {
+    const n = Number(env.MAESTRO_MOCK_ROUND);
+    if (Number.isInteger(n) && n > 0) opts.round = n;
+  }
+}
+
+applyMockEnv(process.env);
+
 const MOCK_USAGE = [
   '用法（I1.1 旧开关，行为不变）：node mock-acp-agent.js [--permission=ask|deny|auto] ...',
   '用法（I1.2 场景）：node mock-acp-agent.js --root <项目根绝对路径> --scenario <场景名>',
@@ -214,6 +313,30 @@ const taskLoopMode = scenarioMode && SUITE === SUITE_TASK_LOOP;
 
 const SCENARIO_ROOT = scenarioMode ? path.resolve(opts.root) : null;
 const MOCK_DIR = scenarioMode ? path.join(SCENARIO_ROOT, '.mock') : null;
+
+/**
+ * I1.8 / M-7: crash / spawn counts survive across mock processes of the same
+ * project, because the recovery rebuild spawns a brand-new agent process.
+ * Scenario mode uses `<root>/.mock`; the plain path uses `<cwd>/.mock`.
+ */
+const STATE_DIR = scenarioMode ? MOCK_DIR : path.join(process.cwd(), '.mock');
+
+/** Rebuild/recovery scene marker: a crash happened, or the driver marked a recovery boot. */
+function recoveryScene() {
+  return fs.existsSync(path.join(STATE_DIR, 'crash-count'))
+    || fs.existsSync(path.join(STATE_DIR, 'recovery'));
+}
+
+if (opts.spawnFailOnRecover) {
+  // Fail only once the scene is actually rebuilding/recovering:
+  //   - `crash-count` exists  -> AC-43 crash rebuild (same core process)
+  //   - `recovery` marker      -> recovery-driver wrote it before booting core again
+  // The very first spawn of a normal run has neither marker and succeeds.
+  if (recoveryScene()) {
+    process.stderr.write('mock-acp-agent: spawn failed (MAESTRO_MOCK_SPAWN_FAIL_ON_RECOVER=1)\n');
+    process.exit(9);
+  }
+}
 
 let scenario = null;
 if (scenarioMode) {
@@ -358,6 +481,7 @@ function replyError(id, code, message, data) {
 
 function notifyUpdate(sessionId, update) {
   writeLine({ jsonrpc: '2.0', method: 'session/update', params: { sessionId, update } });
+  maybeCrashAfterUpdate();
 }
 
 function sendUsage(sessionId, used = 1) {
@@ -372,6 +496,90 @@ function sendCommands(sessionId) {
       { name: 'feedback', description: 'Record feedback about this session' },
     ],
   });
+}
+
+// ---------------------------------------------------------------- I1.8 / M-7 注入
+//
+// Crash / slow / prompt-log are test-only and default off. `promptActive` makes
+// the crash hook fire on the first update produced while serving a prompt, not
+// on the `session/new` noise frames.
+
+let promptActive = false;
+/** Scenario mode: the cursor step currently being served, used to roll back on crash. */
+let activeStepN = null;
+/** One crash per process, even though a step emits several updates. */
+let crashScheduled = false;
+
+function bumpCrashCount(limit) {
+  const file = path.join(STATE_DIR, 'crash-count');
+  let count = 0;
+  try {
+    count = Number(fs.readFileSync(file, 'utf8')) || 0;
+  } catch {
+    // first crash in this project
+  }
+  if (count >= limit) return false;
+  fs.mkdirSync(STATE_DIR, { recursive: true });
+  fs.writeFileSync(file, String(count + 1), 'utf8');
+  return true;
+}
+
+/** `after_first_update` crashes once per project; `twice` also crashes the rebuild. */
+function maybeCrashAfterUpdate() {
+  if (!promptActive || !opts.crash || crashScheduled) return;
+  const limit = opts.crash === 'twice' ? 2 : 1;
+  if (!bumpCrashCount(limit)) return;
+  crashScheduled = true;
+  // The rebuild is a new process that would otherwise consume the *next* step.
+  // Roll the cursor back to this step so AC-42's "重试当前轮" serves the same step.
+  if (scenarioMode && Number.isInteger(activeStepN)) {
+    try {
+      fs.writeFileSync(mockPath('cursor.json'), JSON.stringify({ next: activeStepN }), 'utf8');
+    } catch {
+      // cursor 回滚失败时仍按崩溃处理
+    }
+  }
+  const timer = setTimeout(() => process.exit(1), 25);
+  timer.unref?.();
+}
+
+/** AC-44 / AC-45: keep the process alive without any further `session/update`. */
+async function holdSlow(session, token) {
+  while (!session.cancelled && session.tokens === token) await delay(50);
+}
+
+/** AC-08 / AC-09 / AC-24: append one NDJSON line per `session/prompt`. */
+function appendPromptLog(session, params) {
+  if (!opts.promptLog) return;
+  try {
+    const target = path.resolve(opts.promptLog);
+    const text = promptText(params);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.appendFileSync(
+      target,
+      JSON.stringify({
+        sessionId: session.sessionId,
+        // 提示词里带 `.../stage/<nodeId>`；没有显式 --node-id 时用它归属节点，
+        // 这样 AC-08/09/24 的「已完成节点 prompt 次数 0」可直接机检。
+        nodeId: opts.nodeId ?? inferNodeId(text) ?? null,
+        round: opts.round ?? inferRound(text) ?? null,
+        text,
+      }) + '\n',
+      'utf8',
+    );
+  } catch {
+    // 日志写不出来不影响会话本身
+  }
+}
+
+function inferNodeId(text) {
+  const matched = /[\\/]stage[\\/]([A-Za-z0-9_-]+)/.exec(text) || /节点\s*([A-Za-z0-9_-]+)/.exec(text);
+  return matched ? matched[1] : null;
+}
+
+function inferRound(text) {
+  const matched = /第\s*(\d+)\s*轮/.exec(text);
+  return matched ? Number(matched[1]) : null;
 }
 
 async function pause(ms, session, token) {
@@ -560,6 +768,7 @@ function applyVerdict(cwd, step) {
 
 async function runScenarioStep(id, params, session, claim) {
   const { n, step } = claim;
+  activeStepN = n;
   const taskText = promptText(params);
   writePromptRecord(n, step, taskText);
 
@@ -578,7 +787,12 @@ async function runScenarioStep(id, params, session, claim) {
   }
 
   // WP-7 步字段 promptFailures：前 n 次 prompt 在 turn 内事件之前确定性失败。
-  if (shouldFailPrompt(step.promptFailures, session.promptAttempts)) {
+  // I1.8：`--prompt-failures` / `MAESTRO_MOCK_PROMPT_FAILURES` 同样作用于场景模式
+  // （AC-62 的重投 3 次失败），但缺省 0 时既有场景分支逐字不变。
+  if (
+    shouldFailPrompt(step.promptFailures, session.promptAttempts)
+    || shouldFailPrompt(opts.promptFailures, session.promptAttempts)
+  ) {
     recordFailure(session, session.promptAttempts);
     replyError(id, -32603, MOCK_HOST_ERROR_MESSAGE);
     return;
@@ -588,6 +802,17 @@ async function runScenarioStep(id, params, session, claim) {
     sessionUpdate: 'agent_thought_chunk',
     content: { type: 'text', text: 'mock: thinking about the request' },
   });
+
+  // I1.8 / M-7：崩溃已在首个 update 后预约，立刻中止本步（不写产物、不回 end_turn），
+  // 让父进程看到的是 transport 退出而不是一次正常完成。
+  if (crashScheduled) return;
+
+  // I1.8 / M-7：scenario 模式下也支持 slow（保持存活、不再推 update）。
+  if (opts.slow) {
+    await holdSlow(session, token);
+    reply(id, { stopReason: 'cancelled' });
+    return;
+  }
 
   const primary = step.write[0] ?? null;
   const primaryPath = primary?.path ?? (step.verdict !== null ? 'out/verdict.json' : null);
@@ -875,6 +1100,7 @@ function writeWorkspaceDecoy(step, taskText) {
 
 async function runTaskLoopStep(id, params, session, claim) {
   const { n, step } = claim;
+  activeStepN = n;
   const taskText = promptText(params);
   writePromptRecord(n, step, taskText);
 
@@ -890,7 +1116,10 @@ async function runTaskLoopStep(id, params, session, claim) {
   session.cancelled = false;
 
   // WP-7 步字段 promptFailures：前 n 次 prompt 在 turn 内事件之前确定性失败。
-  if (shouldFailPrompt(step.promptFailures, session.promptAttempts)) {
+  if (
+    shouldFailPrompt(step.promptFailures, session.promptAttempts)
+    || shouldFailPrompt(opts.promptFailures, session.promptAttempts)
+  ) {
     recordFailure(session, session.promptAttempts);
     replyError(id, -32603, MOCK_HOST_ERROR_MESSAGE);
     return;
@@ -900,6 +1129,15 @@ async function runTaskLoopStep(id, params, session, claim) {
     sessionUpdate: 'agent_thought_chunk',
     content: { type: 'text', text: 'mock: thinking about the request' },
   });
+
+  if (crashScheduled) return;
+
+  // I1.8 / M-7：task-loop 场景同样支持 slow。
+  if (opts.slow) {
+    await holdSlow(session, token);
+    reply(id, { stopReason: 'cancelled' });
+    return;
+  }
 
   const toolCallId = `call_mock_${process.pid}_${n}`;
   const rawTarget = step.artifact && step.artifactSkip !== true
@@ -968,6 +1206,9 @@ async function handlePrompt(id, params) {
   // WP-7：计数必须是本次 prompt 的第一个动作——在 scenarioMode 分支、
   // --host-error / --unknown-error 早返回、以及任何成功/失败之前完成。
   const attempts = recordAttempt(session);
+  // I1.8 / M-7：prompt 日志同样是第一个动作，失败的尝试也要被记录。
+  appendPromptLog(session, params);
+  promptActive = true;
   if (!scenarioMode && shouldFailPrompt(opts.promptFailures, attempts)) {
     recordFailure(session, attempts);
     replyError(id, -32603, MOCK_HOST_ERROR_MESSAGE);
@@ -1029,7 +1270,16 @@ async function handlePrompt(id, params) {
     content: { type: 'text', text: 'mock: thinking about the request' },
   });
 
+  if (crashScheduled) return;
+
   if (!alive()) {
+    reply(id, { stopReason: 'cancelled' });
+    return;
+  }
+
+  // I1.8 / M-7：进程存活但不再产生 session/update（AC-44 / AC-45）。
+  if (opts.slow) {
+    await holdSlow(session, token);
     reply(id, { stopReason: 'cancelled' });
     return;
   }
@@ -1151,21 +1401,42 @@ async function handlePrompt(id, params) {
   if (opts.noiseAtTurnEnd) sendCommands(sessionId);
 }
 
+// ---------------------------------------------------------------- I1.8 / M-7 能力广告
+//
+// `caps === null` is the pre-I1.8 advertisement, byte-for-byte: the built-in
+// DSH agent advertises close/list/resume and never `load`.
+//   resume -> {close, list, resume}, no loadSession
+//   load   -> {close, list} + initialize.loadSession === true
+//   both   -> {close, list, resume} + initialize.loadSession === true
+//   none   -> {close, list}
+
+function sessionCapabilities() {
+  if (opts.caps === 'load' || opts.caps === 'none') return { close: {}, list: {} };
+  return { close: {}, list: {}, resume: {} };
+}
+
+function initializeResult() {
+  const result = {
+    protocolVersion: 1,
+    agentInfo: { name: MOCK_AGENT_NAME, version: MOCK_AGENT_VERSION },
+    agentCapabilities: {
+      mcpCapabilities: { http: false },
+      promptCapabilities: { image: false, audio: false, embeddedContext: false },
+      sessionCapabilities: sessionCapabilities(),
+    },
+    authMethods: [],
+  };
+  if (opts.caps === 'load' || opts.caps === 'both') result.loadSession = true;
+  return result;
+}
+
 async function handleRequest(msg) {
   const { id, method, params } = msg;
   switch (method) {
     case 'initialize':
-      reply(id, {
-        protocolVersion: 1,
-        agentInfo: { name: MOCK_AGENT_NAME, version: MOCK_AGENT_VERSION },
-        agentCapabilities: {
-          mcpCapabilities: { http: false },
-          promptCapabilities: { image: false, audio: false, embeddedContext: false },
-          sessionCapabilities: { close: {}, list: {}, resume: {} },
-        },
-        authMethods: [],
-      });
+      reply(id, initializeResult());
       return;
+
     case 'session/new': {
       const cwd = params?.cwd;
       if (typeof cwd !== 'string' || !path.isAbsolute(cwd)) {
@@ -1183,6 +1454,10 @@ async function handleRequest(msg) {
           return;
         }
       }
+      if (opts.newFail && recoveryScene()) {
+        replyError(id, -32603, 'mock: session unavailable');
+        return;
+      }
       const sessionId = newSessionId();
       sessions.set(sessionId, {
         sessionId,
@@ -1196,6 +1471,31 @@ async function handleRequest(msg) {
       });
       reply(id, { sessionId, configOptions: [] });
       if (opts.noiseOnSessionNew) sendCommands(sessionId);
+      return;
+    }
+    case 'session/resume':
+    case 'session/load': {
+      const fail = method === 'session/resume' ? opts.resumeFail : opts.loadFail;
+      if (fail) {
+        replyError(id, -32603, `mock: ${method} failed`);
+        return;
+      }
+      const sessionId = params?.sessionId;
+      if (typeof sessionId !== 'string' || sessionId.length === 0) {
+        replyError(id, -32602, 'Invalid params: sessionId required');
+        return;
+      }
+      if (!sessions.has(sessionId)) {
+        sessions.set(sessionId, {
+          sessionId,
+          cwd: typeof params?.cwd === 'string' ? params.cwd : process.cwd(),
+          cancelled: false,
+          turn: 0,
+          tokens: 0,
+          closed: false,
+        });
+      }
+      reply(id, { sessionId, configOptions: [] });
       return;
     }
     case 'session/prompt':

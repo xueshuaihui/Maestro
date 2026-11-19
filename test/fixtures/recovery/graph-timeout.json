@@ -1,0 +1,101 @@
+{
+  "id": "task-loop",
+  "title": "通用任务闭环（超时夹具图）",
+  "showTemplate": true,
+  "entry": "T-001",
+  "terminal": "T-003",
+  "terminals": [
+    "T-003"
+  ],
+  "maxRounds": {
+    "T-001": 1,
+    "T-002": 2,
+    "T-003": 2
+  },
+  "roles": [
+    "researcher",
+    "writer",
+    "reviewer"
+  ],
+  "productPolicy": "doc-single",
+  "nodes": [
+    {
+      "id": "T-001",
+      "nodeId": "T-001",
+      "roleId": "researcher",
+      "order": 1,
+      "title": "研究员",
+      "artifactPolicy": "fixed-workspace",
+      "artifactDir": "artifacts/reports",
+      "artifactExt": ".md",
+      "judge": "none",
+      "products": [
+        "artifacts/reports/research-notes.v1.md"
+      ],
+      "downstreamGate": true,
+      "wakeFrom": [],
+      "prompt": "research"
+    },
+    {
+      "id": "T-002",
+      "nodeId": "T-002",
+      "roleId": "writer",
+      "order": 2,
+      "title": "撰写者",
+      "artifactPolicy": "versioned-doc",
+      "artifactDir": "artifacts/docs",
+      "artifactExt": ".md",
+      "judge": "none",
+      "products": [],
+      "downstreamGate": true,
+      "wakeFrom": [
+        "backflow"
+      ],
+      "prompt": "write"
+    },
+    {
+      "id": "T-003",
+      "nodeId": "T-003",
+      "roleId": "reviewer",
+      "order": 3,
+      "title": "审核者",
+      "artifactPolicy": "review",
+      "reviewPath": "out/review.json",
+      "judge": "review",
+      "products": [],
+      "downstreamGate": false,
+      "wakeFrom": [
+        "retest"
+      ],
+      "prompt": "review",
+      "timeout": 2
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "condition": null
+    },
+    {
+      "from": "T-002",
+      "to": "T-003",
+      "kind": "forward",
+      "condition": null
+    },
+    {
+      "from": "T-003",
+      "to": "T-002",
+      "kind": "backflow",
+      "condition": "review-reject",
+      "requiresHandoff": true
+    },
+    {
+      "from": "T-002",
+      "to": "T-003",
+      "kind": "retest",
+      "condition": "reopen-failed-target"
+    }
+  ]
+}
