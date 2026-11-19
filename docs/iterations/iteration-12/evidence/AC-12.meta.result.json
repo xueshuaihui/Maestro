@@ -1,0 +1,184 @@
+{
+  "suspendDecision": {
+    "suspend": true,
+    "reason": "budget_exhausted",
+    "resumeRound": 4
+  },
+  "resumeDecision": {
+    "suspend": false,
+    "reason": null,
+    "resumeRound": 4
+  },
+  "gate": {
+    "blocked": true,
+    "reasonCode": "budget_exhausted",
+    "resumeRound": 4
+  },
+  "state": {
+    "instanceId": "INST-001",
+    "state": "running",
+    "round": 4,
+    "budget": {
+      "remaining": 10,
+      "nextCost": 1
+    },
+    "events": [],
+    "nodes": [
+      {
+        "id": "T-001",
+        "state": "running",
+        "round": 4
+      },
+      {
+        "id": "T-002",
+        "state": "running",
+        "round": 4
+      },
+      {
+        "id": "T-003",
+        "state": "ready",
+        "round": 4
+      },
+      {
+        "id": "T-004",
+        "state": "ready",
+        "round": 4
+      },
+      {
+        "id": "T-005",
+        "state": "ready",
+        "round": 4
+      }
+    ],
+    "pauseReason": "budget_exhausted",
+    "resumeRound": 4
+  },
+  "checks": [
+    {
+      "id": "C01",
+      "label": "Then：预算不足判定 suspend=true",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "机检：reason=budget_exhausted",
+      "expected": "budget_exhausted",
+      "actual": "budget_exhausted",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "Then：实例状态转为 suspended（不标记为失败）",
+      "expected": "suspended",
+      "actual": "suspended",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "机检：暂停原因可见（pauseReason=budget_exhausted）",
+      "expected": "budget_exhausted",
+      "actual": "budget_exhausted",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "Then：不生成 failed 节点",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "机检：未新增失败事件",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "机检：运行时门禁 blocked=true",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "机检：门禁 reasonCode=budget_exhausted",
+      "expected": "budget_exhausted",
+      "actual": "budget_exhausted",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "机检：门禁保留原轮次 resumeRound=4",
+      "expected": "4",
+      "actual": "4",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "Then：「已挂起 / 预算耗尽」可见原因逐字见 A-5（取自 labels）",
+      "expected": "A-5 carries frozen label literals",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "Then：补充预算后不再挂起 suspend=false",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "Then：恢复后实例回到 running",
+      "expected": "running",
+      "actual": "running",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "Then：节点从原轮次继续（round=4）",
+      "expected": "4",
+      "actual": "4",
+      "ok": true
+    },
+    {
+      "id": "C14",
+      "label": "机检：全部节点仍为原轮次",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C15",
+      "label": "Then：恢复后无 failed 节点",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C16",
+      "label": "机检：恢复未新增失败事件",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C17",
+      "label": "架构检查：预算暂停复用既有 suspended 状态词",
+      "expected": "suspended reused",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C18",
+      "label": "架构检查：预算模块无写状态/迁移",
+      "expected": "pure decision",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

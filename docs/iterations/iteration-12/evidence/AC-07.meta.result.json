@@ -1,0 +1,157 @@
+{
+  "reviewMissing": {
+    "ok": false,
+    "needsHumanReview": true,
+    "blocked": true,
+    "reason": "missing_human_gate",
+    "nodeIds": [
+      "T-001"
+    ]
+  },
+  "reviewFilled": {
+    "ok": true,
+    "needsHumanReview": true,
+    "blocked": false,
+    "reason": null,
+    "nodeIds": [
+      "T-001"
+    ]
+  },
+  "exitMissing": 1,
+  "exitFilled": 0,
+  "linesMissing": [
+    "工作流 [名称]  校验未通过  [高风险节点 [节点] 下游缺少人工终审]"
+  ],
+  "linesFilled": [
+    "校验通过"
+  ],
+  "blockedGate": {
+    "blocked": true,
+    "code": "HIGH_RISK_REVIEW_BLOCKED",
+    "reason": "missing_human_gate",
+    "nodeIds": [
+      "T-001"
+    ],
+    "decision": {
+      "instanceId": "INST-001",
+      "nodeId": "T-001",
+      "needsHumanReview": true,
+      "blocked": true,
+      "reason": "missing_human_gate"
+    }
+  },
+  "checks": [
+    {
+      "id": "C01",
+      "label": "Then：缺终审校验不通过 ok=false",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "Then：缺终审 blocked=true",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "Then：缺终审 reason=missing_human_gate",
+      "expected": "missing_human_gate",
+      "actual": "missing_human_gate",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "机检：提示含高风险节点定位 nodeIds=[T-001]",
+      "expected": "[\"T-001\"]",
+      "actual": "[\"T-001\"]",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "Then：补齐 human 后校验通过 ok=true",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "Then：补齐后 blocked=false",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "Then：补齐后 reason=null",
+      "expected": "null",
+      "actual": "null",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "机检：补齐后仍标记 needsHumanReview=true",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "Then：verify review 缺终审输出 A-5 逐字（取自 labels）",
+      "expected": "工作流 [名称]  校验未通过  [高风险节点 [节点] 下游缺少人工终审]",
+      "actual": "工作流 [名称]  校验未通过  [高风险节点 [节点] 下游缺少人工终审]",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "Then：verify review 缺终审退出码非 0",
+      "expected": "exit=1",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "Then：verify review 补齐后输出取自 labels",
+      "expected": "校验通过",
+      "actual": "校验通过",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "Then：verify review 补齐后退出码 0",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "Then：A-5 文案逐字见 requirement.md 附录（取自 labels）",
+      "expected": "A-5 carries frozen label literal",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C14",
+      "label": "Then：尝试启动被挡 HIGH_RISK_REVIEW_BLOCKED",
+      "expected": "HIGH_RISK_REVIEW_BLOCKED",
+      "actual": "HIGH_RISK_REVIEW_BLOCKED",
+      "ok": true
+    },
+    {
+      "id": "C15",
+      "label": "Then：启动被挡判定含节点定位",
+      "expected": "[\"T-001\"]",
+      "actual": "[\"T-001\"]",
+      "ok": true
+    },
+    {
+      "id": "C16",
+      "label": "架构检查：治理规则不含 UI 文案字面量",
+      "expected": "no CJK in governance",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "roles": [
+    {
+      "id": "role-a",
+      "wake_allow": [
+        "role-b"
+      ],
+      "side_effect": "low"
+    },
+    {
+      "id": "role-b",
+      "wake_allow": [],
+      "side_effect": "low"
+    },
+    {
+      "id": "role-c",
+      "wake_allow": [],
+      "side_effect": "low"
+    }
+  ],
+  "source": "role-a",
+  "target": "role-b",
+  "decision": {
+    "allowed": true,
+    "reason": null,
+    "detail": {
+      "from": "role-a",
+      "to": "role-b",
+      "reason": null,
+      "at": "2026-11-18T00:00:03.000Z"
+    }
+  },
+  "gated": {
+    "decision": {
+      "allowed": true,
+      "reason": null,
+      "detail": {
+        "from": "role-a",
+        "to": "role-b",
+        "reason": null,
+        "at": "2026-11-18T00:00:03.000Z"
+      }
+    },
+    "verdict": null
+  },
+  "delivered": [
+    "role-b"
+  ],
+  "sessions": [
+    "role-b"
+  ],
+  "checks": [
+    {
+      "id": "C01",
+      "label": "Then：白名单内唤醒判定 allowed=true",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "Then：allowed 路径 reason=null",
+      "expected": "null",
+      "actual": "null",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "Then：detail 含来源/目标/原因/时间",
+      "expected": "{\"from\":\"role-a\",\"to\":\"role-b\",\"reason\":null,\"at\":\"2026-11-18T00:00:03.000Z\"}",
+      "actual": "{\"from\":\"role-a\",\"to\":\"role-b\",\"reason\":null,\"at\":\"2026-11-18T00:00:03.000Z\"}",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "Then：运行时门禁 verdict=null（未被拒绝）",
+      "expected": "null",
+      "actual": "null",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "机检：交接包状态进入已投递（夹具：delivered）",
+      "expected": "[\"role-b\"]",
+      "actual": "[\"role-b\"]",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "机检：目标节点/会话进入执行",
+      "expected": "[\"role-b\"]",
+      "actual": "[\"role-b\"]",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "Then：审计里没有越权拒绝记录（拒绝事件计数 0）",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "Then：allowed 路径不产生新拒绝码",
+      "expected": "reason is null",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "架构检查：whitelist/allowWake 命中核心判定模块",
+      "expected": "wake_allow",
+      "actual": "/**\n * Governance-side pure decision module (I1.12 WP-2).\n *\n * Scope:\n *   - Wake whitelist gate (D-3 / AC-03 / AC-04).\n *   - High-risk human review gate (D-5 / AC-07 / AC-08).\n *   - Primary-audit event granularity (AC-09 / AC-10).\n *\n * Discipline: pure decisions only. No persistence, no state transition, no UI\n * fields, no display text, no ambient clock reads. Timestamps come from the\n * injected `now` argument. The single reason-code literal is\n * 'wake.not-whitelisted' (decision A-4); no other rejection code is produced\n * or referenced here, so the existing rejection path stays untouched.\n *\n * Every allowed value is a code or a key name, never a localized string; all\n * user-visible text is owned by the CLI label layer.\n */\n\n// Frozen reason literal (freeze point 2 / decision A-4). This is a CODE, not text.\nconst WAKE_NOT_WHITELISTED = 'wake.not-whitelisted';\n\n// High-risk recognition (D-5): declared marker UNION side effect === 'high'\n// (U-05, union option). Codes only; no localized category names live here.\nconst HIGH_RISK_FLAGS = ['highRisk', 'high_risk', 'requiresHumanReview', 'needsHumanReview'];\nconst HIGH_RISK_LEVELS = new Set(['high', 'release', 'data-change', 'data_change', 'compliance', 'compliance-opinion']);\nconst HIGH_SIDE_EFFECT = 'high';\nconst HUMAN_GATE_TYPES = new Set(['human', 'approval', 'gate', 'escalate']);\n\n// Primary-audit whitelist (D-5 / AC-09 / AC-10).\nconst PRIMARY_AUDIT_EXACT = new Set([\n  'node.state.change',\n  'health.changed',\n  'core.suspend',\n  'run.halted'\n]);\nconst PRIMARY_AUDIT_PREFIXES = ['handoff.'];\n\nfunction isText(value) {\n  return typeof value === 'string' && value.length > 0;\n}\n\nfunction firstText(source, keys) {\n  if (!source || typeof source !== 'object') return null;\n  for (const key of keys) {\n    if (isText(source[key])) return source[key];\n  }\n  return null;\n}\n\n/** Normalize an injected clock into an ISO string; never reads an ambient clock. */\nfunction isoAt(now) {\n  if (typeof now === 'function') {\n    let value;\n    try {\n      value = now();\n    } catch {\n      return null;\n    }\n    return isoAt(value);\n  }\n  if (typeof now === 'number' && Number.isFinite(now)) {\n    const date = new Date(now);\n    return Number.isNaN(date.getTime()) ? null : date.toISOString();\n  }\n  if (isText(now)) {\n    const date = new Date(now);\n    return Number.isNaN(date.getTime()) ? null : date.toISOString();\n  }\n  return null;\n}\n\nfunction roleIdOf(value) {\n  if (isText(value)) return value;\n  if (value && typeof value === 'object') {\n    return firstText(value, ['id', 'roleId', 'role_id', 'name']);\n  }\n  return null;\n}\n\n/** Build an id -> role-config lookup from either an array or a keyed object. */\nfunction indexRoles(roles) {\n  const map = new Map();\n  if (Array.isArray(roles)) {\n    for (const role of roles) {\n      const id = roleIdOf(role);\n      if (id && !map.has(id)) map.set(id, role);\n    }\n    return map;\n  }\n  if (roles && typeof roles === 'object') {\n    for (const [key, value] of Object.entries(roles)) {\n      if (Array.isArray(value)) {\n        if (!map.has(key)) map.set(key, { id: key, wake_allow: value });\n      } else if (value && typeof value === 'object') {\n        const id = roleIdOf(value) || key;\n        if (!map.has(id)) map.set(id, value);\n      }\n    }\n  }\n  return map;\n}\n\n/**\n * Wake whitelist decision at the core routing point (D-3 / AC-03 / AC-04).\n * A whitelist that is undeclared / unreadable, or a target role that does not\n * exist in a supplied registry, is denied strictly rather than silently passed.\n *\n * @param {{sourceRole: object|string, targetRole: object|string,\n *          roles: Array|object, now: Function|number|string}} input\n * @returns {{allowed: boolean, reason: string|null,\n *            detail: {from: string|null, to: string|null,\n *                     reason: string|null, at: string|null}}}\n */\nexport function decideWake({ sourceRole, targetRole, roles, now } = {}) {\n  const roleIndex = indexRoles(roles);\n  const from = roleIdOf(sourceRole);\n  const to = roleIdOf(targetRole);\n  const at = isoAt(now);\n  const registryProvided = Array.isArray(roles) || (!!roles && typeof roles === 'object');\n\n  let sourceConfig = null;\n  if (sourceRole && typeof sourceRole === 'object' && Array.isArray(sourceRole.wake_allow)) {\n    sourceConfig = sourceRole;\n  } else if (from && roleIndex.size > 0) {\n    const found = roleIndex.get(from);\n    if (found && typeof found === 'object') sourceConfig = found;\n  }\n\n  const deny = () => ({\n    allowed: false,\n    reason: WAKE_NOT_WHITELISTED,\n    detail: { from, to, reason: WAKE_NOT_WHITELISTED, at }\n  });\n\n  // Unreadable configuration / unknown source or target -> strict deny.\n  if (!from || !to || !sourceConfig) return deny();\n  const allow = sourceConfig.wake_allow;\n  if (!Array.isArray(allow)) return deny();\n  if (registryProvided && !roleIndex.has(to)) return deny();\n  if (!allow.some((entry) => roleIdOf(entry) === to)) return deny();\n\n  return {\n    allowed: true,\n    reason: null,\n    detail: { from, to, reason: null, at }\n  };\n}\n\nfunction nodeIdOf(node) {\n  return firstText(node, ['id', 'nodeId', 'key']);\n}\n\nfunction nodeTypeOf(node) {\n  return (firstText(node, ['type', 'kind', 'nodeType']) || '').toLowerCase();\n}\n\nfunction isHighRiskNode(node, roleIndex) {\n  if (!node || typeof node !== 'object') return false;\n  for (const flag of HIGH_RISK_FLAGS) {\n    if (node[flag] === true) return true;\n  }\n  const level = (firstText(node, ['risk', 'riskLevel', 'risk_level']) || '').toLowerCase();\n  if (HIGH_RISK_LEVELS.has(level)) return true;\n  const side = (firstText(node, ['side_effect', 'sideEffect']) || '').toLowerCase();\n  if (side === HIGH_SIDE_EFFECT) return true;\n\n  const roleId = firstText(node, ['role', 'roleId', 'role_id']);\n  if (roleId && roleIndex.size > 0) {\n    const role = roleIndex.get(roleId);\n    if (role && typeof role === 'object') {\n      for (const flag of HIGH_RISK_FLAGS) {\n        if (role[flag] === true) return true;\n      }\n      const roleLevel = (firstText(role, ['risk', 'riskLevel', 'risk_level']) || '').toLowerCase();\n      if (HIGH_RISK_LEVELS.has(roleLevel)) return true;\n      const roleSide = (firstText(role, ['side_effect', 'sideEffect']) || '').toLowerCase();\n      if (roleSide === HIGH_SIDE_EFFECT) return true;\n    }\n  }\n  return false;\n}\n\nfunction collectNodes(workflow, graph) {\n  const nodes = new Map();\n  for (const source of [workflow, graph]) {\n    if (!source || typeof source !== 'object') continue;\n    const list = source.nodes || source.tasks || source.steps;\n    if (!Array.isArray(list)) continue;\n    for (const node of list) {\n      const id = nodeIdOf(node);\n      if (id && !nodes.has(id)) nodes.set(id, node);\n    }\n  }\n  return nodes;\n}\n\nfunction buildAdjacency(graph, workflow) {\n  const adjacency = new Map();\n  const addEdge = (from, to, meta) => {\n    if (!from || !to) return;\n    if (!adjacency.has(from)) adjacency.set(from, []);\n    adjacency.get(from).push({ to, meta });\n  };\n  for (const source of [graph, workflow]) {\n    if (!source || typeof source !== 'object') continue;\n    const edges = source.edges || source.links || source.transitions;\n    if (Array.isArray(edges)) {\n      for (const edge of edges) {\n        if (!edge || typeof edge !== 'object') continue;\n        addEdge(\n          firstText(edge, ['from', 'source', 'src', 'fromId']),\n          firstText(edge, ['to', 'target', 'dst', 'toId']),\n          edge\n        );\n      }\n    }\n    const adjacent = source.adjacency;\n    if (adjacent && typeof adjacent === 'object' && !Array.isArray(adjacent)) {\n      for (const [from, targets] of Object.entries(adjacent)) {\n        for (const target of Array.isArray(targets) ? targets : [targets]) {\n          addEdge(from, roleIdOf(target), target);\n        }\n      }\n    }\n  }\n  return adjacency;\n}\n\nfunction hasHumanGate(startId, adjacency, nodeIndex) {\n  const seen = new Set([startId]);\n  const queue = [startId];\n  while (queue.length > 0) {\n    const current = queue.shift();\n    for (const { to, meta } of adjacency.get(current) || []) {\n      if (meta) {\n        const isEscalate =\n          meta.escalate === true ||\n          meta.escalation === true ||\n          (firstText(meta, ['kind', 'type']) || '').toLowerCase() === 'escalate';\n        if (isEscalate) return true;\n      }\n      const target = nodeIndex.get(to);\n      if (target) {\n        if (HUMAN_GATE_TYPES.has(nodeTypeOf(target))) return true;\n        if (target.human === true || target.isHuman === true) return true;\n      }\n      if (!seen.has(to)) {\n        seen.add(to);\n        queue.push(to);\n      }\n    }\n  }\n  return false;\n}\n\n/**\n * High-risk human review gate (D-5 / AC-07).\n * A high-risk node (declared marker UNION side effect 'high') must have a\n * downstream human node or an escalate path, otherwise validation fails and\n * the offending node ids are returned for location.\n *\n * @param {{workflow: object, roles: Array|object, graph: object}} input\n * @returns {{ok: boolean, needsHumanReview: boolean, blocked: boolean,\n *            reason: string|null, nodeIds: string[]}}\n */\nexport function validateHighRiskReview({ workflow, roles, graph } = {}) {\n  const roleIndex = indexRoles(roles);\n  const nodeIndex = collectNodes(workflow, graph);\n  const adjacency = buildAdjacency(graph, workflow);\n\n  const highRiskIds = [];\n  for (const [id, node] of nodeIndex) {\n    if (isHighRiskNode(node, roleIndex)) highRiskIds.push(id);\n  }\n  if (highRiskIds.length === 0) {\n    return { ok: true, needsHumanReview: false, blocked: false, reason: null, nodeIds: [] };\n  }\n\n  // Insufficient data to judge any downstream gate -> block with node location.\n  const dataSufficient = adjacency.size > 0 || nodeIndex.size > highRiskIds.length;\n  if (!dataSufficient) {\n    return {\n      ok: false,\n      needsHumanReview: true,\n      blocked: true,\n      reason: 'insufficient_data',\n      nodeIds: highRiskIds\n    };\n  }\n\n  const missing = highRiskIds.filter((id) => !hasHumanGate(id, adjacency, nodeIndex));\n  if (missing.length > 0) {\n    return {\n      ok: false,\n      needsHumanReview: true,\n      blocked: true,\n      reason: 'missing_human_gate',\n      nodeIds: missing\n    };\n  }\n\n  return { ok: true, needsHumanReview: true, blocked: false, reason: null, nodeIds: highRiskIds };\n}\n\n/**\n * Per-node review decision copy (D-5 / AC-08).\n * Returns a frozen data-only snapshot that downstream consumers can record as\n * traceable evidence; it contains no view fields.\n *\n * @param {{instanceId: string, nodeId: string, needsHumanReview: boolean,\n *          blocked: boolean, reason: string|null}} input\n * @returns {{instanceId: string|null, nodeId: string|null,\n *            needsHumanReview: boolean, blocked: boolean, reason: string|null}}\n */\nexport function reviewDecision({ instanceId, nodeId, needsHumanReview, blocked, reason } = {}) {\n  return Object.freeze({\n    instanceId: isText(instanceId) ? instanceId : null,\n    nodeId: isText(nodeId) ? nodeId : null,\n    needsHumanReview: needsHumanReview === true,\n    blocked: blocked === true,\n    reason: isText(reason) ? reason : null\n  });\n}\n\nfunction eventTypeOf(event) {\n  if (isText(event)) return event;\n  if (!event || typeof event !== 'object') return '';\n  const direct = firstText(event, ['type', 'eventType', 'event']);\n  if (direct) return direct;\n  const object = firstText(event, ['object', 'objectType', 'subject']);\n  const action = firstText(event, ['reason', 'action']);\n  if (action) {\n    // An action that already names a fully-qualified primary type wins as-is\n    // (e.g. health + 'health.changed', instance + 'core.suspend').\n    if (\n      action.includes('.') &&\n      (PRIMARY_AUDIT_EXACT.has(action) || PRIMARY_AUDIT_PREFIXES.some((prefix) => action.startsWith(prefix)))\n    ) {\n      return action;\n    }\n    if (object && action.toLowerCase().startsWith(`${object.toLowerCase()}.`)) return action;\n    if (object) return `${object}.${action}`;\n    return action;\n  }\n  return object || '';\n}\n\n/**\n * Primary-audit granularity decision (AC-09 / AC-10).\n * Node state changes, handoff state changes, health changes, suspend and halt\n * go to the main audit. Derived connection / role / session events do not.\n *\n * @param {object|string} event\n * @returns {boolean}\n */\nexport function isPrimaryAuditEvent(event) {\n  const type = eventTypeOf(event);\n  if (!type) return false;\n  if (PRIMARY_AUDIT_EXACT.has(type)) return true;\n  return PRIMARY_AUDIT_PREFIXES.some((prefix) => type.startsWith(prefix));\n}\n",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "Then：越权拒绝文案取自 labels.js 且逐字见 requirement.md A-3",
+      "expected": "A-3 contains label value",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

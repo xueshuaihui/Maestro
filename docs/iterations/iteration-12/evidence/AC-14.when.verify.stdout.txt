@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "signatureValid": true,
+  "versionCompatible": true,
+  "labelKey": "PACK_IMPORT_OK"
+}

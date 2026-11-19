@@ -1,0 +1,2 @@
+appendFile hits=0
+writeFile(out hits=1

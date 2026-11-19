@@ -1,0 +1,2 @@
+labelKey=PACK_IMPORT_OK
+confirm=导入成功  [签名有效 · 版本兼容]

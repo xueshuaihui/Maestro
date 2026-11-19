@@ -1,0 +1,21 @@
+{
+  "nodes": [
+    {
+      "id": "T-001",
+      "type": "publish",
+      "side_effect": "high",
+      "role": "role-normal"
+    },
+    {
+      "id": "T-002",
+      "type": "human",
+      "side_effect": "low"
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002"
+    }
+  ]
+}

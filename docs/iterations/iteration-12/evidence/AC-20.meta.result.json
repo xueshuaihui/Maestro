@@ -1,0 +1,107 @@
+{
+  "instances": 20,
+  "sessions": 50,
+  "stats": {
+    "median": 560,
+    "p95": 700,
+    "max": 720
+  },
+  "report": {
+    "ok": true,
+    "level": "PERF_LEVEL_MOCK",
+    "stats": {
+      "median": 560,
+      "p95": 700,
+      "max": 720
+    },
+    "bottleneck": null,
+    "blocked": false
+  },
+  "samplesCount": 50,
+  "checks": [
+    {
+      "id": "C01",
+      "label": "机检：并发实例数 = 20",
+      "expected": "20",
+      "actual": "20",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "机检：活跃会话数 ≥ 50",
+      "expected": ">= 50",
+      "actual": "50",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "机检：handoff 延迟统计 < 2s（P95）",
+      "expected": "< 2000",
+      "actual": "700",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "Then：mock 报告达标（ok=true）",
+      "expected": "ok === true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "Then：证据级别 = mock 机检键",
+      "expected": "PERF_LEVEL_MOCK",
+      "actual": "PERF_LEVEL_MOCK",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "Then：mock 面不阻塞",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "Then：无瓶颈",
+      "expected": "null",
+      "actual": "null",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "Then：报告含逐档延迟数据（中位/P95/最大）",
+      "expected": "tiers present",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "机检：未达标时才有瓶颈点（本例达标，瓶颈为空或仅提示）",
+      "expected": "bottleneck field present",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "Then：证据级别中文逐字 = labels 的 mock 实测",
+      "expected": "mock 实测",
+      "actual": "mock 实测",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "Then：不标注为真实宿主达标",
+      "expected": "not real",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "架构检查：压测不接真实宿主、不碰 ~/.dsh",
+      "expected": "fixture under TEMP",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

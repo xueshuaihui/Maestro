@@ -1,0 +1,169 @@
+{
+  "roles": [
+    {
+      "id": "role-a",
+      "wake_allow": [
+        "role-b"
+      ],
+      "side_effect": "low"
+    },
+    {
+      "id": "role-b",
+      "wake_allow": [],
+      "side_effect": "low"
+    },
+    {
+      "id": "role-c",
+      "wake_allow": [],
+      "side_effect": "low"
+    }
+  ],
+  "source": "role-a",
+  "target": "role-c",
+  "decision": {
+    "allowed": false,
+    "reason": "wake.not-whitelisted",
+    "detail": {
+      "from": "role-a",
+      "to": "role-c",
+      "reason": "wake.not-whitelisted",
+      "at": "2026-11-18T00:00:03.000Z"
+    }
+  },
+  "gated": {
+    "decision": {
+      "allowed": false,
+      "reason": "wake.not-whitelisted",
+      "detail": {
+        "from": "role-a",
+        "to": "role-c",
+        "reason": "wake.not-whitelisted",
+        "at": "2026-11-18T00:00:03.000Z"
+      }
+    },
+    "verdict": {
+      "reasonCode": "wake.not-whitelisted",
+      "from": "role-a",
+      "to": "role-c",
+      "reason": "wake.not-whitelisted",
+      "at": "2026-11-18T00:00:03.000Z"
+    }
+  },
+  "rejectionCount": 1,
+  "sessions": [],
+  "delivered": [],
+  "checks": [
+    {
+      "id": "C01",
+      "label": "Then：唤醒被拒绝 allowed=false",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "Then：拒绝 reason 为冻结新码 wake.not-whitelisted",
+      "expected": "wake.not-whitelisted",
+      "actual": "wake.not-whitelisted",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "Then：拒绝审计 detail 含来源/目标/原因/时间",
+      "expected": "{\"from\":\"role-a\",\"to\":\"role-c\",\"reason\":\"wake.not-whitelisted\",\"at\":\"2026-11-18T00:00:03.000Z\"}",
+      "actual": "{\"from\":\"role-a\",\"to\":\"role-c\",\"reason\":\"wake.not-whitelisted\",\"at\":\"2026-11-18T00:00:03.000Z\"}",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "机检：运行时门禁 verdict.reasonCode 为新码",
+      "expected": "wake.not-whitelisted",
+      "actual": "wake.not-whitelisted",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "机检：拒绝留痕含来源角色",
+      "expected": "role-a",
+      "actual": "role-a",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "机检：拒绝留痕含目标角色",
+      "expected": "role-c",
+      "actual": "role-c",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "机检：拒绝留痕含原因",
+      "expected": "wake.not-whitelisted",
+      "actual": "wake.not-whitelisted",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "机检：拒绝留痕含时间",
+      "expected": "2026-11-18T00:00:03.000Z",
+      "actual": "2026-11-18T00:00:03.000Z",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "机检：拒绝审计事件恰为 1 条",
+      "expected": "1",
+      "actual": "1",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "Then：目标会话未创建",
+      "expected": "[]",
+      "actual": "[]",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "Then：交接包未投递",
+      "expected": "[]",
+      "actual": "[]",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "Then：拒绝为 blocking（走既有升级/挂起口径，不静默跳过）",
+      "expected": "gate verdict present",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "Then：治理模块不产出既有 wake.rejected 码",
+      "expected": "no legacy code",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C14",
+      "label": "Then：新码文案取自 labels.js 且逐字见 A-3",
+      "expected": "A-3 contains label value",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C15",
+      "label": "Then：既有 wake.rejected 键仍存在（语义不变）",
+      "expected": "legacy label present",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C16",
+      "label": "Then：未引入被否决的 wake.denied",
+      "expected": "no wake.denied",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

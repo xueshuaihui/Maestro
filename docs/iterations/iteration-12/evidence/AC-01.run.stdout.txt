@@ -1,0 +1,9 @@
+实例 INST-001 · 运行中
+会话已创建 086569e5-e173-4f9b-a6fe-e773b2998086
+任务已投递
+会话 空闲
+节点 失败 · 执行失败：Internal error: turn failed: llm-deepseek: no API key for provider route "deepseek-official"; store DEEPSEEK_API_KEY through the credentials service (the web Models page writes it), or export DEEPSEEK_API_KEY in the launching environment
+交接包 HO-001  已构造   20:36:47
+交接包 HO-001  已投递   20:36:47
+交接包 HO-001  已拒绝   20:36:48  原因 目标拒绝
+执行失败：Internal error: turn failed: llm-deepseek: no API key for provider route "deepseek-official"; store DEEPSEEK_API_KEY through the credentials service (the web Models page writes it), or export DEEPSEEK_API_KEY in the launching environment

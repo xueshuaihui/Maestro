@@ -1,0 +1,10 @@
+{
+  "blocked": true,
+  "code": "PARALLEL_LIMIT",
+  "queued": [
+    "T-003",
+    "T-004",
+    "T-005"
+  ],
+  "limit": 2
+}

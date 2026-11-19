@@ -1,0 +1,30 @@
+{
+  "review": {
+    "ok": false,
+    "needsHumanReview": true,
+    "blocked": true,
+    "reason": "missing_human_gate",
+    "nodeIds": [
+      "H1"
+    ]
+  },
+  "stale": {
+    "ok": false,
+    "code": "EVIDENCE_STALE",
+    "detail": "EVIDENCE_STALE:evidence_missing:HO-9:T-9:artifacts/missing-v9.md",
+    "decision": {
+      "instanceId": "INST-9",
+      "handoffId": "HO-9",
+      "nodeId": "T-9",
+      "stale": true,
+      "reason": "evidence_missing"
+    }
+  },
+  "decision": {
+    "instanceId": "INST-9",
+    "nodeId": "H1",
+    "needsHumanReview": true,
+    "blocked": true,
+    "reason": "missing_human_gate"
+  }
+}

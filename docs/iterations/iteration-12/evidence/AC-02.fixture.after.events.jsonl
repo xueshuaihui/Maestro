@@ -1,0 +1,5 @@
+{"object":"run","result":"applied","reason":"run.started","seq":1,"ts":"2026-11-18T00:00:00.000Z","prev_event_hash":"0000000000000000000000000000000000000000000000000000000000000000"}
+{"object":"node","objectId":"T-002","from":"ready","to":"running","result":"applied","reason":"state.change","seq":2,"ts":"2026-11-18T00:00:00.000Z","prev_event_hash":"d1bd9d5d8fd8a3cbde1502953438b303345409fd07264509db566c1b7dfff2d0"}
+{"object":"handoff","objectId":"HO-003","from":null,"to":"delivered","result":"applied","reason":"handoff.delivered","seq":3,"ts":"2026-11-18T00:00:00.000Z","prev_event_hash":"055df91d5db55139d6306124ff5ca78f0cad4779f05052a8aae7ba72259520b1"}
+{"object":"node","objectId":"T-003","from":"ready","to":"running","result":"applied","reason":"state.change","seq":4,"ts":"2026-11-18T00:00:00.000Z","prev_event_hash":"3c6aa3abe2cf7cbbed66f0012143bd2ccc2eaed8f9de8981ede0bee4626615dc"}
+{"object":"handoff","objectId":"HO-004","from":"created","to":"accepted","result":"applied","reason":"handoff.accepted","seq":5,"ts":"2026-11-18T00:00:00.000Z","prev_event_hash":"4bac3e326a88aa5670b805d5844b6a229c2a6d7d6641fedfcf608467d1c1e6da"}

@@ -1,0 +1,3 @@
+allowed=true rejections=0
+delivered=role-b
+sessionCreated=role-b

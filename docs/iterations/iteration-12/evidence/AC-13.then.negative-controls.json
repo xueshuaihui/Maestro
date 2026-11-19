@@ -1,0 +1,23 @@
+{
+  "missing": {
+    "ok": false,
+    "code": "DEPENDENCY_MISSING",
+    "detail": {
+      "name": "skill-a",
+      "type": "skill"
+    },
+    "labelKey": "PACK_BUILD_MISSING"
+  },
+  "cycle": {
+    "ok": false,
+    "code": "DEPENDENCY_CYCLE",
+    "detail": {
+      "chain": [
+        "role:role-child",
+        "role:role-parent",
+        "role:role-child"
+      ]
+    },
+    "labelKey": "PACK_BUILD_CYCLE"
+  }
+}

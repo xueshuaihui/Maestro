@@ -1,0 +1,136 @@
+{
+  "plan": {
+    "items": [
+      {
+        "from": 1,
+        "to": 2,
+        "file": ".orch/roles/derived.yaml",
+        "field": "derived_from",
+        "name": "parent",
+        "targetExists": true
+      },
+      {
+        "from": 1,
+        "to": 3,
+        "file": ".orch/workflows/wf.yaml",
+        "field": "subworkflows",
+        "name": "sub",
+        "targetExists": true
+      }
+    ],
+    "total": 2
+  },
+  "planRows": [
+    "MIGRATE .orch/roles/derived.yaml derived_from parent 1 2",
+    "MIGRATE .orch/workflows/wf.yaml subworkflows sub 1 3"
+  ],
+  "applied": {
+    "exitCode": 0,
+    "stdout": "MIGRATE .orch/roles/derived.yaml derived_from parent 1 2\nMIGRATE .orch/workflows/wf.yaml subworkflows sub 1 3\nMIGRATION DONE 2 REFERENCES UPGRADED\n"
+  },
+  "expectedDone": "迁移完成  共 2 处引用已升级",
+  "recheck": {
+    "items": [],
+    "total": 0
+  },
+  "checks": [
+    {
+      "id": "C01",
+      "label": "Given：变更清单条数 = 2",
+      "expected": "2",
+      "actual": "2",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "机检：CLI 清单可见条数 = 清单条数",
+      "expected": "2",
+      "actual": "2",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "Then：清单列出每处将改的引用（parent@1、sub@1）",
+      "expected": "parent@1->2 and sub@1->3 listed",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "机检：执行退出码 0",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "Then：派生角色引用升到新版 parent@2",
+      "expected": "parent@2",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "Then：工作流引用升到新版 sub@3",
+      "expected": "sub@3",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "架构检查：业务定义正文未被改写（派生角色 name）",
+      "expected": "name: 派生角色",
+      "actual": "name: 派生角色",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "架构检查：业务定义正文未被改写（工作流 name）",
+      "expected": "name: 主流程",
+      "actual": "name: 主流程",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "Then：CLI 摘要给出迁移完成语义（MIGRATION DONE）",
+      "expected": "MIGRATION DONE",
+      "actual": "MIGRATE .orch/roles/derived.yaml derived_from parent 1 2\nMIGRATE .orch/workflows/wf.yaml subworkflows sub 1 3\nMIGRATION DONE 2 REFERENCES UPGRADED\n",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "机检：摘要条数 = 清单条数",
+      "expected": "/MIGRATION DONE\\s+2\\b/",
+      "actual": "MIGRATE .orch/roles/derived.yaml derived_from parent 1 2\nMIGRATE .orch/workflows/wf.yaml subworkflows sub 1 3\nMIGRATION DONE 2 REFERENCES UPGRADED\n",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "Then：A-6 中文摘要逐字来自 labels",
+      "expected": "逐字 MIGRATE_DONE",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "Then：重新校验通过（无待迁移项）",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "Then：复跑给出无需迁移语义",
+      "expected": "NO MIGRATION NEEDED",
+      "actual": "NO MIGRATION NEEDED\n",
+      "ok": true
+    },
+    {
+      "id": "C14",
+      "label": "机检：备份目录已生成（迁移前先备份，D-8）",
+      "expected": "backup exists",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

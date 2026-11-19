@@ -1,0 +1,148 @@
+{
+  "results": {
+    "doc": {
+      "signals": [
+        {
+          "type": "doc_bottleneck",
+          "instanceId": "INST-DOC",
+          "nodeId": "T-101",
+          "detailKey": "SIGNAL_DOC_BOTTLENECK"
+        }
+      ],
+      "insufficientData": false
+    },
+    "ser": {
+      "signals": [
+        {
+          "type": "serialization_regression",
+          "instanceId": "INST-SER",
+          "nodeId": "T-202",
+          "detailKey": "SIGNAL_SERIALIZATION_REGRESSION"
+        }
+      ],
+      "insufficientData": false
+    },
+    "conf": {
+      "signals": [
+        {
+          "type": "confirmation_bias",
+          "instanceId": "INST-CONF",
+          "nodeId": "T-301",
+          "detailKey": "SIGNAL_CONFIRMATION_BIAS"
+        }
+      ],
+      "insufficientData": false
+    },
+    "thin": {
+      "signals": [],
+      "insufficientData": true
+    }
+  },
+  "checks": [
+    {
+      "id": "C01",
+      "label": "Then：文档瓶颈信号命中一次",
+      "expected": "exactly 1",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "Then：串行化退化信号命中一次",
+      "expected": "exactly 1",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "Then：确认偏误信号命中一次",
+      "expected": "exactly 1",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "Then：文档瓶颈含实例定位",
+      "expected": "INST-DOC",
+      "actual": "INST-DOC",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "Then：文档瓶颈含节点定位",
+      "expected": "T-101",
+      "actual": "T-101",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "Then：串行化退化含节点定位",
+      "expected": "nodeId present",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "Then：确认偏误含节点定位",
+      "expected": "T-301",
+      "actual": "T-301",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "Then：文档瓶颈 detailKey 取自冻结常量",
+      "expected": "SIGNAL_DOC_BOTTLENECK",
+      "actual": "SIGNAL_DOC_BOTTLENECK",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "Then：文档瓶颈文案逐字来自 labels",
+      "expected": "文档瓶颈",
+      "actual": "[实例]  [节点]  文档瓶颈：文档类节点长时间停留在待校验",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "Then：串行化退化文案逐字来自 labels",
+      "expected": "串行化退化",
+      "actual": "[实例]  [节点]  串行化退化：本可并行的节点被串行执行",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "Then：确认偏误文案逐字来自 labels",
+      "expected": "确认偏误",
+      "actual": "[实例]  [节点]  确认偏误：审核结论与上游一致且无独立证据",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "Then：数据不足实例给出提示且不误报",
+      "expected": "insufficientData=true, signals=[]",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "Then：数据不足文案逐字来自 labels",
+      "expected": "数据不足",
+      "actual": "[实例]  数据不足，无法判定反模式信号",
+      "ok": true
+    },
+    {
+      "id": "C14",
+      "label": "架构检查：信号只读（输入未被修改）",
+      "expected": "inputs unchanged",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C15",
+      "label": "架构检查：不调用 emit/transit/escalat",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    }
+  ]
+}

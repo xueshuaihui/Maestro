@@ -1,0 +1,3 @@
+allowed=false reason=wake.not-whitelisted
+rejections=1 sessionCreated=0 handoffDelivered=0
+legacyWakeRejectedLabel=唤醒被拒

@@ -1,0 +1,126 @@
+{
+  "eventCount": 10,
+  "primaryCount": 6,
+  "types": [
+    "node.state.change",
+    "handoff.created",
+    "handoff.delivered",
+    "health.changed",
+    "core.suspend",
+    "run.halted"
+  ],
+  "checks": [
+    {
+      "id": "C01",
+      "label": "Then：主审计白名单命中 node.state.change",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "Then：主审计白名单命中 handoff.created",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "Then：主审计白名单命中 handoff.delivered",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "Then：主审计白名单命中 health.changed",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "Then：主审计白名单命中 core.suspend",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "Then：主审计白名单命中 run.halted",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "Then：交接包状态变更 handoff.created 进主审计",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "Then：交接包状态变更 handoff.delivered 进主审计",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "Then：交接包状态变更 handoff.accepted 进主审计",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "Then：交接包状态变更 handoff.consumed 进主审计",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "Then：交接包状态变更 handoff.rejected 进主审计",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "Then：交接包状态变更 handoff.expired 进主审计",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "机检：主审计类型集合含 node/handoff/health（逐条）",
+      "expected": "[\"node.state.change\",\"handoff.created\",\"handoff.delivered\",\"health.changed\",\"core.suspend\",\"run.halted\"]",
+      "actual": "[\"node.state.change\",\"handoff.created\",\"handoff.delivered\",\"health.changed\",\"core.suspend\",\"run.halted\"]",
+      "ok": true
+    },
+    {
+      "id": "C14",
+      "label": "Then：健康度档位变化进事件日志（I1.9 BR-15 口径）",
+      "expected": "health.changed present",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C15",
+      "label": "Then：节点状态变更进主审计",
+      "expected": "node.state.change present",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C16",
+      "label": "Then：交接包状态变更进主审计",
+      "expected": "handoff events present",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

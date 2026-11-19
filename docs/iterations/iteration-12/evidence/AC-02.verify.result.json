@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "total": 5,
+  "count": 5,
+  "firstMismatch": null,
+  "badLines": 0,
+  "gaps": 0,
+  "historical": 0,
+  "render": "链完整，共 5 条",
+  "expectedOk": "链完整，共 5 条"
+}

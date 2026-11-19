@@ -1,0 +1,12 @@
+{
+  "ok": false,
+  "code": "EVIDENCE_STALE",
+  "detail": "EVIDENCE_STALE:evidence_missing:HO-003:T-002:artifacts/absent.md",
+  "decision": {
+    "instanceId": "INST-001",
+    "handoffId": "HO-003",
+    "nodeId": "T-002",
+    "stale": true,
+    "reason": "evidence_missing"
+  }
+}

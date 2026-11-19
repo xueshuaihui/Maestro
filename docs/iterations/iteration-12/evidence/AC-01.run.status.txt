@@ -1,0 +1,4 @@
+exitCode=1
+timedOut=false
+durationMs=2128
+stderr=(empty)

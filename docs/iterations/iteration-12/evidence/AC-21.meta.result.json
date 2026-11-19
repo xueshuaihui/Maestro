@@ -1,0 +1,82 @@
+{
+  "perfCheck": {
+    "ac": "AC-21",
+    "level": "PERF_LEVEL_PENDING",
+    "levelLabel": "待本机实测",
+    "blocked": true,
+    "ok": false,
+    "realHostCollected": false,
+    "triedPaths": [
+      {
+        "path": "C:/Program Files/DSH/dsh.exe",
+        "exists": false
+      },
+      {
+        "path": "C:\\Users\\xuesh\\AppData\\Local\\DSH\\dsh.exe",
+        "exists": false
+      },
+      {
+        "path": "C:\\Users\\xuesh\\.dsh\\bin\\dsh",
+        "exists": false
+      },
+      {
+        "path": "env:MAESTRO_DSH_EXE/MAESTRO_DSH_BIN",
+        "set": false
+      },
+      {
+        "path": "本机真实宿主 20 实例/50 会话 handoff 取证",
+        "status": "not_collected"
+      }
+    ],
+    "note": "真实宿主面未取证 → 判阻塞、不得用 mock 顶替、不得伪通过（裁决 A 第 3 条 / 483 行契约 / 484 行锚点）",
+    "ts": "2026-11-19T12:40:01.646Z"
+  },
+  "report": {
+    "ok": false,
+    "level": "PERF_LEVEL_PENDING",
+    "stats": {
+      "median": null,
+      "p95": null,
+      "max": null
+    },
+    "bottleneck": null,
+    "blocked": true
+  },
+  "checks": [
+    {
+      "id": "C01",
+      "label": "报告级别 = PERF_LEVEL_PENDING（未取证）",
+      "expected": "PERF_LEVEL_PENDING",
+      "actual": "PERF_LEVEL_PENDING",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "blocked = true",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "级别中文逐字 = labels 待本机实测",
+      "expected": "待本机实测",
+      "actual": "待本机实测",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "mock 结果未进入真实宿主判据（realHostCollected=false）",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "附试过路径（triedPaths 非空）",
+      "expected": "> 0",
+      "actual": "5",
+      "ok": true
+    }
+  ]
+}

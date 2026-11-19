@@ -1,0 +1,18 @@
+{
+  "decision": {
+    "allowed": [
+      "T-001",
+      "T-002"
+    ],
+    "queued": [
+      "T-003",
+      "T-004",
+      "T-005"
+    ],
+    "limit": 2,
+    "reason": null
+  },
+  "running": 2,
+  "waiting": 3,
+  "failed": 0
+}

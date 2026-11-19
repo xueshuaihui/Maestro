@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "level": "PERF_LEVEL_MOCK",
+  "stats": {
+    "median": 560,
+    "p95": 700,
+    "max": 720
+  },
+  "bottleneck": null,
+  "blocked": false
+}

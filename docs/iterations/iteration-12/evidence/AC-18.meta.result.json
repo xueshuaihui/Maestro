@@ -1,0 +1,114 @@
+{
+  "before": {
+    "eventsHash": "d1a6dadf9d8a23103298a21f519621d778088517f3f2e54fa1b51e623f6c9c6d",
+    "tracesHash": "b4236fd54dac246a4def4e28d57699bddbc3f79bd87e35e585e6ac0d81f29491",
+    "stateHash": "67948e0d1c8d781e5db970a5b2bd2d40c54835200e53230fe95296689445081a",
+    "stateText": "{\"instanceId\":\"INST-001\",\"state\":\"running\",\"nodeCount\":2}",
+    "eventCount": 3,
+    "spanCount": 2
+  },
+  "after": {
+    "eventsHash": "d1a6dadf9d8a23103298a21f519621d778088517f3f2e54fa1b51e623f6c9c6d",
+    "tracesHash": "b4236fd54dac246a4def4e28d57699bddbc3f79bd87e35e585e6ac0d81f29491",
+    "stateHash": "67948e0d1c8d781e5db970a5b2bd2d40c54835200e53230fe95296689445081a",
+    "stateText": "{\"instanceId\":\"INST-001\",\"state\":\"running\",\"nodeCount\":2}",
+    "eventCount": 3
+  },
+  "counts": {
+    "events": 3,
+    "spans": 2
+  },
+  "checks": [
+    {
+      "id": "C01",
+      "label": "机检：导出退出码 0",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "Then：导出给出条数/位置",
+      "expected": "counts+out printed",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "机检：导出资源带 instance_id",
+      "expected": "INST-001",
+      "actual": "INST-001",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "Then：事件均在导出结果（logRecords 条数）",
+      "expected": "3",
+      "actual": "3",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "Then：跨度均在导出结果（traceSpans 条数）",
+      "expected": "2",
+      "actual": "2",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "Then：导出外部可读（含 severity/body/trace_id/handoff_ids）",
+      "expected": "OTLP fields present",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "机检：导出前后实例状态深比较相等",
+      "expected": "{\"instanceId\":\"INST-001\",\"state\":\"running\",\"nodeCount\":2}",
+      "actual": "{\"instanceId\":\"INST-001\",\"state\":\"running\",\"nodeCount\":2}",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "机检：事件日志文件 sha256 相等",
+      "expected": "d1a6dadf9d8a23103298a21f519621d778088517f3f2e54fa1b51e623f6c9c6d",
+      "actual": "d1a6dadf9d8a23103298a21f519621d778088517f3f2e54fa1b51e623f6c9c6d",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "机检：追踪日志文件 sha256 相等",
+      "expected": "b4236fd54dac246a4def4e28d57699bddbc3f79bd87e35e585e6ac0d81f29491",
+      "actual": "b4236fd54dac246a4def4e28d57699bddbc3f79bd87e35e585e6ac0d81f29491",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "机检：事件条数不变",
+      "expected": "3",
+      "actual": "3",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "架构检查：appendFile 零命中",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "架构检查：唯一写目标是 out",
+      "expected": "writeFile(out) present",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "Then：确认文案逐字来自 labels（EXPORT_DONE，纯 ASCII 渲染契约）",
+      "expected": "EXPORT_DONE key present",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

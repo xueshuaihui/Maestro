@@ -1,0 +1,15 @@
+{
+  "blocked": true,
+  "code": "HIGH_RISK_REVIEW_BLOCKED",
+  "reason": "missing_human_gate",
+  "nodeIds": [
+    "T-001"
+  ],
+  "decision": {
+    "instanceId": "INST-001",
+    "nodeId": "T-001",
+    "needsHumanReview": true,
+    "blocked": true,
+    "reason": "missing_human_gate"
+  }
+}

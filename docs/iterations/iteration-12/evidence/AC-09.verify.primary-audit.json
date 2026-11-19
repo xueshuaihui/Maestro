@@ -1,0 +1,38 @@
+[
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "ready",
+    "to": "running",
+    "reason": "state.change"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": null,
+    "to": "created",
+    "reason": "handoff.created"
+  },
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "created",
+    "to": "delivered",
+    "reason": "handoff.delivered"
+  },
+  {
+    "object": "health",
+    "objectId": "H-1",
+    "reason": "health.changed"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-1",
+    "reason": "core.suspend"
+  },
+  {
+    "object": "run",
+    "objectId": "RUN-1",
+    "reason": "run.halted"
+  }
+]

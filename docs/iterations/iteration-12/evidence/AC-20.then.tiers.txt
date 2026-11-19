@@ -1,0 +1,6 @@
+median=560
+p95=700
+max=720
+evidenceLevelKey=PERF_LEVEL_MOCK
+evidenceLevelLabel=mock 实测
+瓶颈点=无

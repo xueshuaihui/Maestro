@@ -1,0 +1,171 @@
+{
+  "config": {
+    "maxConcurrent": 2,
+    "instanceBudget": {
+      "roles": [
+        {
+          "id": "role-a",
+          "max_concurrent_sessions": 2
+        }
+      ]
+    }
+  },
+  "initial": {
+    "decision": {
+      "allowed": [
+        "T-001",
+        "T-002"
+      ],
+      "queued": [
+        "T-003",
+        "T-004",
+        "T-005"
+      ],
+      "limit": 2,
+      "reason": null
+    },
+    "running": 2,
+    "waiting": 3,
+    "failed": 0
+  },
+  "queuedGate": {
+    "blocked": true,
+    "code": "PARALLEL_LIMIT",
+    "queued": [
+      "T-003",
+      "T-004",
+      "T-005"
+    ],
+    "limit": 2
+  },
+  "backfill": {
+    "decision": {
+      "allowed": [
+        "T-003"
+      ],
+      "queued": [
+        "T-004",
+        "T-005"
+      ],
+      "limit": 2,
+      "reason": null
+    },
+    "running": 2,
+    "waiting": 2,
+    "failed": 0
+  },
+  "finalStates": [
+    "T-001:done",
+    "T-002:running",
+    "T-003:running",
+    "T-004:ready",
+    "T-005:ready"
+  ],
+  "checks": [
+    {
+      "id": "C01",
+      "label": "Then：任一时刻最多 2 个节点进入执行",
+      "expected": "<= 2",
+      "actual": "2",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "Then：其余就绪节点至少 3 个保持等待",
+      "expected": ">= 3",
+      "actual": "3",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "机检：allowed 恰 2 个",
+      "expected": "2",
+      "actual": "2",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "机检：queued 恰 3 个",
+      "expected": "3",
+      "actual": "3",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "机检：limit=2（实例与角色 max_concurrent_sessions 取小）",
+      "expected": "2",
+      "actual": "2",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "机检：reason=null",
+      "expected": "null",
+      "actual": "null",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "Then：没有节点因此失败（failed=0）",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "机检：超限节点保持 queued（PARALLEL_LIMIT）",
+      "expected": "PARALLEL_LIMIT",
+      "actual": "PARALLEL_LIMIT",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "机检：超限判定返回 3 个排队节点",
+      "expected": "3",
+      "actual": "3",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "Then：完成一个后按序补位一个（allowed=1）",
+      "expected": "1",
+      "actual": "1",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "机检：等待数减一（queued=2）",
+      "expected": "2",
+      "actual": "2",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "Then：补位无 failed 节点",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "Then：补位不产生失败节点",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C14",
+      "label": "架构检查：预算模块无 saveState/transit（纯判定）",
+      "expected": "pure decision",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C15",
+      "label": "架构检查：沿用 max_concurrent_sessions 语义",
+      "expected": "reuses role ceiling",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

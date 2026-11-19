@@ -1,0 +1,3 @@
+mismatch=fingerprint_mismatch missing=evidence_missing
+delivered=0 escalations=2
+uiFields=0 decisionFrozen=true

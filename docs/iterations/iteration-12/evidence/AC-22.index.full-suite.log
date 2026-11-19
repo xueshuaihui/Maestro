@@ -1,0 +1,101 @@
+ 'test'
+  ...
+# Subtest: C-2 tool_running 行带工具名与时长，时长随快照变化
+ok 1645 - C-2 tool_running 行带工具名与时长，时长随快照变化
+  ---
+  duration_ms: 0.2367
+  type: 'test'
+  ...
+# Subtest: C-2 tool_running 无时长信息时不硬造 0s（工具名段保持 AC-16 原样）
+ok 1646 - C-2 tool_running 无时长信息时不硬造 0s（工具名段保持 AC-16 原样）
+  ---
+  duration_ms: 0.096
+  type: 'test'
+  ...
+# Subtest: C-2 status 路径：两次采样的 tool_running 会话行时长递增
+ok 1647 - C-2 status 路径：两次采样的 tool_running 会话行时长递增
+  ---
+  duration_ms: 0.68
+  type: 'test'
+  ...
+# Subtest: C-3 IPC_CLOSED 后以 ensure:false 重连，快照 interrupted → 打停点 note，不报未知错误
+ok 1648 - C-3 IPC_CLOSED 后以 ensure:false 重连，快照 interrupted → 打停点 note，不报未知错误
+  ---
+  duration_ms: 4.2557
+  type: 'test'
+  ...
+# Subtest: C-3 重连失败 → "核心已停止"一行（中文来自 labels），仍不报未知错误
+ok 1649 - C-3 重连失败 → "核心已停止"一行（中文来自 labels），仍不报未知错误
+  ---
+  duration_ms: 3.3259
+  type: 'test'
+  ...
+# Subtest: C-3 重连成功但取不到快照 → 同样落到"核心已停止"
+ok 1650 - C-3 重连成功但取不到快照 → 同样落到"核心已停止"
+  ---
+  duration_ms: 4.6655
+  type: 'test'
+  ...
+# Subtest: C-4 status：sessionStalled 时显示"无新事件"，未静默时不显示
+ok 1651 - C-4 status：sessionStalled 时显示"无新事件"，未静默时不显示
+  ---
+  duration_ms: 0.9456
+  type: 'test'
+  ...
+# Subtest: C-7 status：interrupted 只打一行实例信息（带停点），不重复
+ok 1652 - C-7 status：interrupted 只打一行实例信息（带停点），不重复
+  ---
+  duration_ms: 0.5523
+  type: 'test'
+  ...
+# Subtest: C-7 run 收尾：interrupted 只出现一次 note，不再重复实例行
+ok 1653 - C-7 run 收尾：interrupted 只出现一次 note，不再重复实例行
+  ---
+  duration_ms: 5.5357
+  type: 'test'
+  ...
+# Subtest: S-1 instance.get：STATE_CORRUPT 透出 backupPath（指向 state.json.corrupt）
+ok 1654 - S-1 instance.get：STATE_CORRUPT 透出 backupPath（指向 state.json.corrupt）
+  ---
+  duration_ms: 68.685
+  type: 'test'
+  ...
+# Subtest: S-2 extractDeclaredArtifacts：评审给出的 6 条样例全部成立
+ok 1655 - S-2 extractDeclaredArtifacts：评审给出的 6 条样例全部成立
+  ---
+  duration_ms: 1.3786
+  type: 'test'
+  ...
+# Subtest: S-2 越界与绝对路径仍然一律拒绝
+ok 1656 - S-2 越界与绝对路径仍然一律拒绝
+  ---
+  duration_ms: 0.2637
+  type: 'test'
+  ...
+# Subtest: WP-5 status --instance：审批行在升级块之后按审批号逐条列出（AC-36 / A-2 \#2）
+ok 1657 - WP-5 status --instance：审批行在升级块之后按审批号逐条列出（AC-36 / A-2 \#2）
+  ---
+  duration_ms: 0.6018
+  type: 'test'
+  ...
+# Subtest: WP-5 run 暂停收尾：退出 0，只打实例行与恢复提示（A-2 \#6 / D-7.9）
+ok 1658 - WP-5 run 暂停收尾：退出 0，只打实例行与恢复提示（A-2 \#6 / D-7.9）
+  ---
+  duration_ms: 3.2053
+  type: 'test'
+  ...
+# Subtest: WP-5 run 等待期间新审批立即打印审批行（AC-37 / BR-42）
+ok 1659 - WP-5 run 等待期间新审批立即打印审批行（AC-37 / BR-42）
+  ---
+  duration_ms: 3.3859
+  type: 'test'
+  ...
+1..1659
+# tests 1659
+# suites 0
+# pass 1636
+# fail 14
+# cancelled 0
+# skipped 9
+# todo 0
+# duration_ms 225080.5461

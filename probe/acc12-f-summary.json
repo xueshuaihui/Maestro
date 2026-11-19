@@ -1,0 +1,762 @@
+{
+  "generatedAt": "2026-11-19T12:50:45.014Z",
+  "head": "d1fce53",
+  "acTotal": 23,
+  "pass": 22,
+  "fail": 0,
+  "blocked": 1,
+  "checksTotal": 322,
+  "checksPassed": 322,
+  "checksFailed": 0,
+  "evidenceFileCount": 153,
+  "evidenceFiles": [
+    "docs/iterations/iteration-12/evidence/AC-01.fixture.events-bad.jsonl",
+    "docs/iterations/iteration-12/evidence/AC-01.fixture.events-good.jsonl",
+    "docs/iterations/iteration-12/evidence/AC-01.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-01.run.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-01.run.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-01.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-01.verify.bad.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-01.verify.good.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-01.verify.module-result.json",
+    "docs/iterations/iteration-12/evidence/AC-02.fixture.after.events.jsonl",
+    "docs/iterations/iteration-12/evidence/AC-02.fixture.baseline.events.jsonl",
+    "docs/iterations/iteration-12/evidence/AC-02.meta.fingerprints.json",
+    "docs/iterations/iteration-12/evidence/AC-02.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-02.verify.result.json",
+    "docs/iterations/iteration-12/evidence/AC-03.decision.allow.json",
+    "docs/iterations/iteration-12/evidence/AC-03.fixture.roles.json",
+    "docs/iterations/iteration-12/evidence/AC-03.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-03.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-04.decision.deny.json",
+    "docs/iterations/iteration-12/evidence/AC-04.fixture.roles.json",
+    "docs/iterations/iteration-12/evidence/AC-04.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-04.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-05.fixture.artifact-ok.md",
+    "docs/iterations/iteration-12/evidence/AC-05.fixture.handoff.json",
+    "docs/iterations/iteration-12/evidence/AC-05.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-05.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-05.verify.freshness.json",
+    "docs/iterations/iteration-12/evidence/AC-05.verify.full-chain.json",
+    "docs/iterations/iteration-12/evidence/AC-06.fixture.artifact-F0.md",
+    "docs/iterations/iteration-12/evidence/AC-06.fixture.artifact-F1.md",
+    "docs/iterations/iteration-12/evidence/AC-06.fixture.handoff-mismatch.json",
+    "docs/iterations/iteration-12/evidence/AC-06.fixture.handoff-missing.json",
+    "docs/iterations/iteration-12/evidence/AC-06.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-06.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-06.verify.decision-mismatch.json",
+    "docs/iterations/iteration-12/evidence/AC-06.verify.decision-missing.json",
+    "docs/iterations/iteration-12/evidence/AC-07.fixture.workflow-filled.json",
+    "docs/iterations/iteration-12/evidence/AC-07.fixture.workflow-missing.json",
+    "docs/iterations/iteration-12/evidence/AC-07.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-07.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-07.verify.review-cli.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-07.verify.review-filled.json",
+    "docs/iterations/iteration-12/evidence/AC-07.verify.review-missing.json",
+    "docs/iterations/iteration-12/evidence/AC-07.verify.start-blocked.json",
+    "docs/iterations/iteration-12/evidence/AC-08.fixture.workflow.json",
+    "docs/iterations/iteration-12/evidence/AC-08.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-08.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-08.verify.decision-approved.json",
+    "docs/iterations/iteration-12/evidence/AC-08.verify.decision-awaiting.json",
+    "docs/iterations/iteration-12/evidence/AC-08.verify.review-after-ruling.json",
+    "docs/iterations/iteration-12/evidence/AC-08.verify.review-pending.json",
+    "docs/iterations/iteration-12/evidence/AC-09.fixture.events.jsonl",
+    "docs/iterations/iteration-12/evidence/AC-09.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-09.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-09.verify.primary-audit.json",
+    "docs/iterations/iteration-12/evidence/AC-09.verify.types.json",
+    "docs/iterations/iteration-12/evidence/AC-10.fixture.events.jsonl",
+    "docs/iterations/iteration-12/evidence/AC-10.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-10.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-10.verify.aggregate-recomputed.json",
+    "docs/iterations/iteration-12/evidence/AC-10.verify.handoff-state-keys.json",
+    "docs/iterations/iteration-12/evidence/AC-10.verify.primary-audit.json",
+    "docs/iterations/iteration-12/evidence/AC-10.verify.types.json",
+    "docs/iterations/iteration-12/evidence/AC-11.fixture.parallel.json",
+    "docs/iterations/iteration-12/evidence/AC-11.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-11.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-11.verify.decision-backfill.json",
+    "docs/iterations/iteration-12/evidence/AC-11.verify.decision-initial.json",
+    "docs/iterations/iteration-12/evidence/AC-11.verify.gate-waiting.json",
+    "docs/iterations/iteration-12/evidence/AC-11.verify.state-after-backfill.json",
+    "docs/iterations/iteration-12/evidence/AC-11.verify.state-after-initial.json",
+    "docs/iterations/iteration-12/evidence/AC-12.fixture.budget.json",
+    "docs/iterations/iteration-12/evidence/AC-12.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-12.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-12.verify.decision-resume.json",
+    "docs/iterations/iteration-12/evidence/AC-12.verify.decision-suspend.json",
+    "docs/iterations/iteration-12/evidence/AC-12.verify.gate-suspend.json",
+    "docs/iterations/iteration-12/evidence/AC-12.verify.state-resumed.json",
+    "docs/iterations/iteration-12/evidence/AC-12.verify.state-suspended.json",
+    "docs/iterations/iteration-12/evidence/AC-13.given.registry.json",
+    "docs/iterations/iteration-12/evidence/AC-13.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-13.then.import.json",
+    "docs/iterations/iteration-12/evidence/AC-13.then.negative-controls.json",
+    "docs/iterations/iteration-12/evidence/AC-13.when.build-workflow.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-13.when.build.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-14.given.package.json",
+    "docs/iterations/iteration-12/evidence/AC-14.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-14.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-14.then.confirm.txt",
+    "docs/iterations/iteration-12/evidence/AC-14.then.import.json",
+    "docs/iterations/iteration-12/evidence/AC-14.when.verify.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-15.given.baseline.json",
+    "docs/iterations/iteration-12/evidence/AC-15.given.packages.json",
+    "docs/iterations/iteration-12/evidence/AC-15.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-15.then.assets-after.json",
+    "docs/iterations/iteration-12/evidence/AC-15.then.import.txt",
+    "docs/iterations/iteration-12/evidence/AC-15.when.verify.txt",
+    "docs/iterations/iteration-12/evidence/AC-16.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-16.then.recheck.txt",
+    "docs/iterations/iteration-12/evidence/AC-16.then.references.yaml",
+    "docs/iterations/iteration-12/evidence/AC-16.then.summary.txt",
+    "docs/iterations/iteration-12/evidence/AC-16.when.apply.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-16.when.apply.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-16.when.plan.json",
+    "docs/iterations/iteration-12/evidence/AC-16.when.plan.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-16.when.plan.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-17.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-17.then.idem.txt",
+    "docs/iterations/iteration-12/evidence/AC-17.when.bad.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-17.when.bad.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-17.when.latest.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-17.when.latest.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-18.given.before.json",
+    "docs/iterations/iteration-12/evidence/AC-18.given.events.jsonl",
+    "docs/iterations/iteration-12/evidence/AC-18.given.traces.jsonl",
+    "docs/iterations/iteration-12/evidence/AC-18.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-18.then.after.json",
+    "docs/iterations/iteration-12/evidence/AC-18.then.arch-scan.txt",
+    "docs/iterations/iteration-12/evidence/AC-18.then.exported.json",
+    "docs/iterations/iteration-12/evidence/AC-18.when.export.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-18.when.export.stdout.txt",
+    "docs/iterations/iteration-12/evidence/AC-19.given.inputs.json",
+    "docs/iterations/iteration-12/evidence/AC-19.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-19.then.arch-scan.txt",
+    "docs/iterations/iteration-12/evidence/AC-19.when.signals.json",
+    "docs/iterations/iteration-12/evidence/AC-20.given.events.jsonl",
+    "docs/iterations/iteration-12/evidence/AC-20.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-20.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-20.then.report.json",
+    "docs/iterations/iteration-12/evidence/AC-20.then.tiers.txt",
+    "docs/iterations/iteration-12/evidence/AC-20.when.samples.json",
+    "docs/iterations/iteration-12/evidence/AC-21.given.contract.json",
+    "docs/iterations/iteration-12/evidence/AC-21.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-21.perf-check.stdout.json",
+    "docs/iterations/iteration-12/evidence/AC-21.summary.status.txt",
+    "docs/iterations/iteration-12/evidence/AC-22.check.deps.txt",
+    "docs/iterations/iteration-12/evidence/AC-22.check.purity.txt",
+    "docs/iterations/iteration-12/evidence/AC-22.check.usage.txt",
+    "docs/iterations/iteration-12/evidence/AC-22.diffset.txt",
+    "docs/iterations/iteration-12/evidence/AC-22.flake.three-main-chains.isolated.log",
+    "docs/iterations/iteration-12/evidence/AC-22.full-suite.final.log",
+    "docs/iterations/iteration-12/evidence/AC-22.full-suite.log",
+    "docs/iterations/iteration-12/evidence/AC-22.index.counts.json",
+    "docs/iterations/iteration-12/evidence/AC-22.index.diffset.txt",
+    "docs/iterations/iteration-12/evidence/AC-22.index.full-suite.log",
+    "docs/iterations/iteration-12/evidence/AC-22.index.main-chains.log",
+    "docs/iterations/iteration-12/evidence/AC-22.main-chains.log",
+    "docs/iterations/iteration-12/evidence/AC-22.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-23.boundary.isolated.log",
+    "docs/iterations/iteration-12/evidence/AC-23.given.decisions.json",
+    "docs/iterations/iteration-12/evidence/AC-23.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-23.then.git-diff.txt",
+    "docs/iterations/iteration-12/evidence/AC-23.then.meta-diff.json"
+  ],
+  "batches": {
+    "a": {
+      "scope": "AC-01~AC-12",
+      "resultsFile": "probe/acc12-f-results.jsonl",
+      "acCount": 12,
+      "pass": 12,
+      "fail": 0,
+      "blocked": 0,
+      "checksTotal": 194,
+      "checksPassed": 194,
+      "checksFailed": 0,
+      "evidenceCount": 79
+    },
+    "b": {
+      "scope": "AC-13~AC-23",
+      "resultsFile": "probe/acc12-f-results-b.jsonl",
+      "acCount": 11,
+      "pass": 10,
+      "fail": 0,
+      "blocked": 1,
+      "checksTotal": 128,
+      "checksPassed": 128,
+      "checksFailed": 0,
+      "evidenceCount": 74
+    }
+  },
+  "perAc": [
+    {
+      "ac": "AC-01",
+      "batch": "a",
+      "title": "篡改一条记录，链式哈希校验失败",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 22,
+        "passed": 22,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 9,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-01.fixture.events-bad.jsonl",
+          "docs/iterations/iteration-12/evidence/AC-01.fixture.events-good.jsonl",
+          "docs/iterations/iteration-12/evidence/AC-01.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-01.run.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-01.run.stdout.txt",
+          "docs/iterations/iteration-12/evidence/AC-01.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-01.verify.bad.stdout.txt",
+          "docs/iterations/iteration-12/evidence/AC-01.verify.good.stdout.txt",
+          "docs/iterations/iteration-12/evidence/AC-01.verify.module-result.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-02",
+      "batch": "a",
+      "title": "链式哈希加固与 I1.9 基线衔接",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 21,
+        "passed": 21,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 5,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-02.fixture.after.events.jsonl",
+          "docs/iterations/iteration-12/evidence/AC-02.fixture.baseline.events.jsonl",
+          "docs/iterations/iteration-12/evidence/AC-02.meta.fingerprints.json",
+          "docs/iterations/iteration-12/evidence/AC-02.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-02.verify.result.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-03",
+      "batch": "a",
+      "title": "白名单内唤醒正常发生",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 4,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-03.decision.allow.json",
+          "docs/iterations/iteration-12/evidence/AC-03.fixture.roles.json",
+          "docs/iterations/iteration-12/evidence/AC-03.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-03.summary.status.txt"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-04",
+      "batch": "a",
+      "title": "越权唤醒被拦截并留痕",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 4,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-04.decision.deny.json",
+          "docs/iterations/iteration-12/evidence/AC-04.fixture.roles.json",
+          "docs/iterations/iteration-12/evidence/AC-04.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-04.summary.status.txt"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-05",
+      "batch": "a",
+      "title": "证据指纹一致时正常交接",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 6,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-05.fixture.artifact-ok.md",
+          "docs/iterations/iteration-12/evidence/AC-05.fixture.handoff.json",
+          "docs/iterations/iteration-12/evidence/AC-05.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-05.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-05.verify.freshness.json",
+          "docs/iterations/iteration-12/evidence/AC-05.verify.full-chain.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-06",
+      "batch": "a",
+      "title": "证据过期后交接被拒绝",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 23,
+        "passed": 23,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 8,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-06.fixture.artifact-F0.md",
+          "docs/iterations/iteration-12/evidence/AC-06.fixture.artifact-F1.md",
+          "docs/iterations/iteration-12/evidence/AC-06.fixture.handoff-mismatch.json",
+          "docs/iterations/iteration-12/evidence/AC-06.fixture.handoff-missing.json",
+          "docs/iterations/iteration-12/evidence/AC-06.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-06.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-06.verify.decision-mismatch.json",
+          "docs/iterations/iteration-12/evidence/AC-06.verify.decision-missing.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-07",
+      "batch": "a",
+      "title": "高风险缺人工终审被挡下",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 8,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-07.fixture.workflow-filled.json",
+          "docs/iterations/iteration-12/evidence/AC-07.fixture.workflow-missing.json",
+          "docs/iterations/iteration-12/evidence/AC-07.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-07.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-07.verify.review-cli.stdout.txt",
+          "docs/iterations/iteration-12/evidence/AC-07.verify.review-filled.json",
+          "docs/iterations/iteration-12/evidence/AC-07.verify.review-missing.json",
+          "docs/iterations/iteration-12/evidence/AC-07.verify.start-blocked.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-08",
+      "batch": "a",
+      "title": "有终审路径的高风险节点需等人裁决",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 7,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-08.fixture.workflow.json",
+          "docs/iterations/iteration-12/evidence/AC-08.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-08.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-08.verify.decision-approved.json",
+          "docs/iterations/iteration-12/evidence/AC-08.verify.decision-awaiting.json",
+          "docs/iterations/iteration-12/evidence/AC-08.verify.review-after-ruling.json",
+          "docs/iterations/iteration-12/evidence/AC-08.verify.review-pending.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-09",
+      "batch": "a",
+      "title": "节点与交接包状态变更进主审计",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 5,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-09.fixture.events.jsonl",
+          "docs/iterations/iteration-12/evidence/AC-09.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-09.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-09.verify.primary-audit.json",
+          "docs/iterations/iteration-12/evidence/AC-09.verify.types.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-10",
+      "batch": "a",
+      "title": "派生与会话状态不单独审计",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 7,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-10.fixture.events.jsonl",
+          "docs/iterations/iteration-12/evidence/AC-10.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-10.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-10.verify.aggregate-recomputed.json",
+          "docs/iterations/iteration-12/evidence/AC-10.verify.handoff-state-keys.json",
+          "docs/iterations/iteration-12/evidence/AC-10.verify.primary-audit.json",
+          "docs/iterations/iteration-12/evidence/AC-10.verify.types.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-11",
+      "batch": "a",
+      "title": "并行度上限排队",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 8,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-11.fixture.parallel.json",
+          "docs/iterations/iteration-12/evidence/AC-11.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-11.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-11.verify.decision-backfill.json",
+          "docs/iterations/iteration-12/evidence/AC-11.verify.decision-initial.json",
+          "docs/iterations/iteration-12/evidence/AC-11.verify.gate-waiting.json",
+          "docs/iterations/iteration-12/evidence/AC-11.verify.state-after-backfill.json",
+          "docs/iterations/iteration-12/evidence/AC-11.verify.state-after-initial.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-12",
+      "batch": "a",
+      "title": "预算耗尽时暂停而非失败",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 18,
+        "passed": 18,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 8,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-12.fixture.budget.json",
+          "docs/iterations/iteration-12/evidence/AC-12.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-12.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-12.verify.decision-resume.json",
+          "docs/iterations/iteration-12/evidence/AC-12.verify.decision-suspend.json",
+          "docs/iterations/iteration-12/evidence/AC-12.verify.gate-suspend.json",
+          "docs/iterations/iteration-12/evidence/AC-12.verify.state-resumed.json",
+          "docs/iterations/iteration-12/evidence/AC-12.verify.state-suspended.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-13",
+      "batch": "b",
+      "title": "角色包/工作流包导出含依赖闭包",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 6,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-13.given.registry.json",
+          "docs/iterations/iteration-12/evidence/AC-13.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-13.then.import.json",
+          "docs/iterations/iteration-12/evidence/AC-13.then.negative-controls.json",
+          "docs/iterations/iteration-12/evidence/AC-13.when.build-workflow.stdout.txt",
+          "docs/iterations/iteration-12/evidence/AC-13.when.build.stdout.txt"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-14",
+      "batch": "b",
+      "title": "导入第三方包：签名有效、版本兼容",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 6,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-14.given.package.json",
+          "docs/iterations/iteration-12/evidence/AC-14.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-14.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-14.then.confirm.txt",
+          "docs/iterations/iteration-12/evidence/AC-14.then.import.json",
+          "docs/iterations/iteration-12/evidence/AC-14.when.verify.stdout.txt"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-15",
+      "batch": "b",
+      "title": "签名无效/版本不兼容被拒绝且不污染资产",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 6,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-15.given.baseline.json",
+          "docs/iterations/iteration-12/evidence/AC-15.given.packages.json",
+          "docs/iterations/iteration-12/evidence/AC-15.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-15.then.assets-after.json",
+          "docs/iterations/iteration-12/evidence/AC-15.then.import.txt",
+          "docs/iterations/iteration-12/evidence/AC-15.when.verify.txt"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-16",
+      "batch": "b",
+      "title": "orch migrate 升级派生角色/工作流引用",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 9,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-16.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-16.then.recheck.txt",
+          "docs/iterations/iteration-12/evidence/AC-16.then.references.yaml",
+          "docs/iterations/iteration-12/evidence/AC-16.then.summary.txt",
+          "docs/iterations/iteration-12/evidence/AC-16.when.apply.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-16.when.apply.stdout.txt",
+          "docs/iterations/iteration-12/evidence/AC-16.when.plan.json",
+          "docs/iterations/iteration-12/evidence/AC-16.when.plan.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-16.when.plan.stdout.txt"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-17",
+      "batch": "b",
+      "title": "orch migrate 无迁移项/坏引用/幂等",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 6,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-17.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-17.then.idem.txt",
+          "docs/iterations/iteration-12/evidence/AC-17.when.bad.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-17.when.bad.stdout.txt",
+          "docs/iterations/iteration-12/evidence/AC-17.when.latest.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-17.when.latest.stdout.txt"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-18",
+      "batch": "b",
+      "title": "可观测性导出为 OpenTelemetry 格式",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 9,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-18.given.before.json",
+          "docs/iterations/iteration-12/evidence/AC-18.given.events.jsonl",
+          "docs/iterations/iteration-12/evidence/AC-18.given.traces.jsonl",
+          "docs/iterations/iteration-12/evidence/AC-18.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-18.then.after.json",
+          "docs/iterations/iteration-12/evidence/AC-18.then.arch-scan.txt",
+          "docs/iterations/iteration-12/evidence/AC-18.then.exported.json",
+          "docs/iterations/iteration-12/evidence/AC-18.when.export.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-18.when.export.stdout.txt"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-19",
+      "batch": "b",
+      "title": "反模式监控给出三类信号",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 4,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-19.given.inputs.json",
+          "docs/iterations/iteration-12/evidence/AC-19.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-19.then.arch-scan.txt",
+          "docs/iterations/iteration-12/evidence/AC-19.when.signals.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-20",
+      "batch": "b",
+      "title": "性能基线 mock 压测达标（mock 实测）",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 6,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-20.given.events.jsonl",
+          "docs/iterations/iteration-12/evidence/AC-20.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-20.summary.status.txt",
+          "docs/iterations/iteration-12/evidence/AC-20.then.report.json",
+          "docs/iterations/iteration-12/evidence/AC-20.then.tiers.txt",
+          "docs/iterations/iteration-12/evidence/AC-20.when.samples.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-21",
+      "batch": "b",
+      "title": "真实宿主性能证据分级（留本机）",
+      "verdict": "阻塞",
+      "grading": "阻塞",
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 4,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-21.given.contract.json",
+          "docs/iterations/iteration-12/evidence/AC-21.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-21.perf-check.stdout.json",
+          "docs/iterations/iteration-12/evidence/AC-21.summary.status.txt"
+        ]
+      },
+      "blocker": "真实宿主（DSH 0.2.2-rc.1）性能面本机未取证：level=PERF_LEVEL_PENDING、blocked=true；按裁决 A 第 3 条判阻塞（不算失败），不得用 AC-20 的 mock 实测顶替、不得伪通过；需主控安排本机取证窗口后补采 20 实例/50 会话 handoff。"
+    },
+    {
+      "ac": "AC-22",
+      "batch": "b",
+      "title": "回归红线：上游 AC 与不变量只增不改（证据索引）",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 13,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-22.check.deps.txt",
+          "docs/iterations/iteration-12/evidence/AC-22.check.purity.txt",
+          "docs/iterations/iteration-12/evidence/AC-22.check.usage.txt",
+          "docs/iterations/iteration-12/evidence/AC-22.diffset.txt",
+          "docs/iterations/iteration-12/evidence/AC-22.flake.three-main-chains.isolated.log",
+          "docs/iterations/iteration-12/evidence/AC-22.full-suite.final.log",
+          "docs/iterations/iteration-12/evidence/AC-22.full-suite.log",
+          "docs/iterations/iteration-12/evidence/AC-22.index.counts.json",
+          "docs/iterations/iteration-12/evidence/AC-22.index.diffset.txt",
+          "docs/iterations/iteration-12/evidence/AC-22.index.full-suite.log",
+          "docs/iterations/iteration-12/evidence/AC-22.index.main-chains.log",
+          "docs/iterations/iteration-12/evidence/AC-22.main-chains.log",
+          "docs/iterations/iteration-12/evidence/AC-22.meta.result.json"
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "ac": "AC-23",
+      "batch": "b",
+      "title": "与 I1.11 的边界：治理侧只产出判定结果",
+      "verdict": "通过",
+      "grading": "mock 实测",
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "evidence": {
+        "count": 5,
+        "files": [
+          "docs/iterations/iteration-12/evidence/AC-23.boundary.isolated.log",
+          "docs/iterations/iteration-12/evidence/AC-23.given.decisions.json",
+          "docs/iterations/iteration-12/evidence/AC-23.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-23.then.git-diff.txt",
+          "docs/iterations/iteration-12/evidence/AC-23.then.meta-diff.json"
+        ]
+      },
+      "blocker": null
+    }
+  ]
+}

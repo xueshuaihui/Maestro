@@ -1,0 +1,129 @@
+{
+  "eventCount": 9,
+  "primaryCount": 5,
+  "types": [
+    "node.state.change",
+    "handoff.created",
+    "handoff.delivered",
+    "health.changed",
+    "core.suspend"
+  ],
+  "aggregate": [
+    {
+      "handoffId": "HO-001",
+      "state": "delivered",
+      "transitions": 2
+    }
+  ],
+  "keys": [
+    "HO-001:created",
+    "HO-001:delivered"
+  ],
+  "checks": [
+    {
+      "id": "C01",
+      "label": "Then：connection 聚合不进主审计（isPrimaryAuditEvent=false）",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "Then：connection 类型不进主审计（isPrimaryAuditEvent=false）",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "Then：role_instance 状态不进主审计（isPrimaryAuditEvent=false）",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "Then：role 状态不进主审计（isPrimaryAuditEvent=false）",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "Then：session 状态不进主审计（isPrimaryAuditEvent=false）",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "Then：session 类型不进主审计（isPrimaryAuditEvent=false）",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "机检：主审计事件类型集合不含 connection 独立审计类型",
+      "expected": "no connection type",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "机检：主审计事件类型集合不含 role 独立审计类型",
+      "expected": "no role type",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "机检：主审计事件类型集合不含 session 独立审计类型",
+      "expected": "no session type",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "Then：主审计仅含白名单类型",
+      "expected": "[\"node.state.change\",\"handoff.created\",\"handoff.delivered\",\"health.changed\",\"core.suspend\"]",
+      "actual": "[\"node.state.change\",\"handoff.created\",\"handoff.delivered\",\"health.changed\",\"core.suspend\"]",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "机检：聚合状态可由交接包状态重算一致",
+      "expected": "[{\"handoffId\":\"HO-001\",\"state\":\"delivered\",\"transitions\":2}]",
+      "actual": "[{\"handoffId\":\"HO-001\",\"state\":\"delivered\",\"transitions\":2}]",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "Then：聚合状态本身不是主审计事件",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "Then：同一份交接包状态在主审计中只记一次",
+      "expected": "[\"HO-001:created\",\"HO-001:delivered\"]",
+      "actual": "[\"HO-001:created\",\"HO-001:delivered\"]",
+      "ok": true
+    },
+    {
+      "id": "C14",
+      "label": "机检：无重复 handoff:state",
+      "expected": "2",
+      "actual": "2",
+      "ok": true
+    },
+    {
+      "id": "C15",
+      "label": "架构检查：治理模块不写 connection/role 审计事件",
+      "expected": "no connection emit / role audit",
+      "actual": "true",
+      "ok": true
+    }
+  ]
+}

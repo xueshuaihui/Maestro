@@ -1,0 +1,2 @@
+events=10 primary=6
+types=node.state.change,handoff.created,handoff.delivered,health.changed,core.suspend,run.halted

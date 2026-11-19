@@ -1,0 +1,5 @@
+AC-21 → 阻塞（真实宿主面未取证，不算失败）
+level=PERF_LEVEL_PENDING/待本机实测
+blocked=true
+出口：裁决 A 第 3 条 / 483 行契约 / 484 行阻塞出口锚点
+不得用 AC-20 的 mock 实测顶替、不得伪通过
