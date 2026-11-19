@@ -353,6 +353,47 @@ export async function commitEscalation({
 }
 
 /**
+ * I1.12 WP-7 / D-13 (additive, authorized segment): build a rejection whose
+ * reason code is supplied by the CALLER (e.g. `wake.not-whitelisted`, evidence
+ * or budget reason codes). It reuses buildEscalation; the existing emitMany /
+ * commitEscalation / pendingHandoff paths, the one-CAS disk discipline and every
+ * upstream judgment above are untouched. No display text lives here.
+ *
+ * @param {{instanceId?:string, nodeId?:string, round?:number, reasonCode?:string,
+ *          reasonDetail?:string, escalations?:Array, now?:Function,
+ *          decision?:object|null, resumeRound?:number|null}} input
+ * @returns {object} a pending escalation entry in the frozen D-6 shape
+ */
+export function buildGovernanceRejection({
+  instanceId = null,
+  nodeId = null,
+  round = 1,
+  reasonCode = 'wake.not-whitelisted',
+  reasonDetail = '',
+  escalations = [],
+  now = defaultNow,
+  decision = null,
+  resumeRound = null,
+} = {}) {
+  const entry = buildEscalation({
+    instanceId,
+    escalations,
+    nodeId,
+    round,
+    reasonCode,
+    reasonDetail,
+    defects: [],
+    now,
+  });
+  // Optional I1.11 consumption fields: data-only governance verdicts. They are
+  // absent on every pre-existing escalation, so the frozen D-6 shape and all
+  // upstream event assertions stay byte-for-byte unchanged.
+  if (decision !== null && typeof decision === 'object') entry.governanceDecision = decision;
+  if (Number.isInteger(resumeRound)) entry.resumeRound = resumeRound;
+  return entry;
+}
+
+/**
  * Independent CAS that only sets `halted: true`. Must succeed even when
  * `commitEscalation` was faulted: the instance stays `running`, so this is the only
  * marker that stops further advances.

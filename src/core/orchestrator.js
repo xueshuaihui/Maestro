@@ -294,6 +294,141 @@ function applyHandoff(handoff, snapshot) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// I1.12 WP-7 / decision D-1 governance gate verdicts.
+//
+// These are data-only, injectable helpers: a capability module (real or stub)
+// is passed in, and a blocking verdict is returned when the governance
+// decision must change control flow. They never persist, never call store.save
+// and never introduce a new instance-state enum. All writes remain in the
+// callers through the orchestrator transition entry or escalateState(). Tests
+// inject stubs here, so the wiring contract can be verified without any
+// capability package on disk.
+// ---------------------------------------------------------------------------
+
+/** Wake whitelist verdict (AC-03 / AC-04). */
+export function wakeGate({ governance, input, at = null } = {}) {
+  const decision = governance && typeof governance.decideWake === 'function'
+    ? governance.decideWake(input)
+    : null;
+  if (!decision || decision.allowed !== false) return { decision, verdict: null };
+  const detail = decision.detail ?? {};
+  const reasonCode = decision.reason === 'wake.not-whitelisted'
+    ? decision.reason
+    : 'wake.not-whitelisted';
+  return {
+    decision,
+    verdict: Object.freeze({
+      reasonCode,
+      from: detail.from ?? null,
+      to: detail.to ?? null,
+      reason: detail.reason ?? reasonCode,
+      at: detail.at ?? at,
+    }),
+  };
+}
+
+/** Parallelism ceiling verdict (AC-11): over-limit nodes stay ready/queued. */
+export function parallelismGate({ budget, input, nodeId = null, explicit = false } = {}) {
+  const decision = budget && typeof budget.decideParallelism === 'function'
+    ? budget.decideParallelism(input)
+    : null;
+  if (!explicit || !decision) return { decision, verdict: null };
+  const allowed = Array.isArray(decision.allowed) ? decision.allowed : [];
+  if (allowed.includes(nodeId)) return { decision, verdict: null };
+  return {
+    decision,
+    verdict: Object.freeze({
+      blocked: true,
+      code: 'PARALLEL_LIMIT',
+      queued: decision.queued ?? [],
+      limit: decision.limit ?? 0,
+    }),
+  };
+}
+
+/** Budget exhaustion verdict (AC-12): suspend, never fail. */
+export function budgetGate({ budget, input, explicit = false } = {}) {
+  const decision = budget && typeof budget.decideBudget === 'function'
+    ? budget.decideBudget(input)
+    : null;
+  if (!explicit || !decision || decision.suspend !== true) return { decision, verdict: null };
+  return {
+    decision,
+    verdict: Object.freeze({
+      blocked: true,
+      reasonCode: decision.reason ?? 'budget_exhausted',
+      resumeRound: Number.isInteger(decision.resumeRound) ? decision.resumeRound : null,
+    }),
+  };
+}
+
+/** High-risk human-review verdict (AC-07 / AC-08). */
+export function reviewGate({
+  governance,
+  input,
+  nodeId = null,
+  instanceId = null,
+  hasHumanRuling = false,
+} = {}) {
+  const review = governance && typeof governance.validateHighRiskReview === 'function'
+    ? governance.validateHighRiskReview(input)
+    : null;
+  if (!review) return { review, verdict: null };
+  const decision = governance && typeof governance.reviewDecision === 'function'
+    ? governance.reviewDecision({
+        instanceId,
+        nodeId,
+        needsHumanReview: review.needsHumanReview === true,
+        blocked: review.blocked === true,
+        reason: review.reason ?? null,
+      })
+    : {
+        instanceId,
+        nodeId,
+        needsHumanReview: review.needsHumanReview === true,
+        blocked: review.blocked === true,
+        reason: review.reason ?? null,
+      };
+  if (review.blocked === true) {
+    return {
+      review,
+      verdict: Object.freeze({
+        blocked: true,
+        code: 'HIGH_RISK_REVIEW_BLOCKED',
+        reason: review.reason ?? 'missing_human_gate',
+        nodeIds: review.nodeIds ?? [],
+        decision,
+      }),
+    };
+  }
+  if (review.needsHumanReview === true && !hasHumanRuling) {
+    return {
+      review,
+      verdict: Object.freeze({
+        blocked: true,
+        code: 'HIGH_RISK_REVIEW_PENDING',
+        reason: 'awaiting_human_review',
+        nodeIds: review.nodeIds ?? [],
+        decision,
+      }),
+    };
+  }
+  return { review, verdict: null };
+}
+
+/**
+ * Classify a NEW governance event with the primary-audit whitelist (AC-09 /
+ * AC-10). Only governance events call this helper; the frozen I1.9 event
+ * emitter is untouched, so existing event bytes stay verbatim.
+ */
+export function classifyGovernanceEvent(governance, event) {
+  const primaryAudit = typeof governance?.isPrimaryAuditEvent === 'function'
+    ? governance.isPrimaryAuditEvent(event)
+    : false;
+  return { ...event, detail: { ...(event.detail ?? {}), primaryAudit } };
+}
+
 /**
  * @param {{
  *   store: object,
@@ -330,6 +465,10 @@ export function createOrchestrator({
   // before validation (the `test.handoff` seam is driven by WP-6). NODE_ENV=test
   // only; a bad draft here goes through the same one-CAS rejection as production.
   handoffDraftHook = null,
+  // I1.12 WP-7 / decision D-1: optional capability injection. When absent the
+  // four governance gates load the real modules lazily; tests may inject stub
+  // modules here without requiring any capability package to be present.
+  deps = {},
 } = {}) {
   if (!store || typeof store.save !== 'function' || typeof store.load !== 'function') {
     throw new TypeError('createOrchestrator: 需要实现 load/save/list 的 store');
@@ -403,6 +542,46 @@ export function createOrchestrator({
     return Number.isFinite(value) ? value : Date.now();
   };
   const iso = (ms = now()) => new Date(ms).toISOString();
+
+  // I1.12 WP-7: capability loader. Injected deps win; otherwise the real
+  // module is imported lazily. A missing module is reported to the caller so
+  // the gate stays contract-compatible for instances without governance config.
+  const CAPABILITY_SPECIFIERS = Object.freeze({
+    governance: './governance.js',
+    budget: './budget.js',
+    handoffSchema: './handoff-schema.js',
+    escalation: './escalation.js',
+  });
+  async function loadCapability(key) {
+    if (deps && deps[key]) return deps[key];
+    return import(CAPABILITY_SPECIFIERS[key]);
+  }
+  function hasExplicitConcurrency(state) {
+    const direct = state?.concurrency?.maxConcurrent;
+    const fromBudget = state?.budget?.maxConcurrent ?? state?.budget?.max_concurrent_sessions;
+    return (
+      (direct !== undefined && direct !== null && Number.isFinite(Number(direct))) ||
+      (fromBudget !== undefined && fromBudget !== null && Number.isFinite(Number(fromBudget)))
+    );
+  }
+  function hasExplicitBudget(state) {
+    const budget = state?.budget;
+    if (!budget || typeof budget !== 'object') return false;
+    return (
+      Number.isFinite(Number(budget.remaining)) || Number.isFinite(Number(budget.nextCost))
+    );
+  }
+  function hasHumanRuling(state, nodeId) {
+    const escalations = Array.isArray(state?.escalations) ? state.escalations : [];
+    const approvals = Array.isArray(state?.approvals) ? state.approvals : [];
+    for (const entry of escalations) {
+      if (entry?.nodeId === nodeId && entry?.state === 'resolved' && entry?.resolution != null) return true;
+    }
+    for (const entry of approvals) {
+      if (entry?.nodeId === nodeId && entry?.state !== 'pending' && entry?.resolution != null) return true;
+    }
+    return false;
+  }
 
   function withLock(key, fn) {
     const previous = locks.get(key) ?? Promise.resolve();
@@ -1692,6 +1871,48 @@ export function createOrchestrator({
     const node = nodeOf(state, nodeId);
     if (!node) return { ok: false, action: 'stop', code: 'UNKNOWN_STATE' };
     if (isNodeBusyState(node.state)) return { ok: false, action: 'reject', code: 'NODE_BUSY' };
+    // I1.12 WP-7 / D-13 gate 3a of 4: pre-dispatch parallelism ceiling (AC-11).
+    // Only instances with an EXPLICIT limit are governed; historic instances
+    // keep the contract-compatible default. An over-limit target stays
+    // ready/queued with no failed node and no extra state write.
+    if (hasExplicitConcurrency(state)) {
+      // N-02: guard only the module load. A missing capability keeps the
+      // contract-compatible default, but once loaded the verdict / stop path
+      // below must propagate its errors instead of falling through to dispatch.
+      let budget = null;
+      try {
+        budget = await loadCapability('budget');
+      } catch {
+        // Capability package absent: keep the upstream dispatch behavior.
+      }
+      if (budget) {
+        const readyIds = (state.nodes ?? [])
+          .filter((item) => item?.state === 'ready')
+          .map((item) => item.nodeId);
+        if (!readyIds.includes(nodeId)) readyIds.push(nodeId);
+        const { verdict } = parallelismGate({
+          budget,
+          input: {
+            readyNodes: readyIds,
+            runningNodes: (state.nodes ?? [])
+              .filter((item) => item?.state === 'running')
+              .map((item) => item.nodeId),
+            maxConcurrent: state.concurrency?.maxConcurrent ?? null,
+            instanceBudget: state.budget ?? null,
+          },
+          nodeId,
+          explicit: true,
+        });
+        if (verdict) {
+          return {
+            ok: false,
+            action: 'stop',
+            code: verdict.code,
+            detail: { queued: verdict.queued, limit: verdict.limit },
+          };
+        }
+      }
+    }
 
     const def = graphNode(runGraph, nodeId);
 
@@ -3103,6 +3324,12 @@ export function createOrchestrator({
         sourceNode: graphNode(runGraph, handoff.edge.from),
       });
       if (!check.ok) {
+        // I1.12 WP-7 / decision D-2: expose validateHandoff's data-only
+        // evidence decision on the rejected package for I1.11 consumption.
+        // No UI field, no second blocking call, no changed failure order.
+        if (check.decision && typeof check.decision === 'object') {
+          handoff.freshnessDecision = check.decision;
+        }
         // D-3.5: ONE CAS writes the rejected package / invalid_payload,
         // escalates the source node, suspends the instance and creates the
         // handoff_invalid escalation. No handoff.created, no node.dispatch,
@@ -3118,6 +3345,46 @@ export function createOrchestrator({
           emit,
         });
         return { action: 'stop' };
+      }
+      // I1.12 WP-7 / D-13 gate 4 of 4: high-risk human-review decision at the
+      // handoff arrival point (AC-07 / AC-08). A missing human gate or
+      // insufficient data blocks startup/delivery with a visible reason key
+      // and node location; a review path with no human ruling stops here and
+      // records a D-5 reviewDecision for I1.11 instead of advancing downstream.
+      // N-02: guard only the module load. A missing capability keeps the
+      // contract-compatible default, but once loaded the verdict / emit / stop
+      // path below must propagate its errors instead of being swallowed.
+      let governance = null;
+      try {
+        governance = await loadCapability('governance');
+      } catch {
+        // Capability package absent: keep the upstream handoff behavior.
+      }
+      if (governance) {
+        const { verdict } = reviewGate({
+          governance,
+          input: {
+            workflow: { nodes: runGraph.nodes ?? [] },
+            roles: state.roles ?? null,
+            graph: runGraph,
+          },
+          nodeId: plan.nodeId,
+          instanceId,
+          hasHumanRuling: hasHumanRuling(state, plan.nodeId),
+        });
+        if (verdict) {
+          handoff.reviewDecision = verdict.decision;
+          await emit(classifyGovernanceEvent(governance, {
+            object: 'node',
+            objectId: plan.nodeId,
+            from: null,
+            to: null,
+            result: 'rejected',
+            reason: verdict.reason,
+            detail: { code: verdict.code, nodeIds: verdict.nodeIds },
+          }));
+          return { action: 'stop', code: verdict.code };
+        }
       }
     }
 
@@ -3185,6 +3452,55 @@ export function createOrchestrator({
         // workspace base the A-6 "workspace context" section is dropped.
         workspaceDir: workspaceDirOf(state),
       });
+    }
+
+    // I1.12 WP-7 / D-13 gate 3b of 4: pre-dispatch budget decision (AC-12).
+    // Only instances with an EXPLICIT budget field are governed; exhausted
+    // budget takes the existing escalateState/suspended path with
+    // `budget_exhausted` and `resumeRound`, never a failed node or new enum.
+    if (hasExplicitBudget(state)) {
+      // N-02: guard only the module load. A missing capability keeps the
+      // contract-compatible default, but once loaded the verdict / escalation
+      // / stop path below must propagate its errors instead of being swallowed.
+      let budget = null;
+      try {
+        budget = await loadCapability('budget');
+      } catch {
+        // Capability package absent: keep the upstream dispatch behavior.
+      }
+      if (budget) {
+        const { verdict } = budgetGate({
+          budget,
+          input: {
+            remainingBudget: state.budget?.remaining ?? null,
+            nextCost: state.budget?.nextCost ?? null,
+            state,
+          },
+          explicit: true,
+        });
+        if (verdict) {
+          const escalationMod = await loadCapability('escalation');
+          const target = nodeOf(state, plan.nodeId);
+          const entry = escalationMod.buildGovernanceRejection({
+            instanceId,
+            nodeId: plan.nodeId,
+            round: Number.isInteger(target?.round) ? target.round + 1 : 1,
+            reasonCode: verdict.reasonCode,
+            reasonDetail: verdict.reasonCode,
+            escalations: state.escalations ?? [],
+            resumeRound: verdict.resumeRound,
+            now: clock,
+          });
+          await escalateState({
+            instanceId,
+            state,
+            node: target,
+            entry,
+            emit,
+          });
+          return { action: 'stop', code: 'BUDGET_EXHAUSTED' };
+        }
+      }
     }
 
     const dispatched = await dispatchInState(state, plan.nodeId, {
@@ -4437,7 +4753,88 @@ export function createOrchestrator({
           });
           return { ok: false, code: 'WAKE_REJECTED', detail: { code: gate.code } };
         }
-        handoff = (state.handoffs ?? []).find((item) => item.handoffId === gate.wakeHandoffId) ?? null;
+        // I1.12 WP-7 / D-13 gate 1 of 4: runtime wake-whitelist decision point.
+        // Appended AFTER the frozen checkWakeGate + wake.rejected branch above;
+        // that branch and its wording are byte-for-byte unchanged. A denial
+        // emits exactly one wake.not-whitelisted rejection event, commits the
+        // existing escalation/suspended path and never dispatches or creates a
+        // target session. Instances without an explicit role registry keep the
+        // contract-compatible default (no new rejection).
+        const wakeHandoff = (state.handoffs ?? []).find(
+          (item) => item.handoffId === gate.wakeHandoffId,
+        ) ?? null;
+        const roles = state.roles ?? null;
+        const sourceId = wakeHandoff?.edge?.from ?? wakeHandoff?.fromNodeId ?? null;
+        const sourceStateNode = sourceId ? nodeOf(state, sourceId) : null;
+        const sourceDef = sourceId ? graphNode(runGraph, sourceId) : null;
+        const sourceRole =
+          sourceStateNode?.roleId ?? sourceDef?.roleId ?? sourceDef?.role ?? wakeHandoff?.sourceRole ?? null;
+        const targetDef = graphNode(runGraph, nodeId);
+        const targetRole = node.roleId ?? targetDef?.roleId ?? targetDef?.role ?? null;
+        if (roles && sourceRole && targetRole) {
+          // N-02: guard only the module load. A missing capability keeps the
+          // contract-compatible default, but once loaded the verdict /
+          // escalation / emit / stop path below must propagate its errors
+          // instead of being swallowed into a fall-through to dispatch.
+          let governance = null;
+          try {
+            governance = await loadCapability('governance');
+          } catch {
+            // Capability package absent: keep the upstream wake behavior.
+          }
+          if (governance) {
+            const { verdict } = wakeGate({
+              governance,
+              input: { sourceRole, targetRole, roles, now: () => clock() },
+              at: iso(),
+            });
+            if (verdict) {
+              const escalationMod = await loadCapability('escalation');
+              const decision = {
+                sourceRole,
+                targetRole,
+                reason: verdict.reasonCode,
+                detail: {
+                  from: verdict.from,
+                  to: verdict.to,
+                  reason: verdict.reason,
+                  at: verdict.at,
+                },
+              };
+              const entry = escalationMod.buildGovernanceRejection({
+                instanceId,
+                nodeId,
+                round: Number.isInteger(node.round) ? node.round + 1 : 1,
+                reasonCode: verdict.reasonCode,
+                reasonDetail: JSON.stringify(decision.detail),
+                escalations: state.escalations ?? [],
+                decision,
+                now: clock,
+              });
+              await escalateState({
+                instanceId,
+                state,
+                node,
+                entry,
+                pendingHandoff: wakeHandoff
+                  ? { ...wakeHandoff, rejectReason: verdict.reasonCode }
+                  : null,
+                emit,
+              });
+              await emit(classifyGovernanceEvent(governance, {
+                object: 'instance',
+                objectId: instanceId,
+                from: null,
+                to: null,
+                result: 'rejected',
+                reason: verdict.reasonCode,
+                detail: decision.detail,
+              }));
+              return { ok: false, code: 'WAKE_NOT_WHITELISTED', detail: decision.detail };
+            }
+          }
+        }
+        handoff = wakeHandoff;
         if (handoff && kind === 'backflow') handoff.wakeConsumedAt = iso();
       } else if (!CANCEL_NODE.has(node.state)) {
         return fail('NODE_BUSY', {});

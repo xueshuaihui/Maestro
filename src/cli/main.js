@@ -27,6 +27,11 @@ import {
   ROLE_LABEL,
   ROLE_USAGE_TEXT,
   SKILL_CLI_TEXT,
+  VERIFY_CLI_TEXT,
+  MIGRATE_CLI_TEXT,
+  EXPORT_CLI_TEXT,
+  USAGE_LINES,
+  USAGE_LINES_I112,
   WORKFLOW_CLI_TEXT,
 } from './labels.js';
 import * as render from './render.js';
@@ -185,22 +190,28 @@ const FAMILY_ONLY_FLAGS = new Set([
 /** `role create` two-tier required order (D-6 / AC-02): first missing one wins. */
 const ROLE_CREATE_REQUIRED = ['name', 'group', 'artifact-type', 'side-effect'];
 
-/** Dynamic-import wiring for the two families whose modules land in WP-7 / WP-8. */
+/** Dynamic-import wiring for the asset families and the three I1.12 commands (WP-7). */
 const FAMILY_MODULES = Object.freeze({
   skill: { specifier: './skills.js', exportName: 'skillCommand', notImplemented: SKILL_CLI_TEXT.notImplemented },
-  workflow: { specifier: './workflows.js', exportName: 'workflowCommand', notImplemented: WORKFLOW_CLI_TEXT.notImplemented }
+  workflow: { specifier: './workflows.js', exportName: 'workflowCommand', notImplemented: WORKFLOW_CLI_TEXT.notImplemented },
+  // D-13 (decision A item 1): three appended mounts, existing two untouched.
+  verify: { specifier: './verify.js', exportName: 'verifyCommand', notImplemented: VERIFY_CLI_TEXT.notImplemented },
+  migrate: { specifier: './migrate.js', exportName: 'migrateCommand', notImplemented: MIGRATE_CLI_TEXT.notImplemented },
+  export: { specifier: './otel.js', exportName: 'exportCommand', notImplemented: EXPORT_CLI_TEXT.notImplemented }
 });
 // I1.4 的 `run --approval` / `--decision` 要在旧命令上放行；不改资产族的任何白名单。
 VALUE_FLAGS.add('approval');
 VALUE_FLAGS.add('decision');
 
 
-/** 顶层命令表（M-9）：旧四条 + 六组新命令。 */
+/** 顶层命令表（M-9）：旧四条 + 六组新命令 + I1.12 三命令（只追加）。 */
 const RUNTIME_COMMANDS = new Set([
   'run', 'status', 'cancel', 'core',
   'instance', 'attach', 'escalate', 'approve', 'handoff', 'workflow',
   // I1.9 WP-8：只读追踪视图（仅 `show`，不新增 `--format`）。
   'trace',
+  // I1.12 WP-7 / D-13：三个冻结命令名，既有成员不动。
+  'migrate', 'verify', 'export',
 ]);
 /** 两层命令表：第一层命令 → 合法子命令（§1.7）。 */
 const RUNTIME_SUBS = Object.freeze({
@@ -210,11 +221,17 @@ const RUNTIME_SUBS = Object.freeze({
   handoff: ['list', 'show'],
   workflow: ['pause', 'resume', 'abort'],
   trace: ['show'],
+  // D-13: verify shares one handler across four targets; two need a sub token.
+  verify: ['import', 'review'],
 });
-const RUNTIME_BOOLEAN_FLAGS = new Set(['events', 'all']);
+const RUNTIME_BOOLEAN_FLAGS = new Set(['events', 'all', 'package', 'yes']);
 const RUNTIME_VALUE_FLAGS = new Set([
   'cwd', 'task', 'instance', 'project', 'generation', 'template', 'host',
   'format', 'approval', 'decision',
+  // I1.12 WP-7 / decision D-4: `package` and `yes` stay BOOLEAN-only (a
+  // same-named VALUE entry would be dead config because the boolean branch wins
+  // in parseRuntimeArgs). `version` has no consumer, so it is not registered.
+  'public-key', 'out', 'backup',
 ]);
 
 /** 取值白名单（AC-64）：校验在解析层完成，非法值退出 2 且不连核心、不写状态。 */
@@ -501,12 +518,17 @@ function parseRuntimeArgs(argv) {
     flags[key] = value;
   }
 
-  // 两层命令：第一个位置参数是子命令
+  // 两层命令：第一个位置参数是子命令。I1.12 `verify` 的四个目标是同一 handler
+  // 按目标分派——`verify <实例>` / `verify <包>` 没有子命令 token，只有
+  // `verify import <包>` / `verify review <工作流>` 才消费首个位置参数作 sub。
   let sub = null;
-  if (RUNTIME_SUBS[command]) {
-    sub = positionals.shift() ?? null;
-    if (sub === null || !RUNTIME_SUBS[command].includes(sub)) {
-      return usage(`${command} 需要子命令：${RUNTIME_SUBS[command].join('|')}`);
+  const subs = RUNTIME_SUBS[command];
+  if (subs) {
+    const candidate = positionals[0];
+    if (candidate !== undefined && subs.includes(candidate)) {
+      sub = positionals.shift();
+    } else if (command !== 'verify') {
+      return usage(`${command} 需要子命令：${subs.join('|')}`);
     }
   }
 
@@ -572,6 +594,13 @@ function runtimePositionalRule(command, sub) {
       return sub === 'show' ? { max: 1, exact: 1 } : { max: 0 };
     case 'workflow':
       return { max: 1, needsId: true };
+    // I1.12 WP-7: verify accepts one target (instance / package / workflow),
+    // migrate takes none, export takes one type token.
+    case 'verify':
+    case 'export':
+      return { max: 1 };
+    case 'migrate':
+      return { max: 0 };
     default:
       return { max: 0 };
   }
@@ -585,7 +614,7 @@ function runtimeDescribeCommand(command, sub) {
 // I1.4 把 `workflow` 用作运行时控制（pause|resume|abort），I1.6 把同一词用作资产族。
 // 两套 parseArgs 的结果形状互斥（I1.4 有 positionals；I1.6 键集恰好 4 个且带 positional），
 // 因此按命令字分流到各自原版实现，避免任何一侧的逐字验收基线被改写。
-const RUNTIME_COMMAND_WORDS = new Set(['instance', 'attach', 'escalate', 'approve', 'handoff', 'trace']);
+const RUNTIME_COMMAND_WORDS = new Set(['instance', 'attach', 'escalate', 'approve', 'handoff', 'trace', 'verify', 'migrate', 'export']);
 const RUNTIME_WORKFLOW_SUBS = new Set(['pause', 'resume', 'abort']);
 function isRuntimeArgv(argv) {
   const args = Array.isArray(argv) ? argv : [];
@@ -598,6 +627,16 @@ export function parseArgs(argv) {
 
 function usage(message) {
   return { ok: false, code: 'USAGE', message };
+}
+
+/**
+ * I1.12 WP-7 / decision D-4: `--help` prints the frozen 25 USAGE_LINES verbatim
+ * followed by the independent six-line I112 block. Only this output path
+ * changes; `render.js` and the frozen 25 lines are untouched.
+ */
+function isHelpRequest(argv) {
+  const args = Array.isArray(argv) ? argv : [];
+  return args.length > 0 && (args[0] === '--help' || args[0] === '-h');
 }
 
 /** 失败码 → 退出码：三类“开始前失败”是 3，其余运行失败是 1。 */
@@ -624,6 +663,11 @@ export async function main(argv, options = {}) {
   const parsed = parseArgs(argv);
   if (!parsed.ok) {
     const out = options.out ?? defaultOut;
+    if (isHelpRequest(argv)) {
+      out([...USAGE_LINES, ...USAGE_LINES_I112].join('\n'));
+      await flushStdout();
+      return EXIT_USAGE;
+    }
     out(render.renderUsage(parsed.message));
     await flushStdout();
     return EXIT_USAGE;
@@ -649,6 +693,15 @@ export async function main(argv, options = {}) {
       else if (parsed.command === 'escalate') code = await escalateCommand(parsed, ctx);
       else if (parsed.command === 'approve') code = await approveCommand(parsed, ctx);
       else if (parsed.command === 'handoff') code = await handoffCommand(parsed, ctx);
+      // I1.12 WP-7: the three new commands reuse the single FAMILY_MODULES
+      // dynamic-import path — no second dispatch table is created (D-13).
+      else if (
+        parsed.command === 'verify' ||
+        parsed.command === 'migrate' ||
+        parsed.command === 'export'
+      ) {
+        code = await assetFamilyCommand(parsed.command, parsed, ctx);
+      }
       else code = await workflowCommand(parsed, ctx);
     }
     else if (parsed.command === 'role') code = await roleCommand(parsed, ctx);

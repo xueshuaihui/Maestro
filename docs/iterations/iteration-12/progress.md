@@ -8,8 +8,8 @@
 |---|---|---|---|---|---|---|---|
 | S0 | 需求生成与评审闭环 | 撰写/修复/理解 Agent | 2026-11-17 | 2026-11-18 | **PASS**（DoR 12 绿/1 黄/0 红，S0 Gate 满足） | `requirement.md` v2（23 AC / 19 BR / 5 NF）、`decisions.md`（裁决 A）、`review-round1/2.md`、`requirement-understanding.md` | round1 PASS（0 阻断/6 建议）→ 吸收建议出 v2 → round2 PASS（0 阻断/6 建议移交 S1 §7） |
 | S1 | 拆分 / 选型（8 节 + AC→WP 满覆盖） | 拆分 Agent | 2026-11-18 | 2026-11-18 | **PASS**（round1 FAIL 1 阻断 → 裁决 B 扩授权 → round2 PASS 0 阻断） | `iteration-12.md`（7 WP / 35 文件零交集 / 23/23 覆盖）、`split-review.md`、`split-review-round2.md` | round1 FAIL（SR-01 roles.js/workflows.js 授权缺口）→ 裁决 B → 修复 → round2 PASS（0 阻断/1 建议）|
-| S2 | 分批次实现 | 实现 Agent | — | — | 待开始 | `src/**` `test/**` | 逐批评审 |
-| S3 | 验收逐条取证 | 验收 Agent | — | — | 待开始 | `acceptance-*.md` `evidence/**` | 主控复跑 |
+| S2 | 分批次实现（WP-1~WP-7） | 实现 / 修复 Agent | 2026-11-18 | 2026-11-19 | **PASS**（批次1/2/3 均评审 PASS；WP-7 三轮评审，最终 round3 阻断 0 / 建议 0） | `src/**` `test/wp15/**` `probe/acc12-perf.mjs` | `review-batch1*.md`、`review-batch2*.md`、`s2-review-wp7*.md` |
+| S3 | 验收逐条取证 | 验收 Agent | 2026-11-19 | — | 进行中 | `acceptance-*.md` `evidence/**` `probe/acc12-f-*` | 主控复跑 |
 | S4 | 终验与收口 | 终验 Agent | — | — | 待开始 | `final-verification.md` `report.md` `summary.json` | 六项校验 |
 
 ## 需求基线要点（S0 定稿）
@@ -35,3 +35,6 @@
 - 2026-11-18：需求理解纪要完成，13 条 DoR 12 绿/1 黄/0 红，S0 Gate 满足。
 - 2026-11-18：S1 拆分 round1 FAIL（SR-01：WP-4 用 roles.js/workflows.js 但 D-13 未授权）→ 裁决 B 正式扩 D-13 授权（只授权 export/import handler 段、只加不改）→ 需求 v2→v2.1 补授权 + 拆分修复 → round2 PASS（0 阻断）。修正拆分文档 4 处错误码笔误 `HAND_OFF_HASH_MISMATCH`→`HANDOFF_HASH_MISMATCH`（真实码，handoff-schema.js:24）。
 - 历史证据 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 曾被评审跑全量测试覆盖写，已用 `git -c core.autocrlf=false checkout-index -f` 恢复（内容 diff 空）。
+- 2026-11-18：S2 批次 1（WP-1/2/3）提交 `a0d1be4`，`review-batch1.md` B1-01 FAIL → `review-batch1-round2.md` PASS（裁决 C 恢复 verifyChain 冻结签名）。
+- 2026-11-18：S2 批次 2（WP-4/5/6）提交 `fc384ef`，`review-batch2.md` B2-01 FAIL → `review-batch2-round2.md` PASS（WP-6 三值改 ASCII 机器键，中文移交 labels）。
+- 2026-11-19：S2 批次 3（WP-7 接线包）三轮评审：`s2-review-wp7.md` FAIL（四门禁 advisory no-op 等 9 项）→ 裁决 D 扩授权 + 修复 → `s2-review-wp7-round2.md` FAIL（N-01 `verify review` 误判已配终审路径）→ 二次修复 → `s2-review-wp7-round3.md` PASS（阻断 0 / 建议 0）。主控复跑定向 57/57、`--help` 25+6 行、purity 双目录 exit 0、deps 0、diff-check 0。

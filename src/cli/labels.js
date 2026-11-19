@@ -403,7 +403,10 @@ export const REASON_LABEL = Object.freeze({
   'approval.withdrawn': '作废审批',
   'workflow.paused': '暂停推进',
   'workflow.resumed': '恢复推进',
-  'workspace.status_write_failed': '状态页写入失败'
+  'workspace.status_write_failed': '状态页写入失败',
+  // I1.12 WP-7 / decision A-4 / decision D-3: a normal enumerable key. All
+  // pre-existing keys above stay byte-for-byte unchanged (incl. wake.rejected).
+  'wake.not-whitelisted': '越权唤醒被拒绝'
 });
 
 /** `已停止推进` suffix on the instance line when the escalation write failed. */
@@ -880,3 +883,121 @@ export const SUMMARY_LOG_LINE = Object.freeze(
 // ---- 事件不可读行：A-13 ----
 
 export const EVENTS_SKIPPED = Object.freeze('已跳过 {n} 行不可读记录');
+
+// ===========================================================================
+// I1.12 WP-7 — user-visible text for the three new commands and all governance
+// decisions (requirement appendix A-0 ~ A-7). This file is the ONLY source of
+// user-visible Chinese: capability modules carry frozen ASCII keys only and
+// throw when a required key is absent (decision C item 3), never falling back
+// to a hardcoded literal. Existing frozen baselines above are untouched.
+// ===========================================================================
+
+/** A-0 vocabulary: the 24 user-visible新增 terms, single source of truth. */
+export const I112_VOCAB = Object.freeze({
+  chainComplete: '链完整',
+  chainBroken: '链已断',
+  firstMismatch: '第一条失配',
+  countSuffix: '共 N 条',
+  wakeNotWhitelisted: '越权唤醒被拒绝',
+  evidenceMismatch: '证据与声明产物不一致',
+  evidenceMissing: '证据缺失',
+  handoffRejected: '已拒绝交接',
+  highRiskNoReview: '高风险节点下游缺少人工终审',
+  needsHumanReview: '需要人工终审',
+  budgetExhausted: '预算耗尽',
+  suspended: '已挂起',
+  noMigration: '无需迁移',
+  signatureValid: '签名有效',
+  versionCompatible: '版本兼容',
+  signatureInvalid: '签名无效',
+  versionIncompatible: '版本不兼容',
+  docBottleneck: '文档瓶颈',
+  serializationRegression: '串行化退化',
+  confirmationBias: '确认偏误',
+  insufficientData: '数据不足',
+  perfPending: '待本机实测',
+  perfReal: '已实测（真实宿主面）',
+  perfMock: 'mock 实测',
+});
+
+/** A-1 / A-2 frozen keys from audit-verify.js::CHAIN_LABEL_KEYS. */
+export const CHAIN_COMPLETE = '链完整，共 [N] 条';
+export const CHAIN_BROKEN = '链已断：第 [N] 条记录与前一条指纹不匹配';
+
+/** A-3 ~ A-5 governance decision lines (variable placeholders per A-0). */
+export const WAKE_NOT_WHITELISTED_TEXT = '[角色甲] → [角色丙]  越权唤醒被拒绝  [原因：不在唤醒白名单]';
+export const EVIDENCE_STALE_MISMATCH = '交接 [HO-ID]  已拒绝交接  [证据与声明产物不一致]';
+export const EVIDENCE_STALE_MISSING = '交接 [HO-ID]  已拒绝交接  [证据缺失]';
+export const HIGH_RISK_MISSING_REVIEW = '工作流 [名称]  校验未通过  [高风险节点 [节点] 下游缺少人工终审]';
+export const BUDGET_EXHAUSTED = '实例 [实例]  已挂起  [预算耗尽]';
+
+/** A-6 import / migration result keys (pack.js::LABEL_KEYS, flat). */
+export const PACK_IMPORT_OK = '导入成功  [签名有效 · 版本兼容]';
+export const PACK_SIGNATURE_INVALID = '导入被拒绝  [签名无效]';
+export const PACK_VERSION_INCOMPATIBLE = '导入被拒绝  [版本不兼容]';
+export const PACK_BUILD_CYCLE = '导出被拒绝  [依赖缺失或派生链循环]';
+export const PACK_BUILD_MISSING = '导出被拒绝  [依赖缺失]';
+export const MIGRATE_LIST = '{file}  {field}  {name}  {from} → {to}';
+export const MIGRATE_NONE = '无需迁移，资产已是最新';
+export const MIGRATE_DONE = '迁移完成  共 [N] 处引用已升级';
+export const MIGRATE_BAD_REFERENCE = '迁移被拒绝  [{code}]';
+
+/**
+ * migrate.js camelCase table (MIGRATE_TEXT.*). Its ASCII render contract is
+ * pinned by `test/wp15/migrate.test.js` (MIGRATE prefix / MIGRATION DONE ...),
+ * so the values are the frozen fallback templates; the A-6 Chinese result
+ * wording is carried by the flat MIGRATE_NONE / MIGRATE_DONE keys above.
+ */
+export const MIGRATE_TEXT = Object.freeze({
+  migrateRow: 'MIGRATE {file} {field} {name} {from} {to}',
+  migrateNone: 'NO MIGRATION NEEDED',
+  migrateDone: 'MIGRATION DONE {N} REFERENCES UPGRADED',
+  migrateCancelled: 'MIGRATION CANCELLED',
+  migrateBadReference: 'MIGRATION REJECTED {code}',
+});
+
+/**
+ * otel.js table (OTEL_TEXT.* / EXPORT_TEXT.*), S-04. ASCII render contract is
+ * pinned by `test/wp15/otel-export.test.js` (noCjk + EXPORT OK prefix).
+ */
+export const OTEL_TEXT = Object.freeze({
+  EXPORT_DONE: 'EXPORT OK EVENTS {events} SPANS {spans} -> {out}',
+  EXPORT_FAILED: 'EXPORT FAILED {code}',
+  EXPORT_USAGE: 'EXPORT USAGE <events|traces|pack>',
+});
+
+/** A-7 antipattern signal keys (antipattern.js::SIGNAL_DETAIL_KEYS, flat). */
+export const SIGNAL_DOC_BOTTLENECK = '[实例]  [节点]  文档瓶颈：文档类节点长时间停留在待校验';
+export const SIGNAL_SERIALIZATION_REGRESSION = '[实例]  [节点]  串行化退化：本可并行的节点被串行执行';
+export const SIGNAL_CONFIRMATION_BIAS = '[实例]  [节点]  确认偏误：审核结论与上游一致且无独立证据';
+export const SIGNAL_INSUFFICIENT_DATA = '[实例]  数据不足，无法判定反模式信号';
+
+/** A-0 / A-7 performance evidence levels (perf-baseline.js machine keys). */
+export const PERF_LEVEL_MOCK = 'mock 实测';
+export const PERF_LEVEL_REAL = '已实测（真实宿主面）';
+export const PERF_LEVEL_PENDING = '待本机实测';
+export const PERF_EVIDENCE_LINE = '性能证据：handoff 延迟 [值]  ·  证据级别 [mock 实测 | 已实测（真实宿主面） | 待本机实测]';
+
+/** verify.js review-pass line (no A literal; labels-owned). */
+export const VERIFY_REVIEW_PASSED = '校验通过';
+
+/** notImplemented parity with the two frozen family modules (main.js wiring). */
+export const VERIFY_CLI_TEXT = Object.freeze({ notImplemented: 'verify 命令尚未实现' });
+export const MIGRATE_CLI_TEXT = Object.freeze({ notImplemented: 'migrate 命令尚未实现' });
+export const EXPORT_CLI_TEXT = Object.freeze({ notImplemented: 'export 命令尚未实现' });
+
+/**
+ * I1.12 independent usage block (D-13 / decision A item 2): the existing 25
+ * `USAGE_LINES` above are byte-for-byte frozen (`AC-22` pins length === 25).
+ * The three new commands are registered separately (I1.10a 裁决口径 "单独登记"),
+ * so `--help`'s first 25 lines stay identical while the new block is available
+ * to the new handlers via labels.js only.
+ */
+export const USAGE_LINES_I112 = Object.freeze([
+  '  orch verify <实例> [--instance <实例号>]',
+  '  orch verify <包> --package [--public-key <文件>]',
+  '  orch verify import <包> [--public-key <文件>]',
+  '  orch verify review <工作流>',
+  '  orch migrate [--yes] [--backup <目录>]',
+  '  orch export <events|traces|pack> [--out <文件>] [--instance <实例号>]',
+]);

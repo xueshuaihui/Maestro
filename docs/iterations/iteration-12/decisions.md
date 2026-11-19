@@ -58,3 +58,24 @@
 **对需求的影响**：无 AC / BR / NF 增删、无 Then 改动；示例歧义由 S2 在需求 §3.1 / 拆分 236 行补一句限定语（补注，非改判据）。B1-01 由实现方按第 1 条修签名闭合。
 
 ---
+
+## 裁决 D：WP-7 评审 FAIL 的授权扩项与门禁生效口径（2026-11-19）
+
+**背景**：独立评审 `s2-review-wp7.md` 判 FAIL（阻断 3 / 建议 6），核心事实是 `src/core/orchestrator.js` 的四处门禁均为 `void <decision>` + `catch {}` advisory no-op，`wiring.test.js` 又反向把 `void` 哨兵写成通过条件；同时存在冻结 `RUNTIME_SUBS.workflow` 越界改动、`REASON_LABEL` 新键用 non-enumerable 规避旧精确断言、新用法块无消费方、`--package/--yes` 重复登记等偏差。
+
+**事实核查**（主控实跑与实读）：
+- `requirement.md` AC-03/04/07/08/11/12 Then 明确要求「投递/拒绝/不推进/挂起/恢复」等运行时效果；advisory 判定无法让这些 Then 成立。
+- `handoff-schema.js:447-457::validateHandoff` 已把 `validateEvidenceFreshness` 放在 blocking 链末尾；重复 `void` 调用不是必需，但 `check.decision` 未向 I1.11 消费方暴露。
+- `main.js` 当前把 `workflow: ['pause','resume','abort']` 改为含 `export/import`，违反 D-13「既有映射不动」；`--package/--yes` 同时进 BOOLEAN 与 VALUE 表，VALUE 项为死配置。
+- `labels.js:354` 将 `REASON_LABEL` 改为可变 base 后用 `Object.defineProperty(...,{enumerable:false})` 追加新键；`test/wp2/labels.test.js:217,269` 的精确枚举断言因此未变——这是为保回归数字而规避功能变更，违反模板 DoR-6。
+- `USAGE_LINES_I112` 仅被测试引用，`node bin/orch.js --help` 仍只输出既有 25 行，三命令不可发现。
+
+**裁决**：
+1. **门禁必须生效**：唤醒白名单、高风险终审、并行度上限、预算耗尽四处决策必须进入编排控制流，按 AC Then 产生拒绝/停等/排队/挂起；写路径仍只走 `orchestrator.transit()` / 既有 `escalateState`，事件先落盘，不新增实例状态枚举，不新增失败节点。对**未显式配置**治理参数的既有实例保持契约兼容默认（不突然拒绝历史工作流），但一旦参数/风险标记/预算字段显式存在，判定必须 blocking。
+2. 证据过期无需第二套 blocking 调用：保留 `validateHandoff` 链末尾的既有 blocking 路径，WP-7 把 `check.decision`（含原因与关联节点）挂到交接/升级记录供 I1.11 消费；`escalation.buildGovernanceRejection` 必须被唤醒拒绝路径真实调用，不留死代码。
+3. **扩 D-13 授权清单**：正式授权 `test/wp2/labels.test.js` 仅两处精确断言同步（`REASON_LABEL` 枚举对象新增 `wake.not-whitelisted` 一项、`Object.keys().length` 48→49）；`wake.rejected` 及既有 47 个键值逐字不动。新 reason 键改为普通可枚举属性，以消除「查得到但枚举不到」的伪兼容。
+4. 恢复 `RUNTIME_SUBS.workflow` 为冻结的 `['pause','resume','abort']`；`package`/`yes` 仅保留 BOOLEAN flag；`--help` 在既有 25 行逐字不变之后追加 `USAGE_LINES_I112` 独立块，使三命令可发现。
+5. `test/wp15/regression.test.js` 保留为结构性门禁（下限与差集判定函数、冻结文件/命令/主链登记、purity/deps 实跑），**不冒充全量实跑**；AC-22 的全量 `tests ≥1425 + 差集 0` 与三主链逐字比对由 S3 验收取证、S4 复核落证据。该口径不放宽 AC-22。
+6. AC-19「查看反模式信号」在冻结命令名不扩张的前提下，由 `detectAntipatterns` 只读模块直调取证（S3 用例），不新增 CLI 子命令；不构成 WP-7 的阻塞项。
+
+**对需求的影响**：无 AC / BR / NF 增删、无 Then 改动；仅把被 advisory 架空的门禁恢复为需求原文已有判定强度，扩一处冻结断言的同步授权，并明确全量回归取证与 AC-19 查看口径。

@@ -247,6 +247,8 @@ test('reason vocabulary is complete (I1.1 baseline + I1.2 additions)', () => {
     'escalation.voided': '作废升级',
     'core.suspend': '挂起',
     'wake.rejected': '唤醒被拒',
+    // I1.12 / decision D-3: new enumerable wake-whitelist reason key.
+    'wake.not-whitelisted': '越权唤醒被拒绝',
     'run.halted': '停止推进',
     // I1.3 additions (review node + downstream gate).
     'review.read': '读取审核',
@@ -266,7 +268,7 @@ test('reason vocabulary is complete (I1.1 baseline + I1.2 additions)', () => {
     'workflow.resumed': '恢复推进',
     'workspace.status_write_failed': '状态页写入失败'
   });
-  assert.equal(Object.keys(REASON_LABEL).length, 48);
+  assert.equal(Object.keys(REASON_LABEL).length, 49);
 });
 
 test('event-line fragments match D-5 verbatim', () => {
