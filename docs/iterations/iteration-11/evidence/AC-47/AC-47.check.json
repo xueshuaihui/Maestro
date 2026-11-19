@@ -1,0 +1,147 @@
+{
+  "ac": "AC-47",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-47",
+    "title": "断线保留旧内容并标注，恢复后自动补全",
+    "given": "`/tmp/maestro-i11-queue-reconnect` 项目根，队列 2 行（`INST-001` 的升级 `ESC-001`、`INST-002` 的审批 `APR-001`），托盘待处理升级 1；`NODE_ENV=test`。",
+    "when": "停掉守护进程并观察队列；在离线期间让 `INST-003` 产生 1 条待处理升级（`ESC-002`）；再重启守护进程。",
+    "then": [
+      "断线时队列**仍保留那 2 行**并显示\"已断开 · 正在重连…\"，同时不再声称这些数字是最新的（托盘信息行显示\"—\"）；恢复后 2 秒内提示消失、队列补齐为 **3 行**（离线期间新增的 `ESC-002` 出现）、托盘待处理升级变为 **2**；补全前后都不需要点\"刷新\"。"
+    ],
+    "jijian": "`test -f test/wp14/queue-reconnect.test.js && NODE_ENV=test node --test test/wp14/queue-reconnect.test.js`，断言断线阶段 `rows.length === 2`、`disconnectedText === '已断开 · 正在重连…'`、`tray.instances === null`；恢复后 `t_restore - t_restart ≤ 2000`、`rows.length === 3`、`tray.pendingEscalations === 2`、提示已消失；`# fail 0`。",
+    "fixture": "`core stop` 停核；离线期间在 `INST-003` 的 `state.json` 写入 1 条待处理升级（先起核再写盘的口径在离线期间成立）；重启走同一 `run` 入口。",
+    "archText": "断线不得清空队列、不得把旧内容标为最新：`grep -REn \"已断开\" desktop/ui/queue/` 必须**零命中（exit 1）**（文案只能来自 labels）；`grep -REn \"rows = \\[\\]|clearRows\" desktop/ui/queue/` 必须**零命中（exit 1）**。",
+    "refs": "BR-36",
+    "risk": "中（把旧内容当最新，会让人处置已经不存在的事）"
+  },
+  "checks": [
+    {
+      "text": "机检 ui-views.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.497469\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 808.920497\n",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 31 / # tests 31",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=842.868169\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 457.472597\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 8797.329922\n",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 16 / # tests 16",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=...\n# Subtest: daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\nok 18 - daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图\n  ---\n  duration_ms: 9292.121227\n  type: 'test'\n  ...\n1..18\n# tests 18\n# suites 0\n# pass 18\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 14002.752643\n",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 18 / # tests 18",
+      "expected": null
+    },
+    {
+      "text": "机检 http-contract.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-47 架构①：断线文案不硬编码，来自 labels（UI queue 目录零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"已断开\" desktop/ui/queue/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #2：AC-47 架构②：断线不清空队列（rows=[]/clearRows 零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"rows = \\[\\]|clearRows\" desktop/ui/queue/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "断线时队列保留最后 2 行（ESC-001 升级 + APR-001 审批），显示「已断开 · 正在重连…」",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-47: queue snapshot frame replaces content; disconnect keeps last rows",
+      "expected": "rows.length===2 && disconnectedText==='已断开 · 正在重连…'（DESKTOP_QUEUE_DISCONNECTED）"
+    },
+    {
+      "text": "断线时数字不再声称最新：托盘信息行显示「—」（instances===null / DESKTOP_TRAY_STATUS_DISCONNECTED）",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass ui-views 31 / http 18",
+      "expected": "tray.instances===null；DESKTOP_TRAY_STATUS_DISCONNECTED='实例 — · 待处理升级 —'"
+    },
+    {
+      "text": "恢复后 2 秒内提示消失、队列补齐 3 行（离线新增 ESC-002 出现）、托盘待处理升级变 2，无需刷新",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass ui-views 31 / queue 16",
+      "expected": "t_restore - t_restart ≤ 2000；rows.length===3；tray.pendingEscalations===2；提示已消失"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "断线时队列**仍保留那 2 行**并显示\"已断开 · 正在重连…\"，同时不再声称这些数字是最新的（托盘信息行显示\"—\"）；恢复后 2 秒内提示消失、队列补齐为 **3 行**（离线期间新增的 `ESC-002` 出现）、托盘待处理升级变为 **2**；补全前后都不需要点\"刷新\"。",
+      "expected": "断线时队列**仍保留那 2 行**并显示\"已断开 · 正在重连…\"，同时不再声称这些数字是最新的（托盘信息行显示\"—\"）；恢复后 2 秒内提示消失、队列补齐为 **3 行**（离线期间新增的 `ESC-002` 出现）、托盘待处理升级变为 **2**；补全前后都不需要点\"刷新\"。"
+    }
+  ]
+}

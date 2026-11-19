@@ -1,0 +1,68 @@
+{
+  "ac": "AC-42",
+  "title": "七种异常提示：断开、已处理、状态不可读、资产不可读、定义不可读、引用不可读、通知不可用",
+  "face": "异常 / 文案 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "e598e43",
+  "startedAt": "2026-11-17T16:24:57.688Z",
+  "finishedAt": "2026-11-17T16:25:13.096Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 18,
+    "ok": 18,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "ui-views.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-42: seven anomaly wordings all resolve from the label table"
+      ]
+    },
+    {
+      "file": "http-contract.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": []
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"console[.]error\" desktop/ui",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检 http-contract.test.js：# tests 18 / # pass 18 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。",
+    "机检文件名口径：需求点名 test/wp14/errors.test.js（本分支不存在），七条文案逐字断言由 test/wp14/ui-views.test.js「AC-42: seven anomaly wordings」+ test/wp14/http-contract.test.js「A-11 文案键逐字」承载；按实际存在文件机检并保留原始 TAP，登记说明不放宽。可变值（实例 INST-004、目录 roles）按 A-0 约定替换，固定文字/分隔符逐字。",
+    "A-2/A-3/A-5 段序：断开与状态不可读在 A-3（DESKTOP_QUEUE_DISCONNECTED / ROW_STATE_UNREADABLE），已处理与通知不可用 A-2（ALREADY_RESOLVED / NOTIFY_UNAVAILABLE），资产/定义/引用不可读在 A-5（ASSET_UNREADABLE / CANVAS_UNREADABLE / EVIDENCE_UNREADABLE）。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-42"
+}

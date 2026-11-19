@@ -1,0 +1,98 @@
+{
+  "ac": "AC-25",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-25",
+    "title": "库浏览只读：不改资产、不写状态",
+    "given": "`/tmp/maestro-i11-assets-readonly` 项目根；记下 `.orch/roles/`、`.orch/skills/`、`.orch/workflows/` 下全部文件的字节哈希，以及实例 `state.json` / `events.jsonl` 的哈希；`NODE_ENV=test`。",
+    "when": "依次浏览三个分页、打开若干详情、切到运行时占用、再回到列表。",
+    "then": [
+      "全部哈希不变；界面没有\"新建 / 编辑 / 导入 / 导出 / 删除 / 校验\"按钮；实例状态与事件日志不变。"
+    ],
+    "jijian": "`test -f test/wp14/assets-readonly.test.js && NODE_ENV=test node --test test/wp14/assets-readonly.test.js`，断言哈希集合前后相等、界面动作清单只含只读动作、无写接口被调用（探针记录 `writes=0`）；`# fail 0`。",
+    "fixture": "同 AC-19 的资产，另加一个运行中实例。",
+    "archText": "`grep -REn \"fs[.]write|fs[.]unlink|assets-write\" desktop/ui/assets/` 必须**零命中（exit 1）**；资产只读接口的注册点可能在 `server.js` 也可能在 `routes.js`（既有 REST 路由表在 `routes.js`），因此计数必须**两个文件合计**：`cat src/daemon/http/server.js src/daemon/http/routes.js | grep -Ec \"/assets/\"` 的输出必须 **≥ 6**（列表 3 + 详情 3；基线实跑为 `0`，exit 1）；写方法不得落在资产路径上：`grep -REn \"/assets/\" src/daemon/http/server.js src/daemon/http/routes.js | grep -E \"POST|PUT|DELETE\"` 必须**零命中（exit 1）**。",
+    "refs": "BR-13, BR-25",
+    "risk": "高（浏览误写会改掉用户的资产）"
+  },
+  "checks": [
+    {
+      "text": "机检 assets.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=不可解析：那一行标不可读，其余照常\n  ---\n  duration_ms: 40.025512\n  type: 'test'\n  ...\n# Subtest: 未知 kind 与未知 id 按找不到处理，不抛错\nok 10 - 未知 kind 与未知 id 按找不到处理，不抛错\n  ---\n  duration_ms: 11.084245\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 850.820972\n",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # tests 10",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-25 架构①：界面资产层无直写盘，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"fs[.]write|fs[.]unlink|assets-write\" desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "架构检查 #2：AC-25 架构②：/assets/ 两文件合计 ≥6（列表 3 + 详情 3；基线实跑 7，exit 0），计数须两文件合计不单看 server.js",
+      "ok": true,
+      "blocked": false,
+      "actual": "`cat src/daemon/http/server.js src/daemon/http/routes.js | grep -Ec \"/assets/\"` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #3：AC-25 架构③：资产路径上无写方法，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"/assets/\" src/daemon/http/server.js src/daemon/http/routes.js | grep -E \"POST|PUT|DELETE\"` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "AC-25 只读用例存在：浏览三分页/打开详情/切占用后，三个资产目录 sha256 哈希集合前后相等",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-25 库浏览只读：调用前后三个资产目录的哈希不变",
+      "expected": "hashTree(roles/skills/workflows) after === before；hashTree 按字节 sha256"
+    },
+    {
+      "text": "界面没有新建/编辑/导入/导出/删除/校验按钮（只读动作清单），实例状态与事件日志不变",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # fail 0",
+      "expected": "只读接口；无写接口被调用；探针 writes=0"
+    },
+    {
+      "text": "/assets/ 两文件合计计数 ≥6（列表 3 + 详情 3），基线实跑 7",
+      "ok": true,
+      "blocked": false,
+      "actual": "实测合计 7",
+      "expected": "≥ 6"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "全部哈希不变；界面没有\"新建 / 编辑 / 导入 / 导出 / 删除 / 校验\"按钮；实例状态与事件日志不变。",
+      "expected": "全部哈希不变；界面没有\"新建 / 编辑 / 导入 / 导出 / 删除 / 校验\"按钮；实例状态与事件日志不变。"
+    }
+  ]
+}

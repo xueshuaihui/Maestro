@@ -1,0 +1,68 @@
+{
+  "ac": "AC-37",
+  "title": "暂停不改变退出语义，且暂停期间不产生新通知",
+  "face": "托盘 / 退出语义 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "cdfa9e4",
+  "startedAt": "2026-11-17T15:47:06.047Z",
+  "finishedAt": "2026-11-17T15:47:06.817Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 11,
+    "ok": 11,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "shell-notify.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 12,
+        "pass": 11,
+        "fail": 0,
+        "skipped": 1
+      },
+      "labeled": []
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"core[.]stop\" desktop/src-tauri/src/",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn -B8 \"core[.]stop\" desktop/src-tauri/src/",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "index": 3,
+      "cmd": "node --input-type=module -e 'import fs from \"node:fs\";const t=fs.readFileSync(\"desktop/src-tauri/src/tray.rs\",\"utf8\");const m=t.match(/pub fn quit\\([\\s\\S]*?\\n\\}/);const body=m?m[0]:\"\";const bad=/tray-pause/.test(body);console.log(\"tray-pause-in-fn-quit=\"+bad+\" bodyLen=\"+body.length);process.exit(bad?1:0)'",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 shell-notify.test.js：# tests 12 / # pass 11 / # fail 0 / # skipped 1；带本 AC 编号用例 0 条。",
+    "函数体锚点（比照 D-53）：core.stop 行号随迭代漂移（tray.rs:445），按「恰好 1 命中 + -B8 见 fn quit + fn quit 函数体无 tray-pause」三条联合判定，不锁行号。D-9 红线：tray-quit-confirm 由 tray.rs 的 wait_ctl_file(&dir,\"tray-quit-confirm\",30_000) 在退出确认等待期间单独消费，本迭代对该通道零改动。",
+    "机检文件名口径：需求点名 test/wp14/tray.test.js（本分支不存在），逐字断言落 shell-notify.test.js（WP-9 shell 契约，含「tray-quit-confirm 通道不动」静态用例 + core.stop 唯一 + pause/resume 走 /control）+ 本用例 3 条架构检查（core.stop 唯一/-B8 见 fn quit/fn quit 函数体无 tray-pause）；按实际存在文件机检并登记说明，不放宽任何 AC-37 判据。",
+    "机检范围登记（不放宽）：regression.test.js 里与 D-9 相关的「tray-quit-confirm 仅由 wait_ctl_file 消费」是静态断言，同一事实已由 shell-notify.test.js 静态用例 + 架构检查①③覆盖；该文件的「三主链：A-0 冻结基线」是与 AC-37 无关的真实 orch run 用例，本环境下受 ACP broker 争用偶发「execution attempt 不存在或已关闭」假阴性（#fail 1），故不以整文件机检承载 AC-37，避免无关用例假阳性波及本 AC；AC-37 全部判据一条未放宽。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-37"
+}

@@ -1,0 +1,55 @@
+{
+  "ac": "AC-01",
+  "title": "升级待处理时托盘通知（规划验收句第 1 句）",
+  "face": "通知 / 机检 + 原始帧",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2732f86",
+  "startedAt": "2026-11-16T17:03:39.780Z",
+  "finishedAt": "2026-11-16T17:03:41.257Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 18,
+    "ok": 18,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "notify.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 22,
+        "pass": 22,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-01: 升级待处理事件产生升级意图，标题与正文五段逐字",
+        "AC-01 变体: 状态里读不到的段渲染 — 不省略"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"new EventEmitter|setInterval\" src/daemon/notify.js",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 notify.test.js：# tests 22 / # pass 22 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。",
+    "逐字断言由 test/wp14/notify.test.js 的 AC-01 / AC-01 变体用例承载（五段段序、缺段渲染 —）；本用例复跑取原始意图帧。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-01"
+}

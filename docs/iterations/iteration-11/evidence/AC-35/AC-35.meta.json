@@ -1,0 +1,67 @@
+{
+  "ac": "AC-35",
+  "title": "托盘信息行：实例数与待处理升级数",
+  "face": "托盘 / 信息行 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "cdfa9e4",
+  "startedAt": "2026-11-17T15:47:02.127Z",
+  "finishedAt": "2026-11-17T15:47:05.347Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 14,
+    "ok": 14,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "shell-notify.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 12,
+        "pass": 11,
+        "fail": 0,
+        "skipped": 1
+      },
+      "labeled": []
+    },
+    {
+      "file": "e2e.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": []
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"escalations[.]filter\" desktop/src-tauri/src/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 shell-notify.test.js：# tests 12 / # pass 11 / # fail 0 / # skipped 1；带本 AC 编号用例 0 条。",
+    "机检 e2e.test.js：# tests 6 / # pass 6 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。",
+    "证据分级降级（非阻塞）：shell-notify.test.js 静态契约层 11 条全部通过，真实探针层 1 条按 U-13 gated SKIP（release 壳层二进制早于 main.rs，本轮改动未构建）。按任务书与 U-13：本机旧二进制 SKIP 属证据分级降级（mock 实测：静态契约 + 探针字段口径已落），不是阻塞；CI 判通知意图与「失败不阻断」，不要求系统真弹窗。",
+    "机检文件名口径：需求点名 test/wp14/tray.test.js（本分支不存在），逐字断言落 shell-notify.test.js（静态契约，WP-9）与 e2e.test.js（AC-38 用例内 tray-status 模板）；按实际存在文件机检并登记说明，不放宽。",
+    "环境假阴性修复：e2e.test.js 机检首轮在长 TMPDIR 下 core.sock 路径超 macOS sun_path 104 字节上限被截断 → EADDRINUSE 假阴性（#fail 2）；改短 TMPDIR=/tmp/m11c-AC-35 后复跑 14/14 通过，断言一条未改（D-55 口径）。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-35"
+}

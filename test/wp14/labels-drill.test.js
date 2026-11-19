@@ -358,8 +358,8 @@ test('既有复用键零改动：83 个平铺键与 src/cli/labels.js 对应成�
   assert.equal(total, 83, `复用键应为 83，实为 ${total}`);
 });
 
-test('全集计数：UI_LABEL_KEYS = 既有 64 + 新增 63 + 复用 83 = 210', () => {
-  assert.equal(Object.keys(UI_LABEL_KEYS).length, 210);
+test('全集计数：UI_LABEL_KEYS = I1.10a 基线 + I1.10b 下钻 + I1.11 通知队列并集 = 312', () => {
+  assert.equal(Object.keys(UI_LABEL_KEYS).length, 312);
 });
 
 // ---------------------------------------------------------------------------

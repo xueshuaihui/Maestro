@@ -1,0 +1,123 @@
+{
+  "ac": "AC-19",
+  "commands": [
+    {
+      "label": "机检 assets.test.js",
+      "cmd": "test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 1040,
+      "stdout": "TAP version 13\n# Subtest: AC-19 三类列表：来源、分组、校验状态与计数自洽\nok 1 - AC-19 三类列表：来源、分组、校验状态与计数自洽\n  ---\n  duration_ms: 104.725165\n  type: 'test'\n  ...\n# Subtest: AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致\nok 2 - AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致\n  ---\n  duration_ms: 28.68232\n  type: 'test'\n  ...\n# Subtest: AC-21 技能列表与详情：正文摘要按上限截断\nok 3 - AC-21 技能列表与详情：正文摘要按上限截断\n  ---\n  duration_ms: 40.896395\n  type: 'test'\n  ...\n# Subtest: AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条\nok 4 - AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条\n  ---\n  duration_ms: 50.850178\n  type: 'test'\n  ...\n# Subtest: AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）\nok 5 - AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）\n  ---\n  duration_ms: 127.330118\n  type: 'test'\n  ...\n# Subtest: AC-24 现场一：角色目录不可读整页降级，其它分页照常\nok 6 - AC-24 现场一：角色目录不可读整页降级，其它分页照常\n  ---\n  duration_ms: 60.737223\n  type: 'test'\n  ...\n# Subtest: AC-24 现场二：引用缺失的技能标缺失，其余字段照常\nok 7 - AC-24 现场二：引用缺失的技能标缺失，其余字段照常\n  ---\n  duration_ms: 40.080348\n  type: 'test'\n  ...\n# Subtest: AC-25 库浏览只读：调用前后三个资产目录的哈希不变\nok 8 - AC-25 库浏览只读：调用前后三个资产目录的哈希不变\n  ---\n  duration_ms: 175.964831\n  type: 'test'\n  ...\n# Subtest: AC-46 单个资产不可解析：那一行标不可读，其余照常\nok 9 - AC-46 单个资产不可解析：那一行标不可读，其余照常\n  ---\n  duration_ms: 41.147353\n  type: 'test'\n  ...\n# Subtest: 未知 kind 与未知 id 按找不到处理，不抛错\nok 10 - 未知 kind 与未知 id 按找不到处理，不抛错\n  ---\n  duration_ms: 12.767729\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 939.084444\n",
+      "stderr": ""
+    },
+    {
+      "label": "机检 ui-views.test.js",
+      "cmd": "test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 836,
+      "stdout": "TAP version 13\n# Subtest: A-2 / AC-05: notification toggles render in fixed order, default all on\nok 1 - A-2 / AC-05: notification toggles render in fixed order, default all on\n  ---\n  duration_ms: 2.090046\n  type: 'test'\n  ...\n# Subtest: A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion\nok 2 - A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion\n  ---\n  duration_ms: 0.600308\n  type: 'test'\n  ...\n# Subtest: A-3 / AC-08: escalation + approval rows keep all seven segments verbatim\nok 3 - A-3 / AC-08: escalation + approval rows keep all seven segments verbatim\n  ---\n  duration_ms: 0.408348\n  type: 'test'\n  ...\n# Subtest: A-3 / AC-08: node-less degraded row keeps node/round segments\nok 4 - A-3 / AC-08: node-less degraded row keeps node/round segments\n  ---\n  duration_ms: 0.247693\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed\nok 5 - A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed\n  ---\n  duration_ms: 0.484588\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-11: cancel is two-step with verbatim confirm line\nok 6 - A-4 / AC-11: cancel is two-step with verbatim confirm line\n  ---\n  duration_ms: 0.180769\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-14: result lines use the daemon conclusion vocabulary\nok 7 - A-4 / AC-14: result lines use the daemon conclusion vocabulary\n  ---\n  duration_ms: 0.291582\n  type: 'test'\n  ...\n# Subtest: A-5: three tabs, count line, rows and unreadable banners are verbatim\nok 8 - A-5: three tabs, count line, rows and unreadable banners are verbatim\n  ---\n  duration_ms: 0.457469\n  type: 'test'\n  ...\n# Subtest: A-5: detail lines render fixed order with missing markers\nok 9 - A-5: detail lines render fixed order with missing markers\n  ---\n  duration_ms: 0.879278\n  type: 'test'\n  ...\n# Subtest: A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim\nok 10 - A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim\n  ---\n  duration_ms: 0.721749\n  type: 'test'\n  ...\n# Subtest: A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges\nok 11 - A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges\n  ---\n  duration_ms: 0.651513\n  type: 'test'\n  ...\n# Subtest: A-7 / AC-29: node rows reuse the instance-graph shape keys\nok 12 - A-7 / AC-29: node rows reuse the instance-graph shape keys\n  ---\n  duration_ms: 0.215376\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-32: five fields + round render verbatim, latest only\nok 13 - A-8 / AC-32: five fields + round render verbatim, latest only\n  ---\n  duration_ms: 0.577301\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-33: missing fields render the unprovided word\nok 14 - A-8 / AC-33: missing fields render the unprovided word\n  ---\n  duration_ms: 0.14813\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak\nok 15 - A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak\n  ---\n  duration_ms: 11.026398\n  type: 'test'\n  ...\n# Subtest: D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing\nok 16 - D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing\n  ---\n  duration_ms: 0.390472\n  type: 'test'\n  ...\n# Subtest: AC-43 / setView: five new keys switch view, existing four unchanged\nok 17 - AC-43 / setView: five new keys switch view, existing four unchanged\n  ---\n  duration_ms: 0.753666\n  type: 'test'\n  ...\n# Subtest: AC-04 / AC-49: followNotification navigates to queue and selects the row\nok 18 - AC-04 / AC-49: followNotification navigates to queue and selects the row\n  ---\n  duration_ms: 0.519068\n  type: 'test'\n  ...\n# Subtest: AC-11: cancel confirm is two-step; dismiss leaves no pending confirm\nok 19 - AC-11: cancel confirm is two-step; dismiss leaves no pending confirm\n  ---\n  duration_ms: 0.541422\n  type: 'test'\n  ...\n# Subtest: AC-05: prefs toggles write through the HTTP seam\nok 20 - AC-05: prefs toggles write through the HTTP seam\n  ---\n  duration_ms: 0.308588\n  type: 'test'\n  ...\n# Subtest: AC-47: queue snapshot frame replaces content; disconnect keeps last rows\nok 21 - AC-47: queue snapshot frame replaces content; disconnect keeps last rows\n  ---\n  duration_ms: 0.766678\n  type: 'test'\n  ...\n# Subtest: AC-42: seven anomaly wordings all resolve from the label table\nok 22 - AC-42: seven anomaly wordings all resolve from the label table\n  ---\n  duration_ms: 0.227225\n  type: 'test'\n  ...\n# Subtest: D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)\nok 23 - D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)\n  ---\n  duration_ms: 0.392948\n  type: 'test'\n  ...\n# Subtest: D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys\nok 24 - D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys\n  ---\n  duration_ms: 0.24047\n  type: 'test'\n  ...\n# Subtest: BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)\nok 25 - BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)\n  ---\n  duration_ms: 19.995088\n  type: 'test'\n  ...\n# Subtest: harness: queue-dump exports empty row + prefs verbatim\nok 26 - harness: queue-dump exports empty row + prefs verbatim\n  ---\n  duration_ms: 106.391027\n  type: 'test'\n  ...\n# Subtest: harness: assets-dump exports tabs + count verbatim\nok 27 - harness: assets-dump exports tabs + count verbatim\n  ---\n  duration_ms: 106.355106\n  type: 'test'\n  ...\n# Subtest: harness: occupancy-dump exports row + empty verbatim\nok 28 - harness: occupancy-dump exports row + empty verbatim\n  ---\n  duration_ms: 112.882768\n  type: 'test'\n  ...\n# Subtest: harness: canvas-dump exports title + degradation + layout reuse\nok 29 - harness: canvas-dump exports title + degradation + layout reuse\n  ---\n  duration_ms: 110.929214\n  type: 'test'\n  ...\n# Subtest: harness: evidence-dump exports A-8 lines + 64 KB gate\nok 30 - harness: evidence-dump exports A-8 lines + 64 KB gate\n  ---\n  duration_ms: 102.1061\n  type: 'test'\n  ...\n# Subtest: D-52 / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.464133\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 743.364523\n",
+      "stderr": ""
+    }
+  ],
+  "testRuns": [
+    {
+      "file": "assets.test.js",
+      "cmd": "test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: AC-19 三类列表：来源、分组、校验状态与计数自洽\nok 1 - AC-19 三类列表：来源、分组、校验状态与计数自洽\n  ---\n  duration_ms: 104.725165\n  type: 'test'\n  ...\n# Subtest: AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致\nok 2 - AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致\n  ---\n  duration_ms: 28.68232\n  type: 'test'\n  ...\n# Subtest: AC-21 技能列表与详情：正文摘要按上限截断\nok 3 - AC-21 技能列表与详情：正文摘要按上限截断\n  ---\n  duration_ms: 40.896395\n  type: 'test'\n  ...\n# Subtest: AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条\nok 4 - AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条\n  ---\n  duration_ms: 50.850178\n  type: 'test'\n  ...\n# Subtest: AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）\nok 5 - AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）\n  ---\n  duration_ms: 127.330118\n  type: 'test'\n  ...\n# Subtest: AC-24 现场一：角色目录不可读整页降级，其它分页照常\nok 6 - AC-24 现场一：角色目录不可读整页降级，其它分页照常\n  ---\n  duration_ms: 60.737223\n  type: 'test'\n  ...\n# Subtest: AC-24 现场二：引用缺失的技能标缺失，其余字段照常\nok 7 - AC-24 现场二：引用缺失的技能标缺失，其余字段照常\n  ---\n  duration_ms: 40.080348\n  type: 'test'\n  ...\n# Subtest: AC-25 库浏览只读：调用前后三个资产目录的哈希不变\nok 8 - AC-25 库浏览只读：调用前后三个资产目录的哈希不变\n  ---\n  duration_ms: 175.964831\n  type: 'test'\n  ...\n# Subtest: AC-46 单个资产不可解析：那一行标不可读，其余照常\nok 9 - AC-46 单个资产不可解析：那一行标不可读，其余照常\n  ---\n  duration_ms: 41.147353\n  type: 'test'\n  ...\n# Subtest: 未知 kind 与未知 id 按找不到处理，不抛错\nok 10 - 未知 kind 与未知 id 按找不到处理，不抛错\n  ---\n  duration_ms: 12.767729\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 939.084444\n",
+      "tap": {
+        "tests": 10,
+        "pass": 10,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 939.084444,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "AC-19 三类列表：来源、分组、校验状态与计数自洽",
+          "AC-20 角色详情：契约要点透传、缺失技能标注、原因与 CLI 原文一致",
+          "AC-21 技能列表与详情：正文摘要按上限截断",
+          "AC-22 工作流列表与详情：7 节点 8 边、节点清单同序、回流 2 条",
+          "AC-23 校验不通过的资产照常出现在列表并标注原因（与 CLI 原文逐字）",
+          "AC-24 现场一：角色目录不可读整页降级，其它分页照常",
+          "AC-24 现场二：引用缺失的技能标缺失，其余字段照常",
+          "AC-25 库浏览只读：调用前后三个资产目录的哈希不变",
+          "AC-46 单个资产不可解析：那一行标不可读，其余照常",
+          "未知 kind 与未知 id 按找不到处理，不抛错"
+        ]
+      }
+    },
+    {
+      "file": "ui-views.test.js",
+      "cmd": "test -f test/wp14/ui-views.test.js && NODE_ENV=test node --test test/wp14/ui-views.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: A-2 / AC-05: notification toggles render in fixed order, default all on\nok 1 - A-2 / AC-05: notification toggles render in fixed order, default all on\n  ---\n  duration_ms: 2.090046\n  type: 'test'\n  ...\n# Subtest: A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion\nok 2 - A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion\n  ---\n  duration_ms: 0.600308\n  type: 'test'\n  ...\n# Subtest: A-3 / AC-08: escalation + approval rows keep all seven segments verbatim\nok 3 - A-3 / AC-08: escalation + approval rows keep all seven segments verbatim\n  ---\n  duration_ms: 0.408348\n  type: 'test'\n  ...\n# Subtest: A-3 / AC-08: node-less degraded row keeps node/round segments\nok 4 - A-3 / AC-08: node-less degraded row keeps node/round segments\n  ---\n  duration_ms: 0.247693\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed\nok 5 - A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed\n  ---\n  duration_ms: 0.484588\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-11: cancel is two-step with verbatim confirm line\nok 6 - A-4 / AC-11: cancel is two-step with verbatim confirm line\n  ---\n  duration_ms: 0.180769\n  type: 'test'\n  ...\n# Subtest: A-4 / AC-14: result lines use the daemon conclusion vocabulary\nok 7 - A-4 / AC-14: result lines use the daemon conclusion vocabulary\n  ---\n  duration_ms: 0.291582\n  type: 'test'\n  ...\n# Subtest: A-5: three tabs, count line, rows and unreadable banners are verbatim\nok 8 - A-5: three tabs, count line, rows and unreadable banners are verbatim\n  ---\n  duration_ms: 0.457469\n  type: 'test'\n  ...\n# Subtest: A-5: detail lines render fixed order with missing markers\nok 9 - A-5: detail lines render fixed order with missing markers\n  ---\n  duration_ms: 0.879278\n  type: 'test'\n  ...\n# Subtest: A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim\nok 10 - A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim\n  ---\n  duration_ms: 0.721749\n  type: 'test'\n  ...\n# Subtest: A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges\nok 11 - A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges\n  ---\n  duration_ms: 0.651513\n  type: 'test'\n  ...\n# Subtest: A-7 / AC-29: node rows reuse the instance-graph shape keys\nok 12 - A-7 / AC-29: node rows reuse the instance-graph shape keys\n  ---\n  duration_ms: 0.215376\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-32: five fields + round render verbatim, latest only\nok 13 - A-8 / AC-32: five fields + round render verbatim, latest only\n  ---\n  duration_ms: 0.577301\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-33: missing fields render the unprovided word\nok 14 - A-8 / AC-33: missing fields render the unprovided word\n  ---\n  duration_ms: 0.14813\n  type: 'test'\n  ...\n# Subtest: A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak\nok 15 - A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak\n  ---\n  duration_ms: 11.026398\n  type: 'test'\n  ...\n# Subtest: D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing\nok 16 - D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing\n  ---\n  duration_ms: 0.390472\n  type: 'test'\n  ...\n# Subtest: AC-43 / setView: five new keys switch view, existing four unchanged\nok 17 - AC-43 / setView: five new keys switch view, existing four unchanged\n  ---\n  duration_ms: 0.753666\n  type: 'test'\n  ...\n# Subtest: AC-04 / AC-49: followNotification navigates to queue and selects the row\nok 18 - AC-04 / AC-49: followNotification navigates to queue and selects the row\n  ---\n  duration_ms: 0.519068\n  type: 'test'\n  ...\n# Subtest: AC-11: cancel confirm is two-step; dismiss leaves no pending confirm\nok 19 - AC-11: cancel confirm is two-step; dismiss leaves no pending confirm\n  ---\n  duration_ms: 0.541422\n  type: 'test'\n  ...\n# Subtest: AC-05: prefs toggles write through the HTTP seam\nok 20 - AC-05: prefs toggles write through the HTTP seam\n  ---\n  duration_ms: 0.308588\n  type: 'test'\n  ...\n# Subtest: AC-47: queue snapshot frame replaces content; disconnect keeps last rows\nok 21 - AC-47: queue snapshot frame replaces content; disconnect keeps last rows\n  ---\n  duration_ms: 0.766678\n  type: 'test'\n  ...\n# Subtest: AC-42: seven anomaly wordings all resolve from the label table\nok 22 - AC-42: seven anomaly wordings all resolve from the label table\n  ---\n  duration_ms: 0.227225\n  type: 'test'\n  ...\n# Subtest: D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)\nok 23 - D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)\n  ---\n  duration_ms: 0.392948\n  type: 'test'\n  ...\n# Subtest: D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys\nok 24 - D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys\n  ---\n  duration_ms: 0.24047\n  type: 'test'\n  ...\n# Subtest: BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)\nok 25 - BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)\n  ---\n  duration_ms: 19.995088\n  type: 'test'\n  ...\n# Subtest: harness: queue-dump exports empty row + prefs verbatim\nok 26 - harness: queue-dump exports empty row + prefs verbatim\n  ---\n  duration_ms: 106.391027\n  type: 'test'\n  ...\n# Subtest: harness: assets-dump exports tabs + count verbatim\nok 27 - harness: assets-dump exports tabs + count verbatim\n  ---\n  duration_ms: 106.355106\n  type: 'test'\n  ...\n# Subtest: harness: occupancy-dump exports row + empty verbatim\nok 28 - harness: occupancy-dump exports row + empty verbatim\n  ---\n  duration_ms: 112.882768\n  type: 'test'\n  ...\n# Subtest: harness: canvas-dump exports title + degradation + layout reuse\nok 29 - harness: canvas-dump exports title + degradation + layout reuse\n  ---\n  duration_ms: 110.929214\n  type: 'test'\n  ...\n# Subtest: harness: evidence-dump exports A-8 lines + 64 KB gate\nok 30 - harness: evidence-dump exports A-8 lines + 64 KB gate\n  ---\n  duration_ms: 102.1061\n  type: 'test'\n  ...\n# Subtest: D-52 / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.464133\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 743.364523\n",
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 743.364523,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "A-2 / AC-05: notification toggles render in fixed order, default all on",
+          "A-2 / AC-49: already-resolved notice is verbatim from the daemon conclusion",
+          "A-3 / AC-08: escalation + approval rows keep all seven segments verbatim",
+          "A-3 / AC-08: node-less degraded row keeps node/round segments",
+          "A-4 / AC-08: CONTROLS is the closed action list; per-type actions fixed",
+          "A-4 / AC-11: cancel is two-step with verbatim confirm line",
+          "A-4 / AC-14: result lines use the daemon conclusion vocabulary",
+          "A-5: three tabs, count line, rows and unreadable banners are verbatim",
+          "A-5: detail lines render fixed order with missing markers",
+          "A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim",
+          "A-7 / AC-29 AC-31 AC-45: title, badge, degradation branches and backflow edges",
+          "A-7 / AC-29: node rows reuse the instance-graph shape keys",
+          "A-8 / AC-32: five fields + round render verbatim, latest only",
+          "A-8 / AC-33: missing fields render the unprovided word",
+          "A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak",
+          "D-46 / AC-04: notify replace by (kind,instanceId) + queue target routing",
+          "AC-43 / setView: five new keys switch view, existing four unchanged",
+          "AC-04 / AC-49: followNotification navigates to queue and selects the row",
+          "AC-11: cancel confirm is two-step; dismiss leaves no pending confirm",
+          "AC-05: prefs toggles write through the HTTP seam",
+          "AC-47: queue snapshot frame replaces content; disconnect keeps last rows",
+          "AC-42: seven anomaly wordings all resolve from the label table",
+          "D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no buildLabels bypass)",
+          "D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys",
+          "BR-26: desktop/ui + desktop/harness carry zero CJK literals (comments included)",
+          "harness: queue-dump exports empty row + prefs verbatim",
+          "harness: assets-dump exports tabs + count verbatim",
+          "harness: occupancy-dump exports row + empty verbatim",
+          "harness: canvas-dump exports title + degradation + layout reuse",
+          "harness: evidence-dump exports A-8 lines + 64 KB gate",
+          "D-52 / open-queue: shell ctl seam navigates the live window to queue"
+        ]
+      }
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"yaml|readFile\" desktop/ui/assets/",
+      "note": "AC-19 架构：列表投影复用既有注册表读取与校验结果，不在界面层重跑 schema 校验，零命中（exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

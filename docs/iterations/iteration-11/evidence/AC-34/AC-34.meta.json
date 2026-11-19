@@ -1,0 +1,69 @@
+{
+  "ac": "AC-34",
+  "title": "证据不展示正文、不泄露会话内容",
+  "face": "证据 / 边界 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "cdfa9e4",
+  "startedAt": "2026-11-17T15:46:58.460Z",
+  "finishedAt": "2026-11-17T15:47:02.017Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 14,
+    "ok": 14,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "evidence.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 5,
+        "pass": 5,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "buildEvidence：不泄露日志正文与会话对话文本，体积远低于 64 KB（AC-34 / BR-21）"
+      ]
+    },
+    {
+      "file": "ui-views.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "A-8 / AC-34: unreadable / truncated markers, 64 KB gate, no body leak"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"session/update|delta\" src/daemon/evidence.js",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 evidence.test.js：# tests 5 / # pass 5 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "夹具：5000 行日志文件；state.json 带一条含对话文本的会话事件。D-7 只 stat 不读正文：日志引用只做存在性统计，绝不 readFile；会话事件只读 execution.summary 四要素，不读消息内容。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-34"
+}

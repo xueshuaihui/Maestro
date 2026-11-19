@@ -59,6 +59,24 @@ import { isProjectBlocked, projectMessage, resolveProject } from './project.js';
 // I1.10b WP-4: the drill layer is a pure module; the assembly only feeds it
 // frozen projections plus label keys. No second renderer, no transport inside.
 import { createDrillView } from './drill/index.js';
+import {
+  CONTROLS,
+  renderQueueRow,
+  actionsFor,
+  emptyText as queueEmptyText,
+  disconnectedText as queueDisconnectedText,
+  confirmTexts,
+  outcomeOf,
+  prefsRows,
+} from './queue/queue.js';
+import { ASSET_KINDS, tabText, countText, rowText as assetRowText,
+  dirUnreadableText, detailLines } from './assets/assets.js';
+import { renderOccupancyRow, emptyText as occupancyEmptyText,
+  skippedText, disconnectedText as occupancyDisconnectedText } from './occupancy/occupancy.js';
+import { titleText as canvasTitleText, validationBadge, degradeText as canvasDegradeText,
+  nodeRow as canvasNodeRow, edgeRow as canvasEdgeRow, graphEdges } from './canvas/canvas.js';
+import { renderEvidence, RENDER_LIMIT_BYTES } from './evidence/evidence.js';
+import { replaceIntent, queueTargetOf, stripEntryOf } from './notify/notify.js';
 
 const DEFAULT_MODULES = Object.freeze({
   renderListEmpty,
@@ -85,7 +103,59 @@ const DEFAULT_MODULES = Object.freeze({
   projectBoard,
   createConnectionState,
   createDrillView,
+  CONTROLS,
+  renderQueueRow,
+  actionsFor,
+  queueEmptyText,
+  queueDisconnectedText,
+  confirmTexts,
+  outcomeOf,
+  prefsRows,
+  ASSET_KINDS,
+  tabText,
+  countText,
+  assetRowText,
+  dirUnreadableText,
+  detailLines,
+  renderOccupancyRow,
+  occupancyEmptyText,
+  skippedText,
+  occupancyDisconnectedText,
+  canvasTitleText,
+  validationBadge,
+  canvasDegradeText,
+  canvasNodeRow,
+  canvasEdgeRow,
+  graphEdges,
+  renderEvidence,
+  replaceIntent,
+  queueTargetOf,
+  stripEntryOf,
 });
+
+/** Navigation entries for the five I1.11 views (view id -> label key). */
+const VIEW_NAV_KEYS = Object.freeze([
+  ['queue', 'DESKTOP_VIEW_QUEUE'],
+  ['assets', 'DESKTOP_VIEW_ASSETS'],
+  ['occupancy', 'DESKTOP_VIEW_OCCUPANCY'],
+  ['canvas', 'DESKTOP_VIEW_CANVAS'],
+  ['evidence', 'DESKTOP_VIEW_EVIDENCE'],
+]);
+
+/**
+ * Pure view-navigation items derived from the delivered label table (D-51).
+ * A key whose text is not a delivered string is skipped, so a missing label
+ * never renders a broken button. No DOM and no wording is authored here.
+ */
+export function viewNavItems(labels) {
+  const items = [];
+  for (const [view, key] of VIEW_NAV_KEYS) {
+    const text = labels?.[key];
+    if (typeof text !== 'string') continue;
+    items.push({ view, key, text });
+  }
+  return items;
+}
 
 /** Controls that carry no wording of their own (ASCII glyphs only). */
 const CONTROL_BACK = '\u2190';
@@ -253,6 +323,23 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     // that the SAME graph stream was kept / reopened, without a new channel.
     graphStreamOpens: 0,
     graphStreamReopened: false,
+    // ---- I1.11 WP-8 new views ----
+    queue: null,          // last buildQueue projection (kept on disconnect)
+    queuePrefs: null,     // last /ui/prefs read
+    queueNotice: null,    // outcome text of a decision / result line
+    queueConfirm: null,   // pending cancel confirmation { id, texts }
+    expandedRow: null,    // expanded queue row id (AC-43)
+    selectedQueueIds: [], // ids selected by a notification click (AC-04)
+    assets: null,         // last assets projection for the active kind
+    assetKind: ASSET_KINDS[0],
+    assetDetail: null,    // last showAsset projection
+    occupancy: null,      // last buildOccupancy projection
+    canvas: null,         // last buildCanvas projection
+    canvasLayout: null,   // computeLayout(graphEdges(canvas)) result
+    canvasId: null,
+    evidence: null,       // last buildEvidence projection
+    evidenceId: null,
+    notifications: [],    // replaceIntent entries keyed (kind, instanceId)
   };
 
   if (isProjectBlocked(state.project)) state.view = 'project';
@@ -667,7 +754,219 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       if (view === 'graph' && state.graph !== null) state.view = 'graph';
       if (view === 'board' && state.graph !== null) state.view = 'board';
       if (view === 'instances') state.view = 'instances';
+      // I1.11 WP-8: the five new views switch unconditionally; their data is
+      // loaded through the seam methods below and the last projection is kept
+      // while a channel recovers (AC-47 / BR-36).
+      if (['queue', 'assets', 'occupancy', 'canvas', 'evidence'].includes(view)) {
+        state.view = view;
+      }
       return api;
+    },
+
+    // --------------------------------------------- I1.11 WP-8 view seams
+
+    /**
+     * Load one projection through the HTTP seam. On a failed / non-200 answer
+     * the last projection is kept (AC-47): the view repaints with the stale
+     * rows and the connection state owns the "disconnected" line.
+     */
+    async loadProjection(name, key, transportFn) {
+      if (typeof transportFn !== 'function') return api;
+      try {
+        const answer = await transportFn();
+        if (answer && answer.status === 200 && answer.body && typeof answer.body === 'object') {
+          state[key] = answer.body;
+          state.lastError = null;
+        }
+      } catch (error) {
+        state.lastError = error?.message ?? String(error);
+      }
+      return api;
+    },
+
+    async loadQueue() {
+      return api.loadProjection('queue', 'queue', () => transport.getQueue?.());
+    },
+
+    async loadQueuePrefs() {
+      return api.loadProjection('prefs', 'queuePrefs', () => transport.getPrefs?.());
+    },
+
+    async saveQueuePrefs(patch) {
+      if (typeof transport.postPrefs !== 'function') return api;
+      try {
+        const answer = await transport.postPrefs(patch);
+        if (answer && answer.status === 200 && answer.body && typeof answer.body === 'object') {
+          state.queuePrefs = answer.body;
+        }
+      } catch (error) {
+        state.lastError = error?.message ?? String(error);
+      }
+      return api;
+    },
+
+    async loadAssets(kind) {
+      const active = ASSET_KINDS.includes(kind) ? kind : ASSET_KINDS[0];
+      state.assetKind = active;
+      state.assetDetail = null;
+      return api.loadProjection('assets', 'assets', () => transport.getAssets?.(active));
+    },
+
+    async loadAssetDetail(kind, id) {
+      const active = ASSET_KINDS.includes(kind) ? kind : ASSET_KINDS[0];
+      state.assetKind = active;
+      if (typeof transport.getAsset !== 'function') return api;
+      try {
+        const answer = await transport.getAsset(active, id);
+        if (answer && answer.status === 200 && answer.body && typeof answer.body === 'object') {
+          state.assetDetail = answer.body;
+        } else if (answer && answer.status === 404) {
+          state.assetDetail = { found: false, kind: active, id };
+        }
+      } catch (error) {
+        state.lastError = error?.message ?? String(error);
+      }
+      return api;
+    },
+
+    async loadOccupancy() {
+      return api.loadProjection('occupancy', 'occupancy', () => transport.getOccupancy?.());
+    },
+
+    async loadCanvas(id) {
+      const canvasId = typeof id === 'string' && id.length > 0 ? id : state.canvasId;
+      state.canvasId = canvasId;
+      if (canvasId === null || typeof transport.getCanvas !== 'function') return api;
+      try {
+        const answer = await transport.getCanvas(canvasId);
+        if (answer && answer.status === 200 && answer.body && typeof answer.body === 'object') {
+          state.canvas = answer.body;
+          // Reuse the one layout module; never copy a second layout here.
+          state.canvasLayout = m.computeLayout({
+            nodes: Array.isArray(answer.body.nodes) ? answer.body.nodes : [],
+            edges: m.graphEdges(answer.body),
+          });
+        }
+      } catch (error) {
+        state.lastError = error?.message ?? String(error);
+      }
+      return api;
+    },
+
+    async loadEvidence(instanceId, nodeId) {
+      const id = typeof instanceId === 'string' && instanceId.length > 0
+        ? instanceId
+        : state.evidenceId;
+      state.evidenceId = id;
+      if (id === null || typeof transport.getEvidence !== 'function') return api;
+      try {
+        const answer = await transport.getEvidence(id, nodeId ?? null);
+        if (answer && answer.status === 200 && answer.body && typeof answer.body === 'object') {
+          state.evidence = answer.body;
+        }
+      } catch (error) {
+        state.lastError = error?.message ?? String(error);
+      }
+      return api;
+    },
+
+    /** Enter a new view and eagerly load its projection (and prefs for queue). */
+    async openView(view, arg) {
+      api.setView(view);
+      if (view === 'queue') {
+        await api.loadQueue();
+        await api.loadQueuePrefs();
+      } else if (view === 'assets') {
+        await api.loadAssets(arg ?? state.assetKind);
+      } else if (view === 'occupancy') {
+        await api.loadOccupancy();
+      } else if (view === 'canvas') {
+        await api.loadCanvas(arg ?? state.canvasId ?? state.templates?.[0]?.id ?? null);
+      } else if (view === 'evidence') {
+        await api.loadEvidence(arg ?? state.evidenceId ?? state.instances?.[0]?.instanceId ?? null);
+      }
+      return api;
+    },
+
+    /**
+     * Apply one queue decision through the HTTP write seam and map the answer
+     * to a visible outcome line (A-4 / AC-15 / AC-16). Cancel is two-step and
+     * therefore handled by `beginCancel` / `cancelConfirmed` below.
+     */
+    async decide(kind, id, decision, context) {
+      const path = kind === 'approval'
+        ? 'postApprovalDecision'
+        : kind === 'escalation'
+          ? 'postEscalationDecision'
+          : 'postCancel';
+      if (typeof transport[path] !== 'function') return api;
+      let answer;
+      try {
+        answer = await transport[path](id, decision);
+      } catch (error) {
+        answer = { status: 0, body: { message: error?.message ?? String(error) } };
+      }
+      const outcome = m.outcomeOf(answer?.body ?? {}, context ?? {}, state.labels);
+      state.queueNotice = {
+        kind: outcome.kind,
+        text: outcome.text,
+        passHint: outcome.passHint,
+        id,
+      };
+      if (outcome.kind === 'denied') {
+        const rows = Array.isArray(state.queue?.items) ? state.queue.items : [];
+        const row = rows.find((item) => item?.id === id);
+        if (row) row.passHint = outcome.passHint;
+      }
+      await api.loadQueue();
+      return outcome;
+    },
+
+    beginCancel(id) {
+      state.queueConfirm = {
+        id,
+        texts: m.confirmTexts(id, state.labels),
+      };
+      return api;
+    },
+
+    dismissCancel() {
+      state.queueConfirm = null;
+      return api;
+    },
+
+    async cancelConfirmed() {
+      const confirm = state.queueConfirm;
+      state.queueConfirm = null;
+      if (confirm === null) return api;
+      return api.decide('cancel', confirm.id, 'cancel', {
+        type: 'cancel', id: confirm.id, decision: 'cancel', action: 'cancel',
+      });
+    },
+
+    toggleRow(id) {
+      state.expandedRow = state.expandedRow === id ? null : id;
+      return api;
+    },
+
+    /** Replace the notification strip by one incoming intent (D-46). */
+    pushNotification(intent) {
+      state.notifications = m.replaceIntent(state.notifications, intent);
+      return api;
+    },
+
+    /**
+     * Click routing (AC-04 / AC-49): navigate to the queue and select the rows
+     * the notification points at, then reload the freshest snapshot.
+     */
+    async followNotification(intent) {
+      const target = m.queueTargetOf(intent);
+      await api.openView('queue');
+      if (target.selectable) {
+        state.expandedRow = target.ids[0] ?? null;
+        state.selectedQueueIds = target.ids.slice();
+      }
+      return target;
     },
 
     resetView() {
@@ -763,6 +1062,20 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         api.setGraph(payload, asText(data?.instanceId) ?? state.graphId);
         if (state.view === 'graph') emitGraphProbe();
         return { type, repaint: 'graph', refetch: false, indicatorOnly: false, rev: state.graph?.rev ?? null };
+      }
+
+      if (type === 'queue.snapshot') {
+        // The queue SSE carries the full buildQueue projection as its data.
+        const snapshot = data?.payload !== undefined && data?.payload !== null ? data.payload : data;
+        if (snapshot && typeof snapshot === 'object' && Array.isArray(snapshot.items)) {
+          state.queue = snapshot;
+        }
+        return { type, repaint: 'queue', refetch: false, indicatorOnly: false, rev: null };
+      }
+
+      if (type === 'notify') {
+        api.pushNotification(data && typeof data === 'object' ? data : {});
+        return { type, repaint: 'notify', refetch: false, indicatorOnly: false, rev: null };
       }
 
       if (type === 'instances.changed') {
@@ -880,6 +1193,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       const model = {
         ready,
         view,
+        labels: state.labels,
         statusKey,
         statusText: connectionText,
         notice,
@@ -968,6 +1282,27 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
             returnable: true,
           };
         }
+        return model;
+      }
+
+      if (view === 'queue') {
+        model.queue = composeQueue(state, m);
+        return model;
+      }
+      if (view === 'assets') {
+        model.assets = composeAssets(state, m);
+        return model;
+      }
+      if (view === 'occupancy') {
+        model.occupancy = composeOccupancy(state, m);
+        return model;
+      }
+      if (view === 'canvas') {
+        model.canvas = composeCanvas(state, m);
+        return model;
+      }
+      if (view === 'evidence') {
+        model.evidence = composeEvidence(state, m);
         return model;
       }
 
@@ -1317,6 +1652,127 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     return { nodes, edges, legend, focusTitle, rows, zoom: view.getZoom() };
   }
 
+  /** Queue page: rows, A-4 actions, prefs toggles, notice and confirm. */
+  function composeQueue(current, modules) {
+    const labels = current.labels;
+    const disconnected = current.connection.status() === 'reconnecting'
+      || current.connection.status() === 'failed'
+      || current.queue?.disconnected === true;
+    const items = Array.isArray(current.queue?.items) ? current.queue.items : [];
+    const rows = items.map((item) => {
+      const row = modules.renderQueueRow(item, labels);
+      return {
+        ...row,
+        actions: modules.actionsFor(row, labels),
+        expanded: current.expandedRow !== null && current.expandedRow === row.key,
+        selected: current.selectedQueueIds.includes(row.id) && row.id !== null,
+      };
+    });
+    const strip = modules.stripEntryOf(current.notifications);
+    return {
+      rows,
+      emptyText: rows.length === 0 ? modules.queueEmptyText(labels) : null,
+      disconnectedText: disconnected ? modules.queueDisconnectedText(labels) : null,
+      prefs: modules.prefsRows(current.queuePrefs, labels),
+      notice: current.queueNotice,
+      confirm: current.queueConfirm,
+      strip,
+      controls: CONTROLS.slice(),
+    };
+  }
+
+  /** Asset library: three tabs, count line, rows and the detail block. */
+  function composeAssets(current, modules) {
+    const labels = current.labels;
+    const kind = current.assetKind;
+    const tabs = modules.ASSET_KINDS.map((entry) => ({
+      kind: entry,
+      text: modules.tabText(entry, labels),
+      active: entry === kind,
+    }));
+    const projection = current.assets ?? {};
+    const items = Array.isArray(projection.items) ? projection.items : [];
+    const rows = items.map((item) => modules.assetRowText(kind, item, labels));
+    return {
+      tabs,
+      kind,
+      countText: projection.dirUnreadable === true
+        ? null
+        : modules.countText(kind, projection.counts ?? {}, labels),
+      dirUnreadableText: projection.dirUnreadable === true
+        ? modules.dirUnreadableText(kind, labels)
+        : null,
+      rows,
+      detail: current.assetDetail && current.assetDetail.found !== false
+        ? { id: current.assetDetail.id, lines: modules.detailLines(kind, current.assetDetail, labels) }
+        : null,
+      disconnectedText: current.connection.status() === 'reconnecting' || current.connection.status() === 'failed'
+        ? modules.queueDisconnectedText(labels)
+        : null,
+    };
+  }
+
+  /** Occupancy page: one row per role, skipped line and disconnect line. */
+  function composeOccupancy(current, modules) {
+    const labels = current.labels;
+    const rows = Array.isArray(current.occupancy?.rows)
+      ? current.occupancy.rows.map((row) => modules.renderOccupancyRow(row, labels))
+      : [];
+    return {
+      rows,
+      emptyText: rows.length === 0 ? modules.occupancyEmptyText(labels) : null,
+      skippedText: modules.skippedText(current.occupancy?.skipped, labels),
+      disconnectedText: current.occupancy?.disconnected === true
+        || current.connection.status() === 'reconnecting'
+        || current.connection.status() === 'failed'
+        ? modules.occupancyDisconnectedText(labels)
+        : null,
+    };
+  }
+
+  /** Canvas page: title, badge, degradation branch and placed rows. */
+  function composeCanvas(current, modules) {
+    const labels = current.labels;
+    const projection = current.canvas;
+    if (projection === null) {
+      return { title: null, badge: null, rows: [], degrade: modules.canvasDegradeText({ nodes: [] }, labels) };
+    }
+    const degrade = modules.canvasDegradeText(projection, labels);
+    const nodeRows = (Array.isArray(projection.nodes) ? projection.nodes : [])
+      .filter((node) => !(degrade.key !== ''))
+      .map((node) => modules.canvasNodeRow(node, labels));
+    const edgeRows = (Array.isArray(projection.edges) ? projection.edges : [])
+      .map((edge) => modules.canvasEdgeRow(edge, labels));
+    // Placement comes from the single layout module; the pure view model only
+    // maps edges to its input shape (D-23 / D-36).
+    const layout = current.canvasLayout ?? { nodes: [], edges: [] };
+    const placed = [];
+    for (const pos of Array.isArray(layout.nodes) ? layout.nodes : []) {
+      const row = nodeRows.find((entry) => entry.id === pos.id);
+      if (row) placed.push({ ...row, x: pos.x, y: pos.y, layer: pos.layer });
+    }
+    return {
+      title: modules.canvasTitleText(projection, labels),
+      badge: modules.validationBadge(projection, labels),
+      degrade,
+      nodes: placed,
+      edges: edgeRows,
+      rows: [...nodeRows.map((row) => row.text), ...edgeRows.map((row) => row.text)].filter((text) => typeof text === 'string'),
+    };
+  }
+
+  /** Evidence page: A-8 rendered text plus the 64 KB gate result. */
+  function composeEvidence(current, modules) {
+    const labels = current.labels;
+    if (current.evidence === null) {
+      return { instanceId: current.evidenceId, text: '', capped: false, bytes: 0, items: [] };
+    }
+    // RENDER_LIMIT_BYTES is exported for the harness / tests; the view model
+    // applies the same default cap itself.
+    void RENDER_LIMIT_BYTES;
+    return modules.renderEvidence(current.evidence, labels);
+  }
+
   return api;
 }
 
@@ -1500,9 +1956,185 @@ export function mountApp({
       return;
     }
 
+    if (['queue', 'assets', 'occupancy', 'canvas', 'evidence'].includes(model.view)) {
+      paintViewNav(host, model);
+      if (model.view === 'queue') paintQueue(host, model);
+      else if (model.view === 'assets') paintAssets(host, model);
+      else if (model.view === 'occupancy') paintOccupancy(host, model);
+      else if (model.view === 'canvas') paintCanvas(host, model);
+      else if (model.view === 'evidence') paintEvidence(host, model);
+      return;
+    }
+
     paintToolbar(host, model);
     if (model.view === 'board') paintBoard(host, model);
     else paintGraph(host, model);
+  }
+
+  /** Shared navigation for the five new views (labels carry all wording). */
+  function paintViewNav(container, model) {
+    const nav = document.createElement('nav');
+    nav.className = 'view-nav';
+    for (const { view, text } of viewNavItems(model.labels)) {
+      const button = paintText(nav, 'button', text, {
+        type: 'button',
+        'data-nav': view,
+        'aria-pressed': model.view === view ? 'true' : 'false',
+      });
+      if (model.view === view) button.className = 'active';
+    }
+    container.appendChild(nav);
+  }
+
+  function paintQueue(container, model) {
+    const view = model.queue;
+    const section = document.createElement('section');
+    section.className = 'queue';
+    if (view.disconnectedText) paintText(section, 'p', view.disconnectedText, { class: 'disconnected' });
+    if (view.strip?.title) {
+      paintText(section, 'p', view.strip.title, { class: 'notify-title', 'data-nav': 'queue' });
+      if (view.strip.body) paintText(section, 'p', view.strip.body, { class: 'notify-body', 'data-nav': 'queue' });
+    }
+    // Notification preferences strip at the top of the queue page (U-10).
+    const prefs = document.createElement('div');
+    prefs.className = 'prefs';
+    for (const row of view.prefs) {
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = row.checked;
+      input.setAttribute('data-pref', row.key);
+      label.appendChild(input);
+      if (row.text) label.appendChild(document.createTextNode(row.text));
+      prefs.appendChild(label);
+    }
+    section.appendChild(prefs);
+    if (view.rows.length === 0) {
+      paintText(section, 'p', view.emptyText ?? '', { class: 'empty' });
+    } else {
+      const list = document.createElement('ul');
+      for (const row of view.rows) {
+        const item = document.createElement('li');
+        item.setAttribute('data-queue-row', row.key);
+        if (row.selected) item.className = 'selected';
+        paintText(item, 'span', row.text ?? '', { class: 'queue-row' });
+        if (row.expanded) {
+          const controls = document.createElement('div');
+          controls.className = 'controls';
+          for (const action of row.actions) {
+            const button = paintText(controls, 'button', action.text ?? '', {
+              type: 'button',
+              'data-decision': action.id,
+              'data-row': row.key,
+              'data-type': row.type ?? '',
+              'title': action.hint ?? '',
+              disabled: action.disabled ? 'disabled' : null,
+            });
+            if (action.hint) button.setAttribute('title', action.hint);
+          }
+          item.appendChild(controls);
+        }
+        list.appendChild(item);
+      }
+      section.appendChild(list);
+    }
+    if (view.confirm) {
+      const box = document.createElement('div');
+      box.className = 'confirm';
+      if (view.confirm.texts.line) paintText(box, 'p', view.confirm.texts.line);
+      if (view.confirm.texts.ok) paintText(box, 'button', view.confirm.texts.ok, {
+        type: 'button', 'data-confirm': 'ok',
+      });
+      if (view.confirm.texts.dismiss) paintText(box, 'button', view.confirm.texts.dismiss, {
+        type: 'button', 'data-confirm': 'dismiss',
+      });
+      section.appendChild(box);
+    }
+    if (view.notice?.text) paintText(section, 'p', view.notice.text, { class: 'queue-notice' });
+    container.appendChild(section);
+  }
+
+  function paintAssets(container, model) {
+    const view = model.assets;
+    const section = document.createElement('section');
+    section.className = 'assets';
+    if (view.disconnectedText) paintText(section, 'p', view.disconnectedText, { class: 'disconnected' });
+    const tabs = document.createElement('nav');
+    tabs.className = 'asset-tabs';
+    for (const tab of view.tabs) {
+      const button = paintText(tabs, 'button', tab.text ?? '', {
+        type: 'button', 'data-asset-kind': tab.kind,
+        'aria-pressed': tab.active ? 'true' : 'false',
+      });
+      if (tab.active) button.className = 'active';
+    }
+    section.appendChild(tabs);
+    if (view.countText) paintText(section, 'p', view.countText, { class: 'asset-count' });
+    if (view.dirUnreadableText) paintText(section, 'p', view.dirUnreadableText, { class: 'dir-unreadable' });
+    const list = document.createElement('ul');
+    for (const row of view.rows) {
+      const item = document.createElement('li');
+      item.setAttribute('data-asset', row.id ?? '');
+      item.textContent = row.text ?? '';
+      list.appendChild(item);
+    }
+    section.appendChild(list);
+    if (view.detail) {
+      const detail = document.createElement('section');
+      detail.className = 'asset-detail';
+      for (const line of view.detail.lines) paintText(detail, 'p', line);
+      section.appendChild(detail);
+    }
+    container.appendChild(section);
+  }
+
+  function paintOccupancy(container, model) {
+    const view = model.occupancy;
+    const section = document.createElement('section');
+    section.className = 'occupancy';
+    if (view.disconnectedText) paintText(section, 'p', view.disconnectedText, { class: 'disconnected' });
+    if (view.rows.length === 0) {
+      paintText(section, 'p', view.emptyText ?? '', { class: 'empty' });
+    } else {
+      const list = document.createElement('ul');
+      for (const row of view.rows) paintText(list, 'li', row.text ?? '', { 'data-role': row.roleId });
+      section.appendChild(list);
+    }
+    if (view.skippedText) paintText(section, 'p', view.skippedText, { class: 'skipped' });
+    container.appendChild(section);
+  }
+
+  function paintCanvas(container, model) {
+    const view = model.canvas;
+    const section = document.createElement('section');
+    section.className = 'canvas-view';
+    if (view.title) paintText(section, 'h2', view.title);
+    if (view.badge) paintText(section, 'span', view.badge, { class: 'badge' });
+    if (view.degrade?.text) {
+      paintText(section, 'p', view.degrade.text, { class: 'degrade' });
+      for (const reason of view.degrade.reasons ?? []) paintText(section, 'p', reason, { class: 'reason' });
+    }
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'definition-canvas');
+    svg.setAttribute('width', '100%');
+    for (const edge of view.edges) {
+      paintSvgText(svg, 0, 0, edge.text ?? '', { 'data-edge': `${edge.from}->${edge.to}` });
+    }
+    for (const node of view.nodes) {
+      paintSvgText(svg, node.x, node.y + 20, node.text ?? '', { 'data-node': node.id });
+    }
+    section.appendChild(svg);
+    container.appendChild(section);
+  }
+
+  function paintEvidence(container, model) {
+    const view = model.evidence;
+    const section = document.createElement('section');
+    section.className = 'evidence';
+    const pre = document.createElement('pre');
+    pre.textContent = view.text ?? '';
+    section.appendChild(pre);
+    container.appendChild(section);
   }
 
   function paintList(container, model) {
@@ -1778,6 +2410,38 @@ export function mountApp({
   }
 
   host.addEventListener('click', (event) => {
+    const nav = event.target.closest?.('[data-nav]') ?? null;
+    if (nav) {
+      void app.openView(nav.getAttribute('data-nav')).then(paint);
+      return;
+    }
+    const tab = event.target.closest?.('[data-asset-kind]') ?? null;
+    if (tab) {
+      void app.loadAssets(tab.getAttribute('data-asset-kind')).then(paint);
+      return;
+    }
+    const asset = event.target.closest?.('[data-asset]') ?? null;
+    if (asset && asset.getAttribute('data-asset')) {
+      void app.loadAssetDetail(app.state().assetKind, asset.getAttribute('data-asset')).then(paint);
+      return;
+    }
+    const confirm = event.target.closest?.('[data-confirm]') ?? null;
+    if (confirm) {
+      if (confirm.getAttribute('data-confirm') === 'ok') void app.cancelConfirmed().then(paint);
+      else app.dismissCancel(), paint();
+      return;
+    }
+    const decision = event.target.closest?.('[data-decision]') ?? null;
+    if (decision) {
+      void handleQueueDecision(decision);
+      return;
+    }
+    const queueRow = event.target.closest?.('[data-queue-row]') ?? null;
+    if (queueRow) {
+      app.toggleRow(queueRow.getAttribute('data-queue-row'));
+      paint();
+      return;
+    }
     const button = event.target.closest?.('[data-action]') ?? null;
     if (button) {
       handleAction(button.getAttribute('data-action'), button.getAttribute('data-group'));
@@ -1787,6 +2451,35 @@ export function mountApp({
     if (row) {
       void app.openGraph(row.getAttribute('data-instance')).then(paint);
     }
+  });
+
+  /** Map a decision button to its kind, id and outcome context. */
+  async function handleQueueDecision(button) {
+    const id = button.getAttribute('data-row');
+    const action = button.getAttribute('data-decision');
+    const type = button.getAttribute('data-type');
+    const items = Array.isArray(app.state().queue?.items) ? app.state().queue.items : [];
+    const row = items.find((item) => item?.id === id) ?? {};
+    if (action === 'cancel') {
+      app.beginCancel(id);
+      paint();
+      return;
+    }
+    const kind = type === 'approval' ? 'approval' : 'escalation';
+    const decision = action === 'pass' ? 'pass'
+      : action === 'retry' ? 'retry'
+        : action === 'allow' ? 'allow'
+          : 'deny';
+    await app.decide(kind, id, decision, {
+      type, id, decision, action: row.reasonSummary ?? decision,
+    });
+    paint();
+  }
+
+  host.addEventListener('change', (event) => {
+    const pref = event.target.closest?.('[data-pref]') ?? null;
+    if (!pref) return;
+    void app.saveQueuePrefs({ [pref.getAttribute('data-pref')]: pref.checked }).then(paint);
   });
 
   host.addEventListener('mouseover', (event) => {
@@ -1827,14 +2520,20 @@ export function mountApp({
   let listClose = null;
   let graphClose = null;
   let graphStreamId = null;
+  let queueClose = null;
+  let notifyClose = null;
   let reconnectTimer = null;
 
   const stopStreams = () => {
     if (listClose) listClose();
     if (graphClose) graphClose();
+    if (queueClose) queueClose();
+    if (notifyClose) notifyClose();
     listClose = null;
     graphClose = null;
     graphStreamId = null;
+    queueClose = null;
+    notifyClose = null;
     if (reconnectTimer !== null) clearTimeout(reconnectTimer);
     reconnectTimer = null;
   };
@@ -1900,6 +2599,42 @@ export function mountApp({
         },
       );
     }
+    // Queue snapshot stream (event: queue.snapshot). Kept open for the whole
+    // session so the freshest snapshot is always in state when a notification
+    // is clicked; the last content is kept on a drop (AC-47 / BR-36).
+    if (queueClose === null) {
+      queueClose = transport.openStream(`${origin()}/queue/stream`, {
+        onFrame(frame) {
+          if (app.state().connection.isPending()) app.state().connection.markReady();
+          const result = app.handleFrame(frame);
+          if (result.repaint === 'queue' && app.state().view === 'queue') paint();
+        },
+        onStatus(status) {
+          if (status === 'error' || status === 'closed') {
+            queueClose = null;
+            app.state().connection.disconnect();
+            paint();
+            scheduleReconnect();
+          }
+        },
+      });
+    }
+    // Notification stream (event: notify). Each intent replaces the previous
+    // entry with the same (kind, instanceId) key (D-46).
+    if (notifyClose === null) {
+      notifyClose = transport.openStream(`${origin()}/notifications/stream`, {
+        onFrame(frame) {
+          app.handleFrame(frame);
+          if (app.state().view === 'queue') paint();
+        },
+        onStatus(status) {
+          if (status === 'error' || status === 'closed') {
+            notifyClose = null;
+            scheduleReconnect();
+          }
+        },
+      });
+    }
   }
 
   function origin() {
@@ -1951,6 +2686,12 @@ export function mountApp({
         paint();
       } else if (action === 'continue-escalation' && arg && typeof arg === 'object') {
         void app.continueEscalation(arg).then(paint);
+      } else if (action === 'open-queue') {
+        // I1.11 D-52: shell notify click / tray queue-open lands on the
+        // queue view, selecting the entry the shell supplied (AC-04 / AC-49).
+        const selected = arg && typeof arg === 'object' && typeof arg.selected === 'string'
+          ? [arg.selected] : [];
+        void app.followNotification({ kind: 'escalation', ids: selected }).then(paint);
       }
     };
   }
@@ -2226,6 +2967,26 @@ export function createLoopbackTransport(creds) {
     getWorkflows: () => request('/workflows'),
     getGraph: (instanceId) => request(`/instances/${encodeURIComponent(instanceId)}/graph`),
     postInstance: (payload) => request('/instances', { method: 'POST', body: JSON.stringify(payload) }),
+    // ---- I1.11 WP-8 read projections and single-item write seam ----
+    getQueue: () => request('/queue'),
+    getAssets: (kind) => request(`/assets/${encodeURIComponent(kind)}`),
+    getAsset: (kind, id) => request(`/assets/${encodeURIComponent(kind)}/${encodeURIComponent(id)}`),
+    getOccupancy: () => request('/occupancy/roles'),
+    getCanvas: (id) => request(`/workflows/${encodeURIComponent(id)}/canvas`),
+    getEvidence: (instanceId, nodeId) => nodeId
+      ? request(`/evidence/${encodeURIComponent(instanceId)}/${encodeURIComponent(nodeId)}`)
+      : request(`/evidence/${encodeURIComponent(instanceId)}`),
+    getPrefs: () => request('/ui/prefs'),
+    postPrefs: (patch) => request('/ui/prefs', { method: 'POST', body: JSON.stringify(patch) }),
+    postEscalationDecision: (id, decision) => request(
+      `/queue/escalations/${encodeURIComponent(id)}/decision`,
+      { method: 'POST', body: JSON.stringify({ decision }) },
+    ),
+    postApprovalDecision: (id, decision) => request(
+      `/queue/approvals/${encodeURIComponent(id)}/decision`,
+      { method: 'POST', body: JSON.stringify({ decision }) },
+    ),
+    postCancel: (id) => request(`/instances/${encodeURIComponent(id)}/cancel`, { method: 'POST' }),
     // The shell wraps the map into `{ offsets, updatedAt }` (split 3.2), so
     // the invoke argument is the offsets map itself, never a second envelope.
     writeViewOffsets: async ({ root, instance_id: instanceId, offsets } = {}) => {

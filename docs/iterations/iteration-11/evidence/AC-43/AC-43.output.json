@@ -1,0 +1,103 @@
+{
+  "ac": "AC-43",
+  "commands": [
+    {
+      "label": "机检 contract.test.js",
+      "cmd": "test -f test/wp14/contract.test.js && NODE_ENV=test node --test test/wp14/contract.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 441,
+      "stdout": "TAP version 13\n# Subtest: §2.1 notify.js：createNotifier 返回 intents$ + dispose，DEDUP 双窗口\nok 1 - §2.1 notify.js：createNotifier 返回 intents$ + dispose，DEDUP 双窗口\n  ---\n  duration_ms: 3.876189\n  type: 'test'\n  ...\n# Subtest: §2.2 prefs.js：四键读写，缺文件全 true 缺省\nok 2 - §2.2 prefs.js：四键读写，缺文件全 true 缺省\n  ---\n  duration_ms: 8.34232\n  type: 'test'\n  ...\n# Subtest: §2.3 queue.js：buildQueue 返回 items + totals（两计数键）\nok 3 - §2.3 queue.js：buildQueue 返回 items + totals（两计数键）\n  ---\n  duration_ms: 0.937561\n  type: 'test'\n  ...\n# Subtest: §2.4 assets-view.js：listAssets/showAsset 导出 + items/unreadable 形状\nok 4 - §2.4 assets-view.js：listAssets/showAsset 导出 + items/unreadable 形状\n  ---\n  duration_ms: 46.334512\n  type: 'test'\n  ...\n# Subtest: §2.5 occupancy.js：buildOccupancy 返回 rows + skipped\nok 5 - §2.5 occupancy.js：buildOccupancy 返回 rows + skipped\n  ---\n  duration_ms: 13.760771\n  type: 'test'\n  ...\n# Subtest: §2.6 canvas.js：buildCanvas 返回 title/readable/valid/nodes/edges\nok 6 - §2.6 canvas.js：buildCanvas 返回 title/readable/valid/nodes/edges\n  ---\n  duration_ms: 17.170772\n  type: 'test'\n  ...\n# Subtest: §2.7 evidence.js：buildEvidence 返回 instanceId + items（五项键冻结）\nok 7 - §2.7 evidence.js：buildEvidence 返回 instanceId + items（五项键冻结）\n  ---\n  duration_ms: 3.59745\n  type: 'test'\n  ...\n# Subtest: D-46 ① notify 意图：7 键规范形 + 源端逐键构造\nok 8 - D-46 ① notify 意图：7 键规范形 + 源端逐键构造\n  ---\n  duration_ms: 1.268687\n  type: 'test'\n  ...\n# Subtest: D-46 ② SSE 帧：event=notify，data 为意图本体（零包装）\nok 9 - D-46 ② SSE 帧：event=notify，data 为意图本体（零包装）\n  ---\n  duration_ms: 3.422232\n  type: 'test'\n  ...\n# Subtest: D-46 ③ UI replaceIntent：按 (kind, instanceId) 替换，形状与意图一致\nok 10 - D-46 ③ UI replaceIntent：按 (kind, instanceId) 替换，形状与意图一致\n  ---\n  duration_ms: 0.668081\n  type: 'test'\n  ...\n# Subtest: D-46 ④ 壳层替换 id：派生自同一 (kind, instanceId) 键\nok 11 - D-46 ④ 壳层替换 id：派生自同一 (kind, instanceId) 键\n  ---\n  duration_ms: 1.39627\n  type: 'test'\n  ...\n# Subtest: D-36：desktop/ui 不出现 pendingEscalations 重算（grep 计数 = 0）\nok 12 - D-36：desktop/ui 不出现 pendingEscalations 重算（grep 计数 = 0）\n  ---\n  duration_ms: 24.897998\n  type: 'test'\n  ...\n# Subtest: A-11：/ui/labels 249 键含全部 DESKTOP_* 字符串常量（白名单 100%）\nok 13 - A-11：/ui/labels 249 键含全部 DESKTOP_* 字符串常量（白名单 100%）\n  ---\n  duration_ms: 1.279843\n  type: 'test'\n  ...\n# Subtest: A-11：USAGE_LINES 未混入 /ui/labels（键与值都不含用法行）\nok 14 - A-11：USAGE_LINES 未混入 /ui/labels（键与值都不含用法行）\n  ---\n  duration_ms: 1.736445\n  type: 'test'\n  ...\n# Subtest: AC-43 源码级：desktop/ui + harness 不 import 下钻/节点详情/跳转类模块\nok 15 - AC-43 源码级：desktop/ui + harness 不 import 下钻/节点详情/跳转类模块\n  ---\n  duration_ms: 22.511129\n  type: 'test'\n  ...\n# Subtest: AC-43 行为级：open-queue 只展开本条、不跳转、不下钻\nok 16 - AC-43 行为级：open-queue 只展开本条、不跳转、不下钻\n  ---\n  duration_ms: 2.120721\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 345.001745\n",
+      "stderr": ""
+    },
+    {
+      "label": "语义复核：rev-list 原文命令输出",
+      "cmd": "git rev-list --count 66e5a6b..origin/feat/i1.10b-drilldown 2>&1",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 128,
+      "timedOut": false,
+      "durationMs": 33,
+      "stdout": "fatal: ambiguous argument '66e5a6b..origin/feat/i1.10b-drilldown': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\n",
+      "stderr": ""
+    },
+    {
+      "label": "语义复核：本地是否存有 i1.10b 远程跟踪 ref（exit 1=不存在）",
+      "cmd": "git show-ref --verify --quiet refs/remotes/origin/feat/i1.10b-drilldown",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 1,
+      "timedOut": false,
+      "durationMs": 32,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "testRuns": [
+    {
+      "file": "contract.test.js",
+      "cmd": "test -f test/wp14/contract.test.js && NODE_ENV=test node --test test/wp14/contract.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: §2.1 notify.js：createNotifier 返回 intents$ + dispose，DEDUP 双窗口\nok 1 - §2.1 notify.js：createNotifier 返回 intents$ + dispose，DEDUP 双窗口\n  ---\n  duration_ms: 3.876189\n  type: 'test'\n  ...\n# Subtest: §2.2 prefs.js：四键读写，缺文件全 true 缺省\nok 2 - §2.2 prefs.js：四键读写，缺文件全 true 缺省\n  ---\n  duration_ms: 8.34232\n  type: 'test'\n  ...\n# Subtest: §2.3 queue.js：buildQueue 返回 items + totals（两计数键）\nok 3 - §2.3 queue.js：buildQueue 返回 items + totals（两计数键）\n  ---\n  duration_ms: 0.937561\n  type: 'test'\n  ...\n# Subtest: §2.4 assets-view.js：listAssets/showAsset 导出 + items/unreadable 形状\nok 4 - §2.4 assets-view.js：listAssets/showAsset 导出 + items/unreadable 形状\n  ---\n  duration_ms: 46.334512\n  type: 'test'\n  ...\n# Subtest: §2.5 occupancy.js：buildOccupancy 返回 rows + skipped\nok 5 - §2.5 occupancy.js：buildOccupancy 返回 rows + skipped\n  ---\n  duration_ms: 13.760771\n  type: 'test'\n  ...\n# Subtest: §2.6 canvas.js：buildCanvas 返回 title/readable/valid/nodes/edges\nok 6 - §2.6 canvas.js：buildCanvas 返回 title/readable/valid/nodes/edges\n  ---\n  duration_ms: 17.170772\n  type: 'test'\n  ...\n# Subtest: §2.7 evidence.js：buildEvidence 返回 instanceId + items（五项键冻结）\nok 7 - §2.7 evidence.js：buildEvidence 返回 instanceId + items（五项键冻结）\n  ---\n  duration_ms: 3.59745\n  type: 'test'\n  ...\n# Subtest: D-46 ① notify 意图：7 键规范形 + 源端逐键构造\nok 8 - D-46 ① notify 意图：7 键规范形 + 源端逐键构造\n  ---\n  duration_ms: 1.268687\n  type: 'test'\n  ...\n# Subtest: D-46 ② SSE 帧：event=notify，data 为意图本体（零包装）\nok 9 - D-46 ② SSE 帧：event=notify，data 为意图本体（零包装）\n  ---\n  duration_ms: 3.422232\n  type: 'test'\n  ...\n# Subtest: D-46 ③ UI replaceIntent：按 (kind, instanceId) 替换，形状与意图一致\nok 10 - D-46 ③ UI replaceIntent：按 (kind, instanceId) 替换，形状与意图一致\n  ---\n  duration_ms: 0.668081\n  type: 'test'\n  ...\n# Subtest: D-46 ④ 壳层替换 id：派生自同一 (kind, instanceId) 键\nok 11 - D-46 ④ 壳层替换 id：派生自同一 (kind, instanceId) 键\n  ---\n  duration_ms: 1.39627\n  type: 'test'\n  ...\n# Subtest: D-36：desktop/ui 不出现 pendingEscalations 重算（grep 计数 = 0）\nok 12 - D-36：desktop/ui 不出现 pendingEscalations 重算（grep 计数 = 0）\n  ---\n  duration_ms: 24.897998\n  type: 'test'\n  ...\n# Subtest: A-11：/ui/labels 249 键含全部 DESKTOP_* 字符串常量（白名单 100%）\nok 13 - A-11：/ui/labels 249 键含全部 DESKTOP_* 字符串常量（白名单 100%）\n  ---\n  duration_ms: 1.279843\n  type: 'test'\n  ...\n# Subtest: A-11：USAGE_LINES 未混入 /ui/labels（键与值都不含用法行）\nok 14 - A-11：USAGE_LINES 未混入 /ui/labels（键与值都不含用法行）\n  ---\n  duration_ms: 1.736445\n  type: 'test'\n  ...\n# Subtest: AC-43 源码级：desktop/ui + harness 不 import 下钻/节点详情/跳转类模块\nok 15 - AC-43 源码级：desktop/ui + harness 不 import 下钻/节点详情/跳转类模块\n  ---\n  duration_ms: 22.511129\n  type: 'test'\n  ...\n# Subtest: AC-43 行为级：open-queue 只展开本条、不跳转、不下钻\nok 16 - AC-43 行为级：open-queue 只展开本条、不跳转、不下钻\n  ---\n  duration_ms: 2.120721\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 345.001745\n",
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 345.001745,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "§2.1 notify.js：createNotifier 返回 intents$ + dispose，DEDUP 双窗口",
+          "§2.2 prefs.js：四键读写，缺文件全 true 缺省",
+          "§2.3 queue.js：buildQueue 返回 items + totals（两计数键）",
+          "§2.4 assets-view.js：listAssets/showAsset 导出 + items/unreadable 形状",
+          "§2.5 occupancy.js：buildOccupancy 返回 rows + skipped",
+          "§2.6 canvas.js：buildCanvas 返回 title/readable/valid/nodes/edges",
+          "§2.7 evidence.js：buildEvidence 返回 instanceId + items（五项键冻结）",
+          "D-46 ① notify 意图：7 键规范形 + 源端逐键构造",
+          "D-46 ② SSE 帧：event=notify，data 为意图本体（零包装）",
+          "D-46 ③ UI replaceIntent：按 (kind, instanceId) 替换，形状与意图一致",
+          "D-46 ④ 壳层替换 id：派生自同一 (kind, instanceId) 键",
+          "D-36：desktop/ui 不出现 pendingEscalations 重算（grep 计数 = 0）",
+          "A-11：/ui/labels 249 键含全部 DESKTOP_* 字符串常量（白名单 100%）",
+          "A-11：USAGE_LINES 未混入 /ui/labels（键与值都不含用法行）",
+          "AC-43 源码级：desktop/ui + harness 不 import 下钻/节点详情/跳转类模块",
+          "AC-43 行为级：open-queue 只展开本条、不跳转、不下钻"
+        ]
+      }
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"drilldown|nodeDetail|jumpHost|attachHost\" desktop/ui desktop/harness",
+      "note": "AC-43 架构①：界面/验收层零 I1.10b 前置能力引用（零命中，exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "git rev-list --count 66e5a6b..origin/feat/i1.10b-drilldown",
+      "note": "AC-43 架构②（原文留证）：rev-list 基线分叉计数（本机远程分支不存在，exit 128；见语义复核等价核验）",
+      "expect": null,
+      "exit": 128,
+      "lines": 4,
+      "stdout": "\n--- STDERR ---\nfatal: ambiguous argument '66e5a6b..origin/feat/i1.10b-drilldown': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": true
+    }
+  ]
+}

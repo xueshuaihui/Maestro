@@ -1,0 +1,191 @@
+{
+  "ac": "AC-18",
+  "commands": [
+    {
+      "label": "机检 queue.test.js",
+      "cmd": "test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 6745,
+      "stdout": "TAP version 13\n# Subtest: buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\nok 1 - buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\n  ---\n  duration_ms: 2.277118\n  type: 'test'\n  ...\n# Subtest: buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\nok 2 - buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\n  ---\n  duration_ms: 0.465921\n  type: 'test'\n  ...\n# Subtest: buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\nok 3 - buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\n  ---\n  duration_ms: 0.230509\n  type: 'test'\n  ...\n# Subtest: 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\nok 4 - 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\n  ---\n  duration_ms: 415.345006\n  type: 'test'\n  ...\n# Subtest: 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\nok 5 - 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\n  ---\n  duration_ms: 478.160054\n  type: 'test'\n  ...\n# Subtest: 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\nok 6 - 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\n  ---\n  duration_ms: 408.457005\n  type: 'test'\n  ...\n# Subtest: 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\nok 7 - 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\n  ---\n  duration_ms: 283.327615\n  type: 'test'\n  ...\n# Subtest: 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\nok 8 - 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\n  ---\n  duration_ms: 175.786542\n  type: 'test'\n  ...\n# Subtest: 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\nok 9 - 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\n  ---\n  duration_ms: 330.863836\n  type: 'test'\n  ...\n# Subtest: 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\nok 10 - 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\n  ---\n  duration_ms: 48.458709\n  type: 'test'\n  ...\n# Subtest: 实例未挂起：固定结论且原状态不变（AC-16②）\nok 11 - 实例未挂起：固定结论且原状态不变（AC-16②）\n  ---\n  duration_ms: 185.139157\n  type: 'test'\n  ...\n# Subtest: 审批会话失效：返回已失效且行仍待处理（AC-16③）\nok 12 - 审批会话失效：返回已失效且行仍待处理（AC-16③）\n  ---\n  duration_ms: 162.032066\n  type: 'test'\n  ...\n# Subtest: 审批·允许：真实等待会话被放行并继续（AC-12 allow）\nok 13 - 审批·允许：真实等待会话被放行并继续（AC-12 allow）\n  ---\n  duration_ms: 1083.383131\n  type: 'test'\n  ...\n# Subtest: 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\nok 14 - 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\n  ---\n  duration_ms: 916.722337\n  type: 'test'\n  ...\n# Subtest: 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\nok 15 - 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\n  ---\n  duration_ms: 1666.098726\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 215.537691\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 6649.761146\n",
+      "stderr": ""
+    },
+    {
+      "label": "机检 e2e.test.js",
+      "cmd": "test -f test/wp14/e2e.test.js && NODE_ENV=test node --test test/wp14/e2e.test.js",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 2526,
+      "stdout": "TAP version 13\n# Subtest: AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）\nok 1 - AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）\n  ---\n  duration_ms: 1278.111162\n  type: 'test'\n  ...\n# Subtest: AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH\nok 2 - AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH\n  ---\n  duration_ms: 2.906714\n  type: 'test'\n  ...\n# Subtest: AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写\nok 3 - AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写\n  ---\n  duration_ms: 791.250151\n  type: 'test'\n  ...\n# Subtest: AC-39 prefs：唯一写入方只写四键，多余键拒绝\nok 4 - AC-39 prefs：唯一写入方只写四键，多余键拒绝\n  ---\n  duration_ms: 60.025801\n  type: 'test'\n  ...\n# Subtest: AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源\nok 5 - AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源\n  ---\n  duration_ms: 24.905719\n  type: 'test'\n  ...\n# Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\nok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\n  ---\n  duration_ms: 1.845495\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2425.486486\n",
+      "stderr": ""
+    },
+    {
+      "label": "语义复核：arch⑤ 桌面壳层命中原文",
+      "cmd": "grep -REn \"pendingEscalations\" desktop/ui desktop/src-tauri/src",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 197,
+      "stdout": "desktop/src-tauri/src/tray.rs:103:/// Emit the `tray-status` probe line (D-9: instances / pendingEscalations /\ndesktop/src-tauri/src/tray.rs:113:            \"pendingEscalations\": tray.pending,\n",
+      "stderr": ""
+    },
+    {
+      "label": "语义复核：tray.pending 取值来源（daemon 投影 vs 壳层自算）",
+      "cmd": "sed -n '296,306p' desktop/src-tauri/src/main.rs",
+      "argv": null,
+      "cwd": "/Users/xuesh/www/Maestro",
+      "exit": 0,
+      "timedOut": false,
+      "durationMs": 183,
+      "stdout": "                let token = meta.get(\"token\")?.as_str()?.to_string();\n                let payload = http_get_json(port, \"/instances\", &token)?;\n                let items = payload.get(\"items\")?.as_array()?.clone();\n                let instances = items.len() as u32;\n                let pending = items\n                    .iter()\n                    .filter_map(|item| {\n                        item.get(\"pending\")?.get(\"escalations\")?.as_u64()\n                    })\n                    .sum::<u64>() as u32;\n                let running_ids = items\n",
+      "stderr": ""
+    }
+  ],
+  "testRuns": [
+    {
+      "file": "queue.test.js",
+      "cmd": "test -f test/wp14/queue.test.js && NODE_ENV=test node --test test/wp14/queue.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\nok 1 - buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）\n  ---\n  duration_ms: 2.277118\n  type: 'test'\n  ...\n# Subtest: buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\nok 2 - buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）\n  ---\n  duration_ms: 0.465921\n  type: 'test'\n  ...\n# Subtest: buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\nok 3 - buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）\n  ---\n  duration_ms: 0.230509\n  type: 'test'\n  ...\n# Subtest: 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\nok 4 - 升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）\n  ---\n  duration_ms: 415.345006\n  type: 'test'\n  ...\n# Subtest: 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\nok 5 - 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）\n  ---\n  duration_ms: 478.160054\n  type: 'test'\n  ...\n# Subtest: 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\nok 6 - 升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）\n  ---\n  duration_ms: 408.457005\n  type: 'test'\n  ...\n# Subtest: 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\nok 7 - 升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）\n  ---\n  duration_ms: 283.327615\n  type: 'test'\n  ...\n# Subtest: 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\nok 8 - 继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）\n  ---\n  duration_ms: 175.786542\n  type: 'test'\n  ...\n# Subtest: 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\nok 9 - 已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）\n  ---\n  duration_ms: 330.863836\n  type: 'test'\n  ...\n# Subtest: 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\nok 10 - 动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）\n  ---\n  duration_ms: 48.458709\n  type: 'test'\n  ...\n# Subtest: 实例未挂起：固定结论且原状态不变（AC-16②）\nok 11 - 实例未挂起：固定结论且原状态不变（AC-16②）\n  ---\n  duration_ms: 185.139157\n  type: 'test'\n  ...\n# Subtest: 审批会话失效：返回已失效且行仍待处理（AC-16③）\nok 12 - 审批会话失效：返回已失效且行仍待处理（AC-16③）\n  ---\n  duration_ms: 162.032066\n  type: 'test'\n  ...\n# Subtest: 审批·允许：真实等待会话被放行并继续（AC-12 allow）\nok 13 - 审批·允许：真实等待会话被放行并继续（AC-12 allow）\n  ---\n  duration_ms: 1083.383131\n  type: 'test'\n  ...\n# Subtest: 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\nok 14 - 审批·拒绝：真实等待会话被拒绝（AC-12 deny）\n  ---\n  duration_ms: 916.722337\n  type: 'test'\n  ...\n# Subtest: 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\nok 15 - 跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）\n  ---\n  duration_ms: 1666.098726\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 215.537691\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 6649.761146\n",
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 6649.761146,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "buildQueue：跨实例合并、排序与统一八字段模板（AC-08 / BR-06 / BR-07）",
+          "buildQueue：无节点审批行轮次为 null、降级行标注状态不可读、断线位与空态（AC-08 / D-19 / BR-36 数据位）",
+          "buildQueue：totals 只读既有快照计数字段，不按数组重算（D-36 / AC-18 数据侧）",
+          "升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39）",
+          "升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）",
+          "升级·重派：轮次 +1、绑定新会话、实例回到运行中（AC-10）",
+          "升级·终止：实例级取消，待处理升级作废、条目消失（AC-11 数据侧 / D-08）",
+          "继续只对轮次超限可用：其它升级返回 ACTION_NOT_SUPPORTED 且不生效（AC-44 / U-5 数据侧）",
+          "已处理不重复写：二次处置返回固定结论且不再落盘（AC-15 / D-13 / BR-09）",
+          "动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）",
+          "实例未挂起：固定结论且原状态不变（AC-16②）",
+          "审批会话失效：返回已失效且行仍待处理（AC-16③）",
+          "审批·允许：真实等待会话被放行并继续（AC-12 allow）",
+          "审批·拒绝：真实等待会话被拒绝（AC-12 deny）",
+          "跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）",
+          "队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）"
+        ]
+      }
+    },
+    {
+      "file": "e2e.test.js",
+      "cmd": "test -f test/wp14/e2e.test.js && NODE_ENV=test node --test test/wp14/e2e.test.js",
+      "exit": 0,
+      "raw": "TAP version 13\n# Subtest: AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）\nok 1 - AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）\n  ---\n  duration_ms: 1278.111162\n  type: 'test'\n  ...\n# Subtest: AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH\nok 2 - AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH\n  ---\n  duration_ms: 2.906714\n  type: 'test'\n  ...\n# Subtest: AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写\nok 3 - AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写\n  ---\n  duration_ms: 791.250151\n  type: 'test'\n  ...\n# Subtest: AC-39 prefs：唯一写入方只写四键，多余键拒绝\nok 4 - AC-39 prefs：唯一写入方只写四键，多余键拒绝\n  ---\n  duration_ms: 60.025801\n  type: 'test'\n  ...\n# Subtest: AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源\nok 5 - AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源\n  ---\n  duration_ms: 24.905719\n  type: 'test'\n  ...\n# Subtest: NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\nok 6 - NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致\n  ---\n  duration_ms: 1.845495\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2425.486486\n",
+      "tap": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 2425.486486,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）",
+          "AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH",
+          "AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写",
+          "AC-39 prefs：唯一写入方只写四键，多余键拒绝",
+          "AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源",
+          "NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致"
+        ]
+      }
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"pendingEscalations\" src/daemon/",
+      "note": "AC-18 架构①：daemon 透传行存在（基线 5 行；D-53 行号漂移后实测 9 行，允许新增同类透传，不得新增计数表达式），有命中 exit 0",
+      "expect": 0,
+      "exit": 0,
+      "lines": 9,
+      "stdout": "src/daemon/server.js:1015: * `instance.get` 的只读投影：补齐渲染层需要的 `template` / `pendingEscalations`，\nsrc/daemon/server.js:1021:  const pendingEscalations = Number.isInteger(snapshot.pendingEscalations)\nsrc/daemon/server.js:1022:    ? snapshot.pendingEscalations\nsrc/daemon/server.js:1028:    pendingEscalations,\nsrc/daemon/queue.js:139:  const escalations = Number.isInteger(snapshot.pendingEscalations)\nsrc/daemon/queue.js:140:    ? snapshot.pendingEscalations\nsrc/daemon/queue.js:179:      totals: { pendingEscalations: 0, pendingApprovals: 0 },\nsrc/daemon/queue.js:204:      pendingEscalations: sumSnapshotField(instances, 'pendingEscalations'),\nsrc/daemon/http/routes.js:280:      escalations: Number.isInteger(snapshot?.pendingEscalations) ? snapshot.pendingEscalations : 0,",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn -A3 \"pendingEscalations\" src/daemon/",
+      "note": "AC-18 架构②：多行感知检出跨行计数表达式（server.js shapeSnapshot 回退，基线 905→现 1023 行按 D-53 漂移）",
+      "expect": 0,
+      "exit": 0,
+      "lines": 34,
+      "stdout": "src/daemon/server.js:1015: * `instance.get` 的只读投影：补齐渲染层需要的 `template` / `pendingEscalations`，\nsrc/daemon/server.js-1016- * 其余字段（`cwd` / `backupPath` / `nodes[]` …）原样透传，不改写核心的对象。\nsrc/daemon/server.js-1017- */\nsrc/daemon/server.js-1018-function shapeSnapshot(snapshot) {\n--\nsrc/daemon/server.js:1021:  const pendingEscalations = Number.isInteger(snapshot.pendingEscalations)\nsrc/daemon/server.js:1022:    ? snapshot.pendingEscalations\nsrc/daemon/server.js-1023-    : escalations.filter((entry) => entry?.state === 'pending').length;\nsrc/daemon/server.js-1024-  return {\nsrc/daemon/server.js-1025-    ...snapshot,\n--\nsrc/daemon/server.js:1028:    pendingEscalations,\nsrc/daemon/server.js-1029-  };\nsrc/daemon/server.js-1030-}\nsrc/daemon/server.js-1031-\nsrc/daemon/queue.js:139:  const escalations = Number.isInteger(snapshot.pendingEscalations)\nsrc/daemon/queue.js:140:    ? snapshot.pendingEscalations\nsrc/daemon/queue.js-141-    : 0;\nsrc/daemon/queue.js-142-  const approvals = Number.isInteger(snapshot.pendingApprovals)\nsrc/daemon/queue.js-143-    ? snapshot.pendingApprovals\n--\nsrc/daemon/queue.js:179:      totals: { pendingEscalations: 0, pendingApprovals: 0 },\nsrc/daemon/queue.js-180-      disconnected: true,\nsrc/daemon/queue.js-181-    };\nsrc/daemon/queue.js-182-  }\n--\nsrc/daemon/queue.js:204:      pendingEscalations: sumSnapshotField(instances, 'pendingEscalations'),\nsrc/daemon/queue.js-205-      pendingApprovals: sumSnapshotField(instances, 'pendingApprovals'),\nsrc/daemon/queue.js-206-    },\nsrc/daemon/queue.js-207-  };\nsrc/daemon/http/routes.js:280:      escalations: Number.isInteger(snapshot?.pendingEscalations) ? snapshot.pendingEscalations : 0,\nsrc/daemon/http/routes.js-281-      approvals: Number.isInteger(snapshot?.pendingApprovals) ? snapshot.pendingApprovals : 0,\nsrc/daemon/http/routes.js-282-    },\nsrc/daemon/http/routes.js-283-    health: healthPayload(snapshot),",
+      "contains": "escalations.filter((entry) => entry?.state === 'pending').length",
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 3,
+      "cmd": "node --input-type=module -e 'import fs from \"node:fs\";import path from \"node:path\";const walk=(d)=>fs.readdirSync(d,{withFileTypes:true}).flatMap((e)=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]);const COUNT=/(\\.filter\\(|\\.reduce\\(|\\.length|\\+= *1|\\.push\\()/;const hits=[];for(const f of walk(\"src/daemon\").filter((x)=>x.endsWith(\".js\"))){const lines=fs.readFileSync(f,\"utf8\").split(\"\\n\");let fn=\"<top>\";for(let i=0;i<lines.length;i++){const m=lines[i].match(/^\\s*(?:export\\s+)?(?:async\\s+)?function\\s+([A-Za-z0-9_$]+)/);if(m)fn=m[1];if(!lines[i].includes(\"pendingEscalations\"))continue;hits.push({f,line:i+1,fn,count:COUNT.test(lines.slice(i,i+4).join(\"\\n\"))});}}const bad=hits.filter((h)=>h.count&&h.fn!==\"shapeSnapshot\");console.log(\"occurrences=\"+hits.length+\" countExpr=\"+hits.filter((h)=>h.count).length+\" outsideShapeSnapshot=\"+bad.length);process.exit(bad.length===0?0:1)'",
+      "note": "AC-18 架构③：函数体切块——daemon 计数表达式只许在 shapeSnapshot 内（D-36，单行 grep 假阴性已弃用）",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "stdout": "occurrences=9 countExpr=2 outsideShapeSnapshot=0",
+      "contains": "outsideShapeSnapshot=0",
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 4,
+      "cmd": "grep -REn \"escalations[.]filter|escalations[.]reduce\" src/daemon/",
+      "note": "AC-18 架构④：escalations.filter/reduce 恰好 1 条（server.js:1023 回退计数），不得新增第二条",
+      "expect": 0,
+      "exit": 0,
+      "lines": 1,
+      "stdout": "src/daemon/server.js:1023:    : escalations.filter((entry) => entry?.state === 'pending').length;",
+      "contains": null,
+      "expectLines": 1,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 5,
+      "cmd": "grep -REn \"pendingEscalations\" desktop/ui desktop/src-tauri/src | grep -vE \":\\s*[0-9]+:\\s*(//|\\*)\" | grep -vE \"\\\"pendingEscalations\\\"\\s*:\"",
+      "note": "AC-18 架构⑤（v12/D-55）：界面与壳层零自算——排除 //、///、* 注释行与 D-9 要求下发的 tray-status 探针字段名（真实计数表达式仍零命中，exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    },
+    {
+      "index": 6,
+      "cmd": "grep -REn \"escalations[.]filter\" desktop/ui/",
+      "note": "AC-18 架构⑥：界面不按条目数组自行过滤计数，零命中（exit 1）",
+      "expect": 1,
+      "exit": 1,
+      "lines": 0,
+      "stdout": "",
+      "contains": null,
+      "expectLines": null,
+      "ok": true,
+      "informational": false
+    }
+  ]
+}

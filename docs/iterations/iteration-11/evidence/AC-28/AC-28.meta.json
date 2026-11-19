@@ -1,0 +1,84 @@
+{
+  "ac": "AC-28",
+  "title": "占用随运行时变化更新且与流程图同源",
+  "face": "占用 / 实时 / 同源 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "cdfa9e4",
+  "startedAt": "2026-11-17T15:46:41.738Z",
+  "finishedAt": "2026-11-17T15:46:46.210Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 17,
+    "ok": 17,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "occupancy.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 4,
+        "pass": 4,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "buildOccupancy：占用随真实派发更新且与流程图同源（AC-28 / BR-37 数据侧 / D-40）"
+      ]
+    },
+    {
+      "file": "ui-views.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REl \"buildRoleInstances\" src/daemon/",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"buildRoleInstances|role-instances\" src/daemon/occupancy.js",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "index": 3,
+      "cmd": "grep -REn \"function .*[Rr]oleInstances\" src/daemon/occupancy.js src/daemon/canvas.js",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 occupancy.test.js：# tests 4 / # pass 4 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "D-40 夹具红线：占用投影读实例 state.json，graph/pulse 只写 overlay 不写 state（读不到）；本用例手写 state.json（先起核再写盘）+ test.dispatch 真实派发，全程禁 pulse。D-28 口径：同源 = 两处同引 buildRoleInstances，禁第二套派生；架构①实测 2 文件（graph.js + occupancy.js）符合架构②「占用引入同一投影」要求，基线 1 文件是实现前状态，非回归。",
+    "BR-37 2 秒时效：t_update - t_change ≤ 2000 由行为断言承载；CJK 中文只在 labels.js（BR-26）。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-28"
+}

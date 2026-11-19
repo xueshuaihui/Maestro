@@ -1,0 +1,91 @@
+{
+  "ac": "AC-39",
+  "note": "本 AC 为机检型，原始帧见同名 *.log / *.tap.json / arch-*.log；此对象为占位索引。",
+  "testRuns": [
+    {
+      "file": "e2e.test.js",
+      "exit": 0,
+      "tap": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 2781.21407,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）",
+          "AC-39 静态面：写接口白名单 + HTTP/UI 零直写盘 + 无 PATCH",
+          "AC-39 行为面：浏览零写盘；仅五动作/暂停继续/prefs 三类写",
+          "AC-39 prefs：唯一写入方只写四键，多余键拒绝",
+          "AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来源",
+          "NF-5 轻量版：20 次处置 + 30 次视图切换不崩、计数一致"
+        ]
+      }
+    },
+    {
+      "file": "http-contract.test.js",
+      "exit": 0,
+      "tap": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 14036.744227,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）",
+          "D-10：NODE_ENV=test 时三个 __test__ 接缝出现在路由表",
+          "A-11 文案键逐字（抽查 + 键存在性）",
+          "BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）",
+          "既有面共存：/ui/labels、/instances、/workflows 行为不变",
+          "GET /queue：条目排序、totals 透传与单行状态不可读降级",
+          "GET /assets：三类列表结构与详情 404 形状、穿越 id 拒绝",
+          "GET /occupancy/roles：跨实例聚合行 + 不可读实例跳过登记",
+          "GET /workflows/:id/canvas：合法定义投影、未命中与穿越 id 按「定义 空」降级",
+          "GET /evidence：五项 + 轮次、缺项 null、节点过滤与未知实例空投影",
+          "POST /queue/escalations/:id/decision：缺 decision 400，非 pass/retry 422 ACTION_NOT_SUPPORTED",
+          "POST /queue/approvals/:id/decision 与 /instances/:id/cancel：核心不在时 503（错误码透传）",
+          "POST /control/pause|resume：逐实例汇总，单个失败跳过、全量失败不报错（D-8）",
+          "POST /__test__/escalations：参数校验 400、委派既有 escalateOnce、无接缝 503",
+          "POST /__test__/approvals：构造待审批只进内存覆盖层并入队列投影（不写盘）",
+          "GET /queue/stream：首帧快照 + 变化后 ≤2s 推送（BR-37）",
+          "GET /notifications/stream 与 /__test__/notify-trigger：意图推送 + (kind, instanceId) 合并",
+          "daemon server 生产接线：升级事件 → SSE 通知意图；close 后 dispose 停止产意图"
+        ]
+      }
+    },
+    {
+      "file": "prefs.test.js",
+      "exit": 0,
+      "tap": {
+        "tests": 10,
+        "pass": 10,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMs": 637.180759,
+        "notOk": [],
+        "skips": [],
+        "subtests": [
+          "缺文件 / 缺目录 → 全 true 缺省，不抛错",
+          "文件损坏 / 非对象内容 → 全 true 缺省，不抛错",
+          "缺键 → true；非法值 → 按 true；false 如实保留；多余键读侧忽略",
+          "readPrefs 的 root 缺失直接抛 TypeError",
+          "合并写入：只传改动键，其余键保持既有值；文件恰为四键",
+          "首次写入自动建目录；内容可被 readPrefs 原样读回",
+          "多余键 / 非布尔值 / 非对象 patch → throw，且不落盘",
+          "原子写：无残留 tmp 文件，损坏的旧文件被整体替换",
+          "写入只触碰 prefs.json：不产生其它文件、不改实例状态目录",
+          "prefsPath 与 PREFS_KEYS 的形状契约"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "ac": "AC-09",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-09",
+    "title": "升级「继续」：终态节点让实例完成、非终态节点让实例续跑",
+    "given": "`/tmp/maestro-i11-queue-pass` 项目根，三个实例：`INST-001`（`single` 模板，唯一节点 `T-001` 就是**终态节点**，因\"轮次超限\"挂起，待处理升级 `ESC-001`）、`INST-002`（`single` 模板，运行中、无待处理项，用于对照）、`INST-003`（`code-loop` 模板，入口节点 `T-001`「开发」是**非终态节点**，因\"轮次超限\"挂起，待处理升级 `ESC-002`）；队列已打开（2 行）；`NODE_ENV=test`。",
+    "when": "先点 `ESC-001` 行的\"继续\"；看到结果后再点 `ESC-002` 行的\"继续\"。",
+    "then": [
+      "第一次：2 秒内 `ESC-001` 显示\"已处理（通过）\"并从队列消失；`INST-001` 从\"已挂起\"进入**\"已完成\"**、`T-001` 节点进入已完成（终态节点判通过 → 实例完成，D-39）；`INST-002` 的实例状态、节点轮次与队列行数（除 `ESC-001` 外）**完全不变**。第二次：2 秒内 `ESC-002` 同样\"已处理（通过）\"并消失；`INST-003` **保持\"运行中\"**、下游 `T-002`「测试」被唤醒并进入执行（非终态节点判通过 → 实例续跑，D-39）；队列清空为\"待处理 无\"。"
+    ],
+    "jijian": "`test -f test/wp14/queue-actions.test.js`（或合并后的 `test/wp14/queue.test.js`）&& NODE_ENV=test node --test test/wp14/queue-actions.test.js`，断言两条结果行逐字匹配附录 A-4、两次 `escalation.resolution === 'pass'`；`INST-001` 状态为\"已完成\"且 `T-001` 节点为\"已完成\"；`INST-002` 在两次操作前后的状态与节点轮次 `deepEqual`；`INST-003` 状态仍为\"运行中\"且 `T-002` 有新的派发 / 会话事件；队列剩余条数依次减少 2；`# fail 0`。",
+    "fixture": "三个实例经 `orch run --host mock` 的 `single` / `single` / `code-loop` 起（节点必须存在：`single` 的 `T-001`、`code-loop` 的 `T-001`）；两条升级分别经 `POST /__test__/escalations` 以 `reasonCode: \"rounds_exceeded\"` 构造；处置经界面按钮路径（与 `orch escalate resolve ... --decision pass` 等价）。",
+    "archText": "处置必须走既有裁决入口并经 CAS；`grep -REn \"orchestrator.resolveEscalation\" src/daemon/queue.js` **恰好 1 条命中（exit 0）**，且同文件 `grep -REn \"escalations[.]push|resolution =\"` **零命中（exit 1）**（不得直接改状态数组或自写决议）。",
+    "refs": "BR-08, BR-34",
+    "risk": "高（\"继续\"是最常用的一条出边）"
+  },
+  "checks": [
+    {
+      "text": "机检 queue.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=603.543546\n  type: 'test'\n  ...\n# Subtest: 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\nok 16 - 队列与 CLI 同源：同一时点字段值一致，各按本侧分隔符拆（AC-17 / D-37）\n  ---\n  duration_ms: 319.816035\n  type: 'test'\n  ...\n1..16\n# tests 16\n# suites 0\n# pass 16\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 6729.870415\n",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 16 / # tests 16",
+      "expected": null
+    },
+    {
+      "text": "机检 queue.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-09 架构：处置走既有裁决入口，恰好 1 条命中（exit 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"orchestrator.resolveEscalation\" src/daemon/queue.js` → exit 0 / 恰好 1 行；实测 exit 0 / 1 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #2：AC-09 架构：不得直接改状态数组/自写决议，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"escalations[.]push|resolution =\" src/daemon/queue.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "D-39 现场一：终态节点 pass → 实例 completed（逐字断言由用例承载）",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级·继续：终态节点判通过 → 实例已完成（AC-09 现场一 / D-39） | 升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）",
+      "expected": "INST-001 已完成 / T-001 已完成"
+    },
+    {
+      "text": "D-39 现场二：非终态节点 pass → 保持 running + 下游 T-002 被唤醒",
+      "ok": true,
+      "blocked": false,
+      "actual": "升级·继续：非终态节点判通过 → 保持运行中且下游被唤醒（AC-09 现场二 / D-39）",
+      "expected": "INST-003 运行中 / T-002 新派发"
+    },
+    {
+      "text": "两条 resolution === pass、结果行逐字 A-4、INST-002 对照不变、队列依次减 2",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 16 / # fail 0",
+      "expected": "两次 escalation.resolution === pass；# fail 0"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "第一次：2 秒内 `ESC-001` 显示\"已处理（通过）\"并从队列消失；`INST-001` 从\"已挂起\"进入**\"已完成\"**、`T-001` 节点进入已完成（终态节点判通过 → 实例完成，D-39）；`INST-002` 的实例状态、节点轮次与队列行数（除 `ESC-001` 外）**完全不变**。第二次：2 秒内 `ESC-002` 同样\"已处理（通过）\"并消失；`INST-003` **保持\"运行中\"**、下游 `T-002`「测试」被唤醒并进入执行（非终态节点判通过 → 实例续跑，D-39）；队列清空为\"待处理 无\"。",
+      "expected": "第一次：2 秒内 `ESC-001` 显示\"已处理（通过）\"并从队列消失；`INST-001` 从\"已挂起\"进入**\"已完成\"**、`T-001` 节点进入已完成（终态节点判通过 → 实例完成，D-39）；`INST-002` 的实例状态、节点轮次与队列行数（除 `ESC-001` 外）**完全不变**。第二次：2 秒内 `ESC-002` 同样\"已处理（通过）\"并消失；`INST-003` **保持\"运行中\"**、下游 `T-002`「测试」被唤醒并进入执行（非终态节点判通过 → 实例续跑，D-39）；队列清空为\"待处理 无\"。"
+    }
+  ]
+}

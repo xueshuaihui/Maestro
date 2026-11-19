@@ -8,7 +8,10 @@
 - 五阶段 S0~S4，主控只调度/复核/裁决，不写需求正文、不写实现代码、不写验收用例。
 - 需求由子 Agent 依三件套撰写 → **每轮新开干净上下文评审** → FAIL 修复重评（不设轮次上限）→ PASS 才进拆分。
 - 报告结论带证据分级：已实测（真实宿主）/ mock 实测 / 阻塞，附可复核原始帧。
-- spike 代码不进产品工程，删前做保护性提交并在文档写「处置声明」。
+- spike 代码不进产品工程，删前做保护性提交并在文档写「处置声明」；有价值的方案/契约移到附录，避免路径悬空。
+- 三主链逐字回归口径 = `git worktree` 基线树 + 交替 ≥6 对 + A-0 归一化 diff，判「当前不得低于基线」，不能只跑单次。
+- 门禁按「失败集合差集 = 0」，禁止硬写 `fail === 0`；新增红先 `--test-concurrency=1` 独占复跑证伪 flake。
+- 一次派 3 个大 Agent 会触发平台 429；分批（1~2 个），要求 Agent 分批落盘证据。
 
 ## 本机环境硬事实（Windows）
 - DSH：`%LOCALAPPDATA%\Programs\DeepSeek Harness`（`0.2.2-rc.1`）。**无 `dsh.cmd`**，入口
@@ -16,13 +19,16 @@
 - 工具行平台条件挂载：`tool-bash` 在 win32 `disabled` → **夹具禁止硬编码 `bash`**，落盘用 `write`(`file_path`+`content`)。
 - 内置 `acp` profile 自带 ACP server（`@deepseek-ai/dsh-acp-app`，`sessionCapabilities={close,list,resume}`，**无 load**）；
   **不需要**第三方 `dsh-acp-server`。**ACP 分帧是 NDJSON（按 `\n` 切行），不是 LSP `Content-Length`**。
-- 模型凭据：`~/.dsh/.credentials.yaml`（`deepseek-account` 路由）。隔离 DSH_HOME 验会话时复制该文件（用完删），
+- 模型凭据：`~/.dsh/.credentials.yaml`（`deepseek-account` / `deepseek-flash`）。隔离 DSH_HOME 验会话时复制该文件（用完删），
   patch 里把 `agent-default-model` 与 `acp` 两行 provider 改成 `deepseek-account`；**不要碰用户 `~/.dsh`**。
+  无凭据时用隔离 patch 注入 `dsh-acp-server/test/mock-llm`。
 - 真实宿主写 cwd 内文件**不触发** `session/request_permission`；「等待审批」只能靠夹具。
 - 无 Rust/MSVC/Windows SDK，Tauri 只能 CI 构建；Electron 二进制走 `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/`。
   `ELECTRON_RUN_AS_NODE=1` 可能常驻，跑 Electron 前要删。Cursor 只有 IDE，无 `cursor-agent`。
-- GitHub：`github.com` 隧道间歇 502；`api.github.com` 直连（`curl --noproxy '*'`）稳定；PAT 走 `git credential fill`，
-  可用 REST `GET/DELETE /repos/<o>/<r>/git/refs/heads/<b>` 核对/删远端分支（DELETE 204）。
+- GitHub：`github.com` 隧道间歇 502（含 HTTP2 framing / CONNECT 502）；可绕代理
+  `env -u https_proxy -u HTTPS_PROXY -u http_proxy -u HTTP_PROXY git -c http.proxy= push`；`api.github.com` 直连
+  （`curl --noproxy '*'`）稳定，PAT 走 `git credential fill`，可用 REST `GET/DELETE /repos/<o>/<r>/git/refs/heads/<b>`
+  核对/删远端分支（DELETE 204；删后 GET 可能缓存 200，须列全量复核）。
 - 测试：`node --test "test/**/*.test.js"`（`npm test` 报 MODULE_NOT_FOUND）。夹具项目根一律放 `%TEMP%`，
   `NODE_ENV=test` 必注入；同进程串行场景 ≤10 个，分批跑（否则资源耗尽 `session/new` 全失败）。
 - 残留 `orch core serve` 进程会造成负载型 flake；逐文件/`--test-concurrency=1` 复跑证伪，确认过记 flake。
@@ -39,21 +45,29 @@
 7. 提示词真正产出点是 `src/core/advance.js` 的 `planAdvance`（经 `plan.promptText`），不是 orchestrator 兜底分支。
    审核提示词必须给**绝对路径**（相对路径会让真实模型写进实例工作区并挂起）。
 8. **健康度只在 `getStatus` 读取时算**，`saveState` 只透传 `state.health`（在 saveState 里算会让真实回归从 91% 掉到 9%）。
-9. `trace show` 走只读 `instance.trace`，**不得走 `instance.get`**（会触发受控写，破坏只读哈希）。
+9. `trace show` 走只读 `instance.trace`，**不得走 `instance.get`**（会触发受控写，破坏只读哈希）；空态看「跨度非空」；
+   追踪号落 `state.traceId`；失败摘要行仅四项至少一非 null 时渲染。
 10. 中文唯一来源 `src/cli/labels.js`；`task-loop` 事件行渲染必须与 `code-loop` 分流（逐字红线）。
 11. 默认图 `single` 输出必须逐字保持 I1.1；三主链逐字回归口径 = `git worktree` 基线树 + 交替 ≥6 对 + A-0 归一化 diff。
 12. 验收脚本禁止硬编码测试条数，用 `fail=0 && pass===tests && tests>=基线`。
+13. **核心独立进程 + 命名管道**：管道名 `sha256(realpath(root).toLowerCase()).slice(0,16)`；`--project`/管道按项目根而非 shell cwd 算。
+14. `load` 后 drain-quiet（idle 40ms / cap 400ms）；`-32602` 同码双义（会话不存在 / prompt 在飞）；`accepted` 排除
+    `usage_update` 等噪声；cancel 非即时（实测 4.3s），容忍迟到 update。
+15. 指纹由核心自算；`artifactRef` 只从 `tool_call.rawInput.file_path` 提取；判定只认 `verdict`。
+16. 发布面：`makensis` 预装但不在 PATH；Windows 路径剥 `\\?\` 前缀；证据原始帧不得 strip 空白。
 
 ## 迭代状态（全部已收口）
 | 迭代 | 结论 | 关键基线 |
 |---|---|---|
 | I1.1~I1.3 | PASS | 26/44/45 AC；418 测试；命名管道核心 + 3 主链 |
-| I1.8 第 1 批 | 合入 main（merge `c1915c3`），批次未完 | checkpoint + ACP 恢复方言 |
+| I1.8 第 1 批 | 合入 main（merge `c1915c3`），批次未完 | checkpoint + ACP 恢复方言；分支已删，从最新 main 续作 |
 | I1.9 | PASS（27/27 AC、1157 测试、终验 PASS） | 三层日志 + 健康度 + `orch trace show` |
 | I1.10a | PASS（44/44 AC、1425 测试、终验 PASS，远端 `9c30f61`） | 桌面壳 + 实例列表 + 角色流程图 + GitHub CI Release |
+| I1.10b | PASS（51/51 AC、1526 测试、425 证据、终验 PASS，merge `d17090f`） | 角色下钻与节点详情下钻；文案键 147→210 |
+| I1.11 | PASS（49/49 AC、1606 测试/4 允许失败差集 0、588 证据、三主链 diff 0、终验 PASS） | 通知队列与只读浏览面；文案键并集 312 |
 
-- **当前主线 = main @ `66e5a6b`**（含 I1.7 代码隔离 worktree、I1.9、I1.10a v3 发布面）。全量测试基线 **1425 条**，
-  Windows 平台噪声约 24 条，门禁按「失败集合差集 = 0」。
+- **当前主线 = main**（I1.11 合入后），全量测试基线 **1606 条**，Windows 平台噪声 4 条已裁决失败，门禁按「失败集合差集 = 0」。
+- **I1.11 边界**：无逐 AC 真实宿主面（全 mock 实测，U-13 降级非阻塞）；壳层真探针需 `npm run desktop:build` 后不再 SKIP；若提供 `cursor-agent` CLI 可补 ACP 真实宿主取证。
 - **发布面**：`.github/workflows/release.yml`（tag `v*` + `workflow_dispatch`，`permissions: contents: write` 仅此一项，
   只用 `${{ github.token }}`）；三平台矩阵出 `.dmg`/NSIS `.exe` + `SHA256SUMS.txt`；`v0.*` → prerelease。
   Actions 证据日志行尾带时间戳，`.gitattributes` 已关掉 `docs/iterations/**/evidence/**/*.log` 的空白检查——
@@ -62,4 +76,3 @@
 - **仓库协作**：`origin/main` 会被并行工作树推进；合入前 `git fetch`；分叉时备份 WIP → `reset --hard origin/main` →
   记忆日志按**标题级并集**合并。本地 sha 与远端可能不等（时区），**以 `origin/main` 为权威**。
 - `core.autocrlf=true` 下 `git restore` 后 status 假报 M；用 `git -c core.autocrlf=false checkout-index -f -- <路径>` 刷新，不可全量 `-a -f`。
-- 一次派 3 个大 Agent 会触发平台 429；分批（1~2 个），要求 Agent 分批落盘证据。

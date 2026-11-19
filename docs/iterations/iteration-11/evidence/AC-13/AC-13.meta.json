@@ -1,0 +1,56 @@
+{
+  "ac": "AC-13",
+  "title": "跨实例两条目分别处置：互不影响，三处数字各自同步",
+  "face": "处置 / 一致性 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2732f86",
+  "startedAt": "2026-11-16T17:04:30.590Z",
+  "finishedAt": "2026-11-16T17:04:37.772Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 10,
+    "ok": 10,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "queue.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "跨实例分别处置互不影响，三处数字各自同步（AC-13 / BR-12）"
+      ]
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"batch|bulk|multiSelect|selectedRows\" src/daemon/queue.js src/daemon/http/routes.js desktop/ui/queue/ | grep -vE \":\\s*[0-9]+:\\s*\\*\"",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "D-54 裁决已落实：queue.test.js 的 AC-13 现场改为 INST-001 持升级、INST-002 持真实等待审批（startRun 分配 INST-002），三处数字序列 [[2,1,1,1],[1,0,0,1],[0,0,0,0]] 与需求 Given 逐字一致。",
+    "D-54 裁决已落实：需求 v11 的架构检查排除否定语境注释行（`* (no batch)` 是「无批量」声明，非批量能力实现），真实代码零命中要求不放宽——按新锚点判定。原始命中帧仍留证于 arch-1.log。",
+    "需求机检原文点名 queue-cross.test.js，本分支（HEAD 2732f86）不存在该文件，AC-13 用例合并进 queue.test.js；本用例按实际存在文件机检并保留原始 TAP。三处数字「角色对调」差异请主控/终验按需求 Then Given 裁决；本验收不放宽任何断言。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-13"
+}

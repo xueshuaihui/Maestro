@@ -1,0 +1,39 @@
+{
+  "ac": "AC-05",
+  "file": "prefs.test.js",
+  "cmd": "test -f test/wp14/prefs.test.js && NODE_ENV=test node --test test/wp14/prefs.test.js",
+  "exit": 0,
+  "durationMs": 517,
+  "timedOut": false,
+  "tap": {
+    "tests": 10,
+    "pass": 10,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 438.128935,
+    "notOk": [],
+    "skips": [],
+    "subtests": [
+      "缺文件 / 缺目录 → 全 true 缺省，不抛错",
+      "文件损坏 / 非对象内容 → 全 true 缺省，不抛错",
+      "缺键 → true；非法值 → 按 true；false 如实保留；多余键读侧忽略",
+      "readPrefs 的 root 缺失直接抛 TypeError",
+      "合并写入：只传改动键，其余键保持既有值；文件恰为四键",
+      "首次写入自动建目录；内容可被 readPrefs 原样读回",
+      "多余键 / 非布尔值 / 非对象 patch → throw，且不落盘",
+      "原子写：无残留 tmp 文件，损坏的旧文件被整体替换",
+      "写入只触碰 prefs.json：不产生其它文件、不改实例状态目录",
+      "prefsPath 与 PREFS_KEYS 的形状契约"
+    ]
+  },
+  "f16": {
+    "exitOk": true,
+    "passAtLeastOne": true,
+    "failZero": true,
+    "fileMissing": false,
+    "ok": true
+  },
+  "labeled": []
+}

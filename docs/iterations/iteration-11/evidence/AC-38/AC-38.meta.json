@@ -1,0 +1,95 @@
+{
+  "ac": "AC-38",
+  "title": "规划验收句端到端（逐字三段）",
+  "face": "规划验收 / 端到端 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "cdfa9e4",
+  "startedAt": "2026-11-17T15:47:06.928Z",
+  "finishedAt": "2026-11-17T15:47:24.212Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 21,
+    "ok": 21,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "e2e.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步（fixture 面真实链路）"
+      ]
+    },
+    {
+      "file": "http-contract.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": []
+    },
+    {
+      "file": "shell-notify.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 12,
+        "pass": 11,
+        "fail": 0,
+        "skipped": 1
+      },
+      "labeled": []
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"NODE_ENV|__test__|__TEST__|testOnly|test-only|TEST_RENDER\" desktop/ui/queue/ desktop/ui/evidence/ desktop/ui/occupancy/",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "cmd": "grep -REn \"buildQueue|buildEvidence|buildOccupancy\" src/daemon/http/routes.js",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "index": 3,
+      "cmd": "node --input-type=module -e 'import fs from \"node:fs\";const checks=[[\"desktop/ui/queue/queue.js\",\"renderQueueRow\"],[\"desktop/ui/evidence/evidence.js\",\"renderEvidence\"],[\"desktop/ui/occupancy/occupancy.js\",\"renderOccupancyRow\"]];const miss=checks.filter(([f,k])=>!fs.readFileSync(f,\"utf8\").includes(\"export function \"+k));console.log(\"render-modules-missing=\"+miss.length);process.exit(miss.length?1:0)'",
+      "expect": 0,
+      "exit": 0,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 e2e.test.js：# tests 6 / # pass 6 / # fail 0 / # skipped 0；带本 AC 编号用例 1 条。",
+    "机检 http-contract.test.js：# tests 18 / # pass 18 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。",
+    "机检 shell-notify.test.js：# tests 12 / # pass 11 / # fail 0 / # skipped 1；带本 AC 编号用例 0 条。",
+    "机检文件名口径：需求点名 test/wp14/acceptance-e2e.test.js（本分支不存在），三段逐字断言已合并进 test/wp14/e2e.test.js「AC-38：通知 → 队列处置 → 后续跑 + 三处数字同步」真链路 + http-contract.test.js 三段只读接口；按实际存在文件机检并保留原始 TAP，登记说明不放宽。",
+    "D-55/环境假阴性：短 TMPDIR=/tmp/m11c-AC-38 规避 macOS socket 104 字节上限（长 os.tmpdir() 叠加会截断 core.sock 路径致 EADDRINUSE 假阴性），断言一条未改。D-53/live 快照：数据侧断言用磁盘快照 + buildQueue/buildOccupancy，不依赖 getStatus live 快照。shell-notify 真实探针层按 U-13 gated SKIP（本机旧二进制）属证据分级降级，非阻塞。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-38"
+}

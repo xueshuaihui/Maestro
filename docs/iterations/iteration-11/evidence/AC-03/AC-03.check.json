@@ -1,0 +1,133 @@
+{
+  "ac": "AC-03",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-03",
+    "title": "实例异常时托盘通知",
+    "given": "`/tmp/maestro-i11-notify-abnormal` 项目根；一个运行中的实例；应用在托盘；`NODE_ENV=test`；核心进程可被停止与重启。",
+    "when": "在实例运行中停止守护进程，随后重新启动守护进程（实例按既有规则被判为\"已中断\"，健康度转\"需关注\"）。",
+    "then": [
+      "2 秒内出现异常通知，标题为附录 A-1 的异常标题，正文为 A-1 的五段固定段序：`实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已中断，需关注`（原因摘要取实例状态词\"已中断\"与健康度\"需关注\"；节点与角色取 `single` 的唯一节点 `T-001` 与角色「执行者」）；通知只出现一次，不因重启后的多次健康度刷新而重复。"
+    ],
+    "jijian": "`test -f test/wp14/notify.test.js && NODE_ENV=test node --test test/wp14/notify.test.js`，断言出现 `{\"event\":\"notify\",\"kind\":\"abnormal\",\"instanceId\":\"INST-001\"}`、正文按 ` · ` 切分恰为 5 段、第 2 段 `升级 —`、第 5 段以 `已中断` 开头并含 `需关注`、同类通知计数为 1；`# fail 0`。",
+    "fixture": "起实例 → `node \"$MAESTRO_REPO/bin/orch.js\" core stop` → 重启守护进程（同 `run` 入口）→ 轮询实例状态为\"已中断\"；探针同上。",
+    "archText": "异常判定复用既有 `state.health` 与实例状态，不在通知层重算；`grep -REn \"P90|TTL\" src/daemon/notify.js` 必须**零命中（exit 1）**。",
+    "refs": "BR-01, BR-04",
+    "risk": "高（异常不通知等于把失败藏起来）"
+  },
+  "checks": [
+    {
+      "text": "机检 notify.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=不发过期意图\n  ---\n  duration_ms: 30.562682\n  type: 'test'\n  ...\n# Subtest: 未注入 schedule 时异常合并退化为即发 + 窗口抑制\nok 22 - 未注入 schedule 时异常合并退化为即发 + 窗口抑制\n  ---\n  duration_ms: 38.513536\n  type: 'test'\n  ...\n1..22\n# tests 22\n# suites 0\n# pass 22\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1043.254866\n",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 22 / # tests 22",
+      "expected": null
+    },
+    {
+      "text": "机检 notify.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-03 架构检查：异常判定复用既有 health，不在通知层重算，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"P90|TTL\" src/daemon/notify.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "意图 kind=anomaly（逐字）（期望逐字 \"anomaly\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"anomaly\"",
+      "expected": "\"anomaly\""
+    },
+    {
+      "text": "标题逐字 A-1 异常标题（期望逐字 \"通知 实例异常 · INST-001\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"通知 实例异常 · INST-001\"",
+      "expected": "\"通知 实例异常 · INST-001\""
+    },
+    {
+      "text": "正文逐字 A-1 异常五段（single：升级 — / T-001 执行者 / 第 1 轮 / 已中断，需关注）（期望逐字 \"实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已中断，需关注\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已中断，需关注\"",
+      "expected": "\"实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已中断，需关注\""
+    },
+    {
+      "text": "正文按 \" · \" 切分恰为 5 段（期望逐字 5）",
+      "ok": true,
+      "blocked": false,
+      "actual": "5",
+      "expected": "5"
+    },
+    {
+      "text": "第 2 段逐字 升级 —（期望逐字 \"升级 —\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"升级 —\"",
+      "expected": "\"升级 —\""
+    },
+    {
+      "text": "第 5 段以 已中断 开头且含 需关注",
+      "ok": true,
+      "blocked": false,
+      "actual": "已中断，需关注",
+      "expected": "已中断，需关注"
+    },
+    {
+      "text": "同类通知计数为 1（D-46 首条即发、单异常天然 1 条）（期望逐字 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1",
+      "expected": "1"
+    },
+    {
+      "text": "去重组计数 1（期望逐字 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1",
+      "expected": "1"
+    },
+    {
+      "text": "mergedCount=1（首条即发满足 2 秒时效）（期望逐字 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1",
+      "expected": "1"
+    },
+    {
+      "text": "首条意图 at < 2000ms（2 秒时效，注入时钟下延迟 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0",
+      "expected": "< 2000"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2 秒内出现异常通知，标题为附录 A-1 的异常标题，正文为 A-1 的五段固定段序：`实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已中断，需关注`（原因摘要取实例状态词\"已中断\"与健康度\"需关注\"；节点与角色取 `single` 的唯一节点 `T-001` 与角色「执行者」）；通知只出现一次，不因重启后的多次健康度刷新而重复。",
+      "expected": "2 秒内出现异常通知，标题为附录 A-1 的异常标题，正文为 A-1 的五段固定段序：`实例 INST-001 · 升级 — · 节点 T-001 执行者 · 第 1 轮 · 已中断，需关注`（原因摘要取实例状态词\"已中断\"与健康度\"需关注\"；节点与角色取 `single` 的唯一节点 `T-001` 与角色「执行者」）；通知只出现一次，不因重启后的多次健康度刷新而重复。"
+    }
+  ]
+}

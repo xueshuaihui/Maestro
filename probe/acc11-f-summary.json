@@ -1,0 +1,1083 @@
+{
+  "batch": "a+b+c+d",
+  "acFrom": "AC-01",
+  "acTo": "AC-49",
+  "head": "0b0b9ff",
+  "通过": 49,
+  "不通过": 0,
+  "阻塞": 0,
+  "acCount": 49,
+  "missing": [],
+  "evidenceFileCount": 588,
+  "perAc": [
+    {
+      "id": "AC-01",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "升级待处理时托盘通知（规划验收句第 1 句）",
+      "face": "通知 / 机检 + 原始帧",
+      "checks": 18,
+      "ok": 18,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-02",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "实例完成时托盘通知",
+      "face": "通知 / 机检 + 原始帧",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-03",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "实例异常时托盘通知",
+      "face": "通知 / 异常 / 机检 + 原始帧",
+      "checks": 16,
+      "ok": 16,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-04",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测（app.js 源码锚点 + followNotification 行为断言；真窗口/CI 不可用）",
+      "title": "点击通知定位到队列条目",
+      "face": "通知 / 交互 / 源码锚点 + 行为断言",
+      "checks": 15,
+      "ok": 15,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-05",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "通知开关：总开关与三类分项，按本机记住",
+      "face": "设置 / 机检",
+      "checks": 17,
+      "ok": 17,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        },
+        {
+          "file": "prefs.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-06",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "去重与合并：10 秒同一升级一次，60 秒同类异常合并",
+      "face": "通知 / 节流 / 机检 + 原始帧",
+      "checks": 13,
+      "ok": 13,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-07",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "通知不可用：只提示一次，不阻断任何流程",
+      "face": "通知 / 异常 / 机检 + 原始帧",
+      "checks": 15,
+      "ok": 15,
+      "testRuns": [
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        },
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-08",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "队列合并、排序与空态",
+      "face": "队列 / 投影 / 机检 + 原始帧",
+      "checks": 16,
+      "ok": 16,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-09",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "升级「继续」：终态节点让实例完成、非终态节点让实例续跑",
+      "face": "处置 / 机检（D-39 两现场）",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-10",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "升级「重派」：重新分配、轮次 +1",
+      "face": "处置 / 机检",
+      "checks": 8,
+      "ok": 8,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-11",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "升级「终止」：二次确认后取消实例",
+      "face": "处置 / 确认 / 机检",
+      "checks": 13,
+      "ok": 13,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-12",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "审批「允许」与「拒绝」",
+      "face": "审批 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-13",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "跨实例两条目分别处置：互不影响，三处数字各自同步",
+      "face": "处置 / 一致性 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-14",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "处理后续跑与计数同步（规划验收句第 2 句的收尾条件）",
+      "face": "处置 / 续跑 / 机检",
+      "checks": 19,
+      "ok": 19,
+      "testRuns": [
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        },
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-15",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "重复 / 冲突处理：已处理就不重复写",
+      "face": "异常 / 重复处置 / 机检",
+      "checks": 16,
+      "ok": 16,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-16",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "动作与类型错配、实例未挂起、审批会话失效三条异常",
+      "face": "异常 / 边界 / 机检",
+      "checks": 19,
+      "ok": 19,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-17",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "队列与 CLI 同源：同一时点结论一致",
+      "face": "一致性 / 机检",
+      "checks": 12,
+      "ok": 12,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-18",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "三处数字一致：队列、托盘、列表",
+      "face": "一致性 / 计数 / 机检",
+      "checks": 21,
+      "ok": 21,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-19",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "角色库列表：来源、分组与校验状态",
+      "face": "资产库 / 列表 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-20",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "角色详情：契约要点与技能引用",
+      "face": "资产库 / 详情 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-21",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "技能库列表与详情",
+      "face": "资产库 / 技能 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-22",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "工作流库列表与详情",
+      "face": "资产库 / 工作流 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-23",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "校验不通过的资产可浏览并标注原因",
+      "face": "资产库 / 异常 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-24",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "资产目录不可读与引用缺失的降级",
+      "face": "资产库 / 降级 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-25",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "库浏览只读：不改资产、不写状态",
+      "face": "只读 / 安全 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-26",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "全局角色占用：跨实例聚合",
+      "face": "占用 / 聚合 / 机检",
+      "checks": 16,
+      "ok": 16,
+      "testRuns": [
+        {
+          "file": "occupancy.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 4
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-27",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "占用视图空态与\"未参与\"，不冒充\"不可用\"",
+      "face": "占用 / 边界 / 机检",
+      "checks": 17,
+      "ok": 17,
+      "testRuns": [
+        {
+          "file": "occupancy.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 4
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-28",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "占用随运行时变化更新且与流程图同源",
+      "face": "占用 / 实时 / 同源 / 机检",
+      "checks": 17,
+      "ok": 17,
+      "testRuns": [
+        {
+          "file": "occupancy.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 4
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-29",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "工作流画布：定义态角色图（规划验收句外的独立判据）",
+      "face": "画布 / 定义态 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "canvas.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 13
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-30",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "画布只读：不能拖拽保存、不能下钻",
+      "face": "画布 / 只读 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "canvas.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 13
+        },
+        {
+          "file": "canvas-interaction.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 4
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-31",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "画布降级：定义不可读、定义 空与校验失败",
+      "face": "画布 / 降级 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "canvas.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 13
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-32",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "证据视图：按节点看五项",
+      "face": "证据 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "evidence.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 5
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-33",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "缺项\"未提供\"与引用不可读",
+      "face": "证据 / 异常 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "evidence.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 5
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-34",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "证据不展示正文、不泄露会话内容",
+      "face": "证据 / 边界 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "evidence.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 5
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-35",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "托盘信息行：实例数与待处理升级数",
+      "face": "托盘 / 信息行 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        },
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-36",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "托盘暂停与继续",
+      "face": "托盘 / 暂停继续 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-37",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "暂停不改变退出语义，且暂停期间不产生新通知",
+      "face": "托盘 / 退出语义 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-38",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "规划验收句端到端（逐字三段）",
+      "face": "规划验收 / 端到端 / 机检",
+      "checks": 21,
+      "ok": 21,
+      "testRuns": [
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        },
+        {
+          "file": "http-contract.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 18
+        },
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-39",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "只读与本地性：唯一写操作清单",
+      "face": "只读与本地性 / 机检",
+      "checks": 28,
+      "ok": 28,
+      "testRuns": [
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        },
+        {
+          "file": "http-contract.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 18
+        },
+        {
+          "file": "prefs.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-40",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "非功能：零依赖、无打包器、中文唯一来源、纯净扫描",
+      "face": "非功能 / 架构 / 机检",
+      "checks": 23,
+      "ok": 23,
+      "testRuns": [
+        {
+          "file": "e2e.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 6
+        },
+        {
+          "file": "regression.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 12
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-41",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "无回归：既有 CLI、既有接口与全量测试",
+      "face": "回归 / 全量 / 机检",
+      "checks": 13,
+      "ok": 13,
+      "testRuns": [
+        {
+          "file": "regression.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 12
+        }
+      ],
+      "evidenceCount": 6
+    },
+    {
+      "id": "AC-42",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "七种异常提示：断开、已处理、状态不可读、资产不可读、定义不可读、引用不可读、通知不可用",
+      "face": "异常 / 文案 / 机检",
+      "checks": 18,
+      "ok": 18,
+      "testRuns": [
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        },
+        {
+          "file": "http-contract.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 18
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-43",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "不依赖 I1.10b：点击条目只展开，不跳转、不下钻",
+      "face": "范围边界 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "contract.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-44",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "「继续」只对轮次超限可用：置灰、悬停说明、点了也不生效",
+      "face": "处置 / 边界 / 机检",
+      "checks": 11,
+      "ok": 11,
+      "testRuns": [
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-45",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "空定义：文件在、能解析、但一个节点都没有",
+      "face": "画布 / 边界 / 机检",
+      "checks": 13,
+      "ok": 13,
+      "testRuns": [
+        {
+          "file": "canvas.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 13
+        },
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-46",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "单个资产不可解析：那一行标\"不可读\"，其余照常",
+      "face": "资产库 / 异常 / 机检",
+      "checks": 10,
+      "ok": 10,
+      "testRuns": [
+        {
+          "file": "assets.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 10
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-47",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "断线保留旧内容并标注，恢复后自动补全",
+      "face": "队列 / 异常 / 机检",
+      "checks": 18,
+      "ok": 18,
+      "testRuns": [
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        },
+        {
+          "file": "queue.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "http-contract.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 18
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-48",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "没有运行中实例时点\"暂停\"：置灰且给出固定提示",
+      "face": "托盘 / 边界 / 机检",
+      "checks": 14,
+      "ok": 14,
+      "testRuns": [
+        {
+          "file": "shell-notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 11
+        },
+        {
+          "file": "http-contract.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 18
+        }
+      ],
+      "evidenceCount": 5
+    },
+    {
+      "id": "AC-49",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "title": "点击通知时条目已被别处处理：仍停在队列并提示\"已处理\"",
+      "face": "通知 / 异常 / 机检",
+      "checks": 18,
+      "ok": 18,
+      "testRuns": [
+        {
+          "file": "ui-views.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 31
+        },
+        {
+          "file": "contract.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 16
+        },
+        {
+          "file": "notify.test.js",
+          "exit": 0,
+          "fail": 0,
+          "pass": 22
+        }
+      ],
+      "evidenceCount": 5
+    }
+  ],
+  "bad": []
+}

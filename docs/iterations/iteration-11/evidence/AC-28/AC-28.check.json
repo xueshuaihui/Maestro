@@ -1,0 +1,140 @@
+{
+  "ac": "AC-28",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-28",
+    "title": "占用随运行时变化更新且与流程图同源",
+    "given": "`/tmp/maestro-i11-occupy-live` 项目根，`INST-001`（`code-loop` 模板，mock 宿主）里\"开发\"（`developer`）当前\"可用\"（`T-001` 待执行、无活跃会话、实例 `running`）；同时打开占用视图与 `INST-001` 的角色流程图；`NODE_ENV=test`。",
+    "when": "经既有 `test.dispatch` 接缝（`methods['test.dispatch']` → `orchestrator.dispatchToNode` → 既有 `dispatchInState`，**真实写 `state.json`**）派发 `T-001`，让该节点进入执行。",
+    "then": [
+      "2 秒内占用视图该行变\"服务中\"、活跃会话 +1；`INST-001` 流程图里\"开发\"也是\"服务中\"；两处状态词在同一时点相同。`T-001` 完成（mock 宿主返回成功、下游 `T-002`「测试」自动派发）后，两处**同时**由\"服务中\"变\"冷却中\"（该角色已无服务中节点、有已完成节点），状态词仍相同。"
+    ],
+    "jijian": "`test -f test/wp14/occupancy.test.js && NODE_ENV=test node --test test/wp14/occupancy.test.js`，断言两处导出状态词在同一时点相等、`servingNodes` 含 `T-001`、`activeSessions` 增量为 1、两次变化各自 `t_update - t_change ≤ 2000`、第二阶段两处均为 `冷却中`；`# fail 0`。",
+    "fixture": "手写 `state.json`（按 §3.3 快照顺序：空目录先拉核心 → 写 state → 再开界面），再经 `test.dispatch` 真实派发。**不许**用 `POST /__test__/graph/pulse` 造占用数据（D-40：pulse 只写 `overlayByInstance` 并贴到图投影，不写 `state.json`，占用投影读不到）。",
+    "archText": "占用与流程图共用同一份角色实例投影，**不得各自派生第二套**。锚点锁「复用」而不是锁文件数（D-5 允许等价的只读投影）：① 既有导出的来源是 `src/registry/role-instances.js` 的 `buildRoleInstances`，`grep -REl \"buildRoleInstances\" src/daemon/` 基线实跑 **1 个文件**（`src/daemon/graph.js`）；② 占用投影（S2 新建 `src/daemon/occupancy.js`，基线上不存在）必须引入同一份既有投影：`grep -REn \"buildRoleInstances|role-instances\" src/daemon/occupancy.js` **≥ 1 条命中（exit 0）**；③ 占用层与画布层都不得自带第二套派生：`grep -REn \"function .*[Rr]oleInstances\" src/daemon/occupancy.js src/daemon/canvas.js` 必须**零命中（exit 1）**。",
+    "refs": "BR-16, BR-37",
+    "risk": "中（两处不一致会让人怀疑数据来源）"
+  },
+  "checks": [
+    {
+      "text": "机检 occupancy.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=\n  ...\n# Subtest: buildOccupancy：占用随真实派发更新且与流程图同源（AC-28 / BR-37 数据侧 / D-40）\nok 4 - buildOccupancy：占用随真实派发更新且与流程图同源（AC-28 / BR-37 数据侧 / D-40）\n  ---\n  duration_ms: 1905.807391\n  type: 'test'\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 4\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2850.293962\n",
+      "expected": null
+    },
+    {
+      "text": "机检 occupancy.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 occupancy.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 4 / # tests 4",
+      "expected": null
+    },
+    {
+      "text": "机检 occupancy.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.416946\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 787.278687\n",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 31 / # tests 31",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-28 架构①：既有导出来源是 buildRoleInstances（基线 1 文件 graph.js；按架构②实现后 occupancy.js 引入同一投影，实测 2 文件，未派生第二套）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REl \"buildRoleInstances\" src/daemon/` → exit 0 / 恰好 2 行 / 含「src/daemon/graph.js」；实测 exit 0 / 2 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #2：AC-28 架构②：占用投影必须引入同一份既有投影（≥1 命中，exit 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"buildRoleInstances|role-instances\" src/daemon/occupancy.js` → exit 0 / 恰好 3 行；实测 exit 0 / 3 行",
+      "expected": "exit 0"
+    },
+    {
+      "text": "架构检查 #3：AC-28 架构③：占用层与画布层不得自带第二套派生（零命中，exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"function .*[Rr]oleInstances\" src/daemon/occupancy.js src/daemon/canvas.js` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "两处导出状态词在同一时点相等；servingNodes 含 T-001、activeSessions 增量为 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "buildOccupancy：占用随真实派发更新且与流程图同源（AC-28 / BR-37 数据侧 / D-40）",
+      "expected": "2 秒内占用视图该行变「服务中」、活跃会话 +1；流程图「开发」也是「服务中」"
+    },
+    {
+      "text": "两次变化各自 t_update - t_change ≤ 2000；第二阶段两处均为「冷却中」、状态词仍相同",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 4 / # fail 0",
+      "expected": "T-001 完成后两处同时由「服务中」变「冷却中」，状态词相同"
+    },
+    {
+      "text": "D-40 夹具：手写 state.json + test.dispatch 真实派发（methods[test.dispatch] → dispatchInState 写盘），未用 graph/pulse",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 4 / # fail 0",
+      "expected": "不许用 POST /__test__/graph/pulse 造占用数据"
+    },
+    {
+      "text": "同源断言：占用与流程图共用 buildRoleInstances 投影；宿主 mock（D-48）",
+      "ok": true,
+      "blocked": false,
+      "actual": "#1:exit 0 / #2:exit 0 / #3:exit 1",
+      "expected": "两处不各算一套；graph.js 与 occupancy.js 同引 src/registry/role-instances.js"
+    },
+    {
+      "text": "A-6 占用行逐字（含 hosts 段）由 ui-views.test.js 承载",
+      "ok": true,
+      "blocked": false,
+      "actual": "A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim",
+      "expected": "「角色 开发 · 服务中 · 参与 2 个实例 · 3 个活跃会话 · 服务 T-001, T-004 · 宿主 mock」逐字"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "2 秒内占用视图该行变\"服务中\"、活跃会话 +1；`INST-001` 流程图里\"开发\"也是\"服务中\"；两处状态词在同一时点相同。`T-001` 完成（mock 宿主返回成功、下游 `T-002`「测试」自动派发）后，两处**同时**由\"服务中\"变\"冷却中\"（该角色已无服务中节点、有已完成节点），状态词仍相同。",
+      "expected": "2 秒内占用视图该行变\"服务中\"、活跃会话 +1；`INST-001` 流程图里\"开发\"也是\"服务中\"；两处状态词在同一时点相同。`T-001` 完成（mock 宿主返回成功、下游 `T-002`「测试」自动派发）后，两处**同时**由\"服务中\"变\"冷却中\"（该角色已无服务中节点、有已完成节点），状态词仍相同。"
+    }
+  ]
+}

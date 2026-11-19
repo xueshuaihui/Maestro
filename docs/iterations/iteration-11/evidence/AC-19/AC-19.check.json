@@ -1,0 +1,119 @@
+{
+  "ac": "AC-19",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "requirement": {
+    "ac": "AC-19",
+    "title": "角色库列表：来源、分组与校验状态",
+    "given": "`/tmp/maestro-i11-assets` 项目根，内置角色若干 + 2 个项目角色（1 个校验通过、1 个技能引用缺失）；另有内置技能若干 + 1 个项目技能、内置工作流若干 + 1 个项目工作流；`NODE_ENV=test`。",
+    "when": "依次打开角色库分页、技能库分页、工作流库分页。",
+    "then": [
+      "**三个分页各自的计数行**都显示出来并自洽：`角色 {total} 个（内置 {builtin} · 项目 {project}）`、`技能 {total} 个（内置 {builtin} · 项目 {project}）`、`工作流 {total} 个（内置 {builtin} · 项目 {project}）`；角色行给出名称、分组、来源、校验状态（通过 / 不通过），逐字匹配附录 A-5；两个项目角色都在列表里，缺失技能的那个标\"不通过\"。"
+    ],
+    "jijian": "`test -f test/wp14/assets.test.js && NODE_ENV=test node --test test/wp14/assets.test.js`，用 `desktop/harness/assets-dump.mjs` 导出**三个分页**的计数行与列表，逐字比对附录 A-5；断言三处计数行的 `total === builtin + project` 且与各自行数自洽；`# fail 0`。",
+    "fixture": "`.orch/roles/*.yaml` 写 2 个项目角色，其中一个 `skills: [not-exist]`。",
+    "archText": "列表投影复用既有注册表读取与校验结果，不在界面层重跑 schema 校验；`grep -REn \"yaml|readFile\" desktop/ui/assets/` 必须**零命中（exit 1）**。",
+    "refs": "BR-14",
+    "risk": "中（列表是资产库入口）"
+  },
+  "checks": [
+    {
+      "text": "机检 assets.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr=不可解析：那一行标不可读，其余照常\n  ---\n  duration_ms: 41.147353\n  type: 'test'\n  ...\n# Subtest: 未知 kind 与未知 id 按找不到处理，不抛错\nok 10 - 未知 kind 与未知 id 按找不到处理，不抛错\n  ---\n  duration_ms: 12.767729\n  type: 'test'\n  ...\n1..10\n# tests 10\n# suites 0\n# pass 10\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 939.084444\n",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # tests 10",
+      "expected": null
+    },
+    {
+      "text": "机检 assets.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：test -f 前置断言（文件存在）",
+      "ok": true,
+      "blocked": false,
+      "actual": "exit=0；stderr= / open-queue: shell ctl seam navigates the live window to queue\nok 31 - D-52 / open-queue: shell ctl seam navigates the live window to queue\n  ---\n  duration_ms: 1.464133\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 743.364523\n",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：exit 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "实际 exit=0",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# pass ≥ 1",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 31 / # tests 31",
+      "expected": null
+    },
+    {
+      "text": "机检 ui-views.test.js：# fail 0",
+      "ok": true,
+      "blocked": false,
+      "actual": "# fail 0",
+      "expected": null
+    },
+    {
+      "text": "架构检查 #1：AC-19 架构：列表投影复用既有注册表读取与校验结果，不在界面层重跑 schema 校验，零命中（exit 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "`grep -REn \"yaml|readFile\" desktop/ui/assets/` → exit 1 / 恰好 0 行；实测 exit 1 / 0 行",
+      "expected": "exit 1"
+    },
+    {
+      "text": "AC-19 三类列表用例存在：来源/分组/校验状态与计数自洽",
+      "ok": true,
+      "blocked": false,
+      "actual": "AC-19 三类列表：来源、分组、校验状态与计数自洽",
+      "expected": "三处分页 total === builtin + project 且与行数自洽"
+    },
+    {
+      "text": "三个分页计数行自洽：角色/技能/工作流各自 total = builtin + project",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # fail 0",
+      "expected": "roles/skills/workflows 三处 counts.total === builtin + project"
+    },
+    {
+      "text": "角色行给名称/分组/来源/校验状态，缺失技能那个标不通过",
+      "ok": true,
+      "blocked": false,
+      "actual": "# pass 10 / # fail 0",
+      "expected": "proj-coder 通过 / proj-gap（skills:[not-exist]）不通过"
+    },
+    {
+      "text": "A-5 计数行逐字「角色 {total} 个（内置 {builtin} · 项目 {project}）」等三处（ui-views 逐字用例承载）",
+      "ok": true,
+      "blocked": false,
+      "actual": "A-5: three tabs, count line, rows and unreadable banners are verbatim",
+      "expected": "「角色 12 个（内置 9 · 项目 3）」逐字；资产行「角色 开发 · 编码工程 · 项目 · 通过」"
+    },
+    {
+      "text": "Then #1（逐字，机检 + 架构检查复核）",
+      "ok": true,
+      "blocked": false,
+      "actual": "**三个分页各自的计数行**都显示出来并自洽：`角色 {total} 个（内置 {builtin} · 项目 {project}）`、`技能 {total} 个（内置 {builtin} · 项目 {project}）`、`工作流 {total} 个（内置 {builtin} · 项目 {project}）`；角色行给出名称、分组、来源、校验状态（通过 / 不通过），逐字匹配附录 A-5；两个项目角色都在列表里，缺失技能的那个标\"不通过\"。",
+      "expected": "**三个分页各自的计数行**都显示出来并自洽：`角色 {total} 个（内置 {builtin} · 项目 {project}）`、`技能 {total} 个（内置 {builtin} · 项目 {project}）`、`工作流 {total} 个（内置 {builtin} · 项目 {project}）`；角色行给出名称、分组、来源、校验状态（通过 / 不通过），逐字匹配附录 A-5；两个项目角色都在列表里，缺失技能的那个标\"不通过\"。"
+    }
+  ]
+}

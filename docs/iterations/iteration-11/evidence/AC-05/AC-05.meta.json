@@ -1,0 +1,84 @@
+{
+  "ac": "AC-05",
+  "title": "通知开关：总开关与三类分项，按本机记住",
+  "face": "设置 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2732f86",
+  "startedAt": "2026-11-16T17:03:46.894Z",
+  "finishedAt": "2026-11-16T17:03:49.486Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 17,
+    "ok": 17,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "notify.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 22,
+        "pass": 22,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "AC-05: 关掉分项后该类不产生意图，重开后恢复；总开关关掉全静默",
+        "AC-05 变体: 关掉升级分项不影响完成与异常两类"
+      ]
+    },
+    {
+      "file": "ui-views.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "A-2 / AC-05: notification toggles render in fixed order, default all on",
+        "AC-05: prefs toggles write through the HTTP seam"
+      ]
+    },
+    {
+      "file": "prefs.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 10,
+        "pass": 10,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": []
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"notify\" src/daemon/queue.js",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 notify.test.js：# tests 22 / # pass 22 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。",
+    "机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 2 条。",
+    "机检 prefs.test.js：# tests 10 / # pass 10 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。",
+    "逐字断言由 notify.test.js 的 AC-05 两用例（意图计数 0/1/0）+ ui-views.test.js 的 A-2 开关顺序用例 + prefs.test.js（四键原子写）承载；本用例机检复核。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-05"
+}

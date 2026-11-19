@@ -1,0 +1,70 @@
+{
+  "ac": "AC-16",
+  "title": "动作与类型错配、实例未挂起、审批会话失效三条异常",
+  "face": "异常 / 边界 / 机检",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "head": "2a829da",
+  "startedAt": "2026-11-17T15:28:59.194Z",
+  "finishedAt": "2026-11-17T15:29:06.554Z",
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-i11-acc",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [],
+  "checks": {
+    "total": 19,
+    "ok": 19,
+    "failed": 0,
+    "blocked": 0
+  },
+  "testRuns": [
+    {
+      "file": "queue.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": [
+        "动作错配：审批行点升级动作 / 升级行点审批动作 → ACTION_NOT_SUPPORTED（AC-16①）",
+        "实例未挂起：固定结论且原状态不变（AC-16②）",
+        "审批会话失效：返回已失效且行仍待处理（AC-16③）"
+      ]
+    },
+    {
+      "file": "ui-views.test.js",
+      "exit": 0,
+      "timedOut": false,
+      "tap": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0,
+        "skipped": 0
+      },
+      "labeled": []
+    }
+  ],
+  "arch": [
+    {
+      "index": 1,
+      "cmd": "grep -REn \"不能处理|已失效\" desktop/ui",
+      "expect": 1,
+      "exit": 1,
+      "ok": true
+    }
+  ],
+  "notes": [
+    "机检 queue.test.js：# tests 16 / # pass 16 / # fail 0 / # skipped 0；带本 AC 编号用例 3 条。",
+    "机检 ui-views.test.js：# tests 31 / # pass 31 / # fail 0 / # skipped 0；带本 AC 编号用例 0 条。",
+    "机检文件名口径：需求点名 test/wp14/queue-conflict.test.js（本分支不存在），AC-16 三异常逐字断言合并进 test/wp14/queue.test.js 三条「AC-16①/②/③」用例；动作集合与状态词由 ui-views.test.js「A-4 / AC-08: CONTROLS」承载。按实际文件机检并登记说明，不放宽。",
+    "D-54 裁决已落实：会话失效码 APPROVAL_SESSION_GONE 的判定事实在核心（approvals.js / orchestrator.js），queue.js 只经既有裁决入口；本用例按 v11 口径核对「核心有会话校验 + 界面不拼接中文」，不放宽三条异常的逐字结论与状态词断言。"
+  ],
+  "source": "docs/iterations/iteration-11/requirement.md §3.1 AC-16"
+}
