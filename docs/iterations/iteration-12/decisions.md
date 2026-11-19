@@ -91,3 +91,28 @@
 **裁决**：A-2 文案「第 [N] 条记录与前一条指纹不匹配」中的 N 必须是**失配记录的 `seq`**（与 D-2 / 裁决 C 第 2 条一致），不是已校验条数。`verify.js` 只调整渲染取值优先级为 `seq` / `firstMismatch` → `badIndex` → `count` / `total` 兜底；不得改核心算法、A-2 文案或验收断言。
 
 **对需求的影响**：无 AC / BR / NF 增删、无 Then 改动；修复被 CLI 渲染层误报的序号，使 AC-01 Then 与 D-2 口径一致。
+
+---
+
+## 裁决 F：AC-21 真实宿主面取证的处置（用户裁决：停在试点，2026-11-19）
+
+**背景**：S4 复核对 AC-21 的「阻塞」根因做核查，发现两处方法学问题：
+
+1. `probe/acc12-cases/AC-21.mjs` 并不调用 `probe/acc12-perf.mjs`，而是**硬编码** `samples: []` + `evidenceLevel: PERF_LEVEL_PENDING` 构造报告；
+2. 该用例的 `triedPaths` 只尝试 `C:/Program Files/DSH/dsh.exe`、`%LOCALAPPDATA%/DSH/dsh.exe`、`~/.dsh/bin/dsh` 三条路径，**均不是本机真实安装布局**（真实入口是 `%LOCALAPPDATA%\Programs\DeepSeek Harness\DeepSeek Harness.exe` + `resources/app.asar/dsh/node_modules/@deepseek-ai/dsh/lib/bin.js`，且无 `dsh.exe`）。
+
+**事实核查**（主控实跑，帧见 `probe/acc12-perf-pilot.json`、`probe/acc12-perf-pilot-5.json`）：
+
+- 产品自身 `src/adapter/dsh-launch.js::resolveDshLaunch()`（`source: default`）可正确定位本机宿主；`--version` 返回 **`0.2.2-rc.3`**（需求文档记的是 rc.1，属版本漂移，需登记）。
+- 隔离 `DSH_HOME` + 复制 `~/.dsh/.credentials.yaml`（用完即删，未改用户 `~/.dsh`）后，ACP 面可正常握手：**1 会话 ok，交付→首事件 743.8ms，`stopReason=end_turn`**；**5 会话 / 2 并发 5/5 成功，延迟 547 / 665 / 726 / 1008 / 1473 ms（全部 < 2s）**。
+- 首次失败（`-32603 no API key for provider route "deepseek-official"`）的解除条件：隔离 profile 的 patch 层必须**同时**覆盖 `agent-default-model` 与 `acp` 两个条目到本机账号路由 `deepseek-account`，只改一处仍会落到无 key 的 official 路由。
+
+**裁决**（用户于 2026-11-19 明确选择「停在试点，不再跑全量」）：
+
+1. **AC-21 判定不变，仍为 `阻塞`**：试点规模（1 / 5 会话）未达 D-11 的 20 实例 / 50 会话口径，不得据此宣称真实宿主面达标，也不得提升 `PERF_LEVEL`；`blocked=1` 保留。
+2. 试点帧作为 **S4 收口期补充诊断**落 `probe/`，**不计入 S3 的 153 份验收证据**（S3 证据集已随 `3470241` 冻结，不回溯编辑）。
+3. 阻塞根因的定性修正记为观察项：**「本机无真实宿主面」不成立**；正确表述是「AC-21 的取证脚手架未使用产品宿主发现逻辑，导致未取证」。该修正**不改变** AC-21 判定，也不改变 §4.5 Done 结论。
+4. 若后续要解除阻塞，唯一路径仍是按 D-11 跑满 20 实例 / 50 会话产出 `PERF_LEVEL_REAL` 后复判 `<2s`；或由用户出具**书面豁免**。
+5. 在此之前：不宣布 I1.12 结束、不把阻塞改写成通过、不删 `blocked=1`、不把试点延迟写成真实宿主达标。
+
+**对需求的影响**：无 AC / BR / NF 增删、无 Then 改动。仅修正阻塞根因的表述，并把「取证脚手架宿主发现」列为方法学缺陷（不影响任何 AC 判定强度）。

@@ -169,7 +169,7 @@
     }
   },
   "verdict": "BLOCKED",
-  "verdictNote": "22 通过 / 0 不通过 / 1 阻塞（AC-21 真实宿主性能面本机未取证）。实现与取证可信、门禁与回归可复现，但按 §4.5 不得带阻塞收口：需用户裁决 ①补真实宿主取证 或 ②书面豁免。在裁决前不宣布 Done，不把阻塞写成通过。",
+  "verdictNote": "22 通过 / 0 不通过 / 1 阻塞（AC-21：20 实例/50 会话的真实宿主口径未取证）。S4 补充诊断已确认本机真实宿主可用（0.2.2-rc.3，试点 5/5、最大 1473ms < 2s），故阻塞根因修正为「取证脚手架未用产品宿主发现逻辑」而非「无真实宿主」；判定不变。按 §4.5 不得带阻塞收口：需 ①补满 20/50 口径取证 或 ②书面豁免。裁决前不宣布 Done、不把阻塞写成通过。",
   "perAc": [
     {
       "ac": "AC-01",
@@ -493,5 +493,43 @@
       "manualGraded": false,
       "blocker": null
     }
-  ]
+  ],
+  "pilotDiagnostics": {
+    "purpose": "S4 收口期补充诊断：核实 AC-21 阻塞根因（不计入 S3 的 153 份验收证据，不改变 AC-21 判定）",
+    "decision": "decisions.md 裁决 F（用户裁决：停在试点，不再跑全量，2026-11-19）",
+    "hostVersion": "0.2.2-rc.3",
+    "hostDiscovery": {
+      "ok": true,
+      "source": "default",
+      "exe": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\DeepSeek Harness.exe",
+      "bin": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\app.asar\\dsh\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js"
+    },
+    "runs": [
+      {
+        "frames": "probe/acc12-perf-pilot.json",
+        "sessions": 1,
+        "ok": 1,
+        "failed": 0,
+        "latencyMs": [
+          744
+        ]
+      },
+      {
+        "frames": "probe/acc12-perf-pilot-5.json",
+        "sessions": 5,
+        "ok": 5,
+        "failed": 0,
+        "latencyMs": [
+          726,
+          1473,
+          547,
+          665,
+          1008
+        ]
+      }
+    ],
+    "meetsTargetLoad": false,
+    "rootCause": "AC-21 用例未复用产品 resolveDshLaunch()，只探了三个本机不存在的 dsh.exe 路径，并硬编码 PERF_LEVEL_PENDING",
+    "conclusion": "本机真实宿主可用（0.2.2-rc.3，5/5 成功，最大 1473ms < 2s），但试点规模未达 20 实例/50 会话口径 → AC-21 仍判阻塞，PERF_LEVEL 不升"
+  }
 }

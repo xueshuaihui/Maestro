@@ -1,0 +1,76 @@
+{
+  "ac": "AC-21",
+  "probe": "acc12-perf-pilot",
+  "startedAt": "2026-11-19T13:15:34.033Z",
+  "load": {
+    "requestedSessions": 1,
+    "requestedConcurrency": 1,
+    "target": {
+      "concurrentInstances": 20,
+      "activeSessions": 50,
+      "handoffBudgetMs": 2000
+    }
+  },
+  "hostDiscovery": {
+    "ok": true,
+    "source": "default",
+    "exe": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\DeepSeek Harness.exe",
+    "bin": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\app.asar\\dsh\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js"
+  },
+  "hostVersion": "0.2.2-rc.3",
+  "levels": {
+    "mock": "PERF_LEVEL_MOCK",
+    "real": "PERF_LEVEL_REAL",
+    "pending": "PERF_LEVEL_PENDING"
+  },
+  "sessions": [
+    {
+      "index": 0,
+      "sessionId": "4f1dc1c3-d8a9-4e33-8049-043e0b9d3931",
+      "deliveredAt": "2026-11-19T13:15:36.276Z",
+      "firstEventMs": 743.8,
+      "firstEventKind": "session/update",
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 768.9
+    }
+  ],
+  "summary": {
+    "okSessions": 1,
+    "failedSessions": 0,
+    "distinctInstances": 1,
+    "distinctSessions": 1,
+    "meetsTargetLoad": false,
+    "latencyMs": [
+      744
+    ],
+    "perfLevel": "PERF_LEVEL_PENDING",
+    "perfBlocked": true
+  },
+  "conclusion": "PILOT_SINGLE_INSTANCE",
+  "note": "试点：真实宿主已跑通并采到 handoff 延迟，但实例/会话数未达 20/50，级别仍为待本机实测（不得据此宣称真实面达标）。",
+  "dshHome": {
+    "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i112-perf-pilot\\dsh-home",
+    "isolated": true,
+    "credentialsCopied": true,
+    "credentialsWillBeRemoved": true
+  },
+  "samples": [
+    {
+      "instanceId": "pilot-0",
+      "sessionId": "4f1dc1c3-d8a9-4e33-8049-043e0b9d3931",
+      "handoffId": null,
+      "latencyMs": 744
+    }
+  ],
+  "collectedByProduct": {
+    "samples": 1,
+    "stats": {
+      "median": 744,
+      "p95": 744,
+      "max": 744
+    }
+  },
+  "finishedAt": "2026-11-19T13:15:37.130Z"
+}

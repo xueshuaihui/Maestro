@@ -1,0 +1,148 @@
+{
+  "ac": "AC-21",
+  "probe": "acc12-perf-pilot",
+  "startedAt": "2026-11-19T13:18:52.391Z",
+  "load": {
+    "requestedSessions": 5,
+    "requestedConcurrency": 2,
+    "target": {
+      "concurrentInstances": 20,
+      "activeSessions": 50,
+      "handoffBudgetMs": 2000
+    }
+  },
+  "hostDiscovery": {
+    "ok": true,
+    "source": "default",
+    "exe": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\DeepSeek Harness.exe",
+    "bin": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\app.asar\\dsh\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js"
+  },
+  "hostVersion": "0.2.2-rc.3",
+  "levels": {
+    "mock": "PERF_LEVEL_MOCK",
+    "real": "PERF_LEVEL_REAL",
+    "pending": "PERF_LEVEL_PENDING"
+  },
+  "sessions": [
+    {
+      "index": 0,
+      "sessionId": "070cc12c-4da9-46ce-8a9d-e3234ecf0d1a",
+      "deliveredAt": "2026-11-19T13:18:54.463Z",
+      "firstEventMs": 726.1,
+      "firstEventKind": "session/update",
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 757
+    },
+    {
+      "index": 1,
+      "sessionId": "57f5b65b-00bd-4b70-9222-024cf443af91",
+      "deliveredAt": "2026-11-19T13:18:55.249Z",
+      "firstEventMs": 1473.4,
+      "firstEventKind": "session/update",
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 1497.8
+    },
+    {
+      "index": 2,
+      "sessionId": "7bab72f3-2031-4300-835c-bf2d76d0fd2c",
+      "deliveredAt": "2026-11-19T13:18:56.775Z",
+      "firstEventMs": 547.4,
+      "firstEventKind": "session/update",
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 561.5
+    },
+    {
+      "index": 3,
+      "sessionId": "65e045bc-3eed-49dd-9145-44464ba1170b",
+      "deliveredAt": "2026-11-19T13:18:59.354Z",
+      "firstEventMs": 665.3,
+      "firstEventKind": "session/update",
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 697.9
+    },
+    {
+      "index": 4,
+      "sessionId": "e1a0621b-864f-4e89-bfe9-a762bd36209c",
+      "deliveredAt": "2026-11-19T13:19:00.084Z",
+      "firstEventMs": 1008.3,
+      "firstEventKind": "session/update",
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 1042.2
+    }
+  ],
+  "summary": {
+    "okSessions": 5,
+    "failedSessions": 0,
+    "distinctInstances": 5,
+    "distinctSessions": 5,
+    "meetsTargetLoad": false,
+    "latencyMs": [
+      726,
+      1473,
+      547,
+      665,
+      1008
+    ],
+    "perfLevel": "PERF_LEVEL_PENDING",
+    "perfBlocked": true
+  },
+  "conclusion": "PILOT_SINGLE_INSTANCE",
+  "note": "试点：真实宿主已跑通并采到 handoff 延迟，但实例/会话数未达 20/50，级别仍为待本机实测（不得据此宣称真实面达标）。",
+  "dshHome": {
+    "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i112-perf-pilot\\dsh-home",
+    "isolated": true,
+    "credentialsCopied": true,
+    "credentialsWillBeRemoved": true
+  },
+  "samples": [
+    {
+      "instanceId": "pilot-0",
+      "sessionId": "070cc12c-4da9-46ce-8a9d-e3234ecf0d1a",
+      "handoffId": null,
+      "latencyMs": 726
+    },
+    {
+      "instanceId": "pilot-1",
+      "sessionId": "57f5b65b-00bd-4b70-9222-024cf443af91",
+      "handoffId": null,
+      "latencyMs": 1473
+    },
+    {
+      "instanceId": "pilot-2",
+      "sessionId": "7bab72f3-2031-4300-835c-bf2d76d0fd2c",
+      "handoffId": null,
+      "latencyMs": 547
+    },
+    {
+      "instanceId": "pilot-3",
+      "sessionId": "65e045bc-3eed-49dd-9145-44464ba1170b",
+      "handoffId": null,
+      "latencyMs": 665
+    },
+    {
+      "instanceId": "pilot-4",
+      "sessionId": "e1a0621b-864f-4e89-bfe9-a762bd36209c",
+      "handoffId": null,
+      "latencyMs": 1008
+    }
+  ],
+  "collectedByProduct": {
+    "samples": 5,
+    "stats": {
+      "median": 726,
+      "p95": 1380,
+      "max": 1473
+    }
+  },
+  "finishedAt": "2026-11-19T13:19:01.187Z"
+}

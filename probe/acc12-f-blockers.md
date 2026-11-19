@@ -24,3 +24,17 @@
 
 - 23 条 AC 均 ≥4 份非空 `AC-XX.*` 证据，合计 153 份唯一文件；无 0 字节、无重名、无跨 AC 串号。
 - AC-21 为阻塞而非通过：其 4 份证据只支持「真实宿主未取证」这一事实，mock 面结论（AC-20）未被计入真实宿主判据。
+
+## S4 补充诊断（2026-11-19，不改变 AC-21 判定）
+
+- **触发**：S4 收口复核 AC-21 的取证链路，发现「本机无真实宿主面」的表述不成立。
+- **核查事实**：
+  1. `probe/acc12-cases/AC-21.mjs` 未调用 `probe/acc12-perf.mjs`，直接硬编码 `samples: []` + `evidenceLevel: PERF_LEVEL_PENDING` 构造报告；
+  2. 该用例只探 `C:/Program Files/DSH/dsh.exe`、`%LOCALAPPDATA%/DSH/dsh.exe`、`~/.dsh/bin/dsh`，三条都不是本机布局；产品自身 `src/adapter/dsh-launch.js::resolveDshLaunch()` 能正确定位（`source: default`）。
+  3. 隔离 `DSH_HOME`（复制凭据、用完即删、未改用户 `~/.dsh`）+ 覆盖 `agent-default-model` 与 `acp` 两处 provider 到 `deepseek-account` 后，真实宿主跑通：
+     - `probe/acc12-perf-pilot.json`：宿主 `0.2.2-rc.3`，1 会话 `ok`，交付→首事件 **743.8ms**，`stopReason=end_turn`；
+     - `probe/acc12-perf-pilot-5.json`：5 会话 / 2 并发 **5/5 成功**，547 / 665 / 726 / 1008 / 1473 ms，最大 **1473ms < 2s**。
+- **为什么不销项**：试点规模未达 D-11 的 20 实例 / 50 会话口径，按 AC-21 机检锚点只能停在 `PERF_LEVEL_PENDING`；按 `decisions.md` 裁决 F，用户选择「停在试点，不再跑全量」，故本项**维持阻塞**。
+- **定性修正**：阻塞根因从「本机无真实宿主面」改为「**AC-21 取证脚手架未复用产品宿主发现逻辑，导致未取证**」。
+- **解除条件（不变）**：按 D-11 跑满 20 实例 / 50 会话 handoff，产出 `PERF_LEVEL_REAL` 后复判 `<2s / ≥20 并发`；或用户出具书面豁免。
+- **证据归属**：以上试点帧落在 `probe/`，属 S4 收口期补充诊断，**不计入 S3 的 153 份验收证据**（S3 证据集已随 `3470241` 冻结）。

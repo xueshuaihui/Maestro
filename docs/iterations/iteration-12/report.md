@@ -7,7 +7,7 @@
 | **需求评审** | `review-round1.md` 评 v1 **PASS**（0 阻断 / 6 建议，规划逐句覆盖 18/18、夹带 0、缺漏 0）→ 吸收建议出 v2 + 裁决 A → `review-round2.md` 评 v2 **PASS**（0 阻断 / 6 建议移交 S1 §7）；**S0 需求评审 2 轮，最终 PASS 轮号 = round2**；`requirement-understanding.md` DoR 13 条 **12 绿 / 1 黄（DoR-7 = AC-21）/ 0 红** |
 | **验收记录** | `acceptance-fixture.md`（夹具面，A 段 + B 段）、`acceptance-product.md`（真实宿主面，仅 AC-21 取证尝试）、`acceptance-merge.md`（合并与审计）、`probe/acc12-f-{results.jsonl,results-b.jsonl,summary.json,blockers.md}`、`evidence/`（**153 份**） |
 | **终验记录** | `final-verification.md`（S4 独立终验：六项校验 + 第 7 项需求评审闭环**全部 PASS**，但 §4.5 总判定 **FAIL**，唯一原因是 AC-21 阻塞） |
-| **环境** | Windows（Git Bash）、Node **v22.22.2**、零第三方运行时依赖（`dependencies` = `{}`）；分支 `feat/i1.12-governance`，基线 HEAD `0b12bd8` |
+| **环境** | Windows（Git Bash）、Node **v22.22.2**、零第三方运行时依赖（`dependencies` = `{}`）；本机真实宿主 DSH **`0.2.2-rc.3`**（需求文档写 rc.1，属版本漂移，见 §5.2）；分支 `feat/i1.12-governance`，基线 HEAD `0b12bd8` |
 | **完成时间** | 2026-11-19（S0 2026-11-17~18 → S1 11-18 → S2 11-18~19 → S3 11-19 → S4 11-19） |
 
 ---
@@ -118,7 +118,7 @@
 |---|---|---|
 | `已实测（真实宿主面）` | **0** | 本迭代无任何 AC 声称真实宿主面取证 |
 | `mock 实测` | **22** | AC-01~AC-20、AC-22、AC-23：全部在夹具 / 模块直调 / 事件构造面取证，产物带原始帧 |
-| `阻塞` | **1** | AC-21：真实宿主 DSH 0.2.2-rc.1 性能面本机不可达，如实判阻塞 |
+| `阻塞` | **1** | AC-21：真实宿主性能面**未按 20/50 口径取证**，如实判阻塞（根因复核见 §5.1.1：本机真实宿主可用，版本 `0.2.2-rc.3`，是取证脚手架路径不全） |
 
 `PERF_LEVEL_MOCK` / `PERF_LEVEL_REAL` / `PERF_LEVEL_PENDING` 是 ASCII 机器键（机器判定用），对应中文只在 `src/cli/labels.js`（`mock 实测` / `真实宿主实测` / `待本机实测`），符合「中文唯一来源」不变量。
 
@@ -173,7 +173,27 @@ node probe/acc12-f-final.mjs
 
 | # | 项 | 事实 | 为何阻断 | 两条出口 |
 |---|---|---|---|---|
-| **B-1** | **AC-21 真实宿主性能证据** | 本机 DSH 0.2.2-rc.1 性能面未取证；`level=PERF_LEVEL_PENDING`、`blocked=true`、`realHostCollected=false`、`triedPaths` 5 条 | §4.5 Done 条件 1（AC 100% 通过）与条件 2（阻塞 = 0）不满足，连带条件 5（终验总判 PASS）不满足；§4.5 明写「不许带着阻塞宣布需求结束」 | ① 安排本机真实宿主取证窗口，按附录 **D-11** 采集 20 实例 / 50 会话 handoff，产出 `PERF_LEVEL_REAL` 后按 `<2s / ≥20 并发` 复判；② 就 AC-21 书面升级给用户裁决豁免，并在本文件 §5.1 保留登记。**在任一出完成前：不宣布 I1.12 结束、不把阻塞改写成通过、不把 `blocked=1` 从 summary 抹去。** |
+| **B-1** | **AC-21 真实宿主性能证据** | 20 实例 / 50 会话的真实宿主取证**未做**，`level=PERF_LEVEL_PENDING`、`blocked=true`、`realHostCollected=false` | §4.5 Done 条件 1（AC 100% 通过）与条件 2（阻塞 = 0）不满足，连带条件 5（终验总判 PASS）不满足；§4.5 明写「不许带着阻塞宣布需求结束」 | ① 安排本机真实宿主取证窗口，按附录 **D-11** 采集 20 实例 / 50 会话 handoff，产出 `PERF_LEVEL_REAL` 后按 `<2s / ≥20 并发` 复判；② 就 AC-21 书面升级给用户裁决豁免，并在本文件 §5.1 保留登记。**在任一出完成前：不宣布 I1.12 结束、不把阻塞改写成通过、不把 `blocked=1` 从 summary 抹去。** |
+
+#### 5.1.1 阻塞根因的复核结论（S4 补充诊断，不改变 AC-21 判定）
+
+复核 AC-21 的取证链路后确认：**「本机没有真实宿主面」这个表述不成立**，阻塞的真实原因是**取证脚手架自身的方法学缺陷**。
+
+| 事实 | 依据 |
+|---|---|
+| `probe/acc12-cases/AC-21.mjs` 未调用 `probe/acc12-perf.mjs`，直接硬编码 `samples: []` + `PERF_LEVEL_PENDING` 拼报告 | 用例源码（`perfCheck` 对象由常量构造） |
+| 它的探测路径 `C:/Program Files/DSH/dsh.exe`、`%LOCALAPPDATA%/DSH/dsh.exe`、`~/.dsh/bin/dsh` **三条都不是本机布局** | 本机实际入口见下行 |
+| 产品自身 `src/adapter/dsh-launch.js::resolveDshLaunch()` 能正确定位宿主（`source: default`），`--version` → **`0.2.2-rc.3`** | `probe/acc12-perf-pilot.json` 的 `hostDiscovery` / `hostVersion` |
+| 隔离 `DSH_HOME` + 复制凭据后，真实 ACP 面可握手并跑完 turn：**1 会话 743.8ms**；**5 会话 / 2 并发 5/5，547 / 665 / 726 / 1008 / 1473 ms，全部 < 2s** | `probe/acc12-perf-pilot.json`、`probe/acc12-perf-pilot-5.json` |
+| 首次失败 `-32603 no API key for provider route "deepseek-official"` 的解除条件：隔离 profile 的 patch 层要**同时**覆盖 `agent-default-model` 与 `acp` 两处到本机账号路由，只改一处无效 | 同上（`--dump-config` 两处 provider 均为 `deepseek-official`） |
+
+**为什么仍然判阻塞、不做降级**：
+
+1. 试点规模（1 / 5 会话）**未达 D-11 的 20 实例 / 50 会话口径**，按 AC-21 的机检锚点只能停在 `PERF_LEVEL_PENDING`，不得升 `PERF_LEVEL_REAL`；
+2. 试点帧是 **S4 收口期补充诊断**，**不计入 S3 的 153 份验收证据**（S3 证据集已随 `3470241` 冻结，不回溯编辑），也不得替代 AC-21 的取证；
+3. 用户于 2026-11-19 明确选择「停在试点，不再跑全量」（见 `decisions.md` 裁决 F），因此 20/50 口径的取证与书面豁免两条出口均未完成。
+
+**结论**：阻塞从「本机无真实宿主」修正为「取证脚手架未使用产品宿主发现逻辑，导致未取证」；**AC-21 判定与 §4.5 Done 结论均不变**。若要解除，仍需按 D-11 跑满 20/50 产出 `PERF_LEVEL_REAL`，或由用户出具书面豁免。
 
 ### 5.2 不影响结论的观察项（终验 §4 登记，逐条写明影响范围）
 
@@ -186,6 +206,8 @@ node probe/acc12-f-final.mjs
 7. **AC-22 证据内过程帧与最终帧并存**：`AC-22.index.counts.json` 为 1659/1636/14/9（AC-01 修复前过程帧），最终帧为 1660/1637/14/9；`AC-22.diffset.txt` 已注明两者，不冲突。另 `AC-22.check.purity.txt` 只落了 `src/core,src/daemon` 一段输出，`desktop/ui,desktop/harness` 段由终验独立实跑补强（exit 0）。
 8. **`.workbuddy/memory/2026-11-17.md`** 属基线 `0b12bd8` 自身提交，不计入 I1.12 提交卫生问题。
 9. **`migrate` 与 `otel` 的两个 CLI 入口只做参数透传**：业务判定全在 `src/core/**`，CLI 侧不重复实现校验逻辑（避免双份真值），故 CLI 单测覆盖集中在参数解析与文案，行为覆盖由 `test/wp15/{migrate,otel-export}.test.js` 的模块级用例承担。影响范围：未来改 CLI 参数表时需同步跑这两组模块用例。
+10. **AC-21 取证脚手架的宿主发现缺陷（方法学，已定性、不改判定）**：`probe/acc12-cases/AC-21.mjs` 未复用产品 `resolveDshLaunch()`，只探了三个本机不存在的 `dsh.exe` 路径，且直接硬编码 `PERF_LEVEL_PENDING` 而不调用 `acc12-perf.mjs`。影响范围：阻塞结论「依据」偏弱（结论本身仍成立，因为 20/50 口径确实没做）；后续迭代若要补真实面取证，应先修脚手架再跑，否则会重复误判。详见 `decisions.md` 裁决 F。
+11. **宿主版本漂移**：需求与裁决 A 记的是 `DSH 0.2.2-rc.1`，本机实测 `--version` 为 **`0.2.2-rc.3`**。影响范围：不影响任何 AC 判据（AC-21 只约束「本机真实宿主」而非具体补丁号），但报告与后续取证记录应写实际观测值，不要照抄文档版本。
 
 ---
 
