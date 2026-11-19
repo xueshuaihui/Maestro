@@ -1,0 +1,29 @@
+=== 阶段一现状回归门禁（HEAD 8506ad9） ===
+时间: 2026-11-19T22:12:32+08:00
+
+--- 全量 ---
+# tests 1841
+# pass 1808
+# fail 22
+# skipped 11
+
+--- 三主链隔离 ---
+# tests 8
+# pass 8
+# fail 0
+
+--- purity A ---
+OK: 扫描 45 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+EXIT:0
+--- purity B ---
+OK: 扫描 42 个文件，desktop/ui, desktop/harness 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+EXIT:0
+--- deps ---
+0
+--- help 行数 ---
+31
+--- git diff --check ---
+warning: in the working copy of 'docs/iterations/iteration-4/evidence/nfr-perf-atomic.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/iterations/iteration-4/evidence/nfr-perf-batch.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/iterations/iteration-4/evidence/nfr-perf-render.json', LF will be replaced by CRLF the next time Git touches it
+EXIT:0

@@ -1,0 +1,194 @@
+{
+  "phase": "阶段一 · DSH 单宿主完整流程（13 个迭代）",
+  "generatedAt": "2026-11-19T14:13:21.187Z",
+  "head": "8506ad9",
+  "phaseDone": false,
+  "phaseDoneBlockers": [
+    {
+      "id": "I1.8",
+      "reason": "S2 仅第 1 批落地（WP-1/WP-2），WP-3~WP-7 未实现，S3/S4 未开始，无 report/final-verification"
+    },
+    {
+      "id": "I1.12",
+      "reason": "AC-21 阻塞：D-11 的 20 实例/50 会话真实宿主 handoff 口径未取证，PERF_LEVEL 停在 PENDING"
+    }
+  ],
+  "iterations": [
+    {
+      "id": "I1.1",
+      "status": "PASS",
+      "ac": {
+        "pass": 26,
+        "fail": 0,
+        "blocked": 0
+      },
+      "evidence": "iteration-1/report.md"
+    },
+    {
+      "id": "I1.2",
+      "status": "PASS",
+      "ac": {
+        "pass": 44,
+        "fail": 0,
+        "blocked": 0
+      },
+      "evidence": "iteration-2/report.md"
+    },
+    {
+      "id": "I1.3",
+      "status": "PASS",
+      "ac": {
+        "pass": 45,
+        "fail": 0,
+        "blocked": 0
+      },
+      "evidence": "iteration-3/report.md"
+    },
+    {
+      "id": "I1.4",
+      "status": "PASS",
+      "ac": {
+        "pass": 70,
+        "fail": 0,
+        "blocked": 0
+      },
+      "note": "全 mock 实测",
+      "evidence": "iteration-4/report.md"
+    },
+    {
+      "id": "I1.5",
+      "status": "PASS",
+      "ac": {
+        "pass": 45,
+        "fail": 0,
+        "blocked": 0
+      },
+      "evidence": "iteration-5/report.md"
+    },
+    {
+      "id": "I1.6",
+      "status": "PASS",
+      "ac": {
+        "pass": 65,
+        "fail": 0,
+        "blocked": 0
+      },
+      "evidence": "iteration-6/report.md + final-verification.md"
+    },
+    {
+      "id": "I1.7",
+      "status": "PASS",
+      "evidence": "iteration-7/report.md + final-verification.md"
+    },
+    {
+      "id": "I1.8",
+      "status": "IN_PROGRESS",
+      "stage": "S2 批 1/5",
+      "wpDone": [
+        "WP-1",
+        "WP-2"
+      ],
+      "wpPending": [
+        "WP-3",
+        "WP-4",
+        "WP-5",
+        "WP-6",
+        "WP-7"
+      ],
+      "mergeCommit": "c1915c3",
+      "evidence": "iteration-8/progress.md"
+    },
+    {
+      "id": "I1.9",
+      "status": "PASS",
+      "ac": {
+        "pass": 27,
+        "fail": 0,
+        "blocked": 0
+      },
+      "evidence": "iteration-9/report.md + final-verification.md"
+    },
+    {
+      "id": "I1.10a",
+      "status": "PASS",
+      "ac": {
+        "pass": 44,
+        "fail": 0,
+        "blocked": 0
+      },
+      "evidence": "iteration-10a/report.md + final-verification.md"
+    },
+    {
+      "id": "I1.10b",
+      "status": "PASS",
+      "ac": {
+        "pass": 51,
+        "fail": 0,
+        "blocked": 0
+      },
+      "mergeCommit": "d17090f",
+      "evidence": "iteration-10b/report.md + final-verification.md"
+    },
+    {
+      "id": "I1.11",
+      "status": "PASS",
+      "ac": {
+        "pass": 49,
+        "fail": 0,
+        "blocked": 0
+      },
+      "mergeCommit": "018cc1e",
+      "evidence": "iteration-11/report.md + final-verification.md"
+    },
+    {
+      "id": "I1.12",
+      "status": "BLOCKED",
+      "ac": {
+        "pass": 22,
+        "fail": 0,
+        "blocked": 1
+      },
+      "mergeCommit": "85c5a8b",
+      "blockedAc": [
+        "AC-21"
+      ],
+      "evidence": "iteration-12/report.md + final-verification.md"
+    }
+  ],
+  "summary": {
+    "total": 13,
+    "pass": 11,
+    "inProgress": 1,
+    "blocked": 1
+  },
+  "regression": {
+    "command": "NODE_ENV=test node --test --test-concurrency=1 --test-timeout=120000 --test-force-exit \"test/**/*.test.js\"",
+    "tests": 1841,
+    "pass": 1808,
+    "fail": 22,
+    "skipped": 11,
+    "baselineTree": "origin/main b1fb82c: 1707/1671/25/11",
+    "newRed": 0,
+    "flakes": [
+      {
+        "name": "live 取消：四项全 null、终态 cancelled/ended、不阻断取消",
+        "isolated": "ok 7 通过",
+        "frame": "probe/phase1-status/flake-live-cancel.isolated.log"
+      }
+    ],
+    "gates": {
+      "mainChains": "8/8",
+      "purity": [
+        "src/core,src/daemon 45 文件 exit 0",
+        "desktop/ui,desktop/harness 42 文件 exit 0"
+      ],
+      "dependencies": 0,
+      "helpLines": 31,
+      "gitDiffCheck": 0
+    },
+    "frames": [
+      "probe/phase1-status/full-suite.log",
+      "probe/phase1-status/gates.txt"
+    ]
+  }
+}

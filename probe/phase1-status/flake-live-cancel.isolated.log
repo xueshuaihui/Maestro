@@ -1,0 +1,160 @@
+TAP version 13
+# Subtest: newState 只追加 health 与 traceId 两个字段、既有初始字段与顺序不动；缺 health 按 30000 缺省且不批量回填
+not ok 1 - newState 只追加 health 与 traceId 两个字段、既有初始字段与顺序不动；缺 health 按 30000 缺省且不批量回填
+  ---
+  duration_ms: 932.1319
+  type: 'test'
+  location: 'D:\\WWW\\Maestro\\test\\wp9\\i19-orchestrator.test.js:131:1'
+  failureType: 'hookFailed'
+  error: "EBUSY: resource busy or locked, rmdir 'C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-wp7-orch-nag8Av'"
+  code: 'EBUSY'
+  stack: |-
+    Object.rmdirSync (node:fs:1193:11)
+    C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:671:53
+    _rmdirSync (node:internal/fs/rimraf:236:5)
+    rimrafSync (node:internal/fs/rimraf:194:7)
+    Object.rmSync (node:fs:1239:10)
+    Object.wrappedRmSync [as rmSync] (C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:823:12)
+    TestContext.<anonymous> (file:///D:/WWW/Maestro/test/wp9/i19-orchestrator.test.js:38:20)
+    TestHook.runInAsyncScope (node:async_hooks:214:14)
+    TestHook.run (node:internal/test_runner/test:1047:25)
+    TestHook.run (node:internal/test_runner/test:1354:18)
+  ...
+# Subtest: 实例创建即有 state.traceId，且此早于任何跨度落地（不是首条跨度反推）
+ok 2 - 实例创建即有 state.traceId，且此早于任何跨度落地（不是首条跨度反推）
+  ---
+  duration_ms: 416.2155
+  type: 'test'
+  ...
+# Subtest: saveState 写回 health：保留 nodeTimeoutMs，level/reasons/computedAt 齐全
+ok 3 - saveState 写回 health：保留 nodeTimeoutMs，level/reasons/computedAt 齐全
+  ---
+  duration_ms: 65.7777
+  type: 'test'
+  ...
+# Subtest: getStatus：首次补写不追加事件；档位变化恰一次窄 CAS + 一条 health.changed；档位未变不重复
+ok 4 - getStatus：首次补写不追加事件；档位变化恰一次窄 CAS + 一条 health.changed；档位未变不重复
+  ---
+  duration_ms: 79.8881
+  type: 'test'
+  ...
+# Subtest: execution.summary 每会话恰一条，成功/失败/取消三种收尾都有，缺项为 null
+not ok 5 - execution.summary 每会话恰一条，成功/失败/取消三种收尾都有，缺项为 null
+  ---
+  duration_ms: 1682.7478
+  type: 'test'
+  location: 'D:\\WWW\\Maestro\\test\\wp9\\i19-orchestrator.test.js:267:1'
+  failureType: 'hookFailed'
+  error: "EBUSY: resource busy or locked, rmdir 'C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-wp7-orch-rzyb3v'"
+  code: 'EBUSY'
+  stack: |-
+    Object.rmdirSync (node:fs:1193:11)
+    C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:671:53
+    _rmdirSync (node:internal/fs/rimraf:236:5)
+    rimrafSync (node:internal/fs/rimraf:194:7)
+    Object.rmSync (node:fs:1239:10)
+    Object.wrappedRmSync [as rmSync] (C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:823:12)
+    TestContext.<anonymous> (file:///D:/WWW/Maestro/test/wp9/i19-orchestrator.test.js:38:20)
+    TestHook.runInAsyncScope (node:async_hooks:214:14)
+    TestHook.run (node:internal/test_runner/test:1047:25)
+    TestHook.run (node:internal/test_runner/test:1354:18)
+  ...
+# Subtest: --fail-tool 合并四项；--fail-tool-no-refs 缺项为 null 且 command 不被工具名冒充
+not ok 6 - --fail-tool 合并四项；--fail-tool-no-refs 缺项为 null 且 command 不被工具名冒充
+  ---
+  duration_ms: 1477.749
+  type: 'test'
+  location: 'D:\\WWW\\Maestro\\test\\wp9\\i19-orchestrator.test.js:308:1'
+  failureType: 'hookFailed'
+  error: "EBUSY: resource busy or locked, rmdir 'C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-wp7-orch-wsxPlY'"
+  code: 'EBUSY'
+  stack: |-
+    Object.rmdirSync (node:fs:1193:11)
+    C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:671:53
+    _rmdirSync (node:internal/fs/rimraf:236:5)
+    rimrafSync (node:internal/fs/rimraf:194:7)
+    Object.rmSync (node:fs:1239:10)
+    Object.wrappedRmSync [as rmSync] (C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:823:12)
+    TestContext.<anonymous> (file:///D:/WWW/Maestro/test/wp9/i19-orchestrator.test.js:38:20)
+    TestHook.runInAsyncScope (node:async_hooks:214:14)
+    TestHook.run (node:internal/test_runner/test:1047:25)
+    TestHook.run (node:internal/test_runner/test:1354:18)
+  ...
+# Subtest: live 取消：四项全 null、终态 cancelled/ended、不阻断取消
+ok 7 - live 取消：四项全 null、终态 cancelled/ended、不阻断取消
+  ---
+  duration_ms: 393.0366
+  type: 'test'
+  ...
+# Subtest: --stop-after 3 冻结窗口恰 3 条跨度、7 字段、无 handoff_ids、HO-002 读取时推导
+not ok 8 - --stop-after 3 冻结窗口恰 3 条跨度、7 字段、无 handoff_ids、HO-002 读取时推导
+  ---
+  duration_ms: 5615.6536
+  type: 'test'
+  location: 'D:\\WWW\\Maestro\\test\\wp9\\i19-orchestrator.test.js:367:1'
+  failureType: 'hookFailed'
+  error: "EBUSY: resource busy or locked, rmdir 'C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-wp7-orch-qhxduU'"
+  code: 'EBUSY'
+  stack: |-
+    Object.rmdirSync (node:fs:1193:11)
+    C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:671:53
+    _rmdirSync (node:internal/fs/rimraf:236:5)
+    rimrafSync (node:internal/fs/rimraf:194:7)
+    Object.rmSync (node:fs:1239:10)
+    Object.wrappedRmSync [as rmSync] (C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:823:12)
+    TestContext.<anonymous> (file:///D:/WWW/Maestro/test/wp9/i19-orchestrator.test.js:38:20)
+    TestHook.runInAsyncScope (node:async_hooks:214:14)
+    TestHook.run (node:internal/test_runner/test:1047:25)
+    TestHook.run (node:internal/test_runner/test:1354:18)
+  ...
+# Subtest: grep -c "object: 'session'" ≤ 13；会话级新增事件类型只有 execution.summary
+not ok 9 - grep -c "object: 'session'" ≤ 13；会话级新增事件类型只有 execution.summary
+  ---
+  duration_ms: 905.2597
+  type: 'test'
+  location: 'D:\\WWW\\Maestro\\test\\wp9\\i19-orchestrator.test.js:408:1'
+  failureType: 'hookFailed'
+  error: "EBUSY: resource busy or locked, rmdir 'C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-wp7-orch-TeILWH'"
+  code: 'EBUSY'
+  stack: |-
+    Object.rmdirSync (node:fs:1193:11)
+    C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:671:53
+    _rmdirSync (node:internal/fs/rimraf:236:5)
+    rimrafSync (node:internal/fs/rimraf:194:7)
+    Object.rmSync (node:fs:1239:10)
+    Object.wrappedRmSync [as rmSync] (C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:823:12)
+    TestContext.<anonymous> (file:///D:/WWW/Maestro/test/wp9/i19-orchestrator.test.js:38:20)
+    TestHook.runInAsyncScope (node:async_hooks:214:14)
+    TestHook.run (node:internal/test_runner/test:1047:25)
+    TestHook.run (node:internal/test_runner/test:1354:18)
+  ...
+# Subtest: single / code-loop / task-loop 三主链运行期输出不出现健康度 / 追踪新行
+not ok 10 - single / code-loop / task-loop 三主链运行期输出不出现健康度 / 追踪新行
+  ---
+  duration_ms: 1891.4461
+  type: 'test'
+  location: 'D:\\WWW\\Maestro\\test\\wp9\\i19-orchestrator.test.js:432:1'
+  failureType: 'hookFailed'
+  error: "EBUSY: resource busy or locked, rmdir 'C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-wp7-orch-S5Mcw6'"
+  code: 'EBUSY'
+  stack: |-
+    Object.rmdirSync (node:fs:1193:11)
+    C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:671:53
+    _rmdirSync (node:internal/fs/rimraf:236:5)
+    rimrafSync (node:internal/fs/rimraf:194:7)
+    Object.rmSync (node:fs:1239:10)
+    Object.wrappedRmSync [as rmSync] (C:\Users\xuesh\AppData\Local\Programs\WorkBuddy\resources\app.asar.unpacked\cli\vendor\sandbox-center-runtime-kit\shim\node-safe-delete-shim.cjs:823:12)
+    TestContext.<anonymous> (file:///D:/WWW/Maestro/test/wp9/i19-orchestrator.test.js:38:20)
+    TestHook.runInAsyncScope (node:async_hooks:214:14)
+    TestHook.run (node:internal/test_runner/test:1047:25)
+    TestHook.run (node:internal/test_runner/test:1354:18)
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 4
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13570.5096
