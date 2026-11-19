@@ -1,0 +1,37 @@
+S4 数字一致性核对（report / summary / acceptance-fixture / results / 实盘证据）
+时间: 2026-11-19T13:04:30.136Z
+HEAD: 3470241 + S4 文档提交（仅 docs/ 与 probe/acc12-f-*.txt，src/test 相对 3470241 零 diff）
+
+OK    summary.acTotal vs probe.acTotal = 23
+OK    pass = 22
+OK    fail = 0
+OK    blocked = 1
+OK    results.jsonl 记录数 = 23
+OK    results 通过数 = 22
+OK    results 不通过数 = 0
+OK    results 阻塞数 = 1
+OK    checksTotal = 322
+OK    checksPass = 322
+OK    probe checks 总数 = 322
+OK    perAc 核对项合计 = 322
+OK    perAc 证据合计 = 153
+OK    summary.evidence vs 实盘 evidence/ = 153
+OK    probe.summary.evidenceFileCount vs 实盘 = 153
+OK    批次证据合计（79+74） = 153
+OK    批次核对项合计（194+128） = 322
+OK    允许集合命中 + 最终帧 flake = 观察到失败数 = 14
+
+OK    report 含「22 通过 / 0 不通过 / 1 阻塞」
+OK    report 含「322 / 322」
+OK    report 含「153 份」
+OK    report 含「1660 / pass 1637 / fail 14 / skipped 9」
+OK    report 含「1425」
+OK    report 含「三主链 8/8」
+OK    report 含「USAGE_LINES」
+OK    report 含「dependencies」
+OK    acceptance-fixture 含「22 通过 / 0 不通过 / 1 阻塞（AC-21 真实宿主未取证）」
+OK    acceptance-fixture 含「| 总计 | AC-01~AC-23 | 22 | 0 | 1 | 322/322 | 153 |」
+
+OK    src/test 相对 3470241 零 diff（收口文档提交不含产品与测试改动）
+
+结论: CONSISTENT —— report / summary / acceptance-fixture / results / 实盘证据 数字一致（22/0/1、322/322、153、1660/1637/14/9），15 条归因自洽，src/test 相对被验证提交零 diff

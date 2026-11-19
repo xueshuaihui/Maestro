@@ -10,7 +10,7 @@
 | S1 | 拆分 / 选型（8 节 + AC→WP 满覆盖） | 拆分 Agent | 2026-11-18 | 2026-11-18 | **PASS**（round1 FAIL 1 阻断 → 裁决 B 扩授权 → round2 PASS 0 阻断） | `iteration-12.md`（7 WP / 35 文件零交集 / 23/23 覆盖）、`split-review.md`、`split-review-round2.md` | round1 FAIL（SR-01 roles.js/workflows.js 授权缺口）→ 裁决 B → 修复 → round2 PASS（0 阻断/1 建议）|
 | S2 | 分批次实现（WP-1~WP-7） | 实现 / 修复 Agent | 2026-11-18 | 2026-11-19 | **PASS**（批次1/2/3 均评审 PASS；WP-7 三轮评审，最终 round3 阻断 0 / 建议 0） | `src/**` `test/wp15/**` `probe/acc12-perf.mjs` | `review-batch1*.md`、`review-batch2*.md`、`s2-review-wp7*.md` |
 | S3 | 验收逐条取证 | 验收 Agent | 2026-11-19 | 2026-11-19 | **PASS（22 通过 / 0 不通过 / 1 阻塞）**：AC-21 真实宿主未取证，按裁决 A 判阻塞、不用 mock 顶替 | `acceptance-fixture.md`、`acceptance-product.md`、`evidence/`、`probe/acc12-f-*` | 主控复跑 AC-01（22/22）、summary 22/0/1、322/322、153 证据 |
-| S4 | 终验与收口 | 终验 Agent | 2026-11-19 | — | 进行中 | `final-verification.md` `report.md` `summary.json` | 六项校验 |
+| S4 | 终验与收口 | 终验 Agent / 主控 | 2026-11-19 | 2026-11-19 | 终验六项 + 需求评审闭环全 PASS；**§4.5 Done 判定 = 不满足**（仅 AC-21 阻塞）→ 报告与 summary 已落盘，等待用户就 AC-21 裁决 | `final-verification.md` `report.md` `summary.json`、`probe/acc12-f-{consistency,s4-gates}.txt` | 主控复核：四处数字一致（22/0/1、322/322、153、1660/1637/14/9）、差集归因修正为 win32 12 + S0 2 |
 
 ## 需求基线要点（S0 定稿）
 
@@ -40,3 +40,7 @@
 - 2026-11-19：S2 批次 3（WP-7 接线包）三轮评审：`s2-review-wp7.md` FAIL（四门禁 advisory no-op 等 9 项）→ 裁决 D 扩授权 + 修复 → `s2-review-wp7-round2.md` FAIL（N-01 `verify review` 误判已配终审路径）→ 二次修复 → `s2-review-wp7-round3.md` PASS（阻断 0 / 建议 0）。主控复跑定向 57/57、`--help` 25+6 行、purity 双目录 exit 0、deps 0、diff-check 0；批次 3 提交 `d20fccc`。
 - 2026-11-19：全量门禁实跑最终帧 `tests 1660 / pass 1637 / fail 14 / skipped 9 ≥ 1425`；14 条失败全部落允许集合（12 条 win32 16 项登记 + `HANDOFF_EVIDENCE_ESCAPE` / `AC-04` 两条裁决 K S0 既有红），**差集 0**；原始帧 `evidence/AC-22.full-suite.final.log`。过程出现一次 `三主链` 负载 flake，单文件隔离 8/8 全绿留帧，最终全量未复现。历史性能证据已恢复。
 - 2026-11-19：S3 验收完成。批次 A（AC-01~12）12/12 通过（AC-01 首轮发现 CLI 序号误报 → 裁决 E 修复 `d1fce53` → 复跑 22/22）；批次 B（AC-13~23）10 通过 / AC-21 阻塞 / 0 不通过。合并总判 **22 通过 / 0 不通过 / 1 阻塞**，核对项 **322/322**，唯一证据 **153** 份；AC-21 真实宿主未取证，保留 `PERF_LEVEL_PENDING/blocked`，未用 mock 顶替。
+- 2026-11-19：S3 证据计数口径统一为 **153**（`progress.md`、`acceptance-merge.md` 原写 150/71，实盘 A 79 + B 74 = 153），提交 `3ea10ba`；Done 条件 6 由此满足。
+- 2026-11-19：S4 收口产物落盘——`final-verification.md`（独立终验）、`report.md`（§0~§6 + 附录）、`summary.json`（迭代级，与 `probe/acc12-f-summary.json` 同源）、`probe/acc12-f-consistency.txt`（四处数字一致性核对，0 不一致）、`probe/acc12-f-s4-gates.txt`（purity 双目录 exit 0 / deps 0 / diff-check 0 / USAGE_LINES 25+6 / help 31 行）。
+- 2026-11-19：主控复核终验时发现一处**归因错误并修正**：终验 §1.4 把最终帧 14 条失败写成「win32 11 + S0 既有红 2 + flake 1」，与 `evidence/AC-22.diffset.txt` 及 `AC-22.full-suite.final.log` 的 `^not ok` 逐行清单不符；实际为 **win32 登记 12 + S0 既有红 2 = 14，最终帧不含 flake**（`live 取消` 的隔离复跑是过程帧「三主链」flake 的证伪性诊断）。已同步修正 `final-verification.md` §1.4/§2、`report.md` §0/§4、`summary.json` 的 `gate.allowedSet/inAllowedSet`，计数结论（差集 0）不变。
+- 2026-11-19：**I1.12 最终状态 = 22 通过 / 0 不通过 / 1 阻塞（AC-21）**。按 `execution-template.md` §4.5，Done 条件 1/2/5 不满足，**不宣布结束、不把阻塞写成通过、不抹去 `blocked=1`**；等待用户就 AC-21 二选一裁决：①安排本机真实宿主取证窗口（附录 D-11，20 实例/50 会话 → `PERF_LEVEL_REAL`）后复判；②书面豁免并保留 §5.1 登记。

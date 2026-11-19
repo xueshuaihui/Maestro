@@ -1,0 +1,497 @@
+{
+  "iteration": "I1.12",
+  "phase": "S4",
+  "generatedAt": "2026-11-19T13:02:56.558Z",
+  "head": "3470241",
+  "requirementVersion": "v2.1",
+  "acTotal": 23,
+  "pass": 22,
+  "fail": 0,
+  "blocked": 1,
+  "counts": {
+    "通过": 22,
+    "不通过": 0,
+    "阻塞": 1
+  },
+  "checksTotal": 322,
+  "checksPass": 322,
+  "checksFail": 0,
+  "thenTotal": 23,
+  "levels": {
+    "mock 实测": 22,
+    "阻塞": 1
+  },
+  "batches": {
+    "a": {
+      "acRange": "AC-01~AC-12",
+      "total": 12,
+      "pass": 12,
+      "fail": 0,
+      "blocked": 0,
+      "checks": 194,
+      "evidence": 79
+    },
+    "b": {
+      "acRange": "AC-13~AC-23",
+      "total": 11,
+      "pass": 10,
+      "fail": 0,
+      "blocked": 1,
+      "checks": 128,
+      "evidence": 74
+    }
+  },
+  "evidence": {
+    "refsTotal": 153,
+    "filesUnique": 153,
+    "evidenceBelow4": 0,
+    "emptyFiles": 0,
+    "missingFiles": 0,
+    "note": "每 AC ≥4 份非空原始帧（最小 4：AC-03/AC-04/AC-19/AC-21）；A 79 + B 74 = 153，0 空文件、0 缺件、路径无重复无串号"
+  },
+  "gate": {
+    "suiteCommand": "NODE_ENV=test node --test --test-concurrency=1 --test-timeout=120000 --test-force-exit \"test/**/*.test.js\"",
+    "tests": 1660,
+    "pass": 1637,
+    "fail": 14,
+    "skipped": 9,
+    "testsFloor": 1425,
+    "testsFloorOk": true,
+    "allowedSet": "win32 基线登记 16 项（命中 12）∪ 裁决 K 的 S0 基线既有红 2 项（HANDOFF_EVIDENCE_ESCAPE、AC-04）",
+    "observedFail": 14,
+    "inAllowedSet": 14,
+    "loadFlakesConfirmedByIsolation": 1,
+    "diff": 0,
+    "diffCount": 0,
+    "purity": {
+      "dirs": [
+        "src/core,src/daemon",
+        "desktop/ui,desktop/harness"
+      ],
+      "words": 31,
+      "exit": 0,
+      "bothOk": true,
+      "files": [
+        "38",
+        "31"
+      ]
+    },
+    "dependencies": 0,
+    "mainChains": {
+      "count": 3,
+      "source": "test/wp14/regression-drill.test.js",
+      "exit": 0,
+      "pass": 8,
+      "total": 8
+    },
+    "usageLines": {
+      "USAGE_LINES": 25,
+      "USAGE_LINES_I112": 6,
+      "helpLines": 31
+    },
+    "gitDiffCheck": 0,
+    "nfrPerfEvidenceRestored": true,
+    "flakeInFinalFrame": 0,
+    "flakeNote": "过程帧曾出现一次「三主链」负载 flake，test/wp14/regression-drill.test.js 隔离复跑 8/8 全绿留帧（AC-22.flake.three-main-chains.isolated.log）；最终帧未复现，不计入 14 条失败集合",
+    "diffsetSource": "docs/iterations/iteration-12/evidence/AC-22.diffset.txt"
+  },
+  "finalVerification": {
+    "checks": [
+      {
+        "id": 1,
+        "name": "结果完整性",
+        "verdict": "PASS"
+      },
+      {
+        "id": 2,
+        "name": "证据支撑性",
+        "verdict": "PASS"
+      },
+      {
+        "id": 3,
+        "name": "判定未被放宽",
+        "verdict": "PASS"
+      },
+      {
+        "id": 4,
+        "name": "门禁与回归",
+        "verdict": "PASS"
+      },
+      {
+        "id": 5,
+        "name": "缺陷与遗留",
+        "verdict": "PASS",
+        "reason": "blockers.md 仅 AC-21 且有处置与解除条件；report.md 已落盘，§5 观察项已登记"
+      },
+      {
+        "id": 6,
+        "name": "提交范围 / 卫生",
+        "verdict": "PASS"
+      },
+      {
+        "id": 7,
+        "name": "需求评审闭环",
+        "verdict": "PASS",
+        "reason": "review-round1/2 齐全，最终轮 PASS（0 阻断）；需求头部 v2.1 = 附录 C 末行 v2.1；DoR 12 绿/1 黄/0 红"
+      }
+    ],
+    "verdict": "FAIL",
+    "verdictNote": "六项校验 + 第 7 项需求评审闭环全部 PASS，未发现伪造或放宽；总判 FAIL 的唯一原因是 AC-21 阻塞导致 §4.5 Done 条件 1/2/5 不满足"
+  },
+  "done": {
+    "1_acAllPass": {
+      "satisfied": false,
+      "note": "22/23 通过，AC-21 阻塞"
+    },
+    "2_zeroFailZeroBlocked": {
+      "satisfied": false,
+      "note": "不通过 0，阻塞 1"
+    },
+    "3_gatesGreen": {
+      "satisfied": true,
+      "note": "1660/1637/14/9 ≥1425，差集 0；三主链 8/8；purity 双目录 exit 0；deps 0"
+    },
+    "4_defectsClosed": {
+      "satisfied": true,
+      "note": "blockers.md AC-21 有处置与解除条件；report.md §5 观察项已登记"
+    },
+    "5_finalVerificationPass": {
+      "satisfied": false,
+      "note": "终验总判 FAIL（仅因 AC-21）"
+    },
+    "6_numbersConsistent": {
+      "satisfied": true,
+      "note": "report / acceptance-* / summary / results 四处均为 153 证据、22/0/1、322/322（commit 3ea10ba 统一 150→153）"
+    },
+    "7_requirementReviewLoop": {
+      "satisfied": true,
+      "note": "两轮评审，round2 PASS；v2.1 与附录 C 一致；DoR 无红"
+    }
+  },
+  "verdict": "BLOCKED",
+  "verdictNote": "22 通过 / 0 不通过 / 1 阻塞（AC-21 真实宿主性能面本机未取证）。实现与取证可信、门禁与回归可复现，但按 §4.5 不得带阻塞收口：需用户裁决 ①补真实宿主取证 或 ②书面豁免。在裁决前不宣布 Done，不把阻塞写成通过。",
+  "perAc": [
+    {
+      "ac": "AC-01",
+      "title": "篡改一条记录，链式哈希校验失败",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 22,
+      "checksPass": 22,
+      "checksFail": 0,
+      "evidenceRefs": 9,
+      "evidenceNonempty": 9,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-02",
+      "title": "链式哈希加固与 I1.9 基线衔接",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 21,
+      "checksPass": 21,
+      "checksFail": 0,
+      "evidenceRefs": 5,
+      "evidenceNonempty": 5,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-03",
+      "title": "白名单内唤醒正常发生",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 10,
+      "checksPass": 10,
+      "checksFail": 0,
+      "evidenceRefs": 4,
+      "evidenceNonempty": 4,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-04",
+      "title": "越权唤醒被拦截并留痕",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 16,
+      "checksPass": 16,
+      "checksFail": 0,
+      "evidenceRefs": 4,
+      "evidenceNonempty": 4,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-05",
+      "title": "证据指纹一致时正常交接",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 7,
+      "checksPass": 7,
+      "checksFail": 0,
+      "evidenceRefs": 6,
+      "evidenceNonempty": 6,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-06",
+      "title": "证据过期后交接被拒绝",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 23,
+      "checksPass": 23,
+      "checksFail": 0,
+      "evidenceRefs": 8,
+      "evidenceNonempty": 8,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-07",
+      "title": "高风险缺人工终审被挡下",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 16,
+      "checksPass": 16,
+      "checksFail": 0,
+      "evidenceRefs": 8,
+      "evidenceNonempty": 8,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-08",
+      "title": "有终审路径的高风险节点需等人裁决",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 15,
+      "checksPass": 15,
+      "checksFail": 0,
+      "evidenceRefs": 7,
+      "evidenceNonempty": 7,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-09",
+      "title": "节点与交接包状态变更进主审计",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 16,
+      "checksPass": 16,
+      "checksFail": 0,
+      "evidenceRefs": 5,
+      "evidenceNonempty": 5,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-10",
+      "title": "派生与会话状态不单独审计",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 15,
+      "checksPass": 15,
+      "checksFail": 0,
+      "evidenceRefs": 7,
+      "evidenceNonempty": 7,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-11",
+      "title": "并行度上限排队",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 15,
+      "checksPass": 15,
+      "checksFail": 0,
+      "evidenceRefs": 8,
+      "evidenceNonempty": 8,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-12",
+      "title": "预算耗尽时暂停而非失败",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "a",
+      "checksTotal": 18,
+      "checksPass": 18,
+      "checksFail": 0,
+      "evidenceRefs": 8,
+      "evidenceNonempty": 8,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-13",
+      "title": "角色包/工作流包导出含依赖闭包",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 15,
+      "checksPass": 15,
+      "checksFail": 0,
+      "evidenceRefs": 6,
+      "evidenceNonempty": 6,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-14",
+      "title": "导入第三方包：签名有效、版本兼容",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 8,
+      "checksPass": 8,
+      "checksFail": 0,
+      "evidenceRefs": 6,
+      "evidenceNonempty": 6,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-15",
+      "title": "签名无效/版本不兼容被拒绝且不污染资产",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 10,
+      "checksPass": 10,
+      "checksFail": 0,
+      "evidenceRefs": 6,
+      "evidenceNonempty": 6,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-16",
+      "title": "orch migrate 升级派生角色/工作流引用",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 14,
+      "checksPass": 14,
+      "checksFail": 0,
+      "evidenceRefs": 9,
+      "evidenceNonempty": 9,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-17",
+      "title": "orch migrate 无迁移项/坏引用/幂等",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 12,
+      "checksPass": 12,
+      "checksFail": 0,
+      "evidenceRefs": 6,
+      "evidenceNonempty": 6,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-18",
+      "title": "可观测性导出为 OpenTelemetry 格式",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 13,
+      "checksPass": 13,
+      "checksFail": 0,
+      "evidenceRefs": 9,
+      "evidenceNonempty": 9,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-19",
+      "title": "反模式监控给出三类信号",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 15,
+      "checksPass": 15,
+      "checksFail": 0,
+      "evidenceRefs": 4,
+      "evidenceNonempty": 4,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-20",
+      "title": "性能基线 mock 压测达标（mock 实测）",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 12,
+      "checksPass": 12,
+      "checksFail": 0,
+      "evidenceRefs": 6,
+      "evidenceNonempty": 6,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-21",
+      "title": "真实宿主性能证据分级（留本机）",
+      "verdict": "阻塞",
+      "face": "阻塞",
+      "batch": "b",
+      "checksTotal": 5,
+      "checksPass": 5,
+      "checksFail": 0,
+      "evidenceRefs": 4,
+      "evidenceNonempty": 4,
+      "manualGraded": false,
+      "blocker": "真实宿主（DSH 0.2.2-rc.1）性能面本机未取证：level=PERF_LEVEL_PENDING、blocked=true；按裁决 A 第 3 条判阻塞（不算失败），不得用 AC-20 的 mock 实测顶替、不得伪通过；需主控安排本机取证窗口后补采 20 实例/50 会话 handoff。"
+    },
+    {
+      "ac": "AC-22",
+      "title": "回归红线：上游 AC 与不变量只增不改（证据索引）",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 13,
+      "checksPass": 13,
+      "checksFail": 0,
+      "evidenceRefs": 13,
+      "evidenceNonempty": 13,
+      "manualGraded": false,
+      "blocker": null
+    },
+    {
+      "ac": "AC-23",
+      "title": "与 I1.11 的边界：治理侧只产出判定结果",
+      "verdict": "通过",
+      "face": "mock 实测",
+      "batch": "b",
+      "checksTotal": 11,
+      "checksPass": 11,
+      "checksFail": 0,
+      "evidenceRefs": 5,
+      "evidenceNonempty": 5,
+      "manualGraded": false,
+      "blocker": null
+    }
+  ]
+}
