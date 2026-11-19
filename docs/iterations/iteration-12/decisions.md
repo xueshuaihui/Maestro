@@ -79,3 +79,15 @@
 6. AC-19「查看反模式信号」在冻结命令名不扩张的前提下，由 `detectAntipatterns` 只读模块直调取证（S3 用例），不新增 CLI 子命令；不构成 WP-7 的阻塞项。
 
 **对需求的影响**：无 AC / BR / NF 增删、无 Then 改动；仅把被 advisory 架空的门禁恢复为需求原文已有判定强度，扩一处冻结断言的同步授权，并明确全量回归取证与 AC-19 查看口径。
+
+---
+
+## 裁决 E：链校验 CLI 失配序号取值口径（2026-11-19）
+
+**背景**：S3 批次 A 验收 AC-01 发现 `verify <实例>` 对篡改副本输出「链已断：第 1 条记录与前一条指纹不匹配」，但核心 `verifyChainCore` 返回的 `seq` / `firstMismatch` 均为 2。
+
+**事实核查**（主控实跑）：独立夹具中 8 条事件，直改第 2 条 `prev_event_hash`；核心返回 `seq:2, firstMismatch:2, count:1`（`count` 是失配前已校验条数），CLI 输出 `第 1 条`。`src/cli/verify.js:133` 的取值链把 `count` 放在 `seq` / `firstMismatch` 之前。
+
+**裁决**：A-2 文案「第 [N] 条记录与前一条指纹不匹配」中的 N 必须是**失配记录的 `seq`**（与 D-2 / 裁决 C 第 2 条一致），不是已校验条数。`verify.js` 只调整渲染取值优先级为 `seq` / `firstMismatch` → `badIndex` → `count` / `total` 兜底；不得改核心算法、A-2 文案或验收断言。
+
+**对需求的影响**：无 AC / BR / NF 增删、无 Then 改动；修复被 CLI 渲染层误报的序号，使 AC-01 Then 与 D-2 口径一致。

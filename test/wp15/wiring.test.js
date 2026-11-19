@@ -299,6 +299,26 @@ test('verify <instance> calls verifyChain with the frozen signature', async () =
   assert.equal(lines.length, 1);
 });
 
+test('verify <instance> broken chain reports mismatch seq, not the pre-break count', async () => {
+  const calls = [];
+  const lines = [];
+  const ctx = stubCtx(calls, lines, {
+    verifyChain: async (input) => {
+      calls.push(['chain', input]);
+      return { ok: false, seq: 2, firstMismatch: 2, count: 1, code: 'CHAIN_BROKEN' };
+    },
+  });
+  const code = await verifyCommand({ sub: null, positionals: ['INST-001'], flags: {} }, ctx);
+  assert.notEqual(code, 0);
+  assert.equal(calls[0][0], 'chain');
+  assert.equal(lines.length, 1);
+  // Expected text is filled from the frozen label template only: no CJK
+  // literal and no inline unicode escape in this file.
+  const fillN = (n) => labels.CHAIN_BROKEN.replace(/\[N\]/g, String(n)).replace(/\{N\}/g, String(n));
+  assert.equal(lines[0], fillN(2));
+  assert.notEqual(lines[0], fillN(1));
+});
+
 test('verify <package> calls verifyPackage; bad signature and version return non-zero', async () => {
   const calls = [];
   const lines = [];

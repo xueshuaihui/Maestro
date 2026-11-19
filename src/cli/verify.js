@@ -130,7 +130,12 @@ export async function verifyCommand(parsed, ctx = {}) {
     const result = await run({ root: rootOf(ctx), instanceId: value, fs: deps.fs ?? ctx?.fs });
     const ok = result?.ok === true;
     const key = ok ? VERIFY_LABEL_KEYS.chainComplete : VERIFY_LABEL_KEYS.chainBroken;
-    const n = result?.count ?? result?.total ?? result?.seq ?? result?.badIndex ?? result?.firstMismatch ?? 0;
+    // A break must report the mismatching record's seq (decision E / D-2), not
+    // the number of records verified before the break. A complete chain still
+    // reports its verified count. No label or exit-code change here.
+    const n = ok
+      ? result?.count ?? result?.total ?? 0
+      : result?.seq ?? result?.firstMismatch ?? result?.badIndex ?? result?.count ?? result?.total ?? 0;
     out(fill(requireLabel(labels, key), { N: n }));
     return ok ? EXIT_OK : EXIT_FAILED;
   }
