@@ -1,0 +1,35 @@
+# S2 批次 5（WP-7）门禁实跑（主控，2026-11-19T17:15Z）
+
+#1 纯净：src/core,src/daemon（31 词）
+OK: 扫描 45 个文件，src/core, src/daemon 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+exit=0
+
+#2 纯净：src/registry（30 词）
+OK: 扫描 11 个文件，src/registry 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+exit=0
+
+#3 纯净：三文件口径（31 词）
+OK: 扫描 3 个文件，src/cli/roles.js, src/cli/skills.js, src/cli/workflows.js 内 task-loop, researcher, writer, reviewer, 研究员, 撰写者, 审核者, code-loop, developer, tester, coordinator, arbiter, planner, summarizer, worker, data-analyst, fact-checker, editor, code-reviewer, compliance-reviewer, requirement-clarifier, research-brief, fact-check, data-analysis, doc-draft, doc-review, code-change, test-run, code-review, coordination, compliance-check 零命中
+exit=0
+
+#4 deps 数量
+0
+
+#5 新增实现零 CJK
+OK: no CJK
+exit=0
+
+# 资产计数（role validate）
+校验资产 26 个：全部通过（角色 16 · 技能 10）
+
+# 用法块行数（USAGE_LINES 25 + 首尾）
+31
+# orch recover 退出码（未实现命令应为 2）
+recover=2
+
+# NODE_STATES 仍 7 项
+count=7
+pending,running,review,done,failed,cancelled,escalated
+
+# src/ 本次新增行中文命中数（应为 0）
+0

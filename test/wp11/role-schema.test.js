@@ -54,7 +54,7 @@ test('freezes every exported value set', () => {
 
 test('declares nine required role keys and five optional ones', () => {
   assert.equal(ROLE_REQUIRED_KEYS.length, 9);
-  assert.deepEqual([...ROLE_OPTIONAL_KEYS], ['tools', 'wake_allow', 'inputs', 'outputs', 'dispatchable']);
+  assert.deepEqual([...ROLE_OPTIONAL_KEYS], ['tools', 'wake_allow', 'inputs', 'outputs', 'dispatchable', 'session_policy']);
 });
 
 test('declares the id pattern and its length window', () => {

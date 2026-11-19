@@ -5209,7 +5209,11 @@ export function createOrchestrator({
         }
       }
       await disposeAdapter(adapter);
-      return { ok: false, reason: 'host_unreachable', unavailable: true, message: 'no dialect client' };
+      // D-5 / AC-17: `initializeAdapterOnly` already succeeded, so the host is
+      // reachable. An adapter that exposes no dialect primitive is a
+      // session-level loss (degrade to the assigned position and re-dispatch),
+      // not a host-unreachable failure that interrupts the instance.
+      return { ok: false, reason: 'no_dialect', unavailable: false, message: 'no dialect client' };
     }
     const caps = typeof client.normalizeCapabilities === 'function'
       ? client.normalizeCapabilities(client.capabilities ?? adapter.capabilities ?? {})

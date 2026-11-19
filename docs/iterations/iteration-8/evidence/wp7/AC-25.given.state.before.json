@@ -1,0 +1,44 @@
+{
+  "state": "running",
+  "recoveredAt": null,
+  "recovery": null,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "state": "done",
+      "phase": null,
+      "round": 1,
+      "sessionId": "75df28ad-f73c-4bc0-822e-f9ac166a5781",
+      "artifactRefs": 2
+    },
+    {
+      "nodeId": "T-002",
+      "state": "running",
+      "phase": null,
+      "round": 1,
+      "sessionId": "2e0741f5-b96c-42e5-83b0-7e73495ca412",
+      "artifactRefs": 0
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "75df28ad-f73c-4bc0-822e-f9ac166a5781",
+      "nodeId": "T-001",
+      "state": "idle",
+      "dialect": null,
+      "recovered": null
+    },
+    {
+      "sessionId": "2e0741f5-b96c-42e5-83b0-7e73495ca412",
+      "nodeId": "T-002",
+      "state": "idle",
+      "dialect": null,
+      "recovered": null
+    }
+  ],
+  "dispatch": {
+    "T-001": 1,
+    "T-002": 1
+  },
+  "events": 23
+}

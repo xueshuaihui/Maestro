@@ -1,0 +1,125 @@
+{
+  "iteration": "I1.8",
+  "step": "S3 / WP-7 末批",
+  "generatedAt": "2026-11-19T17:02:55.295Z",
+  "repoHead": "ref: refs/heads/main",
+  "total": 9,
+  "byVerdict": {
+    "通过": 5,
+    "不通过": 2,
+    "阻塞": 2
+  },
+  "acs": [
+    {
+      "ac": "AC-25",
+      "title": "真实 DSH：只广告 resume、不广告 load，恢复走 resume",
+      "verdict": "通过",
+      "grading": "真实宿主实测",
+      "checks": "13/13",
+      "failedChecks": [],
+      "evidenceCount": 5,
+      "blocker": null
+    },
+    {
+      "ac": "AC-26",
+      "title": "真实 DSH：重启不重复已完成节点",
+      "verdict": "阻塞",
+      "grading": "真实宿主实测",
+      "checks": "6/6",
+      "failedChecks": [],
+      "evidenceCount": 4,
+      "blocker": "AC-26 第二条机检（`workspace/artifacts/**` 产物 mtime 不因恢复变化）在本机实跑场景下不可取证：编码闭环实例没有 `workspace/artifacts/**`（产物在 I1.7 worktree / stage 区，强杀窗口内 stage 为空）。按 NFR-08 判「阻塞」，不用空集冒充通过、不用替代目录冒充通过；第一条机检（已完成节点无第二次 node.dispatch）已实测通过。"
+    },
+    {
+      "ac": "AC-27",
+      "title": "第三方 load 方言：真实可用则真验，否则阻塞",
+      "verdict": "阻塞",
+      "grading": "真实宿主实测",
+      "checks": "2/3",
+      "failedChecks": [
+        {
+          "id": "C03",
+          "label": "第三方 ACP 服务端可在本机启动",
+          "expected": "exit 1",
+          "actual": "false (exit 1)"
+        }
+      ],
+      "evidenceCount": 2,
+      "blocker": "`dsh-acp-server@0.14.4` 已在 %TEMP% 真实安装（npm install 成功，95 包 / 51s），但其 ACP 服务端在本机无法启动：本机没有 `dsh` CLI（只有 Electron + app.asar/bin.js），入口直接抛错（见 AC-27.probe.third-party-boot.txt）。按需求 AC-27 判「阻塞」，load 语义由 AC-20 夹具覆盖；**不用夹具结果冒充真实面**。"
+    },
+    {
+      "ac": "AC-52",
+      "title": "非恢复路径的三条主链不变（基线 014fa6a）",
+      "verdict": "通过",
+      "grading": "架构门禁实测",
+      "checks": "12/12",
+      "failedChecks": [],
+      "evidenceCount": 5,
+      "blocker": null
+    },
+    {
+      "ac": "AC-53",
+      "title": "全量测试回归门禁：失败集合差集为 0",
+      "verdict": "不通过",
+      "grading": "架构门禁实测",
+      "checks": "2/3",
+      "failedChecks": [
+        {
+          "id": "C02",
+          "label": "新增失败集合（差集）为空",
+          "expected": "[]",
+          "actual": "[\"--host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）\",\"reconcileOnBoot：v2 旧 generation 运行中实例按实例记录恢复；v1 保持原样\"]"
+        }
+      ],
+      "evidenceCount": 1,
+      "blocker": null
+    },
+    {
+      "ac": "AC-54",
+      "title": "架构纯净：31 词扫描 exit 0、零依赖",
+      "verdict": "通过",
+      "grading": "架构门禁实测",
+      "checks": "8/8",
+      "failedChecks": [],
+      "evidenceCount": 2,
+      "blocker": null
+    },
+    {
+      "ac": "AC-55",
+      "title": "不新增 CLI 命令，用法块不变",
+      "verdict": "通过",
+      "grading": "架构门禁实测",
+      "checks": "9/9",
+      "failedChecks": [],
+      "evidenceCount": 4,
+      "blocker": null
+    },
+    {
+      "ac": "AC-56",
+      "title": "I1.7 已合入：恢复实现不依赖 worktree / 产物隔离（按裁-12 重判）",
+      "verdict": "不通过",
+      "grading": "架构门禁实测",
+      "checks": "5/6",
+      "failedChecks": [
+        {
+          "id": "C04",
+          "label": "grep -R -E \"artifact_type.*dir|merge.*order\" src/core src/daemon | wc -l = 0",
+          "expected": "0",
+          "actual": "2"
+        }
+      ],
+      "evidenceCount": 1,
+      "blocker": null
+    },
+    {
+      "ac": "AC-57",
+      "title": "真实宿主隔离：不动用户 ~/.dsh",
+      "verdict": "通过",
+      "grading": "真实宿主实测",
+      "checks": "12/12",
+      "failedChecks": [],
+      "evidenceCount": 1,
+      "blocker": null
+    }
+  ]
+}

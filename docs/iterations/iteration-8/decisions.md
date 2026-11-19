@@ -87,3 +87,42 @@
 | 裁-11d | 批次 4 全量 **1921 / 1885 pass / 25 fail / 11 skip**；新增红 4 条 | 拆解：`declares nine required role keys and five optional ones`（`test/wp11/role-schema.test.js:57`）与 `reconcileOnBoot：v2 旧 generation…`（`test/wp4/orchestrator.test.js:585`）**均为 D-9 授权预期红**；`--host-error 早返回` 与 `三主链：无新增可见词` 为已知负载 flake，本批隔离复跑 **6/6** 与 **8/8** 全绿。**剔除后差集 = 0** |
 | 裁-11e | `role-schema.js` 新增导出 `SESSION_POLICIES = Object.freeze(['reuse','fresh'])` | 与 `GROUPS` / `ARTIFACT_TYPES` / `SIDE_EFFECTS` 同风格的值域常量，零 CJK、零资产名；D-13 未禁止。**接受** |
 | 裁-11f | `role-instances.js` 按裁-10a 收窄：仅排除 `state==='running' && phase==='assigned'`，`review` 与无 `phase` 的旧快照行为不变 | 与 D-2 的位置语义一致（`assigned` 是「已分配、会话待重建」，不是在服务）；既有 67 条实例用例全绿。**接受** |
+
+## 九、S2 第 5 批（WP-7）前置裁决：AC-56 的「I1.7 已合入」重判口径（裁-12）
+
+**背景**：AC-56 的 **Given** 写「当前 `origin/main` 不含 I1.7 的 worktree / 产物隔离能力」，机检锚点含
+`grep -R "worktree" src/ | wc -l` 输出 `0` 与「`docs/iterations/iteration-7/requirement.md` 不存在」。
+但 I1.7（产物类型隔离 + 代码 worktree 集成）已收口并合入 main，上述两个锚点**客观不再成立**。
+AC-56 的 **Then** 末句已预留出口：「I1.7 合入后按同一套 AC 重跑」。
+
+**判定**：不修改需求；按 Then 末句执行「合入后重判」，把机检从「文件是否存在」改为「I1.8 是否依赖 I1.7 的能力」。
+
+**重判口径（S3 / S4 一律按此判 AC-56）**：
+
+1. **核心判据（不变）**：I1.8 的恢复实现**只读现有 `artifactRefs`**，不假设 worktree 路径、不假设产物隔离目录。
+   机检改为：`git diff 014fa6a..HEAD -- src/core/orchestrator.js | grep -c worktree` = `0`
+   且 `git diff 014fa6a..HEAD -- src/core/orchestrator.js | grep -cE "artifact_type.*dir|merge.*order"` = `0`。
+2. `test ! -e src/core/worktree.js` **仍成立**（I1.7 的隔离能力在 `src/core/code-isolation.js`，本就没有 `worktree.js`）——保留该断言。
+3. `grep -R "worktree" src/ | wc -l` 输出 `0` **不再适用**（I1.7 自身引入），**不得为凑该数字去改 I1.7 代码**；
+   改为「I1.8 新增行零命中」，即上述第 1 条。
+4. 「`docs/iterations/iteration-7/requirement.md` 不存在」不再成立（文件存在），**改为登记事实**：
+   报告写明「I1.7 已合入（`docs/iterations/iteration-7/requirement.md` 存在、`src/core/code-isolation.js` 存在），
+   AC-56 已按合入后口径重判；67 条 AC 的合入后重跑体现在 I1.8 S2 全量回归（基线 `014fa6a`）与 S3 逐条取证中」。
+5. 其余 4 条机检（`artifact_type.*dir|merge.*order` 零命中、报告登记「I1.7 合入后重跑」）**原样执行**。
+
+**不做的事**：不改 `src/core/code-isolation.js`、不改 I1.7 任何产物、不删 `docs/iterations/iteration-7/**` 来凑旧判据。
+
+## 十、S2 第 5 批（WP-7）实现口径、会话恢复降级缺陷修复与差集核对（裁-13）
+
+**背景**：WP-7 回执明确拒绝「改测试迁就实现」，把一条产品缺陷上报：「mock 进程**已成功拉起并完成 initialize**，
+只是适配器没暴露方言原语，却被判 `host_unreachable` → 实例被 `markInterrupted`」。主控复核后**亲自修产品代码**
+（不派回 WP-4 负责人，避免契约漂移），并据此消除 D-9 两条授权预期红。
+
+| 编号 | 事项 | 主控决定 |
+|---|---|---|
+| 裁-13a | **产品缺陷（主控亲修）**：`recoverSessionEntry` 在 `initializeAdapterOnly` 已成功（宿主可达）后，若适配器既无 `client` 也无 `resumeOrCreate`，返回 `{ok:false, reason:'host_unreachable', unavailable:true}`，`recoverInstance` 据此判致命 → `markInterrupted('recovery.failed')` → 整个实例 `interrupted` | 与 D-5「**只有宿主不可达才致命**」（AC-17 的给定是 mock 进程**拉不起来**）明确不符。改为 `{ok:false, reason:'no_dialect', unavailable:false}`，走**会话级降级**：节点 `running → assigned`、角色回到 `available`、写恢复事件后继续调度。落地位置 `src/core/orchestrator.js:5210-5216`，随代码附 D-5/AC-17 注释说明「initialize 成功即宿主可达」 |
+| 裁-13b | D-9 第二条授权预期红（`test/wp4/orchestrator.test.js:585` 的 `core.gone`）在裁-13a 修复后改测试即转绿 | **两条授权断言各司其职**：`:57` 改 `ROLE_OPTIONAL_KEYS` 元素数（`session_policy`），`:585` 改「无 `core.gone`、有 `recovery.*`」。改完 `test/wp4/orchestrator.test.js` **37/37 全绿**、`test/wp11/role-schema.test.js` **36/36 全绿**，`test/wp13/**` 无回归。**D-9 授权额度用尽，后续不得再改既有测试来迁就实现** |
+| 裁-13c | AC-56 第 4 条机检（`artifact_type.*dir|merge.*order` 零命中）按**全仓**口径实测 2 处命中：`src/core/code-isolation.js:6`、`src/core/orchestrator.js:2496` | 已核实两处**均在 `014fa6a` 基线已存在**（`orchestrator.js` 同文在基线 `:2258`，仅因上方新增代码行号位移），I1.8 新增行**零命中**。按裁-12 第 1 条 diff 口径实测 `worktree=0`、`artifactdir_mergeorder=0`，**判通过**；全仓 2 处按裁-12 第 3 条「不得为凑数字改 I1.7 代码」**登记为事实**，不改代码。S4 报告 §5 列明「全仓 2 处 vs diff 0 处」的口径差 |
+| 裁-13d | 批次 5 全量 **1921 / 1888 pass / 22 fail / 11 skip**；与基线 `014fa6a`（1841/1808/22/11）做失败集合差集 | **新增 1 条**：`--host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）`，失败点在 `after` 钩子 `EBUSY: rmdir %TEMP%/maestro-wp7-hosterr-*`（沙箱 `node-safe-delete-shim.cjs`），隔离复跑 **6/6 全绿** → 记为 Windows 清理 flake，**不计新增红**。**消失 1 条**：`live 取消：四项全 null、终态 cancelled/ended、不阻断取消`（基线红、本次转绿，属改善）。**剔除 flake 后差集 = 0**，条数 1921 ≥ 1841 |
+| 裁-13e | WP-7 自述未完成项：AC-26 第二条机检、AC-27、AC-53 差集口径、AC-56 第 4 条 | **一律不在 S2 掩盖**：AC-26 第二条（崩溃窗口内 `workspace/artifacts/**` 无产物，编码闭环实例产物落在 I1.7 `worktrees/` 与 `stage/`，强杀窗口内 `stage/` 为空）→ 判**阻塞**，不用空集冒充；AC-27（`dsh-acp-server@0.14.4` 真实安装成功，bin 启动即抛 `ERR_UNSUPPORTED_ESM_URL_SCHEME … Received protocol 'c:'`，本机只有 Electron + `app.asar/bin.js`、无 `dsh` CLI）→ 判**阻塞**并留原始 stderr 帧；AC-53 差集已由裁-13d 闭合；AC-56 已由裁-12 + 裁-13c 闭合。四条全部进 S3/S4 台账 |
+| 裁-13f | 真实宿主版本实测 **0.2.2-rc.5**，需求 §3.3 与 `docs/index.md` 记 `0.2.2-rc.1` | **不改需求**（需求是验收依据，版本号属环境事实）。按「实测优先」在 S3 取证时以 rc.5 记录，S4 报告 §5 登记「需求记 rc.1 / 实测 rc.5」，Done 判定不受影响 |

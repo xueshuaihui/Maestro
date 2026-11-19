@@ -9,7 +9,7 @@
 |---|---|---|
 | **S0 需求** | **PASS**（提交 `760b8a1`） | 需求 v3（1419 行 / 67 AC / 54 BR / 8 NFR / M-8 / C-18 / 附录 A~D）；**3 轮干净评审**：r1 FAIL（F-01~F-24）、r2 FAIL（N-01~N-05）、**r3 PASS**（阻断 0 / 建议 0，DoR 13/13、覆盖表 15/15、反向扫描无夹带缺漏）；`requirement-understanding.md` 596 行（8 节 + 67 条 Given 可构造性核查） |
 | **S1 拆分** | **PASS**（提交 `ae89f27`） | `docs/iterations/iteration-8.md` 812 行 / 8 节 / 7 WP / AC 67/67 满覆盖 / 文件零交集 / DAG 无环 / 10 个契约冻结点；**2 轮独立评审**：r1 FAIL（A⑤ 唯一判据 FAIL + S-01~S-07 建议）、**r2 PASS**（23/23 判据、阻断 0 / 建议 0） |
-| **S2 实现** | 进行中（第 1/2/3/4 批已落地：WP-1/WP-2、WP-5/WP-6、WP-4、WP-3） | 5 批：① WP-1+WP-2 ✅ → ② WP-5+WP-6 ✅ → ③ WP-4 ✅ → ④ WP-3 ✅ → ⑤ WP-7（末批单线，含 D-9 两行授权断言 + 真实宿主面）。每批主控复跑门禁后提交。**遗留**：门禁 ④「三主链逐字基线」的对照口径已改（见下方批次 2/3 段）：`d4b0f94` 之后 main 已依次合入 I1.7~I1.12，全量与三主链统一改用「I1.8 开工点」`014fa6a` 作对照，O-I2 据此闭合 |
+| **S2 实现** | **PASS**（5/5 批全部落地） | 5 批：① WP-1+WP-2 ✅ → ② WP-5+WP-6 ✅ → ③ WP-4 ✅ → ④ WP-3 ✅ → ⑤ WP-7 ✅（末批单线，含 D-9 两行授权断言 + 真实宿主面）。每批主控复跑门禁后提交。**遗留**：门禁 ④「三主链逐字基线」的对照口径已改（见下方批次 2/3 段）：`d4b0f94` 之后 main 已依次合入 I1.7~I1.12，全量与三主链统一改用「I1.8 开工点」`014fa6a` 作对照，O-I2 据此闭合。**转 S3/S4 的未完成项**见批次 5 段末清单（AC-26 第二条、AC-27 判阻塞；AC-53/AC-56 已闭合） |
 | **S3 验收** | 未开始 | `probe/acc8-f-*` 四件套 + `acc8-cases/` 67 用例 + `evidence/`；主控独立复跑全部批次 |
 | **S4 收口** | 未开始 | 终验 Agent + `report.md` / `final-verification.md` / `acceptance-*.md`，Done 七项判定 |
 
@@ -89,6 +89,30 @@ mock 能力广告用 `{}` 形态、`--prompt-failures` 双来源、flake 归因�
 
 **实现口径裁决 裁-11a~11f**：`ROLE_DIFF_KEYS` 不纳入（不扩范围）、`role show --format json` 不加键、AC-49 用角色 **id** 填充（AC Then 优先，模板占位名不符登记为观察项）、flake 构成、`SESSION_POLICIES` 导出、`role-instances` 收窄边界。
 
+### S2 第 5 批（WP-7 授权断言 / 门禁 / 真实宿主）门禁实跑（主控，2026-11-19）
+
+| 门禁 | 结果 |
+|---|---|
+| 全量（对照 `baseline-014fa6a-reds.txt`） | **1921 / 1888 pass / 22 fail / 11 skip**（基线 1841 → **+80 条**，本批未新增用例，仅转绿 2 条 + 修 1 处产品缺陷）；帧 `probe/i18-s2/batch5-full.log` |
+| 失败集合差集 | **新增 1 条 = 已知 flake**：`--host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）`，失败点在 `after` 钩子 `EBUSY: rmdir %TEMP%/maestro-wp7-hosterr-*`（沙箱 `node-safe-delete-shim.cjs`），隔离复跑 **6/6 全绿**；**消失 1 条**：`live 取消：四项全 null、终态 cancelled/ended、不阻断取消`（基线红→转绿，属改善）。**剔除 flake 后差集 = 0**（裁-13d）；帧 `probe/i18-s2/batch5-reds.txt` |
+| D-9 两条授权预期红 | **全部消除**：`test/wp4/orchestrator.test.js` **37/37 全绿**、`test/wp11/role-schema.test.js` **36/36 全绿**；`:588~592` 的 v1 一字不改断言未动 |
+| **产品缺陷（主控亲修）** | `recoverSessionEntry` 在 `initializeAdapterOnly` 已成功（宿主可达）后仍返 `host_unreachable / unavailable:true` → 实例被 `markInterrupted`，与 D-5「只有宿主不可达才致命」不符。修为 `{ok:false, reason:'no_dialect', unavailable:false}` 走会话级降级（节点 `running→assigned`、角色 `available`、写恢复事件后继续调度）。位置 `src/core/orchestrator.js:5210-5216`（裁-13a） |
+| `test/wp13/**` | 本批无新增用例文件，全量内 `test/wp13/**` 无回归；新增夹具侧用例并入 `fixtures.test.js`（批次 2 已计） |
+| D-11 五条 | #1 45 文件 exit 0；#2 `src/registry` 11 文件 exit 0；#3 三文件 exit 0；#4 `dependencies` = 0；#5 `OK: no CJK`。帧 `probe/i18-s2/gates-batch5.txt` |
+| 资产 / 命令冻结面 | `role validate` 仍 `校验资产 26 个：全部通过（角色 16 · 技能 10）`；`NODE_STATES` 仍 **7 项**；`--help` 31 行；`orch recover` 退 **2** |
+| 中文唯一来源 | `src/` 本批新增行中文字面量 **0** 处（仅注释） |
+| AC-56 重判机检 | `git diff 014fa6a..HEAD -- src/core/orchestrator.js \| grep -c worktree` = **0**；`… \| grep -cE 'artifact_type.*dir\|merge.*order'` = **0** → 裁-12 第 1 条**通过**。全仓口径仍有 2 处（`code-isolation.js:6`、`orchestrator.js:2496`），核实**均在 `014fa6a` 基线已存在**（基线同文 `:2258`），I1.8 新增行零命中，按裁-13c 不改 I1.7 代码 |
+| 历史证据污染 | `test/wp10/perf.test.js` 覆盖 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 复现，已用 `git -c core.autocrlf=false checkout-index -f -- <三路径>` 恢复 |
+
+**批次 5 未完成项（不掩盖，转 S3 / S4 报告）**：
+
+1. **AC-26 第二条机检判「阻塞」**：编码闭环实例无 `workspace/artifacts/**`（产物落在 I1.7 的 `worktrees/` 与 `stage/`，强杀窗口内 `stage/` 为空），**不用空集冒充**。
+2. **AC-27 判「阻塞」**：`dsh-acp-server@0.14.4` 真实安装成功（`added 95 packages`），bin 启动即抛 `ERR_UNSUPPORTED_ESM_URL_SCHEME … Received protocol 'c:'`（本机只有 Electron + `app.asar/bin.js`，无 `dsh` CLI），留原始 stderr 帧。
+3. **AC-53 已闭合**（差集剔 flake 后 = 0）；**AC-56 已闭合**（裁-12 + 裁-13c）。
+4. **真实宿主版本实测 `0.2.2-rc.5`**，需求写 `rc.1`；按实测取证、不改需求，S4 报告 §5 登记（裁-13f）。
+
+**实现口径裁决 裁-13a~13f**（`decisions.md` 第十节）：会话恢复降级缺陷修复、D-9 授权额度用尽、AC-56 全仓 2 处 vs diff 0 处的口径差、批次 5 差集构成、未完成项去向、宿主版本实测优先。
+
 ### WP-7 任务书必须吸收的三条（批次 4 交付时的接口约定）
 
 1. **D-9 两行授权改动**现在是**两条预期红**：`test/wp11/role-schema.test.js:57`（`ROLE_OPTIONAL_KEYS` 末尾追加 `'session_policy'`）与 `test/wp4/orchestrator.test.js:480/575/578/580/584~586`（改为「按实例记录恢复」）；`:588~592` 的 v1 一字不改断言保持原样。
@@ -113,7 +137,7 @@ mock 能力广告用 `{}` 形态、`--prompt-failures` 双来源、flake 归因�
 
 ## 裁决台账（`decisions.md`）
 
-裁-1（状态机 7 项 + 9 态投影）/ 裁-2（D-11 三文件口径）/ 裁-3（会话 `escalated` 沿用既有指示器）/ 裁-4（AC-54 内嵌 D-11 逐字副本）/ 裁-5（D-9 行号 `:588~592`）/ 裁-6（`session_policy` 命名）/ 裁-7（§8 措辞同步「已裁决」）/ **裁-8a~8f（批次 1）/ 裁-9a~9h（批次 2）/ 裁-10a~10e（批次 3 + 补派 + flake）/ 裁-11a~11f（批次 4）**。
+裁-1（状态机 7 项 + 9 态投影）/ 裁-2（D-11 三文件口径）/ 裁-3（会话 `escalated` 沿用既有指示器）/ 裁-4（AC-54 内嵌 D-11 逐字副本）/ 裁-5（D-9 行号 `:588~592`）/ 裁-6（`session_policy` 命名）/ 裁-7（§8 措辞同步「已裁决」）/ **裁-8a~8f（批次 1）/ 裁-9a~9h（批次 2）/ 裁-10a~10e（批次 3 + 补派 + flake）/ 裁-11a~11f（批次 4）/ 裁-12（AC-56 合入后重判）/ 裁-13a~13f（批次 5 + 会话恢复降级缺陷修复）**。
 
 ## S2 批次与门禁口径
 
@@ -123,7 +147,8 @@ mock 能力广告用 `{}` 形态、`--prompt-failures` 双来源、flake 归因�
 - **既有断言**：仅 D-9 两行授权改动（`:57` 与 `:480/575/578/580/584~586`），`:588~592` 一字不改；其余 `test/**` 零改动，新增断言一律 `test/wp13/**`。
 - **行尾**：本机 `core.autocrlf=true`，提交前统一 LF（历史坑：CRLF 让逐字节资产断言与 SHA256 假红）。
 - **真实宿主面**：AC-25/26/27/57 无 DSH CLI 时判「阻塞」，**不得用夹具冒充**；隔离 `DSH_HOME`，不动用户 `~/.dsh`。
-- **I1.7 边界**：当前 main 不含 I1.7；不依赖 worktree / 产物隔离；I1.7 合入后 67 条 AC 全部重跑。
+- **I1.7 边界（口径已更新，裁-12）**：需求 Given 写「main 不含 I1.7」，但 I1.7 已收口合入 main（`docs/iterations/iteration-7/requirement.md` 与 `src/core/code-isolation.js` 均存在）。按 AC-56 的 Then 末句「合入后重跑」执行重判：**判据改为「I1.8 是否依赖 I1.7 能力」**——`git diff 014fa6a..HEAD -- src/core/orchestrator.js` 内 `worktree` / `artifact_type.*dir` / `merge.*order` 必须零命中（实测 `0 / 0`）。**不得**为凑旧数字去改 I1.7 代码或删 I1.7 文档。
+- **对照基线（口径已更新）**：全量与三主链统一对照 **I1.8 开工点 `014fa6a`**（`1841/1808/22/11`），红名单固化在 `probe/i18-s2/baseline-014fa6a-reds.txt`；`d4b0f94` 与 `992` 条旧基线均不再作对照。
 
 ## 需求侧披露与遗留（S4 报告需列）
 

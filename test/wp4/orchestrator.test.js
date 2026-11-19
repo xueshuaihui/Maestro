@@ -478,7 +478,7 @@ test('getStatus：派生字段（elapsedMs / sessionStalled / handoffWaitMs）�
   }
 });
 
-test('reconcileOnBoot：v2 旧 generation 的运行中实例 → interrupted；v1 保持原样', async () => {
+test('reconcileOnBoot：v2 旧 generation 运行中实例按实例记录恢复；v1 保持原样', async () => {
   const env = await setupMock();
   try {
     const at = new Date().toISOString();
@@ -573,18 +573,20 @@ test('reconcileOnBoot：v2 旧 generation 的运行中实例 → interrupted；v
 
     const result = await env.orch.reconcileOnBoot({ generation: 'gen-wp4' });
     assert.equal(result.ok, true);
-    assert.deepEqual(result.interrupted, ['INST-009']);
+    assert.deepEqual(result.interrupted, []);
 
     const loaded = await env.store.load('INST-009');
-    assert.equal(loaded.state.state, 'interrupted');
+    assert.equal(loaded.state.state, 'running');
     assert.equal(loaded.state.nodes[0].state, 'running');
-    assert.match(loaded.state.nodes[0].note, /stopped at node running/);
+    assert.ok(!/stopped/.test(loaded.state.nodes[0].note ?? ''), '按实例记录恢复不写 stopped note');
 
     const read = await env.store.readEvents('INST-009');
     const gone = read.events.filter((e) => e.reason === 'core.gone');
-    assert.equal(gone.length >= 1, true);
-    assert.equal(gone[0].from, 'running');
-    assert.equal(gone[0].to, 'interrupted');
+    assert.equal(gone.length, 0, '按实例记录恢复不得写 core.gone');
+    const recoveryEvents = read.events.filter(
+      (e) => typeof e.reason === 'string' && e.reason.startsWith('recovery.'),
+    );
+    assert.equal(recoveryEvents.length >= 1, true, '按实例记录恢复必须写 recovery.* 事件');
 
     const legacyAfter = fs.readFileSync(
       path.join(env.root, '.orch', 'instances', 'INST-010', 'state.json'),

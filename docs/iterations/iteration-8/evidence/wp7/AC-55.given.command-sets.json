@@ -1,0 +1,27 @@
+{
+  "commands": [
+    "run",
+    "status",
+    "cancel",
+    "core",
+    "role",
+    "skill",
+    "workflow"
+  ],
+  "runtimeCommands": [
+    "run",
+    "status",
+    "cancel",
+    "core",
+    "instance",
+    "attach",
+    "escalate",
+    "approve",
+    "handoff",
+    "workflow",
+    "trace",
+    "migrate",
+    "verify",
+    "export"
+  ]
+}
