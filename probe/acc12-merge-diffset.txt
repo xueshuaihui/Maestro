@@ -1,0 +1,48 @@
+# 合入 I1.11 后的失败集合差集（裁决 G 口径）
+# 基线树 = origin/main b1fb82c（git worktree 临时树，跑完即删）
+# 合并树 = 10af3c2 + 裁决 G 锚点修正
+# 时间: 2026-11-19T22:02:41+08:00
+
+## 基线全量
+# tests 1707
+# pass 1671
+# fail 25
+# skipped 11
+
+## 合并树全量
+# tests 1841
+# pass 1808
+# fail 22
+# skipped 11
+
+## 新增红（merged ∖ baseline）
+  -> 共 0 条
+
+## 基线有、合并树消失
+  A-1: code-change/SKILL.md matches the documented sample byte for byte
+  A-1: developer.yaml matches the documented sample byte for byte
+  两份 legacy 夹具的 state/events sha256 与 SHA256SUMS 一致
+
+## 合并树 22 条失败全清单
+     1	--fail-tool 合并四项；--fail-tool-no-refs 缺项为 null 且 command 不被工具名冒充
+     2	--host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）
+     3	--stop-after 3 冻结窗口恰 3 条跨度、7 字段、无 handoff_ids、HO-002 读取时推导
+     4	AC-04：空态、不可读行不阻断、新实例 2 秒内由推送触发出现；F-18 脉冲后 2 秒内更新
+     5	AC-24 现场一：角色目录不可读整页降级，其它分页照常
+     6	AC-27：读操作不写实例、四组状态不变、仅回环监听、数据面无凭据 401
+     7	AC-31 现场二：文件不存在 / 无读权限 → 定义 空（readable=true、零节点）
+     8	BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）
+     9	D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）
+    10	HANDOFF_EVIDENCE_ESCAPE：符号链接绕过
+    11	S-07: thirteen directly written role files are read by the registry (--host mock)
+    12	escalations.filter|reduce 在 src/daemon 恰 1 条基线（shapeSnapshot 回退）
+    13	execution.summary 每会话恰一条，成功/失败/取消三种收尾都有，缺项为 null
+    14	grep -c "object: 'session'" ≤ 13；会话级新增事件类型只有 execution.summary
+    15	newState 只追加 health 与 traceId 两个字段、既有初始字段与顺序不动；缺 health 按 30000 缺省且不批量回填
+    16	resolveEvidenceRef 纯路径判定（越界 / artifacts / policy）
+    17	shapeSnapshot 函数体逐字未改（D-36：禁止为凑「一处」改它）
+    18	single / code-loop / task-loop 三主链运行期输出不出现健康度 / 追踪新行
+    19	the desktop port listens on loopback only (lsof shows 127.0.0.1)
+    20	三主链：A-0 归一化后逐字命中 I1.1/I1.3 冻结基线（single/code-loop/task-loop）
+    21	可注入 fs：stat 结果决定通过，且不产生任何写
+    22	既有 8 条 HTTP 路径与 2 个测试接缝锚点仍在（逐字、D-11/拆分 §2.8）

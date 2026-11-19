@@ -232,11 +232,18 @@ function frozenSubs(src) {
 test('CLI 命令表与两层子命令表未变（D-14 冻结，锚点取 src/cli/main.js）', () => {
   const src = readText('src/cli/main.js');
   assert.deepEqual(setLiteral(src, 'COMMANDS'), ['run', 'status', 'cancel', 'core', 'role', 'skill', 'workflow']);
-  assert.deepEqual(setLiteral(src, 'RUNTIME_COMMANDS'), [
+  // D-14 冻结：既有 11 条成员与顺序逐字不可变。I1.12 按裁决 A/D-13 只允许在末尾
+  // 追加 `verify/migrate/export` 三条（命令名已由裁决 A 冻结），故尾部单列断言而非放宽为子集。
+  const runtimeCommands = setLiteral(src, 'RUNTIME_COMMANDS');
+  assert.deepEqual(runtimeCommands.slice(0, 11), [
     'run', 'status', 'cancel', 'core', 'instance', 'attach', 'escalate', 'approve',
     'handoff', 'workflow', 'trace',
   ]);
-  assert.deepEqual(frozenSubs(src), {
+  assert.deepEqual(runtimeCommands.slice(11), ['migrate', 'verify', 'export']);
+  // 既有六组子命令逐字不变；`verify` 是 I1.12 新增组（D-13：一个 handler 四目标，
+  // 仅 import/review 两目标需要子命令 token），单列精确断言。
+  const { verify, ...legacySubs } = frozenSubs(src);
+  assert.deepEqual(legacySubs, {
     core: ['stop'],
     instance: ['status', 'log', 'graph'],
     escalate: ['list', 'resolve'],
@@ -244,6 +251,7 @@ test('CLI 命令表与两层子命令表未变（D-14 冻结，锚点取 src/cli
     workflow: ['pause', 'resume', 'abort'],
     trace: ['show'],
   });
+  assert.deepEqual(verify, ['import', 'review']);
 });
 
 // ---------------------------------------------------------------------------

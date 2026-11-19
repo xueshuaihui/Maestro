@@ -116,3 +116,31 @@
 5. 在此之前：不宣布 I1.12 结束、不把阻塞改写成通过、不删 `blocked=1`、不把试点延迟写成真实宿主达标。
 
 **对需求的影响**：无 AC / BR / NF 增删、无 Then 改动。仅修正阻塞根因的表述，并把「取证脚手架宿主发现」列为方法学缺陷（不影响任何 AC 判定强度）。
+
+---
+
+## 裁决 G：合入 I1.11 后跨迭代冻结锚点的更新口径（2026-11-19）
+
+**背景**：I1.12 分支 `feat/i1.12-governance` 在 S4 收口后与 `origin/main` 合并（main 已由并行工作树推进到 I1.11，
+`b1fb82c`）。合并本身只有一处文本冲突（`src/cli/labels.js`，双方均在文件末尾追加导出块，按「两者都保留」解决），
+但产生一处**语义冲突**：I1.11 的冻结锚点 `test/wp14/regression.test.js::CLI 命令表与两层子命令表未变（D-14 冻结）`
+以 `deepEqual` 断言 `RUNTIME_COMMANDS` 恰为 11 条、`RUNTIME_SUBS` 恰为 6 组；而 I1.12 按裁决 A / D-13 合法追加了
+`migrate/verify/export` 三条命令名与 `verify: ['import','review']` 一组子命令。
+
+**判定**：该锚点的**意图**是「既有成员不得删改或重排、两层表不得结构漂移」，不是「永远不许扩项」；
+I1.12 的扩项已由裁决 A 冻结命令名、由裁决 D-13 授权 `main.js` 追加挂载。因此不修产品、只修锚点表达方式。
+
+**授权**（严格限定为 `test/wp14/regression.test.js` 中该**一个** test 块，不动其它断言）：
+
+1. `RUNTIME_COMMANDS`：由「整表 deepEqual」改为「`slice(0,11)` 逐字等于原 11 条冻结成员（含顺序）」+「`slice(11)` 逐字等于 `['migrate','verify','export']`」——
+   既证明无删改无重排，也把新增项钉死为恰好这三条，**不放松为子集断言**。
+2. `RUNTIME_SUBS`：解构出 `verify` 后，其余六组仍按原对象 `deepEqual`；`verify` 单列 `deepEqual(['import','review'])`。
+3. `COMMANDS`（资产族七条）保持不变。
+
+**不做的事**：不改 `src/**` 任何产品代码；不改 `test/wp2/labels.test.js`（已在裁决 D 授权内同步过）；不因该冲突放宽任何 AC 判定。
+
+**合并后门禁口径**：失败集合差集以 **`origin/main` 基线树（`b1fb82c`）的全量红名单**为对照，
+`merged ∖ baseline = ∅` 才算通过（基线红不再逐条人工登记，避免把「main 本来就红」误记成 I1.12 引入）。
+实测：基线 `1707 / 1671 pass / 25 fail / 11 skip`；合并树 `1841 / 1808 pass / 22 fail / 11 skip`；
+**新增红 0 条**，另有 3 条基线红在合并树中消失（`A-1: code-change/SKILL.md`、`A-1: developer.yaml`、
+`两份 legacy 夹具的 state/events sha256`）。

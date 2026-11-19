@@ -51,15 +51,14 @@
   },
   "gate": {
     "suiteCommand": "NODE_ENV=test node --test --test-concurrency=1 --test-timeout=120000 --test-force-exit \"test/**/*.test.js\"",
-    "tests": 1660,
-    "pass": 1637,
-    "fail": 14,
-    "skipped": 9,
+    "tests": 1841,
+    "pass": 1808,
+    "fail": 22,
+    "skipped": 11,
     "testsFloor": 1425,
     "testsFloorOk": true,
-    "allowedSet": "win32 基线登记 16 项（命中 12）∪ 裁决 K 的 S0 基线既有红 2 项（HANDOFF_EVIDENCE_ESCAPE、AC-04）",
-    "observedFail": 14,
-    "inAllowedSet": 14,
+    "allowedSet": "对照 origin/main（b1fb82c）基线树红名单：25 条；合并树 22 条全部 ⊆ 基线 25 条（新增红 0，另有 3 条基线红消失）",
+    "observedFail": 22,
     "loadFlakesConfirmedByIsolation": 1,
     "diff": 0,
     "diffCount": 0,
@@ -72,9 +71,10 @@
       "exit": 0,
       "bothOk": true,
       "files": [
-        "38",
-        "31"
-      ]
+        "45",
+        "42"
+      ],
+      "note": "S3 帧为 38/31 文件；合入 I1.11 后 45/42，均 exit 0"
     },
     "dependencies": 0,
     "mainChains": {
@@ -91,9 +91,41 @@
     },
     "gitDiffCheck": 0,
     "nfrPerfEvidenceRestored": true,
-    "flakeInFinalFrame": 0,
-    "flakeNote": "过程帧曾出现一次「三主链」负载 flake，test/wp14/regression-drill.test.js 隔离复跑 8/8 全绿留帧（AC-22.flake.three-main-chains.isolated.log）；最终帧未复现，不计入 14 条失败集合",
-    "diffsetSource": "docs/iterations/iteration-12/evidence/AC-22.diffset.txt"
+    "diffsetSource": "docs/iterations/iteration-12/evidence/AC-22.diffset.txt",
+    "s3Frame": {
+      "commit": "3470241",
+      "tests": 1660,
+      "pass": 1637,
+      "fail": 14,
+      "skipped": 9,
+      "allowedSet": "win32 基线登记 16 项（命中 12）∪ 裁决 K 的 S0 基线既有红 2 项",
+      "diffsetSource": "docs/iterations/iteration-12/evidence/AC-22.diffset.txt"
+    },
+    "integration": {
+      "commit": "10af3c2 + 裁决 G 锚点修正",
+      "base": "origin/main b1fb82c",
+      "baseFrame": {
+        "tests": 1707,
+        "pass": 1671,
+        "fail": 25,
+        "skipped": 11
+      },
+      "mergedFrame": {
+        "tests": 1841,
+        "pass": 1808,
+        "fail": 22,
+        "skipped": 11
+      },
+      "diffset": 0,
+      "newRed": 0,
+      "disappearedReds": 3,
+      "rule": "裁决 G：差集以 origin/main 基线树全量红名单为对照，merged ∖ baseline = ∅",
+      "frames": [
+        "probe/acc12-merge-baseline-full.log",
+        "probe/acc12-merge-full.log",
+        "probe/acc12-merge-diffset.txt"
+      ]
+    }
   },
   "finalVerification": {
     "checks": [
@@ -149,7 +181,7 @@
     },
     "3_gatesGreen": {
       "satisfied": true,
-      "note": "1660/1637/14/9 ≥1425，差集 0；三主链 8/8；purity 双目录 exit 0；deps 0"
+      "note": "合入 I1.11 后 1841/1808/22/11（≥1425 基线），对照 origin/main 基线树新增红 0；三主链 8/8；purity 双目录 exit 0（45+42 文件）；deps 0"
     },
     "4_defectsClosed": {
       "satisfied": true,

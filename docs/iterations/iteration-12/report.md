@@ -22,8 +22,9 @@
 |---|---|---|
 | AC 条数 | **23 通过 22 / 不通过 0 / 阻塞 1** | `summary.json`、两份 `results.jsonl`、`acceptance-fixture.md` 三处一致 |
 | 核对项 | **322 / 322** | A 批 194（AC-01 按裁决 E 修复后 22/22）+ B 批 128；AC-21 的 5/5 为「阻塞出口」核对项，不计失败 |
-| 全量测试 | **1660 / pass 1637 / fail 14 / skipped 9**（`tests ≥ 1425` 基线） | 14 条全部落在允许集合（win32 登记 **12** + 裁决 K 的 S0 既有红 **2**，逐行对账见 `evidence/AC-22.diffset.txt`），**集合外新增红 = 0，差集 0**；最终帧**不含** flake（过程帧的一次「三主链」负载 flake 已隔离复跑证伪并留帧，未复现） |
-| 架构扫描 | 双目录 31 词 **exit 0** | `src/core,src/daemon`（38 文件）+ `desktop/ui,desktop/harness`（31 文件），零命中 |
+| 全量测试（S3 取证的被验证提交 `3470241`） | **1660 / pass 1637 / fail 14 / skipped 9**（`tests ≥ 1425` 基线） | 14 条全部落在允许集合（win32 登记 **12** + 裁决 K 的 S0 既有红 **2**，逐行对账见 `evidence/AC-22.diffset.txt`），**集合外新增红 = 0，差集 0**；最终帧**不含** flake（过程帧的一次「三主链」负载 flake 已隔离复跑证伪并留帧，未复现） |
+| 全量测试（**合入 I1.11 后**的集成树） | **1841 / pass 1808 / fail 22 / skipped 11** | 差集口径改为「以 `origin/main` 基线树（`b1fb82c`）红名单为对照」（裁决 G）：基线 **1707 / 1671 / 25 / 11**，合并树 **新增红 0 条**，另有 3 条基线红消失；逐条见 `probe/acc12-merge-diffset.txt`，原始帧 `probe/acc12-merge{,-baseline}-full.log` |
+| 架构扫描 | 双目录 31 词 **exit 0** | `src/core,src/daemon`（S3 帧 38 文件 → 合入 I1.11 后 45 文件）+ `desktop/ui,desktop/harness`（31 → 42 文件），零命中 |
 | 回归红线 | **三主链 8/8、I1.10b 51 AC + I1.9 27 AC 判据文件零改动、`USAGE_LINES` 25 行逐字不变** | `test/wp14/regression-drill.test.js` exit 0；`git diff 0b12bd8..HEAD -- .../requirement.md` 为空 |
 | 零依赖 | **0** | `Object.keys(package.json.dependencies).length` |
 | 阻断级缺陷 | **0**（AC-01 缺陷已修复并复验、不计缺陷；AC-21 是阻塞不是缺陷） | `probe/acc12-f-blockers.md` 仅 AC-21，「不通过 / 缺陷项」为空 |
@@ -133,6 +134,12 @@ NODE_ENV=test node --test --test-concurrency=1 --test-timeout=120000 \
 # 预期：tests 1660 / pass 1637 / fail 14 / skipped 9，EXIT:1
 # 14 条 = win32 登记 12 + 裁决 K 的 S0 既有红 2；集合外新增红 0，差集 0
 # （过程帧曾出现一次「三主链」负载 flake，单文件隔离 8/8 全绿留帧，最终帧未复现）
+#
+# 合入 I1.11 后的集成树（main 现状）预期：tests 1841 / pass 1808 / fail 22 / skipped 11，EXIT:1。
+# 此时差集口径改为「对照 origin/main 基线树」（裁决 G）：基线 b1fb82c 为 1707/1671/25/11，
+# 合并树新增红必须为 0。基线树复现方式：
+#   git worktree add --detach %TEMP%/maestro-base-i111 b1fb82c
+#   (在基线树内跑同一条命令)  然后 git worktree remove %TEMP%/maestro-base-i111
 
 # 2) 三主链回归红线（不变量逐字）
 NODE_ENV=test node --test --test-concurrency=1 --test-timeout=120000 \
@@ -141,8 +148,8 @@ NODE_ENV=test node --test --test-concurrency=1 --test-timeout=120000 \
 
 # 3) 架构 purity（31 词并集，两个目录都要跑）
 FORBID="task-loop,researcher,writer,reviewer,研究员,撰写者,审核者,code-loop,developer,tester,coordinator,arbiter,planner,summarizer,worker,data-analyst,fact-checker,editor,code-reviewer,compliance-reviewer,requirement-clarifier,research-brief,fact-check,data-analysis,doc-draft,doc-review,code-change,test-run,code-review,coordination,compliance-check"
-node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid "$FORBID"      # 38 文件，exit 0
-node test/fixtures/purity-check.mjs --dirs desktop/ui,desktop/harness --forbid "$FORBID" # 31 文件，exit 0
+node test/fixtures/purity-check.mjs --dirs src/core,src/daemon --forbid "$FORBID"      # 45 文件，exit 0（S3 帧为 38）
+node test/fixtures/purity-check.mjs --dirs desktop/ui,desktop/harness --forbid "$FORBID" # 42 文件，exit 0（S3 帧为 31）
 
 # 4) 零依赖 / 补丁卫生
 node -p "Object.keys(require('./package.json').dependencies||{}).length"   # 预期 0
@@ -217,8 +224,8 @@ node probe/acc12-f-final.mjs
 |---|---|---|---|
 | **I1.9**（三层日志 + 健康度 + `orch trace show`） | 事件落盘结构、`reason` 码表、`trace show` 只读通道、审计粒度基线 | 事件链新增**哈希指纹**与 `prev` 链接（`audit-verify.js`）；`REASON_LABEL` 新增 1 键（`wake.not-whitelisted`），既有键不动 | 27 条 AC 判据文件零改动（`git diff` 空）；`verifyChain` 冻结签名不变（裁决 C）；`test/wp15/chain-compat.test.js` 双跑新旧链 |
 | **I1.10b**（桌面壳 + 实例列表 + 角色流程图 + CI Release） | 实例/角色/工作流的数据布局与 CLI 命令族注册表（`FAMILY_MODULES` / `RUNTIME_COMMANDS` / `RUNTIME_SUBS`） | 命令族**只增**三条（`verify` / `migrate` / `export`）；`USAGE_LINES` **25 行逐字不变**，追加走独立的 `USAGE_LINES_I112`（6 行） | 51 条 AC 判据文件零改动；`--help` 31 行 = 25 + 6；`RUNTIME_SUBS.workflow` 保持 `pause/resume/abort` |
-| **I1.11**（通知 / 干预队列 / 资产库 / 画布 / 证据浏览，并行实现） | 无代码复用（刻意零交集） | **只定义治理侧判定结果的数据形状**（`handoff.freshnessDecision` / `handoff.reviewDecision`），不定义 UI / 按钮 / 文案 | AC-23 机检：实现文件零交集、证据文件名不含 I1.11 特征词（`queue` 等）、`test/wp15/boundary-i111.test.js` |
-| **I1.7**（代码隔离 worktree） | 夹具项目根一律 `%TEMP%`、`NODE_ENV=test` 必注入 | 无 | 全量 1660 条跑通、允许集合差集 0 |
+| **I1.11**（通知 / 干预队列 / 资产库 / 画布 / 证据浏览，并行实现） | 无代码复用（刻意零交集） | **只定义治理侧判定结果的数据形状**（`handoff.freshnessDecision` / `handoff.reviewDecision`），不定义 UI / 按钮 / 文案。**合入时**：`src/cli/labels.js` 两段追加块并存；I1.11 的 D-14 冻结锚点按裁决 G 改为「前 11 条逐字 + 尾部恰为 `migrate/verify/export`」 | AC-23 机检：实现文件零交集、证据文件名不含 I1.11 特征词（`queue` 等）、`test/wp15/boundary-i111.test.js`；合入后差集对照 `origin/main` 基线树 = 0（`probe/acc12-merge-diffset.txt`） |
+| **I1.7**（代码隔离 worktree） | 夹具项目根一律 `%TEMP%`、`NODE_ENV=test` 必注入 | 无 | S3 帧 1660 条跑通、允许集合差集 0；合入 I1.11 后 1841 条、对照基线树新增红 0 |
 
 **不变量守持（跨迭代 12 条，本迭代新增/触碰的 4 条）**：① 状态迁移唯一入口 `orchestrator.transit()` 未绕开（治理拦截走 `escalateState` + `return {action:'stop'}`，不直接改状态）；② `halted` 仍独立一次 `saveState`；③ 事件先落盘再广播，`emit` 失败不改内存状态（`event-bus.emit()` 新增可选 `ts`，复用状态变更同一时刻）；④ purity 31 词双目录 exit 0、中文唯一来源 `labels.js`、`USAGE_LINES` 25 行不变。
 
