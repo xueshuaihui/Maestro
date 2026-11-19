@@ -1,0 +1,22 @@
+--fail-tool 合并四项；--fail-tool-no-refs 缺项为 null 且 command 不被工具名冒充
+--stop-after 3 冻结窗口恰 3 条跨度、7 字段、无 handoff_ids、HO-002 读取时推导
+AC-04：空态、不可读行不阻断、新实例 2 秒内由推送触发出现；F-18 脉冲后 2 秒内更新
+AC-24 现场一：角色目录不可读整页降级，其它分页照常
+AC-27：读操作不写实例、四组状态不变、仅回环监听、数据面无凭据 401
+AC-31 现场二：文件不存在 / 无读权限 → 定义 空（readable=true、零节点）
+BR-26：六个守护进程投影模块的代码行零中文字面量（中文只在 labels.js）
+D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）
+HANDOFF_EVIDENCE_ESCAPE：符号链接绕过
+S-07: thirteen directly written role files are read by the registry (--host mock)
+escalations.filter|reduce 在 src/daemon 恰 1 条基线（shapeSnapshot 回退）
+execution.summary 每会话恰一条，成功/失败/取消三种收尾都有，缺项为 null
+grep -c "object: 'session'" ≤ 13；会话级新增事件类型只有 execution.summary
+newState 只追加 health 与 traceId 两个字段、既有初始字段与顺序不动；缺 health 按 30000 缺省且不批量回填
+reconcileOnBoot：v2 旧 generation 的运行中实例 → interrupted；v1 保持原样
+resolveEvidenceRef 纯路径判定（越界 / artifacts / policy）
+shapeSnapshot 函数体逐字未改（D-36：禁止为凑「一处」改它）
+single / code-loop / task-loop 三主链运行期输出不出现健康度 / 追踪新行
+the desktop port listens on loopback only (lsof shows 127.0.0.1)
+三主链：A-0 归一化后逐字命中 I1.1/I1.3 冻结基线（single/code-loop/task-loop）
+可注入 fs：stat 结果决定通过，且不产生任何写
+既有 8 条 HTTP 路径与 2 个测试接缝锚点仍在（逐字、D-11/拆分 §2.8）

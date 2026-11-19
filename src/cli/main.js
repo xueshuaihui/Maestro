@@ -33,6 +33,10 @@ import {
   USAGE_LINES,
   USAGE_LINES_I112,
   WORKFLOW_CLI_TEXT,
+  RECOVERY_TEXT,
+  SESSION_FAILURE_TEXT,
+  fill,
+  formatHandoffDirection,
 } from './labels.js';
 import * as render from './render.js';
 import { firstRegistryDetail, roleCommand } from './roles.js';
@@ -816,6 +820,116 @@ function templateOf(snapshot) {
   return typeof snapshot?.template === 'string' && snapshot.template.length > 0 ? snapshot.template : 'single';
 }
 
+/**
+ * I1.8 / A-3 / A-6: recovery and session-failure events get their own vetted
+ * lines. Every wording template comes from `labels.js`; this helper only maps
+ * structured event details onto them. Unmapped reasons fall back to the generic
+ * event renderer.
+ */
+function recoveryEventLines(event) {
+  const reason = event?.reason;
+  if (typeof reason !== 'string') return null;
+  const detail = event?.detail ?? {};
+  const stamp = render.formatClock(event?.ts) ?? '--:--:--';
+  const line = (text) => (typeof text === 'string' && text.length > 0 ? `${stamp}  ${text}` : null);
+
+  if (reason === 'checkpoint.write_failed') {
+    return [line(fill(RECOVERY_TEXT.checkpointWriteFailed, { reason: detail.reason ?? detail.code ?? '' }))];
+  }
+  if (reason === 'session.crash') {
+    return [line(render.renderSessionCrashLine({
+      nodeId: detail.nodeId,
+      round: detail.round,
+      maxRounds: detail.maxRounds,
+    }))];
+  }
+  if (reason === 'session.rebuilt') {
+    return [line(render.renderSessionRebuiltLine({
+      sessionId: detail.sessionId,
+      nodeId: detail.nodeId,
+      round: detail.round,
+      maxRounds: detail.maxRounds,
+    }))];
+  }
+  if (reason === 'session.rebuild_failed') {
+    return [line(render.renderSessionRebuildFailedLine({
+      nodeId: detail.nodeId,
+      round: detail.round,
+      maxRounds: detail.maxRounds,
+    }))];
+  }
+  if (reason === 'session.slow') {
+    return [line(render.renderSessionSlowLine({
+      nodeId: detail.nodeId,
+      minutes: Math.floor((Number(detail.waitedMs) || 0) / 60000),
+    }))];
+  }
+  if (reason === 'session.timeout') {
+    return [line(render.renderNodeTimeoutLine({
+      nodeId: detail.nodeId,
+      round: detail.round,
+      maxRounds: detail.maxRounds,
+    }))];
+  }
+  if (reason === 'recovery.summary') {
+    return [line(fill(RECOVERY_TEXT.summary, {
+      clock: render.formatClock(detail.checkpointAt) ?? '--:--:--',
+      skipped: detail.skipped,
+      round: detail.round,
+      maxRounds: detail.maxRounds,
+    }))];
+  }
+  if (reason === 'recovery.dialect') {
+    if (detail.fallback === true) {
+      if (detail.from === 'resume') return [line(RECOVERY_TEXT.fallbackResumeToLoad)];
+      if (detail.from === 'load') return [line(RECOVERY_TEXT.fallbackLoadToNew)];
+      return null;
+    }
+    const template = detail.dialect === 'resume'
+      ? RECOVERY_TEXT.sessionResume
+      : detail.dialect === 'load'
+        ? RECOVERY_TEXT.sessionLoad
+        : RECOVERY_TEXT.sessionNew;
+    return [line(fill(template, { sessionId: detail.sessionId }))];
+  }
+  if (reason === 'recovery.role') {
+    if (detail.to === 'available' && detail.from !== 'unavailable') {
+      return [line(fill(RECOVERY_TEXT.roleUnrecoverable, {
+        role: ROLE_LABEL[detail.roleId] ?? detail.roleId ?? '',
+      }))];
+    }
+    if (detail.from === 'unavailable') {
+      return [line(fill(RECOVERY_TEXT.roleRebuilt, {
+        role: ROLE_LABEL[detail.roleId] ?? detail.roleId ?? '',
+      }))];
+    }
+    return null;
+  }
+  if (reason === 'recovery.handoff') {
+    return [line(fill(RECOVERY_TEXT.handoffCreated, { handoffId: detail.handoffId }))];
+  }
+  if (reason === 'recovery.connection') {
+    const direction = formatHandoffDirection(
+      detail.fromRole ?? detail.from ?? '',
+      detail.toRole ?? detail.to ?? '',
+      detail.kind ?? 'forward',
+    );
+    return [line(fill(RECOVERY_TEXT.connectionRedeliver, { direction }))];
+  }
+  if (reason === 'recovery.human') {
+    return [line(fill(RECOVERY_TEXT.humanHeld, { nodeId: detail.nodeId }))];
+  }
+  if (reason === 'recovery.reverify') {
+    return [line(fill(RECOVERY_TEXT.reverify, { nodeId: detail.nodeId }))];
+  }
+  if (reason === 'recovery.record') return [line(RECOVERY_TEXT.recordFallback)];
+  if (reason === 'recovery.legacy') return [line(RECOVERY_TEXT.legacyNoCheckpoint)];
+  if (reason === 'recovery.failed') {
+    return [line(fill(RECOVERY_TEXT.failed, { reason: detail.reason ?? detail.code ?? '' }))];
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------- run
 
 async function runCommand(flags, ctx) {
@@ -1131,7 +1245,10 @@ async function statusCommand(flags, ctx) {
     if (snapshot?.state === 'interrupted') {
       out(render.renderInterruptedNote(snapshot));
     } else {
-      out(render.renderInstanceLine(snapshot));
+      // I1.8 / A-2: the recovery line is a conditional second line; the plain
+      // instance line is byte-identical for instances without `recoveredAt`.
+      const graph = getGraph(template) ?? null;
+      for (const line of render.renderInstanceStatusLines(snapshot, graph)) out(line);
     }
     // I1.9 WP-8：实例状态行之后只插这一行健康度；其余各行文字与相对顺序零改（AC-19）。
     out(render.renderHealthLine(snapshot, ctx.now()));
@@ -1284,6 +1401,13 @@ async function instanceCommand(parsed, ctx) {
         if (badLines > 0) out(render.renderEventsSkippedLine(badLines));
       } else {
         for (const event of list) {
+          // I1.8 / A-3 / A-6: recovery and session-failure records get their own
+          // vetted lines first; everything else keeps the existing renderer.
+          const recovery = recoveryEventLines(event);
+          if (recovery !== null) {
+            for (const line of recovery) out(line);
+            continue;
+          }
           // I1.9 WP-8：`instance log` 在既有事件行之前只分派两类新记录
           // （A-12 执行摘要 / A-8 健康度变化）；其余事件仍走原渲染逻辑，行格式与相对顺序零改。
           if (event?.reason === 'execution.summary') {

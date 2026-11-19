@@ -66,3 +66,13 @@
 | 裁-9f | mock agent 的能力广告实际形态为 `{close:{},list:{},resume:{}}`，不是 `{close:true,...}` | 与既有 mock 及真实 DSH 的 ACP 能力形态一致；D-4 归一化用 `Boolean(...)`，两种形态等价；键集严格为 `close/list/resume` 且 `resume` 分支不含 `load`。**接受** |
 | 裁-9g | `--prompt-failures` / `MAESTRO_MOCK_PROMPT_FAILURES` 增加第二个来源 `opts.promptFailures`，使场景模式也生效 | 缺省 0 时 `shouldFailPrompt(0, n)` 短路为 false，**既有场景分支逐字不变**；佐证：`test/wp11/fixture-delivery.test.js` 6/6、`test/wp13/**` 300 条（4 条既有红）、全量差集 0。**接受** |
 | 裁-9h | 批次 2 首轮全量出现 `--host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）` 红 | 失败原因是测试 `after` 钩子 `EBUSY: resource busy or locked, rmdir %TEMP%/maestro-wp7-hosterr-*`，堆栈指向沙箱 `node-safe-delete-shim.cjs`，**非产品逻辑**。隔离复跑 6/6 全绿（帧 `probe/i18-s2/flake-host-error.isolated.log`），第二次全量未复现。**按 flake 登记，不计新增红** |
+
+## 七、S2 第 3 批（WP-4）、拆分遗漏补派与批次 3 实现口径（裁-10）
+
+| 编号 | 事项 | 主控决定 |
+|---|---|---|
+| 裁-10a | **拆分遗漏**：`src/registry/role-instances.js`（202 行，计算角色「服务节点 / 活跃会话」派生视图）既不在 §2.16 边界守护清单，也不在任何 WP 的负责文件清单里；而 AC-28 的 Then 要求 `orch role show developer --instance <实例>` 显示 `服务节点 —` | **补派给 WP-3**（角色域：`role-schema.js` / `asset-write.js` / `roles.js` 同为角色域文件）。授权范围**仅限**「服务节点 / servingNodeId」判定按 9 位置收窄（`state='running' + phase='assigned'` 不算正在服务），**不得**改角色其它派生规则、不得改注册表加载顺序。理由：AC-28 是用户可见 Then，不能因拆分遗漏而缺项 |
+| 裁-10b | WP-4 的 `transit` 把 phase 分支实现为「同一次 `saveState` 内同时写 `state` 与 `phase`」（`orchestrator.js:1016-1031`），`PHASE_EDGES` 恰为 D-2 的六组、`PHASE_TARGETS` 仅 `pending→[blocked,ready]` / `running→[assigned,running]` | 与 D-2「同一次 CAS、不得先写 phase 再写 state」逐字一致。**接受**，S3 按 AC-01 取证 9 位置可达 + 非法组合 `rejected / illegal_transition` 且磁盘不动 |
+| 裁-10c | `selectReusableSession` 由 `orchestrator.js:145` 顶层导出并在返回对象中暴露，但 `main.js` 无调用点 | 拆分 §6 冻结点 10 只要求「唯一新增导出、供 WP-3 import」；派发路径在内核、不新增 CLI 命令（AC-55）。**接受**，WP-3 直接 `import { selectReusableSession }` 消费 |
+| 裁-10d | 批次 3 全量首轮出现 3 条差集外红：`--host-error 早返回`、`三主链：无新增可见词`、`reconcileOnBoot：v2 旧 generation…` | 前两条隔离复跑全绿（`probe/i18-s2/flake-host-error.isolated.log`、`probe/i18-s2/wp4-three-chains.isolated.log` 8/8），为 Windows `EBUSY` 清理与三主链时序负载 flake，**不计新增红**；第三条是 **D-9 授权的预期红**（`test/wp4/orchestrator.test.js:585` 的 `core.gone` 断言），按拆分 §6 冻结点 8「改后必红是预期」留待 WP-7 末批改测试。二轮全量 **1908 / 1875 / 22 / 11**，差集恰为这一条 |
+| 裁-10e | WP-4 自述的未完成项：AC-58（e2e 需 spawn + `SIGKILL` 冷启动）、AC-24（角色目录不可读整页降级，属基线既有红）、AC-35 的 `delivered→accepted` 段依赖宿主首帧 | **不在 S2 掩盖**：AC-58 由 S3 用 `recovery-driver.mjs --scenario e2e` 真实取证；AC-24 作为**基线既有红**登记（非 I1.8 引入，`014fa6a` 基线红名单已含同名项）；AC-35 的 `accepted` 段在 S3 说明「依赖宿主首帧、mock 适配器不发真实 turn 帧」，按 `pending→delivered` 判据取证。三条均写入 S4 报告 §5 观察项 |

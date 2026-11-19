@@ -14,6 +14,7 @@
  * 本文件不出现模板名与角色名（AC-28）：图与角色都是注入的数据对象。
  */
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import path from 'node:path';
 
 import { createHandoffTracker } from '../adapter/handoff-tracker.js';
@@ -80,6 +81,7 @@ import {
   WORKSPACE_INIT_FAILED,
 } from './workspace.js';
 import * as approvals from './approvals.js';
+import { buildCheckpoint, loadCheckpoint, writeCheckpoint } from './checkpoint.js';
 
 const TURN_ID = 'turn-1';
 
@@ -97,6 +99,64 @@ const CANCEL_HANDOFF = new Set(CANCELABLE_HANDOFF);
 
 /** waitForRun 超时哨兵：与任何业务返回值都不相等。 */
 const WAIT_TIMEOUT = Symbol('run.wait.timeout');
+
+// ---------------------------------------------------------------- I1.8 position projection
+//
+// The seven-state table stays untouched (AC-01). The nine baseline positions are a
+// pure read-only projection of `state + phase`; `phase` may only live on `pending`
+// and `running` (C-01/D-2).
+const NODE_PHASE_VALUES = Object.freeze(['blocked', 'ready', 'assigned', 'running']);
+const PHASE_TARGETS = Object.freeze({
+  pending: Object.freeze(['blocked', 'ready']),
+  running: Object.freeze(['assigned', 'running']),
+});
+const PHASE_EDGES = new Set([
+  'blocked->ready',
+  'ready->assigned',
+  'assigned->running',
+  'running->assigned',
+  'assigned->cancelled',
+  'assigned->escalated',
+]);
+
+/** Read-only position of a node; falls back to the seven-state value. */
+function nodePosition(node) {
+  const state = node?.state ?? null;
+  const phase = typeof node?.phase === 'string' && NODE_PHASE_VALUES.includes(node.phase)
+    ? node.phase
+    : null;
+  if (state === 'pending') return phase === 'ready' ? 'ready' : 'blocked';
+  if (state === 'running') return phase === 'assigned' ? 'assigned' : 'running';
+  return state;
+}
+
+/** True when the position can carry a `phase` (C-01). */
+function phaseAllowedOn(state) {
+  return state === 'pending' || state === 'running';
+}
+
+/**
+ * D-13 / C-15 / freeze point 10: pick an existing idle session that may serve a new
+ * dispatch. Pure function; never mutates the list.
+ *
+ * A session qualifies when instance / role / host match, it is idle, and it either
+ * has no serving node or already serves the same node.
+ */
+export function selectReusableSession(sessionList, { instanceId, roleId, hostId, nodeId } = {}) {
+  if (!Array.isArray(sessionList)) return null;
+  for (const session of sessionList) {
+    if (!session || typeof session !== 'object') continue;
+    if (instanceId !== undefined && session.instanceId !== undefined
+      && session.instanceId !== instanceId) continue;
+    if (session.roleId !== roleId) continue;
+    if (session.hostId !== hostId) continue;
+    if (session.state !== 'idle') continue;
+    const serving = session.servingNodeId;
+    if (serving !== undefined && serving !== null && serving !== '' && serving !== nodeId) continue;
+    return session;
+  }
+  return null;
+}
 
 /**
  * Escalation reason texts. The only wording pieces assembled in the engine are the
@@ -505,6 +565,29 @@ export function createOrchestrator({
   /** AC-59: status.md refresh fault (test-only seam value). */
   const statusFault =
     isTest && runtimeEnv?.MAESTRO_FAULT === 'workspace_status_write:fail' ? STATUS_WRITE_FAULT : null;
+  /** I1.8 / M-7: checkpoint write fault (test-only; never reaches production). */
+  const checkpointFault =
+    isTest && runtimeEnv?.MAESTRO_FAULT === 'checkpoint_write:fail' ? 'checkpoint_write:fail' : null;
+  /** I1.8 / C-14: slow threshold, shortened by `MAESTRO_TEST_SLOW_MS` in tests. */
+  const slowMs = (() => {
+    if (isTest) {
+      const value = Number.parseInt(runtimeEnv?.MAESTRO_TEST_SLOW_MS ?? '', 10);
+      if (Number.isInteger(value) && value > 0) return value;
+    }
+    return 10 * 60 * 1000;
+  })();
+  /** I1.8 / D-8: test-only graph injection; only an absolute, existing file in tests. */
+  const injectedGraph = (() => {
+    if (!isTest) return null;
+    const raw = runtimeEnv?.MAESTRO_TEST_GRAPH;
+    if (typeof raw !== 'string' || raw.length === 0 || !path.isAbsolute(raw)) return null;
+    try {
+      const parsed = JSON.parse(fsSync.readFileSync(raw, 'utf8'));
+      return parsed && typeof parsed === 'object' ? parsed : null;
+    } catch {
+      return null;
+    }
+  })();
   /** Deterministic retry gate for tests; production always uses 200/500ms. */
   const deliveryDelayMs = (() => {
     if (!isTest) return null;
@@ -622,6 +705,47 @@ export function createOrchestrator({
     };
   }
 
+  const checkpointWarned = new Set();
+  const recoveryGraphs = new Map();
+  const recoveryDrives = new Map();
+
+  /** D-3 / C-03: one `checkpoint.write_failed` per instance per run. */
+  async function warnCheckpoint(instanceId, code) {
+    const key = `${instanceId}\u0000${generation}`;
+    if (checkpointWarned.has(key)) return;
+    checkpointWarned.add(key);
+    try {
+      await makeEmitter(instanceId, null)({
+        object: 'instance',
+        objectId: instanceId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'checkpoint.write_failed',
+        detail: { code: code ?? null, reminderOnce: true },
+      });
+    } catch {
+      // A failed reminder never blocks the run.
+    }
+  }
+
+  /** Write the recovery envelope after a successful snapshot write. */
+  async function writeStateCheckpoint(instanceId, state) {
+    if (!state || isLegacy(state)) return;
+    if (checkpointFault) {
+      await warnCheckpoint(instanceId, checkpointFault);
+      return;
+    }
+    const checkpoint = buildCheckpoint({
+      state,
+      graph: graphForState(state),
+      cwd: state.cwd,
+      task: state.task,
+    });
+    const written = await writeCheckpoint(store.root, instanceId, checkpoint);
+    if (!written.ok) await warnCheckpoint(instanceId, written.code);
+  }
+
   async function saveState(instanceId, state, opts) {
     if (state?.counters) {
       state.counters.eventSeq = Math.max(0, store.nextSeq(instanceId) - 1);
@@ -641,6 +765,9 @@ export function createOrchestrator({
     // C-02: every successful snapshot write rewrites status.md atomically.
     // A refresh failure only emits an event and never rolls the state back (AC-59).
     if (saved?.ok) await refreshWorkspaceStatus(instanceId, state);
+    // I1.8 / C-03: fixed order snapshot -> checkpoint -> event broadcast. A
+    // checkpoint failure never rolls back the snapshot nor blocks the event.
+    if (saved?.ok) await writeStateCheckpoint(instanceId, state);
     return saved;
   }
 
@@ -818,6 +945,7 @@ export function createOrchestrator({
     if (!sm) return { ok: false, code: 'UNKNOWN_OBJECT', from: null, to };
 
     let lastFrom = null;
+    const phase = options.phase ?? null;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const disk = await store.load(instanceId);
       if (!disk.ok) {
@@ -840,6 +968,99 @@ export function createOrchestrator({
         liveHolder.stateSince = diskHolder.stateSince;
       }
 
+      // C-01 / C-02 / D-2: a `phase` call is validated against the six-position
+      // table, never against the seven-state table, and the position lands in the
+      // same CAS as the state. Counts as "no phase call" when the option is absent.
+      if (phase !== null) {
+        const invalid =
+          object !== 'node'
+            ? 'phase-not-node'
+            : (typeof phase !== 'string' || !NODE_PHASE_VALUES.includes(phase))
+              ? 'unknown-phase'
+              : !PHASE_TARGETS[to]
+                ? 'terminal-with-phase'
+                : !PHASE_TARGETS[to].includes(phase)
+                  ? 'phase-target-mismatch'
+                  : null;
+        const fromPosition = nodePosition(diskHolder);
+        const toPosition = invalid === null ? phase : null;
+        if (invalid !== null) {
+          if (typeof emit === 'function') {
+            await emit({
+              object,
+              objectId: objectIdOf(object, disk.state, ids, instanceId),
+              from,
+              to,
+              result: 'rejected',
+              reason: 'illegal_transition',
+              detail: { ...(detail || {}), phase, message: invalid },
+            });
+          }
+          return { ok: false, code: 'ILLEGAL_TRANSITION', from, to, phase };
+        }
+        if (from === to && fromPosition === toPosition) return { ok: true, from, to, phase, repeat: true };
+        if (!PHASE_EDGES.has(`${fromPosition}->${toPosition}`)) {
+          if (typeof emit === 'function') {
+            await emit({
+              object,
+              objectId: objectIdOf(object, disk.state, ids, instanceId),
+              from,
+              to,
+              result: 'rejected',
+              reason: 'illegal_transition',
+              detail: { ...(detail || {}), phase, message: `${fromPosition}->${toPosition}` },
+            });
+          }
+          return { ok: false, code: 'ILLEGAL_TRANSITION', from, to, phase };
+        }
+        liveHolder.state = to;
+        liveHolder.phase = phase;
+        liveHolder.stateSince = iso();
+        let workingPhase = state ?? disk.state;
+        if (object !== 'instance' && state && workingPhase.state !== disk.state.state) {
+          adoptState(state, disk.state);
+          const replay = locate(state, object, ids);
+          if (replay === null || replay === undefined) {
+            return { ok: false, code: 'UNKNOWN_STATE', from, to, phase };
+          }
+          replay.state = to;
+          replay.phase = phase;
+          replay.stateSince = iso();
+          workingPhase = state;
+        }
+        const phaseSaved = await saveState(instanceId, workingPhase, { expectedState: expected });
+        if (phaseSaved.ok) {
+          if (typeof emit === 'function') {
+            await emit({
+              object,
+              objectId: objectIdOf(object, workingPhase, ids, instanceId),
+              from,
+              to,
+              result: 'applied',
+              reason,
+              detail: { ...(detail || {}), phase },
+            });
+          }
+          return { ok: true, from, to, phase };
+        }
+        if (state) adoptState(state, disk.state);
+        if (phaseSaved.code !== 'STORE_CONFLICT') {
+          if (typeof emit === 'function') {
+            await emit({
+              object,
+              objectId: objectIdOf(object, disk.state, ids, instanceId),
+              from,
+              to,
+              result: 'rejected',
+              reason: 'store.write_failed',
+              detail: { ...(detail || {}), phase, code: phaseSaved.code },
+            });
+          }
+          return { ok: false, code: phaseSaved.code, from, to, phase };
+        }
+        continue;
+      }
+
       if (from === to) return { ok: true, from, to, repeat: true };
 
       const verdict = sm.can(from, to);
@@ -859,6 +1080,10 @@ export function createOrchestrator({
       }
 
       liveHolder.state = to;
+      // Leaving `pending` / `running` drops the position so old shapes are preserved.
+      if (!phaseAllowedOn(to) && Object.prototype.hasOwnProperty.call(liveHolder, 'phase')) {
+        delete liveHolder.phase;
+      }
       liveHolder.stateSince = iso();
       let working = state ?? disk.state;
       // 非实例对象的迁移：实例级状态若已被外部改写（重启对账判 interrupted、
@@ -924,16 +1149,17 @@ export function createOrchestrator({
   }
 
   function makeTransitioner(ctx) {
-    return function transition(object, to, reason, detail) {
+    return function transition(object, to, reason, detail, extra = {}) {
       return transit(ctx.instanceId, object, to, {
         emit: ctx.emit,
         state: ctx.state,
         reason,
         detail,
-        nodeId: ctx.nodeId,
-        sessionId: ctx.sessionId,
-        handoffId: ctx.handoffId,
-        escalationId: ctx.escalationId,
+        nodeId: extra.nodeId ?? ctx.nodeId,
+        sessionId: extra.sessionId ?? ctx.sessionId,
+        handoffId: extra.handoffId ?? ctx.handoffId,
+        escalationId: extra.escalationId ?? ctx.escalationId,
+        ...(extra.phase === undefined ? {} : { phase: extra.phase }),
       });
     };
   }
@@ -1029,11 +1255,22 @@ export function createOrchestrator({
 
   /** 图名 → 图对象；未知模板返回 null（不抛）。 */
   function resolveTemplate(name) {
+    if (injectedGraph && typeof name === 'string' && name.length > 0
+      && (name === injectedGraph.id || name === stateTemplateOfGraph(injectedGraph))) {
+      return injectedGraph;
+    }
     return graphByName(graphs, name);
+  }
+
+  /** The template key an injected graph occupies (`id` or `template`). */
+  function stateTemplateOfGraph(value) {
+    return typeof value?.template === 'string' ? value.template : null;
   }
 
   /** 实例当前所用的图（按写入的 template 反查，找不到退回本次注入的图）。 */
   function graphForState(state) {
+    const recovered = state?.instanceId ? recoveryGraphs.get(state.instanceId) : null;
+    if (recovered) return recovered;
     const byName = resolveTemplate(state?.template);
     if (byName) return byName;
     if (!Array.isArray(state?.nodes) || state.nodes.length === 0) return graph;
@@ -2078,6 +2315,7 @@ export function createOrchestrator({
     // D-4.1 / C-04: only graph-driven packages (edge !== null) enter the
     // durable-inbox + retry path. Single bootstraps and the entry-node dispatch
     // keep the I1.2 / I1.3 delivery path byte-for-byte.
+    ctx.promptText = text;
     const graphHandoff = ctx.handoff && ctx.handoff.edge != null ? ctx.handoff : null;
     if (graphHandoff) {
       // D-7.4 step 2: atomically persist the inbox BEFORE any delivery; only
@@ -2629,23 +2867,241 @@ export function createOrchestrator({
    * 多节点图里单个节点的收尾：通过 → done；判定不通过（未超上限）→ failed；
    * 其余一律升级（节点 review → escalated，实例 suspended）。
    */
+  /** D-8 / C-12: transport exit or spawn failure after the session was established. */
+  function isCrashResult(result) {
+    if (!result || result.ok !== false) return false;
+    const code = result?.error?.code ?? null;
+    return code === 'DSH_SPAWN_FAILED' || code === 'IPC_CLOSED';
+  }
+
+  /**
+   * D-8 / C-13: one rebuild per dispatch. A second crash upgrades immediately.
+   * The round never changes; only the session id is replaced.
+   */
+  async function recoverCrashedSession(ctx) {
+    const { state, node } = ctx;
+    const graph = graphForState(state);
+    const maxRounds = maxRoundsOf(graph, node.nodeId);
+    const detail = { nodeId: node.nodeId, round: node.round, maxRounds };
+
+    const fail = async () => {
+      await ctx.emit({
+        object: 'node',
+        objectId: node.nodeId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'session.rebuild_failed',
+        detail: { ...detail, attempt: ctx.crashRebuilt ? 2 : 1 },
+      });
+      guardEscalation(ctx);
+      const escalation = await escalateState({
+        instanceId: state.instanceId,
+        state,
+        node,
+        reasonCode: 'session_crash',
+        reasonDetail: `${ESC_TEXT.executionPrefix}session_crash`,
+        defects: [],
+        emit: ctx.emit,
+      });
+      await markEscalatedSession(ctx);
+      return { done: true, outcome: { kind: escalation.ok ? 'escalated' : 'halted' } };
+    };
+
+    if (ctx.crashRebuilt === true) return fail();
+    ctx.crashRebuilt = true;
+    await ctx.emit({
+      object: 'node',
+      objectId: node.nodeId,
+      from: null,
+      to: null,
+      result: 'note',
+      reason: 'session.crash',
+      detail: { ...detail, attempt: 1 },
+    });
+
+    let created = null;
+    try {
+      created = await createAdapter(ctx.hostId ?? ctx.session?.hostId ?? null, state.cwd);
+    } catch {
+      return fail();
+    }
+    const previous = ctx.adapter;
+    const fresh = buildSession({
+      sessionId: created.sessionId,
+      hostId: ctx.hostId ?? ctx.session?.hostId ?? null,
+      nodeId: node.nodeId,
+      round: node.round,
+    });
+    fresh.roleId = node.roleId ?? null;
+    state.sessions.push(fresh);
+    node.sessionId = created.sessionId;
+    ctx.adapter = created.adapter;
+    ctx.session = fresh;
+    ctx.sessionId = created.sessionId;
+    ctx.normalizer = createNormalizer({ clock });
+    await subscribe(ctx);
+    ctx.normalizer.onPromptSent(ctx.sessionId, TURN_ID);
+    fresh.turnId = TURN_ID;
+    if (previous && previous !== created.adapter) await disposeAdapter(previous);
+
+    await ctx.emit({
+      object: 'node',
+      objectId: node.nodeId,
+      from: null,
+      to: null,
+      result: 'note',
+      reason: 'session.rebuilt',
+      detail: { ...detail, sessionId: created.sessionId },
+    });
+
+    let retried;
+    try {
+      retried = await created.adapter.prompt(ctx.sessionId, [
+        { type: 'text', text: ctx.promptText ?? '' },
+      ]);
+    } catch (error) {
+      retried = { ok: false, error: { code: 'UNKNOWN_ERROR', message: String(error?.message ?? error) } };
+    }
+    if (isCrashResult(retried)) return fail();
+    await saveLive(ctx);
+    return { done: false, result: retried };
+  }
+
+  /**
+   * C-14 / D-8: slow means "process alive but no update past the threshold". It
+   * never rebuilds. Only a node that declared `timeout` (seconds) escalates.
+   */
+  function startSlowWatcher(ctx, def) {
+    let stopped = false;
+    let slowEmitted = false;
+    let finished = false;
+    let resolveTrigger = null;
+    const trigger = new Promise((resolve) => {
+      resolveTrigger = resolve;
+    });
+    const graph = graphForState(ctx.state);
+    const declared = graphNode(graph, ctx.node.nodeId)?.timeout ?? def?.timeout ?? null;
+    const interval = Math.max(10, Math.min(200, Math.floor(slowMs / 10)));
+
+    const tick = async () => {
+      if (stopped || finished) return;
+      const session = ctx.session;
+      if (!session) return;
+      if (session.state !== 'thinking' && session.state !== 'tool_running') return;
+      const last = Date.parse(session.lastEventAt ?? session.stateSince ?? '') || now();
+      const waited = now() - last;
+      if (waited < slowMs) return;
+      if (!slowEmitted) {
+        slowEmitted = true;
+        try {
+          await ctx.emit({
+            object: 'node',
+            objectId: ctx.node.nodeId,
+            from: null,
+            to: null,
+            result: 'note',
+            reason: 'session.slow',
+            detail: { nodeId: ctx.node.nodeId, waitedMs: waited, rebuild: false },
+          });
+        } catch {
+          // A failed note never changes the verdict.
+        }
+      }
+      if (finished || stopped) return;
+      const started = Date.parse(ctx.node.roundStartedAt ?? ctx.node.startedAt ?? '') || now();
+      // `null` must stay "no timeout": `Number(null) === 0` would otherwise make
+      // every slow node escalate on the first tick.
+      const declaredMs = declared === null || declared === undefined || declared === ''
+        ? null
+        : Number(declared);
+      const limitMs = Number.isFinite(declaredMs) ? declaredMs * 1000 : null;
+      if (limitMs === null || now() - started < limitMs) return;
+      finished = true;
+      const maxRounds = maxRoundsOf(graph, ctx.node.nodeId);
+      try {
+        await ctx.emit({
+          object: 'node',
+          objectId: ctx.node.nodeId,
+          from: null,
+          to: null,
+          result: 'note',
+          reason: 'session.timeout',
+          detail: { nodeId: ctx.node.nodeId, round: ctx.node.round, maxRounds },
+        });
+      } catch {
+        // The escalation below is the durable part.
+      }
+      ctx.node.failed_reason = 'timeout';
+      // commitEscalation re-reads the disk, so the reason has to be durable first.
+      await saveLive(ctx);
+      guardEscalation(ctx);
+      const escalation = await escalateState({
+        instanceId: ctx.state.instanceId,
+        state: ctx.state,
+        node: ctx.node,
+        reasonCode: 'timeout',
+        reasonDetail: `${ESC_TEXT.executionPrefix}timeout`,
+        defects: [],
+        emit: ctx.emit,
+      });
+      resolveTrigger({
+        slowTimeout: true,
+        outcome: { kind: escalation.ok ? 'escalated' : 'halted' },
+      });
+    };
+
+    const timer = setInterval(() => {
+      tick().catch(() => {});
+    }, interval);
+    timer.unref?.();
+    return {
+      trigger,
+      stop() {
+        stopped = true;
+        clearInterval(timer);
+      },
+    };
+  }
+
+  /**
+   * D-5 step 2 / BR-14: a review node is re-checked against its evidence; the
+   * session is never replayed.
+   */
   async function finishGraphNode(ctx) {
     const { state, node } = ctx;
     const runGraph = graphForState(state);
     const def = graphNode(runGraph, node.nodeId) ?? {};
 
     let prompted = null;
+    const watcher = startSlowWatcher(ctx, def);
     try {
-      prompted = await ctx.promptPromise;
-    } catch (error) {
-      prompted = { ok: false, error: { code: 'UNKNOWN_ERROR', message: String(error?.message ?? error) } };
+      try {
+        prompted = await Promise.race([ctx.promptPromise, watcher.trigger]);
+      } catch (error) {
+        prompted = { ok: false, error: { code: 'UNKNOWN_ERROR', message: String(error?.message ?? error) } };
+      }
+    } finally {
+      watcher.stop();
     }
     await ctx.chain.catch(() => {});
     await Promise.allSettled(ctx.pauses);
 
+    if (prompted && prompted.slowTimeout === true) {
+      return prompted.outcome ?? { kind: 'escalated' };
+    }
+
     if (ctx.cancelled || (await isRunStopped(ctx.instanceId))) {
       await cleanup(ctx);
       return { kind: 'cancelled' };
+    }
+
+    // I1.8 / D-8: a transport exit after the session was established is a crash,
+    // not a normal execution failure. Rebuild once and retry the current round.
+    if (isCrashResult(prompted)) {
+      const crash = await recoverCrashedSession(ctx);
+      if (crash.done === true) return crash.outcome;
+      prompted = crash.result ?? prompted;
     }
 
     // turn 结束：先落到“已出料”，再核对；会话显示“等待下游”。
@@ -4455,6 +4911,73 @@ export function createOrchestrator({
     return fail('STORE_CONFLICT', {});
   }
 
+  /**
+   * I1.8 / A-4 / D-6: derive the connection aggregate from handoff states. The
+   * aggregate is a read-only view, never persisted. Priority is fixed:
+   * rejected > expired > pending > delivered > accepted > consumed > not_started.
+   */
+  function deriveConnections(state, runGraph) {
+    const order = ['rejected', 'expired', 'pending', 'delivered', 'accepted', 'consumed', 'not_started'];
+    const rank = new Map(order.map((name, index) => [name, index]));
+    const buckets = new Map();
+    for (const handoff of Array.isArray(state?.handoffs) ? state.handoffs : []) {
+      if (!handoff || typeof handoff !== 'object') continue;
+      const from = handoff.from ?? handoff.edge?.from ?? null;
+      const to = handoff.to ?? handoff.toNodeId ?? handoff.edge?.to ?? null;
+      if (from === null || to === null) continue;
+      const kind = handoff.kind ?? handoff.edge?.kind ?? 'forward';
+      const key = `${from}\u0000${to}\u0000${kind}`;
+      const current = buckets.get(key) ?? { from, to, kind, aggregate: 'not_started' };
+      const candidate = rank.has(handoff.state) ? handoff.state : 'not_started';
+      if ((rank.get(candidate) ?? order.length) < (rank.get(current.aggregate) ?? order.length)) {
+        current.aggregate = candidate;
+      }
+      buckets.set(key, current);
+    }
+    // Stable order follows the graph edges first, then any handoff pair not on the graph.
+    const edges = Array.isArray(runGraph?.edges) ? runGraph.edges : [];
+    const seen = new Set();
+    const out = [];
+    for (const edge of edges) {
+      const key = `${edge?.from}\u0000${edge?.to}\u0000${edge?.kind ?? 'forward'}`;
+      if (!buckets.has(key) || seen.has(key)) continue;
+      seen.add(key);
+      out.push(buckets.get(key));
+    }
+    for (const [key, value] of buckets) {
+      if (seen.has(key)) continue;
+      out.push(value);
+    }
+    return out;
+  }
+
+  /** A-4 / A-9: the four-key recovery summary, derived when the record lacks one. */
+  function recoverySummaryOf(state, runGraph) {
+    const existing = state?.recovery;
+    if (existing && typeof existing === 'object') {
+      return {
+        checkpointAt: existing.checkpointAt ?? state?.recoveredAt ?? null,
+        skipped: Number.isInteger(existing.skipped) ? existing.skipped : 0,
+        round: Number.isInteger(existing.round) ? existing.round : 0,
+        maxRounds: Number.isInteger(existing.maxRounds) ? existing.maxRounds : 0,
+      };
+    }
+    const nodes = Array.isArray(state?.nodes) ? state.nodes : [];
+    const skipped = nodes.filter((node) => node?.state === 'done').length;
+    const active = nodes.filter((node) => node?.state === 'running' || node?.state === 'review');
+    const pool = active.length > 0 ? active : nodes;
+    const current = pool.reduce(
+      (best, node) => (Number.isInteger(node?.round) && node.round > (best?.round ?? 0) ? node : best),
+      null,
+    );
+    return {
+      checkpointAt: state?.recoveredAt ?? null,
+      skipped,
+      round: Number.isInteger(current?.round) ? current.round : 0,
+      maxRounds: current ? maxRoundsOf(runGraph, current.nodeId) : 0,
+    };
+  }
+
   function snapshotOf(state) {
     const at = now();
     const since = Date.parse(state?.stateSince ?? state?.createdAt ?? '') || at;
@@ -4504,6 +5027,13 @@ export function createOrchestrator({
     snapshot.pendingApprovals = snapshot.approvals.filter(
       (entry) => entry?.state === 'pending',
     ).length;
+    // I1.8 / A-4 / A-9: only recovered instances expose the two derived keys, and
+    // they are appended after every frozen field. Non-recovered snapshots keep the
+    // exact key set they had before this iteration.
+    if (typeof state?.recoveredAt === 'string' && state.recoveredAt.length > 0) {
+      snapshot.recovery = recoverySummaryOf(state, graphForState(state));
+      snapshot.connections = deriveConnections(state, graphForState(state));
+    }
     return snapshot;
   }
 
@@ -4588,12 +5118,644 @@ export function createOrchestrator({
     return store.list();
   }
 
-  // ------------------------------------------------------------------ 对账
+  // ------------------------------------------------------------- I1.8 恢复
+  //
+  // D-5 six-step reconciliation. The state record stays the single source of
+  // truth; the checkpoint only contributes the locked graph and "where we were".
+
+  /** Built-in graph lookup without naming any template (purity rule). */
+  function knownGraph(name) {
+    if (injectedGraph && typeof name === 'string'
+      && (name === injectedGraph.id || name === stateTemplateOfGraph(injectedGraph))) {
+      return injectedGraph;
+    }
+    return graphByName(graphs, name);
+  }
+
+  function sessionForNode(state, node) {
+    if (node?.sessionId) {
+      const direct = sessionOf(state, node.sessionId);
+      if (direct) return direct;
+    }
+    const list = Array.isArray(state?.sessions) ? state.sessions : [];
+    for (let index = list.length - 1; index >= 0; index -= 1) {
+      if (list[index]?.nodeId === node?.nodeId) return list[index];
+    }
+    return null;
+  }
+
+  function nodeTypeOf(graph, node) {
+    if (typeof node?.nodeType === 'string' && node.nodeType.length > 0) return node.nodeType;
+    const def = graphNode(graph, node?.nodeId);
+    return typeof def?.nodeType === 'string' ? def.nodeType : null;
+  }
+
+  /** Create and initialize an adapter without paying for a session. */
+  async function initializeAdapterOnly(hostId, cwd) {
+    const args = typeof hostId === 'string' && hostId.length > 0 ? { hostId, cwd } : { cwd };
+    const created = await adapterFactory.create(args);
+    if (created && created.ok === false) {
+      throw new Error(String(created?.params?.cause ?? created?.code ?? 'adapter create failed'));
+    }
+    const adapter = created && created.ok === true && created.adapter ? created.adapter : created;
+    if (!adapter || typeof adapter.initialize !== 'function') {
+      throw new Error('adapter factory returned no adapter');
+    }
+    adapters.add(adapter);
+    const initialized = await adapter.initialize();
+    if (!initialized || initialized.ok !== true) {
+      await disposeAdapter(adapter);
+      throw new Error(String(initialized?.error?.message ?? initialized?.code ?? 'initialize failed'));
+    }
+    return adapter;
+  }
+
+  /**
+   * D-4 / C-07: capability-only dialect choice, fixed order resume -> load -> new.
+   * Implemented on the ACP client primitives so the orchestrator keeps the new
+   * session id produced by the last station (needed for the continuation drive).
+   */
+  async function recoverSessionEntry(state, node, session, graph) {
+    const hostId = session?.hostId ?? null;
+    const lastState = session?.state ?? null;
+    let adapter = null;
+    try {
+      adapter = await initializeAdapterOnly(hostId, state.cwd);
+    } catch (err) {
+      return {
+        ok: false,
+        reason: 'host_unreachable',
+        unavailable: true,
+        message: String(err?.message ?? err ?? ''),
+      };
+    }
+    const client = adapter.client ?? null;
+    if (!client) {
+      if (typeof adapter.resumeOrCreate === 'function') {
+        const res = await adapter.resumeOrCreate({
+          cwd: state.cwd,
+          sessionId: session?.sessionId ?? null,
+          policy: 'reuse',
+        });
+        if (res && res.ok !== false) {
+          return {
+            ok: true,
+            dialect: res.dialect ?? 'new',
+            sessionId: adapter.sessionId ?? session?.sessionId ?? null,
+            adapter,
+            lastState: session?.state ?? null,
+            fallbacks: [],
+          };
+        }
+      }
+      await disposeAdapter(adapter);
+      return { ok: false, reason: 'host_unreachable', unavailable: true, message: 'no dialect client' };
+    }
+    const caps = typeof client.normalizeCapabilities === 'function'
+      ? client.normalizeCapabilities(client.capabilities ?? adapter.capabilities ?? {})
+      : { canResume: false, canLoad: false };
+    const fallbacks = [];
+    let dialect = null;
+    let sessionId = session?.sessionId ?? null;
+
+    if (caps.canResume && sessionId) {
+      const res = await client.resumeSession(sessionId, { cwd: state.cwd });
+      if (res && res.ok === true) {
+        dialect = 'resume';
+      } else {
+        const reason = res?.error?.code ?? 'host_error';
+        fallbacks.push({ from: 'resume', to: caps.canLoad ? 'load' : 'new', reason, sessionId });
+      }
+    }
+    if (dialect === null && caps.canLoad && sessionId) {
+      const res = await client.loadSession(sessionId, { cwd: state.cwd });
+      if (res && res.ok === true) {
+        dialect = 'load';
+      } else {
+        const reason = res?.error?.code ?? 'host_error';
+        fallbacks.push({ from: 'load', to: 'new', reason, sessionId });
+      }
+    }
+    if (dialect === null) {
+      // The factory already opened one fresh session before handing the adapter
+      // over; reuse it so a `new` recovery issues exactly one `session/new`.
+      const fresh = adapter.sessionId ?? null;
+      if (fresh) {
+        dialect = 'new';
+        sessionId = fresh;
+      } else {
+        const res = await adapter.newSession({ cwd: state.cwd });
+        if (!res || res.ok !== true) {
+          const reason = res?.error?.code ?? 'SESSION_RESTORE_FAILED';
+          fallbacks.push({ from: 'new', to: 'new', reason, sessionId });
+          await disposeAdapter(adapter);
+          return { ok: false, reason: 'all_dialects_failed', message: reason, fallbacks, unavailable: true };
+        }
+        dialect = 'new';
+        sessionId = res.result?.sessionId ?? res.result?.sessionId ?? null;
+      }
+    }
+    return { ok: true, dialect, sessionId, adapter, lastState, fallbacks };
+  }
+
+  /** D-5 step 2: `review` nodes are re-checked, never re-prompted. */
+  async function reverifyNode(state, node, graph, emit) {
+    const handoff = [...(state.handoffs ?? [])].reverse().find(
+      (item) => item?.to === node.nodeId || item?.toNodeId === node.nodeId
+        || item?.edge?.to === node.nodeId,
+    ) ?? null;
+    const fromNode = handoff?.edge?.from ?? handoff?.from ?? null;
+    const input = Array.isArray(handoff?.artifactRefs?.input) ? handoff.artifactRefs.input[0] : null;
+    const expectedArtifact = typeof input === 'string' && input.length > 0
+      ? input
+      : (fromNode ? nodeOf(state, fromNode)?.artifactRefs?.[0]?.ref ?? null : null);
+    const read = await readReview({
+      cwd: state.cwd,
+      workspaceDir: workspaceDirOf(state),
+      expectedArtifact,
+      roundStartedAt: node.roundStartedAt,
+      now: clock,
+    });
+    await emit({
+      object: 'node',
+      objectId: node.nodeId,
+      from: null,
+      to: null,
+      result: 'note',
+      reason: 'recovery.reverify',
+      detail: { nodeId: node.nodeId, ok: read.ok === true },
+    });
+    if (!read.ok) return { ok: false, code: read.reasonCode ?? 'REVIEW_INVALID' };
+    if (read.review?.decision === 'reject') {
+      node.state = 'failed';
+      node.stateSince = iso();
+      node.endedAt = iso();
+      node.note = null;
+      node.failed_reason = 'verdict_fail';
+      return { ok: true, decision: 'reject' };
+    }
+    node.state = 'done';
+    node.stateSince = iso();
+    node.endedAt = iso();
+    node.failure = null;
+    node.note = null;
+    if (handoff && handoff.state !== 'consumed' && handoff.state !== 'rejected') {
+      handoff.state = 'consumed';
+      handoff.consumedAt = iso();
+    }
+    return { ok: true, decision: 'accept' };
+  }
+
+  /**
+   * D-5 / D-6: reconcile one instance. `checkpoint` may be null for the
+   * "record-only" fallback (built-in graph, missing checkpoint).
+   */
+  async function recoverInstance(instanceId, stateDoc, checkpoint, currentGeneration = generation) {
+    const state = arraysOf(stateDoc);
+    const emit = makeEmitter(instanceId, null);
+    const step = makeTransitioner({ instanceId, state, emit });
+    let fatal = null;
+    const graph = (checkpoint?.graph && Array.isArray(checkpoint.graph.nodes) && checkpoint.graph.nodes.length > 0)
+      ? checkpoint.graph
+      : knownGraph(state.template);
+    if (!graph) {
+      await markInterrupted(state, 'RECOVERY_NO_GRAPH');
+      try {
+        await emit({
+          object: 'instance',
+          objectId: instanceId,
+          from: null,
+          to: null,
+          result: 'rejected',
+          reason: 'recovery.failed',
+          detail: { code: 'RECOVERY_NO_GRAPH', reason: 'RECOVERY_NO_GRAPH' },
+        });
+      } catch {
+        // The interruption is already persisted.
+      }
+      return { ok: false, interrupted: true, code: 'RECOVERY_NO_GRAPH' };
+    }
+    recoveryGraphs.set(instanceId, graph);
+
+    if (state.state === 'created') {
+      const started = await step('instance', 'running', 'recovery.resume');
+      if (!started.ok) return { ok: false, code: started.code };
+    }
+
+    const alreadyRecovered =
+      typeof state.recoveredAt === 'string'
+      && state.recovery !== null && typeof state.recovery === 'object';
+    const nodes = Array.isArray(state.nodes) ? state.nodes : (state.nodes = []);
+    const skipped = nodes.filter((node) => node?.state === 'done').length;
+    const dialects = [];
+    const roleChanges = [];
+    const humanNodes = [];
+    const reverified = [];
+    const assigned = [];
+    const recoverableSessions = new Map();
+
+    for (const node of nodes) {
+      if (!node || typeof node !== 'object') continue;
+      if (node.state === 'done' || node.state === 'cancelled') continue;
+      if (node.state === 'escalated' || node.state === 'failed') continue;
+      const type = nodeTypeOf(graph, node);
+      if (type === 'human') {
+        // D-7: keep the node running, create no session, dispatch nothing.
+        if (node.state === 'running') humanNodes.push(node.nodeId);
+        continue;
+      }
+      if (type === 'subworkflow') {
+        // BR-54: a subworkflow stays opaque across recovery; never expand it and
+        // never dispatch into its private nodes.
+        continue;
+      }
+      if (node.state === 'review') {
+        const result = await reverifyNode(state, node, graph, emit);
+        reverified.push({ nodeId: node.nodeId, ...result });
+        continue;
+      }
+      if (node.state === 'pending') continue;
+      if (node.state !== 'running') continue;
+
+      const session = sessionForNode(state, node);
+      if (!session) {
+        // No session to restore: demote to assigned (D-5 step 3).
+        await step('node', 'running', 'recovery.session_unrecoverable', undefined, {
+          nodeId: node.nodeId,
+          phase: 'assigned',
+        });
+        assigned.push(node.nodeId);
+        continue;
+      }
+      const recovered = await recoverSessionEntry(state, node, session, graph);
+      if (recovered.ok) {
+        session.state = recovered.lastState === 'thinking' || recovered.lastState === 'tool_running'
+          ? recovered.lastState
+          : 'idle';
+        session.stateSince = iso();
+        session.dialect = recovered.dialect;
+        session.recovered = true;
+        if (recovered.dialect === 'new' && recovered.sessionId && recovered.sessionId !== session.sessionId) {
+          const fresh = buildSession({
+            sessionId: recovered.sessionId,
+            hostId: session.hostId,
+            nodeId: node.nodeId,
+            round: node.round,
+          });
+          fresh.roleId = session.roleId ?? node.roleId ?? null;
+          fresh.policy = session.policy ?? null;
+          state.sessions.push(fresh);
+          node.sessionId = recovered.sessionId;
+        }
+        recoverableSessions.set(node.nodeId, { adapter: recovered.adapter, sessionId: node.sessionId });
+        dialects.push({
+          sessionId: node.sessionId,
+          dialect: recovered.dialect,
+          fallbacks: recovered.fallbacks,
+          nodeId: node.nodeId,
+        });
+        // D-6 / AC-28: a `new` dialect means the old conversation is gone, so the
+        // role degrades from busy to available even though a fresh session exists;
+        // redispatch brings it back to busy once the node actually starts.
+        if (recovered.dialect === 'new') {
+          roleChanges.push({
+            roleId: node.roleId ?? session.roleId ?? null,
+            to: 'available',
+            reason: 'session_unrecoverable',
+          });
+        }
+        if (nodePosition(node) === 'assigned') assigned.push(node.nodeId);
+      } else {
+        if (recovered.unavailable) {
+          // AC-17 / C-10: a host that cannot even be started is fatal for the
+          // whole recovery; dialect failures on a reachable host degrade instead.
+          fatal = recovered.message || 'host_unreachable';
+        }
+        if (recovered.unavailable) session.quarantined = true;
+        await step('node', 'running', 'recovery.session_unrecoverable', undefined, {
+          nodeId: node.nodeId,
+          phase: 'assigned',
+        });
+        assigned.push(node.nodeId);
+        roleChanges.push({
+          roleId: node.roleId ?? session.roleId ?? null,
+          to: recovered.unavailable ? 'unavailable' : 'available',
+          reason: recovered.unavailable ? 'host_unreachable' : 'session_unrecoverable',
+        });
+        if (fatal !== null) break;
+      }
+    }
+
+    if (fatal !== null) {
+      // `markInterrupted` already records the `recovery.failed` event in the same
+      // CAS that flips the instance; a second emit would duplicate the line.
+      await markInterrupted(state, 'recovery.failed');
+      return { ok: false, interrupted: true, code: 'RECOVERY_HOST_UNREACHABLE' };
+    }
+
+    // D-6 / C-17: reconcile handoffs. `delivered` without an acceptance goes back
+    // to pending; `created` keeps its id and attempts and is delivered as-is.
+    const redeliver = [];
+    const createdContinue = [];
+    for (const handoff of Array.isArray(state.handoffs) ? state.handoffs : []) {
+      if (!handoff || typeof handoff !== 'object') continue;
+      const targetId = handoff.to ?? handoff.toNodeId ?? handoff.edge?.to ?? null;
+      const target = targetId ? nodeOf(state, targetId) : null;
+      if (handoff.state === 'delivered' && !handoff.acceptedAt) {
+        const moved = await step('handoff', 'pending', 'recovery.redeliver', undefined, {
+          handoffId: handoff.handoffId,
+        });
+        if (moved.ok) {
+          handoff.pendingAt = iso();
+          redeliver.push({ handoffId: handoff.handoffId, nodeId: target?.nodeId ?? null });
+        }
+      } else if (handoff.state === 'created') {
+        createdContinue.push({ handoffId: handoff.handoffId, nodeId: target?.nodeId ?? null });
+      }
+    }
+
+    // Summary + recovery envelope, exactly one per instance.
+    const activePool = nodes.filter((node) => node?.state === 'running' || node?.state === 'review');
+    const pool = activePool.length > 0 ? activePool : nodes;
+    const current = pool.reduce(
+      (best, node) => (Number.isInteger(node?.round) && node.round > (best?.round ?? 0) ? node : best),
+      null,
+    );
+    const summary = {
+      checkpointAt: checkpoint?.writtenAt ?? state.updatedAt ?? state.stateSince ?? iso(),
+      skipped,
+      round: Number.isInteger(current?.round) ? current.round : 0,
+      maxRounds: current ? maxRoundsOf(graph, current.nodeId) : 0,
+    };
+    if (!alreadyRecovered) {
+      state.recoveredAt = iso();
+      state.recovery = { ...summary };
+    }
+    state.coreGeneration = currentGeneration;
+    state.updatedAt = iso();
+    const saved = await saveState(instanceId, state, { expectedState: expectedOf(state) });
+    if (!saved.ok) {
+      return { ok: false, code: saved.code };
+    }
+
+    if (!alreadyRecovered) {
+      try {
+        await emit({
+          object: 'instance',
+          objectId: instanceId,
+          from: null,
+          to: null,
+          result: 'note',
+          reason: 'recovery.summary',
+          detail: { ...summary },
+        });
+      } catch {
+        // The recovery record is already durable.
+      }
+    }
+    for (const entry of dialects) {
+      for (const fallback of entry.fallbacks ?? []) {
+        await emit({
+          object: 'instance',
+          objectId: instanceId,
+          from: null,
+          to: null,
+          result: 'note',
+          reason: 'recovery.dialect',
+          detail: { ...fallback, sessionId: fallback.sessionId ?? entry.sessionId, fallback: true },
+        });
+      }
+      await emit({
+        object: 'instance',
+        objectId: instanceId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'recovery.dialect',
+        detail: { sessionId: entry.sessionId, dialect: entry.dialect, restored: entry.dialect !== 'new' },
+      });
+    }
+    for (const change of roleChanges) {
+      await emit({
+        object: 'instance',
+        objectId: instanceId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'recovery.role',
+        detail: { roleId: change.roleId, from: 'busy', to: change.to, reason: change.reason },
+      });
+    }
+    for (const nodeId of humanNodes) {
+      await emit({
+        object: 'instance',
+        objectId: instanceId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'recovery.human',
+        detail: { nodeId, state: 'running' },
+      });
+    }
+    for (const item of createdContinue) {
+      await emit({
+        object: 'instance',
+        objectId: instanceId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'recovery.handoff',
+        detail: { handoffId: item.handoffId, from: 'created', to: 'delivered' },
+      });
+    }
+    for (const item of redeliver) {
+      const handoff = handoffOf(state, item.handoffId);
+      const from = handoff?.from ?? handoff?.edge?.from ?? null;
+      const to = handoff?.to ?? handoff?.toNodeId ?? handoff?.edge?.to ?? null;
+      await emit({
+        object: 'instance',
+        objectId: instanceId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'recovery.connection',
+        detail: {
+          handoffId: item.handoffId,
+          from,
+          to,
+          fromRole: from ? nodeOf(state, from)?.roleId ?? null : null,
+          toRole: to ? nodeOf(state, to)?.roleId ?? null : null,
+          kind: handoff?.kind ?? handoff?.edge?.kind ?? 'forward',
+          fromState: 'delivered',
+          toState: 'pending',
+        },
+      });
+    }
+
+    // D-5 step 5: continue from assigned / ready nodes. Kicked off after the
+    // durable record so `reconcileOnBoot` never blocks the daemon listener.
+    const plan = {
+      assigned,
+      recoverableSessions,
+      redeliver,
+      createdContinue,
+    };
+    if (!recoveryDrives.has(instanceId)) {
+      const drive = continueRecovery(instanceId, plan).catch(() => {});
+      recoveryDrives.set(instanceId, drive);
+      drive.finally(() => {
+        if (recoveryDrives.get(instanceId) === drive) recoveryDrives.delete(instanceId);
+      });
+    }
+    return { ok: true, recoveredAt: state.recoveredAt ?? null, summary };
+  }
+
+  /** D-6: one mini-dispatch for a node that was already running before the crash. */
+  async function redispatchRecoveredNode(instanceId, nodeId, handoffId) {
+    return withLock(instanceId, async () => {
+      const loaded = await store.load(instanceId);
+      if (!loaded.ok) return { ok: false, code: loaded.code };
+      const state = arraysOf(loaded.state);
+      if (state.state !== 'running' || state.halted === true || state.paused === true) {
+        return { ok: false, code: 'NOT_RUNNING' };
+      }
+      const node = nodeOf(state, nodeId);
+      if (!node || (node.state !== 'running' && node.state !== 'pending')) {
+        return { ok: false, code: 'NODE_NOT_DISPATCHABLE' };
+      }
+      // A node that never left pending follows the normal dispatch path.
+      if (node.state === 'pending') {
+        const emit = makeEmitter(instanceId, null);
+        const dispatched = await dispatchInState(state, nodeId, { handoffId, emit });
+        if (dispatched.ok) {
+          const handle = activeRuns.get(instanceId);
+          if (handle) driveGraph(handle).catch(() => {});
+        }
+        return dispatched;
+      }
+
+      const graph = graphForState(state);
+      const session = sessionForNode(state, node);
+      const emit = makeEmitter(instanceId, null);
+      const step = makeTransitioner({ instanceId, state, emit });
+      let adapter;
+      let sessionId;
+      try {
+        const created = await createAdapter(session?.hostId ?? null, state.cwd);
+        adapter = created.adapter;
+        sessionId = created.sessionId;
+      } catch (err) {
+        return { ok: false, code: 'DISPATCH_FAILED', params: { cause: String(err?.message ?? err) } };
+      }
+      const fresh = buildSession({
+        sessionId,
+        hostId: session?.hostId ?? null,
+        nodeId,
+        round: node.round,
+      });
+      fresh.roleId = node.roleId ?? null;
+      state.sessions.push(fresh);
+      node.sessionId = sessionId;
+      state.state = 'running';
+      if (nodePosition(node) === 'assigned') {
+        // D-2: the only legal way out of `assigned` is a phase call; the same CAS
+        // carries the new session and the dispatch event.
+        const moved = await step('node', 'running', 'node.dispatch', {
+          round: node.round,
+          nodeId,
+          roleId: node.roleId ?? null,
+          recovered: true,
+        }, {
+          nodeId,
+          phase: 'running',
+        });
+        if (!moved.ok) return { ok: false, code: moved.code };
+      } else {
+        node.state = 'running';
+        node.stateSince = iso();
+        const saved = await saveState(instanceId, state, { expectedState: expectedOf(state) });
+        if (!saved.ok) return { ok: false, code: saved.code };
+        await emit({
+          object: 'node',
+          objectId: nodeId,
+          from: 'running',
+          to: 'running',
+          result: 'applied',
+          reason: 'node.dispatch',
+          detail: { round: node.round, nodeId, roleId: node.roleId ?? null, recovered: true },
+        });
+      }
+
+      const handoff = handoffId ? handoffOf(state, handoffId) : null;
+      const ctx = makeCtx({
+        instanceId,
+        state,
+        node,
+        session: fresh,
+        adapter,
+        hostId: fresh.hostId,
+        handoffId,
+        emit,
+        onProgress: null,
+      });
+      await subscribe(ctx);
+      ctx.normalizer.onPromptSent(ctx.sessionId, TURN_ID);
+      fresh.turnId = TURN_ID;
+      const text = retryPromptText(state, { nodeId }, graph);
+      ctx.promptText = text;
+      if (handoff && ['delivered', 'pending', 'created'].includes(handoff.state)) {
+        ctx.promptPromise = deliverWithRetry(ctx, text);
+        ctx.promptPromise.catch(() => {});
+      } else {
+        ctx.promptPromise = Promise.resolve().then(() =>
+          adapter.prompt(ctx.sessionId, [{ type: 'text', text }]),
+        );
+        ctx.promptPromise.catch(() => {});
+      }
+      await saveLive(ctx);
+
+      let handle = activeRuns.get(instanceId);
+      if (handle) handle.currentCtx = ctx;
+      else {
+        handle = { instanceId, graph, currentCtx: ctx, cancelled: false, finished: false };
+        activeRuns.set(instanceId, handle);
+      }
+      driveGraph(handle).catch(() => {});
+      return { ok: true, action: 'dispatch', ctx, nodeId, round: node.round, sessionId };
+    });
+  }
+
+  /** D-5 step 5: continue the recovered instance without blocking the boot. */
+  async function continueRecovery(instanceId, plan) {
+    if (isTest && runtimeEnv?.MAESTRO_TEST_RECOVERY_HOLD === 'after_assign') {
+      const mockDir = path.join(store.root, '.mock');
+      await fs.mkdir(mockDir, { recursive: true });
+      await fs.writeFile(path.join(mockDir, 'paused'), iso(), 'utf8');
+      while (!(await exists(path.join(mockDir, 'release')))) {
+        // Tests remove the temp root once they are done with the held state; stop
+        // polling instead of leaking a timer into the next test file.
+        if (!(await exists(mockDir))) return;
+        await pollSleep(PAUSE_POLL_MS);
+      }
+    }
+    for (const nodeId of plan.assigned ?? []) {
+      await redispatchRecoveredNode(instanceId, nodeId, null);
+    }
+    for (const item of plan.createdContinue ?? []) {
+      if (!item.nodeId) continue;
+      await redispatchRecoveredNode(instanceId, item.nodeId, item.handoffId);
+    }
+    for (const item of plan.redeliver ?? []) {
+      if (!item.nodeId) continue;
+      await redispatchRecoveredNode(instanceId, item.nodeId, item.handoffId);
+    }
+  }
 
   async function reconcileOnBoot({ generation: current } = {}) {
     const currentGeneration = current ?? generation;
     const listed = await store.list();
     const interrupted = [];
+    const recovered = [];
     for (const item of listed?.items ?? []) {
       if (!item?.readable) continue;
       if (Number.isInteger(item.schemaVersion) && item.schemaVersion < 2) continue;
@@ -4603,11 +5765,56 @@ export function createOrchestrator({
       if (isLegacy(loaded.state)) continue;
       if (CORE_IMMUTABLE.has(loaded.state.state)) continue;
       if (loaded.state.coreGeneration === currentGeneration) continue;
-      await markInterrupted(loaded.state, 'core.gone');
-      interrupted.push(item.instanceId);
+
+      const checkpoint = await loadCheckpoint(store.root, item.instanceId);
+      if (!checkpoint.ok) {
+        const graph = knownGraph(loaded.state.template);
+        if (!graph) {
+          await markInterrupted(loaded.state, 'core.gone');
+          interrupted.push(item.instanceId);
+          try {
+            await makeEmitter(item.instanceId, null)({
+              object: 'instance',
+              objectId: item.instanceId,
+              from: null,
+              to: null,
+              result: 'note',
+              reason: 'recovery.legacy',
+              detail: { code: 'CHECKPOINT_UNREADABLE' },
+            });
+          } catch {
+            // interrupted is already durable
+          }
+          continue;
+        }
+        const result = await recoverInstance(item.instanceId, loaded.state, null, currentGeneration);
+        if (result.ok) {
+          recovered.push(item.instanceId);
+          try {
+            await makeEmitter(item.instanceId, null)({
+              object: 'instance',
+              objectId: item.instanceId,
+              from: null,
+              to: null,
+              result: 'note',
+              reason: 'recovery.record',
+              detail: { code: 'CHECKPOINT_MISSING' },
+            });
+          } catch {
+            // summary is already durable
+          }
+        } else if (result.interrupted) {
+          interrupted.push(item.instanceId);
+        }
+        continue;
+      }
+      const result = await recoverInstance(item.instanceId, loaded.state, checkpoint.checkpoint, currentGeneration);
+      if (result.ok) recovered.push(item.instanceId);
+      else if (result.interrupted) interrupted.push(item.instanceId);
     }
-    return { ok: true, interrupted };
+    return { ok: true, interrupted, recovered };
   }
+
 
   async function interruptAll({ reason = 'core.stop' } = {}) {
     const listed = await store.list();
@@ -5633,6 +6840,7 @@ export function createOrchestrator({
     resolveApproval,
     locateSession,
     setApprovalPolicy,
+    selectReusableSession,
     ...(isTest ? {
       dispatchToNode: seamDispatch,
       escalateOnce,

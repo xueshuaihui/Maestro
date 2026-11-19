@@ -163,7 +163,7 @@ export function createServer({
   let stopTimer = null;
 
   // boot 对账结果（AC-12 的关键路径），`core.ping` 回显 interrupted 数量。
-  const boot = { attempted: false, ok: false, interrupted: [], code: null, error: null };
+  const boot = { attempted: false, ok: false, interrupted: [], recovered: [], code: null, error: null };
 
   const methods = {
     'core.ping': async () => ({
@@ -546,6 +546,7 @@ export function createServer({
       if (res && res.ok === true) {
         boot.ok = true;
         boot.interrupted = Array.isArray(res.interrupted) ? res.interrupted.slice() : [];
+        boot.recovered = Array.isArray(res.recovered) ? res.recovered.slice() : [];
       } else {
         boot.ok = false;
         boot.code = res?.code ?? 'UNKNOWN_ERROR';
@@ -559,7 +560,14 @@ export function createServer({
       ok: boot.ok,
       code: boot.code,
       interrupted: boot.interrupted,
+      recovered: boot.recovered,
       error: boot.error,
+    });
+    // D-5: a dedicated boot line keeps the reconcile contract intact while making
+    // the recovered / interrupted split visible in the core log only.
+    await log('info', 'CORE_BOOT_RECOVER', {
+      recovered: boot.recovered,
+      interrupted: boot.interrupted,
     });
   }
 
