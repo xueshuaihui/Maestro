@@ -1,0 +1,21 @@
+[
+  {
+    "object": "node",
+    "objectId": "T-001",
+    "from": "running",
+    "to": "running",
+    "result": "applied",
+    "reason": "node.dispatch",
+    "detail": {
+      "round": 1,
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "recovered": true,
+      "phase": "running"
+    },
+    "gen": "gen-a7443ecbd739f2a0",
+    "seq": 4,
+    "ts": "2026-11-20T15:54:36.792Z",
+    "prev_event_hash": "9c8c6a89448826f3b64edddbb47e77720d7475c6bdfd9d86793bedbbce0b6257"
+  }
+]

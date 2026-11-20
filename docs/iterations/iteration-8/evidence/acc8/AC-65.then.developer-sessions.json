@@ -1,0 +1,32 @@
+[
+  {
+    "sessionId": "mock-sess-19164-1",
+    "nodeId": "T-001",
+    "round": 1,
+    "hostId": "mock",
+    "state": "idle",
+    "stateSince": "2026-11-20T15:55:38.564Z",
+    "createdAt": "2026-11-20T15:55:38.367Z",
+    "lastEventAt": "2026-11-20T15:55:38.379Z",
+    "toolName": null,
+    "turnId": "turn-1",
+    "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-65\\demo-code-pass\\calc.js",
+    "pendingPermission": null,
+    "quarantined": false
+  },
+  {
+    "sessionId": "mock-sess-10968-1",
+    "nodeId": "T-001",
+    "round": 2,
+    "hostId": "mock",
+    "state": "idle",
+    "stateSince": "2026-11-20T15:55:40.857Z",
+    "createdAt": "2026-11-20T15:55:40.639Z",
+    "lastEventAt": "2026-11-20T15:55:40.681Z",
+    "toolName": null,
+    "turnId": "turn-1",
+    "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-65\\demo-code-pass\\calc.js",
+    "pendingPermission": null,
+    "quarantined": false
+  }
+]

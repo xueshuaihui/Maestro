@@ -1,0 +1,19 @@
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "recovery.handoff",
+    "detail": {
+      "handoffId": "HO-001",
+      "from": "created",
+      "to": "delivered"
+    },
+    "gen": "gen-4ab30bd9f4756058",
+    "seq": 2,
+    "ts": "2026-11-20T15:55:04.395Z",
+    "prev_event_hash": "a95a4dcecc8b606e9c40bbdd552f7c54981c75df5cc286ea5d085a7b3ead8700"
+  }
+]

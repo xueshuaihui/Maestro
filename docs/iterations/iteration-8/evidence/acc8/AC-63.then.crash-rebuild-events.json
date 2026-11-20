@@ -1,0 +1,81 @@
+{
+  "crash": [
+    {
+      "object": "node",
+      "objectId": "T-001",
+      "from": null,
+      "to": null,
+      "result": "note",
+      "reason": "session.crash",
+      "detail": {
+        "nodeId": "T-001",
+        "round": 1,
+        "maxRounds": 2,
+        "attempt": 1
+      },
+      "gen": "gen-77b85e696383c0dc",
+      "seq": 4,
+      "ts": "2026-11-20T15:55:18.906Z",
+      "prev_event_hash": "7e4800578a449740a57f7cf0f6c201a87698099e491f34e1c5276aae1f90dfe1"
+    }
+  ],
+  "rebuilt": [
+    {
+      "object": "node",
+      "objectId": "T-001",
+      "from": null,
+      "to": null,
+      "result": "note",
+      "reason": "session.rebuilt",
+      "detail": {
+        "nodeId": "T-001",
+        "round": 1,
+        "maxRounds": 2,
+        "sessionId": "mock-sess-6224-1"
+      },
+      "gen": "gen-77b85e696383c0dc",
+      "seq": 5,
+      "ts": "2026-11-20T15:55:19.120Z",
+      "prev_event_hash": "d6e5c004b2c06d6e45e7a3cf791cedec0ac6b40018c9b4bf00da4c599e77bd83"
+    }
+  ],
+  "rebuildFailed": [
+    {
+      "object": "node",
+      "objectId": "T-001",
+      "from": null,
+      "to": null,
+      "result": "note",
+      "reason": "session.rebuild_failed",
+      "detail": {
+        "nodeId": "T-001",
+        "round": 1,
+        "maxRounds": 2,
+        "attempt": 2
+      },
+      "gen": "gen-77b85e696383c0dc",
+      "seq": 7,
+      "ts": "2026-11-20T15:55:19.191Z",
+      "prev_event_hash": "858feace2ddc9f87aee028898820b341476d0c8f32627dcc490444e0aab648f7"
+    }
+  ],
+  "escalations": [
+    {
+      "object": "escalation",
+      "objectId": "ESC-001",
+      "from": null,
+      "to": "pending",
+      "result": "applied",
+      "reason": "escalation.created",
+      "detail": {
+        "nodeId": "T-001",
+        "round": 1,
+        "reasonCode": "session_crash"
+      },
+      "gen": "gen-77b85e696383c0dc",
+      "seq": 8,
+      "ts": "2026-11-20T15:55:19.232Z",
+      "prev_event_hash": "fd80d9938a0f12b153ac193cc5e089a1674e340627758d8425c7550fc6fc9106"
+    }
+  ]
+}

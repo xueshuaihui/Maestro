@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-8fbde2f7a0b75d8d",
+  "createdAt": "2026-11-20T15:55:52.418Z",
+  "updatedAt": "2026-11-20T15:55:52.717Z",
+  "state": "running",
+  "stateSince": "2026-11-20T15:55:52.418Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-67\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "paused": false,
+  "rev": 2,
+  "counters": {
+    "eventSeq": 0,
+    "runCount": 1,
+    "dispatchCount": 0
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-20T15:55:52.418Z",
+      "startedAt": "2026-11-20T15:55:52.418Z",
+      "roundStartedAt": "2026-11-20T15:55:52.418Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": {
+        "value": "pass",
+        "defects": []
+      },
+      "sessionId": null,
+      "artifactRefs": []
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "pending",
+      "stateSince": "2026-11-20T15:55:52.418Z",
+      "startedAt": "2026-11-20T15:55:52.418Z",
+      "roundStartedAt": "2026-11-20T15:55:52.418Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "phase": "blocked"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-dev",
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T15:55:52.418Z",
+      "createdAt": "2026-11-20T15:55:52.418Z",
+      "lastEventAt": "2026-11-20T15:55:52.418Z",
+      "toolName": null,
+      "turnId": null,
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [],
+  "escalations": [],
+  "health": {
+    "level": "normal",
+    "reasons": [],
+    "computedAt": "2026-11-20T15:55:52.418Z",
+    "nodeTimeoutMs": 30000
+  },
+  "recoveredAt": "2026-11-20T15:55:52.715Z",
+  "recovery": {
+    "checkpointAt": "2026-11-20T15:55:52.418Z",
+    "skipped": 1,
+    "round": 1,
+    "maxRounds": 2
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-HUMAN-001",
+  "coreGeneration": "gen-03fc9647e80b2827",
+  "createdAt": "2026-11-09T10:00:00.000Z",
+  "updatedAt": "2026-11-20T15:54:34.664Z",
+  "state": "running",
+  "stateSince": "2026-11-09T10:04:00.000Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-58-human\\demo-code-pass",
+  "task": "夹具现场：人工节点停在 running，等待人工处理。",
+  "halted": false,
+  "paused": false,
+  "rev": 9,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 2,
+      "state": "done",
+      "startedAt": "2026-11-09T10:00:00.000Z",
+      "endedAt": "2026-11-09T10:02:00.000Z"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 2,
+      "state": "running",
+      "phase": "running",
+      "startedAt": "2026-11-09T10:03:00.000Z"
+    },
+    {
+      "nodeId": "T-004",
+      "nodeType": "human",
+      "title": "人工确认",
+      "round": 1,
+      "maxRounds": 1,
+      "state": "running",
+      "startedAt": "2026-11-09T10:04:00.000Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-fixture-2",
+      "roleId": "tester",
+      "nodeId": "T-002",
+      "hostId": "mock",
+      "state": "thinking",
+      "startedAt": "2026-11-09T10:03:00.000Z",
+      "stateSince": "2026-11-20T15:54:34.663Z",
+      "dialect": "resume",
+      "recovered": true
+    }
+  ],
+  "handoffs": [],
+  "escalations": [],
+  "approvals": [],
+  "artifactRefs": [],
+  "health": {
+    "level": "attention",
+    "reasons": [
+      "node_timeout"
+    ],
+    "computedAt": "2026-11-20T15:53:32.917Z",
+    "nodeTimeoutMs": 300000
+  },
+  "counters": {
+    "eventSeq": 0,
+    "runCount": 1,
+    "dispatchCount": 0
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "recoveredAt": "2026-11-20T15:54:34.663Z",
+  "recovery": {
+    "checkpointAt": "2026-11-20T15:53:32.936Z",
+    "skipped": 1,
+    "round": 2,
+    "maxRounds": 2
+  }
+}

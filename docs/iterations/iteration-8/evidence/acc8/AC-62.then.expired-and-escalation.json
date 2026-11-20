@@ -1,0 +1,38 @@
+{
+  "handoff": {
+    "handoffId": "HO-001",
+    "instanceId": "INST-001",
+    "edge": {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward"
+    },
+    "from": "T-001",
+    "to": "T-002",
+    "kind": "forward",
+    "fromNodeId": "T-001",
+    "toNodeId": "T-002",
+    "state": "accepted",
+    "createdAt": "2026-11-20T15:55:09.314Z",
+    "pendingAt": null,
+    "deliveredAt": "2026-11-20T15:55:11.713Z",
+    "acceptedAt": "2026-11-20T15:55:13.225Z",
+    "consumedAt": null,
+    "rejectedAt": null,
+    "rejectReason": null,
+    "expiredAt": null,
+    "wakeConsumedAt": null,
+    "acceptedSignal": "agent_thought_chunk",
+    "ambiguityWindowMs": 1512,
+    "defects": [],
+    "note": null,
+    "artifactRefs": null,
+    "round": 2,
+    "retestRequirement": null,
+    "deliveryAttempts": 1,
+    "lastError": null,
+    "stateSince": "2026-11-20T15:55:09.574Z"
+  },
+  "escalations": [],
+  "expiredEvents": []
+}

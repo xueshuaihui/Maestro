@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-d02a7524169e97f5",
+  "createdAt": "2026-11-20T15:55:33.879Z",
+  "updatedAt": "2026-11-20T15:55:34.309Z",
+  "state": "running",
+  "stateSince": "2026-11-20T15:55:33.879Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-64-available\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "paused": false,
+  "rev": 2,
+  "counters": {
+    "eventSeq": 0,
+    "runCount": 1,
+    "dispatchCount": 0
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "running",
+      "stateSince": "2026-11-20T15:55:33.879Z",
+      "startedAt": "2026-11-20T15:55:33.879Z",
+      "roundStartedAt": "2026-11-20T15:55:33.879Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-8328-1",
+      "artifactRefs": [],
+      "phase": "assigned"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-dev",
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T15:55:34.307Z",
+      "createdAt": "2026-11-20T15:55:33.879Z",
+      "lastEventAt": "2026-11-20T15:55:33.879Z",
+      "toolName": null,
+      "turnId": null,
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": false,
+      "dialect": "new",
+      "recovered": true
+    },
+    {
+      "sessionId": "mock-sess-8328-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T15:55:34.307Z",
+      "createdAt": "2026-11-20T15:55:34.307Z",
+      "lastEventAt": "2026-11-20T15:55:34.307Z",
+      "toolName": null,
+      "turnId": null,
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": false,
+      "roleId": "developer",
+      "policy": null
+    }
+  ],
+  "handoffs": [],
+  "escalations": [],
+  "health": {
+    "level": "normal",
+    "reasons": [],
+    "computedAt": "2026-11-20T15:55:33.879Z",
+    "nodeTimeoutMs": 30000
+  },
+  "recoveredAt": "2026-11-20T15:55:34.307Z",
+  "recovery": {
+    "checkpointAt": "2026-11-20T15:55:33.879Z",
+    "skipped": 0,
+    "round": 1,
+    "maxRounds": 2
+  }
+}

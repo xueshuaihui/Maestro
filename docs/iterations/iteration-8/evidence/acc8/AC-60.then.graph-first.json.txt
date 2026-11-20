@@ -1,0 +1,53 @@
+{
+  "graphVersion": 1,
+  "instanceId": "INST-001",
+  "template": "code-loop",
+  "state": "running",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": "开发",
+      "roleId": "developer",
+      "state": "pending",
+      "round": 1,
+      "phase": "ready"
+    },
+    {
+      "nodeId": "T-002",
+      "title": "测试",
+      "roleId": "tester",
+      "state": "pending",
+      "round": 1,
+      "phase": "blocked"
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward"
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow"
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest"
+    }
+  ],
+  "handoffs": [],
+  "escalations": [],
+  "approvals": [],
+  "current": null,
+  "recovery": {
+    "checkpointAt": "2026-11-20T15:54:37.494Z",
+    "skipped": 0,
+    "round": 1,
+    "maxRounds": 2
+  },
+  "connections": []
+}

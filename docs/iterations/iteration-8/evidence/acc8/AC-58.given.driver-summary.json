@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "scenario": "e2e",
+  "instanceId": "INST-001",
+  "exitCodes": [
+    1
+  ],
+  "kills": [
+    {
+      "ok": true,
+      "pid": 19404,
+      "atMs": 4015,
+      "promptCount": 1
+    }
+  ],
+  "before": {
+    "instanceId": "INST-001",
+    "state": "running",
+    "rev": 16,
+    "recoveredAt": null,
+    "nodes": [
+      {
+        "nodeId": "T-001",
+        "nodeType": null,
+        "state": "done",
+        "phase": null,
+        "round": 1
+      },
+      {
+        "nodeId": "T-002",
+        "nodeType": null,
+        "state": "running",
+        "phase": null,
+        "round": 1
+      }
+    ],
+    "handoffs": [
+      {
+        "handoffId": "HO-001",
+        "state": "created",
+        "deliveryAttempts": 0
+      }
+    ]
+  },
+  "afterKill": {
+    "instanceId": "INST-001",
+    "state": "running",
+    "rev": 16,
+    "recoveredAt": null,
+    "nodes": [
+      {
+        "nodeId": "T-001",
+        "nodeType": null,
+        "state": "done",
+        "phase": null,
+        "round": 1
+      },
+      {
+        "nodeId": "T-002",
+        "nodeType": null,
+        "state": "running",
+        "phase": null,
+        "round": 1
+      }
+    ],
+    "handoffs": [
+      {
+        "handoffId": "HO-001",
+        "state": "created",
+        "deliveryAttempts": 0
+      }
+    ]
+  },
+  "runMs": 60000
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "recovery.summary",
+    "detail": {
+      "checkpointAt": "2026-11-20T15:53:26.571Z",
+      "skipped": 1,
+      "round": 1,
+      "maxRounds": 2
+    },
+    "gen": "gen-048383207bb1783f",
+    "seq": 14,
+    "ts": "2026-11-20T15:53:27.284Z",
+    "prev_event_hash": "ba7c2b6d972ae317d0d516184723a0ae2ec85002ced0279a1425923e56e64f3b"
+  }
+]
