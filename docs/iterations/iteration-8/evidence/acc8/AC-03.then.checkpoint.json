@@ -1,0 +1,155 @@
+{
+  "schema": "checkpoint/v1",
+  "instanceId": "INST-001",
+  "rev": 40,
+  "checkpointId": 41,
+  "writtenAt": "2026-11-20T13:08:39.152Z",
+  "coreGeneration": "gen-17f46a61bb44fa31",
+  "instanceState": "running",
+  "paused": false,
+  "halted": false,
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "graph": {
+    "id": "code-loop",
+    "title": "编码闭环",
+    "showTemplate": true,
+    "entry": "T-001",
+    "terminal": "T-002",
+    "terminals": [
+      "T-002"
+    ],
+    "maxRounds": {
+      "T-001": 2,
+      "T-002": 2
+    },
+    "roles": [
+      "developer",
+      "tester",
+      "coordinator"
+    ],
+    "nodes": [
+      {
+        "id": "T-001",
+        "nodeId": "T-001",
+        "roleId": "developer",
+        "order": 1,
+        "title": "开发",
+        "artifactPolicy": "declared",
+        "judge": "none",
+        "products": [],
+        "wakeFrom": [
+          "backflow"
+        ],
+        "prompt": "forward"
+      },
+      {
+        "id": "T-002",
+        "nodeId": "T-002",
+        "roleId": "tester",
+        "order": 2,
+        "title": "测试",
+        "artifactPolicy": "verdict",
+        "judge": "verdict",
+        "products": [
+          "out/verdict.json"
+        ],
+        "wakeFrom": [
+          "retest"
+        ],
+        "prompt": "verify"
+      }
+    ],
+    "edges": [
+      {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward",
+        "condition": null
+      },
+      {
+        "from": "T-002",
+        "to": "T-001",
+        "kind": "backflow",
+        "condition": "verdict-fail",
+        "requiresHandoff": true
+      },
+      {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "retest",
+        "condition": "reopen-failed-target"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "state": "done",
+      "phase": null,
+      "round": 2,
+      "roleId": "developer",
+      "sessionId": "mock-sess-25964-1",
+      "endedAt": "2026-11-20T13:08:32.830Z"
+    },
+    {
+      "nodeId": "T-002",
+      "state": "failed",
+      "phase": null,
+      "round": 1,
+      "roleId": "tester",
+      "sessionId": "mock-sess-32544-1",
+      "endedAt": "2026-11-20T13:08:32.299Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-24472-1",
+      "nodeId": "T-001",
+      "hostId": "mock",
+      "state": "idle",
+      "policy": null,
+      "dialect": null,
+      "lastEventAt": "2026-11-20T13:08:30.629Z"
+    },
+    {
+      "sessionId": "mock-sess-32544-1",
+      "nodeId": "T-002",
+      "hostId": "mock",
+      "state": "idle",
+      "policy": null,
+      "dialect": null,
+      "lastEventAt": "2026-11-20T13:08:32.146Z"
+    },
+    {
+      "sessionId": "mock-sess-25964-1",
+      "nodeId": "T-001",
+      "hostId": "mock",
+      "state": "idle",
+      "policy": null,
+      "dialect": null,
+      "lastEventAt": "2026-11-20T13:08:32.686Z"
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "from": null,
+      "to": null,
+      "kind": null,
+      "state": "consumed",
+      "deliveryAttempts": 1
+    },
+    {
+      "handoffId": "HO-002",
+      "from": null,
+      "to": null,
+      "kind": null,
+      "state": "consumed",
+      "deliveryAttempts": 1
+    }
+  ],
+  "escalations": [],
+  "artifactRefs": []
+}

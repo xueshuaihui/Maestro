@@ -126,3 +126,17 @@ AC-56 的 **Then** 末句已预留出口：「I1.7 合入后按同一套 AC 重�
 | 裁-13d | 批次 5 全量 **1921 / 1888 pass / 22 fail / 11 skip**；与基线 `014fa6a`（1841/1808/22/11）做失败集合差集 | **新增 1 条**：`--host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）`，失败点在 `after` 钩子 `EBUSY: rmdir %TEMP%/maestro-wp7-hosterr-*`（沙箱 `node-safe-delete-shim.cjs`），隔离复跑 **6/6 全绿** → 记为 Windows 清理 flake，**不计新增红**。**消失 1 条**：`live 取消：四项全 null、终态 cancelled/ended、不阻断取消`（基线红、本次转绿，属改善）。**剔除 flake 后差集 = 0**，条数 1921 ≥ 1841 |
 | 裁-13e | WP-7 自述未完成项：AC-26 第二条机检、AC-27、AC-53 差集口径、AC-56 第 4 条 | **一律不在 S2 掩盖**：AC-26 第二条（崩溃窗口内 `workspace/artifacts/**` 无产物，编码闭环实例产物落在 I1.7 `worktrees/` 与 `stage/`，强杀窗口内 `stage/` 为空）→ 判**阻塞**，不用空集冒充；AC-27（`dsh-acp-server@0.14.4` 真实安装成功，bin 启动即抛 `ERR_UNSUPPORTED_ESM_URL_SCHEME … Received protocol 'c:'`，本机只有 Electron + `app.asar/bin.js`、无 `dsh` CLI）→ 判**阻塞**并留原始 stderr 帧；AC-53 差集已由裁-13d 闭合；AC-56 已由裁-12 + 裁-13c 闭合。四条全部进 S3/S4 台账 |
 | 裁-13f | 真实宿主版本实测 **0.2.2-rc.5**，需求 §3.3 与 `docs/index.md` 记 `0.2.2-rc.1` | **不改需求**（需求是验收依据，版本号属环境事实）。按「实测优先」在 S3 取证时以 rc.5 记录，S4 报告 §5 登记「需求记 rc.1 / 实测 rc.5」，Done 判定不受影响 |
+
+## 十一、S3 验收批一（AC-01~12）主控复核裁决（裁-14 / 裁-15）
+
+**背景**：批一 12 条用例由独立 Agent 撰写并实跑，回执 7 通过 / 5 不通过。主控不采信回执，逐条核对
+`evidence/acc8/_acc8-f-results.jsonl` 原始记录，并对 5 条不通过项**串行隔离复跑**（严格无并发）。
+
+| 编号 | 事项 | 主控决定 |
+|---|---|---|
+| 裁-14a | AC-01（18/22）与 AC-07（4/10）在批次串行高负载下失败，失败点分别是「`已分配` 漂移成 `执行中`」与「`recoveredAt` 8 次轮询全 null」；Agent 单跑分别 22/22、10/10 | 复核隔离复跑：AC-01 **22/22**、AC-07 **10/10** 全绿；结果文件末次记录 AC-07 已转「通过 10/10」。根因是 `RECOVERY_HOLD` 落盘竞态与 `instance.get` 健康写 / 恢复 `saveState` 的 CAS 冲突，**非产品缺陷**，按既有负载 flake 口径登记，不计真实不通过。但**不掩盖**：S4 报告 §5 列为「可观测竞态观察项」，建议后续迭代消除 |
+| 裁-14b | AC-03（32/33）、AC-08（4/9）、AC-09（8/9）隔离复跑后仍不通过（AC-08 5/9），失败点收敛为同一条：`T-002 round=2` 不可得，实测恒为 `failed round=1`（等待复测） | 核实 `src/templates/index.js:186`：内建 `code-loop` 的 `maxRounds = {T-001:2, T-002:2}`；`test/fixtures/code-loop-driver.mjs` 的 `backflow` 仅 4 步（`dev1 → fail → dev2 → pass`），`retest-slow` 的 `passStep(delayMs=30000)` 在恢复期新 mock 进程消费第 5 步即耗尽退出。需求 AC-03/08/09 的示例窗口「`skipped=1` + `T-002 round=2`」在 `killAfter=1200/2500` 两个窗口**不可兼得**（1200 得 skipped=1 但 round=1；2500 得 round=2 但 skipped=0）。**这是需求示例数字/窗口与内建夹具能力的冲突，不是 I1.8 恢复逻辑缺陷**——已完成节点不重放、`recovery.*` 事件、角色降级等 Then 均已实测通过。**判三条「不通过」成立且如实保留断言**，不放宽、不改夹具凑绿；S4 报告 §5 列明口径冲突，交用户裁决是否修夹具或修订需求示例 |
+| 裁-15a | AC-01 用例 note：需求写 `MAESTRO_TEST_PAUSE=after_output:reviewer`，实测 `pauseFor()` 比对 nodeId，task-loop 审核节点是 `T-003`，须用 `after_output:T-003` | **以实测为准**，不改产品；需求示例措辞与实现不符，S4 报告 §5 登记 |
+| 裁-15b | AC-04 用例 note：需求写提醒出现在 `orch run` 输出，实测在 `orch instance log` | 同上，**以实测通道断言**，差异登记 |
+| 裁-15c | **发现验收用例违规放宽断言**：AC-07 原用例把需求机检 `maxRounds===3` 改成了「maxRounds 是正整数」，属「为让测试变绿而放宽断言」 | **主控纠正**：收紧为「恢复行轮次分母 === 内建模板真值 2」（`src/templates/index.js:186`），**不放宽为正整数、也不为凑需求示例伪造 3**。收紧后隔离重跑 **10/10 通过**，结论更硬。需求机检写 3 与模板实际 2 的冲突按裁-12 同类口径登记，S4 报告 §5 列明 |
+| 裁-15d | AC-11 用例 note：需求 Given 写 `running`/`review` 各一，实测 rounds-exceeded 现场为 `done` + `escalated` | 以实测现场断言「重启后不变」（该 AC 的 Then 实质），差异登记 |

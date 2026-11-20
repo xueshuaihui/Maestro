@@ -1,0 +1,84 @@
+{
+  "ok": true,
+  "kill": {
+    "ok": true,
+    "pid": 14604
+  },
+  "boots": [
+    {
+      "attempt": 0,
+      "exit": 0,
+      "pid": 14604
+    },
+    {
+      "attempt": 0,
+      "pid": 23932,
+      "recoveredAt": "2026-11-20T13:08:07.330Z"
+    }
+  ],
+  "before": {
+    "schemaVersion": 2,
+    "instanceId": "INST-001",
+    "coreGeneration": "gen-d105393c7edef9ef",
+    "createdAt": "2026-11-20T13:08:03.811Z",
+    "updatedAt": "2026-11-20T13:08:05.651Z",
+    "state": "running",
+    "stateSince": "2026-11-20T13:08:05.649Z",
+    "template": "code-loop",
+    "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-01-a\\demo-recovery",
+    "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+    "halted": false,
+    "rev": 3,
+    "counters": {
+      "eventSeq": 1,
+      "runCount": 1,
+      "dispatchCount": 1
+    },
+    "hostRaw": {
+      "stopReason": null,
+      "lastError": null,
+      "agentInfo": null
+    },
+    "nodes": [
+      {
+        "nodeId": "T-001",
+        "roleId": "developer",
+        "round": 1,
+        "state": "running",
+        "stateSince": "2026-11-20T13:08:05.649Z",
+        "startedAt": "2026-11-20T13:08:05.649Z",
+        "roundStartedAt": "2026-11-20T13:08:05.649Z",
+        "endedAt": null,
+        "failure": null,
+        "note": null,
+        "verdict": null,
+        "sessionId": null,
+        "artifactRefs": [],
+        "branch": "maestro/INST-001/developer",
+        "mergeStatus": "pending"
+      },
+      {
+        "nodeId": "T-002",
+        "roleId": "tester",
+        "round": 0,
+        "state": "pending",
+        "stateSince": "2026-11-20T13:08:03.811Z",
+        "startedAt": null,
+        "roundStartedAt": null,
+        "endedAt": null,
+        "failure": null,
+        "note": null,
+        "verdict": null,
+        "sessionId": null,
+        "artifactRefs": []
+      }
+    ],
+    "sessions": [],
+    "handoffs": [],
+    "escalations": [],
+    "health": {
+      "nodeTimeoutMs": 30000
+    },
+    "traceId": "TRC-513ccc51"
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-17f46a61bb44fa31",
+  "createdAt": "2026-11-20T13:08:28.289Z",
+  "updatedAt": "2026-11-20T13:08:39.129Z",
+  "state": "running",
+  "stateSince": "2026-11-20T13:08:32.394Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 40,
+  "counters": {
+    "eventSeq": 41,
+    "runCount": 1,
+    "dispatchCount": 3
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 2,
+      "state": "done",
+      "stateSince": "2026-11-20T13:08:32.795Z",
+      "startedAt": "2026-11-20T13:08:30.365Z",
+      "roundStartedAt": "2026-11-20T13:08:32.394Z",
+      "endedAt": "2026-11-20T13:08:32.830Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-25964-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery\\calc.js",
+          "declared": true,
+          "exists": true,
+          "bytes": 291,
+          "sha256": null,
+          "verifiedAt": "2026-11-20T13:08:32.795Z"
+        }
+      ],
+      "branch": "maestro/INST-001/developer",
+      "mergeStatus": "merging"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "failed",
+      "stateSince": "2026-11-20T13:08:32.299Z",
+      "startedAt": "2026-11-20T13:08:31.837Z",
+      "roundStartedAt": "2026-11-20T13:08:31.837Z",
+      "endedAt": "2026-11-20T13:08:32.299Z",
+      "failure": null,
+      "note": "等待复测",
+      "verdict": {
+        "value": "fail",
+        "defectCount": 2,
+        "verdictPath": "out/verdict.json",
+        "readAt": "2026-11-20T13:08:32.269Z"
+      },
+      "sessionId": "mock-sess-32544-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-24472-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T13:08:30.834Z",
+      "createdAt": "2026-11-20T13:08:30.611Z",
+      "lastEventAt": "2026-11-20T13:08:30.629Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-32544-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T13:08:32.324Z",
+      "createdAt": "2026-11-20T13:08:32.090Z",
+      "lastEventAt": "2026-11-20T13:08:32.146Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery\\out\\test-log.txt",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-25964-1",
+      "nodeId": "T-001",
+      "round": 2,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T13:08:32.862Z",
+      "createdAt": "2026-11-20T13:08:32.635Z",
+      "lastEventAt": "2026-11-20T13:08:32.686Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-20T13:08:31.797Z",
+      "deliveredAt": "2026-11-20T13:08:32.107Z",
+      "acceptedAt": "2026-11-20T13:08:32.138Z",
+      "consumedAt": "2026-11-20T13:08:32.273Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 31,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "calc.js"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 1,
+      "fromNodeId": "T-001",
+      "toNodeId": "T-002",
+      "retestRequirement": null,
+      "deliveryAttempts": 1,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    },
+    {
+      "handoffId": "HO-002",
+      "edge": {
+        "from": "T-002",
+        "to": "T-001",
+        "kind": "backflow"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-20T13:08:32.363Z",
+      "deliveredAt": "2026-11-20T13:08:32.657Z",
+      "acceptedAt": "2026-11-20T13:08:32.682Z",
+      "consumedAt": "2026-11-20T13:08:32.834Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": "2026-11-20T13:08:32.365Z",
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 25,
+      "defects": [
+        {
+          "summary": "div 在除数为 0 时返回 Infinity，未抛错",
+          "evidence": "out/test-log.txt"
+        },
+        {
+          "summary": "div 在整除场景存在浮点误差",
+          "evidence": "out/test-log-2.txt"
+        }
+      ],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "out/verdict.json"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 2,
+      "fromNodeId": "T-002",
+      "toNodeId": "T-001",
+      "retestRequirement": "按上方每条缺陷修正后重新提交产物",
+      "deliveryAttempts": 1,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    }
+  ],
+  "escalations": [],
+  "health": {
+    "level": "normal",
+    "reasons": [],
+    "computedAt": "2026-11-20T13:08:39.128Z",
+    "nodeTimeoutMs": 30000
+  },
+  "traceId": "TRC-c2cbe156",
+  "paused": false,
+  "recoveredAt": "2026-11-20T13:08:34.505Z",
+  "recovery": {
+    "checkpointAt": "2026-11-20T13:08:32.915Z",
+    "skipped": 1,
+    "round": 2,
+    "maxRounds": 2
+  }
+}

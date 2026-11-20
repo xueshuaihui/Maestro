@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-8cf97d28ff1d0582",
+  "createdAt": "2026-11-20T13:03:31.452Z",
+  "updatedAt": "2026-11-20T13:03:36.321Z",
+  "state": "running",
+  "stateSince": "2026-11-20T13:03:34.758Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-02\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 18,
+  "counters": {
+    "eventSeq": 13,
+    "runCount": 1,
+    "dispatchCount": 2
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-20T13:03:33.727Z",
+      "startedAt": "2026-11-20T13:03:33.284Z",
+      "roundStartedAt": "2026-11-20T13:03:33.284Z",
+      "endedAt": "2026-11-20T13:03:33.752Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-21840-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-02\\demo-recovery\\calc.js",
+          "declared": true,
+          "exists": true,
+          "bytes": 251,
+          "sha256": null,
+          "verifiedAt": "2026-11-20T13:03:33.725Z"
+        }
+      ],
+      "branch": "maestro/INST-001/developer",
+      "mergeStatus": "merged"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "running",
+      "stateSince": "2026-11-20T13:03:36.273Z",
+      "startedAt": "2026-11-20T13:03:34.758Z",
+      "roundStartedAt": "2026-11-20T13:03:34.758Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "phase": "assigned"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-21840-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T13:03:33.760Z",
+      "createdAt": "2026-11-20T13:03:33.535Z",
+      "lastEventAt": "2026-11-20T13:03:33.571Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-02\\demo-recovery\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "created",
+      "createdAt": "2026-11-20T13:03:34.722Z",
+      "deliveredAt": null,
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": null,
+      "ambiguityWindowMs": null,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "calc.js"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 1,
+      "fromNodeId": "T-001",
+      "toNodeId": "T-002",
+      "retestRequirement": null,
+      "deliveryAttempts": 0,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    }
+  ],
+  "escalations": [],
+  "health": {
+    "nodeTimeoutMs": 30000
+  },
+  "traceId": "TRC-aa5e23e4",
+  "paused": false,
+  "recoveredAt": "2026-11-20T13:03:36.320Z",
+  "recovery": {
+    "checkpointAt": "2026-11-20T13:03:34.777Z",
+    "skipped": 1,
+    "round": 1,
+    "maxRounds": 2
+  }
+}

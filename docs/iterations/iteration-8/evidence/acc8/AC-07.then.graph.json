@@ -1,0 +1,87 @@
+{
+  "graphVersion": 1,
+  "instanceId": "INST-001",
+  "template": "code-loop",
+  "state": "running",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": "开发",
+      "roleId": "developer",
+      "state": "running",
+      "round": 2,
+      "branch": "maestro/INST-001/developer",
+      "mergeStatus": "pending"
+    },
+    {
+      "nodeId": "T-002",
+      "title": "测试",
+      "roleId": "tester",
+      "state": "failed",
+      "round": 1
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward"
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow"
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest"
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "state": "consumed",
+      "round": 1
+    },
+    {
+      "handoffId": "HO-002",
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow",
+      "state": "created",
+      "round": 2
+    }
+  ],
+  "escalations": [],
+  "approvals": [],
+  "current": {
+    "nodeId": "T-001",
+    "sessionId": "mock-sess-3596-1",
+    "state": "running"
+  },
+  "recovery": {
+    "checkpointAt": "2026-11-20T13:11:30.521Z",
+    "skipped": 0,
+    "round": 2,
+    "maxRounds": 2
+  },
+  "connections": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward",
+      "aggregate": "consumed"
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow",
+      "aggregate": "not_started"
+    }
+  ]
+}

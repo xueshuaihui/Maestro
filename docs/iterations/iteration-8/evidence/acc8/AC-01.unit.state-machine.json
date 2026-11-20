@@ -1,0 +1,11 @@
+{
+  "NODE_STATES": [
+    "pending",
+    "running",
+    "review",
+    "done",
+    "failed",
+    "cancelled",
+    "escalated"
+  ]
+}
