@@ -64,6 +64,22 @@ export async function run() {
       if (events.some((e) => e.reason === 'session.timeout')) break;
       await nap(100);
     }
+    // 升级/挂起是在 `session.timeout` 之后才落盘的：超时事件先写，`escalations` 与实例
+    // `suspended` 紧随其后（终验第 2 轮实测 events 止于 seq 31、state.updatedAt 只比
+    // timeout 晚 5ms，#32~#35 在其后）。原实现读到 timeout 就立刻读 state.json，读到的是
+    // 迁移前快照，把 4 条本该成立的核对项判成失败（假阴性）。这里改为等迁移落定再读；
+    // 等待有上限，落不下来仍按原断言判红——**期望值一个也没改**。
+    let settled = false;
+    const settleUntil = Date.now() + 20_000;
+    while (Date.now() < settleUntil) {
+      const probe = readState(root);
+      if (probe?.state === 'suspended' && (probe?.escalations ?? []).length >= 1) {
+        settled = true;
+        break;
+      }
+      await nap(100);
+    }
+    events = readEvents(root);
     const state = readState(root);
     const log = orch(root, ['instance', 'log', '--instance', 'INST-001'], { env }).stdout;
     const status = orch(root, ['status', '--instance', 'INST-001'], { env }).stdout;
@@ -71,6 +87,10 @@ export async function run() {
     evidence(c, 'given', 'run-output.txt', runOut);
     evidence(c, 'then', 'events.jsonl', events.map((e) => JSON.stringify(e)).join('\n'));
     evidence(c, 'then', 'state.json', JSON.stringify(state, null, 2));
+    evidence(c, 'then', 'settle.txt', `# 等待「升级 + 挂起」落定：settled=${settled}\n`
+      + `# events 末条 seq=${events.at(-1)?.seq ?? '-'} ts=${events.at(-1)?.ts ?? '-'}\n`
+      + `# state.updatedAt=${state?.updatedAt ?? '-'} state=${state?.state ?? '-'} `
+      + `escalations=${(state?.escalations ?? []).length}\n`);
     evidence(c, 'then', 'instance-log.txt', log);
     evidence(c, 'then', 'status.txt', status);
     evidence(c, 'then', 'graph.txt', graph);

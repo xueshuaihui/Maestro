@@ -4,8 +4,9 @@
  * 纪律：§7.2 白名单已有 test/wp10/perf.test.js 的两条 NFR-02 p95 <= 50ms
  * 墙钟用例，属于负载相关、并行全量回归时会红的已知豁免项。本文件
  * **不复制任何严格墙钟断言**：所有 test 只做确定性结构断言（内容完整、
- * JSON 可解析、tmp 残留清零、输出行数正确），并把真实耗时落盘到
- * docs/iterations/iteration-4/evidence/nfr-perf-*.json 作为 NFR 证据。
+ * JSON 可解析、tmp 残留清零、输出行数正确），并把真实耗时落盘作为 NFR 证据。
+ * 落盘目录默认是系统临时目录；只有显式设 `NFR_EVID_DIR=docs/iterations/iteration-4/evidence`
+ * 时才会写回仓库里的 I1.4 证据（避免每次全量跑都污染已收口的跨迭代证据）。
  *
  * 覆盖分工：
  *   NFR-01（100 事件 / 50 包以内首行可见）→ 数据集规模下的渲染完整性 + 实测耗时；
@@ -27,7 +28,15 @@ import { renderHandoffLines, renderEventLine } from '../../src/cli/render.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(HERE, '..', '..');
-const EVID = path.join(REPO, 'docs', 'iterations', 'iteration-4', 'evidence');
+// 这里落盘的是本机实测的 NFR 耗时。默认写临时目录：每次全量跑都改写
+// `docs/iterations/iteration-4/evidence/nfr-perf-*.json`，等于把 I1.4 已收口的验收证据
+// 替换成「另一台机器另一次跑」的数字，属于跨迭代证据污染，也让「被验证提交 = 干净工作区」
+// 无法自然成立（终验第 1、2 轮都因此要手工 `checkout-index` 恢复 3 个文件）。
+// 需要重新生成 I1.4 的 NFR 证据时，显式指定目录：
+//   NFR_EVID_DIR=docs/iterations/iteration-4/evidence npm test
+const EVID = process.env.NFR_EVID_DIR
+  ? path.resolve(REPO, process.env.NFR_EVID_DIR)
+  : path.join(os.tmpdir(), 'maestro-nfr-evidence');
 
 function tmpRoot(label) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `maestro-nfr-${label}-`));

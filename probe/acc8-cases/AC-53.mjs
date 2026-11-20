@@ -157,7 +157,14 @@ export async function run() {
 
   verify(c, '测试条数 ≥ 1841（只增不减）', counts.tests, (n) => typeof n === 'number' && n >= 1841, '≥ 1841');
   eq(c, '新增失败集合（差集，剔除已独占复跑证伪的 flake）为空', surviving, []);
-  check(c, '失败条数与 TAP 解析一致', counts.fail === failures.length || failures.length > 0, JSON.stringify(counts));
+  // 终验第 2 轮指出：原判据 `counts.fail === failures.length || failures.length > 0`
+  // 里的 `|| failures.length > 0` 让该检查在「有任何失败」时恒真，TAP 计数与失败名
+  // 解析错位永远发现不了。这里改为**严格逐条对应**：差额必须为 0。
+  // 若真的出现「失败发生在 after 钩子/子测试里、TAP 只给计数不给用例名」，必须把差额
+  // 逐条查明并在本迭代留痕，而不是用 `||` 抹平（那等于把排错能力删掉）。
+  const failGap = counts.fail - failures.length;
+  check(c, '失败条数与 TAP 解析一致（逐条可对应，差额 0）', failGap === 0,
+    JSON.stringify({ ...counts, parsedNames: failures.length, gap: failGap }));
   note(c, `实跑：${JSON.stringify(counts)}，耗时 ${Math.round(durationMs / 1000)}s；基线红 ${baseline.length} 条，本次失败 ${failSet.size} 条，差集 ${extra.length} 条，独占复跑后仍红 ${surviving.length} 条。`);
   note(c, '裁-20r：新增红逐条独占复跑（`--test-concurrency=1` 单文件），单跑通过判负载 flake 并附独立帧，'
     + '单跑仍红计入差集。不预置任何白名单，不核不剔。');

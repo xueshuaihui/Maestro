@@ -71,7 +71,17 @@ function main() {
       : ['- （无）']),
     '',
   ].join('\n');
-  writeText(ACC8_PATHS.BLOCKERS, md);
+  // 生成部分是机读清单；`## 处置结论` 之后是人工写的处置台账（豁免理由、遗留归属、谁在做）。
+  // 整文件重写会把台账抹掉，所以先取出旧文件里的台账段再原样接回——否则每次重生成都要人工补回，
+  // 一旦忘了，Done#4「缺陷与遗留收口」就会变成「清单里没有处置」。
+  const LEDGER_HEADING = '## 处置结论';
+  let ledger = '';
+  try {
+    const prev = readText(ACC8_PATHS.BLOCKERS);
+    const at = prev.indexOf(LEDGER_HEADING);
+    if (at >= 0) ledger = `\n${prev.slice(at).replace(/\s+$/, '')}\n`;
+  } catch { /* 首次生成没有旧文件 */ }
+  writeText(ACC8_PATHS.BLOCKERS, md + ledger);
   process.stdout.write(`${JSON.stringify({ total: summary.total, byVerdict: summary.byVerdict, acs: summary.acs.map((a) => `${a.ac}=${a.verdict}(${a.checks})`) }, null, 2)}\n`);
   return 0;
 }

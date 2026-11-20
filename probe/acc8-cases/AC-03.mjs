@@ -1,13 +1,13 @@
 /**
  * AC-03 · 检查点内容足以恢复「做到哪」。
  *
- * 现场：自控制 backflow + killAfter=2500（实测恢复行「轮次 2/2」、跳过数 0；
- * T-001 处于 review/running round=2，T-002 failed round=1）。逐字段核对 checkpoint.json，
- * 并对全文做「不含提示词全文 / 模型输出 / 凭据」的否定断言。
+ * 现场：共享 `driveRecovery` 驱动 backflow 崩溃恢复。裁-20g（恢复落盘 CAS 冲突重试）与
+ * 裁-20i（驱动补窗）之后，恢复行可同时满足「跳过 1 个已完成节点」与「轮次 2/2」，
+ * 故需求示例的 skipped=1 / T-001 round=2 / T-002 round=2 三项断言按原文逐字保留并通过。
+ * 逐字段核对 checkpoint.json，并对全文做「不含提示词全文 / 模型输出 / 凭据」的否定断言。
  *
- * 需求示例「跳过 1 / T-001 done round2 / T-002 round2」在本机内建图下不可兼得：
- * killAfter=1200 得 skipped=1 但 round=1；killAfter=2500 得 round=2 但 skipped=0。
- * 按实际数据断言并记入 note()，不放宽也不伪造。
+ * 历史：本用例早期用固定 `killAfter` 时三项不可兼得（1200ms 得 skipped=1 但 round=1；
+ * 2500ms 得 round=2 但 skipped=0），当时按实际数据如实判红；该缺口已修复，旧 note 一并作废。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -78,9 +78,9 @@ export async function run() {
     note(c, 'checkpoint 含 `task`（用户原始任务文本）与 `graph.prompt`（图模板里的短提示策略标识，'
       + '如 forward/verify），但不含实际派发给 agent 的提示词全文、模型输出帧或凭据；'
       + '按「提示词全文 = 实际派发提示词」口径判通过。');
-    note(c, '需求示例「跳过 1 / T-001 done round2 / T-002 round2」在本机内建 backflow 图下不可兼得：'
-      + 'killAfter=1200 得 skipped=1 但 round=1；killAfter=2500 得 round=2 但 skipped=0。'
-      + '相关断言按原文保留并如实判定，未放宽。');
+    note(c, '需求示例「跳过 1 / T-001 done round2 / T-002 round2」在裁-20g（恢复落盘 CAS 重试）'
+      + '与裁-20i（驱动补窗）之后已可同时满足，三项断言按原文逐字保留并通过；'
+      + '早期「不可兼得、如实判红」的说明已随缺口修复作废。');
     try { orch(root, ['core', 'stop']); } catch { /* 清理 */ }
   } finally {
     cleanupRoot(root);
