@@ -8,28 +8,28 @@
   "kills": [
     {
       "ok": true,
-      "pid": 2784,
-      "atMs": 3937,
-      "promptCount": 1
+      "pid": 14956,
+      "atMs": 3061,
+      "promptCount": 3
     }
   ],
   "before": {
     "instanceId": "INST-001",
     "state": "running",
-    "rev": 16,
+    "rev": 27,
     "recoveredAt": null,
     "nodes": [
       {
         "nodeId": "T-001",
         "nodeType": null,
-        "state": "done",
+        "state": "running",
         "phase": null,
-        "round": 1
+        "round": 2
       },
       {
         "nodeId": "T-002",
         "nodeType": null,
-        "state": "running",
+        "state": "failed",
         "phase": null,
         "round": 1
       }
@@ -37,6 +37,11 @@
     "handoffs": [
       {
         "handoffId": "HO-001",
+        "state": "consumed",
+        "deliveryAttempts": 1
+      },
+      {
+        "handoffId": "HO-002",
         "state": "created",
         "deliveryAttempts": 0
       }
@@ -45,20 +50,20 @@
   "afterKill": {
     "instanceId": "INST-001",
     "state": "running",
-    "rev": 16,
+    "rev": 27,
     "recoveredAt": null,
     "nodes": [
       {
         "nodeId": "T-001",
         "nodeType": null,
-        "state": "done",
+        "state": "running",
         "phase": null,
-        "round": 1
+        "round": 2
       },
       {
         "nodeId": "T-002",
         "nodeType": null,
-        "state": "running",
+        "state": "failed",
         "phase": null,
         "round": 1
       }
@@ -66,6 +71,11 @@
     "handoffs": [
       {
         "handoffId": "HO-001",
+        "state": "consumed",
+        "deliveryAttempts": 1
+      },
+      {
+        "handoffId": "HO-002",
         "state": "created",
         "deliveryAttempts": 0
       }

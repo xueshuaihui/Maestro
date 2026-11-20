@@ -1,7 +1,7 @@
 C:\Users\xuesh\.workbuddy\binaries\node\versions\22.22.2-6\node.exe D:\WWW\Maestro\bin\orch.js run --cwd C:\Users\xuesh\AppData\Local\Temp\maestro-i18\AC-04\demo-code-pass --task "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js" --template code-loop --host mock
 exit=0
 实例 INST-001 · 运行中 · 模板 编码闭环
-会话已创建 mock-sess-4080-1
+会话已创建 mock-sess-31228-1
 任务已投递
 会话 执行中 · 已运行 1s
 会话 等待下游 · 产出已提交
@@ -12,9 +12,9 @@ exit=0
 会话 空闲
 节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s
 节点 T-002 测试 已完成 · 第 1 轮 · 耗时 1s · 判定 通过
-交接包 HO-001  开发→测试  已构造   00:52:07
-交接包 HO-001  开发→测试  已投递   00:52:08
-交接包 HO-001  开发→测试  已接受   00:52:08
-交接包 HO-001  开发→测试  已完成   00:52:08
+交接包 HO-001  开发→测试  已构造   02:39:59
+交接包 HO-001  开发→测试  已投递   02:39:59
+交接包 HO-001  开发→测试  已接受   02:39:59
+交接包 HO-001  开发→测试  已完成   02:39:59
 升级 —
 

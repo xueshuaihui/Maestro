@@ -44,7 +44,7 @@
   "approvals": [],
   "current": {
     "nodeId": "T-001",
-    "sessionId": "mock-sess-25464-1",
+    "sessionId": "mock-sess-22880-1",
     "state": "running"
   }
 }

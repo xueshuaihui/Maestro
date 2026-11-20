@@ -1,6 +1,6 @@
-{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-66","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-66\\demo-code-pass","scenario":"backflow","resolvedScenario":"backflow","stopAfter":null,"keep":false,"released":false,"target":"exit","exitCode":0,"instanceId":"INST-001","state":"completed","nodes":[{"nodeId":"T-001","round":2,"state":"done"},{"nodeId":"T-002","round":2,"state":"done"}],"handoffs":3,"escalations":[],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":7448,"checks":[{"name":"state=completed","ok":true,"detail":"completed"},{"name":"两节点 round=2 done","ok":true},{"name":"handoffs=3 forward/backflow/retest","ok":true}]}
+{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-66","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-66\\demo-code-pass","scenario":"backflow","resolvedScenario":"backflow","stopAfter":null,"keep":false,"released":false,"target":"exit","exitCode":0,"instanceId":"INST-001","state":"completed","nodes":[{"nodeId":"T-001","round":2,"state":"done"},{"nodeId":"T-002","round":2,"state":"done"}],"handoffs":3,"escalations":[],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":6270,"checks":[{"name":"state=completed","ok":true,"detail":"completed"},{"name":"两节点 round=2 done","ok":true},{"name":"handoffs=3 forward/backflow/retest","ok":true}]}
 实例 INST-001 · 运行中 · 模板 编码闭环
-会话已创建 mock-sess-32044-1
+会话已创建 mock-sess-27584-1
 任务已投递
 会话 执行中 · 已运行 1s
 会话 等待下游 · 产出已提交
@@ -17,18 +17,18 @@
 会话 执行中 · 已运行 1s
 会话 等待下游 · 产出已提交
 会话 空闲
-节点 T-001 开发 已完成 · 第 2 轮 · 耗时 3s
-节点 T-002 测试 已完成 · 第 2 轮 · 耗时 3s · 判定 通过
-交接包 HO-001  开发→测试  已构造   01:01:03
-交接包 HO-001  开发→测试  已投递   01:01:04
-交接包 HO-001  开发→测试  已接受   01:01:04
-交接包 HO-001  开发→测试  已完成   01:01:04
-交接包 HO-002  测试→开发（回流）  已构造   01:01:04
-交接包 HO-002  测试→开发（回流）  已投递   01:01:04
-交接包 HO-002  测试→开发（回流）  已接受   01:01:04
-交接包 HO-002  测试→开发（回流）  已完成   01:01:05
-交接包 HO-003  开发→测试（复测）  已构造   01:01:06
-交接包 HO-003  开发→测试（复测）  已投递   01:01:06
-交接包 HO-003  开发→测试（复测）  已接受   01:01:06
-交接包 HO-003  开发→测试（复测）  已完成   01:01:06
+节点 T-001 开发 已完成 · 第 2 轮 · 耗时 2s
+节点 T-002 测试 已完成 · 第 2 轮 · 耗时 2s · 判定 通过
+交接包 HO-001  开发→测试  已构造   02:52:25
+交接包 HO-001  开发→测试  已投递   02:52:25
+交接包 HO-001  开发→测试  已接受   02:52:25
+交接包 HO-001  开发→测试  已完成   02:52:25
+交接包 HO-002  测试→开发（回流）  已构造   02:52:25
+交接包 HO-002  测试→开发（回流）  已投递   02:52:26
+交接包 HO-002  测试→开发（回流）  已接受   02:52:26
+交接包 HO-002  测试→开发（回流）  已完成   02:52:26
+交接包 HO-003  开发→测试（复测）  已构造   02:52:27
+交接包 HO-003  开发→测试（复测）  已投递   02:52:27
+交接包 HO-003  开发→测试（复测）  已接受   02:52:27
+交接包 HO-003  开发→测试（复测）  已完成   02:52:27
 升级 —

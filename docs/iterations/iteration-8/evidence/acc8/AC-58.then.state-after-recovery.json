@@ -1,27 +1,32 @@
 {
   "instanceId": "INST-001",
   "state": "running",
-  "rev": 23,
-  "recoveredAt": "2026-11-20T16:59:45.214Z",
+  "rev": 29,
+  "recoveredAt": "2026-11-20T18:59:57.788Z",
   "nodes": [
     {
       "nodeId": "T-001",
       "nodeType": null,
-      "state": "done",
+      "state": "running",
       "phase": null,
-      "round": 1
+      "round": 2
     },
     {
       "nodeId": "T-002",
       "nodeType": null,
-      "state": "running",
-      "phase": "running",
+      "state": "failed",
+      "phase": null,
       "round": 1
     }
   ],
   "handoffs": [
     {
       "handoffId": "HO-001",
+      "state": "consumed",
+      "deliveryAttempts": 1
+    },
+    {
+      "handoffId": "HO-002",
       "state": "created",
       "deliveryAttempts": 0
     }

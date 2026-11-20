@@ -7,13 +7,13 @@
     "result": "note",
     "reason": "recovery.handoff",
     "detail": {
-      "handoffId": "HO-001",
+      "handoffId": "HO-002",
       "from": "created",
       "to": "delivered"
     },
-    "gen": "gen-c8d84e90c2951b90",
-    "seq": 15,
-    "ts": "2026-11-20T16:59:45.241Z",
-    "prev_event_hash": "dd2787bcbf058d32c4496dd52e9e0861bae307799dd501a831a25b8fe35b9a6a"
+    "gen": "gen-0ece820e1efb9930",
+    "seq": 31,
+    "ts": "2026-11-20T18:59:57.815Z",
+    "prev_event_hash": "ab931564eb1b94dc9fb7a4bf893a26eacbe54bfc8bf020283e8082f8a20c121a"
   }
 ]

@@ -7,14 +7,14 @@
     "result": "note",
     "reason": "recovery.summary",
     "detail": {
-      "checkpointAt": "2026-11-20T16:59:44.777Z",
-      "skipped": 1,
-      "round": 1,
+      "checkpointAt": "2026-11-20T18:59:57.051Z",
+      "skipped": 0,
+      "round": 2,
       "maxRounds": 2
     },
-    "gen": "gen-c8d84e90c2951b90",
-    "seq": 14,
-    "ts": "2026-11-20T16:59:45.239Z",
-    "prev_event_hash": "84abb5dc6942511cb1150851a5b2bc93fa4936891046f39a196a71372c0dde0c"
+    "gen": "gen-0ece820e1efb9930",
+    "seq": 29,
+    "ts": "2026-11-20T18:59:57.811Z",
+    "prev_event_hash": "111f0db2b39fd2e755bc558499771d1c8ad803c4e9da8875b0e0ad214702cccd"
   }
 ]

@@ -1,10 +1,10 @@
 {
   "schema": "checkpoint/v1",
   "instanceId": "INST-001",
-  "rev": 15,
+  "rev": 16,
   "checkpointId": 16,
-  "writtenAt": "2026-11-20T16:51:48.400Z",
-  "coreGeneration": "gen-f8b36850c21e028a",
+  "writtenAt": "2026-11-20T18:39:43.027Z",
+  "coreGeneration": "gen-aa4c0680b82ad0e5",
   "instanceState": "running",
   "paused": false,
   "halted": false,
@@ -90,8 +90,8 @@
       "phase": null,
       "round": 1,
       "roleId": "developer",
-      "sessionId": "mock-sess-16896-1",
-      "endedAt": "2026-11-20T16:51:47.295Z"
+      "sessionId": "mock-sess-11768-1",
+      "endedAt": "2026-11-20T18:39:40.565Z"
     },
     {
       "nodeId": "T-002",
@@ -105,25 +105,16 @@
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-16896-1",
+      "sessionId": "mock-sess-11768-1",
       "nodeId": "T-001",
       "hostId": "mock",
       "state": "idle",
       "policy": null,
       "dialect": null,
-      "lastEventAt": "2026-11-20T16:51:47.148Z"
+      "lastEventAt": "2026-11-20T18:39:40.440Z"
     }
   ],
-  "handoffs": [
-    {
-      "handoffId": "HO-001",
-      "from": null,
-      "to": null,
-      "kind": null,
-      "state": "created",
-      "deliveryAttempts": 0
-    }
-  ],
+  "handoffs": [],
   "escalations": [],
   "artifactRefs": []
 }

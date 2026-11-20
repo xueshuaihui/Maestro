@@ -1,4 +1,4 @@
-01:04:43  恢复：检查点 01:04:43 · 跳过 1 个已完成节点 · 轮次 2/2
-[#2] 01:04:43  节点 T-002  执行中  原因 recovery.session_unrecoverable
-01:04:43  恢复失败：host_unreachable；实例已中断（可执行 orch instance log 查看详情）
-01:04:43  健康度 INST-001  正常 → 已结束  原因 
+02:41:53  恢复：检查点 02:41:53 · 跳过 1 个已完成节点 · 轮次 2/2
+[#2] 02:41:54  节点 T-002  执行中  原因 recovery.session_unrecoverable
+02:41:54  恢复失败：host_unreachable；实例已中断（可执行 orch instance log 查看详情）
+02:41:54  健康度 INST-001  正常 → 已结束  原因 

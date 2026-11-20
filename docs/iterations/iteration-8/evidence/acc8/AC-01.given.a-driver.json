@@ -2,28 +2,28 @@
   "ok": true,
   "kill": {
     "ok": true,
-    "pid": 2768
+    "pid": 12372
   },
   "boots": [
     {
       "attempt": 0,
       "exit": 0,
-      "pid": 2768
+      "pid": 12372
     },
     {
       "attempt": 0,
-      "pid": 6224,
-      "recoveredAt": "2026-11-20T17:04:25.142Z"
+      "pid": 17484,
+      "recoveredAt": "2026-11-20T18:39:20.125Z"
     }
   ],
   "before": {
     "schemaVersion": 2,
     "instanceId": "INST-001",
-    "coreGeneration": "gen-567ce2569140c57b",
-    "createdAt": "2026-11-20T17:04:21.486Z",
-    "updatedAt": "2026-11-20T17:04:23.456Z",
+    "coreGeneration": "gen-27373add8bcb96d2",
+    "createdAt": "2026-11-20T18:39:16.689Z",
+    "updatedAt": "2026-11-20T18:39:18.449Z",
     "state": "running",
-    "stateSince": "2026-11-20T17:04:23.454Z",
+    "stateSince": "2026-11-20T18:39:18.447Z",
     "template": "code-loop",
     "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-01-a\\demo-recovery",
     "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
@@ -39,15 +39,16 @@
       "lastError": null,
       "agentInfo": null
     },
+    "sessionPolicies": null,
     "nodes": [
       {
         "nodeId": "T-001",
         "roleId": "developer",
         "round": 1,
         "state": "running",
-        "stateSince": "2026-11-20T17:04:23.454Z",
-        "startedAt": "2026-11-20T17:04:23.454Z",
-        "roundStartedAt": "2026-11-20T17:04:23.454Z",
+        "stateSince": "2026-11-20T18:39:18.447Z",
+        "startedAt": "2026-11-20T18:39:18.447Z",
+        "roundStartedAt": "2026-11-20T18:39:18.447Z",
         "endedAt": null,
         "failure": null,
         "note": null,
@@ -62,7 +63,7 @@
         "roleId": "tester",
         "round": 0,
         "state": "pending",
-        "stateSince": "2026-11-20T17:04:21.486Z",
+        "stateSince": "2026-11-20T18:39:16.689Z",
         "startedAt": null,
         "roundStartedAt": null,
         "endedAt": null,
@@ -79,6 +80,6 @@
     "health": {
       "nodeTimeoutMs": 30000
     },
-    "traceId": "TRC-2d255930"
+    "traceId": "TRC-d894b6b3"
   }
 }

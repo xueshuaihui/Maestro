@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "instanceId": "INST-001",
-  "coreGeneration": "gen-a6362d5f89cc6895",
-  "createdAt": "2026-11-20T16:56:23.030Z",
-  "updatedAt": "2026-11-20T16:56:25.722Z",
+  "coreGeneration": "gen-b989e83030e853ab",
+  "createdAt": "2026-11-20T18:59:40.122Z",
+  "updatedAt": "2026-11-20T18:59:41.688Z",
   "state": "suspended",
-  "stateSince": "2026-11-20T16:56:25.672Z",
+  "stateSince": "2026-11-20T18:59:41.658Z",
   "template": "code-loop",
   "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-43\\demo-recovery",
   "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
@@ -21,20 +21,21 @@
     "lastError": null,
     "agentInfo": null
   },
+  "sessionPolicies": null,
   "nodes": [
     {
       "nodeId": "T-001",
       "roleId": "developer",
       "round": 1,
       "state": "escalated",
-      "stateSince": "2026-11-20T16:56:25.672Z",
-      "startedAt": "2026-11-20T16:56:25.174Z",
-      "roundStartedAt": "2026-11-20T16:56:25.174Z",
-      "endedAt": "2026-11-20T16:56:25.672Z",
+      "stateSince": "2026-11-20T18:59:41.658Z",
+      "startedAt": "2026-11-20T18:59:41.179Z",
+      "roundStartedAt": "2026-11-20T18:59:41.179Z",
+      "endedAt": "2026-11-20T18:59:41.658Z",
       "failure": null,
       "note": null,
       "verdict": null,
-      "sessionId": "mock-sess-29836-1",
+      "sessionId": "mock-sess-33460-1",
       "artifactRefs": [],
       "branch": "maestro/INST-001/developer",
       "mergeStatus": "pending"
@@ -44,7 +45,7 @@
       "roleId": "tester",
       "round": 0,
       "state": "pending",
-      "stateSince": "2026-11-20T16:56:23.030Z",
+      "stateSince": "2026-11-20T18:59:40.122Z",
       "startedAt": null,
       "roundStartedAt": null,
       "endedAt": null,
@@ -57,14 +58,18 @@
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-29836-1",
+      "sessionId": "mock-sess-33460-1",
       "nodeId": "T-001",
       "round": 1,
+      "roleId": "developer",
+      "instanceId": "INST-001",
+      "servingNodeId": "T-001",
+      "reused": false,
       "hostId": "mock",
       "state": "escalated",
-      "stateSince": "2026-11-20T16:56:25.672Z",
-      "createdAt": "2026-11-20T16:56:25.428Z",
-      "lastEventAt": "2026-11-20T16:56:25.437Z",
+      "stateSince": "2026-11-20T18:59:41.658Z",
+      "createdAt": "2026-11-20T18:59:41.426Z",
+      "lastEventAt": "2026-11-20T18:59:41.436Z",
       "toolName": null,
       "turnId": "turn-1",
       "artifactRef": null,
@@ -82,7 +87,7 @@
       "reasonDetail": "执行失败：session_crash",
       "defects": [],
       "state": "pending",
-      "createdAt": "2026-11-20T16:56:25.672Z",
+      "createdAt": "2026-11-20T18:59:41.657Z",
       "resolvedAt": null,
       "resolution": null,
       "voidedAt": null
@@ -94,8 +99,8 @@
       "pending_escalation",
       "session_crash"
     ],
-    "computedAt": "2026-11-20T16:56:25.720Z",
+    "computedAt": "2026-11-20T18:59:41.687Z",
     "nodeTimeoutMs": 30000
   },
-  "traceId": "TRC-ebee2399"
+  "traceId": "TRC-fe4474ae"
 }

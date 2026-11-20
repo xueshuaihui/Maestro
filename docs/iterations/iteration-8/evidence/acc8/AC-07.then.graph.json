@@ -74,7 +74,7 @@
       "reasonDetail": "派遣失败：目标会话不可用",
       "defects": [],
       "state": "pending",
-      "createdAt": "2026-11-20T16:52:26.852Z",
+      "createdAt": "2026-11-20T18:40:17.844Z",
       "resolvedAt": null,
       "resolution": null,
       "voidedAt": null
@@ -83,7 +83,7 @@
   "approvals": [],
   "current": null,
   "recovery": {
-    "checkpointAt": "2026-11-20T16:52:23.057Z",
+    "checkpointAt": "2026-11-20T18:40:14.635Z",
     "skipped": 0,
     "round": 2,
     "maxRounds": 2

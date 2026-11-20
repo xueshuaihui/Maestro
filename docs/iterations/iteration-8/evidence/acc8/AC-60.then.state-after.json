@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-fa117011f64f96ce",
+  "createdAt": "2026-11-20T18:51:35.769Z",
+  "updatedAt": "2026-11-20T18:51:38.464Z",
+  "state": "running",
+  "stateSince": "2026-11-20T18:51:38.463Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-60\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "paused": false,
+  "rev": 3,
+  "counters": {
+    "eventSeq": 2,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 2,
+      "state": "running",
+      "stateSince": "2026-11-20T18:51:38.463Z",
+      "startedAt": "2026-11-20T18:51:35.769Z",
+      "roundStartedAt": "2026-11-20T18:51:38.463Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "phase": "ready",
+      "branch": "maestro/INST-001/developer",
+      "mergeStatus": "pending"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "pending",
+      "stateSince": "2026-11-20T18:51:35.769Z",
+      "startedAt": "2026-11-20T18:51:35.769Z",
+      "roundStartedAt": "2026-11-20T18:51:35.769Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "phase": "blocked"
+    }
+  ],
+  "sessions": [],
+  "handoffs": [],
+  "escalations": [],
+  "health": {
+    "level": "normal",
+    "reasons": [],
+    "computedAt": "2026-11-20T18:51:35.769Z",
+    "nodeTimeoutMs": 30000
+  },
+  "recoveredAt": "2026-11-20T18:51:36.010Z",
+  "recovery": {
+    "checkpointAt": "2026-11-20T18:51:35.769Z",
+    "skipped": 0,
+    "round": 1,
+    "maxRounds": 2
+  }
+}

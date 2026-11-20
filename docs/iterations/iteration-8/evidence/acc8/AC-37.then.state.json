@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
   "instanceId": "INST-HUMAN-001",
-  "coreGeneration": "gen-bfd4fae00fbd5880",
+  "coreGeneration": "gen-bd4f0b993e20578b",
   "createdAt": "2026-11-09T10:00:00.000Z",
-  "updatedAt": "2026-11-20T17:10:59.197Z",
+  "updatedAt": "2026-11-20T18:59:26.451Z",
   "state": "running",
   "stateSince": "2026-11-09T10:04:00.000Z",
   "template": "code-loop",
@@ -58,7 +58,7 @@
     "reasons": [
       "node_timeout"
     ],
-    "computedAt": "2026-11-20T17:10:58.953Z",
+    "computedAt": "2026-11-20T18:59:26.194Z",
     "nodeTimeoutMs": 300000
   },
   "counters": {
@@ -71,7 +71,7 @@
     "lastError": null,
     "agentInfo": null
   },
-  "recoveredAt": "2026-11-20T17:10:59.194Z",
+  "recoveredAt": "2026-11-20T18:59:26.449Z",
   "recovery": {
     "checkpointAt": "2026-11-09T10:05:00.000Z",
     "skipped": 1,

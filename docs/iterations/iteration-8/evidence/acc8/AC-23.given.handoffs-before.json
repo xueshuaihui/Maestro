@@ -8,9 +8,9 @@
       "kind": "forward"
     },
     "state": "delivered",
-    "createdAt": "2026-11-20T16:54:56.816Z",
+    "createdAt": "2026-11-20T18:59:24.530Z",
     "pendingAt": null,
-    "deliveredAt": "2026-11-20T16:54:56.816Z",
+    "deliveredAt": "2026-11-20T18:59:24.530Z",
     "acceptedAt": null,
     "consumedAt": null,
     "rejectedAt": null,

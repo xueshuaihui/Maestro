@@ -3,16 +3,16 @@
   "instanceId": "INST-001",
   "coreGeneration": "gen-before-boot",
   "createdAt": "2026-01-01T00:00:00.000Z",
-  "updatedAt": "2026-11-20T16:54:05.253Z",
+  "updatedAt": "2026-11-20T18:59:23.978Z",
   "state": "interrupted",
-  "stateSince": "2026-11-20T16:54:05.235Z",
+  "stateSince": "2026-11-20T18:59:23.666Z",
   "template": "i18-unknown-template",
   "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-15",
   "task": "旧格式实例，无检查点",
   "halted": false,
   "rev": 3,
   "counters": {
-    "eventSeq": 0,
+    "eventSeq": 2,
     "runCount": 1,
     "dispatchCount": 0
   },
@@ -28,7 +28,7 @@
   "health": {
     "level": "ended",
     "reasons": [],
-    "computedAt": "2026-11-20T16:54:05.250Z",
+    "computedAt": "2026-11-20T18:59:23.977Z",
     "nodeTimeoutMs": 30000
   },
   "paused": false

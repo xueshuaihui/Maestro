@@ -11,7 +11,7 @@
 | **S1 拆分** | **PASS**（提交 `ae89f27`） | `docs/iterations/iteration-8.md` 812 行 / 8 节 / 7 WP / AC 67/67 满覆盖 / 文件零交集 / DAG 无环 / 10 个契约冻结点；**2 轮独立评审**：r1 FAIL（A⑤ 唯一判据 FAIL + S-01~S-07 建议）、**r2 PASS**（23/23 判据、阻断 0 / 建议 0） |
 | **S2 实现** | **PASS**（5/5 批全部落地） | 5 批：① WP-1+WP-2 ✅ → ② WP-5+WP-6 ✅ → ③ WP-4 ✅ → ④ WP-3 ✅ → ⑤ WP-7 ✅（末批单线，含 D-9 两行授权断言 + 真实宿主面）。每批主控复跑门禁后提交。**遗留**：门禁 ④「三主链逐字基线」的对照口径已改（见下方批次 2/3 段）：`d4b0f94` 之后 main 已依次合入 I1.7~I1.12，全量与三主链统一改用「I1.8 开工点」`014fa6a` 作对照，O-I2 据此闭合。**转 S3/S4 的未完成项**见批次 5 段末清单（AC-26 第二条、AC-27 判阻塞；AC-53/AC-56 已闭合） |
 | **S3 验收** | **执行中**（67/67 用例就绪，5 批已落地） | `probe/acc8-f-*` 四件套扩展为全量入口（证据根 `evidence/acc8/`，`ACC8_EVID=wp7` 可复现旧帧）；`acc8-cases/` **67 条用例全部就绪**，分 5 批交付：批一 AC-01~12（`07675c0`）、批二 AC-13~24（`a55d143`）、批三 AC-28~40（`1058741`）、批四 AC-41~51（`f2b9007`）、批五 AC-58~67（`b1662c4`）。**主控逐条核对原始帧 + 不通过项串行隔离复跑**，修 4 处产品缺陷（load 方言透传、三方言降级、连接线角色中文名、恢复失败原因码），纠正 2 处用例口径（`detail.fallback`、`maxRounds` 放宽）。终验全跑与分类见下方 S3/S4 段 |
-| **S4 收口** | **未达成 Done（52 通过 / 13 不通过 / 2 阻塞）** | 按裁-20f 如实判定：模板 §4.5 第 1/2 项（不通过=0 / 阻塞=0）未满足。产物已齐：`report.md`（§0~§6）、`final-verification.md`（**独立终验 Agent，总判 FAIL**）、`acceptance-fixture.md`（67 条索引 + 13 条不通过逐条记录）、`acceptance-product.md`（真实宿主面）、`_acc8-f-summary.json` / `_acc8-f-blockers.md`。13 条不通过归口三类：**产品功能缺口 2**（AC-49 reuse 未接线、AC-60 缺 pending-ready 续派）、**需求与冻结基线硬冲突 6**（AC-42/43/45/63 的 `T-003·2/3`、AC-15、AC-37、AC-67、AC-23、AC-60 分句互斥）、**夹具缺口 3 类**（AC-58 观察窗、AC-62 投递失败接缝；AC-03/08/09/24 已修好）；AC-53 为批次负载下的门禁抖动（硬判保留，独占复跑 3×8/8 绿）。**待用户裁决返工范围与需求修订**，裁决前不宣布结束 |
+| **S4 收口** | **未达成 Done（返工后 55 通过 / 10 不通过 / 2 阻塞）** | 按裁-20f 如实判定：模板 §4.5 第 1/2 项（不通过=0 / 阻塞=0）未满足。产物：`report.md`（§0~§6）、`final-verification.md`（**旧轮独立终验，总判 FAIL，已被本轮返工触发重开**）、`acceptance-fixture.md`（67 条索引 + 10 条不通过逐条记录 + 3 条已消除）、`acceptance-product.md`（真实宿主面）、`_acc8-f-summary.json` / `_acc8-f-blockers.md`。**本轮（返工后）归口**：产品缺陷 **0**（AC-49 / AC-60 已返工消除）、需求与冻结基线硬冲突 7（AC-15、AC-23、AC-37、AC-42/43/63 的 `T-003·2/3`、AC-45 逐字文案）、夹具缺口 3（AC-58 kill 窗口、AC-62 投递失败接缝、AC-45 取证时序）；AC-53 已按裁-20r 落地为「逐条独占复跑证伪」的硬门禁并通过。阻塞 2（AC-26/AC-27）按用户裁决**书面豁免但未改判**。**待用户裁决需求修订与夹具授权**，裁决前不宣布结束 |
 
 ### S2 第 1 批（WP-1 / WP-2）门禁实跑（主控，2026-11-09）
 
@@ -135,9 +135,37 @@ mock 能力广告用 `{}` 形态、`--prompt-failures` 双来源、flake 归因�
 
 
 
+## S4 返工轮（2026-11-21，用户裁决「先返工 2 条产品缺口」+「AC-26/AC-27 书面豁免」）
+
+**改动面**（S2 级，非 S3 顺手改）：`src/core/orchestrator.js`（`buildSession` 补 `roleId`/`instanceId`/`servingNodeId`；
+`newState` 增 `sessionPolicies` 快照 + `policySnapshot`/`sessionPolicyOf`；派发路径改「先试复用（`resume`/`load` 两站）再新建」
++ 命中写 `session.reuse` 事件；`sessionOf` 改倒序取最新；`recoverInstance` 收集 `plan.ready`；`continueRecovery` 末尾续派且**派前重读磁盘**）、
+`src/cli/roles.js`（新增 `roleSessionPolicies`）、`src/cli/main.js`（`run.start` 下发快照 + `instance log` 渲染复用行）、
+`src/daemon/server.js`（`run.start` 边界校验与透传、`test.dispatch` 透传 `hostId`）。
+
+**测试改动**：新增 `test/wp13/session-reuse-dispatch.test.js`（5 例：AC-65 / AC-66×2 / AC-49 正控 / AC-48）；
+`test/wp13/recovery-boot.test.js` 的 AC-60 用例改写（hold 点分离取证 + `orchestrator.cancel` 收尾避免 Windows `ENOTEMPTY`）；
+`test/wp9/i19-regression.test.js` 按裁-20m 合法扩项（会话发射点 ≤13 → ≤14，且 `session.reuse` 写入点单列断言恰 1 处，
+既有 13 处一字未动，**不放松为子集**）。
+
+| 门禁 | 结果 |
+|---|---|
+| 全量 `node --test --test-concurrency=1 --test-timeout=120000 --test-force-exit "test/**/*.test.js"` | **1927 / 1895 pass / 21 fail / 11 skip**（基线 `014fa6a` 1841/1808/22/11 → **+86 条**）；帧 `probe/i18-s2/batch6-full.log` |
+| 失败集合差集 | **EXTRA = 0**（21 条 ⊆ 基线 22 条），并修好 1 条基线红（`live 取消…`）；帧 `probe/i18-s2/batch6-reds.txt` |
+| 首轮 4 条新增红 | AC-32 / AC-60 / AC-62 / 三主链 A-0 —— 根因是 `continueRecovery` 把已被 `redeliver` 派发的节点又派一次（双 prompt）。修法：`plan.ready` 派前重读磁盘确认仍 `pending`；三条恢复用例（`handoff-recovery` 6/6、`recovery-boot` 17/17）复绿 |
+| `session-reuse-dispatch` | **5/5**；`recovery-boot` **17/17**；`handoff-recovery` **6/6** |
+| 全量 67 条验收（`--batch all`） | 批次内 53/12/2 → 按裁-20r 逐条独占复跑后 **55 通过 / 10 不通过 / 2 阻塞**；714 核对项（684 通过）；451 份被引用帧；分级 mock 58 / 真实宿主 4 / 架构门禁 5 |
+| 独占复跑台账 | `probe/i18-s2/batch7-isolated-rerun.txt`：AC-08 / AC-31 单跑全绿 → 负载 flake 剔除；其余 10 条稳定红；AC-53 复跑后 `EXTRA=0` |
+| 纯净门禁 / 用法块 / 命令树 | purity exit 0、deps 0、`USAGE_LINES` 25 行、`--help` 31 行、`NODE_STATES` 7 项、三主链 diff 0 |
+
+**关键口径**：① `state.sessions` 是「每次派发一条记录」，复用后同一 `sessionId` 会有两条（r1 历史 + r2 绑定），
+故按 id 查找必须取**最新**；② checkpoint 九字段是显式白名单，`sessionPolicies` 不会泄漏进检查点，因此**不改冻结契约**即可带策略；
+③ `plan.ready` 续派必须在 `redeliver` / `createdContinue` 之后且落盘重读，否则同一节点双派（实测撞红 AC-32/AC-62）。
+裁决 **裁-20k / 20k-补 / 20l / 20m / 20n / 20o / 20p / 20q / 20r**（`decisions.md` 第十七节）。
+
 ## 裁决台账（`decisions.md`）
 
-裁-1（状态机 7 项 + 9 态投影）/ 裁-2（D-11 三文件口径）/ 裁-3（会话 `escalated` 沿用既有指示器）/ 裁-4（AC-54 内嵌 D-11 逐字副本）/ 裁-5（D-9 行号 `:588~592`）/ 裁-6（`session_policy` 命名）/ 裁-7（§8 措辞同步「已裁决」）/ **裁-8a~8f（批次 1）/ 裁-9a~9h（批次 2）/ 裁-10a~10e（批次 3 + 补派 + flake）/ 裁-11a~11f（批次 4）/ 裁-12（AC-56 合入后重判）/ 裁-13a~13f（批次 5 + 会话恢复降级缺陷修复）**。
+裁-1（状态机 7 项 + 9 态投影）/ 裁-2（D-11 三文件口径）/ 裁-3（会话 `escalated` 沿用既有指示器）/ 裁-4（AC-54 内嵌 D-11 逐字副本）/ 裁-5（D-9 行号 `:588~592`）/ 裁-6（`session_policy` 命名）/ 裁-7（§8 措辞同步「已裁决」）/ **裁-8a~8f（批次 1）/ 裁-9a~9h（批次 2）/ 裁-10a~10e（批次 3 + 补派 + flake）/ 裁-11a~11f（批次 4）/ 裁-12（AC-56 合入后重判）/ 裁-13a~13f（批次 5 + 会话恢复降级缺陷修复）/ 裁-14~19（S4 终验口径与受阻归口）/ 裁-20a~20r（AC-17 亲修、AC-60 定性自纠、reuse 缺口、需求硬冲突、夹具缺口、Done 判定、AC-03/08 断言纠正、驱动补窗、门禁口径代码化、返工落地、冷冻测试合法扩项、AC-26/27 书面豁免、白名单撤销、i19 flake 归因、逐条独占复跑）**。
 
 ## S2 批次与门禁口径
 

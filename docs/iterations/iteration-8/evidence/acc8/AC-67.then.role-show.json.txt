@@ -38,7 +38,7 @@
       "round": 1,
       "maxRounds": 2,
       "state": "done",
-      "stateSince": "2026-11-20T17:01:07.784Z"
+      "stateSince": "2026-11-20T19:00:18.873Z"
     }
   }
 }
