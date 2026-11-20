@@ -1,124 +1,124 @@
-# I1.8 终验报告（独立终验 Agent）
+# I1.8 终验报告（独立终验 Agent · 第 2 轮）
 
-- 终验时间：2026-11-21T01:20:00+08:00（UTC 2026-11-20T17:20Z）
-- 被验证提交：`d054ca2b7de7198373079ecbe93bd8c0916078f0`（`fix(I1.8): 恢复失败可见原因（AC-17）+ 终验全跑 67 条取证`）
-- 被验证状态：**HEAD + 未提交工作区**（见 §1#6：当前结论由工作区产出，HEAD 自带证据是另一组数字）
-- 依据：`docs/templates/execution-template.md` §3.6（六项校验）/ §4.5（Done 七项）
+- 终验时间：**2026-11-21T03:21:02+08:00**
+- 被验证提交：**`956cbdc15dc1eae05d1150099ffa4685e2309845`**（`docs(I1.8): 返工后重生成 67 条验收口径与收口文档`）
+- 被验证状态：**HEAD 干净工作区**。开工时 `git status --porcelain` **0 行**；终验期间为独立复跑覆盖过 6 组 `AC-XX.*` 帧，跑完全部用 `git -c core.autocrlf=false checkout-index -f -- <路径>` 恢复，收尾时 `git status --porcelain` 仍为 **0 行**。除本文件外未改动任何文件，未提交。
+- 依据：`docs/templates/execution-template.md` §3.6（六项校验）/ §4.5（Done 七项）；`docs/iterations/iteration-8/requirement.md` v3 的 67 条 AC（唯一验收依据）；本次实跑输出（不引用他方结论）。
+- 本轮复跑帧留档：`C:\Users\xuesh\AppData\Local\Temp\acc8-rerun\`（原始帧备份 `...\acc8-orig\`），索引见附录 A。
 
 ## 0. 总判定
 
-**FAIL。** 67 条 AC 实际为 **53 通过 / 12 不通过 / 2 阻塞**，Done 七项中 **5 项 FAIL**（第 1、2、4、5、6 项），阻断 14 条 AC 未收口；另有 1 项过程性阻断（产品代码与用例未提交、`report.md`/全量 `summary.json`/全量 `blockers.md` 三件产物缺失、四处数字互相矛盾）。**不得宣布 I1.8 需求结束。**
+**FAIL。** 67 条 AC 实为 **55 通过 / 10 不通过 / 2 阻塞**，Done 七项 **2 PASS / 5 FAIL**（PASS：第 3、7 项；FAIL：第 1、2、4、5、6 项）。产品侧两条返工缺口（AC-49 / AC-60）确已落地并通过独立复跑，AC-53 的预赦白名单确已撤销；但「不通过 = 0、阻塞 = 0」仍未满足，且本轮新发现 1 类取证时序假阴性、1 处归口漏计、1 处逐项数字不一致与 1 处可复现的跨迭代证据污染副作用。**按 §4.5 与 §7 红线 11，不得宣布 I1.8 需求结束。**
 
 ## 1. 六项校验
 
 | # | 校验项 | 判定 | 实跑命令与输出摘要 |
 |---|---|---|---|
-| 1 | 结果完整性 | **FAIL** | `wc -l docs/iterations/iteration-8/evidence/acc8/_acc8-f-results.jsonl` → **67** 行、67 个 AC 均有结论，但 `last-per-ac` = `{通过:53, 不通过:12, 阻塞:2}`，与「通过=67 / 不通过=0 / 阻塞=0」不符。全量 `_acc8-f-summary.json` / `_acc8-f-blockers.md` **不存在**（`ls` 报 No such file）；仓内唯一 `summary.json` 是 `evidence/wp7/_acc8-f-summary.json`，只覆盖 9 条，且其中 AC-53/AC-56 仍写「不通过」（已过期） |
-| 2 | 证据支撑性 | **FAIL** | 抽查 12 条（§2）。**8 条支撑成立**；**4 条不成立/不可采**：AC-26 C04 在空集上判 ✓（`artifactsDirExists:false`、`files:[]`）、AC-57 仅 1 份证据帧且备注自述「未找到 AC-57 独立探针帧」（该探针实际存在）、AC-03 备注仍写「示例不可兼得、按原文如实判定」与 33/33 通过矛盾、AC-62 C08/C09 期望值以 `false([...])` 形态呈现、不可复核 |
-| 3 | 判定未被放宽 | **FAIL** | 5 条不通过项断言与需求 Then 逐字一致（AC-15/AC-37/AC-42/AC-45/AC-62 原文未改）。但 **AC-53 判据被放宽**（新增 `KNOWN_FLAKES` 白名单，见 §3）；AC-56 属纠正但授权链不足；AC-08 C07 属纠正。详见 §3 |
-| 4 | 门禁与回归 | **PASS** | 全量：`tests 1922 / pass 1890 / fail 21 / skipped 11`，EXIT=1；失败集合对基线 22 条 **EXTRA=0、MISSING=1**（`live 取消` 转绿）。`purity-check` → `OK: 扫描 45 个文件…零命中`，exit **0**。`dependencies` 键数 **0**。`node bin/orch.js --help \| wc -l` → **31**。`NODE_STATES.length` → **7**。数字与 AC-53 证据帧（1890/21、差集 0）**一致**，与主控报告（1889/22、剔除 3 条 flake）**不一致** |
-| 5 | 缺陷与遗留 | **FAIL** | 67 条口径的 `blockers.md` **不存在**，只有 WP-7 末批 9 条版且含 2 条过期结论；`report.md` **不存在**，无法核 §5「不影响结论」清单。12 条不通过在 `decisions.md` 裁-20d/e/f 与各 `AC-XX.part.md` 有归口，但**其中 2 条是未完成的产品缺口**（AC-49 reuse 未接线、AC-60 缺 D-5 第 5 步 pending-ready 派发），被归为「返工项」而非「不影响结论」——这一点是对的，但同时说明收口未完成 |
-| 6 | 提交范围 | **FAIL** | `git log --oneline d054ca2~3..HEAD` 三个 commit。`d054ca2` 同时改 `src/core/orchestrator.js`（AC-17 修复，13+/5-）与 **435 份 `evidence/acc8/**`** → 产品修复 commit 夹带证据帧。`b1662c4`/`f2b9007` 另提交了 `docs/iterations/iteration-4/evidence/nfr-perf-*.json`（跨迭代证据污染）。`git status --porcelain` → **436 M + 2 ??**，其中 **`src/core/orchestrator.js` 与 7 个 `probe/acc8-cases/*.mjs` 未提交**（§1#6 关键） |
-
-### 1.1 关键补充：被验证提交 ≠ 产出结论的代码
-
-`git status` 显示工作区有未提交改动的**产品代码**与**验收用例**：
-
-```
- M src/core/orchestrator.js        # 裁-20g CAS 冲突重试 + 显式中断（30 行）
- M probe/acc8-cases/AC-01.mjs      # retest-slow 精确窗口
- M probe/acc8-cases/AC-08.mjs      # C07 断言改写
- M probe/acc8-cases/AC-03/09/24.mjs
- M probe/acc8-cases/AC-53.mjs      # 新增 KNOWN_FLAKES 白名单
- M probe/acc8-cases/AC-56.mjs      # 裁-12 重判口径
-```
-
-对 `HEAD` 取出的证据统计：`git show HEAD:…/_acc8-f-results.jsonl` → **46 通过 / 19 不通过 / 2 阻塞**。即：**HEAD 自带的证据结论是 46/19/2，工作区才是 53/12/2**。任何按 `HEAD` 复核的人会得到不同答案；AC-03 的 `HEAD` 版 `part.md` 至今写「不通过 29/33」。这是终验无法签字的首要原因。
+| 1 | 结果完整性 | **FAIL** | `_acc8-f-results.jsonl` 67 行 / 67 个 AC 均有结论，但 last-per-ac 重算为 `{通过:55, 不通过:10, 阻塞:2}`，非「67/0/0」。`_acc8-f-summary.json` 67 条、`byVerdict` 同上；`_acc8-f-blockers.md` 67 条口径存在（12 条明细）。AC 级的「覆盖齐全」成立，「全部通过」不成立。 |
+| 2 | 证据支撑性 | **FAIL** | 抽查 14 条（§2）：**9 条完全支撑**（AC-49/60/17/26/37/15/67/03/52），**2 条支撑但表述有缺陷**（AC-53 判据内部弱断言、AC-62 期望/实测打印不可读），**3 条不完整**：AC-45 的 C07~C10 四项不支撑（`state.json`/`events.jsonl` 在 `session.timeout` 落盘后 5ms 读取，升级与挂起事件 #32~#35 尚未落盘，而同一用例后面的 `status` 已显示「已挂起 / 已升级」）、AC-58 的 C14~C16 与 C01~C13 不同源（人工节点组另起项目根）、AC-56 扫描面窄于需求。空文件 0 个、只有结论无原始帧 0 条。 |
+| 3 | 判定未被放宽 | **PASS（限 10 条不通过 + AC-53 + wp9）** | 10 条不通过的期望值逐条与需求 Then/机检一致，无一条被改宽（§3）。`AC-53.mjs` 已无 `KNOWN_FLAKES`/预置常量（`grep -n "KNOWN\|FLAKE" probe/acc8-cases/AC-53.mjs` → 无匹配，exit 1），剔除逻辑是**运行时**逐条独占复跑。`wp9/i19-regression.test.js` 为上限 13→14 + 新项单列断言，既有 13 处 diff 一字未动（`git show 425e2f3 -- src/core/orchestrator.js \| grep "object: 'session'"` 仅 1 行 `+`，无 `-`）。另 2 处「改判据 / 弱断言」单列在 §3，不计入本项。 |
+| 4 | 门禁与回归 | **PASS** | 全量 **tests 1927 / pass 1895 / fail 21 / skip 11**（268.8s），对基线 `014fa6a`（1841/1808/22/11）**EXTRA=0、MISSING=1**（`live 取消…` 转绿），条数 +86。同日两次独立全量（前台一次 + AC-53 内部一次）失败集合**逐条相同**（`diff` 无输出）。purity 五条全 exit 0（45 文件 / registry 11 文件 30 词 / 三 CLI 文件 31 词 / `OK: no CJK`）；`dependencies=0`；`--help` **31** 行；`USAGE_LINES=25`；`NODE_STATES=7`；AC-52 我独立复跑 **12/12**（detach `014fa6a` 三主链归一化 diff 0）。 |
+| 5 | 缺陷与遗留 | **FAIL** | 产品缺陷归 0（AC-49/AC-60 返工经复跑确认）；但 `_acc8-f-blockers.md` 只对 **2 条阻塞**给了「处置结论」，**10 条不通过没有逐项处置行**；`report.md` §5.1 本身就是「10 条不通过」清单，直接违反 Done#4「§5 只列不影响结论的观察项，不含未完成的 AC」。 |
+| 6 | 提交范围 | **PASS（含 3 处夹带说明）** | `639ace7..HEAD` 三提交：`425e2f3 fix` 6 文件、**evidence 0 个**；`5bd0d91 test` 只含 `probe/acc8-cases/*` + `test/wp13/session-reuse-dispatch.test.js`、evidence 0 个；`956cbdc docs` 含 431 个 evidence 变更 + 收口文档。`git show --stat 639ace7..HEAD -- docs/iterations/iteration-4` **为空**（无跨迭代提交污染）。夹带：`.gitattributes`、`.workbuddy/memory/*.md`、`probe/i18-s2/*.log` 也进了 docs 提交（非交付物，属范围噪声）。 |
 
 ## 2. 抽查明细
 
 | AC | 判定 | 证据文件 | 证据是否支撑 | 说明 |
 |---|---|---|---|---|
-| AC-03 | 通过 | `AC-03.then.checkpoint.json`（18 键）、`AC-03.part.md` 33/33 | **部分** | 检查点原始帧真实、字段齐全；但 `task`（用户任务全文 3 行）落在检查点内，用例以「提示词全文 = 实际派发提示词」自解释判通过，C-04 原文列举的可存项不含 `task` → 口径需用户确认。`## 备注` 仍是旧的「示例不可兼得、未放宽」文案，与 33/33 通过自相矛盾 |
-| AC-08 | 通过 | `AC-08.part.md` 9/9、C07 崩溃前/后节点对象 | **是** | 崩溃前 `T-002 running round=2`，恢复后同值；C03=`node.dispatch 0`、C05=`提示次数未增`，共同支撑「未重放」。窗口改为 `retest-slow` 后与需求 Given 对齐，断言从「绑死 round 1→2」改为「running + round 不回退」，是纠正错误现场（见 §3） |
-| AC-17 | 通过 | 我复跑后新帧 `AC-17.then.instance-log.txt` | **是** | 独立复跑 `node probe/acc8-f-run.mjs AC-17` → **通过 9/9**；日志末行 `恢复失败：host_unreachable；实例已中断（可执行 orch instance log 查看详情）`，与 Then 逐字同构，修复真实生效 |
-| AC-52 | 通过 | `AC-52.machine.i19-regression.log`、12/12 核对项 | **是** | 真在 `%TEMP%` detach `014fa6a` 建基线 worktree 做三链归一化 diff，C01/C12 覆盖基线创建与清理，支撑「非恢复路径逐字不变」 |
-| AC-57 | 通过 | `AC-57.given.isolation.json`（53 KB，唯一一帧） | **部分** | 帧内 `~/.dsh` 前后 `mtimeSec` 相同、`entries` 相同、`isolatedRemoved:true`、git 前后一致，实质可复核；但仅 1 份证据、且 `## 备注` 写「未找到 AC-57 独立探针帧（可先跑 node probe/acc8-realhost.mjs）」，而该探针文件确实存在 → 备注过期、证据链单薄 |
-| AC-53 | 通过 | `AC-53.machine.full-suite.log`（435 KB）、`AC-53.diffset.txt` | **是（但判据被改宽）** | 帧内 `1922/1890/21/11`，与我实跑逐字一致；`diffset` 显示新增 0、未知新增 0。C02 名称已从「新增失败集合（差集）为空」改为「新增失败 ∖ 已证伪 flake = 空」并植入 3 条白名单（§3） |
-| AC-56 | 通过 | `AC-56.machine.gates.txt`（6 条 grep 输出） | **部分** | C04 期望值 `2` 与需求原文「无命中（0）」相反；我独立核验：`014fa6a` 处已有 2 处命中（`code-isolation.js:6`、`orchestrator.js:2258`），且本迭代 10 个改动文件 **新增行 worktree 命中 0**。实质结论成立，但记录的证据只扫 `orchestrator.js` 的 diff，范围窄于需求，且改判据未获用户书面授权 |
-| AC-26 | 阻塞 | `AC-26.before/after.workspace.artifacts.json`、`AC-26.part.md` 6/6 | **否（C04 不成立）** | 总判定「阻塞」方向正确；但 C04「产物 mtime/sha 不变」在 `artifactsDirExists:false`、`files:[]` 上判 **✓**，与备注「不用空集冒充通过」直接冲突；`6/6 通过` 的表头会误导读者以为该条只剩半条未验 |
-| AC-27 | 阻塞 | `AC-27.probe.third-party-boot.txt`、安装记录 | **是** | 真实 `npm install dsh-acp-server@0.14.4`（95 包）→ bin 启动抛 `ERR_UNSUPPORTED_ESM_URL_SCHEME`，原始 stderr 留存；C03 的期望/实测写成 `exit 1` / `false (exit 1)` 表述混乱，但结论可复核 |
-| AC-37 | 不通过 | `AC-37.then.graph.txt`、`AC-37.then.status.txt` | **是** | 我独立复跑 `AC-37` → **不通过 9/10**（与记录一致）。graph 只渲染 T-001/T-002，status 有 `节点 T-004 执行中 · 第 1 轮` 但无「等待人工」后缀，与 Then 逐字要求不符，证据直接支撑判定 |
-| AC-15 | 不通过 | `AC-15.then.sha256-before-after.txt`、`AC-15.then.instance-log.txt` | **是** | 日志逐字含 `旧实例无检查点：已中断（如需继续请新建实例）`；sha 前后 `d7e905…` → `c40649…` 变化，机检「sha256 不变」客观不成立。证据支撑「9/10、1 条不通过」 |
-| AC-62 | 不通过 | `AC-62.part.md` 2/9、`handoff-list.txt`（`已接受`）、`events.jsonl` | **是（表述不可读）** | 交接包实测 `accepted`、`deliveryAttempts=1`、`escalations=0`，与 Then 的 `expired/3/1` 全面冲突，结论可信；但 C08/C09 的期望/实测值以 `false([...])` 形态打印（`expected` 与 `actual` 视觉相同而结果 ✗），第三方无法独立判断断言内容 |
-| AC-49 | 不通过 | `AC-49.part.md` 4/7、两轮会话 id | **是** | 两轮开发会话 id 不同（`mock-sess-9600-1` / `mock-sess-23068-1`）、`session/new=2`、无复用行，支撑「reuse 未接线」 |
-| AC-67 | 不通过 | `AC-67.part.md` 7/9、`role show` 文本 | **是** | 实测 `冷却中 · 活跃会话 0/1 · 服务节点 —`，与 Then「可用」冲突；`roleToSessions.developer` 仍留 idle 会话，两条均支撑 |
+| AC-49 | 通过（我复跑 7/7） | `AC-49.part.md`、`AC-49.then.instance-log.txt`、`AC-49.then.state.json` | **是** | 日志在第二轮回流派发处逐字出现 `会话 复用 mock-sess-26832-1（角色 developer）`；两轮开发同 id；`session/new` 1 次。独立复跑仍是 7/7，D-7 真实生效。 |
+| AC-60 | 通过（我复跑 10/10） | `AC-60.then.graph-hold.*`、`.then.dispatch.json`、`.then.state-after.json` | **是** | hold 点（派发前）两节点 `ready`/`blocked` 逐项不变；释放后 `node.dispatch` 恰 1 条且属 T-001，T-002 为 0，edges 三条逐项相同。D-8 真实生效，且两条机检不再互斥。 |
+| AC-53 | 通过（我复跑 4/4） | `AC-53.machine.full-suite.log`（436 KB）、`AC-53.diffset.txt` | **是（判据内部有弱断言）** | 我复跑得 `1927/1895/21/11`，与帧逐字一致；`diffset` 新增失败 `(空)`、基线未复现 1 条。**但 C04 `counts.fail===failures.length \|\| failures.length>0` 近乎恒真**，见 §3。 |
+| AC-17 | 通过（我复跑 9/9） | `AC-17.then.instance-log.txt`、`AC-17.part.md` | **是** | 日志含 `恢复失败：host_unreachable；实例已中断（可执行 orch instance log 查看详情）`，状态 `interrupted`。上一轮亲修项仍成立。 |
+| AC-26 | 阻塞（我复跑 阻塞 5/5） | `AC-26.before/after.workspace.artifacts.json`、`AC-26.part.md` | **是** | `after` 帧 37 bytes，锚点目录不存在；上一轮指出的「空集判 ✓」已移除（U-5 已修），5/5 只含真实可取证项，阻塞成立、无替代物冒充。 |
+| AC-45 | 不通过（10/15） | `AC-45.then.state.json`、`.then.events.jsonl`、`.then.instance-log.txt`、`.then.status.txt` | **否（4/5 条失败不成立）** | `events` 止于 seq 31 `session.timeout`（ts `…18:59:50.745Z`），`state.updatedAt=…50.750Z`（+5ms）；#32~#35 升级/挂起在快照之后才落盘，而 `status` 已显示「已挂起 / 节点 T-003 已升级 / ESC-001」。C07~C10 是**读早了**，只有 C05（逐字「T-003 · 轮次 2/3」实为 1/2）是真失败。 |
+| AC-58 | 不通过（9/16） | `AC-58.given.driver-attempts.json`、`AC-58.part.md`、`AC-58.then.human-*.txt` | **部分** | `attempt 0` 崩溃前为 `T-001 running r2 / T-002 failed r1 / HO-002 created`，**确无 done 节点**，故 `skipped=0`、无「已完成后 dispatch=1」是窗口必然，夹具缺口归因成立；但 C14~C16 的人工节点来自**另一个项目根**，与 C01~C13 不同源，Given 的「一个独立项目根」未满足。 |
+| AC-62 | 不通过（2/9） | `AC-62.part.md`、`AC-62.then.state.json`、handoff/events 帧 | **是（表述不可读）** | 实测 `accepted` / `deliveryAttempts=1` / `escalations=0`，与 Then `expired/3/1` 全面冲突；C08/C09 仍以 `false ([...])` 形态打印，第三方无法逐字复核（上一轮已指出，未修）。 |
+| AC-37 | 不通过（9/10） | `AC-37.then.graph.txt` | **是** | graph 只渲染图声明的 T-001/T-002，T-004 不在文本内；C05 不成立，与记录一致。 |
+| AC-15 | 不通过（9/10） | jsonl failedChecks + `AC-15.*` | **是** | sha256 `d7e905…`→`f15790…`，机检「不变」客观不成立；日志有「已中断并提示新建」。 |
+| AC-67 | 不通过（7/9） | jsonl failedChecks + `AC-67.then.role-show.json.txt` | **是** | `role show` 实测「冷却中 · 活跃会话 0/1 · 服务节点 —」，与 Then「可用」冲突；`roleToSessions` 仍留 developer 条目。 |
+| AC-03 | 通过（33/33） | `AC-03.then.checkpoint.json`、`.then.instance-log.txt` | **是（备注过期）** | 帧内 `恢复：检查点 … 跳过 1 个已完成节点 · 轮次 2/2`，33/33 可复核；但 `## 备注` 仍写「示例不可兼得…按原文如实判定」，与 33/33 自相矛盾（上一轮已指出，未修）。 |
+| AC-52 | 通过（我复跑 12/12） | `AC-52.given.worktree-add.txt`、`AC-52.machine.i19-regression.log` | **是** | 真实 detach `014fa6a` 建基线树，三条主链归一化 diff 0、退出码一致、无恢复类新行、基线树已清理。 |
+| AC-56 | 通过（6/6） | `AC-56.machine.gates.txt`、`AC-56.part.md` | **部分** | 恢复实现新增行 `worktree` 命中 0、`src/core/code-isolation.js` 存在，实质成立；但判据已由「`grep -R worktree src/` 输出 0」改为「基线值 2」，扫描范围由 `src/core src/daemon` 收窄到 `orchestrator.js` diff，见 §3。 |
 
-> 抽查覆盖：通过 4 条（AC-03/08/17/52/57/53/56 共 7 条）、不通过 4 条（AC-37/15/62/49/67）、阻塞 2 条（AC-26/27）、门禁类 AC-53、真实宿主 AC-26/57、修复后转绿 AC-03/AC-17 —— 满足要求并超出。
+> 覆盖：通过 7 条（AC-49/60/53/17/03/52/56）、不通过 6 条（AC-45/58/62/37/15/67）、阻塞 1 条（AC-26）。要求包含的 AC-49 / AC-60 / AC-58 / AC-45 / AC-62 全部在内。
 
 ## 3. 判定是否被放宽（独立结论）
 
 | 处 | 需求原文 | 实际判据 | 独立结论 | 理由 |
 |---|---|---|---|---|
-| **AC-56**「全仓命中 = 基线值 2」 | `grep -R "artifact_type.*dir\|merge.*order" src/core src/daemon` **无命中**（=0） | 改为「恰好等于基线值 2」，另加 `orchestrator.js` diff 零命中 | **纠正错误现场，但授权不足** | `git grep 014fa6a` 证明基线本就有这 2 处（I1.7 自身代码），需求原文的「0」在立项时即不成立，Given「origin/main 不含 I1.7」也已被推翻；我独立核验本迭代 10 个改动文件**新增行 worktree 命中 0**，实质结论（恢复不依赖 worktree）成立。**但 AC-56 的 Then 末句只授权「合入后按同一套 AC 重跑」，未授权改判据**——改判据属需求修订，需用户书面确认。另：C02/C03 只扫 `orchestrator.js`，范围窄于需求，属隐含收紧面；记录应补「10 个改动文件全扫」的帧 |
-| **AC-53**「差集 ∖ 已知 flake」 | 与 `origin/main` 的失败集合**差集为 0**；不要求零失败 | 改为「差集 ∖ `KNOWN_FLAKES` = 空」，白名单 3 条：`--host-error 早返回…`、`三主链：A-0 归一化后多次运行不得低于 I1.7 收口基线（每条链 ≥2 次）`、`三主链：无新增可见词，且归一化后与 I1.7 收口基线逐字一致（AC-03）` | **放宽** | 三条白名单里有 2 条是 **`test/wp13` / `test/wp9` 的三主链回归断言**，它们既不在基线红名单里（基线红是另外两条同名不同文的「三主链…」），也在本次实跑中全绿。也就是说：**只要这三条（含两条三主链）变红，AC-53 仍然通过**。这恰好放掉了 Done#3 最核心的门禁。本轮 `diffset.txt` 记 `flakes:（空）`、`unknown:（空）`，**本次没用上该豁免**，所以「本次差集 0」仍按原文成立；但判据本身已被改宽，且主控回执「剔除 3 条已证伪 flake 后差集 0」与证据（0 条剔除）矛盾 |
-| **AC-08 C07** | 「上一轮『失败』的测试节点没有被当成『已完成』重跑」 | 由「崩溃前 round===1 且恢复后 round===2」改为「崩溃时 `running` 且 `round>=2`，恢复后 `round` 不回退」 | **纠正** | 旧断言绑死的是「固定 `killAfter=2500` 只抓到 T-002 第 1 轮」这一**错误现场**的产物，与需求 Then 无对应关系；新断言仍能排除两种错误（被当 done 会 `state=done`；从头重跑会 `round=1`），并配合 C03/C05 的「零新增派发 / 零新增提示」闭环。判据强度未降 |
-| **AC-20/AC-23 三方言降级** | AC-23：三方言全失败 → 节点「已分配」、角色可用、交接「待投递」、**实例不进入「运行中」** | 产品改 `all_dialects_failed` 的 `unavailable:true → false`，实例保持 `running` 继续调度；AC-23 判 8/10 不通过 | **不是放宽（是对需求的单边取舍）** | 该改动让 Then 前三个分句由不成立变成立（3 项由 ✗ 转 ✓），第 4 分句（不进入运行中）则由「被中断」变成「运行中」，仍判不通过——判定没被放宽，但产品选择与 Then 第 4 分句结构性冲突，须用户裁决「改 Then」或「改产品」。`session/new` 预开会话导致的第 2 条失败同属结构性冲突 |
-
-> 结论：**放宽 1 处（AC-53）、纠正 2 处（AC-56 / AC-08 C07，其中 AC-56 需补授权）、取舍 1 处（AC-23 三方言降级，需裁决）**。放宽的那处本轮未被使用，可作为「撤销白名单」的低成本修复。
+| **10 条不通过**（AC-15/23/37/42/43/45/58/62/63/67） | 各条 Then/机检逐字 | 逐条读 `failedChecks` 的 `expected`，与需求原文对照 | **无放宽** | AC-15 sha 不变、AC-23「不进入运行中」、AC-37「T-004 … 等待人工」、AC-42 `round===2` + 「T-003 · 2/3」、AC-43/63 同文案、AC-45 C05 同文案、AC-58「完成或升级」、AC-62 `expired/3`、AC-67「可用」——期望值一字未改，全按原文判红。 |
+| **AC-53 差集门禁** | 「与 `origin/main` 的失败集合差集为 0」 | 先算 `extra`，对**本次实际出现**的每条新增红独占复跑；单跑通过才剔除，仍红计入 | **未放宽** | 代码内无预置名单（无 `KNOWN_FLAKES`），剔除集合由运行时 `surviving` 决定；无法定位所属文件时按 `stillRed:true` 保守计入。本次 `extra=(空)`，该分支未被使用。方法学边界：单次隔离复跑通过即剔除，理论上可放走间歇 flake——本轮未发生。 |
+| **AC-53 C04** | 「失败条数与 TAP 解析一致」（隐含 `counts.fail === failures.length`） | `counts.fail === failures.length \|\| failures.length > 0` | **弱断言（内部放宽）** | `\|\| failures.length > 0` 让该检查在「有任何失败」时近乎恒真，TAP 计数与失败名解析错位无法被发现。本轮数值恰好一致（21=21），但判据本身排错能力不足。 |
+| **wp9 i19-regression 扩项** | I1.9 冻结：`object: 'session'` ≤13、reason 白名单 9 项 | 上限 13→14；白名单 +`session.reuse`；新增「`session.reuse` 写入点恰 1 处」单列断言 | **合法扩项，非子集放宽** | `git show 425e2f3` 证明 orchestrator 只新增 1 处会话发射点、既有 13 处无 `-` 行；`execution.summary` 恰 1 处与既有 9 项断言原样保留；新项被两处独立断言钉死，未改成「任意新增都允许」。现测 `grep -c` = 14、`session.reuse` = 1。 |
+| **AC-56** | `grep -R "worktree" src/ \| wc -l` 输出 `0`；`artifact_type.*dir\|merge.*order` 在 `src/core src/daemon` 无命中 | 改为「全仓命中 = 基线值 2」，且只扫 `orchestrator.js` 的 diff | **改判据 / 收窄（实质成立，授权不足）** | 我实跑：需求原句 `grep -RE "artifact_type.*dir\|merge.*order" src/core src/daemon` 在 HEAD 有 **2 处命中**（不等于 0）；`grep -R worktree src/` 有 **42 处**（I1.7 自带）。实质结论「本轮恢复代码不新增 worktree 依赖」成立（`git diff 014fa6a..HEAD -- src/ \| grep "^+" \| grep -c worktree` = **0**），但这是把原文的「0/无命中」改写成「等于基线值」，且扫描面从两目录收窄到单文件 diff。裁-12 有记录，**未取得本轮书面授权**。 |
+| **AC-45 C07~C10** | 「节点显示已升级；实例挂起；`escalations` +1；`reasonCode=timeout`」 | 在 `session.timeout` 事件出现后立即读 `state.json`/`events` | **不是放宽，是假阴性** | 快照 `updatedAt=18:59:50.750Z`，升级事件 #32~#35 尚未落盘；同一用例随后读的 `status` 已显示全部达成。若改为等迁移落定再读，AC-45 应为 **14/15**（仅 C05 红）。这是取证时序缺陷，不是产品缺陷，也不是判据放宽。 |
+| **AC-58 Given** | 「**一个独立项目根**，编码闭环回流复测现场 + 一个由夹具预置的人工节点」 | e2e 根（无 human）+ 另起 human 根，两套证据拼在一张表 | **证据不同源（非放宽）** | C14~C16 与 C01~C13 不在同一实例/同一根，无法证明「同一次崩溃恢复里人工节点保持等待」。判定仍为不通过，未据此转绿。 |
+| **`.gitattributes`** | 模板 §7 红线未涉及；验收判据在 AC 与 Done | `docs/iterations/**/evidence/** -whitespace`（原仅 `*.log`） | **不是验收判据放宽** | `-whitespace` 只影响 `git diff --check` 的空白告警，**不改变工作树/提交里的字节**，不影响任何 AC 结论；证据帧尾空格确为产品真实输出，剥掉即篡改。独立结论：可接受，但**属仓库卫生门禁的例外扩大**，且同一规则也覆盖了 `.part.md` / `_acc8-f-blockers.md` 这类手写核对表；应在 `decisions.md` 正式留痕，而不是只写在 commit message 与 `.gitattributes` 注释里。 |
 
 ## 4. Done 七项
 
 | # | 条件 | 判定 | 依据 |
 |---|---|---|---|
-| 1 | 需求里的任务全部通过（67 条 100% 通过） | **FAIL** | 53 通过 / 12 不通过 / 2 阻塞（`_acc8-f-results.jsonl` 67 行，last-per-ac 统计）。未通过：AC-15、AC-23、AC-37、AC-42、AC-43、AC-45、AC-49、AC-58、AC-60、AC-62、AC-63、AC-67；阻塞：AC-26、AC-27 |
-| 2 | 零失败、零阻塞 | **FAIL** | 不通过 = 12 ≠ 0，阻塞 = 2 ≠ 0 |
-| 3 | 门禁全绿（全量测试全通过、扫描 exit 0、零依赖、三主链符合预期） | **PASS（按 AC-53 已评审口径）** | 实跑 1922/1890/21/11，失败集合 **EXTRA=0**（21 条全部 ⊆ 基线 22 条，`live 取消` 转绿），条数 1922 ≥ 基线 1841；purity exit 0（45 文件零命中）；deps 0；`--help` 31 行；`NODE_STATES` 7；AC-52 三主链 12/12。**注**：按 §4.5 字面「全量测试全通过」不成立（21 条既有噪声红仍在），此处采信需求 AC-53 明写的「不要求零失败」——该豁免本身需用户认可 |
-| 4 | 缺陷与遗留收口 | **FAIL** | 67 条口径 `blockers.md` 缺失；`report.md` 缺失（无法核 §5）；2 条产品缺口未返工（AC-49 reuse 派发未接线、AC-60 缺 D-5 第 5 步 pending-ready 派发）；AC-53 白名单、AC-56 改判据两处未经用户书面确认 |
-| 5 | 终验与复核 | **FAIL** | 本终验总判 FAIL（第 1、2、4、5、6 项不过），故第 5 项不成立；主控侧「独立复跑 3~5 条关键 AC」未见独立留帧（`decisions.md` 记的复跑发生在批一~批五期间，非终验前最后一次全跑之后） |
-| 6 | 数字一致（report / acceptance / summary / results 四处） | **FAIL** | 四处只有一处存在且本身有三个版本：`results.jsonl` 工作区 **53/12/2**、`HEAD` 版 **46/19/2**、`evidence/wp7/_acc8-f-summary.json` **5/2/2（9 条）**；`report.md`、`acceptance-fixture.md`、`acceptance-product.md` **均不存在**；`progress.md` 仍写「17 条不通过」并声称四件产物已产出（实际只有本文件） |
-| 7 | 需求评审闭环已 PASS | **PASS** | `review-round1.md` FAIL → `review-round2.md` FAIL → `review-round3.md` **PASS**（阻断 0 / 建议 0、DoR 13/13、覆盖表 15/15、反向扫描无夹带），`review-round1..3` 齐全、F/N 项清零、头部版本 v3 与附录 C 一致。**注**：评审 PASS 的需求里仍含 6 条自身矛盾的 AC（AC-15 sha 与转 interrupted 互斥、AC-42/43/45 的 T-003/2/3 示例、AC-37 图外节点、AC-60 分句互斥、AC-67 与角色六态冲突、AC-53 的 992 条旧基线）——这是评审质量问题，另记 |
+| 1 | 需求里的任务全部通过（67 条 100% 通过） | **FAIL** | 55 通过 / **10 不通过** / **2 阻塞**（67 行 jsonl，last-per-ac 重算）。未通过：AC-15、AC-23、AC-37、AC-42、AC-43、AC-45、AC-58、AC-62、AC-63、AC-67；阻塞：AC-26、AC-27。 |
+| 2 | 零失败、零阻塞 | **FAIL** | 不通过 = 10 ≠ 0；阻塞 = 2 ≠ 0（书面豁免只覆盖「可不再补环境」，**不改变计数**）。 |
+| 3 | 门禁全绿（全量测试全通过、条数 ≥ 基线、扫描 exit 0、零依赖、三主链符合预期） | **PASS（按 AC-53 需求口径）** | 全量 1927/1895/21/11，条数 ≥ 1841，失败集合 **EXTRA=0**（两次独立跑逐条相同）；purity 五条 exit 0；deps 0；`--help` 31；`NODE_STATES` 7；AC-52 我复跑 12/12。**注**：按 §4.5 字面「全量测试全通过」不成立（21 条基线噪声红仍在），此处采信需求 AC-53 明写的「不要求零失败」——该豁免本身需用户认可。 |
+| 4 | 缺陷与遗留收口 | **FAIL** | `blockers.md` 的 10 条不通过**无逐项处置结论**（只有 2 条阻塞有）；`report.md` §5.1 列的就是 10 条未完成 AC，违反「§5 不含未完成的 AC」；另有 3 类夹具缺口与 1 处取证件时序未收口。 |
+| 5 | 终验与复核 | **FAIL** | 本终验总判 FAIL（第 1、2、4、5、6 项不过），故第 5 项不成立。独立复跑部分已完成：AC-49 7/7、AC-60 10/10、AC-53 4/4、AC-17 9/9、AC-26 阻塞 5/5、AC-52 12/12，全部与记录一致。 |
+| 6 | 数字一致（report / acceptance-* / summary / results 四处） | **FAIL（2 处）** | 总量同源且一致：67 / 55/10/2 / 714（684/30）/ 451 / 537 文件 / 分级 58+4+5，四处逐一复算全中。但 ① `report.md:203` 写 AC-53 `3/3`，同文件 §2 与 fixture/summary/jsonl 均为 `4/4`；② `acceptance-fixture.md` §二汇总 `7 + 3 − 1 = 9` 却写「仍是 10 条 AC」，且 **AC-67 未进任何一类**。 |
+| 7 | 需求评审闭环已 PASS | **PASS（有 1 处陈旧状态字样）** | `review-round1.md` FAIL → `r2` FAIL → `r3` **PASS**（阻断 0 / 建议 0 / 覆盖表 15/15 / 反向扫描无夹带 / DoR 13/13）；`requirement.md` 67 条 AC、v3 与附录 C 末行一致、本轮未被改动。**但头部 `状态：修订稿…待第 3 轮评审` 未更新**，与 r3 PASS 矛盾（DoR#1 的「已定稿」字样不满足）。 |
 
-**七项结论：3 PASS（第 3 按项目口径、第 7）/ 4 FAIL（第 1、2、4、5、6）→ 总判定 FAIL。**
+**七项结论：2 PASS（第 3 按项目口径、第 7）/ 5 FAIL（第 1、2、4、5、6）→ 总判定 FAIL。**
 
-## 5. 阻断项与处置建议
+## 5. 阻断项与必须处置
 
-### 5.1 未通过的 14 条 AC
+| # | 项 | 谁来做 | 做什么 | 不做会怎样 |
+|---|---|---|---|---|
+| 1 | **8 条需求冲突**（AC-15、23、37、42、43、45 的 C05、63、67） | **用户** | 逐条书面裁决：改 Then/机检，或明确接受该 AC 以「不通过」收口（即放弃 Done#1）。改法：AC-15 改「除 `state/recovery` 外内容不变」；AC-23 去掉「不进入运行中」；AC-37 改观测通道或允许图外节点；AC-42/43/45/63 改「按实际节点与轮次」；AC-67 改 Given 或允许「冷却中」。 | Done#1、#2 永远不达成，I1.8 无法收口；下一轮终验会重复判 FAIL。 |
+| 2 | **AC-45 的 4 条时序假阴性** | 验收 Agent | 把 C07~C10 的读点从「timeout 事件出现即读」改为「等 `escalations` / 实例 `suspended` 落盘（或轮询状态到终态）」再读，重取证。 | AC-45 继续带着 4 条**不成立**的失败记录进入统计，30 条失败里 4 条失真，归因与后续裁决都会被误导。 |
+| 3 | **AC-58 双项目根** | 验收 Agent | 按 Given 用**一个**项目根同时含回流崩溃与 human 节点；把 kill 点移到「已有 done 节点 + 有 in-flight」窗口，观察窗延长到「完成/升级」。 | 「回流崩溃→恢复→人工作业→完成」的端到端始终未被同一实例证明，只能永久记为夹具缺口。 |
+| 4 | **AC-62 投递失败接缝** | 验收 Agent / 实现 Agent | 给 mock 增「重投前 N 次确定性 prompt 失败」接缝（产品侧 expired/升级已实现且有单测）。 | AC-62 的 Then 无法在端到端取证，继续 2/9。 |
+| 5 | **AC-26 / AC-27 阻塞豁免** | **用户** | 确认 `_acc8-f-blockers.md` 的书面豁免（不改判通过、不计 0）；或在有 `dsh` CLI 的机器补验。 | Done#2 的「阻塞 = 0」永远不成立；若口头默认，等于用「豁免」掩盖阻塞，违反 §4.5。 |
+| 6 | **记账不一致** | 主控 | ① `report.md:203` 改 `4/4`；② `acceptance-fixture.md` §二汇总改为「需求冲突 8（含 AC-67）+ 夹具缺口 3 − AC-45 重复 1 = 10」；③ `docs/index.md` 同步并补 AC-67；④ `requirement.md` 头部状态改为「定稿，r3 PASS」。 | Done#6 不过；且归口表少一条 AC，后续裁决会漏项。 |
+| 7 | **跨迭代证据污染（可复现）** | 实现 / 主控 | `test/wp11/perf.test.js:30-40` 的 `putEvidence()` 每次全量跑都会改写 `docs/iterations/iteration-4/evidence/nfr-perf-*.json`（我两次实跑都触发，已用 `checkout-index` 恢复）。改为写 `%TEMP%`，或把该目录标为生成物。 | 任何人跑一次全量/AC-53 门禁，工作区必脏；「被验证提交 = 干净工作区」无法自然成立，只能靠手工恢复。 |
+| 8 | **AC-56 判据授权 + `.gitattributes` 留痕** | **用户 / 主控** | 用户确认 AC-56 的「基线值 2 / 单文件 diff」口径；主控在 `decisions.md` 补一条 `.gitattributes` 证据树空白豁免的裁决（写明「不改变字节、只关告警」与覆盖范围含手写 `.part.md`）。 | AC-56 的通过依赖未授权的判据改写；卫生门禁的例外扩大没有可追溯依据。 |
 
-| # | AC | 现象 | 归口 | 建议动作 | 需用户书面裁决 |
-|---|---|---|---|---|---|
-| 1 | AC-49 | 两轮开发各建会话（`session/new=2`），无「会话 复用」行；`src/core` 零处读 `session_policy`，`buildSession` 不写 `roleId/instanceId` | **产品缺口** | S2 级返工：CLI 创建实例时快照 `session_policy` → 派发路径 `selectReusableSession` 命中即 `resumeOrCreate({policy:'reuse'})` → 写复用行；补单测 + 全量回归 | 是（返工 or 记为已知缺口收口） |
-| 2 | AC-60 | 恢复后 `pending+phase='ready'` 节点未派发（`T-001 dispatch 0→应为 1`）；同时机检「phase 逐项相同」与 Then「可调度的被派发」互斥 | **产品缺口 + 需求冲突（双因）** | ① `recoverInstance` 收集 `nodePosition==='ready'` 加入 plan；② 修订机检为「依赖未满足节点 phase 不变、可调度节点允许 ready→running」 | 是（机检必须改，否则产品改了也过不了） |
-| 3 | AC-15 | `state.json` sha256 前后不同（`d7e905…`→`c40649…`），因 `markInterrupted` 必重写 | **需求冲突** | 修订机检为「除 `state/recovery` 字段外内容不变」或「sha 变化但语义等值」，保留「不重写旧快照主体」的实质 | 是 |
-| 4 | AC-23 | 实例 `running`（Then 要求不进入运行中）；`session/new` 预开会话导致「失败后无新会话」不成立 | **需求冲突** | 改 Then 第 4 分句为「不假装恢复成功（节点 assigned / 角色 available / 交接待投递）」，去掉「实例不进入运行中」；第 2 分句改为「三方言全部失败时不留活动会话」 | 是 |
-| 5 | AC-37 | graph 只渲染图声明节点，夹具 `T-004` 不在内建 `code-loop` 图内；status 行缺「等待人工」后缀 | **夹具缺口（图声明）** | 夹具改为「图声明内含 human 类型的 T-004」，或把 Then 的观测通道改为 `instance status` 并在 `status` 节点行补后缀 | 是（二选一，会动三主链基线） |
-| 6-8 | AC-42 / AC-43 / AC-45 | 文案示例逐字要求「节点 T-003 · 轮次 2/3」，内建图无 T-003、`maxRounds=2` | **需求冲突（示例数字）** | 把示例改为实际现场（`T-001 · 轮次 1/2`），保留「重建会话 / 重建失败升级 / 超时升级」的文案结构断言；或提供 T-003+maxRounds=3 专用测试图 | 是 |
-| 9 | AC-58 | e2e 恢复后只等 5 s，实例仍 `running` 未到终态；另有 `recovery.handoff created→delivered` 事件与 handoff 视图「已构造」不一致 | **夹具缺口 + 可观测性观察项** | 延长观察窗至终态（或按事件轮询代替固定 5 s）；事件/视图不一致单列观察项 | 是（观察窗属夹具口径） |
-| 10 | AC-62 | 重投首条 prompt 即 `accepted`，取不到「连续 3 次失败 → expired」；缺投递失败接缝 | **夹具缺口**（产品侧 `expired`+`delivery_failed` 已实现） | 给 mock 增「重投前 N 次确定性失败」接缝，或允许 `MAESTRO_MOCK_PROMPT_FAILURES` 作用于重投路径 | 是（补接缝 or 判阻塞） |
-| 11 | AC-63 | 示例「T-003 · 轮次 2/3」不可得（同 AC-42 类）；`session/new` 次数差 1 已满足 | **需求冲突（示例数字）** | 同 AC-42/43/45，改示例为实际节点与轮次 | 是 |
-| 12 | AC-67 | 实测「冷却中」，Then 要求「可用」；命中 `role-instances.js` 的 `doneCount>0 → cooldown`（I1.5 契约） | **需求冲突** | 修订 Given（改为「节点均为 `cancelled`/`failed`，或角色无服务历史」）或修订 Then（允许「冷却中」） | 是 |
-| 13 | AC-26 | `workspace/artifacts/**` 锚点空转：`artifactsDirExists:false`、`files:[]`；产物在 I1.7 `worktrees/`+`stage/` | **需求冲突（机检锚点失效）** | 锚点改为「`worktrees/<role>/**` 与 `stage/**` 的 mtime/sha 不变」并重跑；C04 在空集上不得判 ✓ | 是（改锚点） |
-| 14 | AC-27 | 第三方 ACP 服务端在本机无法启动（`ERR_UNSUPPORTED_ESM_URL_SCHEME`，无 `dsh` CLI） | **环境缺口（阻塞）** | 保留阻塞；若要关闭，需提供可用的 `dsh` CLI 或书面豁免（load 语义已由 AC-20 夹具覆盖） | 是（豁免） |
+## 6. 与上一轮终验的差异
 
-### 5.2 过程性阻断（与 AC 判定无关，但同样阻断收口）
+| 维度 | 上一轮（`d054ca2` + 未提交工作区） | 本轮（`956cbdc` 干净 HEAD） |
+|---|---|---|
+| 被验证对象 | HEAD 结论 46/19/2，工作区 53/12/2，**代码与用例未提交** | **HEAD 即结论 55/10/2**，`git status` 0 行，代码/用例/证据全部入库 |
+| AC 结论 | 53 通过 / 12 不通过 / 2 阻塞 | **55 通过 / 10 不通过 / 2 阻塞**（AC-49 4/7→7/7、AC-60 6/8→10/10、AC-53 2/3→4/4；AC-08/AC-31 按 `batch7-isolated-rerun.txt` 的独占复跑定为 flake 后转绿——这两条我**未实跑**，只核了台账与 jsonl 终值） |
+| 产品缺陷 | 2 条未返工（reuse 未接线、pending-ready 缺派发） | **0 条**（我独立复跑 AC-49/AC-60 确认） |
+| AC-53 白名单 | 有 `KNOWN_FLAKES` 3 条（含 2 条三主链），属预赦 | **已撤销**，改为运行时逐条独占复跑；本次 `extra=(空)` |
+| AC-26 空集 ✓ | C04 在 `files:[]` 上判 ✓，自相矛盾 | **已移除**，5/5 只含可取证项，阻塞如实保留 |
+| 提交范围 | 产品修复 commit 夹带 435 份 evidence；另有 iter-4 证据被提交 | fix/test 两提交 **evidence 均为 0**；`639ace7..HEAD` 对 iter-4 **无提交** |
+| 收口文档 | report / summary / blockers / acceptance 全缺 | **全部存在**，总量数字四处同源 |
+| 门禁数字 | 1922/1890/21/11 | **1927/1895/21/11**，两次独立跑失败集合逐条相同，EXTRA=0，MISSING=1 |
+| 仍 FAIL 的原因 | 12 不通过 + 2 阻塞 + 过程性阻断 | **10 不通过 + 2 阻塞**；Done 第 1/2/4/5/6 项不过 |
 
-| # | 项 | 现状 | 建议 |
+**本轮新发现（上一轮未提）**：
+
+1. **AC-45 的 4 条失败是取证时序假阴性**：`events` 止于 seq 31、`state.updatedAt` 仅比 timeout 晚 5ms，升级事件 #32~#35 在其后落盘；AC-45 实质只剩 1 条（C05 文案）不成立。文档把 AC-45 同时计入「需求冲突」与「夹具缺口」，但 `report.md` §5.1 只写「需求文案」，未写这 4 条。
+2. **归口算术错误且漏 AC-67**：`acceptance-fixture.md` §二 `7 + 3 − 1 = 9`，却声称「仍是 10 条」；AC-67（需求冲突）没进汇总表。正确为 **8 + 3 − 1 = 10**。`docs/index.md` 同样漏 AC-67、把 AC-45 记两次。
+3. **`report.md:203` AC-53 `3/3` 与同文件 §2 `4/4` 自相矛盾**（fixture/summary/jsonl 均为 4/4）。
+4. **跨迭代证据污染是可复现的测试副作用**：根因是 `test/wp11/perf.test.js:30-40` 写 `docs/iterations/iteration-4/evidence/`，不是一次性提交失误；`progress.md` 记的 `wp10` 文件名也不对。任何全量/AC-53 跑都会弄脏工作区。
+5. **AC-58 的 Given 被拆成两个项目根**：C14~C16（人工节点）与 C01~C13 不同源，未满足「一个独立项目根」。
+6. **`requirement.md` 头部状态陈旧**：「修订稿…待第 3 轮评审」与 r3 PASS 矛盾，DoR#1 的「已定稿」字样未落实。
+7. **AC-53 C04 是弱断言**：`|| failures.length > 0` 使其恒真，失去「TAP 计数与失败名一致」的排错能力。
+
+**上一轮已提、本轮仍未修**：AC-03 备注与 33/33 自相矛盾；AC-62/AC-58 的 `false ([...])` / `false ()` 打印形态不可读；AC-56 判据改写未获授权。
+
+## 附录 A 复跑原始帧索引
+
+**留档位置**：`C:\Users\xuesh\AppData\Local\Temp\acc8-rerun\docs\iterations\iteration-8\evidence\acc8\`（覆盖前原始帧备份：`C:\Users\xuesh\AppData\Local\Temp\acc8-orig\acc8\`）。全量前台日志：`C:\Users\xuesh\AppData\Local\Temp\full-test.log`；失败集合：`...\now-reds.txt`；AC-53 内部跑的失败集合：`...\ac53-reds.txt`。
+
+| AC | 我实跑结果 | 复跑帧（留档处） | 恢复动作 |
 |---|---|---|---|
-| P1 | 结论所依赖的代码/用例未提交 | `src/core/orchestrator.js`（裁-20g CAS 重试）与 7 个 `probe/acc8-cases/*.mjs` 全在工作区未提交；`HEAD` 证据是 46/19/2 | 拆两个 commit：`fix(I1.8)` 只含 `src/**`；`test+evidence(I1.8)` 只含 `probe/**` 与 `evidence/**`。提交后按 HEAD 重跑全量 |
-| P2 | 全量汇总三件套缺失 | `evidence/acc8/_acc8-f-summary.json`、`_acc8-f-blockers.md`、`report.md`、`acceptance-fixture.md`、`acceptance-product.md` 全无 | 跑 `node probe/acc8-f-final.mjs`（默认输出到 `evidence/acc8/`）生成 67 条 summary/blockers；按模板 §4.1/§4.3 补报告与两份验收文档 |
-| P3 | 数字四处不一致 | 46/19/2（HEAD）/ 53/12/2（工作区）/ 5-2-2（wp7 summary）/ 17 条（progress.md S4） | 以最后一次全跑工作区版为准，统一回填 progress → report → summary → results，并删除 wp7 过期版或标注「历史批次日」 |
-| P4 | AC-53 白名单 | 3 条白名单含 2 条三主链回归断言 | 建议撤销白名单恢复「差集=0」；确需保留则仅允许「该条独占复跑全绿」时生效，并在 `diffset.txt` 强制打印每一条被剔除项及对应隔离帧路径 |
-| P5 | AC-26 C04 空集判 ✓ | `files:[]` 却记 ✓ | 改为 `inconclusive`，`part.md` 表头不要写「6/6 通过」，避免与「不用空集冒充」自相矛盾 |
-| P6 | 提交范围治理 | `d054ca2` 产品修复夹带 435 证据帧；`b1662c4`/`f2b9007` 提交了 iter-4 的 `nfr-perf-*.json` | 后续迭代把 `evidence/**` 与 `src/**` 强制分 commit；测试写死写到仓内历史证据的 `test/wp10/perf.test.js` 应改为写 `%TEMP%` |
+| AC-49 | **通过 7/7** | `AC-49.part.md`、`AC-49.then.instance-log.txt`、`AC-49.then.state.json`、`AC-49.given.driver-*.txt` | 已 `checkout-index` 恢复回 HEAD |
+| AC-60 | **通过 10/10** | `AC-60.part.md`、`AC-60.then.graph-hold.*`、`.then.graph-after.*`、`.then.state-hold/after.json`、`.then.dispatch.json`、`.then.events.jsonl`、`.given.state.json` | 已恢复 |
+| AC-53 | **通过 4/4** | `AC-53.part.md`、`AC-53.machine.full-suite.log`（我这次跑出 1927/1895/21/11）；`AC-53.diffset.txt` 与 HEAD 逐字相同故未复制 | 已恢复 |
+| AC-17 | **通过 9/9** | `AC-17.part.md` 及 7 份 `AC-17.*` 帧 | 已恢复 |
+| AC-26 | **阻塞 5/5** | `AC-26.part.md`、`AC-26.before.workspace.artifacts.json`、`.then.events.recovery.json`、`.then.recover.log` | 已恢复 |
+| AC-52 | **通过 12/12**（额外复跑，覆盖 Done#3 的三主链） | `AC-52.part.md`、`AC-52.given.worktree-add.txt`、`AC-52.machine.i19-regression.log` | 已恢复 |
 
-## 6. 终验结论
-
-**未达成 Done。** 七项中第 1、2、4、5、6 项 FAIL：67 条 AC 只有 53 条通过，12 条不通过、2 条阻塞；缺陷台账与报告产物缺失；四处数字不一致；产品代码与验收用例尚未提交。**按模板 §4.5 与 §7 红线 11，现在不许宣布 I1.8 需求结束，也不许用「基本达成 / 实质通过」表述收口。**
-
-关闭路径（按代价从低到高）：
-
-1. **先把事实固化**（P1+P2+P3）：提交代码与用例、生成 67 条 summary/blockers、补 report 与两份 acceptance，四处数字统一到 `53/12/2`。
-2. **取得 6 条需求冲突的书面裁决**（AC-15、AC-23、AC-37、AC-42/43/45/63、AC-60 机检、AC-67、AC-26 锚点）——这是 12 条不通过里占比最大的一类，改需求比改产品便宜且不损伤基线。
-3. **返工 2 条产品缺口**（AC-49 reuse 派发接线、AC-60 pending-ready 继续调度）+ 补 3 类夹具（AC-58 观察窗、AC-62 投递失败接缝、AC-42 系列专用图）。
-4. **AC-27 要么给 `dsh` CLI，要么书面豁免**；AC-53 白名单撤销。
-5. 上述完成后由主控独立复跑 3~5 条关键 AC（AC-49、AC-60、AC-53、AC-26、AC-17），再开新一轮终验。
+**复跑口径**：每条都是 `node probe/acc8-f-run.mjs AC-XX` 单条独立跑（AC-53 内部再跑一次全量），不是引用既有日志；跑完 `git status --porcelain` 一度出现 33 项改动（含 `test/wp11/perf.test.js` 触发的 3 份 iter-4 证据），全部用 `git -c core.autocrlf=false checkout-index -f -- <路径>` 还原，收尾 0 行。**未实跑**：AC-27 的真实第三方面（本机无 `dsh` CLI，沿用原始 stderr 帧）、其余 61 条 AC（只做证据抽查，未逐条复跑）。

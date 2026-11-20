@@ -3,8 +3,8 @@
   "instanceId": "INST-001",
   "rev": 43,
   "checkpointId": 44,
-  "writtenAt": "2026-11-20T18:39:50.751Z",
-  "coreGeneration": "gen-9594830936f97804",
+  "writtenAt": "2026-11-20T19:24:11.845Z",
+  "coreGeneration": "gen-e5e09a9e5c399578",
   "instanceState": "running",
   "paused": false,
   "halted": false,
@@ -90,8 +90,8 @@
       "phase": null,
       "round": 2,
       "roleId": "developer",
-      "sessionId": "mock-sess-35584-1",
-      "endedAt": "2026-11-20T18:39:47.935Z"
+      "sessionId": "mock-sess-32448-1",
+      "endedAt": "2026-11-20T19:24:09.490Z"
     },
     {
       "nodeId": "T-002",
@@ -99,37 +99,37 @@
       "phase": null,
       "round": 2,
       "roleId": "tester",
-      "sessionId": "mock-sess-11408-1",
+      "sessionId": "mock-sess-6172-1",
       "endedAt": null
     }
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-15284-1",
+      "sessionId": "mock-sess-33996-1",
       "nodeId": "T-001",
       "hostId": "mock",
       "state": "idle",
       "policy": null,
       "dialect": null,
-      "lastEventAt": "2026-11-20T18:39:45.964Z"
+      "lastEventAt": "2026-11-20T19:24:07.705Z"
     },
     {
-      "sessionId": "mock-sess-11408-1",
+      "sessionId": "mock-sess-6172-1",
       "nodeId": "T-002",
       "hostId": "mock",
       "state": "idle",
       "policy": null,
       "dialect": null,
-      "lastEventAt": "2026-11-20T18:39:47.331Z"
+      "lastEventAt": "2026-11-20T19:24:08.793Z"
     },
     {
-      "sessionId": "mock-sess-35584-1",
+      "sessionId": "mock-sess-32448-1",
       "nodeId": "T-001",
       "hostId": "mock",
       "state": "idle",
       "policy": null,
       "dialect": null,
-      "lastEventAt": "2026-11-20T18:39:47.815Z"
+      "lastEventAt": "2026-11-20T19:24:09.324Z"
     }
   ],
   "handoffs": [

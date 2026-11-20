@@ -52,7 +52,7 @@
 | D-11 五条纯净门禁 | #1 `src/core,src/daemon`（45 文件）exit 0；#2 `src/registry`（11 文件）exit 0；#3 三文件口径（3 文件）exit 0；#4 `dependencies` = **0**；#5 输出 `OK: no CJK`。帧 `probe/i18-s2/gates-batch2.txt` |
 | 用法块 / 命令树 | `USAGE_LINES` 仍 **25 行**、`--help` 31 行（25 + I1.12 的 6）；`orch recover` 仍退 **2**（未新增 CLI 命令） |
 | 行尾 / 空白 | 交付文件统一 LF（提交时由 `core.autocrlf` 规范化）；`git diff --check` exit 0 |
-| 历史证据污染 | `test/wp10/perf.test.js` 覆盖 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 的老问题复现，已用 `git -c core.autocrlf=false checkout-index -f -- <三路径>` 恢复，`git diff --stat` 为空 |
+| 历史证据污染 | `test/wp11/perf.test.js` 覆盖 `docs/iterations/iteration-4/evidence/nfr-perf-*.json` 的老问题复现，已用 `git -c core.autocrlf=false checkout-index -f -- <三路径>` 恢复，`git diff --stat` 为空 |
 
 **实现口径裁决 裁-9a~9h**（`decisions.md` 第六节）：`NODE_PHASE_LABEL` 保持 4 键、A-7 不新增导出、
 恢复摘要须由 WP-4 同时设 `recovery` 与 `recoveredAt`、A-3 事件映射留 `main.js`、节点元素按需透出 `phase`、
@@ -162,6 +162,25 @@ mock 能力广告用 `{}` 形态、`--prompt-failures` 双来源、flake 归因�
 故按 id 查找必须取**最新**；② checkpoint 九字段是显式白名单，`sessionPolicies` 不会泄漏进检查点，因此**不改冻结契约**即可带策略；
 ③ `plan.ready` 续派必须在 `redeliver` / `createdContinue` 之后且落盘重读，否则同一节点双派（实测撞红 AC-32/AC-62）。
 裁决 **裁-20k / 20k-补 / 20l / 20m / 20n / 20o / 20p / 20q / 20r**（`decisions.md` 第十七节）。
+
+## 终验第 2 轮与随之的修正（2026-11-21，被验证提交 `956cbdc`）
+
+独立终验 Agent（干净上下文，非产物作者）对 `956cbdc` 判 **FAIL / Done 2 PASS 5 FAIL**：产品缺口归零（AC-49 复跑 7/7、AC-60 10/10）、
+AC-53 预赦白名单已撤销、提交范围干净（`fix`/`test` 均 evidence 0），但「不通过=0、阻塞=0」未满足。
+它另指出 7 处上一轮没发现的问题，本轮按「能修的当场修、要授权的上报」处理：
+
+| 问题 | 处置 | 证据 |
+|---|---|---|
+| AC-45 的 C07~C10 是「读早了」的假阴性（升级/挂起事件在 `state.json` 快照之后 5ms 才落盘） | 读点改为「等 `suspended` 且 `escalations≥1` 落定再读」（上限 20s，落不下来仍判红），期望值未改 | 复跑 **14/15**，帧 `AC-45.then.settle.txt`；裁-20t |
+| AC-53 的「失败条数一致」是弱断言（`\|\| failures.length > 0` 恒真） | 改为严格 `failGap === 0` | 复跑 **4/4**；裁-20s |
+| `test/wp11/perf.test.js` 每次跑都改写 I1.4 的 NFR 证据（跨迭代污染，可复现） | 默认写系统临时目录，重生成需显式 `NFR_EVID_DIR` | `git status` 跑完后 iter-4 目录干净；裁-20v |
+| 归口算术错且漏 AC-67、`report.md` 一处 AC-53 写 3/3 | 改为「需求冲突 8 + 夹具缺口 2 = 10」、统一 4/4、index.md 补 AC-67 | 裁-20y |
+| `_acc8-f-blockers.md` 的处置台账会被重生成抹掉 | 生成器保留 `## 处置结论` 之后的段落；台账补 10 条逐项处置表 | 裁-20w |
+| `requirement.md` 头部仍写「待第 3 轮评审」 | 改为「定稿（r3 PASS）」 | 评审产物 `review-round3.md` |
+| AC-58 的 human 节点与主场景不同项目根 | **未修**：按 Given 需要重做一个项目根 + 重定 kill 窗口，属夹具返工，需用户授权 | 已记入 `_acc8-f-blockers.md` 处置表 |
+| AC-62 缺「重投前连续 3 次失败」接缝 | **未修**：需给 mock 增能力，属夹具返工，需用户授权 | 同上 |
+
+不通过仍为 10 条（AC-45 由 10/15 → 14/15，核对项通过数 684 → 688、失败 30 → 26、被引用帧 451 → 453）。
 
 ## 裁决台账（`decisions.md`）
 

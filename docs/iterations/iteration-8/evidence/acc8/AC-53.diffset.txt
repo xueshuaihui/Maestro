@@ -1,11 +1,11 @@
-# 本次失败集合 21 条（TAP 计 fail=21）
+# 本次失败集合 22 条（TAP 计 fail=22）
 # 基线红名单 22 条（probe/i18-s2/baseline-014fa6a-reds.txt）
 
 ## 新增失败（差集，必须为空）
-(空)
++ --host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）
 
 ## 新增红的独占复跑核实（裁-20r）
-(无新增红)
+· --host-error 早返回（-32603）也在返回前写 attempts=1（AC-63） → 单跑 通过（负载 flake，剔除）
 
 ## 剔除 flake 后的差集（判据）
 (空)

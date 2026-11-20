@@ -4,9 +4,9 @@
 |---|---|
 | 需求 | `docs/iterations/iteration-8/requirement.md`（v3，**67 条 AC / 54 BR / 8 NFR**；S0 评审 r1 FAIL → r2 FAIL → **r3 PASS**） |
 | 拆分与契约 | `docs/iterations/iteration-8.md`（812 行 / 7 WP / 10 个契约冻结点；S1 评审 r1 FAIL → **r2 PASS**） |
-| 验收记录 | `docs/iterations/iteration-8/evidence/acc8/`（**537 个文件 / 451 份被引用帧**，67 条 `*.part.md` 逐条核对表） |
+| 验收记录 | `docs/iterations/iteration-8/evidence/acc8/`（**539 个文件 / 453 份被引用帧**，67 条 `*.part.md` 逐条核对表） |
 | 终验记录 | `docs/iterations/iteration-8/final-verification.md`（**独立终验 Agent**，返工后重开一轮） |
-| 裁决台账 | `docs/iterations/iteration-8/decisions.md`（裁-1 ~ 裁-20q） |
+| 裁决台账 | `docs/iterations/iteration-8/decisions.md`（裁-1 ~ 裁-20y） |
 | 环境 | Windows 10/11 · Node v22.22.2 · DSH `0.2.2-rc.5`（需求记 rc.1，实测优先）· Git Bash |
 | 完成时间 | 2026-11-21（S4 收口尝试） |
 
@@ -20,12 +20,12 @@
 | 通过 | **55** | — |
 | 不通过 | **10** | 见 §5.1 |
 | 阻塞 | **2** | AC-26（真实宿主机检锚点不可取证）、AC-27（第三方 `load` 方言不可用）——**书面豁免**，仍如实记 `blocked=1` |
-| 核对项 | **714**（通过 684 / 失败 30） | — |
-| 证据 | **451 份被引用帧**（`evidence/acc8/` 目录 537 个文件） | 分级：mock 58、真实宿主 4、架构门禁 5 |
+| 核对项 | **714**（通过 688 / 失败 26） | — |
+| 证据 | **453 份被引用帧**（`evidence/acc8/` 目录 539 个文件） | 分级：mock 58、真实宿主 4、架构门禁 5 |
 | 全量测试 | **1927 / 1895 pass / 21 fail / 11 skip** | 对基线 `014fa6a`（1841/1808/22/11）失败集合 **EXTRA = 0** |
 | 架构扫描 | purity `exit 0`（45 文件）、`dependencies = 0` | 门禁全绿 |
 | 用法块 / 状态机 | `--help` 31 行、`NODE_STATES = 7` | 逐字未变 |
-| Done 七项 | **4 PASS / 3 FAIL** | 见 `final-verification.md` |
+| Done 七项 | **2 PASS / 5 FAIL**（独立终验第 2 轮判定；PASS 第 3、7 项） | 见 `final-verification.md` |
 
 **一句话能力结论**：daemon 崩溃后能按检查点续跑——已完成节点不重跑、轮次不归零、会话按 `resume → load → new` 方言链接回、接不回的按基线 §3.6 降级到「已分配」并把角色放回「可用」；恢复失败时用户能看到原因；`session_policy: reuse` 的角色**第二轮真的复用同一会话**（`会话 复用 mock-sess-…（角色 developer）`）；恢复后**可调度的待执行节点会被继续派发**、依赖未满足的原地不动。
 
@@ -41,7 +41,7 @@
 | 依赖 | **零新增**（`dependencies` 键数 = 0，与基线一致） |
 | 测试与夹具 | `test/wp13/**`（101 例：检查点 / 方言 / 恢复启动 / 会话复用 / **复用派发接线** / 失败区分 / 交接恢复 / CLI 恢复）、`test/fixtures/recovery-driver.mjs`（637 行）、`mock-acp-agent.js`（+324 行四组能力广告 + 9 个行为开关）、`recovery/human-node-state.json` / `graph-timeout.json` |
 | 验收脚手架 | `probe/acc8-f-lib.mjs` / `acc8-f-common.mjs` / `acc8-f-run.mjs` / `acc8-f-final.mjs`、`probe/acc8-cases/AC-01..67.mjs`（**67 条可复跑用例**）、`probe/acc8-realhost.mjs` |
-| 验收产物 | `evidence/acc8/`：537 个文件（451 份被引用帧）、`_acc8-f-results.jsonl`（67 条）、`_acc8-f-summary.json`、`_acc8-f-blockers.md`（含书面豁免处置结论）、`AC-53.diffset.txt`、`probe/i18-s2/batch7-isolated-rerun.txt`（12 条独占复跑台账） |
+| 验收产物 | `evidence/acc8/`：539 个文件（453 份被引用帧）、`_acc8-f-results.jsonl`（67 条）、`_acc8-f-summary.json`、`_acc8-f-blockers.md`（含书面豁免处置结论）、`AC-53.diffset.txt`、`probe/i18-s2/batch7-isolated-rerun.txt`（12 条独占复跑台账） |
 
 ## 2 AC 逐条判定
 
@@ -111,7 +111,7 @@
 | AC-37 | human 节点保持 running，等待人工 | **不通过** | 9/10 | mock 实测 |
 | AC-42 | 会话进程崩溃：重建并重试当前轮 | **不通过** | 13/15 | mock 实测 |
 | AC-43 | 会话重建失败 → 升级人工 | **不通过** | 13/14 | mock 实测 |
-| AC-45 | 运行慢 + 节点超时 → 记超时失败并升级人工 | **不通过** | 10/15 | mock 实测 |
+| AC-45 | 运行慢 + 节点超时 → 记超时失败并升级人工 | **不通过** | 14/15 | mock 实测 |
 | AC-58 | 用户走完一遍：回流崩溃 → 恢复 → 人工作业 → 完成 | **不通过** | 9/16 | mock 实测 |
 | AC-62 | 重投连续失败 → 已过期并升级 | **不通过** | 2/9 | mock 实测 |
 | AC-63 | 重建后的会话再次崩溃 → 直接升级，不再重建 | **不通过** | 15/16 | mock 实测 |
@@ -183,6 +183,9 @@ node probe/acc8-f-final.mjs
 ```
 
 > **门禁抖动说明**：`AC-53`（全量回归门禁）的判据是「新增失败集合为空」。按裁-20r，对**本次实际出现**的每条新增红逐条独占复跑（`--test-concurrency=1` 单文件）：单跑通过判负载 flake 并附独立帧，仍红才计入差集。**不设任何白名单**（终验指出预置名单等于预赦）。本轮最终实跑 **EXTRA = 0**，帧 `AC-53.diffset.txt` / `probe/i18-s2/acc53-isolated.txt`。
+> 该分支不是死代码：末次 AC-53 实跑里确实出现过 1 条新增红（`--host-error 早返回（-32603）…（AC-63）`），
+> 独占复跑单文件 **通过** → 判负载 flake 并剔除（帧 `AC-53.machine.AC-53.isolated.host-error-32603-attempts-1AC-63.log`），
+> 「剔除 flake 后的差集」为空、本条判通过。也就是说「核了才剔」这条路径是被真实走到的。
 
 ## 5 遗留问题与边界
 
@@ -195,12 +198,17 @@ node probe/acc8-f-final.mjs
 | AC-15 | 9/10 | 需求矛盾 | 机检要求「`state.json` sha256 不变」与「转为 `interrupted`」不可兼得（中断必重写 state） | 改需求或书面豁免 |
 | AC-23 | 8/10 | 需求矛盾 + 产品行为 | Then「实例不进入运行中」与 BR-22 降级 + D-5 继续调度冲突；另三方言失败路径在真 factory 下会被「create 预开会话」短路 | 改需求；预开会话列观察项 |
 | AC-37 | 9/10 | 需求 / 夹具 | `graph --format text` 只渲染图声明节点，夹具 `T-004` 不在内建 `code-loop` 图内 | 改需求或换夹具图 |
-| AC-42 / 43 / 45 / 63 | 13/15、13/14、10/15、15/16 | 需求文案 | Then 逐字要求「节点 **T-003** · 轮次 **2/3**」，内建图无 T-003 且 `maxRounds=2`（I1.1 逐字红线） | 改需求文案为「按实际节点 / 轮次」 |
+| AC-42 / 43 / 45 / 63 | 13/15、13/14、14/15、15/16 | 需求文案 | Then 逐字要求「节点 **T-003** · 轮次 **2/3**」，内建图无 T-003 且 `maxRounds=2`（I1.1 逐字红线） | 改需求文案为「按实际节点 / 轮次」 |
 | AC-58 | 9/16 | 夹具缺口 | `e2e` 恢复后只等 `waitMs=5000`，未到「完成 / 升级」终态 | 延长观察窗（补齐前不改判） |
 | AC-62 | 2/9 | 夹具缺口 | 产品侧「3 次失败 → expired → 升级」**已实现**（`orchestrator.js:2039~2062`）并有 `wp13/handoff-recovery.test.js` 单测覆盖；mock 缺「重投前连续 3 次确定性失败」端到端接缝 | 补 mock 接缝 |
 | AC-67 | 7/9 | 需求矛盾 | Given「服务节点都已终态」命中 `doneCount>0 → cooldown`（I1.5 契约），与 Then「显示可用」冲突 | 改需求 |
 
-**已消除的 3 条**（S4 后返工）：AC-49（→7/7，D-7）、AC-60（→10/10，D-8）、AC-53（→3/3，裁-20r）。
+**已消除的 3 条**（S4 后返工）：AC-49（→7/7，D-7）、AC-60（→10/10，D-8）、AC-53（→4/4，裁-20r）。
+
+> **AC-45 的 4 条曾经是假阴性**：独立终验第 2 轮查证 `events` 止于 seq 31（`session.timeout`），`state.updatedAt` 只比它晚 5ms，
+> 「节点已升级 / 实例已挂起 / escalations+1 / reasonCode=timeout」这 4 条升级与挂起事件（#32~#35）在快照之后才落盘；
+> 同一用例后面读的 `status` 已显示全部达成。已把读点从「timeout 事件出现即读」改为「等 `suspended` + `escalations≥1` 落定再读」
+> （等待有上限 20s，落不下来仍判红，**期望值一个未改**），复跑 **14/15**，只剩 C05 的逐字文案「（节点 T-003 · 轮次 2/3）」不成立。
 
 ### 5.2 2 条阻塞（用户裁决：书面豁免）
 
@@ -218,7 +226,10 @@ node probe/acc8-f-final.mjs
 5. **宿主版本**：需求记 `0.2.2-rc.1`，实测 **`0.2.2-rc.5`**（裁-13f，实测优先）。
 6. **`test/wp11/role-schema.test.js` 标题**仍写 "five optional ones"，实际 6 个可选键（断言已更新，标题文案未改）。
 7. **`recovery.handoff` 事件**显示 `created→delivered`，而 `handoff list` 仍显示「已构造」——事件与视图存在一拍差（AC-58 记录）。
-8. **提交粒度**：`d054ca2` 把产品修复与 435 份证据帧放在同一个 commit（模板要求功能 commit 不夹带 `evidence/**`）——已发生，无法追溯拆分，后续迭代按「fix / test+evidence」两段提交。
+8. **提交粒度**：`d054ca2` 把产品修复与 435 份证据帧放在同一个 commit（模板要求功能 commit 不夹带 `evidence/**`）——已发生，无法追溯拆分。本轮已按「`fix` / `test` / `docs+evidence`」三段提交，`fix` 与 `test` 的 evidence 均为 **0** 个文件。
+9. **`.gitattributes` 的证据树空白豁免**（裁-20u）：从 `evidence/**/*.log` 扩到 `docs/iterations/**/evidence/**` 一条规则。它只关 `git diff --check` 的告警、**不改工作树与提交里的字节**，故不构成验收判据放宽；理由是证据帧里「`原因 ` 后为空值」这类尾空格本身就是产品真实输出。
+10. **跨迭代证据污染已根治**（裁-20v）：`test/wp11/perf.test.js` 原先把本机实测耗时直接写进 `docs/iterations/iteration-4/evidence/nfr-perf-*.json`，每次全量跑都会改写 I1.4 已收口的证据。现默认写系统临时目录，需显式 `NFR_EVID_DIR=…` 才写回仓库。
+11. **AC-58 的证据不同源**（未修）：C01~C13 用 e2e 根（无 human 节点），C14~C16 另起一个 human 预置根，两套证据拼在一张表，未满足 Given 的「一个独立项目根」。已记入 `_acc8-f-blockers.md` 处置表，需用户授权后重做夹具。
 
 ### 5.4 边界
 
