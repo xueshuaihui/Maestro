@@ -61,11 +61,11 @@
   "approvals": [],
   "current": {
     "nodeId": "T-001",
-    "sessionId": "mock-sess-3596-1",
+    "sessionId": "mock-sess-2188-1",
     "state": "running"
   },
   "recovery": {
-    "checkpointAt": "2026-11-20T13:11:30.521Z",
+    "checkpointAt": "2026-11-20T16:09:20.823Z",
     "skipped": 0,
     "round": 2,
     "maxRounds": 2

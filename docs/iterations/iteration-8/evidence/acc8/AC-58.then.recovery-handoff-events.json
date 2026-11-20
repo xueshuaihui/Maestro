@@ -11,9 +11,9 @@
       "from": "created",
       "to": "delivered"
     },
-    "gen": "gen-048383207bb1783f",
+    "gen": "gen-a02358475a62c2eb",
     "seq": 15,
-    "ts": "2026-11-20T15:53:27.287Z",
-    "prev_event_hash": "1e29adc7cc2abe90b4faefc4b741142f73d55ff5a67a31f892f3490cc3ee23ed"
+    "ts": "2026-11-20T16:24:00.691Z",
+    "prev_event_hash": "3cebf615b4e954fd1368da711ca21281aaab32c023590338eb2732dd8824d6ca"
   }
 ]

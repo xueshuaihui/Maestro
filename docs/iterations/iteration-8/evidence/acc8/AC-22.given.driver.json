@@ -13,18 +13,18 @@
     },
     {
       "attempt": 0,
-      "pid": 29620,
-      "recoveredAt": "2026-11-20T13:56:40.587Z"
+      "pid": 32892,
+      "recoveredAt": "2026-11-20T16:12:49.857Z"
     }
   ],
   "before": {
     "schemaVersion": 2,
     "instanceId": "INST-001",
     "coreGeneration": "gen-before-recovery",
-    "createdAt": "2026-11-20T13:56:40.096Z",
-    "updatedAt": "2026-11-20T13:56:40.096Z",
+    "createdAt": "2026-11-20T16:12:49.375Z",
+    "updatedAt": "2026-11-20T16:12:49.375Z",
     "state": "running",
-    "stateSince": "2026-11-20T13:56:40.096Z",
+    "stateSince": "2026-11-20T16:12:49.375Z",
     "template": "code-loop",
     "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-22\\demo-recovery",
     "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
@@ -46,10 +46,10 @@
         "roleId": "developer",
         "round": 1,
         "state": "done",
-        "stateSince": "2026-11-20T13:56:40.096Z",
-        "startedAt": "2026-11-20T13:56:40.096Z",
-        "roundStartedAt": "2026-11-20T13:56:40.096Z",
-        "endedAt": "2026-11-20T13:56:40.096Z",
+        "stateSince": "2026-11-20T16:12:49.375Z",
+        "startedAt": "2026-11-20T16:12:49.375Z",
+        "roundStartedAt": "2026-11-20T16:12:49.375Z",
+        "endedAt": "2026-11-20T16:12:49.375Z",
         "failure": null,
         "note": null,
         "verdict": {
@@ -65,9 +65,9 @@
         "round": 2,
         "state": "running",
         "phase": "assigned",
-        "stateSince": "2026-11-20T13:56:40.096Z",
-        "startedAt": "2026-11-20T13:56:40.096Z",
-        "roundStartedAt": "2026-11-20T13:56:40.096Z",
+        "stateSince": "2026-11-20T16:12:49.375Z",
+        "startedAt": "2026-11-20T16:12:49.375Z",
+        "roundStartedAt": "2026-11-20T16:12:49.375Z",
         "endedAt": null,
         "failure": null,
         "note": null,
@@ -83,9 +83,9 @@
         "round": 2,
         "hostId": "mock",
         "state": "thinking",
-        "stateSince": "2026-11-20T13:56:40.096Z",
-        "createdAt": "2026-11-20T13:56:40.096Z",
-        "lastEventAt": "2026-11-20T13:56:40.096Z",
+        "stateSince": "2026-11-20T16:12:49.375Z",
+        "createdAt": "2026-11-20T16:12:49.375Z",
+        "lastEventAt": "2026-11-20T16:12:49.375Z",
         "toolName": null,
         "turnId": "turn-1",
         "artifactRef": null,
@@ -98,7 +98,7 @@
     "health": {
       "level": "normal",
       "reasons": [],
-      "computedAt": "2026-11-20T13:56:40.096Z",
+      "computedAt": "2026-11-20T16:12:49.375Z",
       "nodeTimeoutMs": 30000
     },
     "paused": false

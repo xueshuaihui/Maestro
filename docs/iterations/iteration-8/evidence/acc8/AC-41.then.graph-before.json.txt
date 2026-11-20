@@ -45,12 +45,5 @@
     "nodeId": "T-001",
     "sessionId": null,
     "state": "running"
-  },
-  "recovery": {
-    "checkpointAt": "2026-11-20T15:28:08.983Z",
-    "skipped": 1,
-    "round": 1,
-    "maxRounds": 2
-  },
-  "connections": []
+  }
 }

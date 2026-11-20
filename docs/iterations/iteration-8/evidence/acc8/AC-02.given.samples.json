@@ -3,30 +3,24 @@
     "stateRev": 3,
     "checkpointRev": 3,
     "checkpointId": 3,
-    "writtenAt": "2026-11-20T13:03:33.304Z"
+    "writtenAt": "2026-11-20T16:08:42.075Z"
   },
   {
-    "stateRev": 7,
-    "checkpointRev": 6,
-    "checkpointId": 7,
-    "writtenAt": "2026-11-20T13:03:33.626Z"
+    "stateRev": 5,
+    "checkpointRev": 5,
+    "checkpointId": 6,
+    "writtenAt": "2026-11-20T16:08:42.341Z"
   },
   {
-    "stateRev": 10,
-    "checkpointRev": 10,
-    "checkpointId": 11,
-    "writtenAt": "2026-11-20T13:03:33.742Z"
+    "stateRev": 9,
+    "checkpointRev": 8,
+    "checkpointId": 9,
+    "writtenAt": "2026-11-20T16:08:42.437Z"
   },
   {
     "stateRev": 13,
     "checkpointRev": 13,
     "checkpointId": 14,
-    "writtenAt": "2026-11-20T13:03:33.824Z"
-  },
-  {
-    "stateRev": 14,
-    "checkpointRev": 14,
-    "checkpointId": 15,
-    "writtenAt": "2026-11-20T13:03:34.698Z"
+    "writtenAt": "2026-11-20T16:08:42.565Z"
   }
 ]

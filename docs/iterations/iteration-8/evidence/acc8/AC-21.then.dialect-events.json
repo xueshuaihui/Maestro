@@ -7,13 +7,13 @@
     "result": "note",
     "reason": "recovery.dialect",
     "detail": {
-      "sessionId": "mock-sess-31812-1",
+      "sessionId": "mock-sess-22968-1",
       "dialect": "new",
       "restored": false
     },
-    "gen": "gen-2e8d5f4c589f5f01",
+    "gen": "gen-fbddabeb9855ac8e",
     "seq": 2,
-    "ts": "2026-11-20T13:51:40.362Z",
-    "prev_event_hash": "3148c854bf9eaecc9df2cb80fe8e54a09079346718ee7ec446625a68db0885cb"
+    "ts": "2026-11-20T16:12:45.315Z",
+    "prev_event_hash": "09e0e6a18ad366366105bb4ef6142c5d4ffa34a45f4f3dab72e242afdf5c7e06"
   }
 ]

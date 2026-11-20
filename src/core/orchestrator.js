@@ -5438,7 +5438,9 @@ export function createOrchestrator({
         if (recovered.unavailable) {
           // AC-17 / C-10: a host that cannot even be started is fatal for the
           // whole recovery; dialect failures on a reachable host degrade instead.
-          fatal = recovered.message || 'host_unreachable';
+          // AC-17 / C-10: the *why* is user-visible. Prefer the stable reason
+          // code over the adapter's prose message; the CLI line renders it.
+          fatal = recovered.reason || recovered.message || 'host_unreachable';
         }
         if (recovered.unavailable) session.quarantined = true;
         await step('node', 'running', 'recovery.session_unrecoverable', undefined, {
@@ -5458,7 +5460,9 @@ export function createOrchestrator({
     if (fatal !== null) {
       // `markInterrupted` already records the `recovery.failed` event in the same
       // CAS that flips the instance; a second emit would duplicate the line.
-      await markInterrupted(state, 'recovery.failed');
+      // AC-17 / BR-12: carry the failure code into the event detail so the user
+      // line reads `恢复失败：<原因>` instead of an empty cause.
+      await markInterrupted(state, 'recovery.failed', { reason: fatal });
       return { ok: false, interrupted: true, code: 'RECOVERY_HOST_UNREACHABLE' };
     }
 
@@ -5841,7 +5845,7 @@ export function createOrchestrator({
     return { ok: true, interrupted };
   }
 
-  async function markInterrupted(state, reason) {
+  async function markInterrupted(state, reason, extraDetail = null) {
     arraysOf(state);
     const emit = makeEmitter(state.instanceId, null);
     const activeNode = state.nodes.find((node) => node.state === 'running' || node.state === 'review')
@@ -5862,19 +5866,23 @@ export function createOrchestrator({
       }
     }
 
+    // AC-17: the user-visible line renders `detail.reason` (the *why*), so a
+    // caller that knows the failure code must be able to pass it through. The
+    // inherited `note` key stays byte-for-byte unchanged.
+    const detail = extraDetail ? { note, ...extraDetail } : { note };
     if (state.state === 'created') {
       await transit(state.instanceId, 'instance', 'running', {
         emit,
         state,
         reason,
-        detail: { note },
+        detail,
       });
     }
     return transit(state.instanceId, 'instance', 'interrupted', {
       emit,
       state,
       reason,
-      detail: { note },
+      detail,
     });
   }
 

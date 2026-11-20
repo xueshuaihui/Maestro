@@ -1,0 +1,6 @@
+git worktree remove C:\Users\xuesh\AppData\Local\Temp\i18-acc52-base --force
+exit=0
+
+
+git worktree prune
+exit=0

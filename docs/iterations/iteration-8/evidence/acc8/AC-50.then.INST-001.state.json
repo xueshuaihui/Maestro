@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "instanceId": "INST-001",
-  "coreGeneration": "gen-1b0af77429b61d28",
-  "createdAt": "2026-11-20T15:30:44.758Z",
-  "updatedAt": "2026-11-20T15:30:49.298Z",
+  "coreGeneration": "gen-c26722de469e965d",
+  "createdAt": "2026-11-20T16:17:34.185Z",
+  "updatedAt": "2026-11-20T16:17:38.454Z",
   "state": "completed",
-  "stateSince": "2026-11-20T15:30:49.272Z",
+  "stateSince": "2026-11-20T16:17:38.419Z",
   "template": "code-loop",
   "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-50\\demo-INST-001",
   "task": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
@@ -27,14 +27,14 @@
       "roleId": "developer",
       "round": 1,
       "state": "done",
-      "stateSince": "2026-11-20T15:30:47.105Z",
-      "startedAt": "2026-11-20T15:30:46.686Z",
-      "roundStartedAt": "2026-11-20T15:30:46.686Z",
-      "endedAt": "2026-11-20T15:30:47.136Z",
+      "stateSince": "2026-11-20T16:17:36.742Z",
+      "startedAt": "2026-11-20T16:17:36.349Z",
+      "roundStartedAt": "2026-11-20T16:17:36.349Z",
+      "endedAt": "2026-11-20T16:17:36.769Z",
       "failure": null,
       "note": null,
       "verdict": null,
-      "sessionId": "mock-sess-31756-1",
+      "sessionId": "mock-sess-18080-1",
       "artifactRefs": [
         {
           "ref": "calc.js",
@@ -43,7 +43,7 @@
           "exists": true,
           "bytes": 251,
           "sha256": null,
-          "verifiedAt": "2026-11-20T15:30:47.103Z"
+          "verifiedAt": "2026-11-20T16:17:36.741Z"
         }
       ],
       "branch": "maestro/INST-001/developer",
@@ -54,32 +54,32 @@
       "roleId": "tester",
       "round": 1,
       "state": "done",
-      "stateSince": "2026-11-20T15:30:49.166Z",
-      "startedAt": "2026-11-20T15:30:48.668Z",
-      "roundStartedAt": "2026-11-20T15:30:48.668Z",
-      "endedAt": "2026-11-20T15:30:49.188Z",
+      "stateSince": "2026-11-20T16:17:38.328Z",
+      "startedAt": "2026-11-20T16:17:37.885Z",
+      "roundStartedAt": "2026-11-20T16:17:37.885Z",
+      "endedAt": "2026-11-20T16:17:38.353Z",
       "failure": null,
       "note": null,
       "verdict": {
         "value": "pass",
         "defectCount": 0,
         "verdictPath": "out/verdict.json",
-        "readAt": "2026-11-20T15:30:49.163Z"
+        "readAt": "2026-11-20T16:17:38.324Z"
       },
-      "sessionId": "mock-sess-12688-1",
+      "sessionId": "mock-sess-16068-1",
       "artifactRefs": []
     }
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-31756-1",
+      "sessionId": "mock-sess-18080-1",
       "nodeId": "T-001",
       "round": 1,
       "hostId": "mock",
       "state": "idle",
-      "stateSince": "2026-11-20T15:30:47.143Z",
-      "createdAt": "2026-11-20T15:30:46.945Z",
-      "lastEventAt": "2026-11-20T15:30:46.958Z",
+      "stateSince": "2026-11-20T16:17:36.777Z",
+      "createdAt": "2026-11-20T16:17:36.598Z",
+      "lastEventAt": "2026-11-20T16:17:36.612Z",
       "toolName": null,
       "turnId": "turn-1",
       "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-50\\demo-INST-001\\calc.js",
@@ -87,14 +87,14 @@
       "quarantined": false
     },
     {
-      "sessionId": "mock-sess-12688-1",
+      "sessionId": "mock-sess-16068-1",
       "nodeId": "T-002",
       "round": 1,
       "hostId": "mock",
       "state": "idle",
-      "stateSince": "2026-11-20T15:30:49.236Z",
-      "createdAt": "2026-11-20T15:30:48.909Z",
-      "lastEventAt": "2026-11-20T15:30:48.955Z",
+      "stateSince": "2026-11-20T16:17:38.380Z",
+      "createdAt": "2026-11-20T16:17:38.144Z",
+      "lastEventAt": "2026-11-20T16:17:38.198Z",
       "toolName": null,
       "turnId": "turn-1",
       "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-50\\demo-INST-001\\out\\verdict.json",
@@ -111,15 +111,15 @@
         "kind": "forward"
       },
       "state": "consumed",
-      "createdAt": "2026-11-20T15:30:48.634Z",
-      "deliveredAt": "2026-11-20T15:30:48.923Z",
-      "acceptedAt": "2026-11-20T15:30:48.951Z",
-      "consumedAt": "2026-11-20T15:30:49.191Z",
+      "createdAt": "2026-11-20T16:17:37.847Z",
+      "deliveredAt": "2026-11-20T16:17:38.161Z",
+      "acceptedAt": "2026-11-20T16:17:38.193Z",
+      "consumedAt": "2026-11-20T16:17:38.355Z",
       "rejectedAt": null,
       "rejectReason": null,
       "wakeConsumedAt": null,
       "acceptedSignal": "agent_thought_chunk",
-      "ambiguityWindowMs": 28,
+      "ambiguityWindowMs": 32,
       "defects": [],
       "note": null,
       "artifactRefs": {
@@ -145,9 +145,9 @@
   "health": {
     "level": "ended",
     "reasons": [],
-    "computedAt": "2026-11-20T15:30:49.297Z",
+    "computedAt": "2026-11-20T16:17:38.452Z",
     "nodeTimeoutMs": 30000
   },
-  "traceId": "TRC-8ccf71c2",
+  "traceId": "TRC-eddfe5d7",
   "paused": false
 }

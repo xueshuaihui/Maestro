@@ -1,10 +1,10 @@
 {
   "schema": "checkpoint/v1",
   "instanceId": "INST-001",
-  "rev": 40,
-  "checkpointId": 41,
-  "writtenAt": "2026-11-20T13:08:39.152Z",
-  "coreGeneration": "gen-17f46a61bb44fa31",
+  "rev": 28,
+  "checkpointId": 28,
+  "writtenAt": "2026-11-20T16:08:52.654Z",
+  "coreGeneration": "gen-44a730a844adc414",
   "instanceState": "running",
   "paused": false,
   "halted": false,
@@ -88,10 +88,10 @@
       "nodeId": "T-001",
       "state": "done",
       "phase": null,
-      "round": 2,
+      "round": 1,
       "roleId": "developer",
-      "sessionId": "mock-sess-25964-1",
-      "endedAt": "2026-11-20T13:08:32.830Z"
+      "sessionId": "mock-sess-9872-1",
+      "endedAt": "2026-11-20T16:08:48.794Z"
     },
     {
       "nodeId": "T-002",
@@ -99,37 +99,28 @@
       "phase": null,
       "round": 1,
       "roleId": "tester",
-      "sessionId": "mock-sess-32544-1",
-      "endedAt": "2026-11-20T13:08:32.299Z"
+      "sessionId": "mock-sess-18688-1",
+      "endedAt": "2026-11-20T16:08:50.993Z"
     }
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-24472-1",
+      "sessionId": "mock-sess-9872-1",
       "nodeId": "T-001",
       "hostId": "mock",
       "state": "idle",
       "policy": null,
       "dialect": null,
-      "lastEventAt": "2026-11-20T13:08:30.629Z"
+      "lastEventAt": "2026-11-20T16:08:48.638Z"
     },
     {
-      "sessionId": "mock-sess-32544-1",
+      "sessionId": "mock-sess-18688-1",
       "nodeId": "T-002",
       "hostId": "mock",
       "state": "idle",
       "policy": null,
       "dialect": null,
-      "lastEventAt": "2026-11-20T13:08:32.146Z"
-    },
-    {
-      "sessionId": "mock-sess-25964-1",
-      "nodeId": "T-001",
-      "hostId": "mock",
-      "state": "idle",
-      "policy": null,
-      "dialect": null,
-      "lastEventAt": "2026-11-20T13:08:32.686Z"
+      "lastEventAt": "2026-11-20T16:08:50.835Z"
     }
   ],
   "handoffs": [
@@ -146,8 +137,8 @@
       "from": null,
       "to": null,
       "kind": null,
-      "state": "consumed",
-      "deliveryAttempts": 1
+      "state": "created",
+      "deliveryAttempts": 0
     }
   ],
   "escalations": [],

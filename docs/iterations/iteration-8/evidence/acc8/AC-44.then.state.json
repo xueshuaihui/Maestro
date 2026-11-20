@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "instanceId": "INST-001",
-  "coreGeneration": "gen-0e0382f1ec9f20a9",
-  "createdAt": "2026-11-20T15:28:31.164Z",
-  "updatedAt": "2026-11-20T15:28:49.017Z",
+  "coreGeneration": "gen-71621325a06ba42b",
+  "createdAt": "2026-11-20T16:16:19.538Z",
+  "updatedAt": "2026-11-20T16:16:37.387Z",
   "state": "interrupted",
-  "stateSince": "2026-11-20T15:28:49.016Z",
+  "stateSince": "2026-11-20T16:16:37.386Z",
   "template": "code-loop",
   "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-44\\demo-recovery",
   "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
@@ -27,14 +27,14 @@
       "roleId": "developer",
       "round": 1,
       "state": "running",
-      "stateSince": "2026-11-20T15:28:33.325Z",
-      "startedAt": "2026-11-20T15:28:33.325Z",
-      "roundStartedAt": "2026-11-20T15:28:33.325Z",
+      "stateSince": "2026-11-20T16:16:21.812Z",
+      "startedAt": "2026-11-20T16:16:21.812Z",
+      "roundStartedAt": "2026-11-20T16:16:21.812Z",
       "endedAt": null,
       "failure": null,
       "note": "stopped at node running / session thinking",
       "verdict": null,
-      "sessionId": "mock-sess-20840-1",
+      "sessionId": "mock-sess-20584-1",
       "artifactRefs": [],
       "branch": "maestro/INST-001/developer",
       "mergeStatus": "pending"
@@ -44,7 +44,7 @@
       "roleId": "tester",
       "round": 0,
       "state": "pending",
-      "stateSince": "2026-11-20T15:28:31.164Z",
+      "stateSince": "2026-11-20T16:16:19.538Z",
       "startedAt": null,
       "roundStartedAt": null,
       "endedAt": null,
@@ -57,14 +57,14 @@
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-20840-1",
+      "sessionId": "mock-sess-20584-1",
       "nodeId": "T-001",
       "round": 1,
       "hostId": "mock",
       "state": "thinking",
-      "stateSince": "2026-11-20T15:28:33.592Z",
-      "createdAt": "2026-11-20T15:28:33.583Z",
-      "lastEventAt": "2026-11-20T15:28:33.592Z",
+      "stateSince": "2026-11-20T16:16:22.078Z",
+      "createdAt": "2026-11-20T16:16:22.068Z",
+      "lastEventAt": "2026-11-20T16:16:22.078Z",
       "toolName": null,
       "turnId": "turn-1",
       "artifactRef": null,
@@ -77,8 +77,8 @@
   "health": {
     "level": "normal",
     "reasons": [],
-    "computedAt": "2026-11-20T15:28:43.817Z",
+    "computedAt": "2026-11-20T16:16:32.215Z",
     "nodeTimeoutMs": 30000
   },
-  "traceId": "TRC-8eef4163"
+  "traceId": "TRC-cba5adc1"
 }

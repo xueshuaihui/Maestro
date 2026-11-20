@@ -1,0 +1,46 @@
+{
+  "host": {
+    "ok": true,
+    "version": "0.2.2-rc.5",
+    "exe": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\DeepSeek Harness.exe",
+    "bin": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\app.asar\\dsh\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js",
+    "hasDshExe": false,
+    "source": "default"
+  },
+  "caps": {
+    "keys": [
+      "close",
+      "list",
+      "resume"
+    ],
+    "hasClose": true,
+    "hasList": true,
+    "hasResume": true,
+    "hasLoad": false,
+    "canResume": true,
+    "canLoad": false
+  },
+  "raw": {
+    "protocolVersion": 1,
+    "agentInfo": {
+      "name": "deepseek-harness-acp",
+      "version": "0.0.1"
+    },
+    "agentCapabilities": {
+      "mcpCapabilities": {
+        "http": true
+      },
+      "promptCapabilities": {
+        "image": false,
+        "audio": false,
+        "embeddedContext": false
+      },
+      "sessionCapabilities": {
+        "close": {},
+        "list": {},
+        "resume": {}
+      }
+    },
+    "authMethods": []
+  }
+}

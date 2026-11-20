@@ -1,0 +1,72 @@
+[
+  {
+    "object": "handoff",
+    "objectId": "HO-001",
+    "from": "delivered",
+    "to": "pending",
+    "result": "applied",
+    "reason": "recovery.redeliver",
+    "detail": null,
+    "gen": "gen-4597c527ccea36a1",
+    "seq": 30,
+    "ts": "2026-11-20T16:13:47.416Z",
+    "prev_event_hash": "45baead84e94e960974814aac5defef13d773076721ab61364624203a91f6625"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "recovery.summary",
+    "detail": {
+      "checkpointAt": "2026-11-20T16:13:44.123Z",
+      "skipped": 1,
+      "round": 1,
+      "maxRounds": 2
+    },
+    "gen": "gen-4597c527ccea36a1",
+    "seq": 31,
+    "ts": "2026-11-20T16:13:47.435Z",
+    "prev_event_hash": "206bd92bb4010f2bde02783d23d4c7df7e3e9f7aa3acd22f9dd623ddd7ce5327"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "recovery.dialect",
+    "detail": {
+      "sessionId": "2fd8dbc3-3aeb-4fc5-8104-be2c512ada24",
+      "dialect": "resume",
+      "restored": true
+    },
+    "gen": "gen-4597c527ccea36a1",
+    "seq": 32,
+    "ts": "2026-11-20T16:13:47.437Z",
+    "prev_event_hash": "9bffa3170d6a623175ee7f3adf3fde65303eeb5d82e985fc6bb86eb48122193f"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "recovery.connection",
+    "detail": {
+      "handoffId": "HO-001",
+      "from": "T-001",
+      "to": "T-002",
+      "fromRole": "developer",
+      "toRole": "tester",
+      "kind": "forward",
+      "fromState": "delivered",
+      "toState": "pending"
+    },
+    "gen": "gen-4597c527ccea36a1",
+    "seq": 33,
+    "ts": "2026-11-20T16:13:47.439Z",
+    "prev_event_hash": "836665e454e25a62526fe1c5b84e189b517a3425af6b4a8f34cb024d9fc2a07b"
+  }
+]

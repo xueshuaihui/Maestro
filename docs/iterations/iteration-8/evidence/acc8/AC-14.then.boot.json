@@ -1,18 +1,28 @@
 {
   "kill": {
     "ok": true,
-    "pid": 32048
+    "pid": 29772
   },
   "boots": [
     {
       "attempt": 0,
       "exit": 0,
-      "pid": 32048
+      "pid": 6108
     },
     {
       "attempt": 0,
-      "pid": 32048,
-      "recoveredAt": "2026-11-20T13:50:53.532Z"
+      "pid": 6108,
+      "recoveredAt": null
+    },
+    {
+      "attempt": 1,
+      "exit": 0,
+      "pid": 6108
+    },
+    {
+      "attempt": 1,
+      "pid": 15668,
+      "recoveredAt": "2026-11-20T16:11:57.106Z"
     }
   ]
 }

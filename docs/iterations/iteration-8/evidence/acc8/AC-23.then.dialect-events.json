@@ -13,10 +13,10 @@
       "sessionId": "mock-sess-retest",
       "fallback": true
     },
-    "gen": "gen-5b44f4b6aa3626fa",
+    "gen": "gen-59f0a503a76fff53",
     "seq": 3,
-    "ts": "2026-11-20T14:21:33.897Z",
-    "prev_event_hash": "2442469a594bbbbaeeafb8a0a4e39abbeaa1b99876bf064697793178224b5100"
+    "ts": "2026-11-20T16:12:51.008Z",
+    "prev_event_hash": "ce1b0f802b854a673d818fb01c7d63c31503fd248ca280c1e6a51717626c21f5"
   },
   {
     "object": "instance",
@@ -32,10 +32,10 @@
       "sessionId": "mock-sess-retest",
       "fallback": true
     },
-    "gen": "gen-5b44f4b6aa3626fa",
+    "gen": "gen-59f0a503a76fff53",
     "seq": 4,
-    "ts": "2026-11-20T14:21:33.899Z",
-    "prev_event_hash": "a729d90d642705387913d4eb7d904f31d0172580a8ed97060c3bbf00a36372e5"
+    "ts": "2026-11-20T16:12:51.009Z",
+    "prev_event_hash": "5dc89be1fafbd4a63d197d9c484e8b902e1a710fd86c36f14b8a17fdc4ed251b"
   },
   {
     "object": "instance",
@@ -45,13 +45,13 @@
     "result": "note",
     "reason": "recovery.dialect",
     "detail": {
-      "sessionId": "mock-sess-688-1",
+      "sessionId": "mock-sess-17000-1",
       "dialect": "new",
       "restored": false
     },
-    "gen": "gen-5b44f4b6aa3626fa",
+    "gen": "gen-59f0a503a76fff53",
     "seq": 5,
-    "ts": "2026-11-20T14:21:33.902Z",
-    "prev_event_hash": "77d3d0a49d00c12e53eceddf5ac97f37c6ffd01763c05811725a9201accaa1e0"
+    "ts": "2026-11-20T16:12:51.010Z",
+    "prev_event_hash": "594de58abcf42a11d1664712b43c97387ebf6b563db38dfca607e56a3e3772c0"
   }
 ]

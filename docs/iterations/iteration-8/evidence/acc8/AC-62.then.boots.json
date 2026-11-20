@@ -2,11 +2,11 @@
   {
     "attempt": 0,
     "exit": 0,
-    "pid": 17748
+    "pid": null
   },
   {
     "attempt": 0,
-    "pid": 17748,
-    "recoveredAt": "2026-11-20T15:55:09.600Z"
+    "pid": 23204,
+    "recoveredAt": "2026-11-20T16:25:43.266Z"
   }
 ]

@@ -47,7 +47,7 @@
     "state": "running"
   },
   "recovery": {
-    "checkpointAt": "2026-11-20T15:28:08.983Z",
+    "checkpointAt": "2026-11-20T16:15:58.209Z",
     "skipped": 1,
     "round": 1,
     "maxRounds": 2

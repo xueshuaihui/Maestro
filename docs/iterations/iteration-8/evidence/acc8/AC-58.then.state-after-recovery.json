@@ -2,7 +2,7 @@
   "instanceId": "INST-001",
   "state": "running",
   "rev": 23,
-  "recoveredAt": "2026-11-20T15:53:27.261Z",
+  "recoveredAt": "2026-11-20T16:24:00.668Z",
   "nodes": [
     {
       "nodeId": "T-001",

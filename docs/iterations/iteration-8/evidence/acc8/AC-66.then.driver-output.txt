@@ -1,34 +1,11 @@
-{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-66","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-66\\demo-code-pass","scenario":"backflow","resolvedScenario":"backflow","stopAfter":null,"keep":false,"released":false,"target":"exit","exitCode":0,"instanceId":"INST-001","state":"completed","nodes":[{"nodeId":"T-001","round":2,"state":"done"},{"nodeId":"T-002","round":2,"state":"done"}],"handoffs":3,"escalations":[],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":7889,"checks":[{"name":"state=completed","ok":true,"detail":"completed"},{"name":"两节点 round=2 done","ok":true},{"name":"handoffs=3 forward/backflow/retest","ok":true}]}
+{"ok":false,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-66","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-66\\demo-code-pass","scenario":"backflow","resolvedScenario":"backflow","stopAfter":null,"keep":false,"released":false,"target":"exit","exitCode":4,"instanceId":"INST-001","state":"suspended","nodes":[{"nodeId":"T-001","round":1,"state":"escalated"},{"nodeId":"T-002","round":0,"state":"pending"}],"handoffs":0,"escalations":[{"escalationId":"ESC-001","reasonCode":"merge_aborted"}],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":4192,"checks":[{"name":"state=completed","ok":false,"detail":"suspended"},{"name":"两节点 round=2 done","ok":false},{"name":"handoffs=3 forward/backflow/retest","ok":false}]}
 实例 INST-001 · 运行中 · 模板 编码闭环
-会话已创建 mock-sess-21140-1
+会话已创建 mock-sess-4976-1
 任务已投递
 会话 执行中 · 已运行 1s
 会话 等待下游 · 产出已提交
 会话 空闲
-会话 执行中 · 调用工具（write） · 已运行 1s
-会话 执行中 · 已运行 1s
-会话 等待下游 · 产出已提交
-会话 空闲
-会话 执行中 · 调用工具（write） · 已运行 1s
-会话 执行中 · 已运行 1s
-会话 等待下游 · 产出已提交
-会话 空闲
-会话 执行中 · 调用工具（write） · 已运行 1s
-会话 执行中 · 已运行 1s
-会话 等待下游 · 产出已提交
-会话 空闲
-节点 T-001 开发 已完成 · 第 2 轮 · 耗时 3s
-节点 T-002 测试 已完成 · 第 2 轮 · 耗时 3s · 判定 通过
-交接包 HO-001  开发→测试  已构造   23:55:48
-交接包 HO-001  开发→测试  已投递   23:55:48
-交接包 HO-001  开发→测试  已接受   23:55:48
-交接包 HO-001  开发→测试  已完成   23:55:48
-交接包 HO-002  测试→开发（回流）  已构造   23:55:48
-交接包 HO-002  测试→开发（回流）  已投递   23:55:49
-交接包 HO-002  测试→开发（回流）  已接受   23:55:49
-交接包 HO-002  测试→开发（回流）  已完成   23:55:49
-交接包 HO-003  开发→测试（复测）  已构造   23:55:50
-交接包 HO-003  开发→测试（复测）  已投递   23:55:51
-交接包 HO-003  开发→测试（复测）  已接受   23:55:51
-交接包 HO-003  开发→测试（复测）  已完成   23:55:51
-升级 —
+会话 已升级
+实例 INST-001 · 已挂起 · 模板 编码闭环
+升级 ESC-001 待处理 · 节点 T-001 开发 · 第 1 轮
+下一步：orch escalate list --instance INST-001 查看升级；orch escalate resolve ESC-nnn --instance INST-001 --decision retry|pass|fail 处理；要终止请执行 orch cancel --instance INST-001
