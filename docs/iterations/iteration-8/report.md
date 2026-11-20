@@ -4,7 +4,7 @@
 |---|---|
 | 需求 | `docs/iterations/iteration-8/requirement.md`（v3，**67 条 AC / 54 BR / 8 NFR**；S0 评审 r1 FAIL → r2 FAIL → **r3 PASS**） |
 | 拆分与契约 | `docs/iterations/iteration-8.md`（812 行 / 7 WP / 10 个契约冻结点；S1 评审 r1 FAIL → **r2 PASS**） |
-| 验收记录 | `docs/iterations/iteration-8/evidence/acc8/`（**539 个文件 / 453 份被引用帧**，67 条 `*.part.md` 逐条核对表） |
+| 验收记录 | `docs/iterations/iteration-8/evidence/acc8/`（**542 个文件 / 452 份被引用帧**，67 条 `*.part.md` 逐条核对表） |
 | 终验记录 | `docs/iterations/iteration-8/final-verification.md`（**独立终验 Agent**，返工后重开一轮） |
 | 裁决台账 | `docs/iterations/iteration-8/decisions.md`（裁-1 ~ 裁-20y） |
 | 环境 | Windows 10/11 · Node v22.22.2 · DSH `0.2.2-rc.5`（需求记 rc.1，实测优先）· Git Bash |
@@ -20,13 +20,13 @@
 | 通过 | **55** | — |
 | 不通过 | **10** | 见 §5.1 |
 | 阻塞 | **2** | AC-26（真实宿主机检锚点不可取证）、AC-27（第三方 `load` 方言不可用）——**书面豁免**，仍如实记 `blocked=1` |
-| 核对项 | **714**（通过 688 / 失败 26） | — |
-| 证据 | **453 份被引用帧**（`evidence/acc8/` 目录 539 个文件） | 分级：mock 58、真实宿主 4、架构门禁 5 |
+| 核对项 | **715**（通过 689 / 失败 26） | — |
+| 证据 | **452 份被引用帧**（`evidence/acc8/` 目录 542 个文件） | 分级：mock 58、真实宿主 4、架构门禁 5 |
 | 全量测试 | **1927 / 1895 pass / 21 fail / 11 skip**（另一次独立实跑为 1894/22，见下） | 对基线 `014fa6a`（1841/1808/22/11）失败集合 **EXTRA = 0** |
 | 全量数字的抖动 | 两次独立实跑差 **1 条** | `--host-error 早返回（-32603）…（AC-63）` 在负载下偶发；独占复跑单文件**通过**，按裁-20r 判负载 flake 并剔除（帧 `AC-53.isolated.host-error-32603-*.log`）。**EXTRA=0 的结论两次都成立，但 tests/pass 会在 ±（0~1）条上波动**，引用时须连带这句 |
 | 架构扫描 | purity `exit 0`（45 文件）、`dependencies = 0` | 门禁全绿 |
 | 用法块 / 状态机 | `--help` 31 行、`NODE_STATES = 7` | 逐字未变 |
-| Done 七项 | **2 PASS / 5 FAIL**（独立终验第 2 轮判定；PASS 第 3、7 项） | 见 `final-verification.md` |
+| Done 七项 | **2 PASS / 5 FAIL**（独立终验第 4 轮判定；PASS 第 3、7 项） | 见 `final-verification.md` 与 `final-verification-round2/3/4.md` |
 
 **一句话能力结论**：daemon 崩溃后能按检查点续跑——已完成节点不重跑、轮次不归零、会话按 `resume → load → new` 方言链接回、接不回的按基线 §3.6 降级到「已分配」并把角色放回「可用」；恢复失败时用户能看到原因；`session_policy: reuse` 的角色**第二轮真的复用同一会话**（`会话 复用 mock-sess-…（角色 developer）`）；恢复后**可调度的待执行节点会被继续派发**、依赖未满足的原地不动。
 
@@ -42,7 +42,7 @@
 | 依赖 | **零新增**（`dependencies` 键数 = 0，与基线一致） |
 | 测试与夹具 | `test/wp13/**`（101 例：检查点 / 方言 / 恢复启动 / 会话复用 / **复用派发接线** / 失败区分 / 交接恢复 / CLI 恢复）、`test/fixtures/recovery-driver.mjs`（637 行）、`mock-acp-agent.js`（+324 行四组能力广告 + 9 个行为开关）、`recovery/human-node-state.json` / `graph-timeout.json` |
 | 验收脚手架 | `probe/acc8-f-lib.mjs` / `acc8-f-common.mjs` / `acc8-f-run.mjs` / `acc8-f-final.mjs`、`probe/acc8-cases/AC-01..67.mjs`（**67 条可复跑用例**）、`probe/acc8-realhost.mjs` |
-| 验收产物 | `evidence/acc8/`：539 个文件（453 份被引用帧）、`_acc8-f-results.jsonl`（67 条）、`_acc8-f-summary.json`、`_acc8-f-blockers.md`（含书面豁免处置结论）、`AC-53.diffset.txt`、`probe/i18-s2/batch7-isolated-rerun.txt`（12 条独占复跑台账） |
+| 验收产物 | `evidence/acc8/`：542 个文件（452 份被引用帧）、`_acc8-f-results.jsonl`（67 条）、`_acc8-f-summary.json`、`_acc8-f-blockers.md`（含书面豁免处置结论）、`AC-53.diffset.txt`、`probe/i18-s2/batch7-isolated-rerun.txt`（12 条独占复跑台账） |
 
 ## 2 AC 逐条判定
 
@@ -94,7 +94,7 @@
 | AC-50 | reuse 不跨实例 | **通过** | 7/7 | mock 实测 |
 | AC-51 | 角色配置可见，非法值被拒 | **通过** | 16/16 | mock 实测 |
 | AC-52 | 非恢复路径的三条主链不变（基线 014fa6a） | **通过** | 12/12 | 架构门禁实测 |
-| AC-53 | 全量测试回归门禁：失败集合差集为 0 | **通过** | 4/4 | 架构门禁实测 |
+| AC-53 | 全量测试回归门禁：失败集合差集为 0 | **通过** | 5/5 | 架构门禁实测 |
 | AC-54 | 架构纯净：31 词扫描 exit 0、零依赖 | **通过** | 8/8 | 架构门禁实测 |
 | AC-55 | 不新增 CLI 命令，用法块不变 | **通过** | 9/9 | 架构门禁实测 |
 | AC-56 | I1.7 已合入：恢复实现不依赖 worktree / 产物隔离（按裁-12 重判） | **通过** | 6/6 | 架构门禁实测 |
@@ -152,6 +152,8 @@
 | U-8 | AC-65 / AC-66 原靠「复用行恒为 0」（派发未接线时的恒真观测）判通过 | Given 改由 `test.dispatch` 接缝 + 预置 `state.json` 构造（thinking / 正服务他节点 / 跨宿主），走真实 `dispatchInState`；撤销恒真断言，判据按需求原文 |
 | U-9 | `test/wp9/i19-regression.test.js` 的 AC-24 冻结「会话发射点 ≤13、白名单 9 项」，被 I1.8 的 `session.reuse` 撞红 | 上限 13→14、白名单 +1，并把新增项**单列**为「`session.reuse` 写入点恰 1 处」；既有 9 项与 `execution.summary` 恰 1 处的断言原样保留 |
 | U-10 | `test/wp13/recovery-boot.test.js` 的 AC-60 断言「恢复后 phase 完全不变」，与 D-5 第 5 步（派发）冲突 | 拆成两步：hold 点断言位置不变、release 后断言可调度被派发且阻塞节点不动 |
+| U-11 | 「同名掩蔽」：基线因 `EBUSY` 红的冻结用例，在本次改成**断言失败**后，用例名不变 → 差集仍为 0，真实回归被盖住（独立终验第 4 轮实证 2 条：`newState` 字段清单、`object: 'session'` 上限） | ① 把被撞红的两处按裁-20aa 合法扩项修好（`sessionPolicies` 追加到 `traceId` 之后、上限 13→14 且**不改标题**）；② AC-53 增第 5 条核对项「基线同名红不得换失败类型」，取基线帧的 `failureType` 逐条比（裁-20z）。修后 6 条全部回 `hookFailed`、`masked=(空)` |
+| U-12 | `sessionPolicies` 原先插在 `hostRaw` 与 `nodes` 之间，打乱 I1.9 冻结的 18 字段前缀顺序 | 追加到 `traceId` 之后；新增「第 19 个顶层字段恰为 `sessionPolicies` 且默认 null」单列断言（裁-20aa） |
 
 ### 3.3 证据分级
 
@@ -184,9 +186,10 @@ node probe/acc8-f-final.mjs
 ```
 
 > **门禁抖动说明**：`AC-53`（全量回归门禁）的判据是「新增失败集合为空」。按裁-20r，对**本次实际出现**的每条新增红逐条独占复跑（`--test-concurrency=1` 单文件）：单跑通过判负载 flake 并附独立帧，仍红才计入差集。**不设任何白名单**（终验指出预置名单等于预赦）。本轮最终实跑 **EXTRA = 0**，帧 `AC-53.diffset.txt` / `probe/i18-s2/acc53-isolated.txt`。
-> 该分支不是死代码：末次 AC-53 实跑里确实出现过 1 条新增红（`--host-error 早返回（-32603）…（AC-63）`），
-> 独占复跑单文件 **通过** → 判负载 flake 并剔除（帧 `AC-53.machine.AC-53.isolated.host-error-32603-attempts-1AC-63.log`），
+> 该分支不是死代码：其中一次实跑（`03:28` 那轮）出现过 1 条新增红（`--host-error 早返回（-32603）…（AC-63）`），
+> 独占复跑单文件 **通过** → 判负载 flake 并剔除（帧 `AC-53.isolated.host-error-32603-attempts-1AC-63.log`），
 > 「剔除 flake 后的差集」为空、本条判通过。也就是说「核了才剔」这条路径是被真实走到的。
+> **最终一次实跑**（HEAD 提交里的 `AC-53.machine.full-suite.log`）是「无新增红」，diffset 四个判据段全为空。
 
 ## 5 未达项、阻塞与边界
 
@@ -208,7 +211,7 @@ node probe/acc8-f-final.mjs
 | AC-62 | 2/9 | 夹具缺口 | 产品侧「3 次失败 → expired → 升级」**已实现**（`orchestrator.js:2039~2062`）并有 `wp13/handoff-recovery.test.js` 单测覆盖；mock 缺「重投前连续 3 次确定性失败」端到端接缝 | 补 mock 接缝 |
 | AC-67 | 7/9 | 需求矛盾 | Given「服务节点都已终态」命中 `doneCount>0 → cooldown`（I1.5 契约），与 Then「显示可用」冲突 | 改需求 |
 
-**已消除的 3 条**（S4 后返工）：AC-49（→7/7，D-7）、AC-60（→10/10，D-8）、AC-53（→4/4，裁-20r）。
+**已消除的 3 条**（S4 后返工）：AC-49（→7/7，D-7）、AC-60（→10/10，D-8）、AC-53（→5/5，裁-20r + 裁-20z）。
 
 > **AC-45 的 4 条曾经是假阴性**：独立终验第 2 轮查证 `events` 止于 seq 31（`session.timeout`），`state.updatedAt` 只比它晚 5ms，
 > 「节点已升级 / 实例已挂起 / escalations+1 / reasonCode=timeout」这 4 条升级与挂起事件（#32~#35）在快照之后才落盘；

@@ -1,7 +1,7 @@
 {
   "iteration": "I1.8",
   "step": "S4 / 全量 67 条终验口径",
-  "generatedAt": "2026-11-20T19:46:41.069Z",
+  "generatedAt": "2026-11-20T20:15:48.475Z",
   "repoHead": "ref: refs/heads/main",
   "total": 67,
   "byVerdict": {
@@ -596,9 +596,9 @@
       "title": "全量测试回归门禁：失败集合差集为 0",
       "verdict": "通过",
       "grading": "架构门禁实测",
-      "checks": "4/4",
+      "checks": "5/5",
       "failedChecks": [],
-      "evidenceCount": 2,
+      "evidenceCount": 1,
       "blocker": null
     },
     {

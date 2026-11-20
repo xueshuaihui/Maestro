@@ -5,7 +5,7 @@
 | 覆盖 | **67 条 AC**（含 4 条真实宿主面，其详表见 `acceptance-product.md`） |
 | 用例 | `probe/acc8-cases/AC-01..67.mjs`，每条可单跑：`node probe/acc8-f-run.mjs AC-XX` |
 | 明细 | 每条 AC 一节：需求原文 Then → 核对项表（期望 / 实测）→ 判定 + 备注，落在 `evidence/acc8/AC-XX.part.md` |
-| 结果 | **55 通过 / 10 不通过 / 2 阻塞**；核对项 **714**（通过 688 / 失败 26）；**453 份被引用帧**（`_acc8-f-results.jsonl` 与 `_acc8-f-summary.json` 同源） |
+| 结果 | **55 通过 / 10 不通过 / 2 阻塞**；核对项 **715**（通过 689 / 失败 26）；**452 份被引用帧**（`_acc8-f-results.jsonl` 与 `_acc8-f-summary.json` 同源） |
 | 复跑口径 | 批次跑（`--batch all`）得 53/12/2；对 12 条非通过项按**裁-20r 逐条独占复跑**后定为 55/10/2，台账 `probe/i18-s2/batch7-isolated-rerun.txt` |
 | 判定纪律 | 三档：通过 / 不通过（保留原始期望与实测，不删断言）/ 阻塞（客观取不到，不用空集或替代目录冒充） |
 
@@ -69,7 +69,7 @@
 | AC-50 | reuse 不跨实例 | **通过** | 7/7 | 7 | [AC-50.part.md](evidence/acc8/AC-50.part.md) |
 | AC-51 | 角色配置可见，非法值被拒 | **通过** | 16/16 | 8 | [AC-51.part.md](evidence/acc8/AC-51.part.md) |
 | AC-52 | 非恢复路径的三条主链不变（基线 014fa6a） | **通过** | 12/12 | 5 | [AC-52.part.md](evidence/acc8/AC-52.part.md) |
-| AC-53 | 全量测试回归门禁：失败集合差集为 0 | **通过** | 4/4 | 1 | [AC-53.part.md](evidence/acc8/AC-53.part.md) |
+| AC-53 | 全量测试回归门禁：失败集合差集为 0 | **通过** | 5/5 | 1 | [AC-53.part.md](evidence/acc8/AC-53.part.md) |
 | AC-54 | 架构纯净：31 词扫描 exit 0、零依赖 | **通过** | 8/8 | 2 | [AC-54.part.md](evidence/acc8/AC-54.part.md) |
 | AC-55 | 不新增 CLI 命令，用法块不变 | **通过** | 9/9 | 4 | [AC-55.part.md](evidence/acc8/AC-55.part.md) |
 | AC-56 | I1.7 已合入：恢复实现不依赖 worktree / 产物隔离（按裁-12 重判） | **通过** | 6/6 | 1 | [AC-56.part.md](evidence/acc8/AC-56.part.md) |
@@ -170,7 +170,7 @@
 |---|---|---|---|---|
 | AC-49 | 不通过 4/7（两轮各建新会话、无复用行） | **通过 7/7** | CLI `run` 经 `roleSessionPolicies()` 把角色文件里显式的 `session_policy: reuse` 快照进 `state.sessionPolicies`；`buildSession` 补 `roleId`/`instanceId`/`servingNodeId`；派发路径改为「先试复用（`resume`/`load` 两站）再新建」，命中写 `session.reuse` 事件 + 「会话 复用 {id}（角色 {id}）」行 | 裁-20k、裁-20k-补、裁-20m |
 | AC-60 | 不通过 6/8（`continueRecovery` 只续派 assigned/created/redeliver，漏 `pending`+`ready`） | **通过 10/10** | `recoverInstance` 收集 `nodePosition(node)==='ready'` 的 `pending` 节点进 `plan.ready`；`continueRecovery` 末尾续派，且**派前重读磁盘**确认仍 `pending`（否则与 `redeliver` 二次派发同一节点） | 裁-20b、裁-20b-补、裁-20n |
-| AC-53 | 不通过 2/3（差集口径撞三主链时序 flake） | **通过 4/4** | 门禁按「失败集合差集 = 0」判定，新增红必须逐条独占复跑（TAP `location:` 反查所属文件 + `--test-concurrency=1`）证伪，**不设白名单预赦**；台账 `AC-53.diffset.txt` 显示「新增失败 (空)」「剔除 flake 后的差集 (空)」 | 裁-20j、裁-20p、裁-20q、裁-20r |
+| AC-53 | 不通过 2/3（差集口径撞三主链时序 flake） | **通过 5/5** | 门禁按「失败集合差集 = 0」判定，新增红必须逐条独占复跑（TAP `location:` 反查所属文件 + `--test-concurrency=1`）证伪，**不设白名单预赦**；台账 `AC-53.diffset.txt` 显示「新增失败 (空)」「剔除 flake 后的差集 (空)」 | 裁-20j、裁-20p、裁-20q、裁-20r |
 
 本轮全量：**1927 条 / 1895 pass / 21 fail / 11 skip**，对基线 `014fa6a`（1841/1808/22/11）
 **EXTRA = 0**，并顺带修好 1 条基线红（`live 取消…`）。逐条台账见 `probe/i18-s2/batch7-isolated-rerun.txt`。
