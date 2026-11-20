@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-1b0af77429b61d28",
+  "createdAt": "2026-11-20T15:30:44.758Z",
+  "updatedAt": "2026-11-20T15:30:49.298Z",
+  "state": "completed",
+  "stateSince": "2026-11-20T15:30:49.272Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-50\\demo-INST-001",
+  "task": "给 calc.js 补一个 div 函数，让 node --test 全绿。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 27,
+  "counters": {
+    "eventSeq": 26,
+    "runCount": 1,
+    "dispatchCount": 2
+  },
+  "hostRaw": {
+    "stopReason": "end_turn",
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-20T15:30:47.105Z",
+      "startedAt": "2026-11-20T15:30:46.686Z",
+      "roundStartedAt": "2026-11-20T15:30:46.686Z",
+      "endedAt": "2026-11-20T15:30:47.136Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-31756-1",
+      "artifactRefs": [
+        {
+          "ref": "calc.js",
+          "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-50\\demo-INST-001\\calc.js",
+          "declared": true,
+          "exists": true,
+          "bytes": 251,
+          "sha256": null,
+          "verifiedAt": "2026-11-20T15:30:47.103Z"
+        }
+      ],
+      "branch": "maestro/INST-001/developer",
+      "mergeStatus": "merged"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-20T15:30:49.166Z",
+      "startedAt": "2026-11-20T15:30:48.668Z",
+      "roundStartedAt": "2026-11-20T15:30:48.668Z",
+      "endedAt": "2026-11-20T15:30:49.188Z",
+      "failure": null,
+      "note": null,
+      "verdict": {
+        "value": "pass",
+        "defectCount": 0,
+        "verdictPath": "out/verdict.json",
+        "readAt": "2026-11-20T15:30:49.163Z"
+      },
+      "sessionId": "mock-sess-12688-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-31756-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T15:30:47.143Z",
+      "createdAt": "2026-11-20T15:30:46.945Z",
+      "lastEventAt": "2026-11-20T15:30:46.958Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-50\\demo-INST-001\\calc.js",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-12688-1",
+      "nodeId": "T-002",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T15:30:49.236Z",
+      "createdAt": "2026-11-20T15:30:48.909Z",
+      "lastEventAt": "2026-11-20T15:30:48.955Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-50\\demo-INST-001\\out\\verdict.json",
+      "pendingPermission": null,
+      "quarantined": false
+    }
+  ],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "consumed",
+      "createdAt": "2026-11-20T15:30:48.634Z",
+      "deliveredAt": "2026-11-20T15:30:48.923Z",
+      "acceptedAt": "2026-11-20T15:30:48.951Z",
+      "consumedAt": "2026-11-20T15:30:49.191Z",
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 28,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "calc.js"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 1,
+      "fromNodeId": "T-001",
+      "toNodeId": "T-002",
+      "retestRequirement": null,
+      "deliveryAttempts": 1,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    }
+  ],
+  "escalations": [],
+  "health": {
+    "level": "ended",
+    "reasons": [],
+    "computedAt": "2026-11-20T15:30:49.297Z",
+    "nodeTimeoutMs": 30000
+  },
+  "traceId": "TRC-8ccf71c2",
+  "paused": false
+}

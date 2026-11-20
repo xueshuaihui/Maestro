@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-13c66842aec622c5",
+  "createdAt": "2026-11-20T15:28:08.983Z",
+  "updatedAt": "2026-11-20T15:28:09.207Z",
+  "state": "running",
+  "stateSince": "2026-11-20T15:28:08.983Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-41\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "paused": false,
+  "rev": 2,
+  "counters": {
+    "eventSeq": 0,
+    "runCount": 1,
+    "dispatchCount": 0
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": null,
+      "round": 1,
+      "state": "running",
+      "stateSince": "2026-11-20T15:28:08.983Z",
+      "startedAt": "2026-11-20T15:28:08.983Z",
+      "roundStartedAt": "2026-11-20T15:28:08.983Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": [],
+      "phase": "running",
+      "nodeType": "subworkflow",
+      "title": "子工作流"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-20T15:28:08.983Z",
+      "startedAt": "2026-11-20T15:28:08.983Z",
+      "roundStartedAt": "2026-11-20T15:28:08.983Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [],
+  "handoffs": [],
+  "escalations": [],
+  "health": {
+    "level": "normal",
+    "reasons": [],
+    "computedAt": "2026-11-20T15:28:08.983Z",
+    "nodeTimeoutMs": 30000
+  },
+  "recoveredAt": "2026-11-20T15:28:09.206Z",
+  "recovery": {
+    "checkpointAt": "2026-11-20T15:28:08.983Z",
+    "skipped": 1,
+    "round": 1,
+    "maxRounds": 2
+  }
+}

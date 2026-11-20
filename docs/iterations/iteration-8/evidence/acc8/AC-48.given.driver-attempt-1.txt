@@ -1,0 +1,33 @@
+{"ok":true,"root":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-48","cwd":"C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-48\\demo-code-pass","scenario":"backflow","resolvedScenario":"backflow","stopAfter":null,"keep":false,"released":false,"target":"exit","exitCode":0,"instanceId":"INST-001","state":"completed","nodes":[{"nodeId":"T-001","round":2,"state":"done"},{"nodeId":"T-002","round":2,"state":"done"}],"handoffs":3,"escalations":[],"paused":false,"exhausted":false,"historyLeak":false,"durationMs":7059,"checks":[{"name":"state=completed","ok":true,"detail":"completed"},{"name":"两节点 round=2 done","ok":true},{"name":"handoffs=3 forward/backflow/retest","ok":true}]}
+实例 INST-001 · 运行中 · 模板 编码闭环
+会话已创建 mock-sess-25660-1
+任务已投递
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+会话 执行中 · 调用工具（write） · 已运行 1s
+会话 执行中 · 已运行 1s
+会话 等待下游 · 产出已提交
+会话 空闲
+节点 T-001 开发 已完成 · 第 2 轮 · 耗时 3s
+节点 T-002 测试 已完成 · 第 2 轮 · 耗时 3s · 判定 通过
+交接包 HO-001  开发→测试  已构造   23:29:32
+交接包 HO-001  开发→测试  已投递   23:29:32
+交接包 HO-001  开发→测试  已接受   23:29:32
+交接包 HO-001  开发→测试  已完成   23:29:32
+交接包 HO-002  测试→开发（回流）  已构造   23:29:32
+交接包 HO-002  测试→开发（回流）  已投递   23:29:32
+交接包 HO-002  测试→开发（回流）  已接受   23:29:33
+交接包 HO-002  测试→开发（回流）  已完成   23:29:33
+交接包 HO-003  开发→测试（复测）  已构造   23:29:34
+交接包 HO-003  开发→测试（复测）  已投递   23:29:34
+交接包 HO-003  开发→测试（复测）  已接受   23:29:34
+交接包 HO-003  开发→测试（复测）  已完成   23:29:34
+升级 —

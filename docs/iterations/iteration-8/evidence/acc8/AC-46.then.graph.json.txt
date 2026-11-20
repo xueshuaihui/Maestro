@@ -1,0 +1,50 @@
+{
+  "graphVersion": 1,
+  "instanceId": "INST-001",
+  "template": "code-loop",
+  "state": "running",
+  "paused": false,
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "title": "开发",
+      "roleId": "developer",
+      "state": "running",
+      "round": 1,
+      "branch": "maestro/INST-001/developer",
+      "mergeStatus": "pending"
+    },
+    {
+      "nodeId": "T-002",
+      "title": "测试",
+      "roleId": "tester",
+      "state": "pending",
+      "round": 0
+    }
+  ],
+  "edges": [
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "forward"
+    },
+    {
+      "from": "T-002",
+      "to": "T-001",
+      "kind": "backflow"
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest"
+    }
+  ],
+  "handoffs": [],
+  "escalations": [],
+  "approvals": [],
+  "current": {
+    "nodeId": "T-001",
+    "sessionId": "mock-sess-21224-1",
+    "state": "running"
+  }
+}

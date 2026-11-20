@@ -5,12 +5,12 @@
   "writes": [
     {
       "target": "status.md",
-      "ms": 10.275,
+      "ms": 9.614,
       "bytes": 311
     },
     {
       "target": "inbox/HO-001.json",
-      "ms": 9.912,
+      "ms": 7.661,
       "bytes": 86
     }
   ],

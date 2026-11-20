@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "exitCodes": [
+    4
+  ],
+  "scenario": "crash-rebuild"
+}

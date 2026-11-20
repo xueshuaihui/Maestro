@@ -1,0 +1,20 @@
+{
+  "counts": {
+    "assets": 27,
+    "roles": 16,
+    "skills": 10,
+    "builtin": 25,
+    "project": 1,
+    "invalid": 1
+  },
+  "errors": [
+    {
+      "code": "ROLE_SESSION_POLICY_INVALID",
+      "file": "roles/dev-bad.yaml",
+      "scope": "role",
+      "field": "session_policy",
+      "line": null,
+      "detail": "会话复用策略不合法：always（可选 reuse / fresh）"
+    }
+  ]
+}
