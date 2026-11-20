@@ -11,13 +11,23 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { makeCase, eq, check, includes, excludes, evidence, note, finish } from '../acc8-f-common.mjs';
+import { makeCase, eq, check, includes, evidence, note, finish } from '../acc8-f-common.mjs';
 import {
   REPO, NODE, baseEnv, freshRoot, cleanupRoot, readState, orch, runCmd, GRADING_MOCK,
 } from '../acc8-f-lib.mjs';
 import { selectReusableSession } from '../../src/core/orchestrator.js';
 
 const DRIVER = path.join(REPO, 'test', 'fixtures', 'code-loop-driver.mjs');
+const REUSE_TEST = path.join(REPO, 'test', 'wp13', 'session-reuse-dispatch.test.js');
+
+/** 跑一个测试文件并解析 TAP 的计数行。 */
+function tapCounts(stdout) {
+  const pick = (key) => {
+    const hit = new RegExp(`^# ${key} (\\d+)$`, 'm').exec(stdout);
+    return hit ? Number.parseInt(hit[1], 10) : null;
+  };
+  return { tests: pick('tests'), pass: pick('pass'), fail: pick('fail'), skipped: pick('skipped') };
+}
 
 export async function run() {
   const c = makeCase('AC-66', {
@@ -49,7 +59,19 @@ export async function run() {
     evidence(c, 'then', 'driver-output.txt', d.stdout + d.stderr);
     evidence(c, 'then', 'state.json', JSON.stringify(state, null, 2));
     evidence(c, 'then', 'instance-log.txt', log);
-    excludes(c, 'Then：复用行里不出现跨宿主角色（本机复用行 0 条）', log, '会话 复用');
+    check(c, 'Then：派发正常继续（策略开启后 backflow 跑到终态）',
+      d.exitCode === 0 && state?.state === 'completed',
+      JSON.stringify({ exit: d.exitCode, state: state?.state ?? null }));
+
+    // 派发面机检：预置「空闲但跨宿主 / 空闲但正服务其他节点」的会话，走真实派发分支。
+    const unit = runCmd([NODE, '--test', REUSE_TEST], { cwd: REPO, env, timeout: 180_000 });
+    evidence(c, 'then', 'reuse-dispatch-test.txt', unit.stdout + unit.stderr);
+    const counts = tapCounts(unit.stdout);
+    check(c, '机检：派发接线用例 exit 0 且 fail = 0',
+      unit.exitCode === 0 && counts.fail === 0, JSON.stringify({ exit: unit.exitCode, counts }));
+    check(c, '机检：AC-66 两条边界用例均通过（跨宿主 / 正服务其他节点 → 不复用）',
+      (unit.stdout.match(/^ok \d+ - AC-66/gm) ?? []).length === 2,
+      `命中 ${(unit.stdout.match(/^ok \d+ - AC-66/gm) ?? []).length} 条`);
 
     const options = { instanceId: 'INST-001', roleId: 'developer', nodeId: 'T-003' };
     const crossHost = {
@@ -84,10 +106,12 @@ export async function run() {
     eq(c, '机检：跨角色会话不复用',
       selectReusableSession([{ ...freeSame, roleId: 'tester' }], { ...options, hostId: 'dsh' }), null);
 
-    note(c, '裁-18a：产品派发路径未接线 session_policy，可见复用行恒为 0；'
-      + '本用例按需求机检以冻结选择器取证跨宿主/服务节点边界，不把恒 0 的复用行当作端到端通过。');
-    note(c, '两种宿主用选择器的 hostId 入参模拟（dsh / cursor）：真机同时拉起两种宿主超出本机 mock 面，'
-      + '与 test/wp13/session-reuse.test.js 的 AC-66 口径一致。');
+    note(c, '裁-20l：原「本机复用行 0 条」是「派发未接线」（裁-18a）下的恒真观测，接线后 backflow 现场'
+      + '本身就有空闲会话（属 AC-49 的 Given），该恒真断言已不适用，故撤销；本条的 Then 改由'
+      + '`test.dispatch` 接缝 + 预置会话现场在真实 dispatchInState 分支上取证（跨宿主 / 正服务其他节点 → 不复用），'
+      + '判据按需求原文，未放宽。');
+    note(c, '两种宿主用选择器的 hostId 入参模拟（dsh / cursor）：真机同时拉起两种宿主超出本机 mock 面；'
+      + '派发面用例里跨宿主由「预置会话 hostId=mock2、派发宿主=mock」构造。');
   } finally {
     cleanupRoot(root);
   }

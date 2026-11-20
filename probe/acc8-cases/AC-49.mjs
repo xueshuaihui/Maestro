@@ -71,7 +71,8 @@ export async function run() {
     const second = devSessions.find((s) => s.round === 2);
     check(c, 'Then：开发第二轮复用第一轮的会话 id', Boolean(first && second) && first.sessionId === second.sessionId,
       JSON.stringify({ round1: first?.sessionId, round2: second?.sessionId }));
-    eq(c, '夹具：session/new 只 1 次（两轮开发只有 1 个会话）', devSessions.length, 1);
+    eq(c, '夹具：两轮开发只占 1 个会话（session/new 只 1 次）',
+      new Set(devSessions.map((s) => s.sessionId)).size, 1);
     const expectedReuseLine = `会话 复用 ${first?.sessionId ?? ''}（角色 developer）`;
     includes(c, 'Then：instance log 出现需求示例的复用行（角色 id=developer，裁-11c）', log, expectedReuseLine);
 
@@ -89,8 +90,11 @@ export async function run() {
     note(c, '裁-11c：需求示例「会话 复用 sess-003（角色 developer）」用角色 id；labels.js 的'
       + ' RECOVERY_TEXT.sessionReuse 模板占位名是 {角色中文名}。本用例按需求原文断言角色 id，'
       + '并用实测会话 id 代替示例 sess-003（mock 会话号为 mock-sess-<pid>-<seq>）。');
-    note(c, '实测发现：product 的派发路径没有读取角色 session_policy（selectReusableSession 虽由 orchestrator'
-      + ' 导出，但只在契约测试里被驱动），因此两轮开发仍各建会话、无复用行；按原文保留断言、如实判不通过，交主控裁决。');
+    note(c, '裁-20k：`state.sessions` 是「每次派发一条记录」，复用后同一 sessionId 会出现两条'
+      + '（round 1 记录留作历史、round 2 记录是当前绑定）。因此「session/new 只 1 次」按需求原文'
+      + '（两轮会话 id 相同）机检为**去重后的会话 id 数 = 1**，而不是记录条数 = 1；'
+      + '上一条 Then 已单独断言 round 1 与 round 2 都存在且 id 相同，两者合起来比单看条数更严。'
+      + 'mock 每次 `session/new` 都返回唯一会话号，故去重后为 1 等价于 new 只发生 1 次。');
   } finally {
     cleanupRoot(root);
   }
