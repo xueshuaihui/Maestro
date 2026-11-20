@@ -5506,9 +5506,35 @@ export function createOrchestrator({
     }
     state.coreGeneration = currentGeneration;
     state.updatedAt = iso();
-    const saved = await saveState(instanceId, state, { expectedState: expectedOf(state) });
+    // D-5 / BR-12: a CAS conflict here means another process (health write, session
+    // callback or a concurrent reconcile) moved `rev` between our read and this
+    // save. Recovery is idempotent, so reload the on-disk snapshot and retry with
+    // its rev instead of silently giving up — a silent give-up leaves the user
+    // looking at a `running` instance that was never actually reconciled.
+    let saved = await saveState(instanceId, state, { expectedState: expectedOf(state) });
+    for (let retry = 0; !saved.ok && retry < 2; retry += 1) {
+      const reloaded = await store.load(instanceId);
+      if (!reloaded.ok) break;
+      const fresh = arraysOf(reloaded.state);
+      if (fresh.state !== 'running' && fresh.state !== 'created') break;
+      if (!fresh.recoveredAt) {
+        fresh.recoveredAt = state.recoveredAt ?? iso();
+        fresh.recovery = { ...summary };
+      }
+      fresh.coreGeneration = currentGeneration;
+      fresh.updatedAt = iso();
+      saved = await saveState(instanceId, fresh, { expectedState: expectedOf(fresh) });
+      if (saved.ok) {
+        // Keep the rest of this function (event details, continueRecovery plan)
+        // consistent with what actually landed on disk.
+        Object.assign(state, fresh);
+      }
+    }
     if (!saved.ok) {
-      return { ok: false, code: saved.code };
+      // Still conflicting: surface it. `markInterrupted` writes the visible cause
+      // (AC-17 template) so the instance can never masquerade as healthy.
+      await markInterrupted(state, 'recovery.failed', { reason: saved.code ?? 'RECOVERY_CAS_CONFLICT' });
+      return { ok: false, interrupted: true, code: saved.code ?? 'RECOVERY_CAS_CONFLICT' };
     }
 
     if (!alreadyRecovered) {
