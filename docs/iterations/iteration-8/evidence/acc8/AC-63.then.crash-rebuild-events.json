@@ -13,10 +13,10 @@
         "maxRounds": 2,
         "attempt": 1
       },
-      "gen": "gen-fb72fbfadff25809",
+      "gen": "gen-3911049982b9fe5b",
       "seq": 4,
-      "ts": "2026-11-20T16:25:52.394Z",
-      "prev_event_hash": "9445101e79bf3f86b9b2edeeeb1c03026877c6ad65a16d3bbbdded99affbc5c9"
+      "ts": "2026-11-20T17:00:34.830Z",
+      "prev_event_hash": "d42859a27ec1f056e8c1caa0d960d70a459fef54f038adee2127c17962360176"
     }
   ],
   "rebuilt": [
@@ -31,12 +31,12 @@
         "nodeId": "T-001",
         "round": 1,
         "maxRounds": 2,
-        "sessionId": "mock-sess-9984-1"
+        "sessionId": "mock-sess-25296-1"
       },
-      "gen": "gen-fb72fbfadff25809",
+      "gen": "gen-3911049982b9fe5b",
       "seq": 5,
-      "ts": "2026-11-20T16:25:52.604Z",
-      "prev_event_hash": "6dfd5bbcd27e86dcad9095a397bfad00eeb04fa5494f52934fdb39689beebaac"
+      "ts": "2026-11-20T17:00:35.045Z",
+      "prev_event_hash": "8e23a73dfc878214c26d22d7f15d8d21da5e9b44322a9bddd6ace1034f385e4e"
     }
   ],
   "rebuildFailed": [
@@ -53,10 +53,10 @@
         "maxRounds": 2,
         "attempt": 2
       },
-      "gen": "gen-fb72fbfadff25809",
+      "gen": "gen-3911049982b9fe5b",
       "seq": 7,
-      "ts": "2026-11-20T16:25:52.693Z",
-      "prev_event_hash": "6c01ec2a15d3a40f11191998e6f6acd73b8cfb036fa0dfa3a526897cac424de9"
+      "ts": "2026-11-20T17:00:35.098Z",
+      "prev_event_hash": "a55e102558f1dba0654a8c90521ac71e5c6b7a93988adf521de8359bf1403721"
     }
   ],
   "escalations": [
@@ -72,10 +72,10 @@
         "round": 1,
         "reasonCode": "session_crash"
       },
-      "gen": "gen-fb72fbfadff25809",
+      "gen": "gen-3911049982b9fe5b",
       "seq": 8,
-      "ts": "2026-11-20T16:25:52.724Z",
-      "prev_event_hash": "25daeddffa0e075b1603ef1bbae823656a565ac0d54f48fd6b94831c69d2a423"
+      "ts": "2026-11-20T17:00:35.123Z",
+      "prev_event_hash": "9e9971fddabfa7374d09840ad0eb89bbcccb25c4c937511e276b73d5d837b33a"
     }
   ]
 }

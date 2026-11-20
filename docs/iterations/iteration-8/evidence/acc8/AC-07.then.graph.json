@@ -2,24 +2,24 @@
   "graphVersion": 1,
   "instanceId": "INST-001",
   "template": "code-loop",
-  "state": "running",
+  "state": "suspended",
   "paused": false,
   "nodes": [
     {
       "nodeId": "T-001",
       "title": "开发",
       "roleId": "developer",
-      "state": "running",
+      "state": "done",
       "round": 2,
       "branch": "maestro/INST-001/developer",
-      "mergeStatus": "pending"
+      "mergeStatus": "merged"
     },
     {
       "nodeId": "T-002",
       "title": "测试",
       "roleId": "tester",
-      "state": "failed",
-      "round": 1
+      "state": "escalated",
+      "round": 2
     }
   ],
   "edges": [
@@ -53,19 +53,37 @@
       "from": "T-002",
       "to": "T-001",
       "kind": "backflow",
-      "state": "created",
+      "state": "consumed",
+      "round": 2
+    },
+    {
+      "handoffId": "HO-003",
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest",
+      "state": "rejected",
       "round": 2
     }
   ],
-  "escalations": [],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-002",
+      "round": 2,
+      "reasonCode": "dispatch_failed",
+      "reasonDetail": "派遣失败：目标会话不可用",
+      "defects": [],
+      "state": "pending",
+      "createdAt": "2026-11-20T16:52:26.852Z",
+      "resolvedAt": null,
+      "resolution": null,
+      "voidedAt": null
+    }
+  ],
   "approvals": [],
-  "current": {
-    "nodeId": "T-001",
-    "sessionId": "mock-sess-2188-1",
-    "state": "running"
-  },
+  "current": null,
   "recovery": {
-    "checkpointAt": "2026-11-20T16:09:20.823Z",
+    "checkpointAt": "2026-11-20T16:52:23.057Z",
     "skipped": 0,
     "round": 2,
     "maxRounds": 2
@@ -81,7 +99,13 @@
       "from": "T-002",
       "to": "T-001",
       "kind": "backflow",
-      "aggregate": "not_started"
+      "aggregate": "consumed"
+    },
+    {
+      "from": "T-001",
+      "to": "T-002",
+      "kind": "retest",
+      "aggregate": "rejected"
     }
   ]
 }

@@ -76,8 +76,8 @@ export async function run() {
   }
 
   // 2) 产物文件 mtime / sha256 不因恢复变化（机检锚点：workspace/artifacts/**）
-  //    约定：编码闭环 + I1.7 代码隔离下该目录未必存在；两种情形都如实登记，不做替代性放宽。
-  eq(c, 'workspace/artifacts/** 恢复前后逐条 mtime/sha256 不变', diffUnchanged(artifactBefore, artifactAfter), []);
+  //    约定：编码闭环 + I1.7 代码隔离下该目录未必存在；**空集时不得产生「通过」记录**
+  //    （终验指出：在空集上判 ✓ 等于用空集冒充通过，与此条备注自相矛盾）。
   if (artifactBefore.length === 0 && artifactAfter.length === 0) {
     note(c, `机检锚点空转：实例 ${instRoot} 下不存在 workspace/artifacts/**（编码闭环的产物落在 worktrees/ 与 stage/，`
       + '且 stage/ 在强杀窗口内为空）；该锚点在本场景**无法取证**，不据此宣称「产物未变」，也不用替代目录冒充通过。');
@@ -86,6 +86,7 @@ export async function run() {
       + '按 NFR-08 判「阻塞」，不用空集冒充通过、不用替代目录冒充通过；第一条机检（已完成节点无第二次 node.dispatch）已实测通过。');
   } else {
     check(c, '产物锚点非空（非空转取证）', artifactBefore.length > 0, JSON.stringify(artifactBefore.map((f) => f.path)));
+    eq(c, 'workspace/artifacts/** 恢复前后逐条 mtime/sha256 不变', diffUnchanged(artifactBefore, artifactAfter), []);
   }
 
   // 3) 恢复摘要可见（跳过已完成节点）

@@ -41,12 +41,16 @@ const TASK_DRIVER = path.join(REPO, 'test', 'fixtures', 'task-loop-driver.mjs');
  * 2) 它取证后执行 `core.stop`，把仍在 running 的实例标记为「已中断」，污染落盘 state。
  * 本函数全程只 SIGKILL + `orch status` 冷启动，不 core.stop，现场留给用例取证。
  */
-export async function driveRecovery(root, killAfter = 2500, extraEnv = {}, waitForRound2 = false, retryRecover = false) {
+export async function driveRecovery(root, killAfter = 2500, extraEnv = {}, waitForRound2 = false, retryRecover = false, options = {}) {
+  // `scenario` / `window` 只由新调用点显式传入；缺省值保持既有调用的逐字行为。
+  // `retest-slow` 的第 4 步带 `delayMs: 30_000`，是需求 Given「测试第 2 轮执行中」
+  // 唯一的稳定观测窗（`backflow` 的第 4 步瞬时完成，窗口窄到抓不住）。
+  const scenario = options.scenario ?? 'backflow';
   const env = buildRunEnv(process.env, extraEnv);
   const cwd = path.join(root, 'demo-recovery');
   const promptLog = path.join(root, 'prompt-log.ndjson');
   env.MAESTRO_MOCK_PROMPT_LOG = promptLog;
-  const prepared = prepareScene({ root, scenario: 'backflow', reset: false, mockArgs: mockArgsFromEnv(env) });
+  const prepared = prepareScene({ root, scenario, reset: false, mockArgs: mockArgsFromEnv(env) });
   fs.mkdirSync(cwd, { recursive: true });
   const task = ['修复 calc.js 的除零边界，并补一条回归测试。', '改动写在 calc.js', '产物：calc.js'].join('\n');
   const child = spawn(NODE, [ORCH_BIN, 'run', '--cwd', cwd, '--task', task, '--template', 'code-loop', '--host', 'mock'],
@@ -65,7 +69,22 @@ export async function driveRecovery(root, killAfter = 2500, extraEnv = {}, waitF
   };
   const t0 = Date.now();
   while (Date.now() - t0 < 30000 && promptCount() === 0) await nap(100);
-  if (waitForRound2) {
+  if (options.window === 'retest') {
+    // 需求 Given 的确切现场：T-001「第二轮已完成」+ T-002「第 2 轮执行中」。
+    // 只等 T-001 round>=2 会杀在 T-001 第 2 轮**执行中**（未 done），
+    // 恢复时 skipped 必然是 0 —— 这是此前 AC-08/09/24 一直失败的真实原因。
+    const winUntil = Date.now() + 60000;
+    while (Date.now() < winUntil) {
+      const st = readState(root);
+      const t1 = st?.nodes?.find((n) => n.nodeId === 'T-001');
+      const t2 = st?.nodes?.find((n) => n.nodeId === 'T-002');
+      if (
+        t1?.state === 'done' && (t1.round ?? 0) >= 2
+        && t2 && (t2.round ?? 0) >= 2 && t2.state === 'running'
+      ) break;
+      await nap(100);
+    }
+  } else if (waitForRound2) {
     // 精确等「开发节点进入第 2 轮」窗口再 kill，避免固定毫秒漂移导致 round=1。
     const winUntil = Date.now() + 20000;
     while (Date.now() < winUntil) {

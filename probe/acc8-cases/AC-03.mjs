@@ -23,7 +23,7 @@ export async function run() {
   const root = freshRoot('AC-03');
   c.root = root;
   try {
-    const d = await driveRecovery(root, 2500);
+    const d = await driveRecovery(root, 2500, {}, false, false, { scenario: 'retest-slow', window: 'retest' });
     evidence(c, 'given', 'recovery.json', JSON.stringify(
       { ok: d.ok, kill: d.kill, boots: d.boots, before: d.before }, null, 2));
     check(c, 'Given：现场构造成功（recoveredAt 落盘）', d.ok === true,

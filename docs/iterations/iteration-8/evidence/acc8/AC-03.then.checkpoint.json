@@ -1,10 +1,10 @@
 {
   "schema": "checkpoint/v1",
   "instanceId": "INST-001",
-  "rev": 28,
-  "checkpointId": 28,
-  "writtenAt": "2026-11-20T16:08:52.654Z",
-  "coreGeneration": "gen-44a730a844adc414",
+  "rev": 43,
+  "checkpointId": 44,
+  "writtenAt": "2026-11-20T16:51:58.649Z",
+  "coreGeneration": "gen-12f468aa0aa8529c",
   "instanceState": "running",
   "paused": false,
   "halted": false,
@@ -88,39 +88,48 @@
       "nodeId": "T-001",
       "state": "done",
       "phase": null,
-      "round": 1,
+      "round": 2,
       "roleId": "developer",
-      "sessionId": "mock-sess-9872-1",
-      "endedAt": "2026-11-20T16:08:48.794Z"
+      "sessionId": "mock-sess-19600-1",
+      "endedAt": "2026-11-20T16:51:55.598Z"
     },
     {
       "nodeId": "T-002",
-      "state": "failed",
+      "state": "running",
       "phase": null,
-      "round": 1,
+      "round": 2,
       "roleId": "tester",
-      "sessionId": "mock-sess-18688-1",
-      "endedAt": "2026-11-20T16:08:50.993Z"
+      "sessionId": "mock-sess-27840-1",
+      "endedAt": null
     }
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-9872-1",
+      "sessionId": "mock-sess-26104-1",
       "nodeId": "T-001",
       "hostId": "mock",
       "state": "idle",
       "policy": null,
       "dialect": null,
-      "lastEventAt": "2026-11-20T16:08:48.638Z"
+      "lastEventAt": "2026-11-20T16:51:53.123Z"
     },
     {
-      "sessionId": "mock-sess-18688-1",
+      "sessionId": "mock-sess-27840-1",
       "nodeId": "T-002",
       "hostId": "mock",
       "state": "idle",
       "policy": null,
       "dialect": null,
-      "lastEventAt": "2026-11-20T16:08:50.835Z"
+      "lastEventAt": "2026-11-20T16:51:54.712Z"
+    },
+    {
+      "sessionId": "mock-sess-19600-1",
+      "nodeId": "T-001",
+      "hostId": "mock",
+      "state": "idle",
+      "policy": null,
+      "dialect": null,
+      "lastEventAt": "2026-11-20T16:51:55.471Z"
     }
   ],
   "handoffs": [
@@ -134,6 +143,14 @@
     },
     {
       "handoffId": "HO-002",
+      "from": null,
+      "to": null,
+      "kind": null,
+      "state": "consumed",
+      "deliveryAttempts": 1
+    },
+    {
+      "handoffId": "HO-003",
       "from": null,
       "to": null,
       "kind": null,

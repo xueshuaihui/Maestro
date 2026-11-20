@@ -1,6 +1,6 @@
 [
   {
-    "sessionId": "mock-sess-25728-1",
+    "sessionId": "mock-sess-17296-1",
     "nodeId": "T-002",
     "round": null,
     "text": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js\n\n完成后把结构化判定写到 out/verdict.json：{\"verdict\":\"pass\"|\"fail\",\"defects\":[{\"summary\":\"一句话缺陷\",\"evidence\":\"证据文件路径\"}]}；判定为 fail 时必须给出至少一条带证据路径的缺陷。\n\n工作区：C:/Users/xuesh/AppData/Local/Temp/maestro-i18/AC-21/.orch/instances/INST-001/workspace\n共享区（只读）：C:/Users/xuesh/AppData/Local/Temp/maestro-i18/AC-21/.orch/instances/INST-001/workspace/shared\n本节点阶段区：C:/Users/xuesh/AppData/Local/Temp/maestro-i18/AC-21/.orch/instances/INST-001/workspace/stage/T-002"

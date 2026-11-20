@@ -3,8 +3,8 @@
   "instanceId": "INST-001",
   "rev": 15,
   "checkpointId": 16,
-  "writtenAt": "2026-11-20T16:08:45.163Z",
-  "coreGeneration": "gen-da405d05c76b3ffa",
+  "writtenAt": "2026-11-20T16:51:48.400Z",
+  "coreGeneration": "gen-f8b36850c21e028a",
   "instanceState": "running",
   "paused": false,
   "halted": false,
@@ -90,8 +90,8 @@
       "phase": null,
       "round": 1,
       "roleId": "developer",
-      "sessionId": "mock-sess-26660-1",
-      "endedAt": "2026-11-20T16:08:42.500Z"
+      "sessionId": "mock-sess-16896-1",
+      "endedAt": "2026-11-20T16:51:47.295Z"
     },
     {
       "nodeId": "T-002",
@@ -105,16 +105,25 @@
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-26660-1",
+      "sessionId": "mock-sess-16896-1",
       "nodeId": "T-001",
       "hostId": "mock",
       "state": "idle",
       "policy": null,
       "dialect": null,
-      "lastEventAt": "2026-11-20T16:08:42.321Z"
+      "lastEventAt": "2026-11-20T16:51:47.148Z"
     }
   ],
-  "handoffs": [],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "from": null,
+      "to": null,
+      "kind": null,
+      "state": "created",
+      "deliveryAttempts": 0
+    }
+  ],
   "escalations": [],
   "artifactRefs": []
 }

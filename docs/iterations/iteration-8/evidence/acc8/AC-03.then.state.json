@@ -1,20 +1,20 @@
 {
   "schemaVersion": 2,
   "instanceId": "INST-001",
-  "coreGeneration": "gen-44a730a844adc414",
-  "createdAt": "2026-11-20T16:08:45.988Z",
-  "updatedAt": "2026-11-20T16:08:52.640Z",
+  "coreGeneration": "gen-12f468aa0aa8529c",
+  "createdAt": "2026-11-20T16:51:50.709Z",
+  "updatedAt": "2026-11-20T16:51:58.636Z",
   "state": "running",
-  "stateSince": "2026-11-20T16:08:50.484Z",
+  "stateSince": "2026-11-20T16:51:56.881Z",
   "template": "code-loop",
   "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery",
   "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
   "halted": false,
-  "rev": 28,
+  "rev": 43,
   "counters": {
-    "eventSeq": 28,
+    "eventSeq": 42,
     "runCount": 1,
-    "dispatchCount": 2
+    "dispatchCount": 4
   },
   "hostRaw": {
     "stopReason": "end_turn",
@@ -25,25 +25,25 @@
     {
       "nodeId": "T-001",
       "roleId": "developer",
-      "round": 1,
+      "round": 2,
       "state": "done",
-      "stateSince": "2026-11-20T16:08:48.766Z",
-      "startedAt": "2026-11-20T16:08:48.355Z",
-      "roundStartedAt": "2026-11-20T16:08:48.355Z",
-      "endedAt": "2026-11-20T16:08:48.794Z",
+      "stateSince": "2026-11-20T16:51:55.581Z",
+      "startedAt": "2026-11-20T16:51:52.846Z",
+      "roundStartedAt": "2026-11-20T16:51:54.982Z",
+      "endedAt": "2026-11-20T16:51:55.598Z",
       "failure": null,
       "note": null,
       "verdict": null,
-      "sessionId": "mock-sess-9872-1",
+      "sessionId": "mock-sess-19600-1",
       "artifactRefs": [
         {
           "ref": "calc.js",
           "absPath": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery\\calc.js",
           "declared": true,
           "exists": true,
-          "bytes": 251,
+          "bytes": 291,
           "sha256": null,
-          "verifiedAt": "2026-11-20T16:08:48.764Z"
+          "verifiedAt": "2026-11-20T16:51:55.581Z"
         }
       ],
       "branch": "maestro/INST-001/developer",
@@ -52,34 +52,34 @@
     {
       "nodeId": "T-002",
       "roleId": "tester",
-      "round": 1,
-      "state": "failed",
-      "stateSince": "2026-11-20T16:08:50.994Z",
-      "startedAt": "2026-11-20T16:08:50.484Z",
-      "roundStartedAt": "2026-11-20T16:08:50.484Z",
-      "endedAt": "2026-11-20T16:08:50.993Z",
+      "round": 2,
+      "state": "running",
+      "stateSince": "2026-11-20T16:51:56.881Z",
+      "startedAt": "2026-11-20T16:51:54.401Z",
+      "roundStartedAt": "2026-11-20T16:51:56.881Z",
+      "endedAt": null,
       "failure": null,
-      "note": "等待复测",
+      "note": null,
       "verdict": {
         "value": "fail",
         "defectCount": 2,
         "verdictPath": "out/verdict.json",
-        "readAt": "2026-11-20T16:08:50.963Z"
+        "readAt": "2026-11-20T16:51:54.835Z"
       },
-      "sessionId": "mock-sess-18688-1",
+      "sessionId": "mock-sess-27840-1",
       "artifactRefs": []
     }
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-9872-1",
+      "sessionId": "mock-sess-26104-1",
       "nodeId": "T-001",
       "round": 1,
       "hostId": "mock",
       "state": "idle",
-      "stateSince": "2026-11-20T16:08:48.801Z",
-      "createdAt": "2026-11-20T16:08:48.619Z",
-      "lastEventAt": "2026-11-20T16:08:48.638Z",
+      "stateSince": "2026-11-20T16:51:53.286Z",
+      "createdAt": "2026-11-20T16:51:53.107Z",
+      "lastEventAt": "2026-11-20T16:51:53.123Z",
       "toolName": null,
       "turnId": "turn-1",
       "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery\\calc.js",
@@ -87,17 +87,32 @@
       "quarantined": false
     },
     {
-      "sessionId": "mock-sess-18688-1",
+      "sessionId": "mock-sess-27840-1",
       "nodeId": "T-002",
       "round": 1,
       "hostId": "mock",
       "state": "idle",
-      "stateSince": "2026-11-20T16:08:51.021Z",
-      "createdAt": "2026-11-20T16:08:50.738Z",
-      "lastEventAt": "2026-11-20T16:08:50.835Z",
+      "stateSince": "2026-11-20T16:51:54.896Z",
+      "createdAt": "2026-11-20T16:51:54.652Z",
+      "lastEventAt": "2026-11-20T16:51:54.712Z",
       "toolName": null,
       "turnId": "turn-1",
       "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery\\out\\test-log.txt",
+      "pendingPermission": null,
+      "quarantined": false
+    },
+    {
+      "sessionId": "mock-sess-19600-1",
+      "nodeId": "T-001",
+      "round": 2,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T16:51:55.621Z",
+      "createdAt": "2026-11-20T16:51:55.213Z",
+      "lastEventAt": "2026-11-20T16:51:55.471Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-03\\demo-recovery\\calc.js",
       "pendingPermission": null,
       "quarantined": false
     }
@@ -111,15 +126,15 @@
         "kind": "forward"
       },
       "state": "consumed",
-      "createdAt": "2026-11-20T16:08:50.433Z",
-      "deliveredAt": "2026-11-20T16:08:50.794Z",
-      "acceptedAt": "2026-11-20T16:08:50.829Z",
-      "consumedAt": "2026-11-20T16:08:50.966Z",
+      "createdAt": "2026-11-20T16:51:54.361Z",
+      "deliveredAt": "2026-11-20T16:51:54.675Z",
+      "acceptedAt": "2026-11-20T16:51:54.706Z",
+      "consumedAt": "2026-11-20T16:51:54.838Z",
       "rejectedAt": null,
       "rejectReason": null,
       "wakeConsumedAt": null,
       "acceptedSignal": "agent_thought_chunk",
-      "ambiguityWindowMs": 35,
+      "ambiguityWindowMs": 31,
       "defects": [],
       "note": null,
       "artifactRefs": {
@@ -147,16 +162,16 @@
         "to": "T-001",
         "kind": "backflow"
       },
-      "state": "created",
-      "createdAt": "2026-11-20T16:08:51.066Z",
-      "deliveredAt": null,
-      "acceptedAt": null,
-      "consumedAt": null,
+      "state": "consumed",
+      "createdAt": "2026-11-20T16:51:54.947Z",
+      "deliveredAt": "2026-11-20T16:51:55.406Z",
+      "acceptedAt": "2026-11-20T16:51:55.466Z",
+      "consumedAt": "2026-11-20T16:51:55.600Z",
       "rejectedAt": null,
       "rejectReason": null,
-      "wakeConsumedAt": "2026-11-20T16:08:51.068Z",
-      "acceptedSignal": null,
-      "ambiguityWindowMs": null,
+      "wakeConsumedAt": "2026-11-20T16:51:54.950Z",
+      "acceptedSignal": "agent_thought_chunk",
+      "ambiguityWindowMs": 60,
       "defects": [
         {
           "summary": "div 在除数为 0 时返回 Infinity，未抛错",
@@ -181,6 +196,43 @@
       "fromNodeId": "T-002",
       "toNodeId": "T-001",
       "retestRequirement": "按上方每条缺陷修正后重新提交产物",
+      "deliveryAttempts": 1,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    },
+    {
+      "handoffId": "HO-003",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "retest"
+      },
+      "state": "created",
+      "createdAt": "2026-11-20T16:51:56.844Z",
+      "deliveredAt": null,
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": null,
+      "ambiguityWindowMs": null,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "calc.js"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 2,
+      "fromNodeId": "T-001",
+      "toNodeId": "T-002",
+      "retestRequirement": null,
       "deliveryAttempts": 0,
       "pendingAt": null,
       "expiredAt": null,
@@ -191,16 +243,16 @@
   "health": {
     "level": "normal",
     "reasons": [],
-    "computedAt": "2026-11-20T16:08:52.637Z",
+    "computedAt": "2026-11-20T16:51:58.489Z",
     "nodeTimeoutMs": 30000
   },
-  "traceId": "TRC-14c64f40",
+  "traceId": "TRC-3b2a10fc",
   "paused": false,
-  "recoveredAt": "2026-11-20T16:08:52.549Z",
+  "recoveredAt": "2026-11-20T16:51:58.633Z",
   "recovery": {
-    "checkpointAt": "2026-11-20T16:08:51.083Z",
+    "checkpointAt": "2026-11-20T16:51:56.909Z",
     "skipped": 1,
-    "round": 1,
+    "round": 2,
     "maxRounds": 2
   }
 }

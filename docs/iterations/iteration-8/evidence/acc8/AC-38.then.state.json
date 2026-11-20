@@ -1,19 +1,19 @@
 {
   "schemaVersion": 2,
   "instanceId": "INST-001",
-  "coreGeneration": "gen-49f21af1c1ea1036",
-  "createdAt": "2026-11-20T16:15:55.631Z",
-  "updatedAt": "2026-11-20T16:15:55.968Z",
+  "coreGeneration": "gen-a55b04aba326a5bd",
+  "createdAt": "2026-11-20T16:56:08.366Z",
+  "updatedAt": "2026-11-20T16:56:08.573Z",
   "state": "running",
-  "stateSince": "2026-11-20T16:15:55.631Z",
+  "stateSince": "2026-11-20T16:56:08.366Z",
   "template": "code-loop",
   "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-38\\demo-recovery",
   "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
   "halted": false,
   "paused": false,
-  "rev": 3,
+  "rev": 2,
   "counters": {
-    "eventSeq": 2,
+    "eventSeq": 0,
     "runCount": 1,
     "dispatchCount": 0
   },
@@ -28,9 +28,9 @@
       "roleId": "developer",
       "round": 1,
       "state": "escalated",
-      "stateSince": "2026-11-20T16:15:55.631Z",
-      "startedAt": "2026-11-20T16:15:55.631Z",
-      "roundStartedAt": "2026-11-20T16:15:55.631Z",
+      "stateSince": "2026-11-20T16:56:08.366Z",
+      "startedAt": "2026-11-20T16:56:08.366Z",
+      "roundStartedAt": "2026-11-20T16:56:08.366Z",
       "endedAt": null,
       "failure": {
         "code": "MERGE_CONFLICT"
@@ -45,9 +45,9 @@
       "roleId": "developer",
       "round": 1,
       "state": "done",
-      "stateSince": "2026-11-20T16:15:55.631Z",
-      "startedAt": "2026-11-20T16:15:55.631Z",
-      "roundStartedAt": "2026-11-20T16:15:55.631Z",
+      "stateSince": "2026-11-20T16:56:08.366Z",
+      "startedAt": "2026-11-20T16:56:08.366Z",
+      "roundStartedAt": "2026-11-20T16:56:08.366Z",
       "endedAt": null,
       "failure": null,
       "note": null,
@@ -70,21 +70,19 @@
       "state": "pending",
       "round": 2,
       "reason": "合并冲突",
-      "createdAt": "2026-11-20T16:15:55.631Z",
-      "updatedAt": "2026-11-20T16:15:55.631Z"
+      "createdAt": "2026-11-20T16:56:08.366Z",
+      "updatedAt": "2026-11-20T16:56:08.366Z"
     }
   ],
   "health": {
-    "level": "attention",
-    "reasons": [
-      "pending_escalation"
-    ],
-    "computedAt": "2026-11-20T16:15:55.967Z",
+    "level": "normal",
+    "reasons": [],
+    "computedAt": "2026-11-20T16:56:08.366Z",
     "nodeTimeoutMs": 30000
   },
-  "recoveredAt": "2026-11-20T16:15:55.860Z",
+  "recoveredAt": "2026-11-20T16:56:08.572Z",
   "recovery": {
-    "checkpointAt": "2026-11-20T16:15:55.631Z",
+    "checkpointAt": "2026-11-20T16:56:08.366Z",
     "skipped": 1,
     "round": 1,
     "maxRounds": null

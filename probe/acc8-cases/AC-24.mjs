@@ -27,7 +27,7 @@ export async function run() {
   const root = freshRoot('AC-24');
   c.root = root;
   try {
-    const d = await driveRecovery(root, 2500, { MAESTRO_MOCK_CAPS: 'resume' }, false, true);
+    const d = await driveRecovery(root, 2500, { MAESTRO_MOCK_CAPS: 'resume' }, false, true, { scenario: 'retest-slow', window: 'retest' });
     evidence(c, 'given', 'driver.json', JSON.stringify(
       { ok: d.ok, kill: d.kill, boots: d.boots, before: d.before }, null, 2));
     check(c, 'Given：resume 方言恢复现场构造成功', d.ok === true,

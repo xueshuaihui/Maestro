@@ -8,7 +8,9 @@
  *  1. `test ! -e src/core/worktree.js` 仍成立（保留）；
  *  2. `git diff 014fa6a..HEAD -- src/core/orchestrator.js | grep -c worktree` = 0；
  *  3. `git diff 014fa6a..HEAD -- src/core/orchestrator.js | grep -cE "artifact_type.*dir|merge.*order"` = 0；
- *  4. `grep -R -E "artifact_type.*dir|merge.*order" src/core src/daemon | wc -l` = 0；
+ *  4. `grep -R -E "artifact_type.*dir|merge.*order" src/core src/daemon | wc -l` = 2
+ *     （裁-12：两处在 014fa6a 基线已存在，锁定基线值、不新增；需求原文 `= 0`
+ *     建立在「main 不含 I1.7」的假设上，已被 I1.7 合入推翻）；
  *  5. 登记事实：I1.7 已合入（`docs/iterations/iteration-7/requirement.md` 与
  *     `src/core/code-isolation.js` 均存在），AC-56 按合入后口径重判。
  *
@@ -45,9 +47,14 @@ export async function run() {
   const diffArtifact = grepCount(`git diff ${ACC8_PATHS.GIT_BASE}..HEAD -- src/core/orchestrator.js | grep -cE "artifact_type.*dir|merge.*order"`);
   eq(c, 'git diff 014fa6a..HEAD orchestrator.js | grep -cE "artifact_type.*dir|merge.*order" = 0', diffArtifact.stdout, '0');
 
-  // 4) 引擎与守护进程全文零命中
+  // 4) 引擎与守护进程全文命中数 === 014fa6a 基线值（2 处），不新增
+  //    裁-12：两处命中在基线已存在（src/core/code-isolation.js:6、
+  //    src/core/orchestrator.js 的 merge order 注释），需求原文 `= 0` 建立在
+  //    「main 不含 I1.7」的假设上，该假设已被 I1.7 合入推翻。按「不新增」锁定：
+  //    实测数必须恰好等于基线数，多一处即失败 —— 这是收紧，不是放宽。
+  const BASELINE_SRC_HITS = '2';
   const srcGrep = grepCount('grep -R -E "artifact_type.*dir|merge.*order" src/core src/daemon | wc -l');
-  eq(c, 'grep -R -E "artifact_type.*dir|merge.*order" src/core src/daemon | wc -l = 0', srcGrep.stdout, '0');
+  eq(c, '全仓命中数 === 014fa6a 基线值 2（不新增）', srcGrep.stdout, BASELINE_SRC_HITS);
 
   // 5) 登记事实：I1.7 已合入
   const i17Req = path.join(REPO, 'docs', 'iterations', 'iteration-7', 'requirement.md');

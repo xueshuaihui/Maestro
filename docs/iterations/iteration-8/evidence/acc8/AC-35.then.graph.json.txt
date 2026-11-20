@@ -53,11 +53,11 @@
   "approvals": [],
   "current": {
     "nodeId": "T-001",
-    "sessionId": "049a10d9-e361-4652-83cd-897a51c8c5dc",
+    "sessionId": "c9a1f9fb-7f54-4623-988d-f5dac762fe29",
     "state": "running"
   },
   "recovery": {
-    "checkpointAt": "2026-11-20T16:14:41.622Z",
+    "checkpointAt": "2026-11-20T16:55:56.044Z",
     "skipped": 1,
     "round": 1,
     "maxRounds": 2

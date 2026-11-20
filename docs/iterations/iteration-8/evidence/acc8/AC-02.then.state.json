@@ -1,16 +1,16 @@
 {
   "schemaVersion": 2,
   "instanceId": "INST-001",
-  "coreGeneration": "gen-da405d05c76b3ffa",
-  "createdAt": "2026-11-20T16:08:39.946Z",
-  "updatedAt": "2026-11-20T16:08:45.112Z",
+  "coreGeneration": "gen-a3d80a5745673b8c",
+  "createdAt": "2026-11-20T16:51:44.795Z",
+  "updatedAt": "2026-11-20T16:51:49.850Z",
   "state": "running",
-  "stateSince": "2026-11-20T16:08:42.055Z",
+  "stateSince": "2026-11-20T16:51:46.889Z",
   "template": "code-loop",
   "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-02\\demo-recovery",
   "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
   "halted": false,
-  "rev": 15,
+  "rev": 16,
   "counters": {
     "eventSeq": 11,
     "runCount": 1,
@@ -27,14 +27,14 @@
       "roleId": "developer",
       "round": 1,
       "state": "done",
-      "stateSince": "2026-11-20T16:08:42.472Z",
-      "startedAt": "2026-11-20T16:08:42.055Z",
-      "roundStartedAt": "2026-11-20T16:08:42.055Z",
-      "endedAt": "2026-11-20T16:08:42.500Z",
+      "stateSince": "2026-11-20T16:51:47.271Z",
+      "startedAt": "2026-11-20T16:51:46.889Z",
+      "roundStartedAt": "2026-11-20T16:51:46.889Z",
+      "endedAt": "2026-11-20T16:51:47.295Z",
       "failure": null,
       "note": null,
       "verdict": null,
-      "sessionId": "mock-sess-26660-1",
+      "sessionId": "mock-sess-16896-1",
       "artifactRefs": [
         {
           "ref": "calc.js",
@@ -43,18 +43,18 @@
           "exists": true,
           "bytes": 251,
           "sha256": null,
-          "verifiedAt": "2026-11-20T16:08:42.471Z"
+          "verifiedAt": "2026-11-20T16:51:47.269Z"
         }
       ],
       "branch": "maestro/INST-001/developer",
-      "mergeStatus": "merging"
+      "mergeStatus": "merged"
     },
     {
       "nodeId": "T-002",
       "roleId": "tester",
       "round": 0,
       "state": "pending",
-      "stateSince": "2026-11-20T16:08:39.946Z",
+      "stateSince": "2026-11-20T16:51:44.795Z",
       "startedAt": null,
       "roundStartedAt": null,
       "endedAt": null,
@@ -67,14 +67,14 @@
   ],
   "sessions": [
     {
-      "sessionId": "mock-sess-26660-1",
+      "sessionId": "mock-sess-16896-1",
       "nodeId": "T-001",
       "round": 1,
       "hostId": "mock",
       "state": "idle",
-      "stateSince": "2026-11-20T16:08:42.505Z",
-      "createdAt": "2026-11-20T16:08:42.311Z",
-      "lastEventAt": "2026-11-20T16:08:42.321Z",
+      "stateSince": "2026-11-20T16:51:47.302Z",
+      "createdAt": "2026-11-20T16:51:47.138Z",
+      "lastEventAt": "2026-11-20T16:51:47.148Z",
       "toolName": null,
       "turnId": "turn-1",
       "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-02\\demo-recovery\\calc.js",
@@ -82,19 +82,54 @@
       "quarantined": false
     }
   ],
-  "handoffs": [],
+  "handoffs": [
+    {
+      "handoffId": "HO-001",
+      "edge": {
+        "from": "T-001",
+        "to": "T-002",
+        "kind": "forward"
+      },
+      "state": "created",
+      "createdAt": "2026-11-20T16:51:48.378Z",
+      "deliveredAt": null,
+      "acceptedAt": null,
+      "consumedAt": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "wakeConsumedAt": null,
+      "acceptedSignal": null,
+      "ambiguityWindowMs": null,
+      "defects": [],
+      "note": null,
+      "artifactRefs": {
+        "input": [
+          "calc.js"
+        ],
+        "output": null,
+        "previous": null
+      },
+      "revisionRequirement": null,
+      "instanceId": "INST-001",
+      "round": 1,
+      "fromNodeId": "T-001",
+      "toNodeId": "T-002",
+      "retestRequirement": null,
+      "deliveryAttempts": 0,
+      "pendingAt": null,
+      "expiredAt": null,
+      "lastError": null
+    }
+  ],
   "escalations": [],
   "health": {
-    "level": "normal",
-    "reasons": [],
-    "computedAt": "2026-11-20T16:08:45.109Z",
     "nodeTimeoutMs": 30000
   },
-  "traceId": "TRC-2d64df7e",
+  "traceId": "TRC-00c9f143",
   "paused": false,
-  "recoveredAt": "2026-11-20T16:08:45.020Z",
+  "recoveredAt": "2026-11-20T16:51:49.849Z",
   "recovery": {
-    "checkpointAt": "2026-11-20T16:08:42.565Z",
+    "checkpointAt": "2026-11-20T16:51:48.400Z",
     "skipped": 1,
     "round": 1,
     "maxRounds": 2

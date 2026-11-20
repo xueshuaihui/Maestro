@@ -64,6 +64,11 @@ export async function run() {
   const extra = [...failSet].filter((n) => !baselineSet.has(n)).sort();
   const fixed = baseline.filter((n) => !failSet.has(n)).sort();
 
+  // 门禁判据**保持硬判**：新增失败集合必须为空（AC 原文「失败集合差集为 0」）。
+  // 不设白名单——终验指出：把「本次并未出现、也未被本条证伪」的 flake 放进白名单，
+  // 等于让它们将来变红也不判红，那是放宽判据。批次负载下若偶发 flake，本条如实变红，
+  // 再由「独占复跑」另行证伪（帧见 probe/i18-s2/*.isolated.log），不在判据里预赦。
+
   writeText(path.join(EVID, 'AC-53.diffset.txt'), [
     `# 本次失败集合 ${failSet.size} 条（TAP 计 fail=${counts.fail}）`,
     `# 基线红名单 ${baseline.length} 条（probe/i18-s2/baseline-014fa6a-reds.txt）`,

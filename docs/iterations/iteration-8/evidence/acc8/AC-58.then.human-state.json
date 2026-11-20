@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
   "instanceId": "INST-HUMAN-001",
-  "coreGeneration": "gen-b92b8b3fd28340c5",
+  "coreGeneration": "gen-938c5080dc4dec1b",
   "createdAt": "2026-11-09T10:00:00.000Z",
-  "updatedAt": "2026-11-20T16:25:08.114Z",
+  "updatedAt": "2026-11-20T16:59:51.050Z",
   "state": "running",
   "stateSince": "2026-11-09T10:04:00.000Z",
   "template": "code-loop",
@@ -46,10 +46,7 @@
       "nodeId": "T-002",
       "hostId": "mock",
       "state": "thinking",
-      "startedAt": "2026-11-09T10:03:00.000Z",
-      "stateSince": "2026-11-20T16:25:08.112Z",
-      "dialect": "resume",
-      "recovered": true
+      "startedAt": "2026-11-09T10:03:00.000Z"
     }
   ],
   "handoffs": [],
@@ -61,7 +58,7 @@
     "reasons": [
       "node_timeout"
     ],
-    "computedAt": "2026-11-20T16:24:06.325Z",
+    "computedAt": "2026-11-20T16:59:50.896Z",
     "nodeTimeoutMs": 300000
   },
   "counters": {
@@ -74,9 +71,9 @@
     "lastError": null,
     "agentInfo": null
   },
-  "recoveredAt": "2026-11-20T16:25:08.113Z",
+  "recoveredAt": "2026-11-20T16:59:51.048Z",
   "recovery": {
-    "checkpointAt": "2026-11-20T16:24:06.345Z",
+    "checkpointAt": "2026-11-09T10:05:00.000Z",
     "skipped": 1,
     "round": 2,
     "maxRounds": 2

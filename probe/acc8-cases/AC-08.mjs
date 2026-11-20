@@ -28,7 +28,7 @@ export async function run() {
   const root = freshRoot('AC-08');
   c.root = root;
   try {
-    const d = await driveRecovery(root, 2500, {}, true);
+    const d = await driveRecovery(root, 2500, {}, false, false, { scenario: 'retest-slow', window: 'retest' });
     evidence(c, 'given', 'recovery.json', JSON.stringify(
       { ok: d.ok, kill: d.kill, boots: d.boots, before: d.before }, null, 2));
     check(c, 'Given：恢复现场构造成功（recoveredAt 落盘）', d.ok === true,
@@ -63,14 +63,17 @@ export async function run() {
       JSON.stringify(t2));
     const t2Before = d.before?.nodes?.find?.((n) => n.nodeId === 'T-002');
     check(c, 'Then：上一轮失败的测试节点没有被当成「已完成」重跑',
-      t2Before?.state !== 'done' && Number(t2Before?.round) === 1 && t2?.round === 2,
+      // 需求 Then 的实质：崩溃时它「执行中/未 done」，恢复后轮次不回退
+      // （被当 done 跳过会把 round 冻在原地，从头重跑会回到 round=1）。
+      t2Before?.state === 'running'
+      && Number(t2Before?.round) >= 2
+      && Number(t2?.round) >= Number(t2Before?.round),
       `崩溃前=${JSON.stringify(t2Before)} 恢复后=${JSON.stringify(t2)}`);
     includes(c, '恢复行 skipped=1（需求示例）', log.stdout, '跳过 1 个已完成节点');
     check(c, '恢复后实例仍可推进（running 或 completed）', ['running', 'completed'].includes(st?.state), `${st?.state}`);
-    note(c, '需求夹具指定 retest-slow 精确窗口 T-001 done r2 / T-002 running r2；本机实测 retest-slow 场景仅 4 步，'
-      + 'daemon 被杀后恢复期新 mock 进程消费第 5 步直接退出（host_unreachable），无法稳定复现该窗口；'
-      + '改用同图 backflow killAfter=2500，实测 T-001 review/running r2、T-002 failed r1，恢复跳过数 0。'
-      + '需求示例相关断言按原文保留并如实判定，未放宽。');
+    note(c, '窗口已改为需求 Given 的原样现场：driver 用 retest-slow（第 4 步 delayMs=30s）'
+      + '并在 T-001 done r2 + T-002 running r2 时强杀，不再用固定毫秒猜窗口。'
+      + '此前固定 killAfter 只能得到 T-002 r1，C07 曾按那个错误现场绑死 round===1，已纠正为语义断言。');
     try { orch(root, ['core', 'stop']); } catch { /* 清理 */ }
   } finally {
     cleanupRoot(root);

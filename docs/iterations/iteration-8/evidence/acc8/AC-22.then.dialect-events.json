@@ -13,10 +13,10 @@
       "sessionId": "mock-sess-retest",
       "fallback": true
     },
-    "gen": "gen-436b458a07acab15",
+    "gen": "gen-7d72907c5663436e",
     "seq": 2,
-    "ts": "2026-11-20T16:12:49.893Z",
-    "prev_event_hash": "50b6db172dc9218216a510bbe2f511a5e4d50f1689c8d8df0f3156e060c2ba51"
+    "ts": "2026-11-20T16:54:56.280Z",
+    "prev_event_hash": "90bc050172ca231b758d07adac377ffad249a4b0ad625ae4c7efc5093c17caf1"
   },
   {
     "object": "instance",
@@ -30,9 +30,9 @@
       "dialect": "load",
       "restored": true
     },
-    "gen": "gen-436b458a07acab15",
+    "gen": "gen-7d72907c5663436e",
     "seq": 3,
-    "ts": "2026-11-20T16:12:49.898Z",
-    "prev_event_hash": "e2ac6ed089858c135f463e15a563bc2970560afdb75db211328fdb2cc31fa4d9"
+    "ts": "2026-11-20T16:54:56.282Z",
+    "prev_event_hash": "f13cbd88532875f1bba589d9423c6784a7eba59d5a7ce5931cc831b543236865"
   }
 ]

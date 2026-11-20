@@ -45,7 +45,7 @@
     "approvals": [],
     "current": null,
     "recovery": {
-      "checkpointAt": "2026-11-20T16:25:11.176Z",
+      "checkpointAt": "2026-11-20T16:59:54.032Z",
       "skipped": 0,
       "round": 1,
       "maxRounds": 2
@@ -98,7 +98,7 @@
     "approvals": [],
     "current": null,
     "recovery": {
-      "checkpointAt": "2026-11-20T16:25:11.176Z",
+      "checkpointAt": "2026-11-20T16:59:54.032Z",
       "skipped": 0,
       "round": 1,
       "maxRounds": 2

@@ -2,7 +2,7 @@
   "ok": true,
   "scenario": "crash-rebuild",
   "exitCodes": [
-    1
+    0
   ],
   "runMs": 15000,
   "graphScenario": "pass"

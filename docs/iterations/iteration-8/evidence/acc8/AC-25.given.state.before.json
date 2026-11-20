@@ -8,7 +8,7 @@
       "state": "done",
       "phase": null,
       "round": 1,
-      "sessionId": "a0851f69-13a1-4951-997b-bf251b976512",
+      "sessionId": "4665e8ad-c660-432f-9678-6fc264940994",
       "artifactRefs": 2
     },
     {
@@ -16,20 +16,20 @@
       "state": "running",
       "phase": null,
       "round": 1,
-      "sessionId": "2fd8dbc3-3aeb-4fc5-8104-be2c512ada24",
+      "sessionId": "256837a3-2930-47ef-9059-e59c34e6340c",
       "artifactRefs": 0
     }
   ],
   "sessions": [
     {
-      "sessionId": "a0851f69-13a1-4951-997b-bf251b976512",
+      "sessionId": "4665e8ad-c660-432f-9678-6fc264940994",
       "nodeId": "T-001",
       "state": "idle",
       "dialect": null,
       "recovered": null
     },
     {
-      "sessionId": "2fd8dbc3-3aeb-4fc5-8104-be2c512ada24",
+      "sessionId": "256837a3-2930-47ef-9059-e59c34e6340c",
       "nodeId": "T-002",
       "state": "idle",
       "dialect": null,
@@ -40,5 +40,5 @@
     "T-001": 1,
     "T-002": 1
   },
-  "events": 29
+  "events": 23
 }

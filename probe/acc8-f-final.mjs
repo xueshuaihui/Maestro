@@ -1,6 +1,6 @@
 /**
- * I1.8 S3 汇总（WP-7 末批）：把 `evidence/wp7/_acc8-f-results.jsonl` 汇总成
- * `_acc8-f-summary.json` 与 `_acc8-f-blockers.md`（阻塞清单，一条都不省略）。
+ * I1.8 S3/S4 汇总：把 `evidence/acc8/_acc8-f-results.jsonl`（67 条）汇总成
+ * `_acc8-f-summary.json` 与 `_acc8-f-blockers.md`（不通过与阻塞清单，一条都不省略）。
  *
  *   node probe/acc8-f-final.mjs
  */
@@ -28,7 +28,7 @@ function main() {
   const results = readResults();
   const summary = {
     iteration: 'I1.8',
-    step: 'S3 / WP-7 末批',
+    step: 'S4 / 全量 67 条终验口径',
     generatedAt: iso(),
     repoHead: readText(path.join(REPO, '.git', 'HEAD')).trim(),
     total: results.length,
@@ -53,7 +53,7 @@ function main() {
   const blockers = results.filter((r) => r.verdict === '阻塞' || r.blocker);
   const failed = results.filter((r) => r.verdict === '不通过');
   const md = [
-    '# WP-7 末批 · 阻塞与未通过清单',
+    '# I1.8 S4 · 阻塞与未通过清单（全量 67 条）',
     '',
     `- 生成时间：${iso()}`,
     `- 条目：${results.length} 条（通过 ${summary.byVerdict.通过} / 不通过 ${summary.byVerdict.不通过} / 阻塞 ${summary.byVerdict.阻塞}）`,
