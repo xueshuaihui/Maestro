@@ -1,0 +1,22 @@
+[
+  {
+    "pass": 1,
+    "boot": 0,
+    "killed": {
+      "ok": true,
+      "pid": 9260
+    },
+    "secondBoot": 0,
+    "pid": 9260
+  },
+  {
+    "pass": 2,
+    "boot": 0,
+    "killed": {
+      "ok": true,
+      "pid": 26684
+    },
+    "secondBoot": 0,
+    "pid": 7100
+  }
+]

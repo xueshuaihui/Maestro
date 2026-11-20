@@ -140,3 +140,17 @@ AC-56 的 **Then** 末句已预留出口：「I1.7 合入后按同一套 AC 重�
 | 裁-15b | AC-04 用例 note：需求写提醒出现在 `orch run` 输出，实测在 `orch instance log` | 同上，**以实测通道断言**，差异登记 |
 | 裁-15c | **发现验收用例违规放宽断言**：AC-07 原用例把需求机检 `maxRounds===3` 改成了「maxRounds 是正整数」，属「为让测试变绿而放宽断言」 | **主控纠正**：收紧为「恢复行轮次分母 === 内建模板真值 2」（`src/templates/index.js:186`），**不放宽为正整数、也不为凑需求示例伪造 3**。收紧后隔离重跑 **10/10 通过**，结论更硬。需求机检写 3 与模板实际 2 的冲突按裁-12 同类口径登记，S4 报告 §5 列明 |
 | 裁-15d | AC-11 用例 note：需求 Given 写 `running`/`review` 各一，实测 rounds-exceeded 现场为 `done` + `escalated` | 以实测现场断言「重启后不变」（该 AC 的 Then 实质），差异登记 |
+
+## 十二、S3 验收批二（AC-13~24）主控复核裁决（裁-16）
+
+**背景**：批二 12 条用例实跑 6 通过 / 6 不通过。主控逐条核对原始帧，确认其中**两条是真实产品缺陷**（非用例问题），按批 5 先例由主控亲修产品代码；另两条是用例自身字段路径错误。
+
+| 编号 | 事项 | 主控决定 |
+|---|---|---|
+| 裁-16a | **产品缺陷 1（主控亲修）**：`src/adapter/acp-client.js:323` 的 `initialize()` 把 `client.capabilities` 只设为 `agentCapabilities.sessionCapabilities`，丢掉了顶层 `loadSession` 标志；而 `normalizeCapabilities()` 明确读 `init.loadSession === true`，导致恢复路径 `canLoad` 恒 false、load 方言不可达（AC-20 6/10、AC-22 6/10） | 修复：`result.loadSession === true` 时把 `{load:{}}` 并进 capabilities。AC-20 **10/10**、AC-22（配合裁-16b）**10/10**。补回归单测 `test/wp13/dialect.test.js`「initialize keeps the top-level loadSession flag」，锁定 load/both 为 true、resume/none 为 false，16/16 绿 |
+| 裁-16b | **用例缺陷**：AC-22/AC-23 把 `fallback` 标记当事件顶层字段 `e.fallback` 过滤，而核心写在 `e.detail.fallback`，导致回退事件漏判 | 修正用例字段路径为 `e.detail?.fallback`（**不放宽断言**）。AC-22 转 10/10 |
+| 裁-16c | **产品缺陷 2（主控亲修）**：`src/core/orchestrator.js` 的 `all_dialects_failed` 返回 `unavailable:true`，被上层当宿主不可达 → `markInterrupted` 中断整个实例；与 `index.md:225` / BR-22 / AC-23「三方言都失败 → 节点 assigned、角色 available、交接待投递、实例不假装运行」冲突，也与批 5 裁-13a 的 `no_dialect` 修复同类 | 修复：`unavailable:false`，走会话级降级。补 AC-23 交接包 Given 后实测：节点 `running→assigned`、角色「可用 · 活跃会话 0/1」、交接「待投递」、回退行可见**全部达成**（8/10） |
+| 裁-16d | AC-23 剩余 2 条失败：①「实例不进入运行中」——降级后 `state` 仍 `running`；②「session/new 失败后无新会话」——真 `adapterFactory.create` 预开会话，`new` 方言直接复用，`all_dialects_failed` 分支在 CLI 真路径不可达 | **需求措辞与真 CLI 路径的结构性冲突，非产品缺陷**：① BR-22 的「实例不假装还在运行」语义由「节点 assigned + 角色 available + 会话隔离」承载，实例容器保持 running 才能继续调度，这是设计取舍；② 真 factory 预开会话是既有架构，不为凑夹具改工厂。**两条断言按原文保留并如实判不通过**，S4 报告 §5 列明，交用户裁决是否修订需求 Then |
+| 裁-16e | AC-15 机检「state.json sha256 不变」与产品 `markInterrupted` 必须重写 state 不可兼得；AC-17「恢复失败原因可见」实测日志为「恢复失败：；…」原因为空 | AC-15：按原文保留断言判不通过（9/10），差异登记；AC-17：原因为空是**可观测性缺陷**但非 S2 阻塞（Then 实质「用户看到恢复失败」已由「实例已中断」行承载），按原文保留判不通过（8/9），S4 报告 §5 列明，建议后续迭代回填原因 |
+| 裁-16f | AC-18 用例用「已完成恢复的受控快照 + 1 条 summary 事件」替代需求夹具的「连续两次 kill-after」；其余受控起点用例（AC-13/15/19/20/21/22/23）以手写 state 构造 Given，方言选择/恢复降级仍由产品核心连真 mock ACP 执行 | **接受该口径**：受控起点只用于稳定构造 Given（避开 CAS 竞态与 mock 步骤耗尽），Then 由产品核心实测产出，不构成「夹具冒充通过」。但 `driveDialect/driveRecovery` 的 `retryRecover` 与受控快照是负载 flake 的对症缓解，**根本竞态仍存**，S4 报告 §5 列为观察项 |
+| 裁-16g | 批二全量回归首轮 `--test-concurrency=4` 跑 28 分钟未完成（记忆载有的并发资源耗尽老问题）；改串行后差集出现 7 条 `graph-stream` / pulse 假红（`404 !== 200`） | 并发跑停掉，改串行。**关键自纠**：串行首轮**漏注 `NODE_ENV=test`**，而 `test/wp13/graph-stream.test.js` 的 pulse 接缝门控要求该变量（`src/daemon/http/server.js:627`），导致 7 条 404 假红。注入后该文件 **7/7 全绿**，确认与产品修复、`dc54021` 的 server.js 改动均无关。全量以 `NODE_ENV=test node --test --test-concurrency=1 …` 重跑为准，帧 `probe/i18-s2/batch2-product-fix-full.log`。**不得把漏注环境变量造成的假红记成回归** |

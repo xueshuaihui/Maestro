@@ -1,0 +1,57 @@
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "recovery.dialect",
+    "detail": {
+      "from": "resume",
+      "to": "load",
+      "reason": -32603,
+      "sessionId": "mock-sess-retest",
+      "fallback": true
+    },
+    "gen": "gen-5b44f4b6aa3626fa",
+    "seq": 3,
+    "ts": "2026-11-20T14:21:33.897Z",
+    "prev_event_hash": "2442469a594bbbbaeeafb8a0a4e39abbeaa1b99876bf064697793178224b5100"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "recovery.dialect",
+    "detail": {
+      "from": "load",
+      "to": "new",
+      "reason": -32603,
+      "sessionId": "mock-sess-retest",
+      "fallback": true
+    },
+    "gen": "gen-5b44f4b6aa3626fa",
+    "seq": 4,
+    "ts": "2026-11-20T14:21:33.899Z",
+    "prev_event_hash": "a729d90d642705387913d4eb7d904f31d0172580a8ed97060c3bbf00a36372e5"
+  },
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "recovery.dialect",
+    "detail": {
+      "sessionId": "mock-sess-688-1",
+      "dialect": "new",
+      "restored": false
+    },
+    "gen": "gen-5b44f4b6aa3626fa",
+    "seq": 5,
+    "ts": "2026-11-20T14:21:33.902Z",
+    "prev_event_hash": "77d3d0a49d00c12e53eceddf5ac97f37c6ffd01763c05811725a9201accaa1e0"
+  }
+]

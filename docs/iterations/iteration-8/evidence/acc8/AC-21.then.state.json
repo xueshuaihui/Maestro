@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-2e8d5f4c589f5f01",
+  "createdAt": "2026-11-20T13:51:39.919Z",
+  "updatedAt": "2026-11-20T13:51:40.748Z",
+  "state": "suspended",
+  "stateSince": "2026-11-20T13:51:40.747Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-21\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 10,
+  "counters": {
+    "eventSeq": 12,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "done",
+      "stateSince": "2026-11-20T13:51:39.919Z",
+      "startedAt": "2026-11-20T13:51:39.919Z",
+      "roundStartedAt": "2026-11-20T13:51:39.919Z",
+      "endedAt": "2026-11-20T13:51:39.919Z",
+      "failure": null,
+      "note": null,
+      "verdict": {
+        "value": "pass",
+        "defects": []
+      },
+      "sessionId": "mock-sess-dev-done",
+      "artifactRefs": []
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 2,
+      "state": "escalated",
+      "stateSince": "2026-11-20T13:51:40.747Z",
+      "startedAt": "2026-11-20T13:51:39.919Z",
+      "roundStartedAt": "2026-11-20T13:51:39.919Z",
+      "endedAt": "2026-11-20T13:51:40.747Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-16660-1",
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-retest",
+      "nodeId": "T-002",
+      "round": 2,
+      "hostId": "mock",
+      "state": "thinking",
+      "stateSince": "2026-11-20T13:51:40.334Z",
+      "createdAt": "2026-11-20T13:51:39.919Z",
+      "lastEventAt": "2026-11-20T13:51:39.919Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": false,
+      "dialect": "new",
+      "recovered": true
+    },
+    {
+      "sessionId": "mock-sess-31812-1",
+      "nodeId": "T-002",
+      "round": 2,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T13:51:40.334Z",
+      "createdAt": "2026-11-20T13:51:40.334Z",
+      "lastEventAt": "2026-11-20T13:51:40.334Z",
+      "toolName": null,
+      "turnId": null,
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": false,
+      "roleId": "tester",
+      "policy": null
+    },
+    {
+      "sessionId": "mock-sess-16660-1",
+      "nodeId": "T-002",
+      "round": 2,
+      "hostId": "mock",
+      "state": "escalated",
+      "stateSince": "2026-11-20T13:51:40.747Z",
+      "createdAt": "2026-11-20T13:51:40.580Z",
+      "lastEventAt": "2026-11-20T13:51:40.634Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-21\\demo-recovery\\out\\test-log.txt",
+      "pendingPermission": null,
+      "quarantined": true,
+      "roleId": "tester"
+    }
+  ],
+  "handoffs": [],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-002",
+      "round": 2,
+      "reasonCode": "rounds_exceeded",
+      "reasonDetail": "回流超上限：测试已派发 2 次仍未通过",
+      "defects": [
+        {
+          "summary": "div 在除数为 0 时返回 Infinity，未抛错",
+          "evidence": "out/test-log.txt"
+        },
+        {
+          "summary": "div 在整除场景存在浮点误差",
+          "evidence": "out/test-log-2.txt"
+        }
+      ],
+      "state": "pending",
+      "createdAt": "2026-11-20T13:51:40.747Z",
+      "resolvedAt": null,
+      "resolution": null,
+      "voidedAt": null
+    }
+  ],
+  "health": {
+    "level": "normal",
+    "reasons": [],
+    "computedAt": "2026-11-20T13:51:39.919Z",
+    "nodeTimeoutMs": 30000
+  },
+  "paused": false,
+  "recoveredAt": "2026-11-20T13:51:40.334Z",
+  "recovery": {
+    "checkpointAt": "2026-11-20T13:51:39.919Z",
+    "skipped": 1,
+    "round": 2,
+    "maxRounds": 2
+  }
+}

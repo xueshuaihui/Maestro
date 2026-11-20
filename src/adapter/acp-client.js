@@ -321,6 +321,12 @@ export function createAcpClient({ transport, limits = {}, clock = () => Date.now
     // 真实 DSH 把 sessionCapabilities 放在 agentCapabilities 内（dsh-probe.md §3）；
     // 这里归一化到顶层，同时保留宿主原始 result 供复核。
     capabilities = result.agentCapabilities?.sessionCapabilities ?? result.sessionCapabilities ?? {};
+    // I1.8 AC-20/AC-22: the `load` dialect is advertised as a top-level
+    // `loadSession` flag (ACP initialize result), not inside sessionCapabilities.
+    // `normalizeCapabilities()` explicitly reads `init.loadSession === true`, so
+    // the flag must survive into `client.capabilities` — otherwise `canLoad`
+    // is always false on the recovery path and the load dialect is unreachable.
+    if (result.loadSession === true) capabilities = { ...capabilities, load: {} };
     agentInfo = result.agentInfo ?? null;
     return {
       ok: true,

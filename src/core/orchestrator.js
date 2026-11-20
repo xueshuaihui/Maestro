@@ -5253,7 +5253,12 @@ export function createOrchestrator({
           const reason = res?.error?.code ?? 'SESSION_RESTORE_FAILED';
           fallbacks.push({ from: 'new', to: 'new', reason, sessionId });
           await disposeAdapter(adapter);
-          return { ok: false, reason: 'all_dialects_failed', message: reason, fallbacks, unavailable: true };
+          // D-5 / BR-22 / AC-23: `initializeAdapterOnly` succeeded, so the host is
+          // reachable. All three dialects failing is a session-level loss: degrade
+          // the node to `assigned`, free the role, requeue undelivered handoffs —
+          // do NOT interrupt the whole instance (that is reserved for an
+          // unreachable host, cf. the `initializeAdapterOnly` catch above).
+          return { ok: false, reason: 'all_dialects_failed', message: reason, fallbacks, unavailable: false };
         }
         dialect = 'new';
         sessionId = res.result?.sessionId ?? res.result?.sessionId ?? null;

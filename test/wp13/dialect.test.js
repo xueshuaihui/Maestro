@@ -219,6 +219,31 @@ test('AC-25 capability advertisement checks (four groups)', () => {
   assert.equal(canLoad(ADS.none), false);
 });
 
+test('AC-20/AC-22: initialize keeps the top-level loadSession flag in client.capabilities', async () => {
+  // Regression anchor: the ACP `load` dialect is advertised as a top-level
+  // `loadSession` flag, not inside agentCapabilities.sessionCapabilities.
+  // normalizeCapabilities reads it, so initialize() must not strip it when
+  // building `client.capabilities` — otherwise canLoad is always false on the
+  // recovery path and the load dialect is unreachable (S3 AC-20/22 found this).
+  for (const ad of [ADS.load, ADS.both]) {
+    const { transport } = makeTransport({ ad });
+    const client = createAcpClient({ transport, limits: LIMITS });
+    const initRes = await client.initialize();
+    assert.equal(initRes.ok, true);
+    assert.equal(canLoad(client.capabilities), true, `canLoad lost for ${JSON.stringify(ad)}`);
+    assert.equal(client.normalizeCapabilities(client.capabilities).canLoad, true);
+    await client.dispose();
+  }
+  // The resume-only / none advertisements must not gain a load capability.
+  for (const ad of [ADS.resume, ADS.none]) {
+    const { transport } = makeTransport({ ad });
+    const client = createAcpClient({ transport, limits: LIMITS });
+    await client.initialize();
+    assert.equal(canLoad(client.capabilities), false);
+    await client.dispose();
+  }
+});
+
 test('C-07 / BR-23: dialect selection does not branch on hostId', async () => {
   const variants = ['dsh', 'dsh-acp-server', 'third-party', 'anything-else'];
   const results = [];
