@@ -154,3 +154,14 @@ AC-56 的 **Then** 末句已预留出口：「I1.7 合入后按同一套 AC 重�
 | 裁-16e | AC-15 机检「state.json sha256 不变」与产品 `markInterrupted` 必须重写 state 不可兼得；AC-17「恢复失败原因可见」实测日志为「恢复失败：；…」原因为空 | AC-15：按原文保留断言判不通过（9/10），差异登记；AC-17：原因为空是**可观测性缺陷**但非 S2 阻塞（Then 实质「用户看到恢复失败」已由「实例已中断」行承载），按原文保留判不通过（8/9），S4 报告 §5 列明，建议后续迭代回填原因 |
 | 裁-16f | AC-18 用例用「已完成恢复的受控快照 + 1 条 summary 事件」替代需求夹具的「连续两次 kill-after」；其余受控起点用例（AC-13/15/19/20/21/22/23）以手写 state 构造 Given，方言选择/恢复降级仍由产品核心连真 mock ACP 执行 | **接受该口径**：受控起点只用于稳定构造 Given（避开 CAS 竞态与 mock 步骤耗尽），Then 由产品核心实测产出，不构成「夹具冒充通过」。但 `driveDialect/driveRecovery` 的 `retryRecover` 与受控快照是负载 flake 的对症缓解，**根本竞态仍存**，S4 报告 §5 列为观察项 |
 | 裁-16g | 批二全量回归首轮 `--test-concurrency=4` 跑 28 分钟未完成（记忆载有的并发资源耗尽老问题）；改串行后差集出现 7 条 `graph-stream` / pulse 假红（`404 !== 200`） | 并发跑停掉，改串行。**关键自纠**：串行首轮**漏注 `NODE_ENV=test`**，而 `test/wp13/graph-stream.test.js` 的 pulse 接缝门控要求该变量（`src/daemon/http/server.js:627`），导致 7 条 404 假红。注入后该文件 **7/7 全绿**，确认与产品修复、`dc54021` 的 server.js 改动均无关。全量以 `NODE_ENV=test node --test --test-concurrency=1 …` 重跑为准，帧 `probe/i18-s2/batch2-product-fix-full.log`。**不得把漏注环境变量造成的假红记成回归** |
+
+## 十三、S3 验收批三（AC-28~40）主控复核裁决（裁-17）
+
+**背景**：批三 13 条用例实跑 11 通过 / 2 不通过。主控核对原始帧，确认 AC-32 是产品缺陷（已修），AC-37 是夹具与图声明冲突（如实判）。
+
+| 编号 | 事项 | 主控决定 |
+|---|---|---|
+| 裁-17a | **产品缺陷（主控亲修）**：`src/cli/main.js:912` 的 `recovery.connection` 日志行把事件里的角色 **id**（`tester` / `developer`）直接传给 `formatHandoffDirection`，渲染成 `tester→developer（回流）`，而 `render.js:700-704` 的同类调用先用 `roleLabel()` 转中文名。违反「中文唯一来源 labels.js」且 AC-32 Then 要求「测试→开发（回流）」 | 修复：`main.js` 先用 `ROLE_LABEL[fromId] ?? fromId` 转换再传 `formatHandoffDirection`，与 render.js 同口径。AC-32 **8/9 → 9/9 通过**。不改 labels 文案 |
+| 裁-17b | AC-37 失败：`test/fixtures/recovery/human-node-state.json` 预置的人工节点 **T-004 不在内建 code-loop 图声明内**（图只声明 T-001/T-002），`renderGraphText` 经 `graphNodes()` 只渲染图声明节点，故 graph 不显示 T-004 的「执行中 · 等待人工」；status 行有「节点 T-004 执行中 · 第 1 轮」但无该后缀 | **夹具与图声明的结构性冲突，非产品缺陷**：产品按图声明渲染是既有设计（`graphNodes` 在图声明非空时只返回声明节点），改它会影响所有内建图并撞三主链逐字基线（不变量 11）。`render.js:1479` 的「等待人工」后缀逻辑本身正确（读 `nodeTypeById`）。**断言按原文保留判不通过**，S4 报告 §5 列明，交用户裁决是否改夹具为「图声明内含 human 节点」或修订 AC-37 的 Then |
+| 裁-17c | AC-38/AC-40 同样以图外的 T-003 核对（改以 status 节点行）；AC-39「既有下一步」以 status 的「节点 T-002 待执行」行核对（无独立「下一步：」行） | **接受**这些用例按「Then 实质」选可观测通道：节点状态保持、无重派、无重放均由 status/state/事件实测。措辞差异 `note()` 记录，S4 报告 §5 列明 |
+| 裁-17d | AC-30/AC-31 首轮单跑失败经用例自查修正（events flush 窗口 300ms、忙标志改取 role show 文本 + `node.dispatch.phase=running`）后单跑与批次均稳定通过 | 属**用例采样口径问题**（CLI 快照比 `readState` 新一拍），非产品负载 flake。修正后 11/11 稳定，接受 |

@@ -1,0 +1,19 @@
+[
+  {
+    "object": "instance",
+    "objectId": "INST-001",
+    "from": null,
+    "to": null,
+    "result": "note",
+    "reason": "recovery.dialect",
+    "detail": {
+      "sessionId": "mock-sess-dev",
+      "dialect": "resume",
+      "restored": true
+    },
+    "gen": "gen-6830e37fac217c1b",
+    "seq": 2,
+    "ts": "2026-11-20T14:58:04.530Z",
+    "prev_event_hash": "dcebe641ce711db4b75f74ac33bb662eede93579bd1c8e9b2ab1895626c268cf"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "handoffId": "HO-001",
+    "state": "consumed"
+  },
+  {
+    "handoffId": "HO-002",
+    "state": "rejected"
+  },
+  {
+    "handoffId": "HO-003",
+    "state": "expired"
+  }
+]

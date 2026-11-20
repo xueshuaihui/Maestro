@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-0ad2a0bc6a321848",
+  "createdAt": "2026-11-20T14:58:06.932Z",
+  "updatedAt": "2026-11-20T14:58:08.341Z",
+  "state": "running",
+  "stateSince": "2026-11-20T14:58:06.932Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-31\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "paused": false,
+  "rev": 6,
+  "counters": {
+    "eventSeq": 7,
+    "runCount": 1,
+    "dispatchCount": 0
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "running",
+      "stateSince": "2026-11-20T14:58:08.265Z",
+      "startedAt": "2026-11-20T14:58:06.932Z",
+      "roundStartedAt": "2026-11-20T14:58:06.932Z",
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-13904-1",
+      "artifactRefs": [],
+      "phase": "running"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-dev",
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T14:58:07.357Z",
+      "createdAt": "2026-11-20T14:58:06.932Z",
+      "lastEventAt": "2026-11-20T14:58:06.932Z",
+      "toolName": null,
+      "turnId": null,
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": false,
+      "dialect": "new",
+      "recovered": true
+    },
+    {
+      "sessionId": "mock-sess-14796-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "idle",
+      "stateSince": "2026-11-20T14:58:07.357Z",
+      "createdAt": "2026-11-20T14:58:07.357Z",
+      "lastEventAt": "2026-11-20T14:58:07.357Z",
+      "toolName": null,
+      "turnId": null,
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": false,
+      "roleId": "developer",
+      "policy": null
+    },
+    {
+      "sessionId": "mock-sess-13904-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "hostId": "mock",
+      "state": "thinking",
+      "stateSince": "2026-11-20T14:58:08.322Z",
+      "createdAt": "2026-11-20T14:58:08.264Z",
+      "lastEventAt": "2026-11-20T14:58:08.322Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-31\\demo-recovery\\out\\test-log.txt",
+      "pendingPermission": null,
+      "quarantined": false,
+      "roleId": "developer"
+    }
+  ],
+  "handoffs": [],
+  "escalations": [],
+  "health": {
+    "level": "normal",
+    "reasons": [],
+    "computedAt": "2026-11-20T14:58:06.932Z",
+    "nodeTimeoutMs": 30000
+  },
+  "recoveredAt": "2026-11-20T14:58:07.357Z",
+  "recovery": {
+    "checkpointAt": "2026-11-20T14:58:06.932Z",
+    "skipped": 0,
+    "round": 1,
+    "maxRounds": 2
+  }
+}

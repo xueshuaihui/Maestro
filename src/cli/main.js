@@ -909,9 +909,15 @@ function recoveryEventLines(event) {
     return [line(fill(RECOVERY_TEXT.handoffCreated, { handoffId: detail.handoffId }))];
   }
   if (reason === 'recovery.connection') {
+    // AC-32: the event carries role ids (`tester` / `developer`), while
+    // formatHandoffDirection expects display names (cf. render.js:700-704).
+    // Convert through the single Chinese source before formatting; otherwise
+    // the user-visible recovery line leaks machine ids.
+    const fromId = detail.fromRole ?? detail.from ?? '';
+    const toId = detail.toRole ?? detail.to ?? '';
     const direction = formatHandoffDirection(
-      detail.fromRole ?? detail.from ?? '',
-      detail.toRole ?? detail.to ?? '',
+      ROLE_LABEL[fromId] ?? fromId,
+      ROLE_LABEL[toId] ?? toId,
       detail.kind ?? 'forward',
     );
     return [line(fill(RECOVERY_TEXT.connectionRedeliver, { direction }))];

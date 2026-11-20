@@ -1,0 +1,18 @@
+[
+  {
+    "at": "2026-11-20T14:58:08.124Z",
+    "nodeState": "running",
+    "phase": "assigned",
+    "active": 0,
+    "statusLine": "实例 INST-001：可用 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/2",
+    "busy": false
+  },
+  {
+    "at": "2026-11-20T14:58:08.350Z",
+    "nodeState": "running",
+    "phase": "assigned",
+    "active": 0,
+    "statusLine": "实例 INST-001：服务中 · 活跃会话 1/1 · 服务节点 T-001 · 宿主 mock · 最近 T-001 · 轮次 1/2",
+    "busy": true
+  }
+]
