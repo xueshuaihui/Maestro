@@ -594,10 +594,14 @@ test('会话级事件类型只有 execution.summary 一种新增（AC-24）', ()
   });
 
   // AC-24 冻结口径（D-16 ⑤ 实测）：`grep -c "object: 'session'" src/core/orchestrator.js` ≤ 13。
-  assert.ok(sites.length <= 13, `orchestrator.js 的会话发射点 ${sites.length} 处，超过冻结上限 13（AC-24）`);
+  // I1.8 合法扩项（裁-20m）：AC-49 的「会话 复用 …」行必须成对落一条会话级事件
+  // `session.reuse`，因此上限按迭代 +1 → 14；新增项不放进「任意新增都允许」的口子，
+  // 而是把 `session.reuse` 的写入点单列断言为恰 1 处（见下方），既有 13 处一字未动。
+  assert.ok(sites.length <= 14, `orchestrator.js 的会话发射点 ${sites.length} 处，超过冻结上限 14（AC-24 + I1.8 裁-20m）`);
   assert.ok(sites.length >= 1, 'orchestrator.js 必须仍有会话事件发射点');
 
-  // 会话级 reason 白名单 = 12 处既有发射点 + 1 处 execution.summary（D-1 U-7 / AC-24）。
+  // 会话级 reason 白名单 = 12 处既有发射点 + 1 处 execution.summary（D-1 U-7 / AC-24）
+  // + 1 处 I1.8 的 session.reuse（裁-20m）。
   const allowedReasons = new Set([
     'execution.summary',
     'permission.requested',
@@ -608,6 +612,8 @@ test('会话级事件类型只有 execution.summary 一种新增（AC-24）', ()
     'run.completed',
     'run.cancelled',
     'state.change',
+    // I1.8 / D-13 / AC-49：复用空闲会话时的一条用户可见行。
+    'session.reuse',
   ]);
 
   const literalReasons = new Set();
@@ -634,6 +640,12 @@ test('会话级事件类型只有 execution.summary 一种新增（AC-24）', ()
     countOccurrences(orchestrator, "reason: 'execution.summary'"),
     1,
     'execution.summary 写入点必须恰 1 处（AC-24）',
+  );
+  // I1.8 合法扩项同样是「恰 1 处」，不外溢到第二个会话事件类型（裁-20m）。
+  assert.equal(
+    countOccurrences(orchestrator, "reason: 'session.reuse'"),
+    1,
+    'session.reuse 写入点必须恰 1 处（AC-49 / 裁-20m）',
   );
 
   // daemon 侧不得新增会话事件发射点。

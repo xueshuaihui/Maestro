@@ -39,7 +39,7 @@ import {
   formatHandoffDirection,
 } from './labels.js';
 import * as render from './render.js';
-import { firstRegistryDetail, roleCommand } from './roles.js';
+import { firstRegistryDetail, roleCommand, roleSessionPolicies } from './roles.js';
 
 /** 会话行刷新间隔（AC-03：时长递增；NFR-02：状态变化 1s 内反映）。 */
 const POLL_INTERVAL_MS = 1000;
@@ -871,6 +871,15 @@ function recoveryEventLines(event) {
       maxRounds: detail.maxRounds,
     }))];
   }
+  if (reason === 'session.reuse') {
+    // A-2 / AC-49: `会话 复用 {会话号}（角色 {角色中文名}）`. Per 裁-11c the AC Then
+    // is authoritative over 附录 A and literally reads `（角色 developer）`, i.e. the
+    // role **id**; the template's placeholder name is therefore filled with the id.
+    return [line(fill(RECOVERY_TEXT.sessionReuse, {
+      sessionId: detail.sessionId ?? '',
+      role: detail.roleId ?? '',
+    }))];
+  }
   if (reason === 'recovery.summary') {
     return [line(fill(RECOVERY_TEXT.summary, {
       clock: render.formatClock(detail.checkpointAt) ?? '--:--:--',
@@ -986,6 +995,9 @@ async function runCommand(flags, ctx) {
     const templateHint = typeof flags.template === 'string' ? flags.template : 'single';
 
     // ② 发起（`run.start` 是早返回：会话建立后立刻回包）
+    // D-13 / AC-49: the declared role policies travel with the run; an empty map
+    // is not sent at all so historic instances keep the `fresh` default.
+    const sessionPolicies = roleSessionPolicies(registry, ctx.cwd);
     const started = await client.request(
       'run.start',
       {
@@ -997,6 +1009,7 @@ async function runCommand(flags, ctx) {
         ...(typeof flags.host === 'string' ? { hostId: flags.host } : {}),
         // `--approval` 透传为发起策略（D-5.2 / run.start 白名单）。
         ...(typeof flags.approval === 'string' ? { approvalPolicy: flags.approval } : {}),
+        ...(Object.keys(sessionPolicies).length > 0 ? { sessionPolicies } : {}),
       },
       { timeoutMs: CONNECT_HANDSHAKE_TIMEOUT_MS },
     );

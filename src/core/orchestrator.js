@@ -215,8 +215,19 @@ function nodeOf(state, nodeId) {
   return (state?.nodes ?? []).find((node) => node.nodeId === nodeId) ?? null;
 }
 
+/**
+ * Look up a session by id. `sessions` is one record per dispatch, so a reused
+ * session id legitimately appears more than once (D-13 / AC-49: the same id is
+ * bound for rounds 1 and 2); the newest record is the live one and the older
+ * record stays as history. With unique ids this returns exactly the same object
+ * as a first-match search, so nothing outside the reuse path changes.
+ */
 function sessionOf(state, sessionId) {
-  return (state?.sessions ?? []).find((session) => session.sessionId === sessionId) ?? null;
+  const list = state?.sessions ?? [];
+  for (let index = list.length - 1; index >= 0; index -= 1) {
+    if (list[index]?.sessionId === sessionId) return list[index];
+  }
+  return null;
 }
 
 function handoffOf(state, handoffId) {
@@ -1204,12 +1215,21 @@ export function createOrchestrator({
     return fail(CODES.DSH_SPAWN_FAILED, { cause: message });
   }
 
-  function buildSession({ sessionId, hostId, nodeId, round }) {
+  function buildSession({
+    sessionId, hostId, nodeId, round, roleId = null, instanceId = null, reused = false,
+  }) {
     const at = iso();
     return {
       sessionId,
       nodeId: nodeId ?? null,
       round: Number.isInteger(round) ? round : 0,
+      // D-13: reuse is decided per instance / role / host, so the record has to
+      // carry all three; `servingNodeId` starts as the node this dispatch binds
+      // and is what makes a session ineligible for a *different* node (AC-66).
+      roleId: isinstanceOrNull(roleId),
+      instanceId: isinstanceOrNull(instanceId),
+      servingNodeId: nodeId ?? null,
+      reused: reused === true,
       hostId: isinstanceOrNull(hostId),
       state: 'idle',
       stateSince: at,
@@ -1227,7 +1247,7 @@ export function createOrchestrator({
     return typeof value === 'string' && value.length > 0 ? value : null;
   }
 
-  function newState({ instanceId, cwd, task, runGraph }) {
+  function newState({ instanceId, cwd, task, runGraph, sessionPolicies = null }) {
     const at = iso();
     return arraysOf({
       schemaVersion: 2,
@@ -1244,6 +1264,10 @@ export function createOrchestrator({
       rev: 0,
       counters: { eventSeq: 0, runCount: 1, dispatchCount: 0 },
       hostRaw: { stopReason: null, lastError: null, agentInfo: null },
+      // D-13 / BR-42: the per-role `session_policy` snapshot the caller declared.
+      // Absent (null) means every role keeps the `fresh` default, so historic
+      // instances and the three main chains are unaffected (AC-48 / AC-52).
+      sessionPolicies: policySnapshot(sessionPolicies),
       nodes: initialNodes(runGraph, { stateAt: at }),
       sessions: [],
       handoffs: [],
@@ -1251,6 +1275,34 @@ export function createOrchestrator({
       health: { nodeTimeoutMs: 30000 },
       traceId: trace.newTraceId(),
     });
+  }
+
+  /**
+   * Normalise an incoming `roleId -> policy` map. Only the closed set is kept and
+   * `fresh` is dropped because it is the default; anything malformed collapses to
+   * null so a bad caller can never widen behaviour.
+   */
+  function policySnapshot(value) {
+    if (value === null || value === undefined) return null;
+    if (typeof value !== 'object' || Array.isArray(value)) return null;
+    const out = {};
+    let count = 0;
+    for (const [roleId, policy] of Object.entries(value)) {
+      if (typeof roleId !== 'string' || roleId.length === 0) continue;
+      if (policy !== 'reuse' && policy !== 'fresh') continue;
+      if (policy === 'fresh') continue;
+      out[roleId] = policy;
+      count += 1;
+    }
+    return count > 0 ? out : null;
+  }
+
+  /** D-13: the declared policy for one role; only `reuse` changes dispatch. */
+  function sessionPolicyOf(state, roleId) {
+    if (!roleId) return null;
+    const map = state?.sessionPolicies;
+    if (!map || typeof map !== 'object') return null;
+    return map[roleId] === 'reuse' ? 'reuse' : null;
   }
 
   /** 图名 → 图对象；未知模板返回 null（不抛）。 */
@@ -2221,10 +2273,25 @@ export function createOrchestrator({
 
     let adapter = null;
     let sessionId = null;
+    let reusedDialect = null;
     try {
-      const created = await createAdapter(hostId, state.cwd);
-      adapter = created.adapter;
-      sessionId = created.sessionId;
+      // D-13 / BR-42: only an explicitly declared `reuse` role takes this branch.
+      // A miss (no idle session, or the host cannot reattach) falls through to the
+      // ordinary `new` path without an error and without a reuse line (AC-65).
+      const candidate = reuseCandidate(state, node, hostId);
+      if (candidate) {
+        const attached = await attachReusableSession(state, candidate, hostId);
+        if (attached) {
+          adapter = attached.adapter;
+          sessionId = attached.sessionId;
+          reusedDialect = attached.dialect;
+        }
+      }
+      if (sessionId === null) {
+        const created = await createAdapter(hostId, state.cwd);
+        adapter = created.adapter;
+        sessionId = created.sessionId;
+      }
     } catch (error) {
       if (adapter) await disposeAdapter(adapter);
       // AC-65 / BR-13,BR-29: the handoff was already persisted as `created`
@@ -2253,9 +2320,31 @@ export function createOrchestrator({
       };
     }
 
-    const session = buildSession({ sessionId, hostId, nodeId, round: node.round });
+    const session = buildSession({
+      sessionId,
+      hostId,
+      nodeId,
+      round: node.round,
+      roleId: node.roleId ?? null,
+      instanceId: state.instanceId ?? null,
+      reused: reusedDialect !== null,
+    });
     state.sessions.push(session);
     node.sessionId = sessionId;
+
+    if (reusedDialect !== null) {
+      // A-2 / AC-49: the user-visible reuse line. Written before the prompt so the
+      // log reads in causal order; a failed emit never rolls the dispatch back.
+      await emit({
+        object: 'session',
+        objectId: sessionId,
+        from: null,
+        to: null,
+        result: 'note',
+        reason: 'session.reuse',
+        detail: { sessionId, roleId: node.roleId ?? null, nodeId, dialect: reusedDialect },
+      });
+    }
 
     const ctx = makeCtx({
       instanceId: state.instanceId,
@@ -2932,8 +3021,9 @@ export function createOrchestrator({
       hostId: ctx.hostId ?? ctx.session?.hostId ?? null,
       nodeId: node.nodeId,
       round: node.round,
+      roleId: node.roleId ?? null,
+      instanceId: state.instanceId ?? null,
     });
-    fresh.roleId = node.roleId ?? null;
     state.sessions.push(fresh);
     node.sessionId = created.sessionId;
     ctx.adapter = created.adapter;
@@ -4194,9 +4284,13 @@ export function createOrchestrator({
     return null;
   }
 
-  async function claimSingle({ existing, instanceId, cwd, task, hostId, onProgress, runGraph = graph }) {
+  async function claimSingle({
+    existing, instanceId, cwd, task, hostId, onProgress, runGraph = graph, sessionPolicies = null,
+  }) {
     const fresh = !existing;
-    const state = fresh ? newState({ instanceId, cwd, task, runGraph }) : arraysOf(existing);
+    const state = fresh
+      ? newState({ instanceId, cwd, task, runGraph, sessionPolicies })
+      : arraysOf(existing);
     const prevState = fresh ? null : state.state;
     const prevRev = fresh ? null : state.rev;
 
@@ -4210,6 +4304,10 @@ export function createOrchestrator({
     state.counters.dispatchCount = Number.isInteger(state.counters.dispatchCount)
       ? state.counters.dispatchCount
       : 0;
+    // Same refresh rule as the multi-node claim: only an explicit map overwrites.
+    if (sessionPolicies !== null && sessionPolicies !== undefined) {
+      state.sessionPolicies = policySnapshot(sessionPolicies);
+    }
 
     const at = iso();
     const node = state.nodes[0];
@@ -4255,7 +4353,14 @@ export function createOrchestrator({
       return { ok: false, result: preflightFailure(error) };
     }
 
-    const session = buildSession({ sessionId, hostId, nodeId: node.nodeId, round: 1 });
+    const session = buildSession({
+      sessionId,
+      hostId,
+      nodeId: node.nodeId,
+      round: 1,
+      roleId: node.roleId ?? null,
+      instanceId,
+    });
     state.sessions.push(session);
     node.sessionId = sessionId;
 
@@ -4380,10 +4485,15 @@ export function createOrchestrator({
     return { ok: true, handle };
   }
 
-  async function claimGraph({ existing, instanceId, cwd, task, hostId, onProgress, runGraph: chosenGraph = graph }) {
+  async function claimGraph({
+    existing, instanceId, cwd, task, hostId, onProgress, runGraph: chosenGraph = graph,
+    sessionPolicies = null,
+  }) {
     const fresh = !existing;
     const runGraph = existing ? graphForState(existing) : chosenGraph;
-    const state = fresh ? newState({ instanceId, cwd, task, runGraph }) : arraysOf(existing);
+    const state = fresh
+      ? newState({ instanceId, cwd, task, runGraph, sessionPolicies })
+      : arraysOf(existing);
     const prevState = fresh ? 'created' : state.state;
 
     state.schemaVersion = 2;
@@ -4392,6 +4502,11 @@ export function createOrchestrator({
     state.template = runGraph.id ?? state.template ?? null;
     state.coreGeneration = generation;
     state.counters.runCount = fresh ? 1 : (state.counters.runCount ?? 0) + 1;
+    // Re-running an existing instance refreshes the declared snapshot; a caller
+    // that passes nothing keeps whatever the instance was created with.
+    if (sessionPolicies !== null && sessionPolicies !== undefined) {
+      state.sessionPolicies = policySnapshot(sessionPolicies);
+    }
 
     const emit = makeEmitter(instanceId, onProgress);
 
@@ -4478,10 +4593,12 @@ export function createOrchestrator({
     return { ok: true, handle };
   }
 
-  async function claimRun({ existing, instanceId, cwd, task, hostId, onProgress, multi, runGraph }) {
+  async function claimRun({
+    existing, instanceId, cwd, task, hostId, onProgress, multi, runGraph, sessionPolicies = null,
+  }) {
     return multi
-      ? claimGraph({ existing, instanceId, cwd, task, hostId, onProgress, runGraph })
-      : claimSingle({ existing, instanceId, cwd, task, hostId, onProgress, runGraph });
+      ? claimGraph({ existing, instanceId, cwd, task, hostId, onProgress, runGraph, sessionPolicies })
+      : claimSingle({ existing, instanceId, cwd, task, hostId, onProgress, runGraph, sessionPolicies });
   }
 
   /**
@@ -4498,6 +4615,7 @@ export function createOrchestrator({
     template = null,
     onProgress,
     earlyReturn = false,
+    sessionPolicies = null,
   } = {}) {
     const selected = template ? resolveTemplate(template) : graph;
     if (template && !selected) {
@@ -4592,6 +4710,7 @@ export function createOrchestrator({
             onProgress,
             multi,
             runGraph,
+            sessionPolicies,
           }),
         );
       });
@@ -5150,6 +5269,57 @@ export function createOrchestrator({
     return typeof def?.nodeType === 'string' ? def.nodeType : null;
   }
 
+  /**
+   * D-13 / AC-49 / AC-65 / AC-66: the reuse candidate for one dispatch, or null.
+   * Reads the frozen pure selector so the eligibility rules (same instance, same
+   * role, same host, idle, not serving another node) live in exactly one place.
+   */
+  function reuseCandidate(state, node, hostId) {
+    if (sessionPolicyOf(state, node.roleId) !== 'reuse') return null;
+    return selectReusableSession(state.sessions, {
+      instanceId: state.instanceId ?? null,
+      roleId: node.roleId ?? null,
+      hostId: isinstanceOrNull(hostId),
+      nodeId: node.nodeId,
+    });
+  }
+
+  /**
+   * Reattach an idle session instead of opening a new one. Returns null for every
+   * "cannot reuse" outcome — the caller then takes the ordinary `new` path, which
+   * is what AC-65 requires (no error, no reuse line). The adapter is only kept
+   * alive on success; a failed attempt is disposed so no host process leaks.
+   */
+  async function attachReusableSession(state, candidate, hostId) {
+    const target = candidate?.sessionId ?? null;
+    if (typeof target !== 'string' || target.length === 0) return null;
+    let adapter = null;
+    try {
+      adapter = await initializeAdapterOnly(hostId, state.cwd);
+    } catch {
+      // Host unreachable: the `new` path below produces the proper classification.
+      return null;
+    }
+    const client = adapter.client ?? null;
+    if (!client || typeof client.normalizeCapabilities !== 'function') {
+      await disposeAdapter(adapter);
+      return null;
+    }
+    const caps = client.normalizeCapabilities(client.capabilities ?? adapter.capabilities ?? {});
+    const stations = [
+      caps.canResume && typeof client.resumeSession === 'function' ? 'resume' : null,
+      caps.canLoad && typeof client.loadSession === 'function' ? 'load' : null,
+    ].filter((name) => name !== null);
+    for (const dialect of stations) {
+      const res = dialect === 'resume'
+        ? await client.resumeSession(target, { cwd: state.cwd })
+        : await client.loadSession(target, { cwd: state.cwd });
+      if (res && res.ok === true) return { adapter, sessionId: target, dialect };
+    }
+    await disposeAdapter(adapter);
+    return null;
+  }
+
   /** Create and initialize an adapter without paying for a session. */
   async function initializeAdapterOnly(hostId, cwd) {
     const args = typeof hostId === 'string' && hostId.length > 0 ? { hostId, cwd } : { cwd };
@@ -5361,6 +5531,8 @@ export function createOrchestrator({
     const humanNodes = [];
     const reverified = [];
     const assigned = [];
+    /** D-5 step 5 / AC-60: schedulable (`pending` + `ready`) nodes to dispatch. */
+    const ready = [];
     const recoverableSessions = new Map();
 
     for (const node of nodes) {
@@ -5383,7 +5555,14 @@ export function createOrchestrator({
         reverified.push({ nodeId: node.nodeId, ...result });
         continue;
       }
-      if (node.state === 'pending') continue;
+      // D-5 step 5 / BR-53 / AC-60: a node that was schedulable when the core died
+      // keeps its position (`pending` + `phase: ready`) and is dispatched by the
+      // continuation; a node whose dependency is unmet (`phase: blocked`) is left
+      // alone — dispatching it would silently break the dependency.
+      if (node.state === 'pending') {
+        if (nodePosition(node) === 'ready') ready.push(node.nodeId);
+        continue;
+      }
       if (node.state !== 'running') continue;
 
       const session = sessionForNode(state, node);
@@ -5410,8 +5589,9 @@ export function createOrchestrator({
             hostId: session.hostId,
             nodeId: node.nodeId,
             round: node.round,
+            roleId: session.roleId ?? node.roleId ?? null,
+            instanceId: state.instanceId ?? null,
           });
-          fresh.roleId = session.roleId ?? node.roleId ?? null;
           fresh.policy = session.policy ?? null;
           state.sessions.push(fresh);
           node.sessionId = recovered.sessionId;
@@ -5635,6 +5815,7 @@ export function createOrchestrator({
     // durable record so `reconcileOnBoot` never blocks the daemon listener.
     const plan = {
       assigned,
+      ready,
       recoverableSessions,
       redeliver,
       createdContinue,
@@ -5691,8 +5872,9 @@ export function createOrchestrator({
         hostId: session?.hostId ?? null,
         nodeId,
         round: node.round,
+        roleId: node.roleId ?? null,
+        instanceId: state.instanceId ?? null,
       });
-      fresh.roleId = node.roleId ?? null;
       state.sessions.push(fresh);
       node.sessionId = sessionId;
       state.state = 'running';
@@ -5787,6 +5969,18 @@ export function createOrchestrator({
     for (const item of plan.redeliver ?? []) {
       if (!item.nodeId) continue;
       await redispatchRecoveredNode(instanceId, item.nodeId, item.handoffId);
+    }
+    // D-5 step 5 / AC-60: last, so a node that was already `assigned` (its session
+    // restored above) is not raced by a sibling dispatch. `blocked` nodes never
+    // reach this list — their dependency is still unmet. Re-read the node first:
+    // the `redeliver` / `createdContinue` steps above may already have dispatched
+    // it, and dispatching a node twice would prompt the same round twice.
+    for (const nodeId of plan.ready ?? []) {
+      const loaded = await store.load(instanceId);
+      if (!loaded.ok) continue;
+      const node = nodeOf(arraysOf(loaded.state), nodeId);
+      if (!node || node.state !== 'pending') continue;
+      await redispatchRecoveredNode(instanceId, nodeId, null);
     }
   }
 

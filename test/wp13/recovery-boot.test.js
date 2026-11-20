@@ -567,7 +567,11 @@ test('AC-59 已分配节点保持已分配并重新派发（phase 不退回阻�
 
 test('AC-60 待执行节点恢复后保持原位置与依赖', async () => {
   const root = await tempRoot('ac60');
-  const { store, orchestrator } = await boot(root, { factory: { options: { caps: {} } } });
+  // 「恢复本身不改位置」只在派发之前可观测：`continueRecovery` 的 hold 挂在派发前。
+  const { store, orchestrator } = await boot(root, {
+    env: { MAESTRO_TEST_RECOVERY_HOLD: 'after_assign' },
+    factory: { options: { caps: {} } },
+  });
   const cwd = path.join(root, 'demo');
   await fs.mkdir(cwd, { recursive: true });
   const nodes = [
@@ -578,11 +582,51 @@ test('AC-60 待执行节点恢复后保持原位置与依赖', async () => {
   await persist(store, makeState('INST-060', cwd, { nodes }), { checkpoint: true });
   const before = JSON.parse(await fs.readFile(statePath(root, 'INST-060'), 'utf8'));
   await orchestrator.reconcileOnBoot({ generation: 'gen-current' });
+  // 等 continueRecovery 走到 hold 点（派发之前），此时读到的位置就是「恢复后的位置」。
+  assert.equal(await waitForPath(path.join(root, '.mock', 'paused')), true, '须停在派发之前');
   const after = JSON.parse(await fs.readFile(statePath(root, 'INST-060'), 'utf8'));
   assert.deepEqual(after.nodes.map((node) => node.phase ?? null), before.nodes.map((node) => node.phase ?? null));
   assert.deepEqual(getGraph('code-loop').edges, makeGraph().edges);
-  await fs.rm(root, { recursive: true, force: true });
+
+  // 释放 hold 后：可调度的 T-003 被派发，依赖未满足的 T-002 原地不动（D-5 第 5 步）。
+  await fs.mkdir(path.join(root, '.mock'), { recursive: true });
+  await fs.writeFile(path.join(root, '.mock', 'release'), '1', 'utf8');
+  assert.equal(await waitForNode(store, 'INST-060', 'T-003', (node) => node.state === 'running'), true,
+    '可调度节点须被派发');
+  const dispatched = JSON.parse(await fs.readFile(statePath(root, 'INST-060'), 'utf8'));
+  const parked = dispatched.nodes.find((node) => node.nodeId === 'T-002');
+  assert.equal(parked.state, 'pending', '阻塞节点不得被派发');
+  assert.equal(parked.phase, 'blocked', '阻塞节点位置不变');
+  // 派发已经结束但驱动可能仍在收尾写 workspace：先取消，再按瞬态错误重试删目录。
+  try { await orchestrator.cancel({ instanceId: 'INST-060' }); } catch { /* 终态无需取消 */ }
+  await new Promise((resolve) => setTimeout(resolve, 120));
+  await fs.rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
 });
+
+/** 轮询磁盘上限等待（hold 文件 / 节点状态），不猜固定时长。 */
+async function waitForPath(target, timeoutMs = 15000) {
+  const until = Date.now() + timeoutMs;
+  for (;;) {
+    try {
+      await fs.access(target);
+      return true;
+    } catch {
+      if (Date.now() >= until) return false;
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
+  }
+}
+
+async function waitForNode(store, instanceId, nodeId, predicate, timeoutMs = 15000) {
+  const until = Date.now() + timeoutMs;
+  for (;;) {
+    const loaded = await store.load(instanceId);
+    const node = loaded.ok ? (loaded.state.nodes ?? []).find((item) => item.nodeId === nodeId) : null;
+    if (node && predicate(node)) return true;
+    if (Date.now() >= until) return false;
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+}
 
 
 async function writeInjectedGraph(root, name, value) {

@@ -224,10 +224,24 @@ export function createServer({
         }
       }
 
+      // D-13 / AC-49: per-role `session_policy` snapshot from the project registry.
+      // Validated at the IPC boundary so the engine only ever sees the closed set.
+      const sessionPolicies = params?.sessionPolicies;
+      if (sessionPolicies !== undefined && sessionPolicies !== null) {
+        if (typeof sessionPolicies !== 'object' || Array.isArray(sessionPolicies)) {
+          return { ok: false, code: 'IPC_BAD_PARAMS', params: { field: 'sessionPolicies' } };
+        }
+        for (const value of Object.values(sessionPolicies)) {
+          if (value !== 'reuse' && value !== 'fresh') {
+            return { ok: false, code: 'IPC_BAD_PARAMS', params: { field: 'sessionPolicies' } };
+          }
+        }
+      }
+
       // 早返回契约：orchestrator.startRun 必须在会话建立后立即 resolve，
       // 之后的进展通过返回的 `stream`（遍历后转 bus）或它自己往 bus 里 emit 推进。
-      // 白名单固定为 `{cwd,task,earlyReturn,instanceId,hostId,template}`：`template`
-      // 以前被静默丢弃（C-05），现在全链路透传。`approvalPolicy` 按 D-5.2 追加。
+      // 白名单固定为 `{cwd,task,earlyReturn,instanceId,hostId,template,sessionPolicies}`：
+      // `template` 以前被静默丢弃（C-05），现在全链路透传。`approvalPolicy` 按 D-5.2 追加。
       const started = await withProgress(orchestrator, {
         cwd: path.resolve(cwd),
         task,
@@ -237,6 +251,7 @@ export function createServer({
         ...(typeof params?.hostId === 'string' ? { hostId: params.hostId } : {}),
         ...(typeof params?.template === 'string' ? { template: params.template } : {}),
         ...(typeof approvalPolicy === 'string' ? { approvalPolicy } : {}),
+        ...(sessionPolicies && typeof sessionPolicies === 'object' ? { sessionPolicies } : {}),
       });
 
       if (!started || started.ok !== true) {
@@ -417,7 +432,14 @@ export function createServer({
   if (process.env.NODE_ENV === 'test') {
     if (typeof orchestrator.dispatchToNode === 'function') {
       methods['test.dispatch'] = async (params) =>
-        callSeam('test.dispatch', params, () => orchestrator.dispatchToNode(params?.instanceId, params?.nodeId));
+        callSeam('test.dispatch', params, () => orchestrator.dispatchToNode(
+          params?.instanceId,
+          params?.nodeId,
+          // D-13 / AC-66: the seam forwards the host so a fixture can prove a
+          // cross-host session is never reused (the dispatch itself already
+          // accepted `options.hostId`; it was just never plumbed through).
+          typeof params?.hostId === 'string' ? { hostId: params.hostId } : {},
+        ));
     }
     if (typeof orchestrator.escalateOnce === 'function') {
       // D-10 / G10: forward reasonCode / artifactRefs to the escalation seam.

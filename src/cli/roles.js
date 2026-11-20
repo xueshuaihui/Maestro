@@ -245,6 +245,28 @@ function rolesWithAssetKeys(registry, cwd) {
 }
 
 /**
+ * D-13 / AC-49: the explicit per-role `session_policy` snapshot handed to a run.
+ *
+ * Read from the *source asset*, exactly like `role show`: the registry loader
+ * never injects the default, so only a file that literally declares `reuse`
+ * shows up here. `fresh` is the dispatcher default and is therefore dropped —
+ * an instance without a snapshot keeps the pre-I1.8 behaviour (AC-48 / AC-52).
+ *
+ * @param {{roles:Array}} registry
+ * @param {string} cwd project root the registry was loaded from
+ * @returns {Record<string, 'reuse'>}
+ */
+export function roleSessionPolicies(registry, cwd) {
+  const out = {};
+  for (const role of registry?.roles ?? []) {
+    if (!role || typeof role.id !== 'string' || role.id.length === 0) continue;
+    const asset = assetObjectOf(role, cwd);
+    if (asset && asset.session_policy === 'reuse') out[role.id] = 'reuse';
+  }
+  return out;
+}
+
+/**
  * The workflow collection contract binding is judged against (WP-3, R-4).
  *
  * Deliberately loaded WITHOUT `roles`: passing them would run workflow validate's
