@@ -26,6 +26,8 @@ function parseFailures(stdout) {
 }
 
 function parseCounts(stdout) {
+  // Node 的 TAP 汇总行打的是 `# skipped N`（不是 `# skip N`）。原来只认 `skip`，
+  // 于是 `skipped` 恒为 null —— 终验第 3 轮指出后改为两种写法都认。
   const num = (label) => {
     const m = stdout.match(new RegExp(`^# ${label} (\\d+)$`, 'm'));
     return m ? Number(m[1]) : null;
@@ -34,7 +36,7 @@ function parseCounts(stdout) {
     tests: num('tests'),
     pass: num('pass'),
     fail: num('fail'),
-    skipped: num('skip'),
+    skipped: num('skipped') ?? num('skip'),
   };
 }
 
