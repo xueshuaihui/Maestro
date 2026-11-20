@@ -1,15 +1,16 @@
 /**
- * I1.8 S3 验收脚手架 · 常量与底层工具（WP-7 末批）。
+ * I1.8 S3 验收脚手架 · 常量与底层工具。
  *
  * 纪律（需求 §3.3、附录 D-10、拆分 §2.15）：
- * - 只新增 `probe/**` 与 `docs/iterations/iteration-8/evidence/wp7/**`；
+ * - 只新增 `probe/**` 与 `docs/iterations/iteration-8/evidence/<acc8|wp7>/**`；
  *   不改 `src/**`、`test/**`（D-9 两行授权除外，已由 S2 落地）、`bin/**` 与过程文档。
  * - 夹具项目根一律 `%TEMP%/maestro-i18/<AC>`，**不放仓库内**。
  * - 命令一律 `process.execPath` + 参数数组（跨平台），不经 shell；架构扫描例外
  *   （AC-54 必须逐字执行附录 D-11 的五条 bash 命令）。
  * - 环境必注入 `NODE_ENV=test`；真实宿主面走 `probe/acc8-realhost.mjs` 的隔离配方。
- * - **边界说明**：`results.jsonl` / `summary.json` 落 `evidence/wp7/`（本批授权目录），
- *   不新建 `probe/acc8-f-results.jsonl`（不在 WP-7 允许的新增文件清单内）。
+ * - **证据根**：默认 `evidence/acc8`（S3 全量 67 条的自洽证据集）；
+ *   设 `ACC8_EVID=wp7` 可复现 WP-7 末批那 9 条的原始目录。`results/summary/blockers`
+ *   一律与证据根同目录，保证「一次验收 = 一个自洽目录」。
  */
 import fs from 'node:fs';
 import os from 'node:os';
@@ -25,16 +26,21 @@ export const NODE = process.execPath;
 export const ORCH_BIN = path.join(REPO, 'bin', 'orch.js');
 export const BASE = os.tmpdir();
 
+/** 证据子目录名：`acc8`（默认，S3 全量）或 `wp7`（WP-7 末批原始帧）。 */
+const EVID_DIR = String(process.env.ACC8_EVID || 'acc8').trim() || 'acc8';
+const EVID_ROOT = path.join(REPO, 'docs', 'iterations', 'iteration-8', 'evidence', EVID_DIR);
+
 export const ACC8_PATHS = Object.freeze({
   REPO,
   NODE,
   ORCH_BIN,
   BASE,
-  EVID: path.join(REPO, 'docs', 'iterations', 'iteration-8', 'evidence', 'wp7'),
+  EVID: EVID_ROOT,
+  EVID_DIR,
   CASES: path.join(HERE, 'acc8-cases'),
-  RESULTS: path.join(REPO, 'docs', 'iterations', 'iteration-8', 'evidence', 'wp7', '_acc8-f-results.jsonl'),
-  SUMMARY: path.join(REPO, 'docs', 'iterations', 'iteration-8', 'evidence', 'wp7', '_acc8-f-summary.json'),
-  BLOCKERS: path.join(REPO, 'docs', 'iterations', 'iteration-8', 'evidence', 'wp7', '_acc8-f-blockers.md'),
+  RESULTS: path.join(EVID_ROOT, '_acc8-f-results.jsonl'),
+  SUMMARY: path.join(EVID_ROOT, '_acc8-f-summary.json'),
+  BLOCKERS: path.join(EVID_ROOT, '_acc8-f-blockers.md'),
   REQUIREMENT: path.join(REPO, 'docs', 'iterations', 'iteration-8', 'requirement.md'),
   BASELINE_REDS: path.join(REPO, 'probe', 'i18-s2', 'baseline-014fa6a-reds.txt'),
   BASELINE_FULL: path.join(REPO, 'probe', 'i18-s2', 'baseline-014fa6a-full.log'),
