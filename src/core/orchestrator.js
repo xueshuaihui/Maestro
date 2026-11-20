@@ -1264,16 +1264,21 @@ export function createOrchestrator({
       rev: 0,
       counters: { eventSeq: 0, runCount: 1, dispatchCount: 0 },
       hostRaw: { stopReason: null, lastError: null, agentInfo: null },
-      // D-13 / BR-42: the per-role `session_policy` snapshot the caller declared.
-      // Absent (null) means every role keeps the `fresh` default, so historic
-      // instances and the three main chains are unaffected (AC-48 / AC-52).
-      sessionPolicies: policySnapshot(sessionPolicies),
       nodes: initialNodes(runGraph, { stateAt: at }),
       sessions: [],
       handoffs: [],
       escalations: [],
       health: { nodeTimeoutMs: 30000 },
       traceId: trace.newTraceId(),
+      // D-13 / BR-42: the per-role `session_policy` snapshot the caller declared.
+      // Absent (null) means every role keeps the `fresh` default, so historic
+      // instances and the three main chains are unaffected (AC-48 / AC-52).
+      //
+      // Appended **after** `health` / `traceId` on purpose: I1.9 froze the top-level
+      // key order (`test/wp9/i19-orchestrator.test.js`: 18 base fields verbatim,
+      // then health, then traceId). Adding a field in the middle would reorder the
+      // frozen prefix; appending keeps it byte-identical (裁-20m).
+      sessionPolicies: policySnapshot(sessionPolicies),
     });
   }
 

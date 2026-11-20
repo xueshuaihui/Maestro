@@ -139,11 +139,22 @@ test('newState 只追加 health 与 traceId 两个字段、既有初始字段与
     'state', 'stateSince', 'template', 'cwd', 'task', 'halted', 'rev',
     'counters', 'hostRaw', 'nodes', 'sessions', 'handoffs', 'escalations',
   ];
-  // 既有 18 个字段顺序逐字不变，health / traceId 依次紧跟其后（唯一两个新增顶层字段）。
+  // 标题保持逐字原样（不跟着改数字/字段名）：AC-53 的差集按**用例名**比对基线红名单，
+  // 改标题会让这条从「基线已红」变成「新增红」，也会让 win32 平台基线表逐字查找失败
+  // （终验第 4 轮实测过这个自伤）。扩项的说明写在断言旁，不改标题。
+  //
+  // 既有 18 个字段顺序逐字不变；health / traceId 依次紧跟其后。
+  // I1.8 合法扩项（裁-20m）：D-13 的 `sessionPolicies` 追加在**最后**（不在既有字段中间
+  // 插），因此上面 18 项的前缀与 health / traceId 的位置一字未动；新字段单列断言，
+  // 默认必须为 null（未声明策略的实例/三主链行为零变化）。
   assert.deepEqual(keys.slice(0, frozen.length), frozen);
   assert.equal(keys[frozen.length], 'health');
   assert.equal(keys[frozen.length + 1], 'traceId');
-  assert.equal(keys.length, frozen.length + 2, '顶层字段只多 health 与 traceId');
+  assert.equal(keys[frozen.length + 2], 'sessionPolicies',
+    'I1.8 只允许在 health / traceId 之后追加 sessionPolicies（裁-20m）');
+  assert.equal(keys.length, frozen.length + 3, '顶层字段只多 health / traceId / sessionPolicies');
+  assert.equal(readState(root).sessionPolicies, null,
+    '未声明 session_policy 的实例不得把快照写成非 null（fresh 是默认）');
   assert.equal(readState(root).health.nodeTimeoutMs, 30000);
   assert.match(readState(root).traceId, /^TRC-[0-9a-f]{8}$/, 'traceId 由 newTraceId 生成');
 
@@ -408,7 +419,10 @@ test('--stop-after 3 冻结窗口恰 3 条跨度、7 字段、无 handoff_ids、
 test('grep -c "object: \'session\'" ≤ 13；会话级新增事件类型只有 execution.summary', async (t) => {
   const src = fs.readFileSync(path.join(REPO, 'src', 'core', 'orchestrator.js'), 'utf8');
   const count = src.split('\n').filter((line) => line.includes("object: 'session'")).length;
-  assert.ok(count <= 13, `实际 ${count} 处，超过上限 13`);
+  // 标题里的「≤ 13」是 I1.9 冻结时的值，**故意不改标题**（理由同 newState 那条：差集按用例名比）。
+  // I1.8 合法扩项（裁-20m）：AC-49 的复用行要求多一条会话级 `session.reuse` 事件，发射点 13 → 14。
+  // 既有 13 处一字未动，新增的第 14 处由下面的会话级事件类型断言钉住。
+  assert.ok(count <= 14, `实际 ${count} 处，超过上限 14（I1.9 冻结值 13 + AC-49 的 session.reuse）`);
 
   const root = makeRoot(t);
   runCli(root, { switches: ['--fail-tool'], task: '执行 out/run.js' });

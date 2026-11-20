@@ -59,6 +59,38 @@ function owningFileOf(stdout, name) {
   return null;
 }
 
+/**
+ * 把 TAP 里的「失败用例名 → 失败类型」配成表（`failureType` / `code`）。
+ *
+ * 为什么要它：差集只比**用例名**，基线里因 `EBUSY`（after 钩子清理失败）而红的用例，
+ * 若在本次改成「断言不成立」（`testCodeFailure` / `ERR_ASSERTION`），名字一样、差集照样是 0，
+ * 真实的断言级回归就被同名红掩蔽了。终验第 4 轮就是这么抓到 2 条的（`newState` 字段清单、
+ * `object: 'session'` 上限）。所以同名红必须连「红的原因」一起比（裁-20z）。
+ */
+function failureKindsOf(stdout) {
+  const lines = stdout.split(/\r?\n/);
+  const out = new Map();
+  let cur = null;
+  for (const line of lines) {
+    const head = line.match(/^not ok \d+ - (.*)$/);
+    if (head) {
+      cur = head[1].trim();
+      if (!out.has(cur)) out.set(cur, {});
+      continue;
+    }
+    if (cur === null) continue;
+    if (/^(ok|not ok) \d+ /.test(line)) { cur = null; continue; }
+    const ft = line.match(/^\s+failureType: '(.*)'/);
+    if (ft) out.get(cur).failureType = ft[1];
+    const code = line.match(/^\s+code: '(.*)'/);
+    if (code) out.get(cur).code = code[1];
+  }
+  return out;
+}
+
+/** 基线全量帧（用于取「基线时这条为什么红」）。 */
+const BASELINE_LOG = path.join(REPO, 'probe', 'i18-s2', 'baseline-014fa6a-full.log');
+
 /** 证据文件名用的短标识（只用 ASCII，避免路径里出现中文）。 */
 function slugOf(name) {
   const ascii = name.replace(/[^\x20-\x7e]/g, '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -90,6 +122,25 @@ export async function run() {
   const failSet = new Set(failures);
   const extra = [...failSet].filter((n) => !baselineSet.has(n)).sort();
   const fixed = baseline.filter((n) => !failSet.has(n)).sort();
+
+  // 同名掩蔽检测（裁-20z）：基线红里「名字相同但失败类型变了」的，必须当新增红对待。
+  // 基线的失败类型取自开工点 `014fa6a` 的全量帧；取不到的（基线帧里没有该名）不臆断，
+  // 记为 `unknown` 单列，不参与判据（但会出现在证据里，供人工核对）。
+  let baseLog = '';
+  try { baseLog = readText(BASELINE_LOG); } catch { baseLog = ''; }
+  const baseKinds = baseLog ? failureKindsOf(baseLog) : new Map();
+  const nowKinds = failureKindsOf(r.stdout);
+  const masked = [];
+  const kindUnknown = [];
+  for (const name of failSet) {
+    if (!baselineSet.has(name)) continue;
+    const before = baseKinds.get(name);
+    const now = nowKinds.get(name);
+    if (!before || !before.failureType || !now || !now.failureType) { kindUnknown.push(name); continue; }
+    if (before.failureType !== now.failureType) {
+      masked.push(`${name}（基线 ${before.failureType} → 本次 ${now.failureType}${now.code ? ` / ${now.code}` : ''}）`);
+    }
+  }
 
   // 门禁判据**保持硬判**：新增失败集合必须为空（AC 原文「失败集合差集为 0」）。
   // 不设任何白名单——终验指出：把「本次并未出现、也未被本条证伪」的 flake 放进白名单，
@@ -152,6 +203,12 @@ export async function run() {
     '## 剔除 flake 后的差集（判据）',
     ...(surviving.length ? surviving.map((n) => `+ ${n}`) : ['(空)']),
     '',
+    '## 基线同名红但失败类型变了（判据：必须为空，裁-20z）',
+    ...(masked.length ? masked.map((n) => `+ ${n}`) : ['(空)']),
+    '',
+    '## 基线失败类型取不到（不参与判据，仅供核对）',
+    ...(kindUnknown.length ? kindUnknown.map((n) => `? ${n}`) : ['(空)']),
+    '',
     '## 基线红本次未复现（允许）',
     ...(fixed.length ? fixed.map((n) => `- ${n}`) : ['(空)']),
     '',
@@ -159,6 +216,7 @@ export async function run() {
 
   verify(c, '测试条数 ≥ 1841（只增不减）', counts.tests, (n) => typeof n === 'number' && n >= 1841, '≥ 1841');
   eq(c, '新增失败集合（差集，剔除已独占复跑证伪的 flake）为空', surviving, []);
+  eq(c, '基线同名红不得换失败类型（防「同名掩蔽」，裁-20z）', masked, []);
   // 终验第 2 轮指出：原判据 `counts.fail === failures.length || failures.length > 0`
   // 里的 `|| failures.length > 0` 让该检查在「有任何失败」时恒真，TAP 计数与失败名
   // 解析错位永远发现不了。这里改为**严格逐条对应**：差额必须为 0。
@@ -168,6 +226,9 @@ export async function run() {
   check(c, '失败条数与 TAP 解析一致（逐条可对应，差额 0）', failGap === 0,
     JSON.stringify({ ...counts, parsedNames: failures.length, gap: failGap }));
   note(c, `实跑：${JSON.stringify(counts)}，耗时 ${Math.round(durationMs / 1000)}s；基线红 ${baseline.length} 条，本次失败 ${failSet.size} 条，差集 ${extra.length} 条，独占复跑后仍红 ${surviving.length} 条。`);
+  note(c, '裁-20z：差集只比用例名会漏掉「同名掩蔽」——基线里因 EBUSY 红的用例若改成断言失败，'
+    + '名字一样、差集仍为 0。故额外比「失败类型」，同名换类型一律当新增红；'
+    + `本次基线同名换类型 ${masked.length} 条、类型取不到 ${kindUnknown.length} 条。`);
   note(c, '裁-20r：新增红逐条独占复跑（`--test-concurrency=1` 单文件），单跑通过判负载 flake 并附独立帧，'
     + '单跑仍红计入差集。不预置任何白名单，不核不剔。');
   note(c, `命令逐字：${FULL_CMD}`);
