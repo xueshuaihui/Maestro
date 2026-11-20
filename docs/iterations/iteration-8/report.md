@@ -4,7 +4,7 @@
 |---|---|
 | 需求 | `docs/iterations/iteration-8/requirement.md`（v3，**67 条 AC / 54 BR / 8 NFR**；S0 评审 r1 FAIL → r2 FAIL → **r3 PASS**） |
 | 拆分与契约 | `docs/iterations/iteration-8.md`（812 行 / 7 WP / 10 个契约冻结点；S1 评审 r1 FAIL → **r2 PASS**） |
-| 验收记录 | `docs/iterations/iteration-8/evidence/acc8/`（**542 个文件 / 452 份被引用帧**，67 条 `*.part.md` 逐条核对表） |
+| 验收记录 | `docs/iterations/iteration-8/evidence/acc8/`（**539 个文件 / 452 份被引用帧**，67 条 `*.part.md` 逐条核对表） |
 | 终验记录 | `docs/iterations/iteration-8/final-verification.md`（**独立终验 Agent**，返工后重开一轮） |
 | 裁决台账 | `docs/iterations/iteration-8/decisions.md`（裁-1 ~ 裁-20y） |
 | 环境 | Windows 10/11 · Node v22.22.2 · DSH `0.2.2-rc.5`（需求记 rc.1，实测优先）· Git Bash |
@@ -21,7 +21,7 @@
 | 不通过 | **10** | 见 §5.1 |
 | 阻塞 | **2** | AC-26（真实宿主机检锚点不可取证）、AC-27（第三方 `load` 方言不可用）——**书面豁免**，仍如实记 `blocked=1` |
 | 核对项 | **715**（通过 689 / 失败 26） | — |
-| 证据 | **452 份被引用帧**（`evidence/acc8/` 目录 542 个文件） | 分级：mock 58、真实宿主 4、架构门禁 5 |
+| 证据 | **452 份被引用帧**（`evidence/acc8/` 目录 539 个文件） | 分级：mock 58、真实宿主 4、架构门禁 5 |
 | 全量测试 | **1927 / 1895 pass / 21 fail / 11 skip**（另一次独立实跑为 1894/22，见下） | 对基线 `014fa6a`（1841/1808/22/11）失败集合 **EXTRA = 0** |
 | 全量数字的抖动 | 两次独立实跑差 **1 条** | `--host-error 早返回（-32603）…（AC-63）` 在负载下偶发；独占复跑单文件**通过**，按裁-20r 判负载 flake 并剔除（帧 `AC-53.isolated.host-error-32603-*.log`）。**EXTRA=0 的结论两次都成立，但 tests/pass 会在 ±（0~1）条上波动**，引用时须连带这句 |
 | 架构扫描 | purity `exit 0`（45 文件）、`dependencies = 0` | 门禁全绿 |
@@ -34,6 +34,39 @@
 
 **最难一条的实测证据**：AC-03（检查点足以恢复「做到哪」）需要在「T-001 done r2 + T-002 running r2」的精确窗口强杀 daemon。此前用固定 `killAfter` 永远杀不准；本轮改为 `retest-slow`（第 4 步 `delayMs=30s`）+ 轮询状态到目标窗口，并修复了「恢复落盘 CAS 冲突被静默放弃」的产品缺陷后，实测 **33/33 全绿**，帧 `evidence/acc8/AC-03.then.instance-log.txt` 可见 `恢复：检查点 … 跳过 1 个已完成节点 · 轮次 2/2`。
 
+### 0.1 未达项与阻塞（阻断 Done，逐条归口）
+
+> 模板 §4.5 的 Done#1/#2 就是看这两张表：**10 条不通过 + 2 条阻塞，一条都不能算「不影响结论」**。
+> 它们因此放在结论节里，而不是放到 §5「遗留问题」——§5 只留观察项与边界（见 §5.1/§5.2）。
+
+#### 0.1.1 10 条不通过
+
+> 归口前先做了「独占复跑」（`probe/i18-s2/batch7-isolated-rerun.txt`）：批次里 12 条未通过中，**AC-08 / AC-31 单跑全绿**（负载 flake，按复跑结果定为通过），其余 10 条单跑仍红、判定不变。
+
+| AC | 核对 | 归口 | 具体原因 | 处置 |
+|---|---|---|---|---|
+| AC-15 | 9/10 | 需求矛盾 | 机检要求「`state.json` sha256 不变」与「转为 `interrupted`」不可兼得（中断必重写 state） | 改需求或书面豁免 |
+| AC-23 | 8/10 | 需求矛盾 + 产品行为 | Then「实例不进入运行中」与 BR-22 降级 + D-5 继续调度冲突；另三方言失败路径在真 factory 下会被「create 预开会话」短路 | 改需求；预开会话列观察项 |
+| AC-37 | 9/10 | 需求 / 夹具 | `graph --format text` 只渲染图声明节点，夹具 `T-004` 不在内建 `code-loop` 图内 | 改需求或换夹具图 |
+| AC-42 / 43 / 45 / 63 | 13/15、13/14、14/15、15/16 | 需求文案 | Then 逐字要求「节点 **T-003** · 轮次 **2/3**」，内建图无 T-003 且 `maxRounds=2`（I1.1 逐字红线） | 改需求文案为「按实际节点 / 轮次」 |
+| AC-58 | 9/16 | 夹具缺口 | `e2e` 恢复后只等 `waitMs=5000`，未到「完成 / 升级」终态 | 延长观察窗（补齐前不改判） |
+| AC-62 | 2/9 | 夹具缺口 | 产品侧「3 次失败 → expired → 升级」**已实现**（`orchestrator.js:2039~2062`）并有 `wp13/handoff-recovery.test.js` 单测覆盖；mock 缺「重投前连续 3 次确定性失败」端到端接缝 | 补 mock 接缝 |
+| AC-67 | 7/9 | 需求矛盾 | Given「服务节点都已终态」命中 `doneCount>0 → cooldown`（I1.5 契约），与 Then「显示可用」冲突 | 改需求 |
+
+**已消除的 3 条**（S4 后返工）：AC-49（→7/7，D-7）、AC-60（→10/10，D-8）、AC-53（→5/5，裁-20r + 裁-20z）。
+
+> **AC-45 的 4 条曾经是假阴性**：独立终验第 2 轮查证 `events` 止于 seq 31（`session.timeout`），`state.updatedAt` 只比它晚 5ms，
+> 「节点已升级 / 实例已挂起 / escalations+1 / reasonCode=timeout」这 4 条升级与挂起事件（#32~#35）在快照之后才落盘；
+> 同一用例后面读的 `status` 已显示全部达成。已把读点从「timeout 事件出现即读」改为「等 `suspended` + `escalations≥1` 落定再读」
+> （等待有上限 20s，落不下来仍判红，**期望值一个未改**），复跑 **14/15**，只剩 C05 的逐字文案「（节点 T-003 · 轮次 2/3）」不成立。
+
+#### 0.1.2 2 条阻塞
+
+| AC | 阻塞事实 | 豁免处置 | 留痕 |
+|---|---|---|---|
+| AC-26 | 真实 DSH 跑通、已完成节点无第二次 `node.dispatch` 已实测；但机检锚点 `workspace/artifacts/**` 在编码闭环实例下**客观不存在**（产物在 I1.7 `worktrees/` 与 `stage/`，强杀窗口内 `stage/` 为空） | 保留 `blocked=1`，**不用空集/替代目录冒充通过**；按用户书面裁决豁免补证据 | `AC-26.part.md`（5/5）、`AC-26.then.*` 原始帧、`_acc8-f-blockers.md` 处置结论 |
+| AC-27 | `dsh-acp-server@0.14.4` 安装成功但入口启动即抛 `ERR_UNSUPPORTED_ESM_URL_SCHEME … Received protocol 'c:'`（本机只有 Electron 形态 DSH，无 `dsh` CLI） | 保留 `blocked=1`，**不用夹具冒充真实方言面**；按用户书面裁决豁免补环境 | `AC-27.probe.third-party-boot.txt` 原始 stderr、`_acc8-f-blockers.md` 处置结论 |
+
 ## 1 交付物
 
 | 类别 | 内容 |
@@ -42,7 +75,7 @@
 | 依赖 | **零新增**（`dependencies` 键数 = 0，与基线一致） |
 | 测试与夹具 | `test/wp13/**`（101 例：检查点 / 方言 / 恢复启动 / 会话复用 / **复用派发接线** / 失败区分 / 交接恢复 / CLI 恢复）、`test/fixtures/recovery-driver.mjs`（637 行）、`mock-acp-agent.js`（+324 行四组能力广告 + 9 个行为开关）、`recovery/human-node-state.json` / `graph-timeout.json` |
 | 验收脚手架 | `probe/acc8-f-lib.mjs` / `acc8-f-common.mjs` / `acc8-f-run.mjs` / `acc8-f-final.mjs`、`probe/acc8-cases/AC-01..67.mjs`（**67 条可复跑用例**）、`probe/acc8-realhost.mjs` |
-| 验收产物 | `evidence/acc8/`：542 个文件（452 份被引用帧）、`_acc8-f-results.jsonl`（67 条）、`_acc8-f-summary.json`、`_acc8-f-blockers.md`（含书面豁免处置结论）、`AC-53.diffset.txt`、`probe/i18-s2/batch7-isolated-rerun.txt`（12 条独占复跑台账） |
+| 验收产物 | `evidence/acc8/`：539 个文件（452 份被引用帧）、`_acc8-f-results.jsonl`（67 条）、`_acc8-f-summary.json`、`_acc8-f-blockers.md`（含书面豁免处置结论）、`AC-53.diffset.txt`、`probe/i18-s2/batch7-isolated-rerun.txt`（12 条独占复跑台账） |
 
 ## 2 AC 逐条判定
 
@@ -191,43 +224,14 @@ node probe/acc8-f-final.mjs
 > 「剔除 flake 后的差集」为空、本条判通过。也就是说「核了才剔」这条路径是被真实走到的。
 > **最终一次实跑**（HEAD 提交里的 `AC-53.machine.full-suite.log`）是「无新增红」，diffset 四个判据段全为空。
 
-## 5 未达项、阻塞与边界
+## 5 观察项与边界
 
-> 本节按模板 §4.5 的分工拆开写，避免把「未完成」混进「不影响结论」：
-> **5.1 是 10 条未达 AC（直接阻断 Done#1/#2，绝不算「不影响结论」）**；5.2 是 2 条阻塞（用户书面豁免，但**未改判通过**、计数仍为 2）；
-> 只有 5.3 观察项与 5.4 边界才属「不影响结论」。
+> 模板 §4.5 要求「§5 只列不影响结论的项」，故 §5 现在只剩观察项与边界；
+> **10 条不通过与 2 条阻塞已移到 §0.1**（它们直接决定 Done#1/#2）。
 
-### 5.1 10 条不通过（逐条归口，阻断 Done）
+### 5.1 观察项（不影响结论，但需登记）
 
-> 归口前先做了「独占复跑」（`probe/i18-s2/batch7-isolated-rerun.txt`）：批次里 12 条未通过中，**AC-08 / AC-31 单跑全绿**（负载 flake，按复跑结果定为通过），其余 10 条单跑仍红、判定不变。
-
-| AC | 核对 | 归口 | 具体原因 | 处置 |
-|---|---|---|---|---|
-| AC-15 | 9/10 | 需求矛盾 | 机检要求「`state.json` sha256 不变」与「转为 `interrupted`」不可兼得（中断必重写 state） | 改需求或书面豁免 |
-| AC-23 | 8/10 | 需求矛盾 + 产品行为 | Then「实例不进入运行中」与 BR-22 降级 + D-5 继续调度冲突；另三方言失败路径在真 factory 下会被「create 预开会话」短路 | 改需求；预开会话列观察项 |
-| AC-37 | 9/10 | 需求 / 夹具 | `graph --format text` 只渲染图声明节点，夹具 `T-004` 不在内建 `code-loop` 图内 | 改需求或换夹具图 |
-| AC-42 / 43 / 45 / 63 | 13/15、13/14、14/15、15/16 | 需求文案 | Then 逐字要求「节点 **T-003** · 轮次 **2/3**」，内建图无 T-003 且 `maxRounds=2`（I1.1 逐字红线） | 改需求文案为「按实际节点 / 轮次」 |
-| AC-58 | 9/16 | 夹具缺口 | `e2e` 恢复后只等 `waitMs=5000`，未到「完成 / 升级」终态 | 延长观察窗（补齐前不改判） |
-| AC-62 | 2/9 | 夹具缺口 | 产品侧「3 次失败 → expired → 升级」**已实现**（`orchestrator.js:2039~2062`）并有 `wp13/handoff-recovery.test.js` 单测覆盖；mock 缺「重投前连续 3 次确定性失败」端到端接缝 | 补 mock 接缝 |
-| AC-67 | 7/9 | 需求矛盾 | Given「服务节点都已终态」命中 `doneCount>0 → cooldown`（I1.5 契约），与 Then「显示可用」冲突 | 改需求 |
-
-**已消除的 3 条**（S4 后返工）：AC-49（→7/7，D-7）、AC-60（→10/10，D-8）、AC-53（→5/5，裁-20r + 裁-20z）。
-
-> **AC-45 的 4 条曾经是假阴性**：独立终验第 2 轮查证 `events` 止于 seq 31（`session.timeout`），`state.updatedAt` 只比它晚 5ms，
-> 「节点已升级 / 实例已挂起 / escalations+1 / reasonCode=timeout」这 4 条升级与挂起事件（#32~#35）在快照之后才落盘；
-> 同一用例后面读的 `status` 已显示全部达成。已把读点从「timeout 事件出现即读」改为「等 `suspended` + `escalations≥1` 落定再读」
-> （等待有上限 20s，落不下来仍判红，**期望值一个未改**），复跑 **14/15**，只剩 C05 的逐字文案「（节点 T-003 · 轮次 2/3）」不成立。
-
-### 5.2 2 条阻塞（用户裁决：书面豁免）
-
-| AC | 阻塞事实 | 豁免处置 | 留痕 |
-|---|---|---|---|
-| AC-26 | 真实 DSH 跑通、已完成节点无第二次 `node.dispatch` 已实测；但机检锚点 `workspace/artifacts/**` 在编码闭环实例下**客观不存在**（产物在 I1.7 `worktrees/` 与 `stage/`，强杀窗口内 `stage/` 为空） | 保留 `blocked=1`，**不用空集/替代目录冒充通过**；按用户书面裁决豁免补证据 | `AC-26.part.md`（5/5）、`AC-26.then.*` 原始帧、`_acc8-f-blockers.md` 处置结论 |
-| AC-27 | `dsh-acp-server@0.14.4` 安装成功但入口启动即抛 `ERR_UNSUPPORTED_ESM_URL_SCHEME … Received protocol 'c:'`（本机只有 Electron 形态 DSH，无 `dsh` CLI） | 保留 `blocked=1`，**不用夹具冒充真实方言面**；按用户书面裁决豁免补环境 | `AC-27.probe.third-party-boot.txt` 原始 stderr、`_acc8-f-blockers.md` 处置结论 |
-
-### 5.3 观察项（不影响结论，但需登记）
-
-> 以下只列**不影响结论**的项。任何未达 AC 都不出现在本小节。
+> 以下只列**不影响结论**的项。任何未达 AC 都不出现在本小节（它们在 §0.1）。
 
 1. **方法学**：AC-20/23 的部分断言通过「受控 `state.json` 起手 + 产品核心执行恢复动作」取证，方言选择与降级动作仍由产品完成，但 Given 的可信度低于真实跑图。
 2. **`ROLE_DIFF_KEYS` 未纳入**、`role show --format json` 不加键（裁-11a/11b）。
@@ -241,8 +245,9 @@ node probe/acc8-f-final.mjs
 10. **`.gitattributes` 的证据树空白豁免**（裁-20u）：从 `evidence/**/*.log` 扩到 `docs/iterations/**/evidence/**` 一条规则。它只关 `git diff --check` 的告警、**不改工作树与提交里的字节**，故不构成验收判据放宽；理由是证据帧里「`原因 ` 后为空值」这类尾空格本身就是产品真实输出。
 11. **跨迭代证据污染已根治**（裁-20v）：`test/wp11/perf.test.js` 原先把本机实测耗时直接写进 `docs/iterations/iteration-4/evidence/nfr-perf-*.json`，每次全量跑都会改写 I1.4 已收口的证据。现默认写系统临时目录，需显式 `NFR_EVID_DIR=…` 才写回仓库。
 12. **AC-58 的证据不同源**（未修）：C01~C13 用 e2e 根（无 human 节点），C14~C16 另起一个 human 预置根，两套证据拼在一张表，未满足 Given 的「一个独立项目根」。已记入 `_acc8-f-blockers.md` 处置表，需用户授权后重做夹具。
+13. **两条 I1.9 冻结测试的标题与断言刻意不一致**：`newState 只追加 health 与 traceId 两个字段…` 现在允许三个（+`sessionPolicies`）、`grep -c "object: 'session'" ≤ 13…` 现在允许 14。**标题故意不改**——AC-53 的差集按用例名比对基线红名单，改名会把「基线已红」变成「新增红」，也会让 win32 平台基线表的逐字查找失败（实测踩过一次，见 U-11）。读标题时请连注释一起读（裁-20aa）。
 
-### 5.4 边界
+### 5.2 边界
 
 - I1.7 已合入 main；I1.8 不依赖 worktree / 产物隔离（`diff` 口径零新增，AC-56）。
 - 对照基线统一为 **I1.8 开工点 `014fa6a`**（1841/1808/22/11），红名单 `probe/i18-s2/baseline-014fa6a-reds.txt`。
