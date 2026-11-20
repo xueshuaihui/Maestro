@@ -154,7 +154,7 @@ mock 能力广告用 `{}` 形态、`--prompt-failures` 双来源、flake 归因�
 | 失败集合差集 | **EXTRA = 0**（21 条 ⊆ 基线 22 条），并修好 1 条基线红（`live 取消…`）；帧 `probe/i18-s2/batch6-reds.txt` |
 | 首轮 4 条新增红 | AC-32 / AC-60 / AC-62 / 三主链 A-0 —— 根因是 `continueRecovery` 把已被 `redeliver` 派发的节点又派一次（双 prompt）。修法：`plan.ready` 派前重读磁盘确认仍 `pending`；三条恢复用例（`handoff-recovery` 6/6、`recovery-boot` 17/17）复绿 |
 | `session-reuse-dispatch` | **5/5**；`recovery-boot` **17/17**；`handoff-recovery` **6/6** |
-| 全量 67 条验收（`--batch all`） | 批次内 53/12/2 → 按裁-20r 逐条独占复跑后 **55 通过 / 10 不通过 / 2 阻塞**；714 核对项（684 通过）；451 份被引用帧；分级 mock 58 / 真实宿主 4 / 架构门禁 5 |
+| 全量 67 条验收（`--batch all`） | 批次内 53/12/2 → 按裁-20r 逐条独占复跑后 **55 通过 / 10 不通过 / 2 阻塞**；714 核对项（688 通过 / 26 失败）；453 份被引用帧；分级 mock 58 / 真实宿主 4 / 架构门禁 5 |
 | 独占复跑台账 | `probe/i18-s2/batch7-isolated-rerun.txt`：AC-08 / AC-31 单跑全绿 → 负载 flake 剔除；其余 10 条稳定红；AC-53 复跑后 `EXTRA=0` |
 | 纯净门禁 / 用法块 / 命令树 | purity exit 0、deps 0、`USAGE_LINES` 25 行、`--help` 31 行、`NODE_STATES` 7 项、三主链 diff 0 |
 

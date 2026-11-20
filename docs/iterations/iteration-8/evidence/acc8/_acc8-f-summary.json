@@ -1,7 +1,7 @@
 {
   "iteration": "I1.8",
   "step": "S4 / 全量 67 条终验口径",
-  "generatedAt": "2026-11-20T19:29:11.055Z",
+  "generatedAt": "2026-11-20T19:46:41.069Z",
   "repoHead": "ref: refs/heads/main",
   "total": 67,
   "byVerdict": {
@@ -157,7 +157,12 @@
       "grading": "mock 实测",
       "checks": "9/10",
       "failedChecks": [
-        "机检：实例记录 sha256 不变（需求原文）"
+        {
+          "id": "C09",
+          "label": "机检：实例记录 sha256 不变（需求原文）",
+          "expected": "d7e9054dc273b001a1725e77bb7aa2b39a7c944460b9b4dc4a337efd5650fa44",
+          "actual": "f15790c0df929c0c07542ab1ea96cc9edb0d8a8c3d4a5023549e9314b17abd1c"
+        }
       ],
       "evidenceCount": 8,
       "blocker": null
@@ -239,8 +244,18 @@
       "grading": "mock 实测",
       "checks": "8/10",
       "failedChecks": [
-        "Then：实例不进入「运行中」",
-        "夹具：session/new 失败后无新会话（dialect=new 未成功落地）"
+        {
+          "id": "C06",
+          "label": "Then：实例不进入「运行中」",
+          "expected": "不含 运行中",
+          "actual": "实例 INST-001 · 运行中 · 模板 编码闭环\n恢复：检查点 02:59:24 · 跳过 1 个已完成节点 · 轮次 2/2\n健康度 正常\n节点 T-001 开发 已完成 · 第 1 轮 · 耗时 1s · 判定 通过\n节点 T-002 测试 已分配 · 第 2 轮\n会话 空闲\n交接包 HO-001  开发→测试  已构造   02:59:24\n交接包 HO-001  开发→测试  待投递 · 重试 1/2   02:59:25\n交接包 HO-001  开发→测试  已投递   02:59:24\n升级 —\n"
+        },
+        {
+          "id": "C09",
+          "label": "夹具：session/new 失败后无新会话（dialect=new 未成功落地）",
+          "expected": "[{\"object\":\"instance\",\"objectId\":\"INST-001\",\"from\":null,\"to\":null,\"result\":\"note\",\"reason\":\"recovery.dialect\",\"detail\":{\"sessionId\":\"mock-sess-11408-1\",\"dialect\":\"new\",\"restored\":false},\"gen\":\"gen-40f32c138999e7d9\",\"seq\":5,\"ts\":\"2026-11-20T18:59:25.050Z\",\"prev_event_hash\":\"24c25d6f47008964de8a18c957a99ea8a34c9219d8a889c5150783037d3e315d\"}]",
+          "actual": "false ([{\"object\":\"instance\",\"objectId\":\"INST-001\",\"from\":null,\"to\":null,\"result\":\"note\",\"reason\":\"recovery.dialect\",\"detail\":{\"sessionId\":\"mock-sess-11408-1\",\"dialect\":\"new\",\"restored\":false},\"gen\":\"gen-40f32c138999e7d9\",\"seq\":5,\"ts\":\"2026-11-20T18:59:25.050Z\",\"prev_event_hash\":\"24c25d6f47008964de8a18c957a99ea8a34c9219d8a889c5150783037d3e315d\"}])"
+        }
       ],
       "evidenceCount": 10,
       "blocker": null
@@ -282,7 +297,12 @@
       "grading": "真实宿主实测",
       "checks": "2/3",
       "failedChecks": [
-        "第三方 ACP 服务端可在本机启动"
+        {
+          "id": "C03",
+          "label": "第三方 ACP 服务端可在本机启动",
+          "expected": "exit 1",
+          "actual": "false (exit 1)"
+        }
       ],
       "evidenceCount": 2,
       "blocker": "`dsh-acp-server@0.14.4` 已在 %TEMP% 真实安装（npm install 成功，95 包 / 51s），但其 ACP 服务端在本机无法启动：本机没有 `dsh` CLI（只有 Electron + app.asar/bin.js），入口直接抛错（见 AC-27.probe.third-party-boot.txt）。按需求 AC-27 判「阻塞」，load 语义由 AC-20 夹具覆盖；**不用夹具结果冒充真实面**。"
@@ -384,7 +404,12 @@
       "grading": "mock 实测",
       "checks": "9/10",
       "failedChecks": [
-        "Then：graph 显示「T-004 人工确认 · 执行中 · 第 1 轮 · 等待人工」"
+        {
+          "id": "C05",
+          "label": "Then：graph 显示「T-004 人工确认 · 执行中 · 第 1 轮 · 等待人工」",
+          "expected": "T-004 人工确认 · 执行中 · 第 1 轮 · 等待人工",
+          "actual": "实例 INST-HUMAN-001 · 编码闭环 · 运行中\n恢复：检查点 18:05:00 · 跳过 1 个已完成节点 · 轮次 2/2\nT-001 开发 · 已完成 · 第 2 轮\nT-002 测试 · 执行中 · 第 2 轮\n边：\n  T-001 -> T-002 正向\n  T-002 -> T-001 回流\n  T-001 -> T-002 复测\n"
+        }
       ],
       "evidenceCount": 7,
       "blocker": null
@@ -436,8 +461,18 @@
       "grading": "mock 实测",
       "checks": "13/15",
       "failedChecks": [
-        "夹具：round === 2（需求机检）",
-        "Then：需求示例逐字「（节点 T-003 · 轮次 2/3）」"
+        {
+          "id": "C11",
+          "label": "夹具：round === 2（需求机检）",
+          "expected": "2",
+          "actual": "1"
+        },
+        {
+          "id": "C12",
+          "label": "Then：需求示例逐字「（节点 T-003 · 轮次 2/3）」",
+          "expected": "（节点 T-003 · 轮次 2/3）",
+          "actual": "[#1] 02:59:32  实例 INST-001  已创建 → 运行中  原因 开始运行\n[#2] 02:59:32  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮\n[#3] 02:59:32  会话 mock-sess-6812-1  空闲 → 执行中  原因 会话状态\n02:59:32  会话进程已退出：正在重建会话（节点 T-001 · 轮次 1/2）\n02:59:32  会话已重建 mock-sess-23896-1（节点 T-001 · 轮次 1/2）\n[#6] 02:59:32  会话 mock-sess-23896-1  空闲 → 执行中  原因 会话状态\n[#7] 02:59:32  会话 mock-sess-23896-1  执行中 → 执行中（tool_call）  原因 会话状态\n[#8] 02:59:32  会话 mock-sess-23896-1  执行中 → 等待下游  原因 产出已提交\n[#9] 02:59:33  会话 mock-sess-23896-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态\n[#10] 02:59:33  节点 T-001  执行中 → 待校验  原因 产出已提交\n[#11] 02:59:33  节点 T-001  待校验 → 已完成  原因 核对通过\n[#12] 02:59:33  会话 mock-sess-23896-1  等待下游 → 空闲  原因 运行完成\n02:59:33  会话 mock-sess-23896-1  执行摘要 命令 未提供 · 退出码 未提供 · 关键输出 未提供 · 日志 未提供\n[#14] 02:59:39  实例 INST-001  运行中 → 已中断  原因 核心停止\n02:59:39  健康度 INST-001  正常 → 已结束  原因 \n"
+        }
       ],
       "evidenceCount": 7,
       "blocker": null
@@ -449,7 +484,12 @@
       "grading": "mock 实测",
       "checks": "13/14",
       "failedChecks": [
-        "Then：需求示例逐字「（节点 T-003 · 轮次 2/3）」"
+        {
+          "id": "C07",
+          "label": "Then：需求示例逐字「（节点 T-003 · 轮次 2/3）」",
+          "expected": "（节点 T-003 · 轮次 2/3）",
+          "actual": "[#1] 02:59:40  实例 INST-001  已创建 → 运行中  原因 开始运行\n[#2] 02:59:41  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮\n[#3] 02:59:41  会话 mock-sess-33460-1  空闲 → 执行中  原因 会话状态\n02:59:41  会话进程已退出：正在重建会话（节点 T-001 · 轮次 1/2）\n02:59:41  会话重建失败：已升级人工（节点 T-001 · 轮次 1/2）\n[#6] 02:59:41  升级 ESC-001  待处理  原因 创建升级\n[#7] 02:59:41  节点 T-001  执行中 → 已升级  原因 状态变化\n[#8] 02:59:41  会话 mock-sess-33460-1  执行中 → 已升级  原因 状态变化\n[#9] 02:59:41  实例 INST-001  运行中 → 已挂起  原因 挂起\n"
+        }
       ],
       "evidenceCount": 6,
       "blocker": null
@@ -471,7 +511,12 @@
       "grading": "mock 实测",
       "checks": "14/15",
       "failedChecks": [
-        "Then：需求示例逐字「（节点 T-003 · 轮次 2/3）」"
+        {
+          "id": "C05",
+          "label": "Then：需求示例逐字「（节点 T-003 · 轮次 2/3）」",
+          "expected": "（节点 T-003 · 轮次 2/3）",
+          "actual": "[#1] 03:23:59  实例 INST-001  已创建 → 运行中  原因 开始运行\n[#2] 03:23:59  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮\n[#3] 03:24:00  会话 mock-sess-21660-1  空闲 → 执行中  原因 会话状态\n[#4] 03:24:00  会话 mock-sess-21660-1  执行中 → 执行中（tool_call）  原因 会话状态\n[#5] 03:24:00  会话 mock-sess-21660-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态\n[#6] 03:24:00  会话 mock-sess-21660-1  执行中 → 等待下游  原因 产出已提交\n[#7] 03:24:00  节点 T-001  执行中 → 待校验  原因 产出已提交\n[#8] 03:24:00  节点 T-001  证据核对通过\n[#9] 03:24:00  交接包 HO-001  已构造  原因 构造交接\n[#10] 03:24:00  节点 T-002  派发 → 执行中  原因 派发 · 第 1 轮\n[#11] 03:24:00  交接包 HO-001  已入信箱\n[#12] 03:24:00  交接包 HO-001  已构造 → 已投递  原因 交接已投递\n[#13] 03:24:00  会话 mock-sess-19480-1  空闲 → 执行中  原因 会话状态\n[#14] 03:24:00  交接包 HO-001  已投递 → 已接受  原因 首个事件\n[#15] 03:24:00  节点 T-001  下游已接受\n[#16] 03:24:00  会话 mock-sess-19480-1  执行中 → 执行中（tool_call）  原因 会话状态\n[#17] 03:24:00  会话 mock-sess-19480-1  执行中 → 执行中（agent_message_chunk）  原因 会话状态\n[#18] 03:24:00  会话 mock-sess-19480-1  执行中 → 等待下游  原因 产出已提交\n[#19] 03:24:00  节点 T-002  执行中 → 待校验  原因 产出已提交\n[#20] 03:24:00  节点 T-002  证据核对通过\n[#21] 03:24:00  交接包 HO-001  已接受 → 已完成  原因 产出核对通过\n[#22] 03:24:00  交接包 HO-002  已构造  原因 构造交接\n[#23] 03:24:00  节点 T-003  派发 → 执行中  原因 派发 · 第 1 轮\n[#24] 03:24:00  交接包 HO-002  已入信箱\n[#25] 03:24:00  交接包 HO-002  已构造 → 已投递  原因 交接已投递\n[#26] 03:24:01  会话 mock-sess-14676-1  空闲 → 执行中  原因 会话状态\n[#27] 03:24:01  交接包 HO-002  已投递 → 已接受  原因 首个事件\n[#28] 03:24:01  节点 T-002  下游已接受\n[#29] 03:24:01  会话 mock-sess-14676-1  执行中 → 执行中（tool_call）  原因 会话状态\n03:24:01  会话无进展：判定为运行慢，不重建会话（节点 T-003 · 已等待 0m）\n03:24:02  节点 T-003 超时：按运行慢处理，已升级人工（节点 T-003 · 轮次 1/2）\n[#32] 03:24:02  升级 ESC-001  待处理  原因 创建升级\n[#33] 03:24:02  节点 T-003  执行中 → 已升级  原因 状态变化\n[#34] 03:24:02  会话 mock-sess-14676-1  执行中 → 已升级  原因 状态变化\n[#35] 03:24:02  实例 INST-001  运行中 → 已挂起  原因 挂起\n"
+        }
       ],
       "evidenceCount": 8,
       "blocker": null
@@ -603,13 +648,48 @@
       "grading": "mock 实测",
       "checks": "9/16",
       "failedChecks": [
-        "Then：恢复行显示跳过已完成节点与轮次",
-        "机检：recovery.summary 的 skipped>=1 且轮次/上限可见",
-        "Then：已完成节点恢复后不重跑（node.dispatch 仍只初始 1 次）",
-        "夹具：已完成节点提示次数 0（prompt-log 无第二轮提示）",
-        "Then：角色降级（会话不可恢复）后重新调度",
-        "夹具：重新派发后节点进入执行中（phase=running）",
-        "Then：最终实例按既有规则完成或升级"
+        {
+          "id": "C03",
+          "label": "Then：恢复行显示跳过已完成节点与轮次",
+          "expected": "true",
+          "actual": "false ()"
+        },
+        {
+          "id": "C05",
+          "label": "机检：recovery.summary 的 skipped>=1 且轮次/上限可见",
+          "expected": "{\"checkpointAt\":\"2026-11-20T18:59:57.051Z\",\"skipped\":0,\"round\":2,\"maxRounds\":2}",
+          "actual": "false ({\"checkpointAt\":\"2026-11-20T18:59:57.051Z\",\"skipped\":0,\"round\":2,\"maxRounds\":2})"
+        },
+        {
+          "id": "C06",
+          "label": "Then：已完成节点恢复后不重跑（node.dispatch 仍只初始 1 次）",
+          "expected": "1",
+          "actual": "0"
+        },
+        {
+          "id": "C07",
+          "label": "夹具：已完成节点提示次数 0（prompt-log 无第二轮提示）",
+          "expected": "1",
+          "actual": "0"
+        },
+        {
+          "id": "C09",
+          "label": "Then：角色降级（会话不可恢复）后重新调度",
+          "expected": "{\"role\":0,\"resumedDispatch\":0}",
+          "actual": "false ({\"role\":0,\"resumedDispatch\":0})"
+        },
+        {
+          "id": "C10",
+          "label": "夹具：重新派发后节点进入执行中（phase=running）",
+          "expected": "{\"nodeId\":\"T-001\",\"nodeType\":null,\"state\":\"running\",\"phase\":null,\"round\":2}",
+          "actual": "false ({\"nodeId\":\"T-001\",\"nodeType\":null,\"state\":\"running\",\"phase\":null,\"round\":2})"
+        },
+        {
+          "id": "C13",
+          "label": "Then：最终实例按既有规则完成或升级",
+          "expected": "{\"state\":\"running\"}",
+          "actual": "false ({\"state\":\"running\"})"
+        }
       ],
       "evidenceCount": 16,
       "blocker": null
@@ -651,13 +731,48 @@
       "grading": "mock 实测",
       "checks": "2/9",
       "failedChecks": [
-        "Then：handoff.state === expired",
-        "Then：deliveryAttempts === 3",
-        "Then：handoff list 显示「已过期」",
-        "Then：escalations 新增 1 条",
-        "夹具：升级 reasonCode=delivery_failed",
-        "夹具：有 handoff.expired 事件",
-        "Then：instance log 出现升级行（不再停在已投递）"
+        {
+          "id": "C03",
+          "label": "Then：handoff.state === expired",
+          "expected": "expired",
+          "actual": "accepted"
+        },
+        {
+          "id": "C04",
+          "label": "Then：deliveryAttempts === 3",
+          "expected": "3",
+          "actual": "1"
+        },
+        {
+          "id": "C05",
+          "label": "Then：handoff list 显示「已过期」",
+          "expected": "已过期",
+          "actual": "交接包 HO-001  实例 INST-001  开发→测试  已接受  03:00:08\n"
+        },
+        {
+          "id": "C06",
+          "label": "Then：escalations 新增 1 条",
+          "expected": "1",
+          "actual": "0"
+        },
+        {
+          "id": "C07",
+          "label": "夹具：升级 reasonCode=delivery_failed",
+          "expected": "delivery_failed",
+          "actual": "null"
+        },
+        {
+          "id": "C08",
+          "label": "夹具：有 handoff.expired 事件",
+          "expected": "[]",
+          "actual": "false ([])"
+        },
+        {
+          "id": "C09",
+          "label": "Then：instance log 出现升级行（不再停在已投递）",
+          "expected": "{\"logTail\":\"00:04  恢复：连接线 开发→测试 已投递 → 待投递（重投）\\n03:00:04  按实例记录恢复（可能重跑当前轮）\\n[#5] 03:00:04  节点 T-002  派发 → 执行中  原因 派发 · 第 2 轮\\n[#6] 03:00:06  交接包 HO-001  handoff.inboxed  原因 已入信箱\\n[#7] 03:00:06  交接包 HO-001  已构造 → 已投递  原因 交接已投递\\n[#8] 03:00:08  会话 2601ce09-ab49-4116-81e9-fc4efc1340a1  空闲 → 执行中  原因 会话状态\\n[#9] 03:00:08  交接包 HO-001  已投递 → 已接受  原因 首个事件\\n[#10] 03:00:08  会话 2601ce09-ab49-4116-81e9-fc4efc1340a1  执行中 → 执行中（tool_call）  原因 会话状态\\n[#11] 03:00:10  会话 2601ce09-ab49-4116-81e9-fc4efc1340a1  执行中 → 执行中（agent_thought_chunk）  原因 会话状态\\n[#12] 03:00:10  会话 2601ce09-ab49-4116-81e9-fc4efc1340a1  执行中 → 执行中（tool_call）  原因 会话状态\\n\",\"handoffLine\":\"交接包 HO-001  实例 INST-001  开发→测试  已接受  03:00:08\\n\"}",
+          "actual": "false ({\"logTail\":\"00:04  恢复：连接线 开发→测试 已投递 → 待投递（重投）\\n03:00:04  按实例记录恢复（可能重跑当前轮）\\n[#5] 03:00:04  节点 T-002  派发 → 执行中  原因 派发 · 第 2 轮\\n[#6] 03:00:06  交接包 HO-001  handoff.inboxed  原因 已入信箱\\n[#7] 03:00:06  交接包 HO-001  已构造 → 已投递  原因 交接已投递\\n[#8] 03:00:08  会话 2601ce09-ab49-4116-81e9-fc4efc1340a1  空闲 → 执行中  原因 会话状态\\n[#9] 03:00:08  交接包 HO-001  已投递 → 已接受  原因 首个事件\\n[#10] 03:00:08  会话 2601ce09-ab49-4116-81e9-fc4efc1340a1  执行中 → 执行中（tool_call）  原因 会话状态\\n[#11] 03:00:10  会话 2601ce09-ab49-4116-81e9-fc4efc1340a1  执行中 → 执行中（agent_thought_chunk）  原因 会话状态\\n[#12] 03:00:10  会话 2601ce09-ab49-4116-81e9-fc4efc1340a1  执行中 → 执行中（tool_call）  原因 会话状态\\n\",\"handoffLine\":\"交接包 HO-001  实例 INST-001  开发→测试  已接受  03:00:08\\n\"})"
+        }
       ],
       "evidenceCount": 9,
       "blocker": null
@@ -669,7 +784,12 @@
       "grading": "mock 实测",
       "checks": "15/16",
       "failedChecks": [
-        "夹具：需求示例逐字「（节点 T-003 · 轮次 2/3）」"
+        {
+          "id": "C16",
+          "label": "夹具：需求示例逐字「（节点 T-003 · 轮次 2/3）」",
+          "expected": "（节点 T-003 · 轮次 2/3）",
+          "actual": "[#1] 03:00:12  实例 INST-001  已创建 → 运行中  原因 开始运行\n[#2] 03:00:12  节点 T-001  派发 → 执行中  原因 派发 · 第 1 轮\n[#3] 03:00:12  会话 mock-sess-10936-1  空闲 → 执行中  原因 会话状态\n03:00:12  会话进程已退出：正在重建会话（节点 T-001 · 轮次 1/2）\n03:00:12  会话已重建 mock-sess-31176-1（节点 T-001 · 轮次 1/2）\n[#6] 03:00:12  会话 mock-sess-31176-1  空闲 → 执行中  原因 会话状态\n03:00:13  会话重建失败：已升级人工（节点 T-001 · 轮次 1/2）\n[#8] 03:00:13  升级 ESC-001  待处理  原因 创建升级\n[#9] 03:00:13  节点 T-001  执行中 → 已升级  原因 状态变化\n[#10] 03:00:13  会话 mock-sess-31176-1  执行中 → 已升级  原因 状态变化\n[#11] 03:00:13  实例 INST-001  运行中 → 已挂起  原因 挂起\n"
+        }
       ],
       "evidenceCount": 8,
       "blocker": null
@@ -711,8 +831,18 @@
       "grading": "mock 实测",
       "checks": "7/9",
       "failedChecks": [
-        "Then：role show 显示「可用 · 活跃会话 0/1 · 服务节点 —」",
-        "机检：roleToSessions 无 developer 键"
+        {
+          "id": "C03",
+          "label": "Then：role show 显示「可用 · 活跃会话 0/1 · 服务节点 —」",
+          "expected": "可用 · 活跃会话 0/1 · 服务节点 —",
+          "actual": "  实例 INST-001：冷却中 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/2"
+        },
+        {
+          "id": "C05",
+          "label": "机检：roleToSessions 无 developer 键",
+          "expected": "{\"developer\":[\"mock-sess-dev\"]}",
+          "actual": "false ({\"developer\":[\"mock-sess-dev\"]})"
+        }
       ],
       "evidenceCount": 9,
       "blocker": null

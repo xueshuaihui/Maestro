@@ -1,2 +1,1 @@
-+ --host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）
-  file=test/wp11/fixture-delivery.test.js exit=0 stillRed=false
+
