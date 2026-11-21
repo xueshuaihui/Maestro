@@ -11,6 +11,7 @@
  *       取证「Given 落盘后、执行恢复动作之前」与恢复后各取一次 role show，两帧逐字相同。
  */
 import fs from 'node:fs';
+import path from 'node:path';
 
 import { makeCase, eq, check, includes, excludes, evidence, note, finish } from '../acc8-f-common.mjs';
 import {
