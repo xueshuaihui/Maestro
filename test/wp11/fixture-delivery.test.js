@@ -96,6 +96,15 @@ function startMock({ args, cwd }) {
 function stopMock(mock) {
   try { mock.child.stdin.end(); } catch { /* ignore */ }
   try { mock.child.kill('SIGTERM'); } catch { /* ignore */ }
+  // Windows 上 mock 的 stdout/stderr 句柄可能比进程晚释放；不等待就 rm 会撞
+  // EBUSY（after 钩子失败，掩盖本用例真实断言结果）。等进程退出再清理，
+  // 只改夹具生命周期，不改任何断言与期望值。
+  if (mock.child.exitCode === null && mock.child.signalCode === null) {
+    const exited = new Promise((resolve) => mock.child.once('exit', resolve));
+    const guard = new Promise((resolve) => setTimeout(resolve, 3000));
+    return Promise.race([exited, guard]);
+  }
+  return Promise.resolve();
 }
 
 async function rpc(mock, id, method, params) {
@@ -134,7 +143,7 @@ function seamJson(args) {
 test('promptFailures:2 -> attempts 依次 1/2/3，前 2 次 -32603 第 3 次 end_turn', async (t) => {
   const root = tmpRoot('pf2');
   const mock = startMock({ args: ['--prompt-failures=2'], cwd: root });
-  t.after(() => { stopMock(mock); cleanup(root); });
+  t.after(async () => { await stopMock(mock); cleanup(root); });
 
   const sessionId = await newSession(mock, root);
   const outcomes = [];
@@ -164,7 +173,7 @@ test('promptFailures:2 -> attempts 依次 1/2/3，前 2 次 -32603 第 3 次 end
 test('--host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）', async (t) => {
   const root = tmpRoot('hosterr');
   const mock = startMock({ args: ['--host-error'], cwd: root });
-  t.after(() => { stopMock(mock); cleanup(root); });
+  t.after(async () => { await stopMock(mock); cleanup(root); });
 
   const sessionId = await newSession(mock, root);
   const res = await prompt(mock, 20, sessionId);

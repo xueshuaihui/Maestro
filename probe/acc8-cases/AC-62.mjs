@@ -8,6 +8,7 @@
  *       deliveryAttempts === 3，实例不永远停在「已投递」。
  */
 import fs from 'node:fs';
+import path from 'node:path';
 
 import { makeCase, eq, check, includes, evidence, note, finish } from '../acc8-f-common.mjs';
 import { freshRoot, cleanupRoot, readState, readEvents, orch, GRADING_MOCK } from '../acc8-f-lib.mjs';
@@ -31,7 +32,10 @@ export async function run() {
       nodes: [
         nodeTpl({ nodeId: 'T-001', roleId: 'developer', state: 'done',
           extra: { verdict: { value: 'pass', defects: [] } } }),
-        nodeTpl({ nodeId: 'T-002', roleId: 'tester', state: 'pending' }),
+        // T-002 保持 running 且指向 mock 会话：恢复红派发会按 session.hostId=mock
+        // 连真 mock ACP 适配器，而不是落到默认真实 DSH（后者不消费夹具开关）。
+        nodeTpl({ nodeId: 'T-002', roleId: 'tester', state: 'running',
+          extra: { sessionId: 'mock-sess-test' } }),
       ],
       sessions: [sessionTpl({ sessionId: 'mock-sess-test', nodeId: 'T-002', roleId: 'tester', state: 'idle' })],
       handoffs: [handoffTpl({
@@ -42,18 +46,23 @@ export async function run() {
     });
     const g = prepareGiven(root, given, {
       caps: 'resume',
-      extraEnv: { MAESTRO_MOCK_PROMPT_FAILURES: '3', MAESTRO_TEST_DELIVERY_DELAY_MS: '10' },
+      extraEnv: {
+        MAESTRO_MOCK_PROMPT_FAILURES: '3',
+        MAESTRO_MOCK_DELIVERY_FAILURES: '3',
+        MAESTRO_TEST_DELIVERY_DELAY_MS: '10',
+      },
     });
-    // 场景模式 mock 用 session.promptAttempts 判失败，首次 prompt 时该值为 undefined，
-    // 三次失败开关对首条投递无效；改走非场景分支 + --host-error，尝试让每次 session/prompt
-    // 返回 -32603。实测本机该注入仍未命中（首个 turn 事件即 accepted），如实取证，不放宽断言。
+    // 夹具专用接缝 --delivery-failures 3：前 3 次 session/prompt 在任何 turn 事件之前
+    // 返回 -32603。原 --host-error / --prompt-failures 路径只能让「首个 turn 事件」把
+    // 交接包 accepted；这里由产品核心 deliverWithRetry 自行把 delivered → pending → expired
+    // 并写 delivery_failed 升级。非场景分支避免消费 backflow 场景步。
     const hostCfg = JSON.parse(fs.readFileSync(g.prepared.hostPath, 'utf8'));
     const args = hostCfg.launch.args;
     for (const flag of ['--scenario', '--root']) {
       const idx = args.indexOf(flag);
       if (idx >= 0) args.splice(idx, 2);
     }
-    args.push('--host-error');
+    args.push('--delivery-failures', '3');
     fs.writeFileSync(g.prepared.hostPath, `${JSON.stringify(hostCfg, null, 2)}\n`, 'utf8');
     evidence(c, 'given', 'state.json', JSON.stringify(given, null, 2));
     evidence(c, 'given', 'mock-host.json', fs.readFileSync(g.prepared.hostPath, 'utf8'));
@@ -69,6 +78,22 @@ export async function run() {
     const handoffList = orch(root, ['handoff', 'list', '--instance', 'INST-001'], { env: g.env });
     const log = orch(root, ['instance', 'log', '--instance', 'INST-001'], { env: g.env });
     const status = orch(root, ['status', '--instance', 'INST-001'], { env: g.env });
+    // 诊断帧：mock 侧 attempt / failure 计数，证明三次交付失败在首个 turn 事件之前发生。
+    const mockDiag = [];
+    for (const dir of [path.join(root, '.mock'), path.join(root, 'demo-recovery', '.mock')]) {
+      let names = [];
+      try { names = fs.readdirSync(dir); } catch { /* 无该目录 */ }
+      for (const name of names.sort()) {
+        try {
+          mockDiag.push({
+            dir: path.relative(root, dir).replace(/\\/g, '/'),
+            name,
+            content: fs.readFileSync(path.join(dir, name), 'utf8').slice(0, 2000),
+          });
+        } catch { /* 读不到不影响判定 */ }
+      }
+    }
+    evidence(c, 'then', 'mock-attempt-diagnostics.json', JSON.stringify(mockDiag, null, 2));
     evidence(c, 'then', 'boots.json', JSON.stringify(b.boots, null, 2));
     evidence(c, 'then', 'state.json', JSON.stringify(state, null, 2));
     evidence(c, 'then', 'events.jsonl', events.map((e) => JSON.stringify(e)).join('\n'));
@@ -97,10 +122,12 @@ export async function run() {
 
     note(c, 'Given 用受控 state.json 固定 delivered 未 accepted 交接包 + idle 会话，'
       + '三次投递失败、expired 与升级均由产品核心连真 mock ACP 适配器执行。');
-    note(c, '本机实测：先后尝试场景模式 MAESTRO_MOCK_PROMPT_FAILURES=3 与非场景模式 --host-error，'
-      + '重投的首个 turn 事件仍把交接包从 delivered 推到 accepted（deliveryAttempts=1，无 expired/升级），'
-      + '三次连续失败的 Then 客观取不到。已逐字保留断言并如实判不通过，交主控裁决是否补一个'
-      + '「重投前 n 次 prompt 确定性失败」的专用夹具接缝；未伪造过期/升级。');
+    note(c, '根因：原 --prompt-failures/--host-error 只能让重投的「首个 turn 事件」把交接包 accepted；'
+      + '且 Given 的 T-002 原为 pending 且无 sessionId，恢复红派发以 null hostId 落到默认真实 DSH，'
+      + '根本不经过 mock 开关。返工后 T-002 running + sessionId 指向 mock 会话，并新增'
+      + ' mock 接缝 --delivery-failures 3（env MAESTRO_MOCK_DELIVERY_FAILURES）：前 3 次 session/prompt '
+      + '在任何 turn 事件之前回 -32603，delivered→pending→expired 与 delivery_failed 升级'
+      + '全部由产品核心 deliverWithRetry 推导；断言逐字未改，未伪造过期/升级。');
     note(c, '需求夹具的 MAESTRO_TEST_DELIVERY_DELAY_MS 机检已在 orchestrator 的 deliveryDelayMs 读取，'
       + '设为 10ms 加速三次重试；断言口径不变。');
     releaseAndStop(root, g.env);

@@ -64,7 +64,10 @@ const SCENARIOS = Object.freeze({
     intent: 'AC-32 / AC-35 / AC-61：交接包投递窗口内强杀并重投',
   },
   e2e: {
-    graphScenario: 'backflow',
+    // 用 pass 图（T-001 开发 / T-002 测试，测试一次通过）：状态驱动 kill 命中
+    // 「T-001 done + T-002 running + created 交接包」后恢复，T-002 继续投递即完成，
+    // 不会再触发「第 1 轮不通过 → 回流重测 T-001」把已完成节点二次派发。
+    graphScenario: 'pass',
     killAfter: [1500],
     env: {},
     intent: 'AC-58：回流崩溃 → 恢复 → 人工节点 → 完成',
@@ -123,6 +126,7 @@ function parseDriverArgv(argv) {
     keep: false,
     prepareOnly: false,
     killAfter: [],
+    killWhen: null,
     runMs: null,
     waitMs: 5000,
     help: false,
@@ -169,6 +173,15 @@ function parseDriverArgv(argv) {
         opts.killAfter.push(n);
         break;
       }
+      case '--kill-when': {
+        const value = nextValue(i, inline);
+        if (inline === undefined) i += 1;
+        if (value !== 'done-running' && value !== 'done-running-created') {
+          throw new Error('--kill-when 只支持 done-running | done-running-created');
+        }
+        opts.killWhen = value;
+        break;
+      }
       case '--run-ms': {
         const value = nextValue(i, inline);
         if (inline === undefined) i += 1;
@@ -208,7 +221,8 @@ function usage() {
   return [
     '用法：node test/fixtures/recovery-driver.mjs --root <绝对路径> --scenario <名>',
     '        [--cwd <目录>] [--task <文本>] [--kill-after <毫秒>]... [--run-ms <n>]',
-    '        [--wait-ms <n>] [--reset] [--keep] [--prepare-only]',
+    '        [--kill-when=done-running|done-running-created] [--wait-ms <n>]',
+    '        [--reset] [--keep] [--prepare-only]',
     '',
     `场景：${recoveryScenarioNames().join(', ')}`,
   ].join('\n');
@@ -283,6 +297,38 @@ function runStatus(root, instanceId, env) {
     windowsHide: true,
   });
   return { code: res.status, stdout: res.stdout ?? '', stderr: res.stderr ?? '', error: res.error ?? null };
+}
+
+/** `orch instance log` 同样冷启动核心，但渲染的是事件行（含恢复摘要行）。 */
+function runLog(root, instanceId, env) {
+  const res = spawnSync(process.execPath, [ORCH_BIN, 'instance', 'log', '--instance', instanceId], {
+    cwd: root,
+    env,
+    timeout: 60_000,
+    encoding: 'utf8',
+    windowsHide: true,
+  });
+  return { code: res.status, stdout: res.stdout ?? '', stderr: res.stderr ?? '', error: res.error ?? null };
+}
+
+/**
+ * 状态驱动的 kill 条件：取代固定毫秒延迟，等到 state.nodes 里同时出现
+ * 「至少 1 个 done」与「至少 1 个 running」，并（按 killWhen 要求）拿到交接包。
+ * `done-running-created` 额外要求一个 state=created 的交接包，用于观测
+ * recovery.handoff created→delivered 这一迁移。
+ */
+function killWindowOpen(killWhen, root) {
+  if (killWhen !== 'done-running' && killWhen !== 'done-running-created') return false;
+  const state = readLatestState(root)?.state;
+  const nodes = Array.isArray(state?.nodes) ? state.nodes : [];
+  const hasDone = nodes.some((n) => n?.state === 'done');
+  const hasRunning = nodes.some((n) => n?.state === 'running');
+  if (!hasDone || !hasRunning) return false;
+  const handoffs = Array.isArray(state?.handoffs) ? state.handoffs : [];
+  if (killWhen === 'done-running-created') {
+    return handoffs.some((h) => h?.state === 'created');
+  }
+  return handoffs.length > 0;
 }
 
 function readLatestState(root) {
@@ -473,6 +519,7 @@ async function main(argv) {
     '产物：calc.js',
   ].join('\n');
   const killAfter = opts.killAfter.length > 0 ? opts.killAfter : definition.killAfter;
+  const killWhen = opts.killWhen;
   const runMs = opts.runMs ?? definition.runMs ?? 60_000;
 
   const prepared = prepareScene({
@@ -482,6 +529,24 @@ async function main(argv) {
     mockArgs: mockArgsFromEnv(env),
   });
   fs.mkdirSync(cwd, { recursive: true });
+
+  // 恢复重派发可能以 null hostId 落到默认 `dsh`；夹具侧让默认 host 也指向同一个
+  // mock agent（host-config 文档化的夹具接管入口），避免恢复期误落真实 DSH —— 真实
+  // 宿主不消费场景步、会无限 tool_call，掩盖产品真实行为。仅在状态驱动 kill 场景启用。
+  if (killWhen) {
+    try {
+      const hostsDir = path.join(root, '.orch', 'hosts');
+      const mockCfg = JSON.parse(fs.readFileSync(prepared.hostPath, 'utf8'));
+      fs.mkdirSync(hostsDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(hostsDir, 'dsh.json'),
+        `${JSON.stringify({ ...mockCfg, id: 'dsh' }, null, 2)}\n`,
+        'utf8',
+      );
+    } catch {
+      // 写不出来时退化为原行为
+    }
+  }
 
   if (opts.prepareOnly) {
     process.stdout.write(`${JSON.stringify({
@@ -509,6 +574,7 @@ async function main(argv) {
   });
   const exits = [];
   const kills = [];
+  const killWaits = [];
   let snapshotBeforeKill = null;
   let snapshotAfterKill = null;
 
@@ -527,7 +593,20 @@ async function main(argv) {
       const before = promptCount(prepared.mockDir);
       await waitFor(() => promptCount(prepared.mockDir) > before, 5_000);
     }
-    await delay(killAfter[index]);
+    if (killWhen) {
+      // 状态驱动 kill：取代固定毫秒延迟，等到「done + running（+ created 交接包）」
+      // 窗口真正出现再 SIGKILL。超时仍按原快照杀，窗口判定落 killWaits 证据。
+      const opened = await waitFor(() => killWindowOpen(killWhen, root), 30_000, 100);
+      killWaits.push({
+        index,
+        killWhen,
+        opened,
+        atMs: Date.now() - t0,
+        state: snapshotsOf(readLatestState(root)),
+      });
+    } else {
+      await delay(killAfter[index]);
+    }
     if (corePid(root) === null) {
       const current = readLatestState(root);
       const id = current?.state?.instanceId ?? current?.id ?? null;
@@ -573,12 +652,39 @@ async function main(argv) {
   const latest = readLatestState(root);
   const instanceId = latest?.state?.instanceId ?? latest?.id ?? null;
   let recovery = null;
+  let recoveryLog = null;
+  let snapshotAfterRecovery = null;
+  let terminalWait = null;
   let checkpoint = null;
   let events = [];
   if (instanceId) {
     markRecovery(prepared.mockDir);
     recovery = runStatus(root, instanceId, env);
-    if (opts.waitMs > 0) await delay(opts.waitMs);
+    // 恢复瞬间的快照：此时实例通常仍是 running，用于「运行中/重新派发」判定。
+    snapshotAfterRecovery = readLatestState(root);
+    // 事件行（含「恢复：检查点 …」摘要行）只在 instance log 渲染。
+    // 只在状态驱动 kill 模式额外冷启动取 log：其它场景沿用原来的取证路径，
+    // 避免一次额外的 core 启动改变 afterRecovery 快照（回归实测会撞红 AC-03）。
+    if (killWhen) recoveryLog = runLog(root, instanceId, env);
+    if (opts.waitMs > 0) {
+      if (killWhen) {
+        // 状态轮询优先：到「完成/升级」终态即停，避免负载下固定 sleep 过长/过短。
+        const waitStart = Date.now();
+        const terminal = await waitFor(() => {
+          const s = readLatestState(root)?.state?.state;
+          return s === 'completed' || s === 'suspended';
+        }, opts.waitMs, 200);
+        terminalWait = {
+          mode: 'poll',
+          terminal,
+          waitedMs: Date.now() - waitStart,
+          finalState: readLatestState(root)?.state?.state ?? null,
+        };
+      } else {
+        // 原有口径一字不改：固定 sleep，保证其它场景的恢复瞬间快照不受影响。
+        await delay(opts.waitMs);
+      }
+    }
     checkpoint = readCheckpoint(root, instanceId);
     events = readEvents(root, instanceId);
   }
@@ -595,14 +701,20 @@ async function main(argv) {
     instanceId,
     graphScenario: definition.graphScenario,
     killAfter,
+    killWhen,
+    killWaits,
     kills,
     testGraph,
     runMs,
+    waitMs: opts.waitMs,
     exitCodes: exits.map((item) => item?.code ?? null),
     before: snapshotsOf(snapshotBeforeKill ?? latest),
     afterKill: snapshotsOf(snapshotAfterKill),
-    afterRecovery: snapshotsOf(after),
+    afterRecovery: snapshotsOf(snapshotAfterRecovery ?? after),
+    afterTerminal: snapshotsOf(after),
+    terminalWait,
     recoveryStatus: recovery ? { code: recovery.code, stdout: recovery.stdout.slice(-2000) } : null,
+    recoveryLog: recoveryLog ? { code: recoveryLog.code, stdout: recoveryLog.stdout.slice(-4000) } : null,
     checkpoint: checkpoint ? { file: checkpoint.file, present: checkpoint.value !== null, value: checkpoint.value } : null,
     prompts,
     events,

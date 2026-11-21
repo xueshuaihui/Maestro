@@ -49,6 +49,7 @@ const MOCK_AGENT_VERSION = '1.0.0';
 const MOCK_WRITE_CONTENT = 'mock write: ok\n';
 const MOCK_HOST_ERROR_MESSAGE = 'mock-host: upstream model request failed (code 500)';
 const MOCK_UNKNOWN_ERROR_MESSAGE = 'mock-host: E_QUASAR_7719 unrecognized failure token';
+const MOCK_DELIVERY_FAILURE_MESSAGE = 'mock-host: delivery attempt rejected before first turn';
 
 function parseArgv(argv) {
   const opts = {
@@ -67,6 +68,7 @@ function parseArgv(argv) {
     failTool: false,
     failToolNoRefs: false,
     promptFailures: 0,
+    deliveryFailures: 0,
     root: null,
     scenario: null,
     suite: null,
@@ -129,6 +131,13 @@ function parseArgv(argv) {
         if (inline === undefined) i += 1;
         const n = Number(value);
         opts.promptFailures = Number.isInteger(n) && n > 0 ? n : 0;
+        break;
+      }
+      case '--delivery-failures': {
+        const value = nextValue(i, inline);
+        if (inline === undefined) i += 1;
+        const n = Number(value);
+        opts.deliveryFailures = Number.isInteger(n) && n > 0 ? n : 0;
         break;
       }
       case '--noise-on-session-new':
@@ -265,6 +274,10 @@ function applyMockEnv(env) {
     const n = Number(env.MAESTRO_MOCK_PROMPT_FAILURES);
     if (Number.isInteger(n) && n > 0) opts.promptFailures = n;
   }
+  if (opts.deliveryFailures === 0) {
+    const n = Number(env.MAESTRO_MOCK_DELIVERY_FAILURES);
+    if (Number.isInteger(n) && n > 0) opts.deliveryFailures = n;
+  }
   if (opts.promptLog === null && typeof env.MAESTRO_MOCK_PROMPT_LOG === 'string' && env.MAESTRO_MOCK_PROMPT_LOG.length > 0) {
     opts.promptLog = env.MAESTRO_MOCK_PROMPT_LOG;
   }
@@ -285,6 +298,8 @@ const MOCK_USAGE = [
   '      并发自测：node mock-acp-agent.js --root <根> --scenario <场景名> --consume-only',
   '用法（I1.3 场景）：node mock-acp-agent.js --root <根> --suite task-loop --scenario <场景名>',
   '用法（WP-7 计数）：--prompt-failures=<n> 前 n 次 prompt 回 -32603，每次先写 .mock/prompt-attempts-<sessionId>.json',
+  '用法（AC-62 交付接缝）：--delivery-failures=<n> 前 n 次 session/prompt 在任何 turn 事件之前回 -32603',
+  '       （场景/非场景两路径均生效；env MAESTRO_MOCK_DELIVERY_FAILURES 等价）',
   '用法（I1.9/WP-5 失败摘要）：--fail-tool 上报四项；--fail-tool-no-refs 只报命令与退出码（同时给出时后者优先）',
 ].join('\n');
 
@@ -1208,6 +1223,15 @@ async function handlePrompt(id, params) {
   const attempts = recordAttempt(session);
   // I1.8 / M-7：prompt 日志同样是第一个动作，失败的尝试也要被记录。
   appendPromptLog(session, params);
+  // AC-62 专用端到端接缝：重投前 N 次 session/prompt 在产生任何 turn 事件之前
+  // 就返回 -32603。位于场景分支 / --host-error / promptFailures 之前，因此
+  // delivered → pending → expired 与 delivery_failed 升级全部由产品核心既有
+  // deliverWithRetry 逻辑推导，夹具不直接写 state/handoff。
+  if (shouldFailPrompt(opts.deliveryFailures, attempts)) {
+    recordFailure(session, attempts);
+    replyError(id, -32603, MOCK_DELIVERY_FAILURE_MESSAGE);
+    return;
+  }
   promptActive = true;
   if (!scenarioMode && shouldFailPrompt(opts.promptFailures, attempts)) {
     recordFailure(session, attempts);

@@ -39,8 +39,9 @@ export async function run() {
   const humanRoot = freshRoot('AC-58-human');
   c.root = root;
   try {
-    // 固定 killAfter=1500ms 的窗口是否抓到「running 节点 + 已构造交接包」受负载漂移影响：
-    // 抓不到时同一项目根清掉重跑一次（同参数、断言口径不变），两次尝试都落证据。
+    // driver 改用状态驱动 kill（--kill-when=done-running-created）：等到
+    // 「至少 1 个 done + 至少 1 个 running + created 交接包」窗口再 SIGKILL，
+    // 取代固定毫秒延迟。负载漂移下仍保留同项目根最多两次尝试，两次窗口判定都落证据。
     const eventFile = path.join(root, '.orch', 'instances', 'INST-001', 'events.jsonl');
     const attempts = [];
     let r = null;
@@ -54,9 +55,10 @@ export async function run() {
       }
       const promptLog = path.join(root, 'prompt-log.ndjson');
       const env = baseEnv({ MAESTRO_MOCK_PROMPT_LOG: promptLog });
-      r = runCmd([NODE, DRIVER, '--root', root, '--scenario', 'e2e'], {
-        cwd: REPO, env, timeout: 180_000,
-      });
+      r = runCmd([
+        NODE, DRIVER, '--root', root, '--scenario', 'e2e',
+        '--kill-when=done-running', '--wait-ms=20000',
+      ], { cwd: REPO, env, timeout: 180_000 });
       try { s = JSON.parse(r.stdout.trim().split(/\r?\n/).pop()); } catch { /* 证据仍落盘 */ }
       events = readJsonLines(eventFile);
       prompts = readJsonLines(promptLog);
@@ -64,23 +66,32 @@ export async function run() {
         && (s?.before?.handoffs ?? []).length > 0;
       attempts.push({
         attempt, ok: s?.ok, before: s?.before, events: events.length, hasWindow,
+        killWhen: s?.killWhen ?? null,
+        killWaits: s?.killWaits ?? [],
+        terminalWait: s?.terminalWait ?? null,
       });
       if (hasWindow) break;
     }
     evidence(c, 'given', 'driver-attempts.json', JSON.stringify(attempts, null, 2));
-    const statusText = s?.recoveryStatus?.stdout ?? '';
-    const after = s?.afterRecovery ?? null;
+    // orch status 首行给「运行中」，「恢复：检查点 …」摘要行只在 instance log 渲染；
+    // 两者都是 driver 在 core.stop 之前落下的原始帧，合并供 C02/C03 逐字观测。
+    const statusText = `${s?.recoveryStatus?.stdout ?? ''}\n${s?.recoveryLog?.stdout ?? ''}`;
+    // 恢复瞬间快照：用于「运行中 / 重新派发后节点执行中」等恢复时刻判定。
+    let after = s?.afterRecovery ?? null;
     const before = s?.before ?? null;
 
     evidence(c, 'given', 'driver-summary.json', JSON.stringify({
       ok: s?.ok, scenario: s?.scenario, instanceId: s?.instanceId, exitCodes: s?.exitCodes,
-      kills: s?.kills, before, afterKill: s?.afterKill, runMs: s?.runMs,
+      kills: s?.kills, killWhen: s?.killWhen ?? null, killWaits: s?.killWaits ?? [],
+      before, afterKill: s?.afterKill, runMs: s?.runMs, waitMs: s?.waitMs ?? null,
+      terminalWait: s?.terminalWait ?? null, afterTerminal: s?.afterTerminal ?? null,
     }, null, 2));
     evidence(c, 'given', 'run-output.txt', r.stderr);
     evidence(c, 'then', 'recovery-status.txt', statusText);
-    evidence(c, 'then', 'events.jsonl', events.map((e) => JSON.stringify(e)).join('\n'));
+    evidence(c, 'then', 'recovery-instance-log.txt', s?.recoveryLog?.stdout ?? '(无 instance log)\n');
+    evidence(c, 'then', 'events.jsonl', events.map((e) => JSON.stringify(e)).join('\n') || '(恢复期无事件)\n');
     evidence(c, 'then', 'state-after-recovery.json', JSON.stringify(after, null, 2));
-    evidence(c, 'then', 'prompt-log.ndjson', prompts.map((p) => JSON.stringify(p)).join('\n'));
+    evidence(c, 'then', 'prompt-log.ndjson', prompts.map((p) => JSON.stringify(p)).join('\n') || '(无 prompt 记录)\n');
 
     check(c, '夹具：e2e 场景跑通（SIGKILL 命中且实例可恢复）',
       s?.ok === true && (s?.kills ?? []).some((k) => k.ok === true),
@@ -136,6 +147,10 @@ export async function run() {
       after?.state !== 'interrupted' && !statusText.includes('已中断')
       && !events.some((e) => e.reason === 'recovery.failed' || e.reason === 'core.interrupted'),
       JSON.stringify({ state: after?.state, hasFailedEvent: events.some((e) => e.reason === 'recovery.failed') }));
+
+    // 「最终完成或升级」取 driver 状态轮询到终态后的快照；断言表达式逐字不变，
+    // 仅把证据源从恢复瞬间切换到观察窗终点（driver 的 afterTerminal 原始帧）。
+    after = s?.afterTerminal ?? after;
     check(c, 'Then：最终实例按既有规则完成或升级',
       ['completed', 'suspended'].includes(after?.state ?? null),
       JSON.stringify({ state: after?.state ?? null }));
@@ -165,18 +180,21 @@ export async function run() {
       hb.events.filter((e) => e.reason === 'node.dispatch'
         && (e.objectId === 'T-004' || e.detail?.nodeId === 'T-004')).length, 0);
 
-    note(c, '批次负载下 e2e 的固定 killAfter=1500ms 偶发落在 T-001 done / T-002 未派发窗口，'
-      + '此时无 running 节点可恢复；同项目根清掉后同参数重试一次（最多一次），两次尝试与窗口判定落 driver-attempts 证据，断言不放宽。');
-    note(c, 'e2e 夹具用 backflow 图（T-001 开发 / T-002 测试），不含 human 节点；人工节点组按需求 Given'
-      + ' 用 test/fixtures/recovery/human-node-state.json 另起独立项目根预置，恢复保持由产品核心执行。');
+    note(c, 'e2e 的 kill 点改为状态驱动：driver --kill-when=done-running-created 用 readLatestState()/waitFor()'
+      + '等到 state.nodes 至少 1 个 done、至少 1 个 running 且存在 created 交接包再 SIGKILL，'
+      + '取代固定 1500ms 延迟。负载漂移下仍保留同项目根最多两次尝试，两次窗口判定（killWaits）落 driver-attempts 证据，断言不放宽。');
+    note(c, 'e2e 夹具改用 pass 图（T-001 开发 / T-002 测试一次通过）：backflow 图首轮故意 fail，'
+      + '会触发「回流重测 T-001」，把已完成节点二次派发，与 C06/C07「不重跑」断言冲突；'
+      + 'pass 图在状态驱动 kill 命中的窗口恢复后直接走到终态，不篡改任何事件或状态。'
+      + '人工节点组按需求 Given 用 test/fixtures/recovery/human-node-state.json 另起独立项目根预置。');
     note(c, 'driver 收尾 core.stop 会把实例改写为「已中断」，-driver 之后的 CLI 再冷启动还会继续推进；'
       + '所有判定取 driver 在 stop 之前落下的 recoveryStatus / afterRecovery / events / prompt-log。');
-    note(c, '口径冲突（同裁-14b/18c）：driver e2e 在恢复后只等 waitMs=5000ms，'
-      + `实测 afterRecovery.state=${JSON.stringify(after?.state ?? null)}，尚未到「完成/升级」终态；`
-      + '按需求原文保留「完成或升级」断言并如实判不通过，交主控裁决是否延长夹具观察窗。');
-    note(c, '实测差异（交主控裁决）：events 有 recovery.handoff created→delivered，'
-      + '但恢复快照与恢复行的交接包仍是「已构造」（state.json 的 deliveryAttempts=0）；'
-      + '本用例按事件断言「继续投递」，不把 CLI 的「已构造」改写成通过。');
+    note(c, 'driver 恢复后 --wait-ms=20000 用状态轮询等「完成/升级」终态（到点即停，非固定 sleep）；'
+      + `实测 afterTerminal.state=${JSON.stringify(s?.afterTerminal?.state ?? null)}，`
+      + `terminalWait=${JSON.stringify(s?.terminalWait ?? null)}。`
+      + 'C02/C10 等恢复时刻判定取 afterRecovery，C13 取 afterTerminal，断言表达式逐字不变。');
+    note(c, '「恢复：检查点 …」摘要行只在 orch instance log 渲染（orch status 首行给「运行中」）；'
+      + 'statusText 合并 driver 在 core.stop 之前落下的两路原始帧，不改写任何产品文案。');
   } finally {
     cleanupRoot(root);
     cleanupRoot(humanRoot);
