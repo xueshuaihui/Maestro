@@ -3,7 +3,8 @@
  *
  * Given/When：recovery-driver --scenario crash-rebuild（MAESTRO_MOCK_CRASH=after_first_update）。
  * Then：先「会话进程已退出：正在重建会话」，再「会话已重建 <新会话>」；节点继续、轮次不变。
- * 夹具：断言新会话 id 与旧不同、round === 2、当前轮 session/prompt 2 次。
+ * 夹具：断言新会话 id 与旧不同、round 与崩溃前一致、当前轮 session/prompt 2 次
+ * （v4：文案节点号/轮次/上限按实测 detail 动态填充，不再写死 T-003/2/3）。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -97,8 +98,14 @@ export async function run() {
       new Set(retryPrompts.map((p) => p.sessionId)).size === 2,
       JSON.stringify(retryPrompts.map((p) => p.sessionId)));
 
-    eq(c, '夹具：round === 2（需求机检）', round, 2);
-    includes(c, 'Then：需求示例逐字「（节点 T-003 · 轮次 2/3）」', d.log, '（节点 T-003 · 轮次 2/3）');
+    // v4：round 与崩溃前一致（BR-37 明写「轮次不增加」，不写「或更大」）。
+    eq(c, '夹具：round 与崩溃前一致（BR-37 轮次不增加，不写「或更大」）',
+      rebuiltEvents[0]?.detail?.round, crashEvents[0]?.detail?.round);
+    // v4：文案按实测 detail（nodeId/round/maxRounds）动态填充，不再写死 T-003/2/3。
+    const crashDetail = crashEvents[0]?.detail ?? {};
+    const crashParen = `（节点 ${crashDetail.nodeId} · 轮次 ${crashDetail.round}/${crashDetail.maxRounds}）`;
+    includes(c, 'Then：文案按实测 detail 填充「（节点 <当前节点> · 轮次 <当前轮>/<上限>）」',
+      d.log, crashParen);
     const node = (d.state?.nodes ?? []).find((n) => n.nodeId === crashEvents[0]?.detail?.nodeId);
     check(c, 'Then：节点继续执行且轮次未变', ['done', 'review', 'running'].includes(node?.state)
       && node?.round === round, JSON.stringify(node));
@@ -108,9 +115,9 @@ export async function run() {
       JSON.stringify({ beforeStop: d.summary?.afterRecovery?.state, afterStop: d.state?.state }));
     excludes(c, 'Then：崩溃场景不出现运行慢提示', d.log, '判定为运行慢');
 
-    note(c, '口径冲突（同裁-14b）：crash-rebuild 夹具用内建 pass 图（T-001 开发，maxRounds=2），'
-      + `实测崩溃/重建事件为 ${JSON.stringify(crashEvents[0]?.detail)}，`
-      + `与需求示例「节点 T-003 · 轮次 2/3」及机检 round===2 不可兼得；按原文保留断言、如实判不通过，交主控裁决。`);
+    note(c, 'v4 改法（裁-21a / 裁-21d②）：round 断言改为「与崩溃前一致」（BR-37 轮次不增加，不写「或更大」），'
+      + `实测崩溃/重建明细为 ${JSON.stringify(crashDetail)}；文案里的节点号/轮次/上限按该明细动态填充，`
+      + '不再写死 T-003/2/3。崩溃重建、新会话 id 不同、当前轮 prompt 2 次等 Then 实质不变。');
     note(c, '会话号形态：需求示例 sess-003 是真实 DSH 形态，mock 为 mock-sess-<pid>-<seq>；'
       + '本用例不断言具体编号，只断言新旧不同与事件明细一致。');
   } finally {

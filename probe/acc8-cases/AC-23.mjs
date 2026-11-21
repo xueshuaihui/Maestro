@@ -8,12 +8,14 @@
  * 核心按 host_unreachable 中断实例（recovery.failed），走不到 §3.6 会话级降级。
  * 方言选择与恢复降级仍由产品核心 + 真 mock ACP 适配器执行，用例只写 Given 现场。
  *
- * 逐字保留需求原文断言；本机确实观测不到的 Then 用 note() 记录并如实判不通过。
+ * v4 口径：主断言 state.state === 'running'（halted === false 仅附带）；
+ * recovery.dialect 恰 3 条（1 条 dialect=new/restored:false + 2 条 fallback:true）；
+ * 会话条目只比 Given 多 1 条；无 node.dispatch（继续调度由 AC-31 / AC-60 覆盖）。
  */
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { makeCase, eq, check, includes, excludes, evidence, note, finish } from '../acc8-f-common.mjs';
+import { makeCase, eq, check, includes, evidence, note, finish } from '../acc8-f-common.mjs';
 import { freshRoot, cleanupRoot, readState, readEvents, orch, GRADING_MOCK } from '../acc8-f-lib.mjs';
 import { prepareScene, mockArgsFromEnv, buildRunEnv } from '../../test/fixtures/code-loop-driver.mjs';
 
@@ -155,16 +157,32 @@ export async function run() {
     includes(c, 'Then：status 节点行显示「已分配」', status.stdout, '已分配');
     includes(c, '夹具：role show 显示「可用 · 活跃会话 0/1」', roleShow.stdout, '可用 · 活跃会话 0/1');
     includes(c, '夹具：handoff list 显示「待投递」', handoffList.stdout, '待投递');
-    excludes(c, 'Then：实例不进入「运行中」', status.stdout, '运行中');
+    eq(c, '机检（主）：state.state === running（降级只降会话面，不把实例判为中断）',
+      afterState?.state ?? null, 'running');
+    eq(c, '机检（附带）：state.halted === false', afterState?.halted ?? null, false);
     check(c, '夹具：日志可见 resume→load 回退',
       fallbacks.some((e) => e.detail?.from === 'resume' && e.detail?.to === 'load'),
       JSON.stringify(fallbacks));
     check(c, '夹具：日志可见 load→new 回退',
       fallbacks.some((e) => e.detail?.from === 'load' && e.detail?.to === 'new'),
       JSON.stringify(fallbacks));
-    check(c, '夹具：session/new 失败后无新会话（dialect=new 未成功落地）',
-      !dialectEvents.some((e) => e.detail?.fallback !== true && e.detail?.dialect === 'new'),
-      JSON.stringify(dialectEvents.filter((e) => e.detail?.fallback !== true)));
+    // v4：recovery.dialect 恰 3 条 —— 1 条 dialect=new/restored:false + 2 条 fallback:true。
+    const newDialectEvents = dialectEvents.filter(
+      (e) => e.detail?.dialect === 'new' && e.detail?.restored === false,
+    );
+    eq(c, '夹具：recovery.dialect 恰 3 条', dialectEvents.length, 3);
+    eq(c, '夹具：dialect=new 且 restored:false 恰 1 条', newDialectEvents.length, 1);
+    eq(c, '夹具：fallback:true 回退行恰 2 条', fallbacks.length, 2);
+    eq(c, '夹具：恢复后会话条目只比 Given 多 1 条（adapterFactory.create 预开的会话）',
+      (afterState?.sessions ?? []).length, givenState.sessions.length + 1);
+    check(c, '夹具：新会话条目 sessionId 与 dialect=new 事件的 sessionId 相同',
+      (afterState?.sessions ?? []).some((s) => s.sessionId === newDialectEvents[0]?.detail?.sessionId),
+      JSON.stringify({
+        sessionIds: (afterState?.sessions ?? []).map((s) => s.sessionId),
+        newDialect: newDialectEvents[0]?.detail ?? null,
+      }));
+    eq(c, '夹具：无 node.dispatch（继续调度由 AC-31 / AC-60 覆盖，不在本条断言）',
+      events.filter((e) => e.reason === 'node.dispatch').length, 0);
     // 交接包 delivered → pending 的产品核心动作（由 recovery.redeliver 驱动，非手写）。
     eq(c, 'Then：交接包由 delivered 变为 pending', handoffAfter?.state ?? null, 'pending');
 
@@ -175,11 +193,12 @@ export async function run() {
       + 'resume/load 均失败，核心按 dialect=new 完成会话级降级（recovery.summary、节点已分配、角色可用、交接待投递）。');
     note(c, 'sessions 用 idle（非 thinking）：否则 dialect=new 落地后旧会话仍 thinking，'
       + 'role show 的「活跃会话 0/1」会变成 1/1。');
-    note(c, '需求 Then「实例不进入运行中」本机实测不成立：产品修复 all_dialects_failed→unavailable:false 后不再'
-      + '中断实例，state 仍为 running，orch status 首行显示「运行中」。已逐字保留断言并如实判不通过，交主控裁决。');
-    note(c, '需求 Then「session/new 失败后无新会话」本机实测不成立：真 adapterFactory.create 在 create 时预开会话'
-      + '（adapter.sessionId 非空），恢复的 new 方言直接复用该预开会话，于是产生新会话；'
-      + '三方言全部落到 all_dialects_failed 分支在 CLI 真 factory 路径下不可达。已逐字保留断言并如实判不通过。');
+    note(c, 'v4 主断言改为 state.state === running：BR-22 的「不把实例判为中断」由「节点已分配 / 角色可用 · 0/1 / '
+      + '交接待投递 + recovery.dialect 降级行」承载，实例容器保持 running 才能继续调度；halted === false 单独无判别力'
+      + '（interrupted / suspended 的 halted 同为 false），只作附带断言。');
+    note(c, 'v4 会话口径：recovery.dialect 恰 3 条（resume→load、load→new 两条 fallback:true + 一条 dialect=new/restored:false）；'
+      + '真 adapterFactory.create 在 create 时预开会话，new 方言直接复用它，故恢复后会话条目只比 Given 多 1 条，'
+      + '事件 sessionId 指向它。继续调度由 AC-31 / AC-60 覆盖，本条不断言 node.dispatch。');
 
     try {
       fs.writeFileSync(path.join(root, '.mock', 'release'), '1');

@@ -8,7 +8,8 @@
  * 差异记 note()：
  * - 产品对真正旧格式（schemaVersion<2）在 reconcileOnBoot 直接 continue（跳过，不中断、
  *   不写 legacy 行）；要走到需求期望的 legacy 行必须给 schemaVersion>=2。
- * - markInterrupted 会重写 state.json，机检「sha256 不变」与本路径不可兼得，按原文保留断言。
+ * - v4 机检改为「除 state/stateSince/rev/updatedAt/health/counters.eventSeq 六项外内容不变」，
+ *   逐叶子比对 given/then 的 state.json（sha256 证据保留供复核，但不再拿 hash 相等做判据）。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -17,6 +18,27 @@ import { makeCase, eq, check, includes, evidence, note, finish } from '../acc8-f
 import {
   freshRoot, cleanupRoot, readState, readEvents, orch, statePath, sha256, GRADING_MOCK,
 } from '../acc8-f-lib.mjs';
+
+/** 把对象摊成「叶子路径 → JSON 字符串」；数组作为原子叶子，便于逐字比对业务字段。 */
+function leafMap(obj) {
+  const out = {};
+  const walk = (value, prefix) => {
+    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      for (const [key, child] of Object.entries(value)) walk(child, prefix ? `${prefix}.${key}` : key);
+    } else {
+      out[prefix] = JSON.stringify(value);
+    }
+  };
+  walk(obj, '');
+  return out;
+}
+
+/** v4 六项白名单：health 整棵子树可动，counters 只放 eventSeq。 */
+const V4_ALLOWED_LEAVES = new Set([
+  'state', 'stateSince', 'rev', 'updatedAt', 'counters.eventSeq',
+]);
+const isV4Allowed = (key) => V4_ALLOWED_LEAVES.has(key) || key === 'health' || key.startsWith('health.');
+const V4_BIZ_FIELDS = ['nodes', 'sessions', 'handoffs', 'escalations', 'template', 'task'];
 
 export async function run() {
   const c = makeCase('AC-15', {
@@ -95,14 +117,33 @@ export async function run() {
     eq(c, '机检：状态仍 interrupted', afterState?.state, 'interrupted');
     const newDispatch = events.filter((e) => e.reason === 'node.dispatch');
     eq(c, '机检：没有新增 node.dispatch', newDispatch.length, 0);
-    eq(c, '机检：实例记录 sha256 不变（需求原文）', afterHash, beforeHash);
+
+    // v4：逐叶子比对 given/then，差异键集合必须落在六项白名单内。
+    const givenLeaves = leafMap(JSON.parse(beforeBytes));
+    const thenLeaves = leafMap(JSON.parse(afterBytes));
+    const changedLeaves = [...new Set([...Object.keys(givenLeaves), ...Object.keys(thenLeaves)])]
+      .filter((key) => givenLeaves[key] !== thenLeaves[key]);
+    const unexpectedLeaves = changedLeaves.filter((key) => !isV4Allowed(key));
+    check(c, '机检：state.json 差异键集合 ⊆ v4 六项白名单（state/stateSince/rev/updatedAt/health/counters.eventSeq）',
+      unexpectedLeaves.length === 0,
+      JSON.stringify({ changed: changedLeaves, unexpected: unexpectedLeaves }));
+    const bizFieldDiffs = V4_BIZ_FIELDS.filter((key) => givenLeaves[key] !== thenLeaves[key]);
+    check(c, '机检：nodes/sessions/handoffs/escalations/template/task 逐字不变',
+      bizFieldDiffs.length === 0, JSON.stringify({ bizFieldDiffs }));
+    check(c, 'Then：有用户可见提示（已中断状态行 + 旧实例无检查点提示行）',
+      status.stdout.includes('已中断')
+        && log.stdout.includes('旧实例无检查点：已中断（如需继续请新建实例）'),
+      JSON.stringify({ status: status.stdout, log: log.stdout }));
     check(c, 'Then：没有尝试恢复（无 recovery.summary / recovery.record 事件）',
       !events.some((e) => e.reason === 'recovery.summary' || e.reason === 'recovery.record'),
       JSON.stringify(events.filter((e) => String(e.reason).startsWith('recovery.'))));
     note(c, '产品 reconcileOnBoot 对真正旧格式（schemaVersion<2）直接 continue，不中断也不写 legacy 行；'
       + '为走到需求期望的「旧实例无检查点」提示，手写 state 用 schemaVersion=2 + 未知模板 + 无检查点。');
-    note(c, '机检「sha256 不变」与「转为 interrupted」在本产品路径上不可兼得：markInterrupted 必须重写 state.json。'
-      + '按原文保留断言并如实判不通过，未放宽。');
+    note(c, 'v4 机检按裁-21c 的六项白名单逐叶子比对：状态、状态时间、记录版本、更新时间、健康度、'
+      + '事件计数随「转 interrupted」必然更新，其余业务字段（nodes/sessions/handoffs/escalations/template/task）逐字不动，'
+      + '验收点是「不猜测、不按检查点重建、节点/会话/交接包一个不动」。');
+    note(c, 'sha256-before-after.txt 证据继续写出 before/after 两个 hash 供人工复核，但不再把 hash 相等当判据'
+      + '（markInterrupted 必重写 state.json，hash 必然变化）。');
     try { orch(root, ['core', 'stop']); } catch { /* 清理 */ }
   } finally {
     cleanupRoot(root);

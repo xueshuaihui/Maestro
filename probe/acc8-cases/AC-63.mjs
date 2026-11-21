@@ -6,8 +6,8 @@
  * 夹具：只重建一次（session.rebuilt=1、session.crash=1、第二次崩溃走 rebuild_failed），
  *       节点 escalated、escalations 新增 1 条、orch run 退出码 4。
  *
- * 需求示例「节点 T-003 · 轮次 2/3」与内建 pass 图（T-001 · 1/2）不可兼得（裁-18c），
- * 保留断言、如实判不通过。
+ * v4 机检改为可数锚点（session.rebuilt=1 / rebuild_failed=1 / sessions=2 / escalated / 退出码 4），
+ * 文案节点号与轮次按实测 detail 动态填充（裁-21a / 裁-21f②），不再写死 T-003/2/3。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -87,11 +87,15 @@ export async function run() {
     eq(c, '夹具：升级 reasonCode=session_crash', state?.escalations?.[0]?.reasonCode ?? null, 'session_crash');
     includes(c, '夹具：升级行点名 ESC-001', status, 'ESC-001');
 
-    includes(c, '夹具：需求示例逐字「（节点 T-003 · 轮次 2/3）」', log, '（节点 T-003 · 轮次 2/3）');
+    // v4：文案按实测 detail（nodeId/round/maxRounds）动态填充，不再写死 T-003/2/3。
+    const failParen = `（节点 ${failedDetail.nodeId} · 轮次 ${failedDetail.round}/${failedDetail.maxRounds}）`;
+    includes(c, '夹具：文案按实测 detail 填充「（节点 <当前节点> · 轮次 <当前轮>/<上限>）」',
+      log, failParen);
 
-    note(c, '口径冲突（裁-18c）：crash-twice 夹具用内建 pass 图（T-001 开发，maxRounds=2），'
-      + `实测 rebuild_failed 明细 ${JSON.stringify(failedDetail)}；`
-      + '需求示例「节点 T-003 · 轮次 2/3」按原文保留断言并如实判不通过。');
+    note(c, 'v4 改法（裁-21a / 裁-21f②）：机检用可数锚点 —— session.rebuilt 恰 1 条、session.rebuild_failed 恰 1 条、'
+      + `state.sessions 恰 2 条（原始 + 重建）、节点 escalated、退出码 4；文案按实测 rebuild_failed 明细`
+      + ` ${JSON.stringify(failedDetail)} 动态填充，不再写死「节点 T-003 · 轮次 2/3」。`
+      + '「不会出现第二次正在重建会话」的 Then 实质不变。');
     note(c, '「session/new 比单次崩溃场景少 1 次」按产品可观测锚点核对：'
       + 'crash-twice 只产生 1 次 session.rebuilt / 2 个会话（原始 + 重建），第二次崩溃直接 rebuild_failed + 升级，'
       + '没有第二次重建；需求按「若每次崩溃都重建应有更强计数」理解时本夹具不可兼得。');

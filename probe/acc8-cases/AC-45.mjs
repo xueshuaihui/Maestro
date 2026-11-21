@@ -103,7 +103,10 @@ export async function run() {
     const timeoutLine = fill(SESSION_FAILURE_TEXT.timeout, detail);
     includes(c, 'Then：出现按 labels 渲染的「节点 T-003 超时：按运行慢处理，已升级人工」', log, timeoutLine);
     check(c, '夹具：超时节点是 T-003', detail.nodeId === 'T-003', JSON.stringify(detail));
-    includes(c, 'Then：需求示例逐字「（节点 T-003 · 轮次 2/3）」', log, '（节点 T-003 · 轮次 2/3）');
+    // v4 例外（裁-21k）：节点号 T-003 实测成立、保留字面，只参数化不可满足的轮次与上限，
+    // 绑 session.timeout 事件的 detail.round / detail.maxRounds（本夹具现场 1/2）。
+    const timeoutParen = `（节点 T-003 · 轮次 ${detail.round}/${detail.maxRounds}）`;
+    includes(c, `Then：轮次按 session.timeout 的 detail 填充「${timeoutParen}」`, log, timeoutParen);
 
     const node = (state?.nodes ?? []).find((n) => n.nodeId === 'T-003');
     eq(c, "夹具：failed_reason === 'timeout'", node?.failed_reason, 'timeout');
@@ -120,8 +123,9 @@ export async function run() {
     const reviewSessions = (state?.sessions ?? []).filter((s) => s.nodeId === 'T-003');
     eq(c, '夹具：T-003 会话数不变（1，未被超时重开）', reviewSessions.length, 1);
 
-    note(c, '口径冲突（同裁-14b）：注入图 graph-timeout.json 的 T-003 maxRounds=2，'
-      + `实测 timeout 明细 ${JSON.stringify(detail)}；需求示例「轮次 2/3」按原文保留断言并如实判不通过。`);
+    note(c, 'v4 只参数化不可满足的轮次（裁-21k）：AC-45.part.md C03/C04 证明「节点 T-003」字面实测成立，'
+      + '故保留 T-003，只把「轮次 2/3」改为绑 session.timeout 的 detail.round / detail.maxRounds'
+      + `（实测明细 ${JSON.stringify(detail)}，本夹具 1/2）。机检一字未改。`);
     note(c, 'doc-slow-reviewer 的审核步骤 delayMs=60000 让进程存活且无新 update；'
       + 'MAESTRO_TEST_SLOW_MS=100 缩短慢阈值，timeout:2 为图声明的真实秒数。');
   } finally {

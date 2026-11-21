@@ -59,8 +59,11 @@ export async function run() {
 
     eq(c, 'Then：人工节点 nodeType === human', human?.nodeType ?? null, 'human');
     eq(c, 'Then：人工节点 state === running', human?.state ?? null, 'running');
-    includes(c, 'Then：graph 显示「T-004 人工确认 · 执行中 · 第 1 轮 · 等待人工」',
-      graph.stdout, 'T-004 人工确认 · 执行中 · 第 1 轮 · 等待人工');
+    // v4 观测通道：以 orch status --instance 节点行 + instance log 固定行为准；
+    // graph 只渲染图声明节点，不要求出现图外 human 节点 T-004。
+    const humanStatusLine = `节点 ${humanGiven?.nodeId ?? 'T-004'} 执行中 · 第 ${humanGiven?.round ?? 1} 轮`;
+    includes(c, 'Then：orch status --instance 节点行显示「节点 T-004 执行中 · 第 N 轮」',
+      status.stdout, humanStatusLine);
     includes(c, 'Then：instance log 出现「恢复：人工节点 T-004 保持等待人工（不重派）」',
       log.stdout, '恢复：人工节点 T-004 保持等待人工（不重派）');
     eq(c, '机检：人工节点无第二次 node.dispatch', dispatchToHuman.length, 0);
@@ -74,9 +77,10 @@ export async function run() {
     note(c, 'Given 直接预置需求指定的 test/fixtures/recovery/human-node-state.json（仅复制内容到临时实例目录），'
       + '方言恢复与人工节点保持由产品核心执行。');
     note(c, 'T-002 的 thinking 会话在本机走 session/resume；与人工节点判定无关，仅用于让实例具备可恢复会话。');
-    note(c, '本机实测差异（交主控裁决）：graph --format text 只渲染内置 code-loop 图声明的 T-001/T-002，'
-      + '不渲染夹具节点 T-004；status 显示「节点 T-004 执行中 · 第 1 轮」但没有「等待人工」后缀'
-      + '（该后缀只在 graph 文本的节点行生成）。已按需求原文保留「执行中 · 等待人工」断言并如实判不通过。');
+    note(c, 'v4 改法（裁-21a / 裁-21d）：观测通道改为 orch status --instance 的节点行'
+      + '「节点 T-004 执行中 · 第 N 轮」+ instance log 固定行「恢复：人工节点 T-004 保持等待人工（不重派）」；'
+      + 'graph 只渲染图声明节点（graphNodes() 自 I1.1 冻结），不要求出现图外 human 节点 T-004，'
+      + '原 graph 帧保留供复核，不再作为 T-004 可见性的判据。');
   } finally {
     cleanupRoot(root);
   }

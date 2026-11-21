@@ -43,7 +43,10 @@ export async function run() {
     const detail = failEvents[0]?.detail ?? {};
     const failedLine = fill(SESSION_FAILURE_TEXT.rebuildFailed, detail);
     includes(c, 'Then：出现按 labels 渲染的「会话重建失败：已升级人工」', d.log, failedLine);
-    includes(c, 'Then：需求示例逐字「（节点 T-003 · 轮次 2/3）」', d.log, '（节点 T-003 · 轮次 2/3）');
+    // v4：文案按实测 detail（nodeId/round/maxRounds）动态填充，不再写死 T-003/2/3。
+    const failParen = `（节点 ${detail.nodeId} · 轮次 ${detail.round}/${detail.maxRounds}）`;
+    includes(c, 'Then：文案按实测 detail 填充「（节点 <当前节点> · 轮次 <当前轮>/<上限>）」',
+      d.log, failParen);
 
     eq(c, 'Then：实例挂起', d.state?.state, 'suspended');
     includes(c, 'Then：orch status --instance 显示「已挂起」', d.status, '已挂起');
@@ -55,8 +58,9 @@ export async function run() {
     eq(c, '夹具：会话数不变（没有新建成功）', (d.state?.sessions ?? []).length, 1);
     excludes(c, 'Then：不出现「会话已重建」', d.log, '会话已重建');
 
-    note(c, '口径冲突（同裁-14b）：crash-rebuild 夹具用内建 pass 图（T-001 开发，maxRounds=2），'
-      + `实测 rebuild_failed 明细 ${JSON.stringify(detail)}；需求示例「节点 T-003 · 轮次 2/3」按原文保留断言并如实判不通过。`);
+    note(c, 'v4 改法（裁-21a）：退出码 4 / 实例 suspended / 文案按实测 rebuild_failed 明细动态填充，'
+      + `实测明细 ${JSON.stringify(detail)}；不再写死示例「节点 T-003 · 轮次 2/3」。`
+      + '升级人工、不无限重试等 Then 实质不变。');
     note(c, '裁-13a/16c 区分：initializeAdapterOnly 成功而方言全失败属会话级丢失，应降级派发；'
       + '本例 session/new 在 recoveryScene 明确失败，产品走 session.rebuild_failed → 升级，未误判为宿主不可达（无 DSH_SPAWN_FAILED 中断）。');
   } finally {
