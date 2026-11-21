@@ -1,0 +1,3 @@
+# 等待「升级 + 挂起」落定：settled=true
+# events 末条 seq=35 ts=2026-11-21T12:35:02.764Z
+# state.updatedAt=2026-11-21T12:35:02.777Z state=suspended escalations=1

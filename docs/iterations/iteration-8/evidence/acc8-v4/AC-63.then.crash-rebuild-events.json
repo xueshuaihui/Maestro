@@ -1,0 +1,81 @@
+{
+  "crash": [
+    {
+      "object": "node",
+      "objectId": "T-001",
+      "from": null,
+      "to": null,
+      "result": "note",
+      "reason": "session.crash",
+      "detail": {
+        "nodeId": "T-001",
+        "round": 1,
+        "maxRounds": 2,
+        "attempt": 1
+      },
+      "gen": "gen-18563bf2141a7402",
+      "seq": 4,
+      "ts": "2026-11-21T12:35:06.318Z",
+      "prev_event_hash": "2c6826f479fb47da41a2c5e5181a6a5d4a531af692a6a191336aba7ceb8b7eb5"
+    }
+  ],
+  "rebuilt": [
+    {
+      "object": "node",
+      "objectId": "T-001",
+      "from": null,
+      "to": null,
+      "result": "note",
+      "reason": "session.rebuilt",
+      "detail": {
+        "nodeId": "T-001",
+        "round": 1,
+        "maxRounds": 2,
+        "sessionId": "mock-sess-25952-1"
+      },
+      "gen": "gen-18563bf2141a7402",
+      "seq": 5,
+      "ts": "2026-11-21T12:35:06.545Z",
+      "prev_event_hash": "4a0faf2c1c2722c043d6a69c5ce3a0ef9bb07387018e6285a4fef0c77681f7ce"
+    }
+  ],
+  "rebuildFailed": [
+    {
+      "object": "node",
+      "objectId": "T-001",
+      "from": null,
+      "to": null,
+      "result": "note",
+      "reason": "session.rebuild_failed",
+      "detail": {
+        "nodeId": "T-001",
+        "round": 1,
+        "maxRounds": 2,
+        "attempt": 2
+      },
+      "gen": "gen-18563bf2141a7402",
+      "seq": 7,
+      "ts": "2026-11-21T12:35:06.614Z",
+      "prev_event_hash": "15ce0db34c9d93de9ceb78eadcff243f121a6f7d736a011c92505b1a0f01a786"
+    }
+  ],
+  "escalations": [
+    {
+      "object": "escalation",
+      "objectId": "ESC-001",
+      "from": null,
+      "to": "pending",
+      "result": "applied",
+      "reason": "escalation.created",
+      "detail": {
+        "nodeId": "T-001",
+        "round": 1,
+        "reasonCode": "session_crash"
+      },
+      "gen": "gen-18563bf2141a7402",
+      "seq": 8,
+      "ts": "2026-11-21T12:35:06.640Z",
+      "prev_event_hash": "0bd9ff4734a29e20f52cec41a4e51f7d4010e73f90d89ff6027a305b2c20f276"
+    }
+  ]
+}

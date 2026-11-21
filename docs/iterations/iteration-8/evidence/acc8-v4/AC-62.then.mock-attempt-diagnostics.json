@@ -1,0 +1,17 @@
+[
+  {
+    "dir": ".mock",
+    "name": "cursor.json",
+    "content": "{\"next\":1}\n"
+  },
+  {
+    "dir": "demo-recovery/.mock",
+    "name": "prompt-attempts-mock-sess-10396-1.json",
+    "content": "{\"attempts\":3}\n"
+  },
+  {
+    "dir": "demo-recovery/.mock",
+    "name": "prompt-failures-mock-sess-10396-1.json",
+    "content": "{\"attempts\":3,\"failures\":3}\n"
+  }
+]

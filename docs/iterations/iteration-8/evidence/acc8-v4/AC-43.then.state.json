@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 2,
+  "instanceId": "INST-001",
+  "coreGeneration": "gen-140eda1c37b16bed",
+  "createdAt": "2026-11-21T12:34:51.041Z",
+  "updatedAt": "2026-11-21T12:34:53.429Z",
+  "state": "suspended",
+  "stateSince": "2026-11-21T12:34:53.397Z",
+  "template": "code-loop",
+  "cwd": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i18\\AC-43\\demo-recovery",
+  "task": "修复 calc.js 的除零边界，并补一条回归测试。\n改动写在 calc.js\n产物：calc.js",
+  "halted": false,
+  "rev": 7,
+  "counters": {
+    "eventSeq": 9,
+    "runCount": 1,
+    "dispatchCount": 1
+  },
+  "hostRaw": {
+    "stopReason": null,
+    "lastError": null,
+    "agentInfo": null
+  },
+  "nodes": [
+    {
+      "nodeId": "T-001",
+      "roleId": "developer",
+      "round": 1,
+      "state": "escalated",
+      "stateSince": "2026-11-21T12:34:53.397Z",
+      "startedAt": "2026-11-21T12:34:52.917Z",
+      "roundStartedAt": "2026-11-21T12:34:52.917Z",
+      "endedAt": "2026-11-21T12:34:53.397Z",
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": "mock-sess-25768-1",
+      "artifactRefs": [],
+      "branch": "maestro/INST-001/developer",
+      "mergeStatus": "pending"
+    },
+    {
+      "nodeId": "T-002",
+      "roleId": "tester",
+      "round": 0,
+      "state": "pending",
+      "stateSince": "2026-11-21T12:34:51.041Z",
+      "startedAt": null,
+      "roundStartedAt": null,
+      "endedAt": null,
+      "failure": null,
+      "note": null,
+      "verdict": null,
+      "sessionId": null,
+      "artifactRefs": []
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "mock-sess-25768-1",
+      "nodeId": "T-001",
+      "round": 1,
+      "roleId": "developer",
+      "instanceId": "INST-001",
+      "servingNodeId": "T-001",
+      "reused": false,
+      "hostId": "mock",
+      "state": "escalated",
+      "stateSince": "2026-11-21T12:34:53.397Z",
+      "createdAt": "2026-11-21T12:34:53.161Z",
+      "lastEventAt": "2026-11-21T12:34:53.173Z",
+      "toolName": null,
+      "turnId": "turn-1",
+      "artifactRef": null,
+      "pendingPermission": null,
+      "quarantined": true
+    }
+  ],
+  "handoffs": [],
+  "escalations": [
+    {
+      "escalationId": "ESC-001",
+      "nodeId": "T-001",
+      "round": 1,
+      "reasonCode": "session_crash",
+      "reasonDetail": "执行失败：session_crash",
+      "defects": [],
+      "state": "pending",
+      "createdAt": "2026-11-21T12:34:53.397Z",
+      "resolvedAt": null,
+      "resolution": null,
+      "voidedAt": null
+    }
+  ],
+  "health": {
+    "level": "attention",
+    "reasons": [
+      "pending_escalation",
+      "session_crash"
+    ],
+    "computedAt": "2026-11-21T12:34:53.428Z",
+    "nodeTimeoutMs": 30000
+  },
+  "traceId": "TRC-17f53348",
+  "sessionPolicies": null
+}

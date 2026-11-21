@@ -1,0 +1,40 @@
+{
+  "roleEvents": [
+    {
+      "object": "node",
+      "objectId": "T-002",
+      "from": "running",
+      "to": "running",
+      "result": "applied",
+      "reason": "recovery.session_unrecoverable",
+      "detail": {
+        "phase": "assigned"
+      },
+      "gen": "gen-ccadf0a8cf9dee57",
+      "seq": 13,
+      "ts": "2026-11-21T12:58:39.016Z",
+      "prev_event_hash": "7b3e0786fac6db6fcedd345be0f13cac150e5519f6f1483e68f9a7b9523d25e8"
+    }
+  ],
+  "resumedDispatch": [
+    {
+      "object": "node",
+      "objectId": "T-002",
+      "from": "running",
+      "to": "running",
+      "result": "applied",
+      "reason": "node.dispatch",
+      "detail": {
+        "round": 1,
+        "nodeId": "T-002",
+        "roleId": "tester",
+        "recovered": true,
+        "phase": "running"
+      },
+      "gen": "gen-ccadf0a8cf9dee57",
+      "seq": 16,
+      "ts": "2026-11-21T12:58:39.300Z",
+      "prev_event_hash": "74831689246d95b8f54b9a0877947b9ed64ef43e39905467ab47be81e6833a88"
+    }
+  ]
+}

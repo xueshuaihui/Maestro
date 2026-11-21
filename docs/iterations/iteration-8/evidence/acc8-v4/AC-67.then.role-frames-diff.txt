@@ -1,0 +1,5 @@
+# beforeLine=  实例 INST-001：冷却中 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/2
+# afterLine=  实例 INST-001：冷却中 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/2
+# byteEqual=true
+# before="- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n  职责：按任务修改代码，交出声明的产物文件\n  技能：code-change, test-run\n  工具：read, write, edit, bash\n  可唤醒：tester\n  来源：内置 assets/roles/developer.yaml\n  实例 INST-001：冷却中 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/2\n"
+# after="- developer 开发 · 编码工程 · code · write · 技能 2 · 并发 1\n  职责：按任务修改代码，交出声明的产物文件\n  技能：code-change, test-run\n  工具：read, write, edit, bash\n  可唤醒：tester\n  来源：内置 assets/roles/developer.yaml\n  实例 INST-001：冷却中 · 活跃会话 0/1 · 服务节点 — · 宿主 — · 最近 T-001 · 轮次 1/2\n"
