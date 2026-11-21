@@ -53,8 +53,25 @@ function copyDir(src, dest) {
   }
 }
 
+/**
+ * NSIS 的 `VIProductVersion` 只接受四段纯数字（X.X.X.X），prerelease / build 后缀非法。
+ * 例：`X.Y.Z-<tag>.<n>` → `X.Y.Z.0`；纯数字 `X.Y.Z` → `X.Y.Z.0`。
+ * 完整版本串仍由 `VIAddVersionKey "ProductVersion"` 原样保留，不丢信息。
+ * （本文件不得出现具体版本号字面量，版本只从 version.mjs 派生。）
+ */
+function nsisNumericVersion(version) {
+  const core = String(version).split(/[-+]/)[0];
+  const nums = core.split('.').map((part) => {
+    const n = Number.parseInt(part, 10);
+    return Number.isFinite(n) ? n : 0;
+  });
+  while (nums.length < 4) nums.push(0);
+  return nums.slice(0, 4).join('.');
+}
+
 /** NSIS 脚本：安装到 %LOCALAPPDATA%，建开始菜单与桌面快捷方式，可卸载。 */
 function nsiScript({ outFile, stagingDir, version }) {
+  const numeric = nsisNumericVersion(version);
   return `Unicode true
 !include "MUI2.nsh"
 Name "Maestro"
@@ -62,9 +79,10 @@ OutFile "${outFile}"
 InstallDir "$LOCALAPPDATA\\Maestro"
 InstallDirRegKey HKCU "Software\\Maestro" "InstallDir"
 RequestExecutionLevel user
-VIProductVersion "${version}.0"
+VIProductVersion "${numeric}"
 VIAddVersionKey "ProductName" "Maestro"
-VIAddVersionKey "FileVersion" "${version}"
+VIAddVersionKey "FileVersion" "${numeric}"
+VIAddVersionKey "ProductVersion" "${version}"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_LANGUAGE "English"
