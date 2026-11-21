@@ -40,3 +40,25 @@
 ### 解除条件
 
 主控安排本机取证窗口后，用真实 DSH 按附录 D-11 口径采集 20 实例 / 50 会话 handoff 延迟，产出 `level=PERF_LEVEL_REAL`（labels 逐字：`已实测（真实宿主面）`）证据，再复核 AC-21 的 `<2s / ≥20 并发` 判据。在此之前不得将 AC-20 的 `mock 实测` 写成真实宿主达标。
+
+---
+
+## 后续：AC-21 已解除（2026-11-21，本文以上内容为 S3 时点原文）
+
+**用户 2026-11-21 裁决**「跑满 20/50 真实取证」（`decisions.md` 裁决 H，仅覆盖裁决 F 第 1 条的「停在试点」，其余纪律保留），走裁决 F 登记的**出口①**解除，未使用书面豁免。
+
+**执行**：先修 `probe/acc12-perf-pilot.mjs::waitFirstEvent` 的并发事件归属缺陷（改为按 `params.sessionId` 过滤并落 `firstEventRaw`），再用真实 DSH **`0.2.2-rc.5`**（隔离 `DSH_HOME`，未碰用户 `~/.dsh`）跑 **50 会话 / 20 并发**。
+
+**结果**（原始帧 `evidence/AC-21.perf-real-50-20.json`，sha256 `58f1bc2b…4d95b0b`）：
+
+| 项 | 实测 |
+|---|---|
+| 会话成功 | 50 / 50（0 失败、0 error、0 `-32603`） |
+| 归属串台 | 0（逐条 `firstEventRaw.params.sessionId` 与记录 `sessionId` 一致） |
+| distinctInstances / distinctSessions | 50 / 50（D-11 要求 ≥20 / ≥50） |
+| handoff 延迟 | min 436 / median 695 / **p95 1097** / max 1353 ms（over2s = 0） |
+| 级别 | **`PERF_LEVEL_REAL`**（`已实测（真实宿主面）`）、`blocked=false` |
+
+**重判**：AC-21 **21/21 通过**、`grading=已实测（真实宿主面）`；阻塞出口逻辑保留（帧缺失 / PENDING / 不达标仍判阻塞，负控实测 8/21、9/21 均判阻塞）。Then 目标值与需求文本一字未改。回执见 `ac21-realhost-reverify.md`，证据根 `evidence/acc21-real/` 与 `evidence/AC-21.real.*`。
+
+**本文以上段落（S3 时点的「为何阻塞 / 解除条件」）保留为审计链，不再代表当前判定。**
