@@ -381,10 +381,13 @@ function makeChainProject(t, tag) {
     launch: { command: process.execPath, args: [MOCK] },
     limits: { initializeTimeoutMs: 15_000, requestTimeoutMs: 15_000, promptTimeoutMs: 30_000, quietIdleMs: 30, quietCapMs: 200 },
   }, null, 2), 'utf8');
-  // Windows 上 core 辅助进程（独立进程 + 命名管道）在主进程退出后可能仍短暂持有目录句柄，
-  // 立即 rmSync 会抛 EBUSY。这里对「句柄未释放」类错误做退避重试——只影响清理健壮性，
-  // 不改变任何断言；最终仍失败则照常抛出，不静默吞掉。
+  // `orch run` 会拉起常驻核心（独立进程 + 命名管道），它持有本项目 `.orch` 目录的句柄。
+  // 不停掉就直接删，Windows 上必然 EBUSY（POSIX 的 unlink 语义更宽松，所以只在这里炸）。
+  // 用产品自带的优雅停止入口 `orch core stop` 收尾，再删目录；对残余句柄延迟仍保留退避重试。
   t.after(async () => {
+    spawnSync(process.execPath, [BIN, 'core', 'stop'], {
+      cwd: root, env: envFor(), encoding: 'utf8', timeout: 30_000, windowsHide: true,
+    });
     for (let attempt = 0; attempt < 6; attempt += 1) {
       try {
         fs.rmSync(root, { recursive: true, force: true });
