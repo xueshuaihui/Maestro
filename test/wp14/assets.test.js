@@ -254,6 +254,9 @@ function hashTree(base, rel) {
 }
 
 const isRoot = typeof process.getuid === 'function' && process.getuid() === 0;
+// 「目录不可读」这一前提靠 chmod 构造：root 绕过权限位，Windows 根本没有 POSIX 权限位（chmod 是 no-op）。
+// 两种环境下前提不可构造，按平台能力跳过；在能构造的平台上照常验证，断言本身一字不改。
+const cannotBuildUnreadable = isRoot || process.platform === 'win32';
 
 // ------------------------------------------------------------------ AC-19
 
@@ -460,7 +463,7 @@ test('AC-23 校验不通过的资产照常出现在列表并标注原因（与 C
 
 // ------------------------------------------------------------------ AC-24
 
-test('AC-24 现场一：角色目录不可读整页降级，其它分页照常', { skip: isRoot }, async () => {
+test('AC-24 现场一：角色目录不可读整页降级，其它分页照常', { skip: cannotBuildUnreadable }, async () => {
   const root = makeRoot('ac24a');
   const rolesDir = path.join(root, '.orch', 'roles');
   fs.mkdirSync(rolesDir, { recursive: true });

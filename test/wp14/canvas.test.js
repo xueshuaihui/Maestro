@@ -285,6 +285,9 @@ function hashTree(base, rel) {
 }
 
 const isRoot = typeof process.getuid === 'function' && process.getuid() === 0;
+// 「无读权限」前提靠 chmod 构造：root 绕过权限位，Windows 无 POSIX 权限位（chmod 为 no-op）。
+// 前提不可构造时按平台能力跳过，断言本身一字不改。
+const cannotBuildUnreadable = isRoot || process.platform === 'win32';
 
 // ------------------------------------------------------------------ A-7 逐字基线
 
@@ -424,7 +427,7 @@ test('AC-31 现场一：文件在但整体不可解析 → 定义不可读原因
   assert.equal(typeof canvas.title, 'string');
 });
 
-test('AC-31 现场二：文件不存在 / 无读权限 → 定义 空（readable=true、零节点）', { skip: isRoot }, () => {
+test('AC-31 现场二：文件不存在 / 无读权限 → 定义 空（readable=true、零节点）', { skip: cannotBuildUnreadable }, () => {
   const root = makeRoot('ac31b');
   writeWorkflow(root, 'locked-flow', RELEASE_FLOW);
 

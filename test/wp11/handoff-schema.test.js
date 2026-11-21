@@ -179,10 +179,20 @@ test('HANDOFF_EVIDENCE_ESCAPE：绝对路径逃逸', async () => {
   assert.equal(result.code, CODES.HANDOFF_EVIDENCE_ESCAPE);
 });
 
-test('HANDOFF_EVIDENCE_ESCAPE：符号链接绕过', async () => {
+test('HANDOFF_EVIDENCE_ESCAPE：符号链接绕过', async (t) => {
   const { opts, handoff, base, task } = await validFixture();
   const outside = await put(base, 'outside-real.js', 'secret');
-  await fs.symlink(outside, path.join(task, 'link.js'));
+  try {
+    await fs.symlink(outside, path.join(task, 'link.js'));
+  } catch (err) {
+    // Windows 未授予 SeCreateSymbolicLinkPrivilege（非开发者模式 / 令牌降权）时无法创建符号链接，
+    // 前提不可构造。按平台能力跳过；该安全面在能创建符号链接的平台（macOS/Linux、开发者模式）照常验证。
+    if (err?.code === 'EPERM' || err?.code === 'EACCES' || err?.code === 'ENOTSUP') {
+      t.skip(`本平台无法创建符号链接（${err.code}），该前提不可构造`);
+      return;
+    }
+    throw err;
+  }
   handoff.artifactRefs.input = ['link.js'];
   const result = await validateHandoff(handoff, opts);
   assert.equal(result.ok, false);

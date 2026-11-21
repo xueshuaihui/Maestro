@@ -24,7 +24,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { createServer } from '../../src/daemon/server.js';
 import { desktopMetaPath } from '../../src/daemon/http/server.js';
@@ -258,12 +258,15 @@ function queueSnapshot({ withEscalation = false, withApproval = false } = {}) {
 // ------------------------------------------------------------------ 路由表形状
 
 test('D-1 路由表：GET 覆盖九组只读面，POST 全部落在写名单内（AC-39 机检形态）', async () => {
+  // ESM 的 import() 只接受 file: / data: 等 URL；Windows 盘符路径（D:/...）会被当成 scheme `d:` 而报
+  // ERR_UNSUPPORTED_ESM_URL_SCHEME。用 pathToFileURL 生成合法 URL（POSIX 上的绝对路径亦同样适用）。
+  const routesUrl = pathToFileURL(path.join(REPO, 'src', 'daemon', 'http', 'routes.js')).href;
   const spawned = spawnSync(
     process.execPath,
     [
       '--input-type=module',
       '-e',
-      `const m = await import('${REPO}/src/daemon/http/routes.js'.replace(/\\\\/g, '/'));
+      `const m = await import('${routesUrl}');
        const rows = m.createRoutes({
          orchestrator: { startRun: async () => ({ ok: false }) },
          root: process.cwd(),
@@ -388,7 +391,9 @@ test('BR-26：六个守护进程投影模块的代码行零中文字面量（中
     'src/daemon/assets-view.js',
   ];
   for (const rel of files) {
-    const src = fs.readFileSync(path.join(REPO, rel), 'utf8');
+    // 统一 EOL：Windows 检出为 CRLF 时，`//.*$` 剥离会因行尾 `\r` 失效（`.` 不匹配 `\r`），
+    // 导致注释里的中文被误判成代码行。规范化只影响剥离口径，不放宽「代码行零中文」判定。
+    const src = fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/\r\n/g, '\n');
     const codeOnly = src
       .replace(/\/\*[\s\S]*?\*\//g, '')
       .split('\n')

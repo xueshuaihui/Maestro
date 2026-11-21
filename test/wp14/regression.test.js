@@ -30,7 +30,10 @@ const MOCK = path.join(REPO, 'test', 'fixtures', 'mock-acp-agent.js');
 const PURITY = path.join(REPO, 'test', 'fixtures', 'purity-check.mjs');
 
 const envFor = () => ({ ...process.env, NODE_ENV: 'test' });
-const readText = (rel) => fs.readFileSync(path.join(REPO, rel), 'utf8');
+// 读源码文本时统一 EOL：仓库按 LF 存储，但 Windows 检出（core.autocrlf=true）会变成 CRLF。
+// 若不规范化，逐字锚点比较与「行内注释剥离」正则会因 `\r` 而误判（跨平台假红）。
+// 规范化只影响比较口径，不改任何断言语义：锚点内容与剥离规则均逐字保持。
+const readText = (rel) => fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/\r\n/g, '\n');
 
 // 31 词（与 requirement AC-40 / 门禁命令逐字一致）
 const WORDS_31 = [
@@ -319,7 +322,10 @@ test('escalations.filter|reduce 在 src/daemon 恰 1 条基线（shapeSnapshot �
   const hits = [];
   for (const file of jsFiles(path.join(REPO, 'src', 'daemon'))) {
     fs.readFileSync(file, 'utf8').split('\n').forEach((line, idx) => {
-      if (/escalations\.(filter|reduce)/.test(line)) hits.push(`${path.relative(REPO, file)}:${idx + 1}`);
+      if (/escalations\.(filter|reduce)/.test(line)) {
+        // path.relative 在 Windows 返回反斜杠，统一成正斜杠再与仓库相对路径锚点比较（跨平台假红，非判定放宽）。
+        hits.push(path.relative(REPO, file).replace(/\\/g, '/') + ':' + (idx + 1));
+      }
     });
   }
   assert.equal(hits.length, 1, `计数表达式应恰 1 条（基线 src/daemon/server.js:905），实际：${hits.join(', ')}`);
@@ -375,7 +381,21 @@ function makeChainProject(t, tag) {
     launch: { command: process.execPath, args: [MOCK] },
     limits: { initializeTimeoutMs: 15_000, requestTimeoutMs: 15_000, promptTimeoutMs: 30_000, quietIdleMs: 30, quietCapMs: 200 },
   }, null, 2), 'utf8');
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  // Windows 上 core 辅助进程（独立进程 + 命名管道）在主进程退出后可能仍短暂持有目录句柄，
+  // 立即 rmSync 会抛 EBUSY。这里对「句柄未释放」类错误做退避重试——只影响清理健壮性，
+  // 不改变任何断言；最终仍失败则照常抛出，不静默吞掉。
+  t.after(async () => {
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      try {
+        fs.rmSync(root, { recursive: true, force: true });
+        return;
+      } catch (err) {
+        if (err?.code !== 'EBUSY' && err?.code !== 'EPERM' && err?.code !== 'ENOTEMPTY') throw err;
+        await new Promise((resolve) => setTimeout(resolve, 100 * 2 ** attempt));
+      }
+    }
+    fs.rmSync(root, { recursive: true, force: true });
+  });
   return root;
 }
 
