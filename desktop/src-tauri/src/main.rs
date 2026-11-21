@@ -379,7 +379,7 @@ fn start_project_services(app: tauri::AppHandle, root: PathBuf) {
     spawn::wait_desktop_channel(app.clone(), root.clone());
     // D-8: info-line numbers from /instances every 2s (and on channel loss ->
     // null -> "实例 — · 待处理升级 —").
-    start_tray_status_poller(app.clone(), root.clone(), stop.clone());
+    start_tray_status_poller(app.handle().clone(), root.clone(), stop.clone());
     // Notification delivery: always subscribe; the delivery switch inside
     // `deliver_intent` is what `--no-notify` flips.
     start_notify_stream(app, root, stop);
