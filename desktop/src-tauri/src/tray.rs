@@ -225,7 +225,7 @@ pub fn pause_all(app: &AppHandle) {
         let state = app.state::<ShellState>();
         let labels = state.labels.lock().unwrap().clone();
         let targeted = state.tray.lock().unwrap().running_ids.clone();
-        (state.project_root.clone(), labels, targeted)
+        (state.project_root.lock().unwrap().clone(), labels, targeted)
     };
     let mut paused = 0u32;
     let mut skipped = targeted.len() as u32;
@@ -265,7 +265,7 @@ pub fn pause_all(app: &AppHandle) {
 pub fn resume_all(app: &AppHandle) {
     let root = {
         let state = app.state::<ShellState>();
-        state.project_root.clone()
+        state.project_root.lock().unwrap().clone()
     };
     let mut paused = 0u32;
     let mut ok = false;
@@ -452,8 +452,9 @@ fn quit_after_confirm(app: AppHandle, frame: String) {
     let (root, child_pid, ctl_dir, labels) = {
         let state = app.state::<ShellState>();
         let child = state.daemon.lock().unwrap().as_ref().map(Child::id);
+        let project = state.project_root.lock().unwrap().clone();
         let snapshot = (
-            state.project_root.clone(),
+            project,
             child,
             state.ctl_dir.clone(),
             state.labels.lock().unwrap().clone(),

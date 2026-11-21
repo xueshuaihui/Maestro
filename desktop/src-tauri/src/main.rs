@@ -29,8 +29,15 @@ use std::time::Duration;
 use tauri::{Manager, WindowEvent};
 
 pub struct ShellState {
-    /// Resolved and validated project root (None when unresolved).
-    pub project_root: Option<PathBuf>,
+    /// Resolved project root. Set at launch or by the first-run picker.
+    pub project_root: Mutex<Option<PathBuf>>,
+    /// A remembered/`--project` path that failed validation (first-run page).
+    pub invalid_project: Mutex<Option<String>>,
+    /// Set once the daemon and the channel/poller/SSE workers were started for
+    /// the bound project (prevents a second picker click from duplicating them).
+    pub services_started: AtomicBool,
+    /// Shared stop flag for the channel/poller/SSE workers.
+    pub stop: Arc<AtomicBool>,
     /// Current shell view: `instances` | `graph` | `queue` | `project-missing` | `project-invalid`.
     pub view: Mutex<String>,
     /// The spawned daemon child (None when the project is unresolved or the
@@ -117,16 +124,20 @@ fn main() {
     };
 
     // The invalid-path message (A-3) is emitted with the ready event.
-    let missing_message = match (&view, invalid_path) {
+    let missing_message = match (&view, invalid_path.as_deref()) {
         (v, Some(path)) if v == "project-invalid" => {
-            app_labels().project_invalid_for(&path)
+            app_labels().project_invalid_for(path)
         }
         (v, _) if v == "project-missing" => app_labels().project_missing,
         _ => String::new(),
     };
 
+    let stop = Arc::new(AtomicBool::new(false));
     let state = ShellState {
-        project_root: project_root.clone(),
+        project_root: Mutex::new(project_root.clone()),
+        invalid_project: Mutex::new(invalid_path.clone()),
+        services_started: AtomicBool::new(false),
+        stop: stop.clone(),
         view: Mutex::new(view.clone()),
         daemon: Mutex::new(None),
         ctl_dir: args.ctl.clone(),
@@ -143,8 +154,6 @@ fn main() {
     let spawn_root = project_root.clone();
     // Both background tasks poll this flag; the run loop flips it on exit so
     // neither the SSE reader nor the 2s tray poller outlives the app (D-14).
-    let stop = Arc::new(AtomicBool::new(false));
-    let stop_setup = stop.clone();
     let stop_run = stop.clone();
 
     let app = tauri::Builder::default()
@@ -156,6 +165,10 @@ fn main() {
             config::read_view_command,
             config::write_view_command,
             probe::probe_emit,
+            startup_info,
+            startup_status,
+            pick_project,
+            open_project,
         ])
         .setup(move |app| {
             // Daemon child first: it starts serving while the window builds.
@@ -190,14 +203,9 @@ fn main() {
             tray::init(app.handle())?;
 
             if let Some(root) = spawn_root.as_deref() {
-                probe::start_window_probe_watcher(root.to_path_buf());
-                spawn::wait_desktop_channel(app.handle().clone(), root.to_path_buf());
-                // D-8: info-line numbers from /instances every 2s (and on
-                // channel loss -> null -> "实例 — · 待处理升级 —").
-                start_tray_status_poller(app.handle().clone(), root.to_path_buf(), stop_setup.clone());
-                // Notification delivery: always subscribe; the delivery
-                // switch inside `deliver_intent` is what `--no-notify` flips.
-                start_notify_stream(app.handle().clone(), root.to_path_buf(), stop_setup.clone());
+                if daemon_pid != 0 {
+                    start_project_services(app.handle().clone(), root.to_path_buf());
+                }
             }
             if let Some(dir) = ctl_dir {
                 probe::start_ctl_watcher(app.handle().clone(), dir);
@@ -227,6 +235,154 @@ fn main() {
 /// Labels before the channel is live; the values are the A-3/A-6 baselines.
 fn app_labels() -> config::Labels {
     config::Labels::default()
+}
+
+// ------------------------------------------------------------ first-run binding
+
+/// Describe the startup state for the shell page. All user-visible wording is
+/// resolved here from `Labels`; the page carries no literals of its own.
+#[tauri::command]
+fn startup_info(app: tauri::AppHandle) -> Value {
+    let state = app.state::<ShellState>();
+    let project = state
+        .project_root
+        .lock()
+        .unwrap()
+        .as_ref()
+        .map(|path| path.to_string_lossy().to_string());
+    let invalid = state.invalid_project.lock().unwrap().clone();
+    let labels = state.labels.lock().unwrap().clone();
+    let invalid_message = invalid
+        .as_deref()
+        .map(|path| labels.project_invalid_for(path));
+    json!({
+        "project": project,
+        "invalid": invalid,
+        "invalidMessage": invalid_message,
+        "missing": labels.project_missing,
+        "connecting": labels.conn_connecting,
+        "failed": labels.conn_failed,
+        "hint": labels.project_hint,
+        "pathLabel": labels.project_path_label,
+        "open": labels.project_action_open,
+        "browse": labels.project_action_browse,
+        "retry": labels.project_action_retry,
+        "recentLabel": labels.project_recent,
+        "recent": config::recent_projects(5),
+    })
+}
+
+/// Native folder picker for the first-run page. Runs as an async command so
+/// the blocking dialog API never blocks the webview's main thread.
+#[tauri::command]
+async fn pick_project(app: tauri::AppHandle) -> Option<String> {
+    use tauri_plugin_dialog::DialogExt;
+
+    let title = app
+        .state::<ShellState>()
+        .labels
+        .lock()
+        .unwrap()
+        .project_choose_title
+        .clone();
+    app.dialog()
+        .file()
+        .set_title(title)
+        .blocking_pick_folder()
+        .and_then(|picked| picked.into_path().ok())
+        .map(|path| path.to_string_lossy().to_string())
+}
+
+/// Whether the daemon HTTP channel for the bound project is serving. The token
+/// never leaves the shell; the page only needs the boolean.
+#[tauri::command]
+fn startup_status(app: tauri::AppHandle) -> Value {
+    let root = app.state::<ShellState>().project_root.lock().unwrap().clone();
+    let ready = root
+        .as_deref()
+        .and_then(config::read_desktop_json)
+        .map(|meta| {
+            let port = meta.get("port").and_then(Value::as_u64).unwrap_or(0);
+            let token = meta.get("token").and_then(Value::as_str).unwrap_or("");
+            port != 0 && !token.is_empty()
+        })
+        .unwrap_or(false);
+    if ready {
+        if let Some(root) = root.as_deref() {
+            spawn::navigate_to_ui(&app, root);
+        }
+    }
+    json!({ "ready": ready })
+}
+
+/// Bind a project root, remember it and start the daemon + channel workers.
+/// Used by both the first-run page (`invoke`) and the ctl acceptance seam.
+pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
+    let trimmed = raw.trim();
+    let labels = app.state::<ShellState>().labels.lock().unwrap().clone();
+    if trimmed.is_empty() {
+        return Err(labels.project_missing.clone());
+    }
+    let root = PathBuf::from(trimmed);
+    if !root.is_dir() {
+        return Err(labels.project_invalid_for(trimmed));
+    }
+    let current = app.state::<ShellState>().project_root.lock().unwrap().clone();
+    if let Some(current) = current {
+        if current == root {
+            return Ok(0);
+        }
+        return Err(labels.conn_failed.clone());
+    }
+
+    config::remember_project(&root);
+    {
+        let state = app.state::<ShellState>();
+        *state.project_root.lock().unwrap() = Some(root.clone());
+        *state.invalid_project.lock().unwrap() = None;
+        *state.view.lock().unwrap() = "instances".to_string();
+    }
+
+    let pid = spawn::spawn_daemon(app, &root);
+    if pid == 0 {
+        app.state::<ShellState>().project_root.lock().unwrap().take();
+        return Err(labels.conn_failed);
+    }
+    start_project_services(app.clone(), root.clone());
+    probe::event(
+        "project-opened",
+        json!({ "root": root, "daemonPid": pid }),
+    );
+    Ok(pid)
+}
+
+#[tauri::command]
+fn open_project(app: tauri::AppHandle, root: String) -> Result<Value, String> {
+    let pid = bind_project(&app, &root)?;
+    Ok(json!({ "ok": true, "daemonPid": pid }))
+}
+
+/// Start the per-project background workers exactly once. `stop` is owned by
+/// the shell state so lazily bound projects use the same shutdown flag.
+fn start_project_services(app: tauri::AppHandle, root: PathBuf) {
+    let (stop, already) = {
+        let state = app.state::<ShellState>();
+        (
+            state.stop.clone(),
+            state.services_started.swap(true, Ordering::SeqCst),
+        )
+    };
+    if already {
+        return;
+    }
+    probe::start_window_probe_watcher(root.clone());
+    spawn::wait_desktop_channel(app.clone(), root.clone());
+    // D-8: info-line numbers from /instances every 2s (and on channel loss ->
+    // null -> "实例 — · 待处理升级 —").
+    start_tray_status_poller(app.clone(), root.clone(), stop.clone());
+    // Notification delivery: always subscribe; the delivery switch inside
+    // `deliver_intent` is what `--no-notify` flips.
+    start_notify_stream(app, root, stop);
 }
 
 // ------------------------------------------------------- loopback HTTP helpers

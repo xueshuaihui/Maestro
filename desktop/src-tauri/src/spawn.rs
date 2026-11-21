@@ -341,45 +341,62 @@ fn reap_child(child_pid: Option<u32>) {
     let _ = child_pid;
 }
 
+/// Point the main window at the daemon-served UI when `desktop.json` is
+/// readable. Returns false while the channel is not up yet. Also called from
+/// `startup_status`, so a channel that appears after the waiter timed out can
+/// still replace the shell page instead of leaving a permanent spinner.
+pub fn navigate_to_ui(app: &tauri::AppHandle, root: &std::path::Path) -> bool {
+    let Some(meta) = crate::config::read_desktop_json(root) else {
+        return false;
+    };
+    let port = meta.get("port").and_then(Value::as_u64).unwrap_or(0) as u16;
+    let token = meta.get("token").and_then(Value::as_str).unwrap_or("");
+    if port == 0 || token.is_empty() {
+        return false;
+    }
+    let Some(win) = app.get_webview_window("main") else {
+        return false;
+    };
+    // Decision M (B-25): WebView navigation cannot attach an Authorization
+    // header, so the token rides in the query. Only static GETs accept it; the
+    // page captures it and the shell never logs or prints it.
+    //
+    // Decision Q (Q-1): the project root rides along the same way, so the page
+    // can hand it to the view-preference calls (AC-22) and the project guard
+    // (AC-31) instead of starting with a null root. `append_pair` percent-encodes
+    // both values; neither is ever printed or logged.
+    let mut url: tauri::Url = format!("http://127.0.0.1:{port}/ui/").parse().unwrap();
+    {
+        let mut query = url.query_pairs_mut();
+        query.append_pair("token", token);
+        query.append_pair("project", &root.to_string_lossy());
+    }
+    win.navigate(url).is_ok()
+}
+
 /// Poll `<root>/.orch/desktop.json` until present (daemon HTTP channel up),
 /// then refresh labels and point the window at the served UI.
 pub fn wait_desktop_channel(app: tauri::AppHandle, root: PathBuf) {
     std::thread::spawn(move || {
         for _ in 0..100 {
-            if let Some(meta) = crate::config::read_desktop_json(&root) {
-                let port = meta.get("port").and_then(Value::as_u64).unwrap_or(0) as u16;
+            if crate::config::read_desktop_json(&root).is_some() {
                 if let Some(labels) = crate::config::fetch_labels(&root) {
                     let state = app.state::<ShellState>();
                     *state.labels.lock().unwrap() = labels;
                     drop(state);
                     crate::tray::refresh(app.clone());
                 }
-                if port != 0 {
-                    // Decision M (B-25): WebView navigation cannot attach an
-                    // Authorization header, so the token rides in the query.
-                    // Only static GETs accept it; the page captures it and the
-                    // shell never logs or prints it.
-                    //
-                    // Decision Q (Q-1): the project root rides along the same
-                    // way, so the page can hand it to the view-preference calls
-                    // (AC-22) and the project guard (AC-31) instead of starting
-                    // with a null root. `append_pair` percent-encodes both
-                    // values; neither is ever printed or logged.
-                    let token = meta.get("token").and_then(Value::as_str).unwrap_or("");
-                    if let Some(win) = app.get_webview_window("main") {
-                        let mut url: tauri::Url = format!("http://127.0.0.1:{port}/ui/").parse().unwrap();
-                        let project = root.to_string_lossy();
-                        {
-                            let mut query = url.query_pairs_mut();
-                            query.append_pair("token", token);
-                            query.append_pair("project", &project);
-                        }
-                        let _ = win.navigate(url);
-                    }
-                }
+                navigate_to_ui(&app, &root);
                 return;
             }
             std::thread::sleep(Duration::from_millis(100));
         }
+        // The shell page polls `startup_status` and turns this timeout into the
+        // A-4 failure line; `startup_status` also retries navigation if the
+        // channel shows up later. The probe line keeps the run diagnosable.
+        crate::probe::event(
+            "desktop-channel-timeout",
+            json!({ "root": root.to_string_lossy() }),
+        );
     });
 }

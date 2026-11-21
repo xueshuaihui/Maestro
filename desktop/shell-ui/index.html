@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maestro</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%232f6fd0%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%236d9cf0%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20x%3D%274%27%20y%3D%274%27%20width%3D%2724%27%20height%3D%2724%27%20rx%3D%276%27%20fill%3D%27url(%23g)%27%2F%3E%3Cg%20fill%3D%27%23f4f7fc%27%3E%3Crect%20x%3D%277%27%20y%3D%278%27%20width%3D%278%27%20height%3D%274%27%20rx%3D%271.5%27%2F%3E%3Crect%20x%3D%277%27%20y%3D%2714%27%20width%3D%2712%27%20height%3D%274%27%20rx%3D%271.5%27%2F%3E%3Crect%20x%3D%277%27%20y%3D%2720%27%20width%3D%276%27%20height%3D%274%27%20rx%3D%271.5%27%2F%3E%3Crect%20x%3D%2721%27%20y%3D%2712%27%20width%3D%277%27%20height%3D%278%27%20rx%3D%273%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1f2937;
+      --muted: #667085;
+      --line: #dfe4ea;
+      --paper: #ffffff;
+      --wash: #f4f6f9;
+      --accent: #2f6fd0;
+      --accent-ink: #ffffff;
+      --warn: #b42318;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; padding: 32px 20px;
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 480px at 50% -10%, rgba(47, 111, 208, .10), transparent 70%),
+        var(--wash);
+      display: grid; place-items: center;
+    }
+    .shell { width: 100%; max-width: 600px; }
+    .card {
+      padding: 28px;
+      background: var(--paper);
+      border: 1px solid rgba(16, 24, 40, .08);
+      border-radius: 16px;
+      box-shadow: 0 18px 60px rgba(16, 24, 40, .12);
+    }
+    .brand { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 24px; }
+    .mark {
+      flex: none; width: 40px; height: 40px;
+      display: grid; place-items: center;
+      filter: drop-shadow(0 8px 18px rgba(47, 111, 208, .28));
+    }
+    .mark svg { width: 40px; height: 40px; display: block; }
+    h1 { margin: 0 0 5px; font-size: 22px; line-height: 1.2; letter-spacing: -.01em; }
+    .hint { margin: 0; color: var(--muted); font-size: 13px; }
+    .recent { margin: 0 0 22px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+    .section-label {
+      margin: 0 0 8px; color: var(--muted);
+      font-size: 12px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase;
+    }
+    .recent ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+    .recent button {
+      width: 100%; display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; text-align: left; font: inherit; color: inherit;
+      background: #fbfcfe; border: 1px solid var(--line); border-radius: 9px; cursor: pointer;
+    }
+    .recent button:hover { background: #f4f8ff; border-color: #b9cdf0; }
+    .recent button:disabled { cursor: default; }
+    .recent svg { flex: none; color: #7b8798; }
+    .recent-text { min-width: 0; display: grid; gap: 1px; }
+    .recent-name {
+      font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .recent-path {
+      color: var(--muted); font-size: 12px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .field-label { display: block; margin: 0 0 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+    .row { display: flex; gap: 8px; }
+    input {
+      flex: 1; min-width: 0; font: inherit; color: var(--ink);
+      padding: 9px 11px;
+      background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    }
+    input:focus { outline: 2px solid rgba(47, 111, 208, .22); outline-offset: 1px; border-color: var(--accent); }
+    button { font: inherit; cursor: pointer; }
+    button:disabled { opacity: .55; cursor: default; }
+    .secondary {
+      padding: 9px 12px; white-space: nowrap;
+      color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    }
+    .secondary:hover:not(:disabled) { background: #f4f6f9; border-color: #cbd5e1; }
+    .primary {
+      width: 100%; margin-top: 10px; padding: 10px 14px;
+      color: var(--accent-ink); background: var(--accent);
+      border: 1px solid var(--accent); border-radius: 8px; font-weight: 600;
+    }
+    .primary:hover:not(:disabled) { background: #2861b8; border-color: #2861b8; }
+    .status {
+      display: flex; align-items: center; gap: 8px;
+      min-height: 20px; margin: 12px 0 0; color: var(--muted); font-size: 13px;
+    }
+    .status.busy::before {
+      content: ""; width: 12px; height: 12px; border-radius: 50%;
+      border: 2px solid #c7d2e5; border-top-color: var(--accent);
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error { min-height: 20px; margin: 8px 0 0; color: var(--warn); font-size: 13px; }
+    @media (max-width: 520px) {
+      body { padding: 18px 14px; }
+      .card { padding: 22px; }
+      .row { flex-direction: column; }
+      .secondary { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="card" aria-labelledby="title">
+      <header class="brand">
+        <div class="mark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="mbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f6fd0"/><stop offset="1" stop-color="#6d9cf0"/></linearGradient></defs><rect x="4" y="4" width="24" height="24" rx="6" fill="url(#mbg)"/><g fill="#f4f7fc"><rect x="7" y="8" width="8" height="4" rx="1.5"/><rect x="7" y="14" width="12" height="4" rx="1.5"/><rect x="7" y="20" width="6" height="4" rx="1.5"/><rect x="21" y="12" width="7" height="8" rx="3"/></g></svg></div>
+        <div>
+          <h1 id="title">Maestro</h1>
+          <p id="hint" class="hint"></p>
+        </div>
+      </header>
+
+      <section id="recent" class="recent" hidden>
+        <p id="recent-label" class="section-label"></p>
+        <ul id="recent-list"></ul>
+      </section>
+
+      <form id="form" autocomplete="off">
+        <label id="path-label" class="field-label" for="root"></label>
+        <div class="row">
+          <input id="root" type="text" spellcheck="false" autocomplete="off" autofocus>
+          <button id="browse" type="button" class="secondary"></button>
+        </div>
+        <button id="open" type="submit" class="primary" disabled></button>
+      </form>
+
+      <p id="status" class="status" aria-live="polite"></p>
+      <p id="error" class="error" role="alert"></p>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const invoke = window.__TAURI__?.core?.invoke
+        ?? window.__TAURI_INTERNALS__?.invoke
+        ?? null;
+
+      const hint = document.getElementById('hint');
+      const recentWrap = document.getElementById('recent');
+      const recentLabel = document.getElementById('recent-label');
+      const recentList = document.getElementById('recent-list');
+      const pathLabel = document.getElementById('path-label');
+      const input = document.getElementById('root');
+      const form = document.getElementById('form');
+      const browse = document.getElementById('browse');
+      const open = document.getElementById('open');
+      const status = document.getElementById('status');
+      const error = document.getElementById('error');
+
+      const POLL_MS = 300;
+      const TIMEOUT_MS = 15000;
+
+      let info = {};
+      let busy = false;
+      let polling = null;
+
+      function textOf(value) {
+        if (typeof value === 'string') return value;
+        if (value && typeof value.message === 'string') return value.message;
+        return String(value ?? '');
+      }
+
+      function baseName(root) {
+        const parts = String(root).split(/[\\/]+/).filter(Boolean);
+        return parts.length > 0 ? parts[parts.length - 1] : String(root);
+      }
+
+      function folderIcon() {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '18');
+        svg.setAttribute('height', '18');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('aria-hidden', 'true');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', 'M3.5 7.5A2 2 0 0 1 5.5 5.5h4l2 2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-9Z');
+        path.setAttribute('stroke', 'currentColor');
+        path.setAttribute('stroke-width', '1.6');
+        path.setAttribute('stroke-linejoin', 'round');
+        svg.appendChild(path);
+        return svg;
+      }
+
+      function setStatus(text, isBusy) {
+        status.textContent = text ?? '';
+        status.classList.toggle('busy', Boolean(isBusy));
+      }
+
+      function setBusy(next) {
+        busy = next;
+        input.disabled = next;
+        browse.disabled = next;
+        if (next) open.disabled = true;
+        else open.disabled = input.value.trim().length === 0;
+        for (const button of recentList.querySelectorAll('button')) button.disabled = next;
+        form.setAttribute('aria-busy', next ? 'true' : 'false');
+      }
+
+      function resetOpenLabel() {
+        open.textContent = info.open ?? '';
+      }
+
+      function renderRecent(roots) {
+        const items = Array.isArray(roots) ? roots.filter((root) => typeof root === 'string' && root.length > 0) : [];
+        recentWrap.hidden = items.length === 0;
+        recentList.replaceChildren();
+        for (const root of items) {
+          const row = document.createElement('li');
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.title = root;
+          button.appendChild(folderIcon());
+          const text = document.createElement('span');
+          text.className = 'recent-text';
+          const name = document.createElement('span');
+          name.className = 'recent-name';
+          name.textContent = baseName(root);
+          const pathText = document.createElement('span');
+          pathText.className = 'recent-path';
+          pathText.textContent = root;
+          text.appendChild(name);
+          text.appendChild(pathText);
+          button.appendChild(text);
+          button.addEventListener('click', () => {
+            if (busy) return;
+            input.value = root;
+            error.textContent = '';
+            resetOpenLabel();
+            open.disabled = false;
+            void submit();
+          });
+          row.appendChild(button);
+          recentList.appendChild(row);
+        }
+      }
+
+      function stopPolling() {
+        if (polling !== null) clearInterval(polling);
+        polling = null;
+      }
+
+      function fail(message) {
+        stopPolling();
+        setBusy(false);
+        setStatus('', false);
+        error.textContent = message ?? '';
+        open.textContent = info.retry || info.open || '';
+        input.focus();
+        input.select();
+      }
+
+      function startPolling() {
+        stopPolling();
+        const startedAt = Date.now();
+        polling = setInterval(async () => {
+          if (Date.now() - startedAt > TIMEOUT_MS) {
+            fail(info.failed ?? '');
+            return;
+          }
+          try {
+            const state = await invoke('startup_status');
+            if (state?.ready) {
+              stopPolling();
+              // The shell navigates to the daemon-served UI as soon as the
+              // channel is live; keep the transient line until that happens.
+              return;
+            }
+          } catch {
+            // A transient IPC failure is treated like "not ready yet".
+          }
+        }, POLL_MS);
+      }
+
+      async function submit() {
+        if (busy || invoke === null) return;
+        const root = input.value.trim();
+        error.textContent = '';
+        if (root.length === 0) {
+          setStatus('', false);
+          error.textContent = info.missing ?? '';
+          input.focus();
+          return;
+        }
+        setBusy(true);
+        setStatus(info.connecting ?? '', true);
+        try {
+          await invoke('open_project', { root });
+          startPolling();
+        } catch (err) {
+          fail(textOf(err));
+        }
+      }
+
+      async function boot() {
+        if (invoke === null) {
+          setStatus('Maestro desktop runtime unavailable.', false);
+          return;
+        }
+        try {
+          info = await invoke('startup_info');
+        } catch (err) {
+          setStatus('', false);
+          error.textContent = textOf(err);
+          return;
+        }
+
+        hint.textContent = info.hint ?? '';
+        pathLabel.textContent = info.pathLabel ?? '';
+        browse.textContent = info.browse ?? '';
+        recentLabel.textContent = info.recentLabel ?? '';
+        resetOpenLabel();
+        renderRecent(info.recent);
+
+        if (info.project) {
+          input.value = info.project;
+          setBusy(true);
+          setStatus(info.connecting ?? '', true);
+          startPolling();
+          return;
+        }
+        if (info.invalid) {
+          input.value = info.invalid;
+          error.textContent = info.invalidMessage ?? '';
+          open.disabled = false;
+          input.focus();
+          input.select();
+          return;
+        }
+        setStatus(info.missing ?? '', false);
+        input.focus();
+      }
+
+      browse.addEventListener('click', async () => {
+        if (busy) return;
+        error.textContent = '';
+        try {
+          const picked = await invoke('pick_project');
+          if (typeof picked === 'string' && picked.length > 0) {
+            input.value = picked;
+            resetOpenLabel();
+            open.disabled = false;
+            setStatus('', false);
+            input.focus();
+            input.select();
+          }
+        } catch (err) {
+          error.textContent = textOf(err);
+        }
+      });
+
+      input.addEventListener('input', () => {
+        error.textContent = '';
+        if (!busy) open.disabled = input.value.trim().length === 0;
+        resetOpenLabel();
+      });
+
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          error.textContent = '';
+        }
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        void submit();
+      });
+
+      void boot();
+    })();
+  </script>
+</body>
+</html>

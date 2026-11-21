@@ -2,13 +2,14 @@
 /**
  * 产物冒烟四件套——需求 AC-40 / AC-44。
  *
- * 四项（缺一不可，任一不过即非零退出）：
+ * 五项（缺一不可，任一不过即非零退出）：
  *   1. 应用能启动：直接执行包内二进制，探针出现 `ready`（条件轮询，禁固定 sleep）
- *   2. 鉴权守卫：无凭据 `GET /ui/labels` 返回 401
- *   3. 签名：`codesign --verify --deep --strict` 通过
- *   4. 安装包镜像：`hdiutil verify` 通过 + 挂载后对**镜像里那份** `.app` 再次验签
+ *   2. 鉴权守卫：无凭据 `GET /ui/labels` 返回 401；带凭据 `GET /ui/` 返回真实页面
+ *   3. 首启：不带 `--project` 启动时停在 project-missing；绑定项目后 daemon + `/ui/` 就绪
+ *   4. 签名：`codesign --verify --deep --strict` 通过
+ *   5. 安装包镜像：`hdiutil verify` 通过 + 挂载后对**镜像里那份** `.app` 再次验签
  *
- * 平台分派：macOS 面四项全跑；Windows 面只跑前两项 + 包内可执行存在
+ * 平台分派：macOS 面全跑；Windows 面跑启动、鉴权/UI、首启 + 包内可执行存在
  * （NSIS 交互式安装与 SmartScreen 启属人工核验，需求 §1.3 已排除）。
  *
  * 用法：
@@ -198,6 +199,13 @@ async function smokeApp(shellPath, root) {
       const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
       const res = await httpGet(meta.port, '/ui/labels', null);
       record('2. 鉴权守卫（无凭据 401）', res.status === 401, `HTTP ${res.status}`);
+      // The placeholder shell page is not the product UI: after navigation the
+      // window must be able to load the daemon-served page and its modules.
+      const page = await httpGet(meta.port, '/ui/', meta.token);
+      const loads = page.status === 200
+        && page.body.includes('<div id="app">')
+        && page.body.includes('app.js');
+      record('2b. 真实 UI 可加载（GET /ui/）', loads, `HTTP ${page.status} · ${page.body.length} bytes`);
     } catch (err) {
       record('2. 鉴权守卫（无凭据 401）', false, err.message);
       dumpShellErr();
@@ -209,6 +217,73 @@ async function smokeApp(shellPath, root) {
     try {
       fs.writeFileSync(path.join(ctl, 'tray-quit'), '');
       await waitFor(() => child.exitCode !== null || child.signalCode !== null, 15_000, '进程退出');
+    } catch {
+      child.kill('SIGKILL');
+    }
+    if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+  }
+}
+
+/**
+ * First-run path: launch without `--project` and an empty config dir, assert
+ * the shell stops at `project-missing`, then bind a project through the same
+ * ctl seam the picker page's `open_project` command uses and assert the real
+ * daemon-served UI becomes reachable.
+ */
+async function smokeFirstRun(shellPath, runRoot, projectRoot) {
+  const probe = path.join(runRoot, 'probe.jsonl');
+  const ctl = path.join(runRoot, 'ctl');
+  fs.mkdirSync(ctl, { recursive: true });
+  const env = { ...process.env, MAESTRO_CONFIG_DIR: path.join(runRoot, 'config') };
+  delete env.MAESTRO_PROJECT_ROOT;
+  const shellErr = [];
+  const child = spawn(shellPath, ['--probe', probe, '--ctl', ctl], {
+    env,
+    stdio: ['ignore', 'ignore', 'pipe'],
+    detached: false,
+  });
+  child.stderr?.setEncoding('utf8');
+  child.stderr?.on('data', (chunk) => {
+    for (const line of String(chunk).split('\n')) if (line.trim()) shellErr.push(line.trim());
+  });
+  try {
+    await waitFor(
+      () => readProbeEvents(probe).some((event) => event.event === 'ready'),
+      READY_TIMEOUT_MS,
+      '首启 ready',
+    );
+    const ready = readProbeEvents(probe).find((event) => event.event === 'ready');
+    record(
+      '首启：无项目时停在 project-missing 且不启动 daemon',
+      ready?.view === 'project-missing' && (ready?.daemon?.pid ?? 0) === 0,
+      `view=${ready?.view ?? 'n/a'} daemon=${ready?.daemon?.pid ?? 'n/a'}`,
+    );
+
+    fs.writeFileSync(path.join(ctl, 'open-project'), projectRoot, 'utf8');
+    await waitFor(
+      () => readProbeEvents(probe).some((event) => event.event === 'project-opened'),
+      15_000,
+      '首启选择项目后 daemon 启动',
+    );
+    const metaPath = path.join(projectRoot, '.orch', 'desktop.json');
+    await waitFor(() => fs.existsSync(metaPath), 10_000, '首启项目 desktop.json 出现');
+    const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+    const page = await httpGet(meta.port, '/ui/', meta.token);
+    record(
+      '首启：选择项目后真实 /ui/ 可加载',
+      page.status === 200 && page.body.includes('app.js'),
+      `HTTP ${page.status} · ${page.body.length} bytes`,
+    );
+  } catch (err) {
+    record('首启：项目绑定链路', false, err.message);
+    if (shellErr.length) {
+      process.stdout.write('[smoke] 首启壳 stderr：\n');
+      for (const line of shellErr.slice(0, 20)) process.stdout.write(`[smoke]   ! ${line}\n`);
+    }
+  } finally {
+    try {
+      fs.writeFileSync(path.join(ctl, 'tray-quit'), '');
+      await waitFor(() => child.exitCode !== null || child.signalCode !== null, 15_000, '首启进程退出');
     } catch {
       child.kill('SIGKILL');
     }
@@ -235,6 +310,11 @@ async function main() {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-smoke-'));
     try {
       await smokeApp(path.join(app, 'Contents', 'MacOS', 'maestro'), root);
+      const firstRunRoot = path.join(root, 'first-run');
+      const firstProject = path.join(root, 'first-project');
+      fs.mkdirSync(firstRunRoot, { recursive: true });
+      fs.mkdirSync(firstProject, { recursive: true });
+      await smokeFirstRun(path.join(app, 'Contents', 'MacOS', 'maestro'), firstRunRoot, firstProject);
       verifySigned(app, '3. 签名验签（.app）');
 
       if (args.dmg) {
@@ -288,6 +368,11 @@ async function main() {
       } else {
         await smokeApp(exePath, root);
         record('包内可执行存在', true, exePath);
+        const firstRunRoot = path.join(root, 'first-run');
+        const firstProject = path.join(root, 'first-project');
+        fs.mkdirSync(firstRunRoot, { recursive: true });
+        fs.mkdirSync(firstProject, { recursive: true });
+        await smokeFirstRun(exePath, firstRunRoot, firstProject);
       }
     } finally {
       fs.rmSync(root, { recursive: true, force: true });

@@ -145,6 +145,25 @@ pub fn start_ctl_watcher(app: tauri::AppHandle, dir: PathBuf) {
                 }
                 let path = entry.path();
                 let is_file = path.is_file();
+                // First-run acceptance seam: the trigger file contains the
+                // project root; it goes through the exact same bind path as
+                // the picker page's `open_project` command.
+                if name == "open-project" && is_file {
+                    let raw = std::fs::read_to_string(&path).unwrap_or_default();
+                    event("ctl-fired", serde_json::json!({ "action": name }));
+                    let _ = std::fs::rename(&path, dir.join(format!("{name}.done")));
+                    match crate::bind_project(&app, raw.trim()) {
+                        Ok(pid) => event(
+                            "project-bind",
+                            serde_json::json!({ "ok": true, "daemonPid": pid }),
+                        ),
+                        Err(message) => event(
+                            "project-bind",
+                            serde_json::json!({ "ok": false, "message": message }),
+                        ),
+                    }
+                    continue;
+                }
                 if CTL_ACTIONS.contains(&name.as_str()) {
                     event("ctl-fired", serde_json::json!({ "action": name }));
                 } else {

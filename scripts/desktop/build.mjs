@@ -3,13 +3,14 @@
  * Maestro desktop build (pure Node, zero npm dependencies).
  *
  * Steps:
- *   1. Generate the compile-time placeholder UI (embedded by tauri-build).
+ *   1. Copy the compile-time shell UI (first-run project picker) into the
+ *      Tauri `frontendDist`.
  *   2. `cargo build --release` in desktop/src-tauri.
  *   3. Hand-assemble the .app bundle:
  *        Maestro.app/Contents/MacOS/maestro            (cargo binary)
  *        Maestro.app/Contents/Resources/runtime/node   (local node binary)
  *        Maestro.app/Contents/Resources/bin/ + src/    (repo runtime sources)
- *        Maestro.app/Contents/Resources/desktop/ui/    (when present)
+ *        Maestro.app/Contents/Resources/desktop/ui/    (served at /ui/)
  *   4. Ad-hoc codesign (`codesign --sign -`).
  *
  * Output: desktop/src-tauri/target/release/bundle/macos/Maestro.app
@@ -46,21 +47,15 @@ function run(command, args, options = {}) {
   return result;
 }
 
-// 1. Compile-time placeholder UI (English-only; the real UI ships via /ui/).
+// 1. Compile-time shell UI: the first-run project picker. The orchestration UI
+// itself is served by the daemon at /ui/; this page only runs before a project
+// root is bound and hands the root to the shell.
 const placeholderDir = path.join(TARGET, 'ui-placeholder');
+const shellUiSrc = path.join(REPO, 'desktop', 'shell-ui', 'index.html');
+if (!fs.existsSync(shellUiSrc)) die(`shell UI missing: ${shellUiSrc}`);
+fs.rmSync(placeholderDir, { recursive: true, force: true });
 fs.mkdirSync(placeholderDir, { recursive: true });
-fs.writeFileSync(
-  path.join(placeholderDir, 'index.html'),
-  [
-    '<!doctype html>',
-    '<html><head><meta charset="utf-8"><title>Maestro</title>',
-    '<style>body{font:14px -apple-system,sans-serif;color:#28303b;padding:24px}</style></head>',
-    '<body><p>Maestro desktop shell is running. The instance UI is served',
-    'by the daemon channel at <code>/ui/</code>.</p></body></html>',
-    '',
-  ].join('\n'),
-  'utf8',
-);
+fs.copyFileSync(shellUiSrc, path.join(placeholderDir, 'index.html'));
 
 // 1b. Compile-time window icon (PNG generated in-process, zero dependencies).
 writeIconPng(path.join(TARGET, 'icon.png'));
@@ -211,7 +206,10 @@ if (process.platform !== 'darwin') {
   copyDir(path.join(REPO, 'bin'), path.join(resDir, 'bin'));
   copyDir(path.join(REPO, 'src'), path.join(resDir, 'src'));
   const uiSrc = path.join(REPO, 'desktop', 'ui');
-  if (fs.existsSync(uiSrc)) copyDir(uiSrc, path.join(resDir, 'desktop', 'ui'));
+  if (!fs.existsSync(path.join(uiSrc, 'index.html'))) {
+    die(`desktop UI missing: ${path.join(uiSrc, 'index.html')}`);
+  }
+  copyDir(uiSrc, path.join(resDir, 'desktop', 'ui'));
 
   function copyDir(src, dest) {
     fs.mkdirSync(dest, { recursive: true });

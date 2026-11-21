@@ -178,7 +178,10 @@ function main() {
   copyDir(path.join(REPO, 'bin'), path.join(staging, 'bin'));
   copyDir(path.join(REPO, 'src'), path.join(staging, 'src'));
   const uiSrc = path.join(REPO, 'desktop', 'ui');
-  if (fs.existsSync(uiSrc)) copyDir(uiSrc, path.join(staging, 'desktop', 'ui'));
+  if (!fs.existsSync(path.join(uiSrc, 'index.html'))) {
+    die(`桌面 UI 缺失：${path.join(uiSrc, 'index.html')}（缺它时 /ui/ 会 404，应用只能停在首启页）`);
+  }
+  copyDir(uiSrc, path.join(staging, 'desktop', 'ui'));
 
   fs.mkdirSync(outDir, { recursive: true });
   const nsiPath = path.join(outDir, '.maestro-installer.nsi');

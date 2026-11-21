@@ -22,6 +22,17 @@ pub struct Labels {
     pub quit_confirm_cancel: String,
     pub project_missing: String,
     pub project_invalid: String,
+    /// A-4 连接瞬态/失败文案：首启页在 daemon 尚未写出 `desktop.json` 时使用。
+    pub conn_connecting: String,
+    pub conn_failed: String,
+    /// 首启选择页的交互文案：主操作、浏览、最近项目与输入标签。
+    pub project_hint: String,
+    pub project_path_label: String,
+    pub project_action_open: String,
+    pub project_action_browse: String,
+    pub project_action_retry: String,
+    pub project_recent: String,
+    pub project_choose_title: String,
     pub tray_status: String,
     pub tray_status_disconnected: String,
     pub tray_pause: String,
@@ -42,6 +53,15 @@ impl Default for Labels {
             quit_confirm_cancel: "取消".into(),
             project_missing: "项目 未指定 · 请填写项目目录".into(),
             project_invalid: "项目 不可用 · {path}".into(),
+            conn_connecting: "正在连接守护进程…".into(),
+            conn_failed: "连接守护进程失败 · 请确认项目目录后重试".into(),
+            project_hint: "选择一个项目目录，Maestro 会在其中启动守护进程".into(),
+            project_path_label: "项目目录".into(),
+            project_action_open: "打开项目".into(),
+            project_action_browse: "选择文件夹…".into(),
+            project_action_retry: "重试".into(),
+            project_recent: "最近打开".into(),
+            project_choose_title: "选择 Maestro 项目目录".into(),
             tray_status: "实例 {n} · 待处理升级 {m}".into(),
             tray_status_disconnected: "实例 — · 待处理升级 —".into(),
             tray_pause: "暂停".into(),
@@ -65,6 +85,8 @@ impl Labels {
         if let Some(v) = pick("DESKTOP_QUIT_CONFIRM_CANCEL") { self.quit_confirm_cancel = v; }
         if let Some(v) = pick("DESKTOP_PROJECT_MISSING") { self.project_missing = v; }
         if let Some(v) = pick("DESKTOP_PROJECT_INVALID") { self.project_invalid = v; }
+        if let Some(v) = pick("DESKTOP_CONN_CONNECTING") { self.conn_connecting = v; }
+        if let Some(v) = pick("DESKTOP_CONN_FAILED") { self.conn_failed = v; }
         if let Some(v) = pick("DESKTOP_TRAY_STATUS") { self.tray_status = v; }
         if let Some(v) = pick("DESKTOP_TRAY_STATUS_DISCONNECTED") { self.tray_status_disconnected = v; }
         if let Some(v) = pick("DESKTOP_TRAY_PAUSE") { self.tray_pause = v; }
@@ -138,8 +160,21 @@ fn config_dir() -> PathBuf {
             return PathBuf::from(dir);
         }
     }
-    let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
-    Path::new(&home).join(".maestro")
+    // Windows GUI processes launched from Explorer do not inherit Git-Bash's
+    // POSIX-style HOME, and a bare `.` resolves relative to the install dir.
+    // USERPROFILE is the reliable per-user base there.
+    #[cfg(windows)]
+    let home = std::env::var("USERPROFILE")
+        .ok()
+        .filter(|value| !value.is_empty())
+        .or_else(|| std::env::var("HOME").ok().filter(|value| !value.is_empty()));
+    #[cfg(not(windows))]
+    let home = std::env::var("HOME")
+        .ok()
+        .filter(|value| !value.is_empty());
+    home.map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join(".maestro")
 }
 
 fn projects_path() -> PathBuf {
@@ -152,6 +187,29 @@ pub fn remembered_project() -> Option<String> {
     let value: Value = serde_json::from_str(&text).ok()?;
     let first = value.get("projects")?.as_array()?.first()?.as_str()?;
     if first.is_empty() { None } else { Some(first.to_string()) }
+}
+
+/// Remembered project roots that still exist, most recent first.
+pub fn recent_projects(limit: usize) -> Vec<String> {
+    let Some(text) = std::fs::read_to_string(projects_path()).ok() else {
+        return Vec::new();
+    };
+    let Ok(value) = serde_json::from_str::<Value>(&text) else {
+        return Vec::new();
+    };
+    value
+        .get("projects")
+        .and_then(Value::as_array)
+        .map(|items| {
+            items
+                .iter()
+                .filter_map(Value::as_str)
+                .filter(|root| !root.is_empty() && Path::new(root).is_dir())
+                .take(limit)
+                .map(str::to_string)
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 /// Remember a project root (append or move to front of `projects.json`).
