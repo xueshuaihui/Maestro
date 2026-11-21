@@ -680,7 +680,11 @@ orch instance graph INST-001 --format text   # ASCII 摘要
 （I1.1、I1.2、I1.3、I1.4、I1.5、I1.6、I1.7、**I1.8**、I1.9、I1.10a、I1.10b、I1.11、**I1.12**）。**I1.8 的 v4 独立终验总判 PASS**：六项校验 6 PASS、Done 七项按裁-21b 与 AC-53 口径 7 PASS（严格按模板字面 4 PASS / 3 FAIL，豁免已在终验 §4 明确表态）
 （67 条 AC：**65 通过 / 0 不通过 / 2 阻塞**，724 核对项（723 通过 / 1 失败），457 份被引用帧；v3 原始帧在 `evidence/acc8/`，v4 重跑与合并结果在 `evidence/acc8-v4/`；需求 v4 四轮独立评审终审 PASS，见 `review-v4-round1~4.md`；终验见 `final-verification-v4.md`）。
 **I1.12 的 AC-21 阻塞已解除**：用户 2026-11-21 裁决「跑满 20/50 真实取证」，修 pilot 并发归属缺陷后用真实 DSH `0.2.2-rc.5` 跑 **50 会话 / 20 并发**，`PERF_LEVEL_REAL`、**p95 1097ms < 2s**、50/50 成功、0 归属串台 → AC-21 独立重判 **21/21 通过**；I1.12 由 22/0/1 变为 **23 通过 / 0 不通过 / 0 阻塞**、**338/338** 核对项、**161** 份证据，S3 阻塞帧一字未改保留（见 `ac21-realhost-reverify.md`）。
-**阶段一退出条件已全部达成**，无剩余卡点。其余退出条件（角色定义→工作流编排→ACP 驱动→唤醒交接→三层日志+健康度→桌面应用六面→治理审计、编码与非编码两条闭环、20 实例并发 handoff 延迟）均由已收口迭代覆盖。剩余待办仅为**发布动作**（打 tag 触发三平台 CI Release）与后续迭代规划。
+**阶段一退出条件已全部达成**，无剩余卡点。其余退出条件（角色定义→工作流编排→ACP 驱动→唤醒交接→三层日志+健康度→桌面应用六面→治理审计、编码与非编码两条闭环、20 实例并发 handoff 延迟）均由已收口迭代覆盖。
+
+**首个 beta 已发布（2026-11-22）**：tag **`v0.0.1-beta.1`**（commit `951f0eb`），GitHub Releases 状态 `draft=false / prerelease=true`，产物 `Maestro_0.0.1-beta.1_x64.dmg`（48.0MB）、`Maestro_0.0.1-beta.1_arm64.dmg`（45.7MB）、`Maestro_0.0.1-beta.1_win-x64-setup.exe`（36.8MB）与 `SHA256SUMS.txt`。
+发布前用 `workflow_dispatch` 试跑通道（run `44936715870`）验证三平台 gate 全绿，再打 tag（正式 run `44937604352` 全绿）。版本三处（`package.json` / `Cargo.toml` / `tauri.conf.json`）统一 `0.0.1-beta.1`；旧 `v0.0.1` tag（指向 11-15 的 I1.10a 验证点）**未复用**。
+发布阻塞修复 4 项：① `orch core stop` 收尾（三主链用例在 Windows 上 EBUSY）② 9 条跨平台假红（CRLF / 路径分隔符 / ESM 盘符 / Windows 无 POSIX 权限位 / symlink 权限）③ NSIS `VIProductVersion` 四段纯数字（prerelease 版本号非法）④ AC-63/64 升级落盘时序 flake。**无一项放宽断言**。
 
 **环境归属图例**：
 
