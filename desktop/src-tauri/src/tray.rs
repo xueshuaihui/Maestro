@@ -225,7 +225,8 @@ pub fn pause_all(app: &AppHandle) {
         let state = app.state::<ShellState>();
         let labels = state.labels.lock().unwrap().clone();
         let targeted = state.tray.lock().unwrap().running_ids.clone();
-        (state.project_root.lock().unwrap().clone(), labels, targeted)
+        let project = state.project_root.lock().unwrap().clone();
+        (project, labels, targeted)
     };
     let mut paused = 0u32;
     let mut skipped = targeted.len() as u32;
@@ -265,7 +266,8 @@ pub fn pause_all(app: &AppHandle) {
 pub fn resume_all(app: &AppHandle) {
     let root = {
         let state = app.state::<ShellState>();
-        state.project_root.lock().unwrap().clone()
+        let root = state.project_root.lock().unwrap().clone();
+        root
     };
     let mut paused = 0u32;
     let mut ok = false;
