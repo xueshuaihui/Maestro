@@ -164,20 +164,35 @@ class Host {
     return p;
   }
 
-  /** 等待某个 id 的 response 之后的第一个「目标会话事件」，返回相对 sentAt 的毫秒数。 */
-  waitFirstEvent(promptId, sentAt) {
+  /**
+   * 等待「目标会话」的首个 ACP 事件，返回相对 sentAt 的毫秒数。
+   * 并发归属（AC-21 取证可信度）：session/update 必须按 params.sessionId 归属到本会话；
+   * 若事件不带 sessionId（无法归属）则跳过，绝不用「sentAt 之后的任意 session/update」
+   * 顶替——那会在 20 并发下把别的会话的首事件算成本会话，造假低延迟（假阳性）。
+   * 记录 raw 首事件帧供复核归属是否成立。
+   */
+  waitFirstEvent(promptId, sentAt, sessionId) {
     return new Promise((resolve) => {
       const deadline = Date.now() + timeoutMs;
       const tick = () => {
         for (const ev of this.events) {
           if (ev.t < sentAt) continue;
-          if (ev.obj.method === 'session/update' || ev.obj.id === promptId) {
-            resolve({ firstEventMs: +(ev.t - sentAt).toFixed(1), kind: ev.obj.method ?? 'response' });
+          // response by prompt id: tied to this request, unambiguous.
+          if (ev.obj.id === promptId && ev.obj.method === undefined) {
+            resolve({ firstEventMs: +(ev.t - sentAt).toFixed(1), kind: 'response', raw: ev.obj });
+            return;
+          }
+          // session/update: must be attributed to THIS session by params.sessionId.
+          if (ev.obj.method === 'session/update') {
+            const sid = ev.obj.params?.sessionId ?? ev.obj.sessionId ?? null;
+            if (sid && sessionId && String(sid) !== String(sessionId)) continue;
+            if (!sid) continue; // unattributable — never guess under concurrency
+            resolve({ firstEventMs: +(ev.t - sentAt).toFixed(1), kind: 'session/update', raw: ev.obj });
             return;
           }
         }
         if (Date.now() > deadline || this.exited) {
-          resolve({ firstEventMs: null, kind: 'timeout' });
+          resolve({ firstEventMs: null, kind: 'timeout', raw: null });
           return;
         }
         setTimeout(tick, 5);
@@ -217,7 +232,7 @@ class Host {
 const PROMPT_TEXT = '只回复两个字：收到。不要调用任何工具，不要解释。';
 
 async function runOneSession(host, workspace, index) {
-  const rec = { index, sessionId: null, deliveredAt: null, firstEventMs: null, firstEventKind: null, stopReason: null, ok: false, error: null };
+  const rec = { index, sessionId: null, deliveredAt: null, firstEventMs: null, firstEventKind: null, firstEventRaw: null, stopReason: null, ok: false, error: null };
   try {
     const created = await host.request('session/new', { cwd: workspace, mcpServers: [] });
     if (created.error) throw new Error(`session/new: ${JSON.stringify(created.error)}`);
@@ -225,9 +240,10 @@ async function runOneSession(host, workspace, index) {
     const promptId = host.nextId++;
     const sentAt = host.send({ jsonrpc: '2.0', id: promptId, method: 'session/prompt', params: { sessionId: rec.sessionId, prompt: [{ type: 'text', text: PROMPT_TEXT }] } });
     rec.deliveredAt = new Date().toISOString();
-    const first = await host.waitFirstEvent(promptId, sentAt);
+    const first = await host.waitFirstEvent(promptId, sentAt, rec.sessionId);
     rec.firstEventMs = first.firstEventMs;
     rec.firstEventKind = first.kind;
+    rec.firstEventRaw = first.raw;
     const done = await new Promise((resolve) => {
       const deadline = Date.now() + timeoutMs;
       const tick = () => {

@@ -1,0 +1,322 @@
+{
+  "ac": "AC-21",
+  "probe": "acc12-perf-pilot",
+  "startedAt": "2026-11-21T14:50:26.257Z",
+  "load": {
+    "requestedSessions": 8,
+    "requestedConcurrency": 4,
+    "target": {
+      "concurrentInstances": 20,
+      "activeSessions": 50,
+      "handoffBudgetMs": 2000
+    }
+  },
+  "hostDiscovery": {
+    "ok": true,
+    "source": "default",
+    "exe": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\DeepSeek Harness.exe",
+    "bin": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\app.asar\\dsh\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js"
+  },
+  "hostVersion": "0.2.2-rc.5",
+  "levels": {
+    "mock": "PERF_LEVEL_MOCK",
+    "real": "PERF_LEVEL_REAL",
+    "pending": "PERF_LEVEL_PENDING"
+  },
+  "sessions": [
+    {
+      "index": 0,
+      "sessionId": "96b5e717-0619-4baf-8abd-6335ae5047c1",
+      "deliveredAt": "2026-11-21T14:50:27.801Z",
+      "firstEventMs": 1081.3,
+      "firstEventKind": "session/update",
+      "firstEventRaw": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "96b5e717-0619-4baf-8abd-6335ae5047c1",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "messageId": "4064b4d2-61d1-45b5-bf09-024d4556cb1a",
+            "content": {
+              "type": "text",
+              "text": "收到。"
+            }
+          }
+        }
+      },
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 1103.8
+    },
+    {
+      "index": 1,
+      "sessionId": "8b8864a8-bdfb-42b6-ac32-ce3c8f65aee8",
+      "deliveredAt": "2026-11-21T14:50:28.935Z",
+      "firstEventMs": 464.2,
+      "firstEventKind": "session/update",
+      "firstEventRaw": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "8b8864a8-bdfb-42b6-ac32-ce3c8f65aee8",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "messageId": "6fd1b2f7-5508-4588-81fc-65f21dfba3b1",
+            "content": {
+              "type": "text",
+              "text": "收到。"
+            }
+          }
+        }
+      },
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 497.6
+    },
+    {
+      "index": 2,
+      "sessionId": "eddae28f-a86d-4d0f-903d-bf7218cbf10d",
+      "deliveredAt": "2026-11-21T14:50:30.823Z",
+      "firstEventMs": 715.7,
+      "firstEventKind": "session/update",
+      "firstEventRaw": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "eddae28f-a86d-4d0f-903d-bf7218cbf10d",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "messageId": "89ae80fc-17cb-45e4-8f06-fb33e17bc339",
+            "content": {
+              "type": "text",
+              "text": "收到。"
+            }
+          }
+        }
+      },
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 751
+    },
+    {
+      "index": 3,
+      "sessionId": "90644260-0e17-44d5-93e6-af558aabaeaf",
+      "deliveredAt": "2026-11-21T14:50:31.596Z",
+      "firstEventMs": 708.2,
+      "firstEventKind": "session/update",
+      "firstEventRaw": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "90644260-0e17-44d5-93e6-af558aabaeaf",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "messageId": "03dddfc6-8408-4358-953e-49e6928a2229",
+            "content": {
+              "type": "text",
+              "text": "收到"
+            }
+          }
+        }
+      },
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 719.8
+    },
+    {
+      "index": 4,
+      "sessionId": "5d880b71-487b-400a-ab24-1a27ca6d4c11",
+      "deliveredAt": "2026-11-21T14:50:33.745Z",
+      "firstEventMs": 444,
+      "firstEventKind": "session/update",
+      "firstEventRaw": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "5d880b71-487b-400a-ab24-1a27ca6d4c11",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "messageId": "9e22c0e7-e19c-4d27-8c8c-c24ba4f785fa",
+            "content": {
+              "type": "text",
+              "text": "收到"
+            }
+          }
+        }
+      },
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 459.5
+    },
+    {
+      "index": 5,
+      "sessionId": "694182f7-75fb-4a4e-930a-864bac1e2900",
+      "deliveredAt": "2026-11-21T14:50:34.226Z",
+      "firstEventMs": 593.1,
+      "firstEventKind": "session/update",
+      "firstEventRaw": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "694182f7-75fb-4a4e-930a-864bac1e2900",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "messageId": "51d08b8f-f838-4564-9cd0-741996642d4f",
+            "content": {
+              "type": "text",
+              "text": "收到。"
+            }
+          }
+        }
+      },
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 618.1
+    },
+    {
+      "index": 6,
+      "sessionId": "4a8c1bc6-d9f4-4249-a834-6a88893f205c",
+      "deliveredAt": "2026-11-21T14:50:36.673Z",
+      "firstEventMs": 545.5,
+      "firstEventKind": "session/update",
+      "firstEventRaw": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "4a8c1bc6-d9f4-4249-a834-6a88893f205c",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "messageId": "3182b4fc-60e0-4982-8b7e-679826fc00d6",
+            "content": {
+              "type": "text",
+              "text": "收到。"
+            }
+          }
+        }
+      },
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 546.2
+    },
+    {
+      "index": 7,
+      "sessionId": "010f7147-d41f-4c95-bae8-9badd7cc31e8",
+      "deliveredAt": "2026-11-21T14:50:37.246Z",
+      "firstEventMs": 689.4,
+      "firstEventKind": "session/update",
+      "firstEventRaw": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "010f7147-d41f-4c95-bae8-9badd7cc31e8",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "messageId": "13271018-7d11-475a-a453-9fc2add6b2cc",
+            "content": {
+              "type": "text",
+              "text": "收到。"
+            }
+          }
+        }
+      },
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 713.7
+    }
+  ],
+  "summary": {
+    "okSessions": 8,
+    "failedSessions": 0,
+    "distinctInstances": 8,
+    "distinctSessions": 8,
+    "meetsTargetLoad": false,
+    "latencyMs": [
+      1081,
+      464,
+      716,
+      708,
+      444,
+      593,
+      546,
+      689
+    ],
+    "perfLevel": "PERF_LEVEL_PENDING",
+    "perfBlocked": true
+  },
+  "conclusion": "PILOT_SINGLE_INSTANCE",
+  "note": "试点：真实宿主已跑通并采到 handoff 延迟，但实例/会话数未达 20/50，级别仍为待本机实测（不得据此宣称真实面达标）。",
+  "dshHome": {
+    "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i112-perf-pilot\\dsh-home",
+    "isolated": true,
+    "credentialsCopied": true,
+    "credentialsWillBeRemoved": true
+  },
+  "samples": [
+    {
+      "instanceId": "pilot-0",
+      "sessionId": "96b5e717-0619-4baf-8abd-6335ae5047c1",
+      "handoffId": null,
+      "latencyMs": 1081
+    },
+    {
+      "instanceId": "pilot-1",
+      "sessionId": "8b8864a8-bdfb-42b6-ac32-ce3c8f65aee8",
+      "handoffId": null,
+      "latencyMs": 464
+    },
+    {
+      "instanceId": "pilot-2",
+      "sessionId": "eddae28f-a86d-4d0f-903d-bf7218cbf10d",
+      "handoffId": null,
+      "latencyMs": 716
+    },
+    {
+      "instanceId": "pilot-3",
+      "sessionId": "90644260-0e17-44d5-93e6-af558aabaeaf",
+      "handoffId": null,
+      "latencyMs": 708
+    },
+    {
+      "instanceId": "pilot-4",
+      "sessionId": "5d880b71-487b-400a-ab24-1a27ca6d4c11",
+      "handoffId": null,
+      "latencyMs": 444
+    },
+    {
+      "instanceId": "pilot-5",
+      "sessionId": "694182f7-75fb-4a4e-930a-864bac1e2900",
+      "handoffId": null,
+      "latencyMs": 593
+    },
+    {
+      "instanceId": "pilot-6",
+      "sessionId": "4a8c1bc6-d9f4-4249-a834-6a88893f205c",
+      "handoffId": null,
+      "latencyMs": 546
+    },
+    {
+      "instanceId": "pilot-7",
+      "sessionId": "010f7147-d41f-4c95-bae8-9badd7cc31e8",
+      "handoffId": null,
+      "latencyMs": 689
+    }
+  ],
+  "collectedByProduct": {
+    "samples": 8,
+    "stats": {
+      "median": 641,
+      "p95": 953,
+      "max": 1081
+    }
+  },
+  "finishedAt": "2026-11-21T14:50:38.023Z"
+}

@@ -1,0 +1,91 @@
+{
+  "ac": "AC-21",
+  "probe": "acc12-perf-pilot",
+  "startedAt": "2026-11-21T14:47:11.846Z",
+  "load": {
+    "requestedSessions": 1,
+    "requestedConcurrency": 1,
+    "target": {
+      "concurrentInstances": 20,
+      "activeSessions": 50,
+      "handoffBudgetMs": 2000
+    }
+  },
+  "hostDiscovery": {
+    "ok": true,
+    "source": "default",
+    "exe": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\DeepSeek Harness.exe",
+    "bin": "C:\\Users\\xuesh\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\app.asar\\dsh\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js"
+  },
+  "hostVersion": "0.2.2-rc.5",
+  "levels": {
+    "mock": "PERF_LEVEL_MOCK",
+    "real": "PERF_LEVEL_REAL",
+    "pending": "PERF_LEVEL_PENDING"
+  },
+  "sessions": [
+    {
+      "index": 0,
+      "sessionId": "5663b6ae-15b8-4f14-b3f6-b694713e1b6a",
+      "deliveredAt": "2026-11-21T14:47:13.714Z",
+      "firstEventMs": 901.7,
+      "firstEventKind": "session/update",
+      "firstEventRaw": {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+          "sessionId": "5663b6ae-15b8-4f14-b3f6-b694713e1b6a",
+          "update": {
+            "sessionUpdate": "agent_message_chunk",
+            "messageId": "0309000e-10e7-48c6-af01-2fee78e06071",
+            "content": {
+              "type": "text",
+              "text": "收到。"
+            }
+          }
+        }
+      },
+      "stopReason": "end_turn",
+      "ok": true,
+      "error": null,
+      "turnEndMs": 936.8
+    }
+  ],
+  "summary": {
+    "okSessions": 1,
+    "failedSessions": 0,
+    "distinctInstances": 1,
+    "distinctSessions": 1,
+    "meetsTargetLoad": false,
+    "latencyMs": [
+      902
+    ],
+    "perfLevel": "PERF_LEVEL_PENDING",
+    "perfBlocked": true
+  },
+  "conclusion": "PILOT_SINGLE_INSTANCE",
+  "note": "试点：真实宿主已跑通并采到 handoff 延迟，但实例/会话数未达 20/50，级别仍为待本机实测（不得据此宣称真实面达标）。",
+  "dshHome": {
+    "path": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i112-perf-pilot\\dsh-home",
+    "isolated": true,
+    "credentialsCopied": true,
+    "credentialsWillBeRemoved": true
+  },
+  "samples": [
+    {
+      "instanceId": "pilot-0",
+      "sessionId": "5663b6ae-15b8-4f14-b3f6-b694713e1b6a",
+      "handoffId": null,
+      "latencyMs": 902
+    }
+  ],
+  "collectedByProduct": {
+    "samples": 1,
+    "stats": {
+      "median": 902,
+      "p95": 902,
+      "max": 902
+    }
+  },
+  "finishedAt": "2026-11-21T14:47:14.735Z"
+}
