@@ -204,6 +204,8 @@ fn main() {
 
             if let Some(root) = spawn_root.as_deref() {
                 if daemon_pid != 0 {
+                    let stop = app.state::<ShellState>().stop.clone();
+                    start_tray_status_poller(app.handle().clone(), root.to_path_buf(), stop);
                     start_project_services(app.handle().clone(), root.to_path_buf());
                 }
             }
@@ -348,6 +350,8 @@ pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
         app.state::<ShellState>().project_root.lock().unwrap().take();
         return Err(labels.conn_failed);
     }
+    let stop = app.state::<ShellState>().stop.clone();
+    start_tray_status_poller(app.clone(), root.clone(), stop);
     start_project_services(app.clone(), root.clone());
     probe::event(
         "project-opened",
@@ -377,9 +381,8 @@ fn start_project_services(app: tauri::AppHandle, root: PathBuf) {
     }
     probe::start_window_probe_watcher(root.clone());
     spawn::wait_desktop_channel(app.clone(), root.clone());
-    // D-8: info-line numbers from /instances every 2s (and on channel loss ->
-    // null -> "实例 — · 待处理升级 —").
-    start_tray_status_poller(app.handle().clone(), root.clone(), stop.clone());
+    // D-8 tray polling is started by each entry point, where the `.handle()`
+    // form is available and the startup ordering stays visible.
     // Notification delivery: always subscribe; the delivery switch inside
     // `deliver_intent` is what `--no-notify` flips.
     start_notify_stream(app, root, stop);
