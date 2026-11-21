@@ -1,0 +1,7 @@
+AC-21 → 通过（真实宿主面已取证，不算失败）
+level=PERF_LEVEL_REAL/已实测（真实宿主面）
+blocked=false ok=true bottleneck=null
+instances=50 sessions=50 p95=1097ms
+mismatch=0 error=0 samples=50
+出口：裁决 A 第 3 条 / 483 行契约 / 484 行阻塞出口锚点 / 用户 2026-11-21 书面裁决
+不得用 AC-20 的 mock 实测顶替、不得伪通过；新证据独立于 S3 冻结的 4 份 v3 帧

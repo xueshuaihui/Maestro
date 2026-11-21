@@ -384,6 +384,13 @@ test('AC-63 重建后的会话再次崩溃 → 直接升级，不再重建', asy
   assert.equal(events.filter((event) => event.reason === 'session.crash').length, 1);
   assert.equal(events.filter((event) => event.reason === 'session.rebuilt').length, 1);
   assert.equal(events.filter((event) => event.reason === 'session.rebuild_failed').length, 1);
+  // 事件广播先于升级落盘（毫秒级），先等 escalations 落定再断言「恰 1 条」，
+  // 否则会读到空数组造成假阴性；断言本身不放宽。
+  const escalated = await waitFor(async () => {
+    const disk = await readDisk(root, instanceId);
+    return Array.isArray(disk.escalations) && disk.escalations.length >= 1;
+  }, 4000);
+  assert.equal(escalated, true, 'escalation must be persisted before asserting');
   const disk = await readDisk(root, instanceId);
   assert.equal(disk.escalations.length, 1);
   assert.equal(disk.nodes[0].state, 'escalated');
@@ -403,6 +410,12 @@ test('AC-64 重建失败 / 宿主不可达 → 角色显示不可用', async () 
     return reasonsOf(events).includes('session.rebuild_failed');
   });
   assert.equal(failed, true);
+  // 同 AC-63：等升级落盘后再读盘断言，避免事件先于落盘的假阴性；断言不放宽。
+  const escalated = await waitFor(async () => {
+    const state = await readDisk(root, instanceId);
+    return state.sessions.some((item) => item.nodeId === 'T-001' && item.state === 'escalated');
+  }, 4000);
+  assert.equal(escalated, true, 'T-001 must reach escalated before asserting');
   const disk = await readDisk(root, instanceId);
   const session = disk.sessions.find((item) => item.nodeId === 'T-001');
   assert.equal(session.state, 'escalated');

@@ -1,0 +1,231 @@
+{
+  "perfCheck": {
+    "ac": "AC-21",
+    "level": "PERF_LEVEL_REAL",
+    "levelLabel": "已实测（真实宿主面）",
+    "blocked": false,
+    "ok": true,
+    "bottleneck": null,
+    "realHostCollected": true,
+    "sourceFrame": "D:\\WWW\\Maestro\\docs\\iterations\\iteration-12\\evidence\\AC-21.perf-real-50-20.json",
+    "sourceFrameSha256": "58f1bc2b3e21911ce9d930416224c898bf8fd27ee0af37373a3b1def24d95b0b",
+    "hostVersion": "0.2.2-rc.5",
+    "sessionsCount": 50,
+    "samplesCount": 50,
+    "distinctInstances": 50,
+    "distinctSessions": 50,
+    "stats": {
+      "median": 695,
+      "p95": 1097,
+      "max": 1353
+    },
+    "attributionMismatch": 0,
+    "errorCount": 0,
+    "rpcErrorCount": 0,
+    "latencyMismatch": 0,
+    "mockLevel": "PERF_LEVEL_MOCK",
+    "mockLevelLabel": "mock 实测",
+    "triedPaths": [
+      {
+        "path": "C:/Program Files/DSH/dsh.exe",
+        "exists": false
+      },
+      {
+        "path": "C:\\Users\\xuesh\\AppData\\Local\\DSH\\dsh.exe",
+        "exists": false
+      },
+      {
+        "path": "C:\\Users\\xuesh\\.dsh\\bin\\dsh",
+        "exists": false
+      },
+      {
+        "path": "env:MAESTRO_DSH_EXE/MAESTRO_DSH_BIN",
+        "set": false
+      },
+      {
+        "path": "D:\\WWW\\Maestro\\docs\\iterations\\iteration-12\\evidence\\AC-21.perf-real-50-20.json",
+        "status": "collected"
+      }
+    ],
+    "note": "用户 2026-11-21 书面裁决：跑满 20/50 真实取证解除阻塞；帧缺失/级别 pending/不达标仍判阻塞，不得 mock 顶替、不得伪通过（裁决 A 第 3 条 / 483 行契约 / 484 行锚点）",
+    "ts": "2026-11-21T15:01:57.907Z"
+  },
+  "report": {
+    "ok": true,
+    "level": "PERF_LEVEL_REAL",
+    "stats": {
+      "median": 695,
+      "p95": 1097,
+      "max": 1353
+    },
+    "bottleneck": null,
+    "blocked": false
+  },
+  "sourceFrame": "D:\\WWW\\Maestro\\docs\\iterations\\iteration-12\\evidence\\AC-21.perf-real-50-20.json",
+  "sourceFrameSha256": "58f1bc2b3e21911ce9d930416224c898bf8fd27ee0af37373a3b1def24d95b0b",
+  "recomputed": {
+    "sessionsCount": 50,
+    "samplesCount": 50,
+    "level": "PERF_LEVEL_REAL",
+    "blocked": false,
+    "ok": true,
+    "bottleneck": null,
+    "distinctInstances": 50,
+    "distinctSessions": 50,
+    "median": 695,
+    "p95": 1097,
+    "max": 1353,
+    "attributionMismatch": 0,
+    "errorCount": 0,
+    "latencyMismatch": 0
+  },
+  "checks": [
+    {
+      "id": "C01",
+      "label": "取证来源帧级别 = PERF_LEVEL_REAL",
+      "expected": "PERF_LEVEL_REAL",
+      "actual": "PERF_LEVEL_REAL",
+      "ok": true
+    },
+    {
+      "id": "C02",
+      "label": "产品 buildPerfReport 复算级别 = PERF_LEVEL_REAL",
+      "expected": "PERF_LEVEL_REAL",
+      "actual": "PERF_LEVEL_REAL",
+      "ok": true
+    },
+    {
+      "id": "C03",
+      "label": "blocked = false",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "label": "报告 ok = true（无瓶颈）",
+      "expected": "true",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C05",
+      "label": "bottleneck = null",
+      "expected": "null",
+      "actual": "null",
+      "ok": true
+    },
+    {
+      "id": "C06",
+      "label": "distinctInstances ≥ 20",
+      "expected": ">= 20",
+      "actual": "50",
+      "ok": true
+    },
+    {
+      "id": "C07",
+      "label": "distinctSessions ≥ 50",
+      "expected": ">= 50",
+      "actual": "50",
+      "ok": true
+    },
+    {
+      "id": "C08",
+      "label": "p95 < 2000ms（D-11 建议分位）",
+      "expected": "< 2000",
+      "actual": "1097",
+      "ok": true
+    },
+    {
+      "id": "C09",
+      "label": "报告含逐档延迟数据（median/p95/max 均有限）",
+      "expected": "median/p95/max finite",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C10",
+      "label": "归属 0 串台（raw 首事件 sessionId 与记录一致）",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C11",
+      "label": "原始取证帧会话记录 50 条",
+      "expected": "50",
+      "actual": "50",
+      "ok": true
+    },
+    {
+      "id": "C12",
+      "label": "产品样本 50 条",
+      "expected": "50",
+      "actual": "50",
+      "ok": true
+    },
+    {
+      "id": "C13",
+      "label": "无 error / -32603",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C14",
+      "label": "每条 firstEventMs 有限且 ≥ 0",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C15",
+      "label": "每条 latencyMs 与 firstEventMs 一致",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C16",
+      "label": "每条首事件均为 session/update（可归属）",
+      "expected": "0",
+      "actual": "0",
+      "ok": true
+    },
+    {
+      "id": "C17",
+      "label": "mock 级别未顶替真实宿主级别",
+      "expected": "false",
+      "actual": "false",
+      "ok": true
+    },
+    {
+      "id": "C18",
+      "label": "mock 与真实宿主中文级别逐字不混用",
+      "expected": "mock 实测 != 已实测（真实宿主面）",
+      "actual": "true",
+      "ok": true
+    },
+    {
+      "id": "C19",
+      "label": "级别中文逐字取 labels 真实宿主值",
+      "expected": "已实测（真实宿主面）",
+      "actual": "已实测（真实宿主面）",
+      "ok": true
+    },
+    {
+      "id": "C20",
+      "label": "帧结论 = MEASURED_REAL_HOST",
+      "expected": "MEASURED_REAL_HOST",
+      "actual": "MEASURED_REAL_HOST",
+      "ok": true
+    },
+    {
+      "id": "C21",
+      "label": "宿主发现走产品发现逻辑（source=default）",
+      "expected": "default",
+      "actual": "default",
+      "ok": true
+    }
+  ]
+}
