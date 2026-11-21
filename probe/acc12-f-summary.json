@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-11-19T12:50:45.014Z",
-  "head": "d1fce53",
+  "generatedAt": "2026-11-21T17:48:26.168Z",
+  "head": "2c53d40",
   "acTotal": 23,
-  "pass": 22,
+  "pass": 23,
   "fail": 0,
-  "blocked": 1,
-  "checksTotal": 322,
-  "checksPassed": 322,
+  "blocked": 0,
+  "checksTotal": 338,
+  "checksPassed": 338,
   "checksFailed": 0,
-  "evidenceFileCount": 153,
+  "evidenceFileCount": 161,
   "evidenceFiles": [
     "docs/iterations/iteration-12/evidence/AC-01.fixture.events-bad.jsonl",
     "docs/iterations/iteration-12/evidence/AC-01.fixture.events-good.jsonl",
@@ -144,6 +144,14 @@
     "docs/iterations/iteration-12/evidence/AC-21.given.contract.json",
     "docs/iterations/iteration-12/evidence/AC-21.meta.result.json",
     "docs/iterations/iteration-12/evidence/AC-21.perf-check.stdout.json",
+    "docs/iterations/iteration-12/evidence/AC-21.perf-real-50-20.json",
+    "docs/iterations/iteration-12/evidence/AC-21.perf-real-smoke-1.json",
+    "docs/iterations/iteration-12/evidence/AC-21.perf-real-smoke-8.json",
+    "docs/iterations/iteration-12/evidence/AC-21.real.checklist.md",
+    "docs/iterations/iteration-12/evidence/AC-21.real.given.contract.json",
+    "docs/iterations/iteration-12/evidence/AC-21.real.meta.result.json",
+    "docs/iterations/iteration-12/evidence/AC-21.real.perf-check.stdout.json",
+    "docs/iterations/iteration-12/evidence/AC-21.real.summary.status.txt",
     "docs/iterations/iteration-12/evidence/AC-21.summary.status.txt",
     "docs/iterations/iteration-12/evidence/AC-22.check.deps.txt",
     "docs/iterations/iteration-12/evidence/AC-22.check.purity.txt",
@@ -181,13 +189,13 @@
       "scope": "AC-13~AC-23",
       "resultsFile": "probe/acc12-f-results-b.jsonl",
       "acCount": 11,
-      "pass": 10,
+      "pass": 11,
       "fail": 0,
-      "blocked": 1,
-      "checksTotal": 128,
-      "checksPassed": 128,
+      "blocked": 0,
+      "checksTotal": 144,
+      "checksPassed": 144,
       "checksFailed": 0,
-      "evidenceCount": 74
+      "evidenceCount": 82
     }
   },
   "perAc": [
@@ -686,23 +694,31 @@
       "ac": "AC-21",
       "batch": "b",
       "title": "真实宿主性能证据分级（留本机）",
-      "verdict": "阻塞",
-      "grading": "阻塞",
+      "verdict": "通过",
+      "grading": "已实测（真实宿主面）",
       "checks": {
-        "total": 5,
-        "passed": 5,
+        "total": 21,
+        "passed": 21,
         "failed": 0
       },
       "evidence": {
-        "count": 4,
+        "count": 12,
         "files": [
           "docs/iterations/iteration-12/evidence/AC-21.given.contract.json",
           "docs/iterations/iteration-12/evidence/AC-21.meta.result.json",
           "docs/iterations/iteration-12/evidence/AC-21.perf-check.stdout.json",
+          "docs/iterations/iteration-12/evidence/AC-21.perf-real-50-20.json",
+          "docs/iterations/iteration-12/evidence/AC-21.perf-real-smoke-1.json",
+          "docs/iterations/iteration-12/evidence/AC-21.perf-real-smoke-8.json",
+          "docs/iterations/iteration-12/evidence/AC-21.real.checklist.md",
+          "docs/iterations/iteration-12/evidence/AC-21.real.given.contract.json",
+          "docs/iterations/iteration-12/evidence/AC-21.real.meta.result.json",
+          "docs/iterations/iteration-12/evidence/AC-21.real.perf-check.stdout.json",
+          "docs/iterations/iteration-12/evidence/AC-21.real.summary.status.txt",
           "docs/iterations/iteration-12/evidence/AC-21.summary.status.txt"
         ]
       },
-      "blocker": "真实宿主（DSH 0.2.2-rc.1）性能面本机未取证：level=PERF_LEVEL_PENDING、blocked=true；按裁决 A 第 3 条判阻塞（不算失败），不得用 AC-20 的 mock 实测顶替、不得伪通过；需主控安排本机取证窗口后补采 20 实例/50 会话 handoff。"
+      "blocker": null
     },
     {
       "ac": "AC-22",

@@ -1,0 +1,51 @@
+{
+  "ac": "AC-21",
+  "level": "PERF_LEVEL_REAL",
+  "levelLabel": "已实测（真实宿主面）",
+  "blocked": false,
+  "ok": true,
+  "bottleneck": null,
+  "realHostCollected": true,
+  "sourceFrame": "D:\\WWW\\Maestro\\docs\\iterations\\iteration-12\\evidence\\AC-21.perf-real-50-20.json",
+  "sourceFrameSha256": "58f1bc2b3e21911ce9d930416224c898bf8fd27ee0af37373a3b1def24d95b0b",
+  "hostVersion": "0.2.2-rc.5",
+  "sessionsCount": 50,
+  "samplesCount": 50,
+  "distinctInstances": 50,
+  "distinctSessions": 50,
+  "stats": {
+    "median": 695,
+    "p95": 1097,
+    "max": 1353
+  },
+  "attributionMismatch": 0,
+  "errorCount": 0,
+  "rpcErrorCount": 0,
+  "latencyMismatch": 0,
+  "mockLevel": "PERF_LEVEL_MOCK",
+  "mockLevelLabel": "mock 实测",
+  "triedPaths": [
+    {
+      "path": "C:/Program Files/DSH/dsh.exe",
+      "exists": false
+    },
+    {
+      "path": "C:\\Users\\xuesh\\AppData\\Local\\DSH\\dsh.exe",
+      "exists": false
+    },
+    {
+      "path": "C:\\Users\\xuesh\\.dsh\\bin\\dsh",
+      "exists": false
+    },
+    {
+      "path": "env:MAESTRO_DSH_EXE/MAESTRO_DSH_BIN",
+      "set": false
+    },
+    {
+      "path": "D:\\WWW\\Maestro\\docs\\iterations\\iteration-12\\evidence\\AC-21.perf-real-50-20.json",
+      "status": "collected"
+    }
+  ],
+  "note": "用户 2026-11-21 书面裁决：跑满 20/50 真实取证解除阻塞；帧缺失/级别 pending/不达标仍判阻塞，不得 mock 顶替、不得伪通过（裁决 A 第 3 条 / 483 行契约 / 484 行锚点）",
+  "ts": "2026-11-21T15:01:57.907Z"
+}

@@ -2,23 +2,23 @@
 
 > 本文件由 `probe/acc12-f-final.mjs` 合并 `acc12-f-results.jsonl`（批次 A）与 `acc12-f-results-b.jsonl`（批次 B）
 > + `acc12-f-parts/` + `evidence/` 重建，人工不直接编辑。A 段由批次 A 验收产出，B 段取自 `acceptance-fixture-b.md` 原文。
-> 合并时仓库 HEAD=`d1fce53`；批次 B 取证时点为 `d20fccc`，A 批 AC-01 已在 `d1fce53` 按裁决 E 修复后复跑。
+> 合并时仓库 HEAD=`2c53d40`；批次 B 取证时点为 `d20fccc`，A 批 AC-01 已在 `2c53d40` 按裁决 E 修复后复跑。
 
-**总判：22 通过 / 0 不通过 / 1 阻塞（AC-21 真实宿主未取证）**
+**总判：23 通过 / 0 不通过 / 0 阻塞**
 
 | 批次 | 范围 | 通过 | 不通过 | 阻塞 | 核对项 | 原始证据（unique 文件名） |
 |---|---|---|---|---|---|---|
 | 批次 A | AC-01~AC-12 | 12 | 0 | 0 | 194/194 | 79 |
-| 批次 B | AC-13~AC-23 | 10 | 0 | 1 | 128/128 | 74 |
-| 总计 | AC-01~AC-23 | 22 | 0 | 1 | 322/322 | 153 |
+| 批次 B | AC-13~AC-23 | 11 | 0 | 0 | 144/144 | 82 |
+| 总计 | AC-01~AC-23 | 23 | 0 | 0 | 338/338 | 161 |
 
-- 核对项：A 批 194（AC-01 按裁决 E 修复后 22/22）+ B 批 128 = 322，全部通过；AC-21 的 5/5 是「阻塞出口」核对项，按契约成立，不计为失败。
-- 阻塞：AC-21 真实宿主（DSH 0.2.2-rc.1）性能面未取证，见下方 B 段与 `probe/acc12-f-blockers.md`，未用 mock 顶替、未写成通过。
+- 核对项：A 批 194/194（AC-01 按裁决 E 修复后 22/22）+ B 批 144/144 = 338/338；逐条判定见下方 A/B 段与 `probe/acc12-f-blockers.md`。
+- 阻塞：无。真实宿主面 AC-21 已按用户 2026-11-21 裁决补采（50 会话/20 并发、p95 1097ms < 2s、级别 `PERF_LEVEL_REAL`），重判记录见 `docs/iterations/iteration-12/ac21-realhost-reverify.md`；S3 阻塞帧保留在 `evidence/` 与 `evidence/acc21-real/`，未删改。
 
 <!-- BATCH-A:START -->
 ## 批次 A（AC-01~AC-12）验收取证
 
-- 生成时间：2026-11-19T12:50:45.016Z
+- 生成时间：2026-11-21T17:48:26.170Z
 - 证据分级：全部 `mock 实测`（本批次仅 mock / 夹具面，未声称真实宿主）
 - 判定统计：通过 12 / 不通过 0 / 阻塞 0
 - 核对项：194/194 通过
@@ -51,89 +51,92 @@
 
 ### 原始证据索引
 
-- `docs/iterations/iteration-12/evidence/AC-01.fixture.events-bad.jsonl`（2710 bytes）
-- `docs/iterations/iteration-12/evidence/AC-01.fixture.events-good.jsonl`（2710 bytes）
-- `docs/iterations/iteration-12/evidence/AC-01.meta.result.json`（10311 bytes）
-- `docs/iterations/iteration-12/evidence/AC-01.run.status.txt`（56 bytes）
-- `docs/iterations/iteration-12/evidence/AC-01.run.stdout.txt`（773 bytes）
-- `docs/iterations/iteration-12/evidence/AC-01.summary.status.txt`（111 bytes）
-- `docs/iterations/iteration-12/evidence/AC-01.verify.bad.stdout.txt`（55 bytes）
-- `docs/iterations/iteration-12/evidence/AC-01.verify.good.stdout.txt`（22 bytes）
-- `docs/iterations/iteration-12/evidence/AC-01.verify.module-result.json`（414 bytes）
-- `docs/iterations/iteration-12/evidence/AC-02.fixture.after.events.jsonl`（1143 bytes）
-- `docs/iterations/iteration-12/evidence/AC-02.fixture.baseline.events.jsonl`（662 bytes）
-- `docs/iterations/iteration-12/evidence/AC-02.meta.fingerprints.json`（540 bytes）
-- `docs/iterations/iteration-12/evidence/AC-02.summary.status.txt`（67 bytes）
-- `docs/iterations/iteration-12/evidence/AC-02.verify.result.json`（196 bytes）
-- `docs/iterations/iteration-12/evidence/AC-03.decision.allow.json`（442 bytes）
-- `docs/iterations/iteration-12/evidence/AC-03.fixture.roles.json`（251 bytes）
-- `docs/iterations/iteration-12/evidence/AC-03.meta.result.json`（15648 bytes）
-- `docs/iterations/iteration-12/evidence/AC-03.summary.status.txt`（64 bytes）
-- `docs/iterations/iteration-12/evidence/AC-04.decision.deny.json`（688 bytes）
-- `docs/iterations/iteration-12/evidence/AC-04.fixture.roles.json`（251 bytes）
-- `docs/iterations/iteration-12/evidence/AC-04.meta.result.json`（4121 bytes）
-- `docs/iterations/iteration-12/evidence/AC-04.summary.status.txt`（127 bytes）
+- `docs/iterations/iteration-12/evidence/AC-01.fixture.events-bad.jsonl`（2718 bytes）
+- `docs/iterations/iteration-12/evidence/AC-01.fixture.events-good.jsonl`（2718 bytes）
+- `docs/iterations/iteration-12/evidence/AC-01.meta.result.json`（10480 bytes）
+- `docs/iterations/iteration-12/evidence/AC-01.run.status.txt`（59 bytes）
+- `docs/iterations/iteration-12/evidence/AC-01.run.stdout.txt`（782 bytes）
+- `docs/iterations/iteration-12/evidence/AC-01.summary.status.txt`（113 bytes）
+- `docs/iterations/iteration-12/evidence/AC-01.verify.bad.stdout.txt`（56 bytes）
+- `docs/iterations/iteration-12/evidence/AC-01.verify.good.stdout.txt`（23 bytes）
+- `docs/iterations/iteration-12/evidence/AC-01.verify.module-result.json`（428 bytes）
+- `docs/iterations/iteration-12/evidence/AC-02.fixture.after.events.jsonl`（1148 bytes）
+- `docs/iterations/iteration-12/evidence/AC-02.fixture.baseline.events.jsonl`（665 bytes）
+- `docs/iterations/iteration-12/evidence/AC-02.meta.fingerprints.json`（548 bytes）
+- `docs/iterations/iteration-12/evidence/AC-02.summary.status.txt`（69 bytes）
+- `docs/iterations/iteration-12/evidence/AC-02.verify.result.json`（206 bytes）
+- `docs/iterations/iteration-12/evidence/AC-03.decision.allow.json`（466 bytes）
+- `docs/iterations/iteration-12/evidence/AC-03.fixture.roles.json`（270 bytes）
+- `docs/iterations/iteration-12/evidence/AC-03.meta.result.json`（15771 bytes）
+- `docs/iterations/iteration-12/evidence/AC-03.summary.status.txt`（66 bytes）
+- `docs/iterations/iteration-12/evidence/AC-04.decision.deny.json`（718 bytes）
+- `docs/iterations/iteration-12/evidence/AC-04.fixture.roles.json`（270 bytes）
+- `docs/iterations/iteration-12/evidence/AC-04.meta.result.json`（4289 bytes）
+- `docs/iterations/iteration-12/evidence/AC-04.summary.status.txt`（129 bytes）
 - `docs/iterations/iteration-12/evidence/AC-05.fixture.artifact-ok.md`（10 bytes）
-- `docs/iterations/iteration-12/evidence/AC-05.fixture.handoff.json`（420 bytes）
-- `docs/iterations/iteration-12/evidence/AC-05.meta.result.json`（1455 bytes）
-- `docs/iterations/iteration-12/evidence/AC-05.summary.status.txt`（74 bytes）
-- `docs/iterations/iteration-12/evidence/AC-05.verify.freshness.json`（34 bytes）
-- `docs/iterations/iteration-12/evidence/AC-05.verify.full-chain.json`（16 bytes）
+- `docs/iterations/iteration-12/evidence/AC-05.fixture.handoff.json`（439 bytes）
+- `docs/iterations/iteration-12/evidence/AC-05.meta.result.json`（1521 bytes）
+- `docs/iterations/iteration-12/evidence/AC-05.summary.status.txt`（76 bytes）
+- `docs/iterations/iteration-12/evidence/AC-05.verify.freshness.json`（37 bytes）
+- `docs/iterations/iteration-12/evidence/AC-05.verify.full-chain.json`（18 bytes）
 - `docs/iterations/iteration-12/evidence/AC-06.fixture.artifact-F0.md`（10 bytes）
 - `docs/iterations/iteration-12/evidence/AC-06.fixture.artifact-F1.md`（10 bytes）
-- `docs/iterations/iteration-12/evidence/AC-06.fixture.handoff-mismatch.json`（423 bytes）
-- `docs/iterations/iteration-12/evidence/AC-06.fixture.handoff-missing.json`（424 bytes）
-- `docs/iterations/iteration-12/evidence/AC-06.meta.result.json`（5394 bytes）
-- `docs/iterations/iteration-12/evidence/AC-06.summary.status.txt`（111 bytes）
-- `docs/iterations/iteration-12/evidence/AC-06.verify.decision-mismatch.json`（285 bytes）
-- `docs/iterations/iteration-12/evidence/AC-06.verify.decision-missing.json`（278 bytes）
-- `docs/iterations/iteration-12/evidence/AC-07.fixture.workflow-filled.json`（431 bytes）
-- `docs/iterations/iteration-12/evidence/AC-07.fixture.workflow-missing.json`（291 bytes）
-- `docs/iterations/iteration-12/evidence/AC-07.meta.result.json`（3808 bytes）
-- `docs/iterations/iteration-12/evidence/AC-07.summary.status.txt`（106 bytes）
-- `docs/iterations/iteration-12/evidence/AC-07.verify.review-cli.stdout.txt`（150 bytes）
-- `docs/iterations/iteration-12/evidence/AC-07.verify.review-filled.json`（114 bytes）
-- `docs/iterations/iteration-12/evidence/AC-07.verify.review-missing.json`（130 bytes）
-- `docs/iterations/iteration-12/evidence/AC-07.verify.start-blocked.json`（285 bytes）
-- `docs/iterations/iteration-12/evidence/AC-08.fixture.workflow.json`（292 bytes）
-- `docs/iterations/iteration-12/evidence/AC-08.meta.result.json`（3906 bytes）
-- `docs/iterations/iteration-12/evidence/AC-08.summary.status.txt`（130 bytes）
-- `docs/iterations/iteration-12/evidence/AC-08.verify.decision-approved.json`（129 bytes）
-- `docs/iterations/iteration-12/evidence/AC-08.verify.decision-awaiting.json`（135 bytes）
-- `docs/iterations/iteration-12/evidence/AC-08.verify.review-after-ruling.json`（54 bytes）
-- `docs/iterations/iteration-12/evidence/AC-08.verify.review-pending.json`（273 bytes）
-- `docs/iterations/iteration-12/evidence/AC-09.fixture.events.jsonl`（748 bytes）
-- `docs/iterations/iteration-12/evidence/AC-09.meta.result.json`（3212 bytes）
-- `docs/iterations/iteration-12/evidence/AC-09.summary.status.txt`（116 bytes）
-- `docs/iterations/iteration-12/evidence/AC-09.verify.primary-audit.json`（659 bytes）
-- `docs/iterations/iteration-12/evidence/AC-09.verify.types.json`（123 bytes）
-- `docs/iterations/iteration-12/evidence/AC-10.fixture.events.jsonl`（690 bytes）
-- `docs/iterations/iteration-12/evidence/AC-10.meta.result.json`（3513 bytes）
-- `docs/iterations/iteration-12/evidence/AC-10.summary.status.txt`（212 bytes）
-- `docs/iterations/iteration-12/evidence/AC-10.verify.aggregate-recomputed.json`（85 bytes）
-- `docs/iterations/iteration-12/evidence/AC-10.verify.handoff-state-keys.json`（44 bytes）
-- `docs/iterations/iteration-12/evidence/AC-10.verify.primary-audit.json`（577 bytes）
-- `docs/iterations/iteration-12/evidence/AC-10.verify.types.json`（107 bytes）
-- `docs/iterations/iteration-12/evidence/AC-11.fixture.parallel.json`（423 bytes）
-- `docs/iterations/iteration-12/evidence/AC-11.meta.result.json`（3402 bytes）
-- `docs/iterations/iteration-12/evidence/AC-11.summary.status.txt`（55 bytes）
-- `docs/iterations/iteration-12/evidence/AC-11.verify.decision-backfill.json`（195 bytes）
-- `docs/iterations/iteration-12/evidence/AC-11.verify.decision-initial.json`（225 bytes）
-- `docs/iterations/iteration-12/evidence/AC-11.verify.gate-waiting.json`（120 bytes）
-- `docs/iterations/iteration-12/evidence/AC-11.verify.state-after-backfill.json`（425 bytes）
-- `docs/iterations/iteration-12/evidence/AC-11.verify.state-after-initial.json`（426 bytes）
-- `docs/iterations/iteration-12/evidence/AC-12.fixture.budget.json`（536 bytes）
-- `docs/iterations/iteration-12/evidence/AC-12.meta.result.json`（4014 bytes）
-- `docs/iterations/iteration-12/evidence/AC-12.summary.status.txt`（79 bytes）
-- `docs/iterations/iteration-12/evidence/AC-12.verify.decision-resume.json`（60 bytes）
-- `docs/iterations/iteration-12/evidence/AC-12.verify.decision-suspend.json`（73 bytes）
-- `docs/iterations/iteration-12/evidence/AC-12.verify.gate-suspend.json`（77 bytes）
-- `docs/iterations/iteration-12/evidence/AC-12.verify.state-resumed.json`（593 bytes）
-- `docs/iterations/iteration-12/evidence/AC-12.verify.state-suspended.json`（594 bytes）
+- `docs/iterations/iteration-12/evidence/AC-06.fixture.handoff-mismatch.json`（442 bytes）
+- `docs/iterations/iteration-12/evidence/AC-06.fixture.handoff-missing.json`（443 bytes）
+- `docs/iterations/iteration-12/evidence/AC-06.meta.result.json`（5608 bytes）
+- `docs/iterations/iteration-12/evidence/AC-06.summary.status.txt`（113 bytes）
+- `docs/iterations/iteration-12/evidence/AC-06.verify.decision-mismatch.json`（296 bytes）
+- `docs/iterations/iteration-12/evidence/AC-06.verify.decision-missing.json`（289 bytes）
+- `docs/iterations/iteration-12/evidence/AC-07.fixture.workflow-filled.json`（460 bytes）
+- `docs/iterations/iteration-12/evidence/AC-07.fixture.workflow-missing.json`（311 bytes）
+- `docs/iterations/iteration-12/evidence/AC-07.meta.result.json`（3964 bytes）
+- `docs/iterations/iteration-12/evidence/AC-07.summary.status.txt`（108 bytes）
+- `docs/iterations/iteration-12/evidence/AC-07.verify.review-cli.stdout.txt`（153 bytes）
+- `docs/iterations/iteration-12/evidence/AC-07.verify.review-filled.json`（122 bytes）
+- `docs/iterations/iteration-12/evidence/AC-07.verify.review-missing.json`（138 bytes）
+- `docs/iterations/iteration-12/evidence/AC-07.verify.start-blocked.json`（299 bytes）
+- `docs/iterations/iteration-12/evidence/AC-08.fixture.workflow.json`（312 bytes）
+- `docs/iterations/iteration-12/evidence/AC-08.meta.result.json`（4056 bytes）
+- `docs/iterations/iteration-12/evidence/AC-08.summary.status.txt`（132 bytes）
+- `docs/iterations/iteration-12/evidence/AC-08.verify.decision-approved.json`（135 bytes）
+- `docs/iterations/iteration-12/evidence/AC-08.verify.decision-awaiting.json`（141 bytes）
+- `docs/iterations/iteration-12/evidence/AC-08.verify.review-after-ruling.json`（59 bytes）
+- `docs/iterations/iteration-12/evidence/AC-08.verify.review-pending.json`（287 bytes）
+- `docs/iterations/iteration-12/evidence/AC-09.fixture.events.jsonl`（758 bytes）
+- `docs/iterations/iteration-12/evidence/AC-09.meta.result.json`（3337 bytes）
+- `docs/iterations/iteration-12/evidence/AC-09.summary.status.txt`（117 bytes）
+- `docs/iterations/iteration-12/evidence/AC-09.verify.primary-audit.json`（696 bytes）
+- `docs/iterations/iteration-12/evidence/AC-09.verify.types.json`（130 bytes）
+- `docs/iterations/iteration-12/evidence/AC-10.fixture.events.jsonl`（699 bytes）
+- `docs/iterations/iteration-12/evidence/AC-10.meta.result.json`（3641 bytes）
+- `docs/iterations/iteration-12/evidence/AC-10.summary.status.txt`（214 bytes）
+- `docs/iterations/iteration-12/evidence/AC-10.verify.aggregate-recomputed.json`（91 bytes）
+- `docs/iterations/iteration-12/evidence/AC-10.verify.handoff-state-keys.json`（47 bytes）
+- `docs/iterations/iteration-12/evidence/AC-10.verify.primary-audit.json`（609 bytes）
+- `docs/iterations/iteration-12/evidence/AC-10.verify.types.json`（113 bytes）
+- `docs/iterations/iteration-12/evidence/AC-11.fixture.parallel.json`（453 bytes）
+- `docs/iterations/iteration-12/evidence/AC-11.meta.result.json`（3572 bytes）
+- `docs/iterations/iteration-12/evidence/AC-11.summary.status.txt`（56 bytes）
+- `docs/iterations/iteration-12/evidence/AC-11.verify.decision-backfill.json`（210 bytes）
+- `docs/iterations/iteration-12/evidence/AC-11.verify.decision-initial.json`（242 bytes）
+- `docs/iterations/iteration-12/evidence/AC-11.verify.gate-waiting.json`（129 bytes）
+- `docs/iterations/iteration-12/evidence/AC-11.verify.state-after-backfill.json`（454 bytes）
+- `docs/iterations/iteration-12/evidence/AC-11.verify.state-after-initial.json`（455 bytes）
+- `docs/iterations/iteration-12/evidence/AC-12.fixture.budget.json`（573 bytes）
+- `docs/iterations/iteration-12/evidence/AC-12.meta.result.json`（4197 bytes）
+- `docs/iterations/iteration-12/evidence/AC-12.summary.status.txt`（80 bytes）
+- `docs/iterations/iteration-12/evidence/AC-12.verify.decision-resume.json`（64 bytes）
+- `docs/iterations/iteration-12/evidence/AC-12.verify.decision-suspend.json`（77 bytes）
+- `docs/iterations/iteration-12/evidence/AC-12.verify.gate-suspend.json`（81 bytes）
+- `docs/iterations/iteration-12/evidence/AC-12.verify.state-resumed.json`（631 bytes）
+- `docs/iterations/iteration-12/evidence/AC-12.verify.state-suspended.json`（632 bytes）
 
 <!-- BATCH-A:END -->
 
 <!-- BATCH-B:START -->
+
+> **B 段时点说明**：B 段为批次 B 在 S3（取证时点 `d20fccc`）的原文，其中 AC-21 记「阻塞」。该条已由用户 2026-11-21 裁决补采真实宿主面并按 `PERF_LEVEL_REAL` 帧重判为**通过**（21/21 核对项，p95 1097ms < 2s），重判记录见 `docs/iterations/iteration-12/ac21-realhost-reverify.md`。B 段原文不改写，以保留审计链。
+
 ## 批次 B（AC-13~AC-23）验收取证
 
 - 仓库根：`D:/WWW/Maestro`，HEAD=`d20fccc`
@@ -244,6 +247,6 @@
 
 ### 合并口径说明
 
-- 证据计数按 `evidence/` 内唯一文件名去重、排除 0 字节；当前 153 份（A 79 + B 74），无重复名、无空文件。
+- 证据计数按 `evidence/` 内唯一文件名去重、排除 0 字节；当前 161 份（A 79 + B 82），无重复名、无空文件。
 - 批次 B 段保留 `acceptance-fixture-b.md` 原文（含其核对表、证据索引与取证时点记录），本脚本未改写其判定与数字；其 AC-22 行「8」为本批新采数，另有 3 份复用主控历史帧（`AC-22.index.*`），合并计数按 11 计入 B 批合计。
 - 总计表与总判由 A/B 两份 results 逐条计算；任一 AC 缺记录、判定非法或证据为空时脚本直接非零退出，不落盘。

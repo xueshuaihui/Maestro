@@ -251,8 +251,10 @@ function renderReport(head, perAc, stats) {
     `| 批次 B | AC-13~AC-23 | ${sb.pass} | ${sb.fail} | ${sb.blocked} | ${sb.checksPassed}/${sb.checksTotal} | ${sb.evidenceCount} |`,
     `| 总计 | AC-01~AC-23 | ${total.pass} | ${total.fail} | ${total.blocked} | ${total.checksPassed}/${total.checksTotal} | ${total.evidenceCount} |`,
     '',
-    '- 核对项：A 批 194（AC-01 按裁决 E 修复后 22/22）+ B 批 128 = 322，全部通过；AC-21 的 5/5 是「阻塞出口」核对项，按契约成立，不计为失败。',
-    '- 阻塞：AC-21 真实宿主（DSH 0.2.2-rc.1）性能面未取证，见下方 B 段与 `probe/acc12-f-blockers.md`，未用 mock 顶替、未写成通过。',
+    `- 核对项：A 批 ${sa.checksPassed}/${sa.checksTotal}（AC-01 按裁决 E 修复后 22/22）+ B 批 ${sb.checksPassed}/${sb.checksTotal} = ${total.checksPassed}/${total.checksTotal}；逐条判定见下方 A/B 段与 \`probe/acc12-f-blockers.md\`。`,
+    total.blocked
+      ? `- 阻塞：${blocked.map((r) => `${r.ac}（${r.blocker ? '见 blocking 台账' : '未写明原因'}）`).join('、')}，见下方 B 段与 \`probe/acc12-f-blockers.md\`，未用 mock 顶替、未写成通过。`
+      : `- 阻塞：无。真实宿主面 AC-21 已按用户 2026-11-21 裁决补采（50 会话/20 并发、p95 1097ms < 2s、级别 \`PERF_LEVEL_REAL\`），重判记录见 \`docs/iterations/iteration-12/ac21-realhost-reverify.md\`；S3 阻塞帧保留在 \`evidence/\` 与 \`evidence/acc21-real/\`，未删改。`,
     '',
   ].join('\n');
 
@@ -266,7 +268,17 @@ function renderReport(head, perAc, stats) {
     '',
   ].join('\n');
 
-  return [header, renderBatchA(a), '', '<!-- BATCH-B:START -->', loadBatchB(), '<!-- BATCH-B:END -->', footer].join('\n');
+  // B 段是 acceptance-fixture-b.md 的 S3 取证原文，按纪律不改写其判定与数字；
+  // 当 AC-21 已被重判取代时，在此插入时点说明，避免读者把历史判定当成当前判定。
+  const batchENote = blocked.length
+    ? []
+    : [
+        '',
+        '> **B 段时点说明**：B 段为批次 B 在 S3（取证时点 `d20fccc`）的原文，其中 AC-21 记「阻塞」。该条已由用户 2026-11-21 裁决补采真实宿主面并按 `PERF_LEVEL_REAL` 帧重判为**通过**（21/21 核对项，p95 1097ms < 2s），重判记录见 `docs/iterations/iteration-12/ac21-realhost-reverify.md`。B 段原文不改写，以保留审计链。',
+        '',
+      ];
+
+  return [header, renderBatchA(a), '', '<!-- BATCH-B:START -->', ...batchENote, loadBatchB(), '<!-- BATCH-B:END -->', footer].join('\n');
 }
 
 function renderBlockers(head, perAc, stats) {
@@ -278,11 +290,10 @@ function renderBlockers(head, perAc, stats) {
     return [
       `### ${r.ac} · ${r.title} —— 阻塞`,
       '',
-      '- **要求什么**：Then 目标值 `handoff <2s / ≥20 并发`；只有「已实测（真实宿主面）」级别证据才能判真实宿主达标（需求 §3.3 第 3 条、裁决 A 第 3 条、阻塞出口锚点）。',
-      '- **试过什么**：探测 `MAESTRO_DSH_EXE` / `MAESTRO_DSH_BIN` 环境变量、`C:/Program Files/DSH/dsh.exe`、`%LOCALAPPDATA%/DSH/dsh.exe`、`~/.dsh/bin/dsh`；均不存在或未配置；20 实例 / 50 会话 handoff 取证状态 `not_collected`（triedPaths 共 5 条，见 `docs/iterations/iteration-12/evidence/AC-21.perf-check.stdout.json`）。',
-      '- **为什么观测不到**：真实宿主（DSH 0.2.2-rc.1）性能取证按需求与分派表**留本机**，当前验收环境不具备该宿主面与凭据，验收期前该面未取证；实测 `level=PERF_LEVEL_PENDING`（`待本机实测`）、`blocked=true`、`realHostCollected=false`。',
-      `- **判定**：判**阻塞**（阻塞不算失败，伪通过才是）；不得用 AC-20 的 mock 实测顶替、不得伪通过。证据：${ev}；核对表 \`probe/acc12-f-parts/${r.ac}.md\`。`,
-      '- **解除条件**：主控安排本机取证窗口后，用真实 DSH 按附录 D-11 口径采集 20 实例 / 50 会话 handoff，产出 `level=PERF_LEVEL_REAL`（`已实测（真实宿主面）`）证据后复核本 AC。',
+      `- **要求什么**：${r.blocker || '（未写明）'}`,
+      '- **试过什么**：见该 AC 的核对表与证据帧；阻塞项必须写明「试过什么、为什么观测不到」。',
+      `- **判定**：判**阻塞**（阻塞不算失败，伪通过才是）；不得用 mock 实测顶替、不得伪通过。证据：${ev}；核对表 \`${r.part || '—'}\`。`,
+      '- **解除条件**：按该 AC 的阻塞原因补齐取证后重判；补齐前保持阻塞、不得改判通过。',
     ].join('\n');
   });
 
@@ -292,8 +303,8 @@ function renderBlockers(head, perAc, stats) {
     `- 生成时间：${iso()}`,
     `- 仓库 HEAD：\`${head}\``,
     `- 判定：通过 ${stats.pass} / 不通过 ${stats.fail} / 阻塞 ${stats.blocked}（共 ${stats.acCount} 条 AC）`,
-    `- 核对项：${stats.checksPassed}/${stats.checksTotal} 通过（AC-21 的 5/5 为阻塞判定出口核对项）`,
-    `- 证据分级：${mockAcs.length} 条 \`mock 实测\`，${blocked.length} 条 \`阻塞\`（无「已实测（真实宿主面）」证据，未作此声称）`,
+    `- 核对项：${stats.checksPassed}/${stats.checksTotal} 通过（逐条见各 AC 核对表）`,
+    `- 证据分级：${mockAcs.length} 条 \`mock 实测\`${blocked.length ? `，${blocked.length} 条 \`阻塞\`` : ''}${perAc.some((r) => r.grading === '已实测（真实宿主面）') ? `，${perAc.filter((r) => r.grading === '已实测（真实宿主面）').length} 条 \`已实测（真实宿主面）\`` : ''}`,
     '',
     '## 阻塞项',
     '',
@@ -307,8 +318,8 @@ function renderBlockers(head, perAc, stats) {
     '',
     '## 证据审计',
     '',
-    `- 23 条 AC 均 ≥4 份非空 \`AC-XX.*\` 证据，合计 ${stats.evidenceCount} 份唯一文件；无 0 字节、无重名、无跨 AC 串号。`,
-    '- AC-21 为阻塞而非通过：其 4 份证据只支持「真实宿主未取证」这一事实，mock 面结论（AC-20）未被计入真实宿主判据。',
+    `- ${stats.acTotal} 条 AC 均 ≥4 份非空 \`AC-XX.*\` 证据，合计 ${stats.evidenceCount} 份唯一文件；无 0 字节、无重名、无跨 AC 串号。`,
+    '- 证据分级严格分开：`mock 实测` 只支持 mock / 夹具面结论；真实宿主面（AC-21）只认 `PERF_LEVEL_REAL` 帧。S3 的阻塞帧与 v2 重判帧并存保留，未覆盖、未删除。',
     '',
   ].join('\n');
 }

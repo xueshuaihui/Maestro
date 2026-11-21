@@ -144,3 +144,47 @@ I1.12 的扩项已由裁决 A 冻结命令名、由裁决 D-13 授权 `main.js` 
 实测：基线 `1707 / 1671 pass / 25 fail / 11 skip`；合并树 `1841 / 1808 pass / 22 fail / 11 skip`；
 **新增红 0 条**，另有 3 条基线红在合并树中消失（`A-1: code-change/SKILL.md`、`A-1: developer.yaml`、
 `两份 legacy 夹具的 state/events sha256`）。
+
+---
+
+## 裁决 H — AC-21 改判「跑满 20/50 真实取证」（用户 2026-11-21）
+
+**背景**：裁决 F 记录用户 2026-11-19 选择「停在试点，不再跑全量」，故 AC-21 维持阻塞。2026-11-21 用户明确改判为
+「接着处理 I1.12 的 AC-21」，并在二选一中选中「**跑满 20/50 真实取证（推荐）**」。
+
+**裁决内容**：
+
+1. **覆盖范围**：仅覆盖裁决 F 第 1 条（「停在试点、不再跑全量」）。裁决 F 其余纪律**全部保留**：
+   不得伪造、不得用 mock 顶替真实宿主面、不得回溯编辑 S3 冻结证据、试点帧不得计入 S3 证据集。
+2. **取证路径**：走裁决 F 已登记的两条出口中的**出口①**（补满 D-11 的 20 实例 / 50 会话，产出 `PERF_LEVEL_REAL` 后复判），
+   **不使用**出口②（书面豁免）。
+3. **脚手架授权**：允许修改 `probe/**` 下的取证脚手架以修复方法学缺陷（不改 `src/**` 产品代码、不改任何 AC 的 Then 目标值）。
+4. **前置修复**：扩量前必须修复 `probe/acc12-perf-pilot.mjs::waitFirstEvent` 的**并发事件归属缺陷**
+   （原实现取 `sentAt` 之后任意会话的首条 `session/update`，并发下会串台并低估延迟），改为按 `params.sessionId` 过滤，
+   并保留 `firstEventRaw` 原始帧供复核。
+5. **判定口径不变**：Then 的 `<2s` / `≥20 并发实例` / `50 活跃会话` 与「级别必须为 `已实测（真实宿主面）`」逐字不动；
+   若任一条不达标，仍判阻塞，**不得删样本**。
+
+**执行结果**：真实 DSH `0.2.2-rc.5`（隔离 `DSH_HOME`，未碰用户 `~/.dsh`）跑 50 会话 / 20 并发 →
+50/50 成功、0 归属串台、0 error、`distinctInstances=50`、`distinctSessions=50`、min 436 / median 695 / p95 1097 / max 1353 ms、
+`over2s=0`、`level=PERF_LEVEL_REAL`、`blocked=false`。AC-21 独立重判 **21/21 通过**、`grading=已实测（真实宿主面）`。
+S3 的 4 份阻塞帧与 `results-b.jsonl` 旧行**一字未改**，重判结果走独立证据（`evidence/acc21-real/` 与 `evidence/AC-21.real.*`）。
+
+---
+
+## 裁决 I — 发布基线 0.0.1 beta（用户 2026-11-22）
+
+**指令**：用户 2026-11-22 要求「修复后发布 0.0.1 beta 版本」。
+
+**裁决内容**：
+
+1. **版本号**：`package.json` / `desktop/src-tauri/Cargo.toml` / `desktop/src-tauri/tauri.conf.json` 三处统一为
+   **`0.0.1-beta.1`**（semver prerelease 形态，符合 `scripts/desktop/version.mjs` 的 `SEMVER` 规则）。
+2. **tag 名**：**`v0.0.1-beta.1`**。`release.yml` 的 `v0.*` 分支会自动打 `--prerelease`，与「beta」语义一致。
+3. **旧 tag 处置**：本地遗留的 `v0.0.1`（指向 `958db6f`，I1.10a 的发布验证点，远端 tag 与 Release 已按授权删除）
+   **不推送、不复用**——它指向两周前的旧提交，推送会发布错误代码。新 tag 必须打在本次收口后的 HEAD。
+4. **发布前置**：必须先在 `workflow_dispatch` 通道（`--draft`）跑通三平台 gate，确认本机 Windows 特有的假红
+   （CRLF / 路径分隔符 / chmod 无效 / ESM 盘符 / symlink EPERM / EBUSY）在 macOS runner 上不出现，再打正式 tag。
+5. **不得做的事**：不得为凑绿放宽任何断言；不得把本机假红登记成「已知失败」来跳过 gate；不得在 gate 未绿时打 tag。
+
+**发布提交边界**：I1.12 收口（含 AC-63/64 flake 修复）单独提交，版本号与发布配置单独提交，两者都不夹带 `evidence/**` 的被动改写。
