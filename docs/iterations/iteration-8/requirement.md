@@ -3,9 +3,9 @@
 > **迭代**：阶段一 · I1.8
 > **依据**：`docs/index.md` 第一部分「需求基线」——§3.1 节点 9 态（129~168 行）、§3.2 会话 6 态（170~193 行）、§3.3 角色 6 态与角色实例模型（195~222 行）、§3.4 交接包 7 态（224~246 行）、**§3.6「崩溃恢复时的状态规则」（282~301 行，末句明确 `assigned` / 重新校验 行自 I1.8 起生效，且「恢复后不重放已完成节点，轮次计数从检查点恢复，不重置」）**、§4 能力域 3「多会话驱动」（348~361 行）、能力域 5「实例管理」（416~550 行）、能力域 6「治理与审计」中的会话失败区分（551~571 行）、§5 运行时模型与数据布局（575~614 行，5.2 的 `instances/<id>/state/` 明确含「检查点」）、§6 边界声明（618~629 行）；第二部分 `#### I1.8` 条目逐字（813~824 行，8 个子项 + 验收句）；进度台账中 I1.8 的环境归属与分派口径（696 行）、分派结论（703 行）、回归红线与集成版口径（711 行）、迭代依赖关系（1003~1020 行）
 > **模板**：`docs/templates/requirement-template.md`
-> **版本**：v3 ｜ **状态**：**定稿**（第 1 轮 F-01~F-24、第 2 轮 N-01~N-05 逐条修订后，**第 3 轮独立评审 PASS**：阻断 0 / 建议 0、DoR 13/13、覆盖表 15/15、反向扫描无夹带缺漏；评审结论见 `review-round3.md`，本文件不自评）
-> **评审依据**：`docs/iterations/iteration-8/review-round1.md`（F-01 ~ F-24）；`docs/iterations/iteration-8/review-round2.md`（N-01 ~ N-05，总判 FAIL：阻断 N-01 / N-02、建议 N-03 / N-04 / N-05）；`docs/iterations/iteration-8/decisions.md` 裁-1（「状态机」语义与 7 项锚点）、裁-2（附录 D-11 三文件口径）、裁-3（会话 `escalated` 沿用既有「已升级」指示器）、裁-4（AC-54 内嵌 D-11 逐字词表）、裁-5（D-9 行号）
-> **上游**：`origin/main` 已集成 I1.4 / I1.5 / I1.6；当前分支 `feat/i1.8-instance-recovery`，HEAD `3f35bfa`。**I1.7（产物类型隔离 + 代码 worktree 集成）已交由其他同学实现，当前 main 不含 I1.7**；本迭代不依赖 I1.7 的任何新能力。
+> **版本**：v4 ｜ **状态**：修订稿 v4（第 4 轮：已按 review-v4-round3 的 B-06/B-07 与 S-01~S-10 收口；**review-v4-round4 总判 PASS（阻断 0 / 建议 4）**，其后按 S-01~S-04 精修并追加 `v4-r5` 台账行，可作为验收依据）
+> **评审依据**：`docs/iterations/iteration-8/review-round1.md`（F-01 ~ F-24）；`docs/iterations/iteration-8/review-round2.md`（N-01 ~ N-05，总判 FAIL：阻断 N-01 / N-02、建议 N-03 / N-04 / N-05）；`docs/iterations/iteration-8/review-v4-round1.md` / `review-v4-round2.md` / `review-v4-round3.md` / `review-v4-round4.md`（v4 第 1 ~ 4 轮；第 4 轮总判 PASS / 建议 4）；`docs/iterations/iteration-8/decisions.md` 裁-1（「状态机」语义与 7 项锚点）、裁-2（附录 D-11 三文件口径）、裁-3（会话 `escalated` 沿用既有「已升级」指示器）、裁-4（AC-54 内嵌 D-11 逐字词表）、裁-5（D-9 行号）；`decisions.md` 第十八节 **裁-21a / 裁-21c / 裁-21e / 裁-21f / 裁-21g / 裁-21h / 裁-21i / 裁-21j / 裁-21k**（v4 第 1 ~ 4 轮及第 4 轮评审后精修依据）
+> **上游**：`origin/main` 已集成 I1.4 / I1.5 / I1.6；当前工作分支 = `main`，基线 = I1.8 开工点 `014fa6a`。**I1.7（产物类型隔离 + 代码 worktree 集成）已交由其他同学实现，当前 main 不含 I1.7**；本迭代不依赖 I1.7 的任何新能力。
 > **规模**：业务规则 **BR-01 ~ BR-54**；功能验收 **AC-01 ~ AC-67**；非功能验收 **NFR-01 ~ NFR-08**；授权变更 **M-1 ~ M-8**、补充契约 **C-01 ~ C-18**；附录 A 输出基线、附录 B 术语与未决问题、附录 C 变更记录、附录 D 实现约束。
 >
 > **本迭代的一句话**：把「daemon 一崩，实例从头再来」变成「重启后接着上次确认过的位置继续」——已完成的节点不重跑，轮次不归零，会话按宿主会说的方言接回来，接不回来的按基线 §3.6 降级，并把「检查点、崩溃、运行慢、复用」这四件事变成用户看得见的一句话。
@@ -166,7 +166,7 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 | **C-07** | 方言选择只看 `initialize` 的能力广告与角色策略：`sessionCapabilities.resume` 存在 → 可尝试 `session/resume`；`sessionCapabilities.load` 或 `loadSession === true` → 可尝试 `session/load`；两者都没有 → 只能 `session/new`。不得按宿主名分支 |
 | **C-08** | `session/resume` 成功表示会话接回但历史不回放；调用方不得假设宿主记得上一轮。`session/load` 成功表示历史回放/追加；调用方不得再次投递同一份已完成历史 |
 | **C-09** | `resume` / `load` 成功后，若会话最后状态是 `thinking` / `tool_running`，只等待事件、不重发提示；若最后状态是 `idle` / `waiting_dependency`，只重发**当前轮**提示一次；已完成节点永不重发。会话升级人工时沿用基线既有的「已升级」指示器（红色圆点），随节点「已升级」派生；本迭代不新增会话状态取值、不新增 CLI 输出 |
-| **C-10** | 恢复失败（无可用方言、宿主不可达、锁定图缺失）时，实例按 `interrupted` 落盘，并写一条可见原因；不得静默假装仍在运行 |
+| **C-10** | 恢复失败（宿主不可达、锁定图缺失，即「恢复本身失败」）时，实例按 `interrupted` 落盘，并写一条可见原因；不得静默假装仍在运行。可达宿主的三种方言全部失败**不属恢复失败**：按 §2.3 只降会话面（节点「已分配」/ 角色按派生规则降级 / 交接待投递），实例保持「运行中」，但同样不得把降级伪装成恢复成功 |
 | **C-11** | 角色实例与连接线聚合仍是派生视图，不写 `state.json`；恢复后由核心按节点/会话/交接包重新计算。角色 `busy` 且其全部会话不可恢复 → `available`；连接线按交接包优先级重算。角色「不可用」（`unavailable`）只由「会话崩溃且重建失败 / 宿主不可达」产生，恢复后按派生规则回到「可用」或「服务中」（见 C-18） |
 | **C-12** | 会话进程崩溃的判据是「会话已建立后 transport 退出 / `DSH_SPAWN_FAILED`」；运行慢的判据是「会话进程仍存活且超过慢阈值没有 `session/update`」。`stopReason` 不参与两者判定 |
 | **C-13** | 崩溃重建每次派发最多一次；重建成功后重发当前轮提示；再次崩溃直接升级人工，不进入无限重建。重建不增加轮次 |
@@ -222,7 +222,7 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
   - **`session/new`（新建）**：宿主两种都不支持，或角色策略是 `fresh` 时走它。日志出现 `恢复：会话 sess-005 · session/new（新建）`；只重发当前轮，已完成节点不动。
   - **回退链**：`resume` 失败 → 尝试 `load`（如果宿主广告）→ 仍失败 → `new`。每一次回退都有一行可见说明，例如 `恢复：session/resume 失败，回退 session/load（回放）`。绝不静默降级。
 - **异常情况**：
-  - 三种方言都失败：节点显示「已分配」，角色从「服务中」降为「可用」，未接受的交接包从「已投递」变「待投递」；实例不假装还在运行。
+  - 三种方言都失败：节点显示「已分配」，角色按既有派生规则降级（该场景 `doneCount === 0` 时为「可用」；完成过节点的为「冷却中」，见 AC-67），未接受的交接包从「已投递」变「待投递」；实例保持「运行中」（降级只降会话面），但**不得把降级伪装成恢复成功**——必须同时出现 `recovery.dialect` 的降级行与「节点已分配 / 角色可用 · 活跃会话 0/1 / 交接待投递」三处降级状态（角色「可用」的前提是 `doneCount === 0`；完成过节点的为「冷却中」），角色不得仍显示「服务中」。
   - 方言成功但会话没有后续事件：按 §2.8 的「运行慢」提示，不重复重建。
 - **边界说明**：已完成节点永不重发；`load` 不会导致我手动重发历史；`resume` 不会假设宿主记得上一轮；`stopReason` 不用来判断恢复成功或失败。
 
@@ -248,12 +248,12 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 - **使用场景**：daemon 重启后，某个角色的会话接不回来。
 - **用户操作**：执行 `orch role show <角色> --instance <实例>`，或看 `orch instance log`。
 - **预期效果**：
-  - 角色原本是「服务中」，会话不可恢复：显示 `可用 · 活跃会话 0/1 · 服务节点 —`，日志出现 `恢复：角色 开发 · 服务中 → 可用（会话不可恢复）`。
+  - 角色原本是「服务中」，会话不可恢复：若该角色未完成过节点（`doneCount === 0`），显示 `可用 · 活跃会话 0/1 · 服务节点 —`；完成过节点的（`doneCount > 0`）按既有派生规则显示「冷却中」（见 AC-67）。日志出现 `恢复：角色 开发 · 服务中 → 可用（会话不可恢复）`（完成过节点的为 `… → 冷却中`）。
   - 该角色服务的节点会被重新调度；重新派发后角色回到「服务中」。
   - 会话可恢复：角色保持「服务中」，活跃会话数不变。
   - 原本是「可用」「冷却中」「未参与」的角色不受影响。
   - 会话崩溃且重建失败、或宿主不可达时，角色显示「不可用」；会话接回或重建成功后，恢复按派生规则回到「可用」，重新派发后回到「服务中」。
-- **异常情况**：如果角色在恢复后既没有可用会话、也没有可调度节点，保持「可用」，不显示「服务中」。
+- **异常情况**：如果角色在恢复后既没有可用会话、也没有可调度节点，按既有派生规则显示（可能为「冷却中」），不显示「服务中」。
 - **边界说明**：角色实例是派生视图，不单独持久化；不新增「恢复中」这一角色状态；`retired` 仍只在实例结束时出现。
 
 ### 2.6 连接线聚合恢复：已投递未接受，改回待投递并重投
@@ -315,7 +315,7 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 5. 回流里的交接包重启后回到「待投递」并重投；若是「已构造」还没投递的包，恢复后直接继续投递；重投成功后回到「已投递」，目标首个事件后「已接受」。
 6. 如果开发会话进程在中途退出，我看到「正在重建会话」；重建失败则「已升级人工」，实例挂起等我处理，角色显示「不可用」。如果只是慢，我看到「判定为运行慢，不重建会话」，节点继续等超时。
 7. 如果恢复本身失败（宿主不可达、锁定图缺失），我看到实例「已中断」和一行原因；如果重投一直失败，交接包最终「已过期」并进入升级，不会永远停在「已投递」。
-8. 如果实例停在人工节点，我重启后仍看到「执行中 · 等待人工」，不会被冲掉；如果角色会话接不回来，`orch role show` 显示「可用 · 活跃会话 0/1」，重新派发后回到「服务中」。
+8. 如果实例停在人工节点，我重启后仍看到「执行中 · 等待人工」，不会被冲掉；如果角色会话接不回来，`orch role show` 按既有派生规则显示（可能为「冷却中」，活跃会话 0/1），重新派发后回到「服务中」。
 9. 整个过程里，已完成的节点没有重跑，轮次没有归零，连接线没有永远停在「已投递」。
 
 ### 2.11 用户可见的业务规则
@@ -332,8 +332,8 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 | **BR-08** | 恢复后不重放已完成节点；已完成的节点没有新的派发与提示 |
 | **BR-09** | 只有 `running` / `created` 且有检查点（或可识别内建模板）的实例自动恢复；`suspended` 不恢复 |
 | **BR-10** | 显式 `core stop` 产生的「已中断」不自动恢复；用户要重来只能新建实例 |
-| **BR-11** | 旧实例无检查点且模板未知 → 保持「已中断」，提示新建实例，不猜测、不重写旧快照 |
-| **BR-12** | 恢复失败 → 实例「已中断」并给出可见原因；不得静默假装仍在运行 |
+| **BR-11** | 旧实例无检查点且模板未知 → 保持「已中断」，提示新建实例，不猜测、不尝试恢复；仅落「已中断」状态（含随状态写入变化的 `stateSince` 与随动的 `rev` / `updatedAt` / `health` / `counters.eventSeq`），旧快照的业务内容（节点、会话、交接包等）不改 |
+| **BR-12** | 恢复失败（宿主不可达 / 恢复本身失败，如锁定图缺失）→ 实例「已中断」并给出可见原因；不得静默假装仍在运行。三种方言全部失败**不判「已中断」**——按 §2.3 只降会话面，实例保持「运行中」，不得把降级伪装成恢复成功 |
 | **BR-13** | 恢复是幂等的：重复启动不重复推进、不重复写恢复摘要 |
 | **BR-14** | `review` 节点恢复只重新核对证据，不重放会话；核对通过则继续，不通过按既有失败/升级规则 |
 | **BR-15** | `escalated` 节点恢复后保持「已升级」，不重派，不自动生成新升级 |
@@ -343,7 +343,7 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 | **BR-19** | `session/load` 回放/追加历史；调用方不得重复投递同一份已完成历史 |
 | **BR-20** | `session/new` 是全新会话；只重发当前轮，已完成节点不动 |
 | **BR-21** | 每一次方言回退都必须在日志里点名；不得静默降级 |
-| **BR-22** | 三种方言都失败 → 节点「已分配」、角色「可用」、未接受交接「待投递」，按基线 §3.6 降级 |
+| **BR-22** | 三种方言都失败 → 节点「已分配」、角色「可用」、未接受交接「待投递」，按基线 §3.6 降级；实例保持「运行中」并从「已分配 / 待执行」节点继续调度（D-5 第 5 步） |
 | **BR-23** | DSH 内置 acp 只会 `resume`、不会 `load`；第三方 `dsh-acp-server` 会 `load`；适配器不得按宿主名分支 |
 | **BR-24** | 角色 `busy` 且会话不可恢复 → `available`，并重新调度其服务节点 |
 | **BR-25** | 角色 `busy` 且会话可恢复 → 保持 `busy`，活跃会话数不变 |
@@ -500,8 +500,8 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 - 场景类型：边界 ｜ 风险：P1 ｜ 引用：BR-11
 - **Given** 一个旧格式实例，没有检查点，模板名不在当前三张内建图里
 - **When** 我重启 daemon
-- **Then** 实例显示「已中断」；`orch instance log` 出现 `旧实例无检查点：已中断（如需继续请新建实例）`；不尝试恢复、不重写旧快照
-- **机检：** 实例记录 `sha256` 不变；没有新增 `node.dispatch`；状态仍 `interrupted`
+- **Then** 实例显示「已中断」；`orch instance log` 出现 `旧实例无检查点：已中断（如需继续请新建实例）`；不尝试恢复；除落「已中断」状态及随状态写入必然更新的状态时间（`stateSince`）、记录版本（`rev`）、更新时间（`updatedAt`）、健康度（`health`）与事件计数（`counters.eventSeq`）外，不改动旧快照里的节点、会话、交接包等内容
+- **机检：** 实例记录（`state.json`）除 `state` / `stateSince` / `rev` / `updatedAt` / `health` / `counters.eventSeq` 外内容不变（`nodes` / `sessions` / `handoffs` / `escalations` / `template` / `task` 等业务字段逐字不变）；没有新增 `node.dispatch`；状态仍 `interrupted`
 
 #### AC-16 显式 core stop 仍是已中断，不自动恢复
 
@@ -564,8 +564,10 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 - 场景类型：异常 ｜ 风险：P0 ｜ 引用：BR-22
 - **Given** mock agent 广告 `resume` / `load` 但 `resume`、`load`、`session/new` 三者都失败；节点 `running`，角色 `busy`，交接包 `delivered` 未 `accepted`
 - **When** 我重启恢复
-- **Then** 节点显示「已分配」；`orch role show` 显示「可用 · 活跃会话 0/1」；`orch handoff list` 显示「待投递」；实例不进入「运行中」
-- **夹具：** `MAESTRO_MOCK_CAPS=both` + `MAESTRO_MOCK_RESUME=fail` + `MAESTRO_MOCK_LOAD=fail` + `MAESTRO_MOCK_NEW_FAIL=1`；断言节点/角色/交接三者状态与日志中的降级行，且 `session/new` 失败后无新会话
+- **Then** 节点显示「已分配」；`orch role show` 显示「可用 · 活跃会话 0/1」（`doneCount === 0`，本夹具现场成立；完成过节点的按 AC-67 落「冷却中」）；`orch handoff list` 显示「待投递」；实例保持「运行中」且 `halted === false`（降级只降会话面，不把实例判为中断；BR-22）
+  - 交叉引用：本条只断言「降级后实例没有被误判为中断」；**继续调度**由 AC-31（降级后重新调度）与 AC-60（待执行节点恢复后继续派发）覆盖
+- **夹具：** `MAESTRO_MOCK_CAPS=both` + `MAESTRO_MOCK_RESUME=fail` + `MAESTRO_MOCK_LOAD=fail` + `MAESTRO_MOCK_NEW_FAIL=1`；断言节点/角色/交接三者状态与日志中的降级行，且 **`state.state === 'running'`（主断言）**、`state.halted === false`（**附带断言**）；`recovery.dialect` 中**恰 1 条**记 `dialect:"new"` 且 `restored:false`，另 2 条为回退行（`fallback:true`）；恢复落定后会话条目只比 Given 多 1 条——即 `adapterFactory.create` 预开的那 1 个会话（事件 `sessionId` 与它相同）
+  - 判别力说明：仅 `halted === false` 无判别力——`interrupted` / `suspended` 的 `halted` 同样为 `false`（实测 AC-42 / AC-63）；「不把实例判为中断」由 `state.state === 'running'` 承担，`halted === false` 只作附加核对
 
 #### AC-24 resume 成功也不重放已完成节点
 
@@ -676,8 +678,8 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 - 场景类型：夹具 ｜ 风险：P0 ｜ 引用：BR-32
 - **Given** 夹具预置一个实例停在 `human` 节点，状态 `running`，daemon 被强杀
 - **When** 我重启并执行 `orch instance status` / `orch instance graph`
-- **Then** 人工节点仍显示「执行中 · 等待人工」；没有重派、没有被跳过；`orch instance log` 出现 `恢复：人工节点 T-004 保持等待人工（不重派）`
-- **夹具：** `test/fixtures/recovery/human-node-state.json` 预置到实例目录；断言 `nodeType === 'human'`、`state === 'running'`、无 `node.dispatch`
+- **Then** 人工节点仍显示「执行中」（`orch status --instance` 的节点行「节点 T-004 执行中 · 第 N 轮」，`orch instance status` 与该命令逐字一致）；没有重派、没有被跳过；`orch instance log` 出现 `恢复：人工节点 T-004 保持等待人工（不重派）`
+- **夹具：** `test/fixtures/recovery/human-node-state.json` 预置到实例目录；断言 `nodeType === 'human'`、`state === 'running'`、无 `node.dispatch`。**观测通道口径**：`orch instance graph` 只渲染图声明内的节点（`graphNodes()` 按图声明渲染是 I1.1 起的冻结行为），**不要求** `graph` 出现图外 human 节点 T-004；人工节点的可见性以 `orch status --instance` 节点行与 `instance log` 的 `恢复：人工节点 … 保持等待人工（不重派）` 为准
 
 #### AC-38 escalate 节点保持 escalated
 
@@ -716,15 +718,15 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 - 场景类型：异常 ｜ 风险：P0 ｜ 引用：BR-36、BR-37
 - **Given** 编码闭环开发节点执行中，mock 会话进程在首个事件后退出
 - **When** 我观察 `orch run` 与 `orch instance log`
-- **Then** 先出现 `会话进程已退出：正在重建会话（节点 T-003 · 轮次 2/3）`，再出现 `会话已重建 sess-005（节点 T-003 · 轮次 2/3）`；节点继续，轮次仍 2/3
-- **夹具：** `MAESTRO_MOCK_CRASH=after_first_update`；断言新会话 id 与旧不同、`round === 2`、`session/prompt` 当前轮 2 次（原始 + 重试）
+- **Then** 先出现 `会话进程已退出：正在重建会话（节点 <当前节点> · 轮次 <当前轮>/<上限>）`，再出现 `会话已重建 <新会话 id>（节点 <当前节点> · 轮次 <当前轮>/<上限>）`；节点继续，轮次不回退（节点号、轮次与上限按实际值填充）
+- **夹具：** `MAESTRO_MOCK_CRASH=after_first_update`；断言新会话 id 与旧不同、重建后 `round` 不回退（与崩溃前一致；BR-37「轮次不增加」）、`session/prompt` 当前轮 2 次（原始 + 重试）
 
 #### AC-43 会话重建失败 → 升级人工
 
 - 场景类型：异常 ｜ 风险：P0 ｜ 引用：BR-38
 - **Given** 会话进程退出，且重建时 `session/new` 也失败
 - **When** 我观察 `orch run`
-- **Then** 出现 `会话重建失败：已升级人工（节点 T-003 · 轮次 2/3）`；实例挂起，退出码 4；`orch status --instance` 显示「已挂起」
+- **Then** 出现 `会话重建失败：已升级人工（节点 <当前节点> · 轮次 <当前轮>/<上限>）`；实例挂起，退出码 4；`orch status --instance` 显示「已挂起」
 - **夹具：** `MAESTRO_MOCK_CRASH=after_first_update` + `MAESTRO_MOCK_NEW_FAIL=1`
 
 #### AC-44 运行慢：不重建会话
@@ -740,7 +742,7 @@ I1.6 之后，三种内建模板、角色/技能/工作流资产、CLI 命令集
 - 场景类型：异常 ｜ 风险：P1 ｜ 引用：BR-40
 - **Given** 通过仅测试生效的图注入口 `MAESTRO_TEST_GRAPH=<绝对路径>` 注入一张图，给审核节点声明 `timeout: 2`（秒）；会话进程慢但存活
 - **When** 超时到达
-- **Then** 出现 `节点 T-003 超时：按运行慢处理，已升级人工（节点 T-003 · 轮次 2/3）`；节点显示「已升级」；没有重建会话
+- **Then** 出现 `节点 T-003 超时：按运行慢处理，已升级人工（节点 T-003 · 轮次 <当前轮>/<上限>）`；节点显示「已升级」；没有重建会话。节点号取本夹具注入图的审核节点 `T-003`（该分句实测成立）；轮次与上限分别按 `session.timeout` 事件的 `detail.round` / `detail.maxRounds` 填充（本夹具现场为 `1/2`）
 - **夹具：** `MAESTRO_TEST_GRAPH` + `MAESTRO_MOCK_SLOW=1` + `MAESTRO_TEST_SLOW_MS=100`；断言 `failed_reason === 'timeout'`、节点 `escalated`、`escalations` 新增 1 条、`session/new` 次数不变
 
 #### AC-46 运行慢且未声明超时 → 继续等待，不擅自失败
@@ -904,8 +906,8 @@ node -e "const fs=require('fs'),p=require('path');const roots=['src/registry','s
 - 场景类型：异常 ｜ 风险：P0 ｜ 引用：BR-52
 - **Given** 本派发已经崩溃并重建成功一次，重建后的会话再次崩溃
 - **When** 第二次崩溃发生
-- **Then** 出现 `会话重建失败：已升级人工（节点 T-003 · 轮次 2/3）`；实例挂起；不会出现第二次「正在重建会话」
-- **夹具：** `MAESTRO_MOCK_CRASH=twice`；断言 `session/new` 比单次崩溃场景少 1 次（只重建一次）、节点 `escalated`、退出码 4
+- **Then** 出现 `会话重建失败：已升级人工（节点 <当前节点> · 轮次 <当前轮>/<上限>）`；实例挂起；不会出现第二次「正在重建会话」
+- **夹具：** `MAESTRO_MOCK_CRASH=twice`；断言 `session.rebuilt` 恰 1 条、`session.rebuild_failed` 恰 1 条、`state.sessions` 恰 2 条（原始会话 + 重建会话）、节点 `escalated`、退出码 4
 
 #### AC-64 重建失败 / 宿主不可达 → 角色显示「不可用」，恢复后回到可用
 
@@ -931,13 +933,14 @@ node -e "const fs=require('fs'),p=require('path');const roots=['src/registry','s
 - **Then** 不复用跨宿主的会话；不复用正在服务其他节点的会话；必要时新建
 - **机检：** 被复用会话的 `hostId` 与新会话宿主一致；`servingNodeId` 为空才会被选中；复用行里不出现跨宿主角色
 
-#### AC-67 角色恢复后既无可用会话也无可调度节点 → 保持「可用」
+#### AC-67 角色恢复后既无可用会话也无可调度节点 → 按既有优先序显示（冷却中）
 
-- 场景类型：边界 ｜ 风险：P1 ｜ 引用：BR-24、BR-50
-- **Given** 一个角色的会话不可恢复，且它服务的节点都已处于终态或不可调度
+- 场景类型：边界 ｜ 风险：P1 ｜ 引用：BR-26、BR-27、BR-50（角色六态派生优先序 `busy > cooldown > available`，I1.5 契约）
+- **Given** 一个角色的会话不可恢复，且它服务的节点都已处于终态（`doneCount > 0`）或不可调度
 - **When** 我重启并执行 `orch role show <角色> --instance <实例>`
-- **Then** 显示「可用 · 活跃会话 0/1 · 服务节点 —」；不显示「服务中」，也不新建会话
-- **夹具：** `MAESTRO_MOCK_CAPS=none` + `MAESTRO_TEST_RECOVERY_HOLD=after_assign`；断言 `role_to_sessions` 无该角色条目、`session/new` 次数不变
+- **Then** `orch role show` 显示「冷却中 · 活跃会话 0/1 · 服务节点 —」；不显示「服务中」，也不新建会话
+  - 依据：角色状态由六态派生优先序决定（可执行口径见 `src/registry/role-instances.js:79`：`doneCount > 0 → cooldown`，`doneCount === 0 → available`；I1.5 起契约，BR-26 / BR-27），Given 的「服务节点都已终态」命中 `doneCount > 0 → cooldown`。判定只按 `doneCount > 0`，**不以基线 §3.3 对 `cooldown` 的描述「刚完成一个节点，会话可复用」为条件**（本条现场会话是 `idle` 且不可恢复）。所以本条要求的是**恢复不改写**既有派生结果，而不是把它强制置「可用」
+- **夹具：** `MAESTRO_MOCK_CAPS=none` + `MAESTRO_TEST_RECOVERY_HOLD=after_assign`；**在 Given 落盘后、执行恢复动作之前与恢复完成之后各取一次 `orch role show`，两帧逐字相同（含「冷却中 · 活跃会话 0/1 · 服务节点 —」）**——判定为两帧文本整段比对、字面差异 0 处（不是只断言恢复后一帧）；另断言 `role_to_sessions` 保留该角色的历史 `idle` 会话记录但不计入活跃会话（`活跃会话 0/1`）、`session/new` 次数不变
 
 ### 3.2 非功能验收标准
 
@@ -954,7 +957,7 @@ node -e "const fs=require('fs'),p=require('path');const roots=['src/registry','s
 
 ### 3.3 验收前置条件
 
-1. **代码与环境**：Windows 11 + Git Bash；Node ≥ 22（本机实测 v22.22.2）；当前分支 `feat/i1.8-instance-recovery`，HEAD `3f35bfa`；`origin/main` 可检出用于回归对比；**当前 main 不含 I1.7**。
+1. **代码与环境**：Windows 11 + Git Bash；Node ≥ 22（本机实测 v22.22.2）；当前工作分支 = `main`，基线 = I1.8 开工点 `014fa6a`；`origin/main` 可检出用于回归对比；**当前 main 不含 I1.7**。
 2. **独立项目根**：所有夹具项目根一律放在 `%TEMP%/maestro-i18/<AC>`，**不放仓库内**；`NODE_ENV=test` 必须注入；测试结束删除项目根。仓库内只允许新增 `test/wp13/**` 与 `test/fixtures/**` 的测试代码/夹具，不写运行时产物。
 3. **既有测试接缝**：`test.escalate` / `test.handoff` / `test.delivery` 等既有接缝可直接使用；本迭代新增的接缝见 M-7 与附录 D-10：`MAESTRO_TEST_PAUSE=after_assign[:<节点>]` / `after_handoff_created[:<包号>]`、`MAESTRO_FAULT=checkpoint_write:fail`、`MAESTRO_TEST_SLOW_MS`、`MAESTRO_TEST_RECOVERY_HOLD=after_assign`、`MAESTRO_TEST_GRAPH=<绝对路径>`；mock agent 新增 `MAESTRO_MOCK_CAPS` / `MAESTRO_MOCK_RESUME` / `MAESTRO_MOCK_LOAD` / `MAESTRO_MOCK_NEW_FAIL` / `MAESTRO_MOCK_CRASH` / `MAESTRO_MOCK_SLOW` / `MAESTRO_MOCK_PROMPT_FAILURES` / `MAESTRO_MOCK_SPAWN_FAIL_ON_RECOVER` / `MAESTRO_MOCK_PROMPT_LOG`。所有接缝只在 `NODE_ENV=test` 生效，且不得改变既有场景分支。
 4. **崩溃构造**：从 `<项目根>/.orch/core.json` 读取 `pid`，用 `kill -9 <pid>`（Git Bash 下若不能终止原生进程，改用 `taskkill //F //PID <pid>`）模拟强杀；不要用 `orch core stop` 代替强杀（`core stop` 是显式中断，语义不同）。重启通过任意 `orch` 命令的 `ensureCore` 路径自动拉起。
@@ -1131,6 +1134,70 @@ node -e "const fs=require('fs'),p=require('path');const roots=['src/registry','s
 | v1 | 2026-11-09 | 初稿 | 依据 `index.md` 第一部分 §3.1 ~ §3.6、§4 能力域 3/5/6、§5、§6 与第二部分 I1.8 条目逐字；BR-01 ~ BR-49、AC-01 ~ AC-58、NFR-01 ~ NFR-08、M-1 ~ M-8、C-01 ~ C-16；附录 A 输出基线、B 术语与未决问题、C 变更记录、D 实现约束。待独立评审 |
 | v2 | 2026-11-09 | 按第 1 轮独立评审 F-01 ~ F-24 修订 | **阻断 12 项全部闭合**：F-01 核心现场改为「编码闭环回流复测」实测现场（`T-001 done round=2` / `T-002 running round=2`，跳过 1 个已完成节点）；F-02 按裁-1 恢复「状态机」语义、7 项锚点与 D-2 的 9↔7 映射；F-03 去掉会话 `cooldown`；F-04 补 `created` 交接与角色 `unavailable`（BR-49/50、C-17/18、AC-61/64）；F-05 补 `assigned`/`blocked`/`ready` 保持（BR-53、AC-59/60）；F-06 补重投失败与二次崩溃（BR-51/52、AC-62/63）；F-07 补 `MAESTRO_MOCK_NEW_FAIL`；F-08 增 `MAESTRO_TEST_GRAPH` 并把 `failed_reason: timeout` 改为新增落盘；F-09 环境事实迁出 BR 表（BR-49 改指 `created`）；F-10 D-9 补 `test/wp4/orchestrator.test.js:480/575/578/580/584~586`；F-11 A-3 补「会话 复用」行；F-12 AC-56 改能力面锚点。**建议 12 项全部处理**：F-13 D-11 恢复三文件口径并加第 5 条零 CJK（34 处更正）；F-14 11 键；F-15 §2.10 补失败路径；F-16 AC-01 加接缝；F-17 AC-44 用 `{N}m`；F-18 统一「每次运行最多 1 次」；F-19 B-16 改 `state/` 子目录；F-20 B-17 按 `index.md:166` 裁决；F-21 新增 AC-65/66/67 并给 AC-41 补 BR-54；F-22 NFR-07 用户侧改写；F-23 AC-26 限定 `workspace/artifacts/**`；F-24 AC-45 单解「已升级」。规模变为 BR-01 ~ BR-54、AC-01 ~ AC-67、C-01 ~ C-18 |
 | v3 | 2026-11-10 | 按第 2 轮独立评审 N-01 ~ N-05 修订 | **按第 2 轮独立评审（`review-round2.md`，总判 FAIL：阻断 N-01 / N-02、建议 N-03 / N-04 / N-05）逐条修订**：N-01（阻断）§2.4 `:232` 使用场景与 §1.1 `:21` 背景改为新现场「开发第二轮已完成、测试复测执行中」，§2.4 / §1.1 旧现场措辞全部替换为新现场，`:236`「跳过 1 个已完成节点」数字不动；N-02（阻断）附录 A-3 增逐字短语 `重新核对：{节点号} · 证据重新校验（不重放会话）` 并对齐 AC-14 的 Then / 夹具，逐条复核其余 66 条 AC 带文案输出、除本条外全覆盖；N-03（建议，裁-3）§2.8 与 C-09 补「会话升级沿用基线既有『已升级』指示器（红色圆点）、随节点『已升级』派生、不新增会话状态取值 / CLI 输出」，D-4 补显示来源说明（不进 A-3、不新增 AC / BR）；N-04（建议，裁-4 选项①）AC-54「架构检查」段内嵌附录 D-11 的 `$COMMON`（31 词）/ `$NOCOORD`（30 词）与五条命令逐字副本，§3.3#9 与 D-11 一字不改、两份副本逐字相同；N-05（建议，裁-5）D-9 `:588~590` → `:588~592`。头部版本 v2 → v3，头部版本 = 本行（附录 C 末行） |
+| v4 | 2026-11-21 | 按裁-21a 修订 8 条 AC 的 Then / 机检 | 按用户裁决 `decisions.md` 第十八节 **裁-21a**「逐条修订 8 条需求冲突（推荐）」，修订 AC-15 / AC-23 / AC-37 / AC-42 / AC-43 / AC-45 / AC-63 / AC-67 中「不可满足或被冻结基线否决」的分句，另同步 BR-11 / BR-22 两句；需求意图（崩溃后不重放、有原因可见、保守降级）未删。AC 编号、顺序与其它 59 条 AC 未动。逐条对照见下节 |
+
+### v3 → v4（2026-11-21，裁-21a）
+
+**授权来源**：`decisions.md` 第十八节 裁-21a（用户裁决原文「逐条修订 8 条需求冲突（推荐）」）。
+**失败事实来源**：`report.md` §0.1.1（10 条不通过逐条归口）、`acceptance-fixture.md` §二（每条的「需求原文 → 实测 → 归口 → 处置」）、`evidence/acc8/AC-XX.part.md` 原始核对表。
+**改动边界**：只动这 8 条的 Then 与机检，另同步 2 句直接相关的 BR（BR-11 / BR-22）。没有把「实测做不到」改写成「通过」，没有新增机制，没有放宽未冲突的分句。
+
+| AC | 原文片段（v3） | 改后片段（v4） | 依据（裁-21a 口径 + 实测事实） |
+|---|---|---|---|
+| AC-15 | Then「不尝试恢复、不重写旧快照」；机检「实例记录 `sha256` 不变」 | Then「不尝试恢复；除落「已中断」状态外不改动旧快照的其它内容」；机检「实例记录（`state.json`）除 `state` / `stateSince` / `recovery` 外内容不变」 | `AC-15.part.md` C09：sha256 `d7e905…` → `f15790…`；`markInterrupted` 必须重写 `state.json` 才能落 `interrupted`，「sha256 不变」与 Then 互斥。保留「显示已中断 + 提示新建 + 不尝试恢复 + 状态仍 `interrupted` + 不新增 `node.dispatch`」。其余差异字段（`rev` / `updatedAt` / `health` / `counters.eventSeq`）的最终处理见下方 `AC-15（v4-r2）` 行——裁-21c 已把 6 项排除清单定死，不再是待裁决项 |
+| AC-15（连带 BR） | BR-11「不猜测、不重写旧快照」 | BR-11「不猜测、不尝试恢复；仅落「已中断」状态，旧快照其余内容不改」 | 同上：BR-11 是 AC-15 的被引规则，原「不重写旧快照」与「转 `interrupted`」同样互斥；只把「重写」收窄为「除状态外不改」，不删「不猜测 / 不恢复」的意图 |
+| AC-23 | Then「实例不进入「运行中」」 | Then「实例保持「运行中」并继续调度（降级只降会话面，不把实例判为中断；D-5 第 5 步 / BR-22）」 | `AC-23.part.md` C06：`state` 仍为 `running`，`status` 首行「运行中」；原分句与 BR-22「降级后继续调度」、D-5 第 5 步直接冲突 |
+| AC-23 | 机检「`session/new` 失败后无新会话」 | 机检「`recovery.dialect` 事件记 `dialect: new` 且 `restored: false`，恢复落定后会话条目只比 Given 多 1 条——即 `adapterFactory.create` 预开的那 1 个会话（事件 `sessionId` 与它相同），没有第二个新建的可服务会话」 | `AC-23.part.md` C09 与备注：真 `adapterFactory.create` 在 create 时预开会话（`mock-sess-11408-1`），三方言全失败分支在 CLI 真 factory 路径下不可达；`recovery.dialect` 的 `{dialect:"new", restored:false}` 是可达且可断言的事实。其余三项（节点已分配 / 角色可用 · 活跃会话 0/1 / 交接待投递）一字未动 |
+| AC-23（连带 BR） | BR-22「…按基线 §3.6 降级」 | BR-22「…按基线 §3.6 降级；实例保持「运行中」并从「已分配 / 待执行」节点继续调度（D-5 第 5 步）」 | 修订后的 AC-23 Then 直接引 BR-22 作为「继续调度」的依据，故把该口径补进 BR-22，避免 AC 引用悬空；第 4 轮依 **裁-21i ②** 在 `BR-22（v4-r4 补登记）` 行补登「原文 / 改后 / 依据」 |
+| AC-37 | Then「人工节点仍显示「执行中 · 等待人工」」；观测通道为 `graph` | Then「人工节点仍显示「执行中」（`orch status --instance` 节点行「节点 T-004 执行中 · 第 N 轮」）」；机检增「**观测通道口径**：`orch instance graph` 只渲染图声明内的节点（`graphNodes()` 按图声明渲染是 I1.1 起的冻结行为），**不要求** `graph` 出现图外 human 节点 T-004」 | `AC-37.part.md` C05：`graph --format text` 只渲染内建 `code-loop` 图声明的 T-001/T-002，夹具 `T-004` 不在图内；`status` 实测 `节点 T-004 执行中 · 第 1 轮`。保留「不重派、不跳过」与 `instance log` 的「保持等待人工（不重派）」行。注：`status` 节点行只打印角色名、不打印节点标题，故按实际渲染写「节点 T-004 执行中 · 第 N 轮」，不含标题「人工确认」 |
+| AC-42 | Then 逐字「（节点 T-003 · 轮次 2/3）」×2 与「`会话已重建 sess-005…`」；机检「`round === 2`」 | Then「（节点 <当前节点> · 轮次 <当前轮>/<上限>）」「`会话已重建 <新会话 id>`」，并写明「按实际值填充、轮次不回退」；机检「重建后 `round` 不回退（与崩溃前一致；BR-37「轮次不增加」）」 | `AC-42.part.md` C11/C12：实际为「节点 T-001 · 轮次 1/2」、`round=1`；内建图只有两个节点、`maxRounds=2` 是 I1.1 逐字红线。参照 AC-10 已用的「按实际值」措辞。机检把「`round === 2`」改为不回退（**未采用「或更大」的写法**：BR-37 明确「轮次不增加」，二者会再形成新的互斥） |
+| AC-43 | Then 逐字「（节点 T-003 · 轮次 2/3）」 | Then「（节点 <当前节点> · 轮次 <当前轮>/<上限>）」 | `AC-43.part.md` 备注：实测 `{"nodeId":"T-001","round":1,"maxRounds":2}`；本条其余判据（退出码 4、已挂起）实测已达成，改动只去除逐字文案假设 |
+| AC-45 | Then 逐字「节点 T-003 超时：…（节点 T-003 · 轮次 2/3）」 | Then「节点 <当前节点> 超时：…（节点 <当前节点> · 轮次 <当前轮>/<上限>）」 | `AC-45.part.md` 备注：注入图 `T-003` 的 `maxRounds=2`，实测「节点 T-003 · 轮次 1/2」；`report.md` §0.1.1 记明该条的 4 条升级/挂起假阴性已修，本轮只剩这一条逐字文案 |
+| AC-63 | Then 逐字「（节点 T-003 · 轮次 2/3）」 | Then「（节点 <当前节点> · 轮次 <当前轮>/<上限>）」 | `AC-63.part.md` 备注：实测 `{"nodeId":"T-001","round":1,"maxRounds":2}`；「不再重建 / 只重建一次 / 已升级 / 退出码 4」判据不动 |
+| AC-67 | Then「显示「可用 · 活跃会话 0/1 · 服务节点 —」」；机检「`role_to_sessions` 无该角色条目」 | Then「`orch role show` 显示「冷却中 · 活跃会话 0/1 · 服务节点 —」」+ 理由「恢复**不改变**既有角色状态优先序 `busy > cooldown > available`，Given 的「服务节点都已终态」命中 `doneCount > 0 → cooldown`（I1.5 起的契约）」；机检「`role_to_sessions` 保留该角色的历史 `idle` 会话记录但不计入活跃会话（`活跃会话 0/1`）」 | `AC-67.part.md` C03/C05：实测「冷却中 · 活跃会话 0/1 · 服务节点 —」、`role_to_sessions = {"developer":["mock-sess-dev"]}`；原 Then 与 I1.5 起的角色六态优先序互斥。**未改成「强制置 available」**——那会覆盖既有冷却语义，属新增机制 |
+| AC-15（v4-r2） | 机检「实例记录（`state.json`）除 `state` / `stateSince` / `recovery` 外内容不变」 | 机检「实例记录（`state.json`）除 `state` / `stateSince` / `rev` / `updatedAt` / `health` / `counters.eventSeq` 外内容不变（`nodes` / `sessions` / `handoffs` / `escalations` / `template` / `task` 等业务字段逐字不变）」 | 依裁-21c，按 review-v4-round1 **B-01** 修订。实测（`AC-15.given.state.json` vs `AC-15.then.state.json` 逐叶子比对）差异恰为 6 项：`state`、`stateSince`、`rev`（1→3）、`updatedAt`、`health`（含 `level` / `computedAt` 两个叶子）、`counters.eventSeq`（0→2）；`recovery` 两侧都不存在，属凭空造字段。上一行（v4）末尾的「**注（待裁决）**」由本行取代——裁-21c 已把清单定死，不再是待裁决项 |
+| AC-15 Then（v4-r2） | Then「除落「已中断」状态（含随之更新的状态时间与恢复标记）外，不改动旧快照里的节点、会话、交接包等内容」 | Then「除落「已中断」状态及随状态迁移必然更新的记录版本（`rev`）、更新时间（`updatedAt`）、健康度（`health`）与事件计数（`counters.eventSeq`）外，不改动旧快照里的节点、会话、交接包等内容」 | 同 B-01：实测被改的是 `health`（`normal`→`ended`）、`rev`、`counters.eventSeq`，而「恢复标记」在两侧快照中不存在；不换掉这个不存在的字段，Then 与机检的 6 项清单会互相打脸 |
+| BR-11（v4-r2） | 「不猜测、不尝试恢复；仅落「已中断」状态，旧快照其余内容不改」 | 「不猜测、不尝试恢复；仅落「已中断」状态（含随动的 `rev` / `updatedAt` / `health` / `counters.eventSeq`），旧快照的业务内容（节点、会话、交接包等）不改」 | 同 B-01（裁-21c 的同步项）：`markInterrupted` 必然改写这 4 项元数据，原句「其余内容不改」与实测互斥 |
+| AC-67 标题（v4-r2） | 标题「… → 保持「可用」」 | 标题「… → 按既有优先序显示（冷却中）」 | 依裁-21e ①，按 **B-02** 修订：标题说「可用」、同条 Then 判据是「冷却中」，验收文档不允许两者并存。`report.md` §2 / `acceptance-fixture.md` §二的条目名同步属裁-21e ① 的另一半，由主控同步（不在本文件范围），见下方未改项 |
+| AC-67 引用 / Given（v4-r2） | 引用「BR-24、BR-50」；Given「…且它服务的节点都已处于终态或不可调度」；Then 后为「理由：…」 | 引用「BR-26、BR-27、BR-50（角色六态派生优先序 `busy > cooldown > available`，I1.5 契约）」；Given「…且它服务的节点都已处于终态（`doneCount > 0`）或不可调度」；「理由」段改为「依据」段并改指 BR-26 / BR-27 | 依裁-21e ②④，按 B-02 修订：BR-24 明写「`busy` 且会话不可恢复 → `available`」，与 Then 反向，删；改指 BR-26（`available` / `cooldown` / `inactive` 不受恢复影响）与 BR-27（派生视图按会话重算）——上一轮「理由」段凭空立了一条 BR 级规则（BR 表未登记），改挂到已登记的 BR 上即可成立。Given 补 `doneCount > 0` 让「冷却中」有可验触发面（`AC-67.part.md` C01：节点 `done`、会话 `idle`） |
+| §2.5 / §2.10 / D-6（v4-r2） | §2.5 异常情况「保持「可用」，不显示「服务中」」；§2.10 第 8 步「显示「可用 · 活跃会话 0/1」」；D-6 第一句「角色全部会话不可恢复 → `available`」 | 三处均改为「按既有派生规则显示（可能为「冷却中」）」 | 依裁-21e ③，按 B-02 修订并在此申报：这三处正是 AC-67 的互斥源，上一轮只在正文留张力、未申报；同步后 §2.5 / §2.10 / D-6 / AC-67 四处口径一致，§2.5 中「原本是「服务中」→ 显示可用」的 BR-24 路径不动 |
+| AC-23 Then（v4-r2） | Then「…；实例保持「运行中」并继续调度（…D-5 第 5 步 / BR-22）」 | Then「…；实例保持「运行中」且 `halted === false`（…BR-22）」+ 交叉引用「本条只断言「降级后实例没有被误判为中断」；继续调度由 AC-31 与 AC-60 覆盖」 | 依裁-21f ①，按 **B-03** 修订：`AC-23.then.events.jsonl` 全 8 条无 `node.dispatch`、T-002 停在「已分配」，「继续调度」无实测无锚点；`halted === false` 在 `AC-23.then.state.json` 实测存在（`state: running`、`halted: false`）。BR-22 已于第 1 轮改（见 `AC-23（连带 BR）` 行），其「继续调度」由 AC-31 / AC-60 承担；第 4 轮依裁-21i② 在 `BR-22（v4-r4 补登记）` 行补齐「原文 / 改后 / 依据」 |
+| AC-63 机检（v4-r2） | 机检「`session/new` 比单次崩溃场景少 1 次（只重建一次）、节点 `escalated`、退出码 4」 | 机检「`session.rebuilt` 恰 1 条、`session.rebuild_failed` 恰 1 条、`state.sessions` 恰 2 条（原始会话 + 重建会话）、节点 `escalated`、退出码 4」 | 依裁-21f ②，按 **B-04** 修订：AC-42（单次崩溃）与 AC-63（二次崩溃）落盘会话均 2 条，「少 1 次」字面不成立；三项锚点在 `AC-63.part.md` C04 / C05 / C06 实测为 1 / 1 / 2（`AC-63.then.state.json` 的 `sessions` 长度亦为 2） |
+| AC-67 夹具 / 机检（v4-r3） | 机检「`role_to_sessions` 保留该角色的历史 `idle` 会话记录但不计入活跃会话、`session/new` 次数不变」——只断言恢复后一帧，一个**完全不处理该角色**的实现同样通过 | 机检增「**在 Given 落盘后（恢复前）与恢复后各取一次 `orch role show`，两帧逐字相同（含「冷却中 · 活跃会话 0/1 · 服务节点 —」）**——两帧文本整段比对、字面差异 0 处」，原两项断言保留 | 依裁-21h ①，按 **B-02 残留**修订。`AC-67.given.state.json`（`T-001 done`、会话 `mock-sess-dev` `idle`）按 `role-instances.js` 的 `doneCount=1` 恢复前即为 `cooldown`；`given→then` 差集只有 `coreGeneration` / `updatedAt` / `rev` / `recoveredAt` / `recovery.*`，`then.events.jsonl` 无 `recovery.role`，故「恢复不改写派生」此前无任何观测。结论方向仍是「冷却中」，未改为「可用」 |
+| AC-23 机检（v4-r3） | 机检断言「`state.halted === false`」（唯一的状态断言） | 主断言 `state.state === 'running'`；`halted === false` 降为**附带断言**；机检后加判别力说明「仅 `halted === false` 无判别力——`interrupted` / `suspended` 的 `halted` 同样为 `false`（实测 AC-42 / AC-63）」 | 依裁-21h ②，按 **B-03 残留**修订：`AC-23.then.state.json` = `running` / `halted:false`；`AC-42` = `interrupted` / `halted:false`；`AC-63` = `suspended` / `halted:false`——`halted` 不排除「已中断」「已挂起」两种反例 |
+| §2.3 异常情况（v4-r3） | 「…；实例不假装还在运行。」 | 「…；实例保持「运行中」（降级只降会话面），但**不得把降级伪装成恢复成功**——必须同时出现 `recovery.dialect` 的降级行与「节点已分配 / 角色可用 · 活跃会话 0/1 / 交接待投递」三处降级状态，角色不得仍显示「服务中」。」 | 依裁-21h ③，按 **B-05** 修订：原句主语是「实例」，与 AC-23 Then「实例保持「运行中」」、§2.4「实例仍显示「运行中」」在同一场景下反向；改后与 §2.4 及 AC-23 同口径，且以三处降级状态 + `recovery.dialect` 降级行承担「不伪装成恢复成功」的可判定面 |
+| 附录 C / 头部（v4-r3） | AC-15 行尾「注（待裁决）」；「§2.8 的**两处**示例文案」；头部「当前分支 `feat/i1.8-instance-recovery`，HEAD `3f35bfa`」 | ① 删「注（待裁决）」段，差异字段处理并入 `AC-15（v4-r2）` 行的正式结论；② 改为「**四处**」（`:290` 三处 + `:291` 一处，逐行点出）；③ 头部改为「当前工作分支 = `main`，基线 = I1.8 开工点 `014fa6a`」，不写具体 HEAD sha | 依 review-v4-round2 的 **S-02**（裁-21c 已下，注不再是待裁决项）、**S-04①**（grep 计数：`:290` 三处、`:291` 一处）、**S-06**（分支与 HEAD 已过期；按建议删去易过期的哈希）。`report.md` / `acceptance-fixture.md` 的条目名由主控同步（不在本文件范围） |
+| C-10（v4-r4） | 「恢复失败（无可用方言、宿主不可达、锁定图缺失）时，实例按 `interrupted` 落盘，并写一条可见原因；不得静默假装仍在运行」 | 「恢复失败（宿主不可达、锁定图缺失，即「恢复本身失败」）时，实例按 `interrupted` 落盘，并写一条可见原因；不得静默假装仍在运行。可达宿主的三种方言全部失败**不属恢复失败**：按 §2.3 只降会话面（节点「已分配」/ 角色按派生规则降级 / 交接待投递），实例保持「运行中」，但同样不得把降级伪装成恢复成功」 | 依 **裁-21i ①**，按 B-06 修订：`AC-23.given` 正是「`resume` / `load` / `new` 三者都失败」，而 `AC-23.then.state.json` 实测 `state=running`；`orchestrator.js:5624` 注释亦写明「dialect failures on a reachable host degrade instead」。`interrupted` 只保留给「宿主不可达 / 恢复本身失败」一支（C-10 原义） |
+| BR-12（v4-r4） | 「恢复失败 → 实例「已中断」并给出可见原因；不得静默假装仍在运行」 | 「恢复失败（宿主不可达 / 恢复本身失败，如锁定图缺失）→ 实例「已中断」并给出可见原因；不得静默假装仍在运行。三种方言全部失败**不判「已中断」**——按 §2.3 只降会话面，实例保持「运行中」，不得把降级伪装成恢复成功」 | 依 **裁-21i ①**：BR-12 的触发条件由 C-10 供给，随 C-10 一并收窄；否则同一场景下 C-10 / BR-12 的 `interrupted` 与 §2.3 / AC-23 的 `running` 仍对立 |
+| D-5 第 6 步（v4-r4） | 「任一致命错误 → `interrupted` + `恢复失败` 事件；不假装运行」 | 「任一致命错误（宿主不可达 / 恢复本身失败，如锁定图缺失）→ `interrupted` + `恢复失败` 事件；不假装运行。三种方言全部失败**不属致命错误**——按 §2.3 只降会话面，实例保持「运行中」，不得把降级伪装成恢复成功」 | 依 **裁-21i ①**（B-06 的位置清单已点名 D-5 第 6 步「致命错误」未定义）：不留下可被读成「方言失败也致命」的口径，与 C-10 / BR-12 收窄同向 |
+| BR-22（v4-r4 补登记） | BR-22「…按基线 §3.6 降级」（v3 原文，无实例终态与继续调度） | BR-22「…按基线 §3.6 降级；实例保持「运行中」并从「已分配 / 待执行」节点继续调度（D-5 第 5 步）」 | 依 **裁-21i ②**：该改动第 1 轮已做（见 `AC-23（连带 BR）` 行），第 4 轮补登「原文 / 改后 / 依据」；不补此句则 §2.3 的「实例保持运行中」与 AC-23 的降级结论缺少 BR 级依据。本行取代第 3 轮附录 C 里把 BR-22 既记「已改」又记「未改」的相反表述 |
+| §3.3 验收前置条件 #1（v4-r4 补登记） | 「当前分支 `feat/i1.8-instance-recovery`，HEAD `3f35bfa`」 | 「当前工作分支 = `main`，基线 = I1.8 开工点 `014fa6a`；`origin/main` 可检出用于回归对比」 | 依 **裁-21i ②**：`git branch --show-current` 实测 `main`、`014fa6a` 经 `git merge-base --is-ancestor` 确认为 HEAD 祖先；与头部「上游」为同一处事实更正（S-06②）。属事实更正，无需求语义变更 |
+| AC-23 机检（v4-r4） | 「…`recovery.dialect` 事件记 `dialect: new` 且 `restored: false`，恢复落定后会话条目只比 Given 多 1 条——即 `adapterFactory.create` 预开的那 1 个会话（事件 `sessionId` 与它相同），没有第二个新建的可服务会话」 | 「…`recovery.dialect` 中**恰 1 条**记 `dialect:"new"` 且 `restored:false`，另 2 条为回退行（`fallback:true`）；恢复落定后会话条目只比 Given 多 1 条——即 `adapterFactory.create` 预开的那 1 个会话（事件 `sessionId` 与它相同）」 | 依 **裁-21j S-01**：① 删去「可服务」这一无法判定的措辞（裁-21d ③ 已明令不用），只留可数锚点；② `AC-23.then.events.jsonl` 实测 3 条 `recovery.dialect`——seq3 / seq4 为回退行（`fallback:true`），仅 seq5 为 `dialect:"new"` / `restored:false`，「事件记 `dialect:new`」的单数表述不精确 |
+| AC-15 Then / BR-11（v4-r4） | AC-15 Then「…除落「已中断」状态及随状态迁移必然更新的记录版本（`rev`）、更新时间（`updatedAt`）、健康度（`health`）与事件计数（`counters.eventSeq`）外…」；BR-11「…（含随动的 `rev` / `updatedAt` / `health` / `counters.eventSeq`）…」 | AC-15 Then「…除落「已中断」状态及随状态写入必然更新的状态时间（`stateSince`）、记录版本（`rev`）、更新时间（`updatedAt`）、健康度（`health`）与事件计数（`counters.eventSeq`）外…」；BR-11「…（含随状态写入变化的 `stateSince` 与随动的 `rev` / `updatedAt` / `health` / `counters.eventSeq`）…」 | 依 **裁-21j S-03**：`AC-15.given/then.state.json` 逐叶子差异 7 叶含 `stateSince`（属「随状态写入变化」字段，与 `rev` / `updatedAt` 同组）；机检 6 项清单已含它，Then / BR-11 不点名会与机检不同形 |
+| §2.3 异常情况（v4-r4） | 「…「节点已分配 / 角色可用 · 活跃会话 0/1 / 交接待投递」三处降级状态…」 | 「…「节点已分配 / 角色可用 · 活跃会话 0/1 / 交接待投递」三处降级状态（角色「可用」的前提是 `doneCount === 0`；完成过节点的为「冷却中」）…」，且前句「角色从「服务中」降为「可用」」改为「角色按既有派生规则降级（该场景 `doneCount === 0` 时为「可用」；完成过节点的为「冷却中」，见 AC-67）」 | 依 **裁-21j S-09**：作为通用陈述，「角色可用」缺 `doneCount` 前提；AC-67 现场 `doneCount > 0` 派生为「冷却中」，照字面读会与本条互斥 |
+| §2.5 效果 1 / D-6（v4-r4） | §2.5「角色原本是「服务中」，会话不可恢复：显示 `可用 · 活跃会话 0/1 · 服务节点 —`，日志出现…」；D-6「角色全部会话不可恢复 → 按既有派生规则显示（可能为「冷却中」）…」 | §2.5 补「未完成过节点（`doneCount === 0`）时显示 `可用…`；完成过节点的按既有派生规则显示「冷却中」（见 AC-67）」；D-6 补「与 §3.6「`busy` + 不可恢复 → `available`」的边界：那是 `doneCount === 0` 的默认走向，`doneCount > 0` 时落「冷却中」」 | 依 **裁-21j S-08**：`doneCount > 0 → cooldown` 是 I1.5 起的派生优先序；不补前提时 §2.5 / §3.6 / AC-67 三处可被读成互斥 |
+| AC-67 依据 / 夹具（v4-r4） | 依据「角色状态由六态派生优先序 `busy > cooldown > available` 决定（I1.5 起契约，BR-26 / BR-27）…」；夹具「在 Given 落盘后（恢复前）与恢复后各取一次…」 | 依据「角色状态由六态派生优先序决定（可执行口径见 `src/registry/role-instances.js:79`：`doneCount > 0 → cooldown`，`doneCount === 0 → available`；I1.5 起契约，BR-26 / BR-27）…；判定只按 `doneCount > 0`，不以基线 §3.3 的「会话可复用」为条件」；夹具「在 Given 落盘后、执行恢复动作之前与恢复完成之后各取一次…」 | 依 **裁-21j S-07 / S-10**：S-07 —— 基线 `index.md:204` 的 `cooldown` 描述含「会话可复用」，与本条现场（会话 `idle` 且不可恢复）不符，可执行口径在 `role-instances.js:79`；S-10 —— 「恢复前」帧实际取不到（`orch role show` 必走 core，恢复写入在 `RECOVERY_HOLD` 暂停点之前），改为「执行恢复动作之前」与实现对齐 |
+| 附录 C 未改项（v4-r4） | 「`report.md` / `acceptance-fixture.md` 的条目名同步仍**未执行**」「不在本轮授权文件范围内，未改」 | 「由主控同步（不在本文件范围，不属「未授权」）」 | 依 **裁-21j S-05**：裁-21e ① 已授权条目名同步，只是不在 `requirement.md` 内执行；不应写成「未授权 / 未执行」 |
+| 头部 / 边界注（v4-r4） | 状态「修订稿 v4（第 3 轮…待第 3 轮评审）」；评审依据未列裁-21c / 21e / 21f / 21h 等；「前 12 行」「最后 4 行」 | 状态「修订稿 v4（第 4 轮：已按 review-v4-round3 的 B-06/B-07 与 S-01~S-10 收口，待第 4 轮评审）」；评审依据补列「裁-21a / 21c / 21e / 21f / 21g / 21h / 21i / 21j」；「前 12 行」改「前 11 行」、「最后 4 行」改「`v4-r3` 前缀的 4 行」 | 依 **裁-21j S-06① / S-04②** 与本轮 B-06 / B-07 收口；行数逐行实数：`v4` 11 + `v4-r2` 8 + `v4-r3` 4 = 23 行（本轮追加 12 行） |
+| AC-45 Then（v4-r5） | Then「节点 <当前节点> 超时：按运行慢处理，已升级人工（节点 <当前节点> · 轮次 <当前轮>/<上限>）」（v4 的写法） | Then「节点 T-003 超时：按运行慢处理，已升级人工（节点 T-003 · 轮次 <当前轮>/<上限>）」+「节点号取本夹具注入图的审核节点 `T-003`；轮次与上限分别按 `session.timeout` 事件的 `detail.round` / `detail.maxRounds` 填充（本夹具现场为 `1/2`）」 | 依 `review-v4-round4.md` 的 **S-01** 处置：v4 把实测成立的 `节点 T-003` 也一并泛化成占位符，是 8 条里唯一朝「更容易通过」方向改的分句——`AC-45.part.md` C03 期望逐字「节点 T-003 …（节点 T-003 · 轮次 1/2）」实测 ✓、C04「超时节点是 T-003」✓，唯一失败项 C05 只卡在「轮次 2/3」。裁-21a 只授权改不可满足的分句，故**恢复 T-003 字面、只参数化确实不可满足的轮次/上限**，并绑定到 `AC-45.then.events.jsonl` seq31 的 `detail.nodeId` / `detail.round` / `detail.maxRounds`（实测 `T-003` / `1` / `2`）。机检一字未动，判据不放宽 |
+
+> **v4 第 2 轮的边界**：上表 `v4` 行与 `v4（连带 BR）` 行**一字未删**（保留上一轮记录）；前 11 行是 v4 第 1 轮（裁-21a），后 8 行（`v4-r2` 前缀）是第 2 轮按 `review-v4-round1.md` 的 B-01 ~ B-04 追加，只覆盖其中对应的片段。本轮依据为 `decisions.md` 第十八节的 **裁-21c / 21e / 21f**，未新增/删除 AC，未改其它 61 条 AC。
+
+> **v4 第 3 轮的边界**：上表 `v4` / `v4-r2` 行**一字未删**；`v4-r3` 前缀的 4 行是第 3 轮按 `review-v4-round2.md` 的 **B-02 残留 / B-03 残留 / B-05** 与建议项 S-02 / S-04① / S-06 追加，只覆盖对应片段。本轮依据为 `decisions.md` 第十八节 **裁-21h**；未新增/删除 AC，未改其它 AC；`report.md` / `acceptance-fixture.md` 的条目名由主控同步。
+
+> **v4 第 4 轮的边界**：上表 `v4` / `v4-r2` / `v4-r3` 行**一字未删**；`v4-r4` 前缀的 12 行是第 4 轮按 `review-v4-round3.md` 的 **B-06 / B-07** 与建议项 **S-01 ~ S-10** 追加，只覆盖对应片段。本轮依据为 `decisions.md` 第十八节 **裁-21i / 裁-21j**；未新增/删除 AC，未改其它 AC，未改 AC 编号与顺序，AC-67 的结论方向仍是「冷却中」；`report.md` / `acceptance-fixture.md` 的 AC-67 条目名由主控同步（S-05），不属本文件改动。
+
+> **v4 第 4 轮评审后精修（v4-r5）的边界**：`review-v4-round4.md` 总判 **PASS（阻断 0 / 建议 4）**；上表 `v4` / `v4-r2` / `v4-r3` / `v4-r4` 四层前缀共 35 行**一字未删**，本轮只追加 `v4-r5` 前缀的 **1 行**（AC-45 Then），用于处置 S-01 的「唯一放宽方向分句」。S-02 / S-03 落在 `requirement-understanding.md`（该文件由主控同步），S-04 为 AC-23 Then 补 `doneCount === 0` 前提（见正文，一并计入本轮，但属叙事对齐而非期望值变更）。未新增/删除 AC、未改机检、未改判定、未改 `blocked` 计数（AC-26 / AC-27 仍记 2，按裁-21b 只在 Done 判定视作满足）。
+
+**逐项说明（已改 / 未改）与理由（供评审核对）**：
+
+- **AC-67 的标题**：v4 第 1 轮未改（当时授权范围只到 Then / 机检，改写标题会与 `report.md` §2、`acceptance-fixture.md` §二的条目名脱节）。**第 2 轮已按裁-21e ① 改为「… → 按既有优先序显示（冷却中）」**，五处（标题 / 引用 / §2.5 / §2.10 / D-6）口径已一致；`report.md` / `acceptance-fixture.md` 的条目名由主控同步（S-05：裁-21e ① 已授权，不在本文件范围，不属「未授权」）。
+- **BR-22 的「并从「已分配 / 待执行」节点继续调度（D-5 第 5 步）」已改（第 1 轮）**：第 4 轮依 **裁-21i ②** 追认为必需改动（不补此句，AC-23 新 Then 的「实例保持运行中」与 §2.3 的降级结论缺少 BR 级依据），并已在 `v4-r4` 的 `BR-22（v4-r4 补登记）` 行补齐「原文 / 改后 / 依据」；第 2 / 3 轮未再改。删掉 AC-23 Then 的「继续调度」后，该规则的验收由 AC-31 / AC-60 承担，**AC 与 BR 之间无互斥**。
+- **§2.8 的四处示例文案**（`节点 T-003 · 轮次 2/3`：`:290` 三处、`:291` 一处）未改：属用户侧说明的示例，不是任何 AC 的断言；四条 AC 的 Then / 机检已改为按实际值填充。若要求示例与断言完全同形，需单独授权改 §2.8。
+- **§2.3 异常情况**已按裁-21h ③ 改写（见 `§2.3 异常情况（v4-r3）` 行），第 4 轮再按 S-09 补 `doneCount` 前提（见 `§2.3 异常情况（v4-r4）` 行），不再列为未改项。
+- **§2.7 的「人工节点仍显示「执行中 · 等待人工」」**未改：该句对**图声明内**的 human 节点成立（D-7 / 附录 A 的 `instance graph` 行追加 ` · 等待人工` 亦未改）；AC-37 的夹具 `T-004` 是图外节点，故只改了该条的观测通道。
+- **附录 C 上方边界注的行数自述**：第 4 轮已按 **S-04②** 由「前 12 行」更正为「前 11 行」（逐行实数：`v4` 11 行 / `v4-r2` 8 行 / `v4-r3` 4 行；本轮追加 `v4-r4` 12 行），不再列为未改项。
+
 
 ---
 
@@ -1305,7 +1372,7 @@ reconcileOnBoot(generation):
 3. 会话对账：按 D-4 方言；不可恢复 → `running -> assigned`；角色 `busy` → `available`（派生），崩溃且重建失败 / 宿主不可达 → `unavailable`；交接 `delivered` 未 `accepted` → `pending`（`deliveryAttempts` 保留），交接 `created` → 继续投递（不重构造）。
 4. 写恢复事件（摘要、方言、角色、连接线、人工节点），写检查点，置 `recoveredAt` / `coreGeneration`。
 5. 从 `assigned` / `ready` 节点继续调度；已完成节点不进入派发队列。
-6. 任一致命错误 → `interrupted` + `恢复失败` 事件；不假装运行。
+6. 任一致命错误（宿主不可达 / 恢复本身失败，如锁定图缺失）→ `interrupted` + `恢复失败` 事件；不假装运行。三种方言全部失败**不属致命错误**——按 §2.3 只降会话面，实例保持「运行中」，同样不得把降级伪装成恢复成功。
 
 - `interruptAll()`（`core stop`）不改；`core stop` 产生的 `interrupted` 不被 `reconcileOnBoot` 重新拉起。
 - `core.ping` 的既有字段不改；启动日志新增 `CORE_BOOT_RECOVER`（`recovered` / `interrupted` 列表），不进入用户命令输出。
@@ -1313,7 +1380,7 @@ reconcileOnBoot(generation):
 ### D-6 角色实例与连接线恢复（C-11）
 
 - 角色实例不落盘；恢复后按 `role_to_sessions` 重算：
-  - 角色全部会话不可恢复 → `available`；有可恢复会话 → `busy`；会话崩溃且重建失败 / 宿主不可达 → `unavailable`；无会话且无服务节点 → `available` / `cooldown`（沿用 I1.5 派生规则）。`unavailable` 不是新增枚举，取 `labels.js` 既有词「不可用」。
+  - 角色全部会话不可恢复 → 按既有派生规则显示（可能为「冷却中」）；有可恢复会话 → `busy`；会话崩溃且重建失败 / 宿主不可达 → `unavailable`；无会话且无服务节点 → `available` / `cooldown`（沿用 I1.5 派生规则）。与基线 §3.6「`busy` 角色 + 会话不可恢复 → `available`」的边界：该行是**未完成过节点（`doneCount === 0`）时的默认走向**；`doneCount > 0` 时按 I1.5 优先序落「冷却中」，二者不矛盾。`unavailable` 不是新增枚举，取 `labels.js` 既有词「不可用」。
   - 降级写一条 `recovery.role` 事件；`orch role show` 读派生视图。
 - 连接线不落盘；恢复后按交接包优先级重算：`rejected > expired > pending > delivered > accepted > consumed > not_started`。
 - 交接包 `delivered` 且 `acceptedAt` 为空 → `transit('handoff','pending')`，保留 `deliveryAttempts`，写 `pendingAt`，再走既有 `deliverWithRetry`。

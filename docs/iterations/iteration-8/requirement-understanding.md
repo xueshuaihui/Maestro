@@ -145,7 +145,7 @@
 | AC-64 | 重建失败 / 宿主不可达 → 角色显示「不可用」，恢复后回到可用 | 夹具 | P1 | BR-50 |
 | AC-65 | reuse 但没有空闲会话 → 新建，不报错 | 边界 | P1 | BR-42 |
 | AC-66 | reuse 不跨宿主、不复用正在服务其他节点的会话 | 边界 | P1 | BR-43 |
-| AC-67 | 角色恢复后既无可用会话也无可调度节点 → 保持「可用」 | 边界 | P1 | BR-24、BR-50 |
+| AC-67 | 角色恢复后既无可用会话也无可调度节点 → 按既有优先序显示（冷却中） | 边界 | P1 | BR-26、BR-27、BR-50 |
 
 ### 2.3 分面统计（自洽核算）
 
@@ -196,7 +196,7 @@
 | BR-09 | 只有 `running`/`created` 且有检查点（或内建模板）自动恢复；`suspended` 不恢复 | AC-05、AC-09、AC-10、AC-11、AC-58 |
 | BR-10 | 显式 `core stop` 的「已中断」不自动恢复 | AC-16、AC-58 |
 | BR-11 | 旧实例无检查点且模板未知 → 保持「已中断」并提示新建 | AC-15 |
-| BR-12 | 恢复失败 → 「已中断」并给可见原因，不假装运行 | AC-06、AC-09、AC-17 |
+| BR-12 | 恢复失败（宿主不可达 / 恢复本身失败）→ 「已中断」并给可见原因，不假装运行；三种方言全失败不判中断、实例保持「运行中」 | AC-06、AC-09、AC-17 |
 | BR-13 | 恢复幂等：重复启动不重复推进、不重复写摘要 | AC-18 |
 | BR-14 | `review` 恢复只重新核对证据、不重放会话 | AC-14 |
 | BR-15 | `escalated` 恢复保持「已升级」，不重派、不自动生成新升级 | AC-12、AC-58 |
@@ -206,12 +206,12 @@
 | BR-19 | `session/load` 回放/追加，不重复投递同一份已完成历史 | AC-20 |
 | BR-20 | `session/new` 全新会话，只重发当前轮 | AC-21 |
 | BR-21 | 每一次方言回退必须在日志点名，不得静默降级 | AC-22 |
-| BR-22 | 三方言全失败 → 节点「已分配」、角色「可用」、未接受交接「待投递」 | AC-23 |
+| BR-22 | 三方言全失败 → 节点「已分配」、角色「可用」、未接受交接「待投递」，实例保持「运行中」 | AC-23 |
 | BR-23 | DSH 内置 acp 只会 resume、不会 load；第三方会 load；适配器不得按宿主名分支 | AC-25、AC-27 |
-| BR-24 | 角色 `busy` 且会话不可恢复 → `available` 并重新调度服务节点 | AC-28、AC-31、AC-58、AC-67 |
+| BR-24 | 角色 `busy` 且会话不可恢复 → `available` 并重新调度服务节点 | AC-28、AC-31、AC-58 |
 | BR-25 | 角色 `busy` 且会话可恢复 → 保持 `busy`，活跃会话数不变 | AC-29 |
-| BR-26 | `available`/`cooldown`/`inactive` 不受恢复影响；不新增「恢复中」角色态 | AC-30 |
-| BR-27 | 角色实例仍是派生视图，恢复后按会话重算 | AC-28 |
+| BR-26 | `available`/`cooldown`/`inactive` 不受恢复影响；不新增「恢复中」角色态 | AC-30、AC-67 |
+| BR-27 | 角色实例仍是派生视图，恢复后按会话重算 | AC-28、AC-67 |
 | BR-28 | `delivered` 未 `accepted` → 恢复为 `pending` 并重投 | AC-32、AC-35、AC-58 |
 | BR-29 | 已 `accepted` 的交接包不重投 | AC-33 |
 | BR-30 | `consumed`/`rejected`/`expired` 恢复后不改 | AC-34 |
@@ -273,7 +273,7 @@
 | C-07 | 方言选择只看 `initialize` 能力广告与角色策略，不得按宿主名分支 |
 | C-08 | `resume` 成功 = 接回但不回放，不得假设宿主记得上一轮；`load` 成功 = 回放/追加，不得再投同一份已完成历史 |
 | C-09 | `resume`/`load` 成功后按最后会话态决定「只等待 / 只重发当前轮一次 / 永不重发已完成节点」；会话升级人工沿用基线既有「已升级」红色圆点（裁-3：不新增会话状态取值、不新增 CLI 输出） |
-| C-10 | 恢复失败（无可用方言/宿主不可达/锁定图缺失）→ 实例 `interrupted` 并写可见原因，不静默假装运行 |
+| C-10 | 恢复失败（宿主不可达/锁定图缺失，即恢复本身失败）→ 实例 `interrupted` 并写可见原因，不静默假装运行；三方言全失败不属恢复失败，按 §2.3 只降会话面、实例保持「运行中」 |
 | C-11 | 角色实例与连接线聚合仍是派生视图、不写 `state.json`；`unavailable` 只由「会话崩溃且重建失败 / 宿主不可达」产生，恢复后按派生规则回「可用」或「服务中」（见 C-18） |
 | C-12 | 崩溃判据 = 会话建立后 transport 退出 / `DSH_SPAWN_FAILED`；运行慢判据 = 进程存活且超慢阈值无 `session/update`；`stopReason` 不参与判定 |
 | C-13 | 崩溃重建每次派发最多一次；成功后重发当前轮提示；再次崩溃直接升级人工；重建不增加轮次 |
@@ -310,7 +310,7 @@
 | D-2（`:1157~1204`） | **9 态 ↔ 7 项 + `phase` 投影**：`transit()` 的 `phase` 校验表、写盘同 CAS、`snapshotOf()` 只读、不新增自环迁移 → AC-01 / C-01 / C-02 / M-1 |
 | D-3（`:1206~1238`） | **检查点格式与写点**：`checkpoint/v1` 完整 JSON 样例、原子写、写失败只发一次提醒（`checkpoint.write_failed`）、`loadCheckpoint` 返回 `{ok,checkpoint}`、`rev` 一致性 → AC-02~06 / M-2 / C-03~06 |
 | D-4（`:1240~1281`） | **ACP 方言**：能力归一化、`resumeSession`/`loadSession`/`resumeOrCreate` 伪代码、调用方恢复后动作、每次回退写 `recovery.dialect` 事件、不按 `hostId` 分支 → AC-19~27 / M-3 / C-07~09 |
-| D-5（`:1283~1311`） | **启动恢复 `reconcileOnBoot` / `recover()` 六步顺序**：选图、节点对账、会话对账、写恢复事件与 `recoveredAt`、从 `assigned`/`ready` 继续调度、致命错误 `interrupted` → AC-05/09~18/58 / M-4 / C-05/06/10/11 |
+| D-5（`:1283~1311`） | **启动恢复 `reconcileOnBoot` / `recover()` 六步顺序**：选图、节点对账、会话对账、写恢复事件与 `recoveredAt`、从 `assigned`/`ready` 继续调度、致命错误（宿主不可达 / 恢复本身失败，如锁定图缺失）`interrupted`；**三种方言全失败不属致命错误**（按 §2.3 只降会话面、实例保持「运行中」）→ AC-05/09~18/23/58 / M-4 / C-05/06/10/11 |
 | D-6（`:1313~1322`） | **角色实例与连接线恢复**：`role_to_sessions` 派生、连接线优先级 `rejected>expired>pending>delivered>accepted>consumed>not_started`、`delivered→pending` 保留 `deliveryAttempts`、`created` 继续投递、重投 3 次失败 `expired`+升级 → AC-28~36/61/62/64/67 |
 | D-7（`:1324~1330`） | **特殊节点恢复**：`human`/`escalate`/`failed`/`suspended`/`subworkflow` 各自保持规则 → AC-37~41 |
 | D-8（`:1332~1343`） | **崩溃与运行慢**：判据、处置 4 步、慢阈值/SLOW_MS、`failed_reason: timeout` 新增落盘、`MAESTRO_TEST_GRAPH` 图注入口、`MAESTRO_MOCK_CRASH=twice` → AC-42~47/63 / C-12~14 |
@@ -423,7 +423,7 @@
 | AC-12 | AC-12 / test | `[现]` `test.escalate` 造 `escalated` + `suspended` | 重启 → `status --instance` | `escalations` 中 `pending` 数不变；`node.dispatch` 不变 | 可构造 |
 | AC-13 | AC-13 / test | `[现]` mock `--prompt-failures` / verdict 造 `failed_reason: verdict_fail` | 重启 → `status --instance` | 节点 `state==='failed'`；无新 `node.dispatch` | 可构造 |
 | AC-14 | AC-14 / test | `[现]` `PAUSE=after_output:reviewer`；`[待S2]` `MAESTRO_MOCK_PROMPT_LOG` | 任务闭环停审核 `review`、证据存在 → 强杀 → 重启 | mock prompt log 中审核节点提示 0 次；`instance log` 含逐字短语 `重新核对：{节点号} · 证据重新校验（不重放会话）`（A-3 第 17 行） | 待S2 |
-| AC-15 | AC-15 / test | `[现]` 预置旧格式实例（写 `state.json`，模板名不在内建三图） | 重启 → `status` | 实例记录 `sha256` 不变；无新增 `node.dispatch`；状态 `interrupted` | 可构造 |
+| AC-15 | AC-15 / test | `[现]` 预置旧格式实例（写 `state.json`，模板名不在内建三图） | 重启 → `status` | 实例记录除 `state`/`stateSince`/`rev`/`updatedAt`/`health`/`counters.eventSeq` 外内容不变（`nodes`/`sessions`/`handoffs`/`escalations`/`template`/`task` 等业务字段逐字不变）；无新增 `node.dispatch`；状态 `interrupted` | 可构造 |
 | AC-16 | AC-16 / test | `[现]` `orch core stop` + `orch status` | 运行中 `core stop` → 再次 `status` | `core stop` 后 `interrupted`；`status` 拉起后仍 `interrupted`；无恢复摘要 | 可构造 |
 | AC-17 | AC-17 / test | `[待S2]` `MAESTRO_MOCK_SPAWN_FAIL_ON_RECOVER=1` | 有检查点、恢复时宿主不可达 → 重启 | 断言 `interrupted` 且日志含 `恢复失败` | 待S2 |
 | AC-18 | AC-18 / test | `[待S2]` 连续 `--kill-after`（driver 当前无此参数，Grep 0 命中）+ `recovery.summary` 事件 | AC-09 恢复后再强杀一次并重启 | 统计 `recovery.summary` 事件 = 1（同一实例同一代）；已完成节点提示仍 0 | 待S2 |
@@ -431,7 +431,7 @@
 | AC-20 | AC-20 / test | `[待S2]` `MAESTRO_MOCK_CAPS=load` | 广告 `loadSession:true`、最后态 `thinking` → 重启 | `session/load` 1、`session/resume` 0、`session/prompt` 0 | 待S2 |
 | AC-21 | AC-21 / test | `[待S2]` `MAESTRO_MOCK_CAPS=none` | 不广告 resume/load、最后态 `idle` → 重启 | `session/new` 1、`session/prompt` 1、已完成节点 0 | 待S2 |
 | AC-22 | AC-22 / test | `[待S2]` `MAESTRO_MOCK_CAPS=both` + `MAESTRO_MOCK_RESUME=fail` | resume 返回宿主错误 → 重启 | 调用顺序 `resume→load`、`new` 0；日志两行逐字（A-3 #4/#2） | 待S2 |
-| AC-23 | AC-23 / test | `[待S2]` `CAPS=both` + `RESUME=fail` + `LOAD=fail` + `NEW_FAIL=1` | running/busy/delivered 现场 → 三方言全失败 | 节点/角色/交接三者状态 + 降级行；`session/new` 失败后无新会话 | 待S2 |
+| AC-23 | AC-23 / test | `[待S2]` `CAPS=both` + `RESUME=fail` + `LOAD=fail` + `NEW_FAIL=1` | running/busy/delivered 现场 → 三方言全失败 | 节点/角色/交接三者状态 + 降级行；**主断言 `state.state === 'running'`**，`halted === false` 仅作附带（`halted` 单独无判别力：AC-42 `interrupted` / AC-63 `suspended` 的 `halted` 同为 `false`；继续调度由 AC-31 / AC-60 覆盖）；`recovery.dialect` 恰 3 条：1 条 `dialect:"new"` / `restored:false` + 2 条回退行（`fallback:true`）；会话只多 1 条预开会话 | 待S2 |
 | AC-24 | AC-24 / test | `[待S2]` `MAESTRO_MOCK_CAPS=resume` | 回流复测现场、会话可 resume → 重启继续 | prompt log 中已完成节点 0、当前节点 ≤1 | 待S2 |
 | AC-25 | 真实宿主面（§6.5） | `[现]` 探针 + 隔离 `DSH_HOME` | 见 §6.5 | 见 §2.4 | 阻塞 |
 | AC-26 | 真实宿主面（§6.5） | `[现]` 隔离环境 + `kill -9` | 见 §6.5 | `workspace/artifacts/**` 产物 mtime 不变 | 阻塞 |
@@ -445,15 +445,15 @@
 | AC-34 | AC-34 / test | `[现]` 预置 `consumed`/`rejected`/`expired` 三张包 | 重启 | `handoff list` 三行状态词逐字节相同 | 可构造 |
 | AC-35 | AC-35 / test | `[待S2]` `recovery-driver --scenario redeliver` | AC-32 的 `pending` 包、目标会话可用 → 完成重投 | 状态序列 `pending→delivered→accepted` | 待S2 |
 | AC-36 | AC-36 / test | `[现]` 承接 AC-32 恢复实例 | `instance graph <实例>` | `--format json` 恢复实例含 `recovery`/`connections`、非恢复不含；`connections[].aggregate` 与文本一致 | 可构造 |
-| AC-37 | AC-37 / test | `[待S2]` `test/fixtures/recovery/human-node-state.json`（不存在） | 预置 `human` 节点 `running`、强杀 → 重启 → `instance status` / `graph` | `nodeType==='human'`、`state==='running'`、无 `node.dispatch` | 待S2 |
+| AC-37 | AC-37 / test | `[待S2]` `test/fixtures/recovery/human-node-state.json`（不存在） | 预置 `human` 节点 `running`、强杀 → 重启 → `orch status --instance`（`graph` 只渲染图声明节点，不要求出现 T-004） | `nodeType==='human'`、`state==='running'`、无 `node.dispatch`；status 节点行「节点 T-004 执行中 · 第 N 轮」+ log `保持等待人工（不重派）` | 待S2 |
 | AC-38 | AC-38 / test | `[现]` 预置 `escalate` 节点 `escalated`（写 `state.json`） | 重启 | `state==='escalated'`；`escalations` 计数不变 | 可构造 |
 | AC-39 | AC-39 / test | `[现]` 预置 `failed` 节点（code-loop） | 重启 | `state==='failed'`；`node.dispatch` 不变 | 可构造 |
 | AC-40 | AC-40 / test | `[现]` 预置 `suspended` 实例（节点 running/review/escalated） | 重启 | 重启前后 `graph --format json` 的 `nodes` 数组逐项相同 | 可构造 |
 | AC-41 | AC-41 / test | `[现]` 预置 `subworkflow` 节点 `running` | 重启 | 节点数不变；无内部节点 id 的新事件 | 可构造 |
-| AC-42 | AC-42 / test | `[待S2]` `MAESTRO_MOCK_CRASH=after_first_update` | 开发节点执行中、会话首个事件后退出 → 看 `run` / `instance log` | 新会话 id 与旧不同、`round===2`、`session/prompt` 当前轮 2 次 | 待S2 |
-| AC-43 | AC-43 / test | `[待S2]` `CRASH=after_first_update` + `NEW_FAIL=1` | 会话退出且重建 `new` 失败 → 看 `orch run` | 退出码 4；`status --instance` 显示「已挂起」 | 待S2 |
+| AC-42 | AC-42 / test | `[待S2]` `MAESTRO_MOCK_CRASH=after_first_update` | 开发节点执行中、会话首个事件后退出 → 看 `run` / `instance log` | 新会话 id 与旧不同、`round` 不回退、`session/prompt` 当前轮 2 次；文案按实际节点/轮次填充 | 待S2 |
+| AC-43 | AC-43 / test | `[待S2]` `CRASH=after_first_update` + `NEW_FAIL=1` | 会话退出且重建 `new` 失败 → 看 `orch run` | 退出码 4；`status --instance` 显示「已挂起」；文案按实际节点/轮次填充 | 待S2 |
 | AC-44 | AC-44 / test | `[待S2]` `MAESTRO_MOCK_SLOW=1` + `MAESTRO_TEST_SLOW_MS=100` | 会话存活但超慢阈值无事件 → 看 `run` / `instance log` | 慢行匹配 `已等待 \d+m`（`{N}` 允许 0）；`session/new` 次数不变 | 待S2 |
-| AC-45 | AC-45 / test | `[待S2]` `MAESTRO_TEST_GRAPH=<graph-timeout.json>` + `MOCK_SLOW=1` + `SLOW_MS=100` + 新夹具 `graph-timeout.json` | 注入给审核节点声明 `timeout:2` 的图、会话慢存活 → 等超时 | `failed_reason==='timeout'`、节点 `escalated`、`escalations` +1、`session/new` 不变 | 待S2 |
+| AC-45 | AC-45 / test | `[待S2]` `MAESTRO_TEST_GRAPH=<graph-timeout.json>` + `MOCK_SLOW=1` + `SLOW_MS=100` + 新夹具 `graph-timeout.json` | 注入给审核节点声明 `timeout:2` 的图、会话慢存活 → 等超时 | `failed_reason==='timeout'`、节点 `escalated`、`escalations` +1、`session/new` 不变；文案按实际节点/轮次填充 | 待S2 |
 | AC-46 | AC-46 / test | `[待S2]` `MAESTRO_MOCK_SLOW=1`（慢接缝）+ 内建三图之一 | 节点无 `timeout`、会话慢存活 → 等超慢阈值 | `instance graph` 节点仍 `running`；`failed_reason` 不存在；`session/new` 不变 | 待S2 |
 | AC-47 | AC-47 / test | `[待S2]` 一次 `MOCK_CRASH` 场景 + 一次 `MOCK_SLOW` 场景 | 比较两次 `orch run` 输出 | 崩溃输出不含「判定为运行慢」；慢输出不含「正在重建会话」；各自关键短语计数 1 | 待S2 |
 | AC-48 | AC-48 / test | `[现]` `code-loop` 场景（默认无 `session_policy`） | 第一轮开发完成、测试回流到开发第二轮 | 两轮开发会话 id 不同；`role show developer` 与 I1.6 基线逐字节相同 | 可构造 |
@@ -471,11 +471,11 @@
 | AC-60 | AC-60 / test | `[现]` 预置「依赖未满足」+「可调度」两类待执行节点 | 强杀 → 重启 | `nodes[].phase` 与 `edges` 逐项相同；只有可调度节点 `node.dispatch` 增加 | 可构造 |
 | AC-61 | AC-61 / test | `[待S2]` `MAESTRO_TEST_PAUSE=after_handoff_created`（扩展值） | `created` 未投递窗口强杀 → 重启 → `handoff list --instance` | `handoffId` 不变、`deliveryAttempts` 不重置、无第二张同方向包 | 待S2 |
 | AC-62 | AC-62 / test | `[待S2]` `MAESTRO_MOCK_PROMPT_FAILURES=3`；`[现]` `MAESTRO_TEST_DELIVERY_DELAY_MS=10` | 恢复回 `pending` 的包、目标连续 3 次拒绝投递 | `handoff.state==='expired'`、`deliveryAttempts===3`、`escalations` +1 | 待S2 |
-| AC-63 | AC-63 / test | `[待S2]` `MAESTRO_MOCK_CRASH=twice` | 已崩溃重建成功一次、重建后会话再崩溃 | `session/new` 比单次崩溃少 1、节点 `escalated`、退出码 4 | 待S2 |
+| AC-63 | AC-63 / test | `[待S2]` `MAESTRO_MOCK_CRASH=twice` | 已崩溃重建成功一次、重建后会话再崩溃 | `session.rebuilt` 恰 1 条、`session.rebuild_failed` 恰 1 条、`state.sessions` 恰 2 条（原始 + 重建）、节点 `escalated`、退出码 4；文案按实际节点/轮次填充 | 待S2 |
 | AC-64 | AC-64 / test | `[待S2]` `CRASH=after_first_update` + `NEW_FAIL=1` + `CAPS=resume` | 重建失败看 `role show` → 重启让重建成功 | 角色状态词序列 `不可用 → 可用 → 服务中` | 待S2 |
 | AC-65 | AC-65 / test | `[现]` 角色文件 `session_policy: reuse` + 两节点同角色并发 | 新节点派发 | `session/new` +1；「会话 复用」行 0 次 | 可构造 |
 | AC-66 | AC-66 / test | `[现]` 一个实例里两个 `reuse` 角色/两种宿主 | 新节点派发 | 被复用会话 `hostId` 与新会话一致；`servingNodeId` 为空才选中；复用行无跨宿主角色 | 可构造 |
-| AC-67 | AC-67 / test | `[待S2]` `MAESTRO_MOCK_CAPS=none` + `RECOVERY_HOLD=after_assign` | 角色会话不可恢复、服务节点终态/不可调度 → 重启 → `role show` | `role_to_sessions` 无该角色条目；`session/new` 次数不变 | 待S2 |
+| AC-67 | AC-67 / test | `[待S2]` `MAESTRO_MOCK_CAPS=none` + `RECOVERY_HOLD=after_assign` | 角色会话不可恢复、服务节点终态（`doneCount>0`）/不可调度 → 重启 → `role show` | `role show` 显示「冷却中 · 活跃会话 0/1 · 服务节点 —」（`doneCount>0` 命中既有 `cooldown`，恢复不改写该派生结果）；**Given 落盘后（恢复前）与恢复后各取一次 `role show`，两帧逐字相同（含「冷却中 · 活跃会话 0/1 · 服务节点 —」）**；`role_to_sessions` 保留历史 `idle` 会话记录但不计入活跃会话；`session/new` 次数不变 | 待S2 |
 
 > `*` AC-57 的场景类型是「架构检查」、锚点也是架构检查（分面归架构检查面），但其 Given 是「执行真实 DSH 面的 AC-25/26」，随真实宿主面一并取证；`stat`/`git status` 断言本身可单跑，作为真实宿主面配套取证在 AC-25/26 阻塞时一并列「阻塞/待补证」，不单独伪造成通过。
 
