@@ -180,3 +180,23 @@ mousedown → [SSE 帧到达 → paint() → clear(sidebar) + 重建按钮] → 
 - 文案键 312 → 365（+53，全部 `DESKTOP_V2_` 前缀，既有键值一字未改）。
 - 发布产物：`Maestro_0.0.1-beta.2_x64.dmg`、`_arm64.dmg`、`_win-x64-setup.exe` + `SHA256SUMS.txt`，
   三条校验和与资产 digest 逐条相等；Release `draft=false / prerelease=true`，匿名访问 HTTP 200。
+
+---
+
+## 6. beta.3 回归与发布
+
+改动落在界面层与文案层，受影响面按「只跑受影响文件 + 对照基线红名单」的口径复核
+（Windows 本地跑不全量：约 30 分钟只到 168 例，`HANDOFF_BACKFLOW_INCOMPLETE` 之后进入长等待，
+与 beta.2 时的观察一致）。
+
+| 范围 | tests | pass | fail | 判定 |
+|---|---|---|---|---|
+| wp13 + wp14（界面 / 契约 / 文案） | 643 | 625 | 5 | 5 条全在既有基线红名单（S-07 EBUSY、lsof 不在 Windows、AC-27 计时、三主链、AC-43 会话重建），差集 0 |
+| wp2 / wp7 / wp11 / wp15（文案表与边界） | 54 | 53 | 1 | 唯一红为 `AC-23 #3`（`git diff HEAD` 型），提交后复跑 31/31 通过 |
+| purity 门禁 | — | — | — | `src/core,src/daemon` 对图/角色字面量零命中 |
+| 界面零中文 | — | — | — | `desktop/ui/**` CJK 命中 0 |
+
+发布产物（tag `v0.0.1-beta.3` → `818a438`，run `45052660661`，三平台 + 汇总全 success）：
+
+- `Maestro_0.0.1-beta.3_x64.dmg` / `_arm64.dmg` / `_win-x64-setup.exe` + `SHA256SUMS.txt`；
+- 三条校验和与资产 digest 逐条相等；Release `draft=false / prerelease=true`。
