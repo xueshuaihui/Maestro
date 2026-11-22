@@ -2282,6 +2282,7 @@ export function mountApp({
   const app = createApp({ labels, project: mountProject ?? undefined, io: transport, modules });
 
   let lastRowsSignature = '[]';
+  let lastEmptyDiagAt = 0;
   function emitProbe(event) {
     if (typeof transport.probe !== 'function') return;
     try {
@@ -2289,6 +2290,29 @@ export function mountApp({
     } catch {
       // A broken probe sink must never break painting.
     }
+  }
+
+  /**
+   * Why is the list empty? The acceptance probe already records the rendered
+   * rows; when there are none this records the reason (labels missing, the
+   * instance read failed, the project is still unresolved) so a blank list is
+   * never a silent dead end. Throttled to one event per ~1s: a repaint storm
+   * must not flood the probe file.
+   */
+  function probeEmptyRows(model, state) {
+    if (model.view !== 'instances' || model.rows.length > 0) return;
+    const now = Date.now();
+    if (now - lastEmptyDiagAt < 800) return;
+    lastEmptyDiagAt = now;
+    emitProbe({
+      event: 'rows-empty',
+      ready: model.ready === true,
+      view: model.view,
+      labels: Object.keys(state.labels ?? {}).length,
+      instances: Array.isArray(state.instances) ? state.instances.length : -1,
+      status: model.connection?.status ?? null,
+      error: state.lastError ?? null,
+    });
   }
 
   let toastTimer = null;
@@ -2343,6 +2367,7 @@ export function mountApp({
         emitProbe({ event: 'rows', rows: texts });
       }
     }
+    probeEmptyRows(model, state);
     renderShell(host, buildShellContext(model, state));
   }
 
@@ -3786,6 +3811,10 @@ export function mountApp({
   if (typeof window !== 'undefined') {
     window.__MAESTRO_CTL__ = (action, arg) => {
       if (action === 'refresh-list') {
+        // An explicit refresh re-announces the rendered rows even when the text
+        // is unchanged: the caller asked for a fresh read, so a `rows` probe
+        // lost to a dropped POST must not silence every later attempt.
+        lastRowsSignature = '[]';
         void app.loadInstances().then(paint);
       } else if (action === 'open-instance' && typeof arg === 'string') {
         void app.openGraph(arg).then(paint);
@@ -3824,6 +3853,9 @@ export function mountApp({
     };
   }
 
+  // One boot event per window: tells the acceptance probe whether the module
+  // graph actually evaluated before any render happened.
+  emitProbe({ event: 'ui-boot', shell: 'beta.2' });
   paint();
   ensureStreams();
 
