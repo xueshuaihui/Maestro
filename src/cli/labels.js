@@ -1041,7 +1041,7 @@ export const DESKTOP_QUEUE_ROW_ESC = Object.freeze(
 export const DESKTOP_QUEUE_ROW_APR = Object.freeze(
   '审批 {id} · 实例 {instanceId} · 节点 {nodeId} {role} · 第 {round} 轮 · {state} · 动作 {action} · {createdAt}'
 );
-export const DESKTOP_QUEUE_EMPTY = Object.freeze('待处理 无');
+export const DESKTOP_QUEUE_EMPTY = Object.freeze('暂无待处理项');
 export const DESKTOP_QUEUE_DISCONNECTED = Object.freeze('已断开 · 正在重连…');
 export const DESKTOP_QUEUE_ROW_STATE_UNREADABLE = Object.freeze('实例 {id} · 状态不可读');
 export const DESKTOP_QUEUE_STATE_UNREADABLE = Object.freeze('状态不可读');
@@ -1110,7 +1110,7 @@ export const DESKTOP_ASSET_DETAIL_VALIDATION = Object.freeze('校验 {validation
 export const DESKTOP_OCCUPANCY_ROW = Object.freeze(
   '角色 {role} · {status} · 参与 {instances} 个实例 · {sessions} 个活跃会话 · 服务 {serving} · 宿主 {hosts}'
 );
-export const DESKTOP_OCCUPANCY_EMPTY = Object.freeze('角色占用 无');
+export const DESKTOP_OCCUPANCY_EMPTY = Object.freeze('暂无角色占用');
 export const DESKTOP_OCCUPANCY_SKIPPED = Object.freeze('{n} 个实例状态不可读，已跳过');
 
 // ---- A-7 工作流画布 ----
@@ -1303,7 +1303,19 @@ export const DESKTOP_V2_LABEL = Object.freeze({
   DESKTOP_V2_COUNT: '{n} 项',
   DESKTOP_V2_STAGE: '阶段',
   DESKTOP_V2_DURATION: '耗时',
-  DESKTOP_V2_OPEN_INSTANCE: '打开实例'
+  DESKTOP_V2_OPEN_INSTANCE: '打开实例',
+  DESKTOP_V2_NEED_INSTANCE: '请先打开一个实例',
+  DESKTOP_V2_CONNECTED: '已连接',
+  DESKTOP_V2_NO_INSTANCE: '还没有实例，从右侧选择一个工作流开始',
+  DESKTOP_V2_SWITCH_PROJECT: '切换项目',
+  DESKTOP_V2_HOST_NOTE: '编排核心随应用启动，同一项目下的实例共享一个会话池。',
+  DESKTOP_V2_RECOVERY_TEXT: '状态每次变更即落盘，重启后从最新检查点恢复，已完成节点不重放。',
+  DESKTOP_V2_OCCUPANCY_HINT: '角色占用只统计运行中的实例；启动实例后可在这里看到各角色的并发占用。',
+  DESKTOP_V2_NOT_AVAILABLE: '—',
+  DESKTOP_V2_GOVERNANCE_HINT: '治理计数来自实例证据链，当前还没有可汇总的证据。',
+  DESKTOP_V2_NO_ANOMALY: '没有检测到异常信号',
+  DESKTOP_V2_READ_ALL: '全部标记已读',
+  DESKTOP_V2_SELECT_ITEM: '从左侧选择一个条目查看详情'
 });
 
 /**

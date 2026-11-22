@@ -378,9 +378,9 @@ test('buildQueue：无节点审批行轮次为 null、降级行标注状态不�
   assert.deepEqual(offline.totals, { pendingEscalations: 0, pendingApprovals: 0 });
 
   const empty = buildQueue('/tmp/maestro-wp14-pure', { instances: [] });
-  assert.deepEqual(empty.items, [], '空队列 items 为空（空态文案「待处理 无」由界面渲染）');
+  assert.deepEqual(empty.items, [], '空队列 items 为空（空态文案「暂无待处理项」由界面渲染）');
   assert.deepEqual(empty.totals, { pendingEscalations: 0, pendingApprovals: 0 });
-  assert.equal(QUEUE_LABELS.EMPTY, '待处理 无');
+  assert.equal(QUEUE_LABELS.EMPTY, '暂无待处理项');
   assert.equal(QUEUE_LABELS.DISCONNECTED, '已断开 · 正在重连…');
 });
 

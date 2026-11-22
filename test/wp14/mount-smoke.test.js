@@ -324,3 +324,54 @@ test('mountApp：侧栏九项都能跳到对应视图（无死链、不抛异常
   assert.equal(mounted.app.state().newPanel.open, true, '新建页没有打开表单状态');
   assert.equal(mounted.app.state().newPanel.template, 'code-loop', '新建页没有预选第一个工作流');
 });
+
+test('侧栏导航按钮跨重绘复用同一节点（按下与抬起不会被换掉）', async () => {
+  const io = {
+    getLabels: async () => ({ status: 200, body: { keys: LABELS } }),
+    getInstances: async () => ({
+      status: 200,
+      body: { items: [{ instanceId: 'INST-001', template: 'code-loop', state: 'running', phase: 'coding', nodes: [] }] },
+    }),
+    getWorkflows: async () => ({ status: 200, body: { items: [] } }),
+    getQueue: async () => ({ status: 200, body: { items: [], totals: {} } }),
+    openStream: () => ({ close() {}, addEventListener() {} }),
+    probe: () => {},
+  };
+  const { mounted, host } = await mountWith(io, { labels: null });
+  await mounted.app.start();
+  mounted.paint();
+
+  const before = actionNode(host, 'nav', 'queue');
+  assert.ok(before !== null, '侧栏缺少队列入口');
+  mounted.paint();
+  mounted.paint();
+  const after = actionNode(host, 'nav', 'queue');
+
+  assert.equal(
+    after,
+    before,
+    '一次重绘就换掉了侧栏按钮：按下与抬起落在不同节点，浏览器不会派发 click',
+  );
+});
+
+test('侧栏按下即切换视图（不等 click，实时帧重绘也抢不走这次操作）', async () => {
+  const io = {
+    getLabels: async () => ({ status: 200, body: { keys: LABELS } }),
+    getInstances: async () => ({ status: 200, body: { items: [] } }),
+    getWorkflows: async () => ({ status: 200, body: { items: [] } }),
+    getQueue: async () => ({ status: 200, body: { items: [], totals: {} } }),
+    openStream: () => ({ close() {}, addEventListener() {} }),
+    probe: () => {},
+  };
+  const { mounted, host } = await mountWith(io, { labels: null });
+  await mounted.app.start();
+  mounted.paint();
+
+  const node = actionNode(host, 'nav', 'queue');
+  assert.ok(node !== null, '侧栏缺少队列入口');
+  const handlers = host._listeners?.get('pointerdown') ?? [];
+  assert.ok(handlers.length > 0, 'pointerdown listener was never registered');
+  for (const handler of handlers) handler({ button: 0, target: node, preventDefault() {}, stopPropagation() {} });
+
+  assert.equal(mounted.app.state().view, 'queue', '按下侧栏没有切换视图');
+});

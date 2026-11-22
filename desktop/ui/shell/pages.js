@@ -110,19 +110,33 @@ function textOf(row) {
 
 export function projectPage(ctx) {
   const frag = document.createDocumentFragment();
-  const message = ctx.model.projectMessage ?? '';
+  // `projectMessage` is non-null only when the project is missing or invalid.
+  // A user who simply clicks the sidebar entry gets the project facts instead
+  // of a dead "retry" button.
+  const message = ctx.model.projectMessage ?? null;
+  frag.appendChild(pageHead(ctx.t('DESKTOP_V2_SETTINGS_PROJECT'), message));
+
   const box = card([], { className: 'prompt-card' });
   const mark = document.createElement('img');
   mark.className = 'prompt-mark';
   mark.src = './brand/mark.svg';
   mark.alt = '';
   box.appendChild(mark);
-  box.appendChild(el('p', 'prompt-text', message));
-  const actions = el('div', 'row mt14');
-  actions.appendChild(button(ctx.t('DESKTOP_V2_RETRY'), { variant: 'primary', action: 'retry-connection' }));
-  actions.appendChild(button(ctx.t('DESKTOP_V2_SETTINGS_PROJECT'), { action: 'pick-project' }));
-  box.appendChild(actions);
-  frag.appendChild(pageHead(ctx.t('DESKTOP_V2_SETTINGS_PROJECT'), message));
+
+  if (message !== null) {
+    box.appendChild(el('p', 'prompt-text', message));
+    const actions = el('div', 'row mt14');
+    actions.appendChild(button(ctx.t('DESKTOP_V2_RETRY'), { variant: 'primary', action: 'retry-connection' }));
+    actions.appendChild(button(ctx.t('DESKTOP_V2_SWITCH_PROJECT'), { action: 'pick-project' }));
+    box.appendChild(actions);
+  } else {
+    box.appendChild(el('p', 'prompt-text', ctx.projectRoot ?? ''));
+    box.appendChild(fieldLine(ctx.t('DESKTOP_V2_SETTINGS_DATA'), ctx.dataDir ?? ''));
+    const actions = el('div', 'row mt14');
+    actions.appendChild(button(ctx.t('DESKTOP_V2_SWITCH_PROJECT'), { variant: 'primary', action: 'pick-project' }));
+    actions.appendChild(button(ctx.instancesLabel ?? 'Maestro', { action: 'nav', arg: 'instances' }));
+    box.appendChild(actions);
+  }
   frag.appendChild(box);
   return frag;
 }
@@ -165,8 +179,11 @@ export function instancesPage(ctx) {
 
   const grid = el('div', 'split');
   const listBox = el('div');
-  if (rows.length === 0) {
-    listBox.appendChild(emptyBox('\u25c8', ctx.t('DESKTOP_V2_EMPTY'), button(`+ ${ctx.t('DESKTOP_NEW_TITLE')}`, { variant: 'primary', size: 'sm', action: 'nav', arg: 'new' })));
+  const empty = rows.length === 0;
+  if (empty) {
+    // The right rail already carries the create entry, so the empty state
+    // explains what to do instead of repeating the same button a second time.
+    listBox.appendChild(emptyBox('\u25c8', ctx.t('DESKTOP_V2_NO_INSTANCE')));
   } else {
     for (const row of rows) {
       listBox.appendChild(instanceRow(ctx, row));
@@ -192,20 +209,22 @@ export function instancesPage(ctx) {
   if ((ctx.state.templates ?? []).length === 0) quick.appendChild(el('div', 'tiny muted mt6', ctx.t('DESKTOP_V2_EMPTY')));
   rail.appendChild(quick);
 
-  const healthCard = card([]);
-  healthCard.appendChild(sectionTitle(ctx.t('DESKTOP_V2_HEALTH')));
-  const buckets = new Map();
-  for (const row of ctx.model.rows ?? []) {
-    const level = row.healthLevel ?? 'normal';
-    buckets.set(level, (buckets.get(level) ?? 0) + 1);
+  if (!empty) {
+    const healthCard = card([]);
+    healthCard.appendChild(sectionTitle(ctx.t('DESKTOP_V2_HEALTH')));
+    const buckets = new Map();
+    for (const row of ctx.model.rows ?? []) {
+      const level = row.healthLevel ?? 'normal';
+      buckets.set(level, (buckets.get(level) ?? 0) + 1);
+    }
+    for (const level of ['attention', 'slow', 'normal', 'ended']) {
+      const line = el('div', 'between mt10');
+      line.appendChild(el('span', 'small muted', healthWord(ctx, level) ?? level));
+      line.appendChild(badge(String(buckets.get(level) ?? 0), HEALTH_TONE[level] ?? 'gray'));
+      healthCard.appendChild(line);
+    }
+    rail.appendChild(healthCard);
   }
-  for (const level of ['attention', 'slow', 'normal', 'ended']) {
-    const row = el('div', 'between mt10');
-    row.appendChild(el('span', 'small muted', healthWord(ctx, level) ?? level));
-    row.appendChild(badge(String(buckets.get(level) ?? 0), HEALTH_TONE[level] ?? 'gray'));
-    healthCard.appendChild(row);
-  }
-  rail.appendChild(healthCard);
   grid.appendChild(rail);
   frag.appendChild(grid);
   return frag;
@@ -379,14 +398,18 @@ export function overviewPage(ctx) {
 export function queuePage(ctx) {
   const frag = document.createDocumentFragment();
   const view = ctx.model.queue ?? { rows: [], prefs: [] };
+  const prefs = Array.isArray(ctx.prefs) && ctx.prefs.length > 0 ? ctx.prefs : (view.prefs ?? []);
   frag.appendChild(pageHead(ctx.t('DESKTOP_VIEW_QUEUE'), ctx.queueSubtitle ?? null));
   if (ctx.instanceId) frag.appendChild(workspaceTabs(ctx));
 
   if (view.disconnectedText) frag.appendChild(el('div', 'notice', view.disconnectedText));
 
-  if (Array.isArray(view.prefs) && view.prefs.length > 0) {
-    const prefs = el('div', 'prefs');
-    for (const pref of view.prefs) {
+  if (prefs.length > 0) {
+    // These four switches are notification preferences, not queue filters.
+    // Labelling them keeps the queue page from looking like a filter bar.
+    frag.appendChild(el('div', 'tiny muted mb6', ctx.t('DESKTOP_V2_SETTINGS_NOTIFY')));
+    const prefsRow = el('div', 'prefs');
+    for (const pref of prefs) {
       const label = el('label');
       const input = document.createElement('input');
       input.type = 'checkbox';
@@ -395,9 +418,9 @@ export function queuePage(ctx) {
       input.setAttribute('data-arg', pref.key);
       label.appendChild(input);
       label.appendChild(el('span', 'small', pref.text ?? ''));
-      prefs.appendChild(label);
+      prefsRow.appendChild(label);
     }
-    frag.appendChild(prefs);
+    frag.appendChild(prefsRow);
   }
 
   if ((view.rows ?? []).length === 0) {
@@ -482,7 +505,7 @@ export function assetsPage(ctx) {
   const detail = card([]);
   detail.appendChild(sectionTitle(ctx.t('DESKTOP_V2_DETAIL')));
   const lines = view.detail?.lines ?? [];
-  if (lines.length === 0) detail.appendChild(el('div', 'tiny muted mt10', ctx.t('DESKTOP_V2_EMPTY')));
+  if (lines.length === 0) detail.appendChild(el('div', 'tiny muted mt10', ctx.t('DESKTOP_V2_SELECT_ITEM')));
   for (const line of lines) detail.appendChild(el('p', 'small mt6', line));
   grid.appendChild(detail);
   frag.appendChild(grid);
@@ -498,11 +521,16 @@ export function occupancyPage(ctx) {
   const view = ctx.model.occupancy ?? { rows: [], skipped: [] };
   frag.appendChild(pageHead(ctx.t('DESKTOP_VIEW_OCCUPANCY'), null));
   if (view.disconnectedText) frag.appendChild(el('div', 'notice', view.disconnectedText));
-  const rows = (view.rows ?? []).map((row) => [textOf(row)]);
-  if (rows.length === 0) frag.appendChild(emptyBox('\u25cd', view.emptyText ?? ctx.t('DESKTOP_V2_EMPTY')));
-  else {
+  const rows = view.rows ?? [];
+  if (rows.length === 0) {
+    frag.appendChild(emptyBox('\u25cd', ctx.t('DESKTOP_V2_OCCUPANCY_HINT')));
+  } else {
     const box = card([], { flat: true });
-    box.appendChild(table([ctx.t('DESKTOP_V2_ARTIFACTS')], rows));
+    for (const row of rows) {
+      const line = el('div', 'listrow');
+      line.appendChild(el('div', 'grow small', textOf(row)));
+      box.appendChild(line);
+    }
     frag.appendChild(box);
   }
   if (view.skippedText) frag.appendChild(el('div', 'tiny muted mt10', view.skippedText));
@@ -517,6 +545,25 @@ export function canvasPage(ctx) {
   const frag = document.createDocumentFragment();
   const view = ctx.model.canvas ?? { nodes: [], edges: [] };
   frag.appendChild(pageHead(ctx.t('DESKTOP_VIEW_CANVAS'), view.title ?? null));
+
+  // Workflow switch: the canvas is a projection of ONE workflow, so the page
+  // needs its own selector instead of depending on whichever id loaded first.
+  const templates = Array.isArray(ctx.state.templates) ? ctx.state.templates : [];
+  if (templates.length > 0) {
+    const chips = el('div', 'sb mb14');
+    for (const item of templates) {
+      const id = typeof item?.id === 'string' ? item.id : null;
+      if (id === null) continue;
+      const active = (ctx.state.canvasId ?? templates[0]?.id) === id;
+      const chip = el('button', active ? 'chip on' : 'chip', typeof item?.title === 'string' ? item.title : id);
+      chip.type = 'button';
+      chip.setAttribute('data-action', 'canvas-pick');
+      chip.setAttribute('data-arg', id);
+      chips.appendChild(chip);
+    }
+    frag.appendChild(chips);
+  }
+
   if (view.badge) frag.appendChild(el('div', 'mb14', badge(view.badge, 'cyan')));
   if (view.degrade?.text) {
     const box = callout(view.degrade.text, { tone: 'amber' });
@@ -573,7 +620,7 @@ export function canvasPage(ctx) {
   const rows = (view.nodes ?? []).map((item) => [item.id ?? '', item.text ?? '']);
   if (rows.length > 0) {
     const box = card([], { flat: true, className: 'mt14' });
-    box.appendChild(table([ctx.t('DESKTOP_V2_NODE'), ctx.t('DESKTOP_V2_STATE')], rows));
+    box.appendChild(table([ctx.t('DESKTOP_V2_NODE'), ctx.t('DESKTOP_V2_DETAIL')], rows));
     frag.appendChild(box);
   }
   return frag;
@@ -643,15 +690,17 @@ export function governancePage(ctx) {
   frag.appendChild(pageHead(ctx.t('DESKTOP_V2_NAV_AUDIT'), null));
 
   const rows = ctx.model.rows ?? [];
-  const attention = rows.filter((row) => row.healthLevel === 'attention').length;
-  const slow = rows.filter((row) => row.healthLevel === 'slow').length;
-  const pending = rows.reduce((sum, row) => sum + (row.pending ?? 0), 0);
+  // Governance counters have no projection behind them yet. Showing a health
+  // count under a governance label would be a fabricated number, so the tiles
+  // stay empty and the line below says where the numbers come from.
+  const na = ctx.t('DESKTOP_V2_NOT_AVAILABLE');
   const metrics = el('div', 'metric-grid');
-  metrics.appendChild(metric(ctx.t('DESKTOP_V2_HASH_CHAIN'), ctx.t('DESKTOP_V2_STATE'), { tone: 'green' }));
-  metrics.appendChild(metric(ctx.t('DESKTOP_V2_PERMISSION_DENY'), String(attention), { tone: attention > 0 ? 'red' : 'green' }));
-  metrics.appendChild(metric(ctx.t('DESKTOP_V2_EVIDENCE_EXPIRED'), String(slow), { tone: slow > 0 ? 'amber' : 'green' }));
-  metrics.appendChild(metric(ctx.t('DESKTOP_V2_BUDGET'), String(pending), { tone: pending > 0 ? 'amber' : 'green' }));
+  metrics.appendChild(metric(ctx.t('DESKTOP_V2_HASH_CHAIN'), na, { tone: 'gray' }));
+  metrics.appendChild(metric(ctx.t('DESKTOP_V2_PERMISSION_DENY'), na, { tone: 'gray' }));
+  metrics.appendChild(metric(ctx.t('DESKTOP_V2_EVIDENCE_EXPIRED'), na, { tone: 'gray' }));
+  metrics.appendChild(metric(ctx.t('DESKTOP_V2_BUDGET'), na, { tone: 'gray' }));
   frag.appendChild(metrics);
+  frag.appendChild(el('div', 'tiny muted mb14', ctx.t('DESKTOP_V2_GOVERNANCE_HINT')));
 
   const grid = el('div', 'split mt14');
   const stream = card([], { flat: true });
@@ -674,15 +723,25 @@ export function governancePage(ctx) {
   const side = el('div');
   const anti = card([]);
   anti.appendChild(sectionTitle(ctx.t('DESKTOP_V2_ANTIPATTERN')));
-  anti.appendChild(el('div', 'mt10', badge(attention > 0 ? ctx.t('HEALTH_REASON_NODE_TIMEOUT') : ctx.t('DESKTOP_V2_EMPTY'), attention > 0 ? 'wait' : 'gray')));
-  anti.appendChild(el('div', 'mt6', badge(slow > 0 ? ctx.t('HEALTH_REASON_P90_EXCEEDED') : ctx.t('DESKTOP_V2_EMPTY'), slow > 0 ? 'wait' : 'gray')));
+  const anomalies = rows.filter((row) => row.healthLevel === 'attention' || row.healthLevel === 'slow');
+  if (anomalies.length === 0) {
+    anti.appendChild(el('div', 'tiny muted mt10', ctx.t('DESKTOP_V2_NO_ANOMALY')));
+  }
+  for (const row of anomalies) {
+    const line = el('div', 'between mt10');
+    line.appendChild(el('span', 'small', row.instanceId ?? ''));
+    line.appendChild(badge(healthWord(ctx, row.healthLevel) ?? '', HEALTH_TONE[row.healthLevel] ?? 'gray'));
+    anti.appendChild(line);
+  }
   side.appendChild(anti);
 
   const exp = card([], { className: 'mt14' });
   exp.appendChild(sectionTitle(ctx.t('DESKTOP_V2_EXPORT_OTEL')));
   exp.appendChild(el('div', 'tiny muted mt10', ctx.t('DESKTOP_V2_EXPORT')));
   const row = el('div', 'row mt10');
-  row.appendChild(button(ctx.t('DESKTOP_V2_EXPORT_OTEL'), { size: 'sm', action: 'export-otel' }));
+  const exportBtn = button(ctx.t('DESKTOP_V2_EXPORT_OTEL'), { size: 'sm', action: 'export-otel' });
+  if (rows.length === 0) exportBtn.disabled = true;
+  row.appendChild(exportBtn);
   exp.appendChild(row);
   side.appendChild(exp);
   grid.appendChild(side);
@@ -703,20 +762,22 @@ export function settingsPage(ctx) {
   project.appendChild(sectionTitle(ctx.t('DESKTOP_V2_SETTINGS_PROJECT')));
   project.appendChild(fieldLine(ctx.t('DESKTOP_V2_SETTINGS_DATA'), ctx.projectRoot ?? ctx.t('DESKTOP_PLACEHOLDER')));
   const projectActions = el('div', 'row mt14');
-  projectActions.appendChild(button(ctx.t('DESKTOP_V2_SETTINGS_PROJECT'), { size: 'sm', action: 'pick-project' }));
-  projectActions.appendChild(button(ctx.t('DESKTOP_V2_BACK'), { size: 'sm', action: 'nav', arg: 'projects' }));
+  projectActions.appendChild(button(ctx.t('DESKTOP_V2_SWITCH_PROJECT'), { size: 'sm', action: 'pick-project' }));
   project.appendChild(projectActions);
   grid.appendChild(project);
 
   const host = card([]);
   host.appendChild(sectionTitle(ctx.t('DESKTOP_V2_SETTINGS_HOST')));
-  host.appendChild(el('div', 'mt10', badge(ctx.statusText ?? '', 'done')));
-  host.appendChild(fieldLine(ctx.t('DESKTOP_V2_SESSIONS'), ctx.hostText ?? ctx.t('DESKTOP_PLACEHOLDER')));
+  const hostRow = el('div', 'row mt10');
+  hostRow.appendChild(badge(ctx.statusText ?? '', ctx.statusTone === 'ok' ? 'done' : 'wait'));
+  host.appendChild(hostRow);
+  host.appendChild(fieldLine(ctx.t('DESKTOP_V2_SESSIONS'), String((ctx.state.instances ?? []).length)));
+  host.appendChild(el('div', 'tiny muted mt10', ctx.t('DESKTOP_V2_HOST_NOTE')));
   grid.appendChild(host);
 
   const notify = card([]);
   notify.appendChild(sectionTitle(ctx.t('DESKTOP_V2_SETTINGS_NOTIFY')));
-  const prefs = ctx.model.queue?.prefs ?? [];
+  const prefs = Array.isArray(ctx.prefs) && ctx.prefs.length > 0 ? ctx.prefs : (ctx.model.queue?.prefs ?? []);
   if (prefs.length === 0) notify.appendChild(el('div', 'tiny muted mt10', ctx.t('DESKTOP_V2_EMPTY')));
   for (const pref of prefs) {
     const row = el('div', 'between mt10');
@@ -749,7 +810,7 @@ export function settingsPage(ctx) {
   const recovery = card([]);
   recovery.appendChild(sectionTitle(ctx.t('DESKTOP_V2_SETTINGS_RECOVERY')));
   recovery.appendChild(el('div', 'mt10', badge(ctx.t('DESKTOP_V2_CHECKPOINT'), 'cyan')));
-  recovery.appendChild(el('div', 'tiny muted mt10', ctx.recoveryHint ?? ''));
+  recovery.appendChild(el('div', 'tiny muted mt10', ctx.t('DESKTOP_V2_RECOVERY_TEXT')));
   grid.appendChild(recovery);
 
   const data = card([]);
@@ -767,9 +828,10 @@ export function settingsPage(ctx) {
 
 export function notificationsPage(ctx) {
   const frag = document.createDocumentFragment();
-  const actions = [button(ctx.t('DESKTOP_V2_CLOSE'), { size: 'sm', action: 'read-all' })];
-  frag.appendChild(pageHead(ctx.t('DESKTOP_NOTIFY_TOGGLE'), null, actions));
   const entries = Array.isArray(ctx.state.notifications) ? ctx.state.notifications : [];
+  const readAll = button(ctx.t('DESKTOP_V2_READ_ALL'), { size: 'sm', action: 'read-all' });
+  if (entries.length === 0) readAll.disabled = true;
+  frag.appendChild(pageHead(ctx.t('DESKTOP_NOTIFY_TOGGLE'), null, [readAll]));
   if (entries.length === 0) {
     frag.appendChild(emptyBox('\u2662', ctx.t('DESKTOP_V2_EMPTY')));
     return frag;

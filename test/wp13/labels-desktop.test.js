@@ -30,6 +30,7 @@ import {
   NODE_LABEL,
   RESOLUTION_LABEL,
   ROLE_INSTANCE_STATUS_LABEL,
+  ROLE_LABEL,
   TEMPLATE_LABEL,
   USAGE_LINES
 } from '../../src/cli/labels.js';
@@ -475,6 +476,7 @@ const REUSED_TABLES = Object.freeze([
   ['RESOLUTION_LABEL', RESOLUTION_LABEL, ['pass', 'fail', 'retry']],
   ['HANDOFF_LABEL', HANDOFF_LABEL, ['created', 'delivered', 'pending', 'accepted', 'consumed', 'rejected', 'expired']],
   ['ROLE_INSTANCE_STATUS_LABEL', ROLE_INSTANCE_STATUS_LABEL, ['inactive', 'available', 'busy', 'cooldown', 'unavailable', 'retired']],
+  ['ROLE_LABEL', ROLE_LABEL, ['developer', 'tester', 'coordinator', 'researcher', 'writer', 'reviewer']],
   ['HEALTH_LABEL', HEALTH_LABEL, ['normal', 'slow', 'attention', 'ended']],
   ['HEALTH_LINE', HEALTH_LINE, ['base', 'withReasons', 'sep']],
   ['HEALTH_REASON', HEALTH_REASON, ['pending_escalation', 'node_timeout', 'session_crash', 'role_unavailable', 'connection_rejected', 'connection_expired', 'p90_exceeded', 'handoff_ttl_half']],
@@ -543,7 +545,19 @@ const EXPECTED_V2_KEYS = Object.freeze([
   'DESKTOP_V2_COUNT',
   'DESKTOP_V2_STAGE',
   'DESKTOP_V2_DURATION',
-  'DESKTOP_V2_OPEN_INSTANCE'
+  'DESKTOP_V2_OPEN_INSTANCE',
+  'DESKTOP_V2_NEED_INSTANCE',
+  'DESKTOP_V2_CONNECTED',
+  'DESKTOP_V2_NO_INSTANCE',
+  'DESKTOP_V2_SWITCH_PROJECT',
+  'DESKTOP_V2_HOST_NOTE',
+  'DESKTOP_V2_RECOVERY_TEXT',
+  'DESKTOP_V2_OCCUPANCY_HINT',
+  'DESKTOP_V2_NOT_AVAILABLE',
+  'DESKTOP_V2_GOVERNANCE_HINT',
+  'DESKTOP_V2_NO_ANOMALY',
+  'DESKTOP_V2_READ_ALL',
+  'DESKTOP_V2_SELECT_ITEM'
 ]);
 
 const EXPECTED_V2_VALUES = Object.freeze({
@@ -599,7 +613,19 @@ const EXPECTED_V2_VALUES = Object.freeze({
   DESKTOP_V2_COUNT: '{n} 项',
   DESKTOP_V2_STAGE: '阶段',
   DESKTOP_V2_DURATION: '耗时',
-  DESKTOP_V2_OPEN_INSTANCE: '打开实例'
+  DESKTOP_V2_OPEN_INSTANCE: '打开实例',
+  DESKTOP_V2_NEED_INSTANCE: '请先打开一个实例',
+  DESKTOP_V2_CONNECTED: '已连接',
+  DESKTOP_V2_NO_INSTANCE: '还没有实例，从右侧选择一个工作流开始',
+  DESKTOP_V2_SWITCH_PROJECT: '切换项目',
+  DESKTOP_V2_HOST_NOTE: '编排核心随应用启动，同一项目下的实例共享一个会话池。',
+  DESKTOP_V2_RECOVERY_TEXT: '状态每次变更即落盘，重启后从最新检查点恢复，已完成节点不重放。',
+  DESKTOP_V2_OCCUPANCY_HINT: '角色占用只统计运行中的实例；启动实例后可在这里看到各角色的并发占用。',
+  DESKTOP_V2_NOT_AVAILABLE: '—',
+  DESKTOP_V2_GOVERNANCE_HINT: '治理计数来自实例证据链，当前还没有可汇总的证据。',
+  DESKTOP_V2_NO_ANOMALY: '没有检测到异常信号',
+  DESKTOP_V2_READ_ALL: '全部标记已读',
+  DESKTOP_V2_SELECT_ITEM: '从左侧选择一个条目查看详情'
 });
 
 /** 平铺命名：`表名_成员名`（成员名大写、`-` 归一 `_`、驼峰拆分）。 */
@@ -629,7 +655,7 @@ const EXPECTED_ALL_KEYS = (() => {
 test('键全集冻结：下发键集合与期望清单精确相等（多键/少键都 fail）', () => {
   assert.deepEqual(Object.keys(UI_LABEL_KEYS).sort(), EXPECTED_ALL_KEYS);
   assert.equal(Object.keys(UI_LABEL_KEYS).length, EXPECTED_ALL_KEYS.length);
-  assert.equal(Object.keys(UI_LABEL_KEYS).length, 312 + EXPECTED_V2_KEYS.length, 'I1.10a + I1.10b + I1.11 键并集 + beta.2 外壳增量');
+  assert.equal(Object.keys(UI_LABEL_KEYS).length, 312 + EXPECTED_V2_KEYS.length + Object.keys(ROLE_LABEL).length, 'I1.10a + I1.10b + I1.11 键并集 + beta.2 外壳增量 + 角色名表');
 });
 
 test('beta.2 外壳增量键：DESKTOP_V2_LABEL 与期望值逐字相等', () => {

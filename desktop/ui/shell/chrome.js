@@ -13,7 +13,7 @@ const SHELLS = new WeakMap();
 
 const NAV_GROUPS = Object.freeze([
   [
-    { view: 'projects', key: 'DESKTOP_V2_SETTINGS_PROJECT', glyph: '\u25a6' },
+    { view: 'project', key: 'DESKTOP_V2_SETTINGS_PROJECT', glyph: '\u25a6' },
     { view: 'instances', key: null, glyph: '\u25c8' },
     { view: 'queue', key: 'DESKTOP_VIEW_QUEUE', glyph: '\u2637', count: 'queue' },
     { view: 'notifications', key: 'DESKTOP_NOTIFY_TOGGLE', glyph: '\u2662', count: 'notify' },
@@ -62,10 +62,13 @@ export function shellRefs(host) {
 }
 
 /**
- * Sidebar. `ctx` supplies `t`, the active view and the two counters
- * (`queueCount`, `notifyCount`); counters at zero render no badge.
+ * Build the sidebar once per host. Every later paint updates these nodes in
+ * place: replacing them on a live frame would drop a click whose press and
+ * release straddle the repaint (the browser only fires `click` when both ends
+ * resolve to the same node), which is exactly the "nav sometimes does nothing"
+ * symptom.
  */
-export function paintSidebar(refs, ctx) {
+function buildSidebar(refs) {
   const box = clear(refs.sidebar);
   const brand = el('button', 'brand');
   brand.type = 'button';
@@ -75,9 +78,11 @@ export function paintSidebar(refs, ctx) {
   mark.className = 'brand-mark';
   mark.src = './brand/mark.svg';
   mark.alt = '';
-  append(brand, mark, el('span', 'brand-name', 'Maestro'));
+  const brandLabel = el('span', 'brand-name', 'Maestro');
+  append(brand, mark, brandLabel);
   box.appendChild(brand);
 
+  const items = [];
   for (const group of NAV_GROUPS) {
     box.appendChild(el('div', 'nav-sep'));
     for (const item of group) {
@@ -86,47 +91,102 @@ export function paintSidebar(refs, ctx) {
       node.setAttribute('data-action', 'nav');
       node.setAttribute('data-arg', item.view);
       node.appendChild(el('span', 'ico', item.glyph));
-      const label = item.key === null ? (ctx.instancesLabel ?? 'Maestro') : ctx.t(item.key);
-      node.appendChild(el('span', 'nav-text', label));
-      const active = ctx.view === item.view
-        || (item.view === 'instances' && ['graph', 'board', 'drill', 'node-detail', 'escalation-panel', 'connection-panel', 'subflow', 'evidence'].includes(ctx.view))
-        || (item.view === 'projects' && ctx.view === 'project');
-      if (active) {
-        node.classList.add('on');
-        node.setAttribute('aria-current', 'page');
-      }
-      const count = item.count === 'queue' ? ctx.queueCount : item.count === 'notify' ? ctx.notifyCount : 0;
-      if (count > 0) node.appendChild(el('span', 'badge-n', String(count)));
+      const label = el('span', 'nav-text');
+      node.appendChild(label);
       box.appendChild(node);
+      items.push({
+        view: item.view,
+        key: item.key,
+        counter: item.count ?? null,
+        node,
+        label,
+        badge: null,
+      });
     }
   }
 
   const foot = el('div', 'sidebar-foot');
-  if (ctx.projectRoot) {
-    foot.appendChild(el('div', 't', ctx.t('DESKTOP_V2_SETTINGS_PROJECT')));
-    const path = el('div', 'p', ctx.projectRoot);
-    path.title = ctx.projectRoot;
-    foot.appendChild(path);
-  }
-  if (ctx.statusText) {
-    const conn = el('div', `c ${ctx.statusTone ?? ''}`.trim());
-    conn.appendChild(el('span', 'dot-sm'));
-    conn.appendChild(el('span', null, ctx.statusText));
-    foot.appendChild(conn);
-  }
+  const projectBox = el('div');
+  const projectTitle = el('div', 't');
+  const projectPath = el('div', 'p');
+  append(projectBox, projectTitle, projectPath);
+  const status = el('div', 'c');
+  const statusText = el('span');
+  append(status, el('span', 'dot-sm'), statusText);
+  append(foot, projectBox, status);
   box.appendChild(foot);
+
+  const ui = { brand, brandLabel, items, foot, projectBox, projectTitle, projectPath, status, statusText };
+  refs.sidebarUi = ui;
+  return ui;
 }
 
-/** Top bar: breadcrumb, search, notification dot, avatar. */
-export function paintTopbar(refs, ctx) {
+/**
+ * Sidebar. `ctx` supplies `t`, the active view and the two counters
+ * (`queueCount`, `notifyCount`); counters at zero render no badge.
+ */
+export function paintSidebar(refs, ctx) {
+  const ui = refs.sidebarUi ?? buildSidebar(refs);
+
+  // The brand is the product name, not a projection: it never changes with the
+  // active project or the label table.
+  if (ui.brandLabel.textContent !== 'Maestro') ui.brandLabel.textContent = 'Maestro';
+
+  for (const item of ui.items) {
+    const label = item.key === null ? (ctx.instancesLabel ?? 'Maestro') : ctx.t(item.key);
+    if (item.label.textContent !== label) item.label.textContent = label;
+
+    const active = ctx.view === item.view
+      || (item.view === 'instances' && ['graph', 'board', 'drill', 'node-detail', 'escalation-panel', 'connection-panel', 'subflow', 'evidence'].includes(ctx.view));
+    item.node.classList.toggle('on', active);
+    if (active) item.node.setAttribute('aria-current', 'page');
+    else item.node.removeAttribute('aria-current');
+
+    const raw = item.counter === 'queue' ? ctx.queueCount
+      : item.counter === 'notify' ? ctx.notifyCount
+        : 0;
+    const count = Number.isFinite(raw) ? raw : 0;
+    if (count > 0) {
+      if (item.badge === null) {
+        item.badge = el('span', 'badge-n');
+        item.node.appendChild(item.badge);
+      }
+      const value = String(count);
+      if (item.badge.textContent !== value) item.badge.textContent = value;
+    } else if (item.badge !== null) {
+      item.node.removeChild(item.badge);
+      item.badge = null;
+    }
+  }
+
+  // `hidden` alone loses to the module's own `display` rules, so the empty
+  // project card and the status line are hidden through `style`.
+  ui.projectBox.style.display = ctx.projectRoot ? '' : 'none';
+  if (ctx.projectRoot) {
+    const title = ctx.t('DESKTOP_V2_SETTINGS_PROJECT');
+    if (ui.projectTitle.textContent !== title) ui.projectTitle.textContent = title;
+    if (ui.projectPath.textContent !== ctx.projectRoot) {
+      ui.projectPath.textContent = ctx.projectRoot;
+      ui.projectPath.title = ctx.projectRoot;
+    }
+  }
+
+  ui.status.style.display = ctx.statusText ? '' : 'none';
+  if (ctx.statusText) {
+    const tone = typeof ctx.statusTone === 'string' ? ctx.statusTone : '';
+    ui.status.className = tone.length > 0 ? `c ${tone}` : 'c';
+    if (ui.statusText.textContent !== ctx.statusText) ui.statusText.textContent = ctx.statusText;
+  }
+}
+
+/**
+ * Build the top bar once per host. The search and notification buttons keep
+ * their identity across paints for the same reason as the sidebar: a live
+ * frame must never swap out the node under the pointer.
+ */
+function buildTopbar(refs, ctx) {
   const box = clear(refs.topbar);
   const crumb = el('div', 'crumb');
-  for (const segment of ctx.crumbs) {
-    if (segment.bold) crumb.appendChild(el('b', null, segment.text));
-    else crumb.appendChild(el('span', null, segment.text));
-    crumb.appendChild(el('span', 'sep', '/'));
-  }
-  if (crumb.lastChild) crumb.removeChild(crumb.lastChild);
   box.appendChild(crumb);
   box.appendChild(el('div', 'spacer'));
 
@@ -134,12 +194,48 @@ export function paintTopbar(refs, ctx) {
   search.type = 'button';
   search.setAttribute('data-action', 'palette');
   search.appendChild(el('span', null, '\u2315'));
-  search.appendChild(el('span', null, ctx.t('DESKTOP_V2_SEARCH')));
+  const searchLabel = el('span');
+  search.appendChild(searchLabel);
   search.appendChild(el('span', 'kbd', '\u2318K'));
   box.appendChild(search);
 
-  box.appendChild(iconButton('\u2662', { action: 'nav', arg: 'notifications', title: ctx.t('DESKTOP_NOTIFY_TOGGLE'), dot: ctx.notifyCount > 0 }));
+  const notify = iconButton('\u2662', { action: 'nav', arg: 'notifications', title: ctx.t('DESKTOP_NOTIFY_TOGGLE') });
+  box.appendChild(notify);
   box.appendChild(el('div', 'avatar', 'M'));
+
+  const ui = { crumb, search, searchLabel, notify, notifyDot: null };
+  refs.topbarUi = ui;
+  return ui;
+}
+
+/** Top bar: breadcrumb, search, notification dot, avatar. */
+export function paintTopbar(refs, ctx) {
+  const ui = refs.topbarUi ?? buildTopbar(refs, ctx);
+
+  clear(ui.crumb);
+  for (const segment of ctx.crumbs) {
+    if (segment.bold) ui.crumb.appendChild(el('b', null, segment.text));
+    else ui.crumb.appendChild(el('span', null, segment.text));
+    ui.crumb.appendChild(el('span', 'sep', '/'));
+  }
+  if (ui.crumb.lastChild) ui.crumb.removeChild(ui.crumb.lastChild);
+
+  const searchText = ctx.t('DESKTOP_V2_SEARCH');
+  if (ui.searchLabel.textContent !== searchText) ui.searchLabel.textContent = searchText;
+
+  const notifyTitle = ctx.t('DESKTOP_NOTIFY_TOGGLE');
+  if (ui.notify.title !== notifyTitle) {
+    ui.notify.title = notifyTitle;
+    ui.notify.setAttribute('aria-label', notifyTitle);
+  }
+  const dot = ctx.notifyCount > 0;
+  if (dot && ui.notifyDot === null) {
+    ui.notifyDot = el('i', 'dot');
+    ui.notify.appendChild(ui.notifyDot);
+  } else if (!dot && ui.notifyDot !== null) {
+    ui.notify.removeChild(ui.notifyDot);
+    ui.notifyDot = null;
+  }
 }
 
 /** Show one transient line; repeated calls restart the timer. */

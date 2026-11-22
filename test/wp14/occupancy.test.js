@@ -400,13 +400,13 @@ test('buildOccupancy：跨实例聚合五字段与最忙状态序（AC-26 / BR-1
 // ------------------------------------------------------------------ AC-27
 
 test('buildOccupancy：空态、未参与不冒充不可用、不可读跳过计数（AC-27 / D-5）', async () => {
-  // 现场一：没有任何实例 → 空行集（界面渲染「角色占用 无」），无任何动作位。
+  // 现场一：没有任何实例 → 空行集（界面渲染「暂无角色占用」），无任何动作位。
   const emptyRoot = makeRoot('empty-root');
   const empty = buildOccupancy(emptyRoot, { instances: [] });
-  assert.deepEqual(empty.rows, [], '没有实例 → 无行（角色占用 无）');
+  assert.deepEqual(empty.rows, [], '没有实例 → 无行（暂无角色占用）');
   assert.deepEqual(skippedOf(empty), []);
   assert.deepEqual(Object.keys(empty), ['rows', 'skipped'], '导出动作清单为空（无 release / kick 位）');
-  assert.equal(OCCUPANCY_LABELS.EMPTY, '角色占用 无');
+  assert.equal(OCCUPANCY_LABELS.EMPTY, '暂无角色占用');
 
   const env = await boot('ac27');
   try {

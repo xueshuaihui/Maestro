@@ -1153,8 +1153,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     async openView(view, arg) {
       api.setView(view);
       if (view === 'queue') {
-        await api.loadQueue();
-        await api.loadQueuePrefs();
+        await Promise.all([api.loadQueue(), api.loadQueuePrefs()]);
       } else if (view === 'settings') {
         await api.loadQueuePrefs();
       } else if (view === 'new') {
@@ -1544,6 +1543,10 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       };
 
       if (!ready) return model;
+
+      // Preferences are global rather than queue-only: the settings page shows
+      // the same switches without a prior visit to the queue.
+      model.prefs = m.prefsRows(state.queuePrefs, state.labels);
 
       // Rows are a pure projection of the instance list, so they are built once
       // for every view: the list page, the governance table and the shell
@@ -2384,6 +2387,22 @@ export function mountApp({
     renderShell(host, buildShellContext(model, state));
   }
 
+  let pendingPaint = null;
+
+  /**
+   * Coalesce live-frame repaints. Graph/list frames can arrive faster than a
+   * pointer press, and a repaint that replaces the node under the pointer
+   * costs the browser's `click` (press and release must resolve to the same
+   * node). Every frame inside one window shares a single pass.
+   */
+  function schedulePaint() {
+    if (pendingPaint !== null) return;
+    pendingPaint = setTimeout(() => {
+      pendingPaint = null;
+      paint();
+    }, 90);
+  }
+
   /**
    * Assembly -> shell context. The shell receives projections only: it never
    * reads the transport and never mutates state. Drawer specs ride along so a
@@ -2452,10 +2471,13 @@ export function mountApp({
       drawer,
       instancesLabel: model.instancesLabel,
       projectRoot: model.projectRoot ?? null,
-      statusText: model.statusText ?? null,
+      statusText: model.statusText ?? (model.connection?.status === 'ready'
+        ? labelText('DESKTOP_V2_CONNECTED', {})
+        : null),
       statusTone: model.connection?.status === 'ready' ? 'ok' : '',
       queueCount,
       notifyCount: Array.isArray(state.notifications) ? state.notifications.length : 0,
+      prefs: Array.isArray(model.prefs) ? model.prefs : [],
       instanceId,
       instanceRow,
       instanceTitle: instanceRow?.templateTitle ?? instanceId ?? '',
@@ -3170,14 +3192,16 @@ export function mountApp({
     switch (action) {
       case 'nav': {
         const view = typeof value === 'string' ? value : 'instances';
-        if (view === 'new') {
-          app.openView('new').then(paint);
-          return;
-        }
         if (view === 'overview' || view === 'graph' || view === 'board') {
           if (app.state().graphId !== null) {
             app.setView(view === 'overview' ? 'graph' : view);
             paint();
+          } else {
+            // No instance is open: fall back to the list and say why, instead
+            // of swallowing the click and leaving the frame untouched.
+            app.setView('instances');
+            paint();
+            showToast(shellRefsOf(), labelText('DESKTOP_V2_NEED_INSTANCE', {}));
           }
           return;
         }
@@ -3186,18 +3210,30 @@ export function mountApp({
           paint();
           return;
         }
+        // Paint the target view first and load its projection afterwards. A
+        // slow or retrying request then shows up as late data, never as a
+        // click that appears to do nothing.
+        app.setView(view);
+        paint();
         void app.openView(view, view === 'evidence' ? app.state().graphId : undefined).then(paint);
         return;
       }
+      case 'canvas-pick':
+        app.setView('canvas');
+        paint();
+        void app.loadCanvas(String(value)).then(paint);
+        return;
       case 'tab': {
         const view = typeof value === 'string' ? value : 'graph';
         if (view === 'evidence') {
+          app.setView('evidence');
+          paint();
           void app.openView('evidence', app.state().graphId).then(paint);
           return;
         }
         app.setView(view);
+        paint();
         if (view === 'queue') void app.loadQueue().then(paint);
-        else paint();
         return;
       }
       case 'back':
@@ -3491,6 +3527,36 @@ export function mountApp({
     return raw;
   }
 
+  /**
+   * Actions that only navigate or open a surface: nothing is submitted and
+   * nothing is destroyed. They fire on press so the frame under the pointer
+   * can never be swapped out mid-click — the same reason `click` is dropped
+   * when a live frame repaints between mousedown and mouseup.
+   */
+  const PRESS_ACTIONS = new Set([
+    'nav', 'tab', 'back', 'drill-back', 'open-instance', 'open-drill', 'open-special',
+    'open-node', 'dag-node', 'open-connection', 'open-escalation', 'close-drawer',
+    'palette', 'asset-kind', 'asset-row', 'evidence-node', 'filter', 'select-row',
+    'open-new', 'close-new', 'pick-template', 'view-graph', 'view-board',
+    'drill-all-nodes', 'expand-groups', 'collapse-groups', 'zoom', 'reset-view',
+    'exit-focus', 'toggle-not-started', 'retry-graph', 'back-to-list', 'jump-host',
+    'pick-project', 'read-all', 'follow-notify', 'toggle-pref', 'export-otel', 'canvas-pick',
+  ]);
+
+  let pressAt = 0;
+  let pressKey = '';
+
+  host.addEventListener('pointerdown', (event) => {
+    if (typeof event.button === 'number' && event.button !== 0) return;
+    const node = event.target?.closest?.('[data-action]') ?? null;
+    if (node === null) return;
+    const action = node.getAttribute('data-action');
+    if (!PRESS_ACTIONS.has(action)) return;
+    pressAt = Date.now();
+    pressKey = `${action}|${node.getAttribute('data-arg') ?? ''}`;
+    handleAction(action, parseArg(node.getAttribute('data-arg')), node);
+  }, true);
+
   host.addEventListener('click', (event) => {
     if (event.target?.classList?.contains('mask')) {
       app.closeDrawer();
@@ -3544,7 +3610,16 @@ export function mountApp({
     }
     const actionNode = event.target.closest?.('[data-action]') ?? null;
     if (actionNode) {
-      handleAction(actionNode.getAttribute('data-action'), parseArg(actionNode.getAttribute('data-arg')), actionNode);
+      const action = actionNode.getAttribute('data-action');
+      const key = `${action}|${actionNode.getAttribute('data-arg') ?? ''}`;
+      // The press already handled this surface; a following click would run it
+      // twice. Anything outside the press window (keyboard Enter) still falls
+      // through to the normal path.
+      if (pressKey === key && Date.now() - pressAt < 600) {
+        pressKey = '';
+        return;
+      }
+      handleAction(action, parseArg(actionNode.getAttribute('data-arg')), actionNode);
       return;
     }
     const row = event.target.closest?.('[data-instance]') ?? null;
@@ -3702,6 +3777,8 @@ export function mountApp({
     notifyClose = null;
     if (reconnectTimer !== null) clearTimeout(reconnectTimer);
     reconnectTimer = null;
+    if (pendingPaint !== null) clearTimeout(pendingPaint);
+    pendingPaint = null;
   };
 
   const scheduleReconnect = () => {
@@ -3721,7 +3798,7 @@ export function mountApp({
           if (app.state().connection.isPending()) app.state().connection.markReady();
           const result = app.handleFrame(frame);
           if (result.refetch) void app.loadInstances().then(paint);
-          else if (result.repaint === 'list') paint();
+          else if (result.repaint === 'list') schedulePaint();
         },
         onStatus(status) {
           // A graceful EOF is a drop like an error: keep the last frame,
@@ -3751,7 +3828,7 @@ export function mountApp({
           onFrame(frame) {
             if (app.state().connection.isPending()) app.state().connection.markReady();
             const result = app.handleFrame(frame);
-            if (result.repaint === 'graph') paint();
+            if (result.repaint === 'graph') schedulePaint();
           },
           onStatus(status) {
             if (status === 'error' || status === 'closed') {
@@ -3773,7 +3850,7 @@ export function mountApp({
         onFrame(frame) {
           if (app.state().connection.isPending()) app.state().connection.markReady();
           const result = app.handleFrame(frame);
-          if (result.repaint === 'queue' && app.state().view === 'queue') paint();
+          if (result.repaint === 'queue' && app.state().view === 'queue') schedulePaint();
         },
         onStatus(status) {
           if (status === 'error' || status === 'closed') {
@@ -3791,7 +3868,7 @@ export function mountApp({
       notifyClose = transport.openStream(`${origin()}/notifications/stream`, {
         onFrame(frame) {
           app.handleFrame(frame);
-          if (app.state().view === 'queue') paint();
+          if (app.state().view === 'queue') schedulePaint();
         },
         onStatus(status) {
           if (status === 'error' || status === 'closed') {

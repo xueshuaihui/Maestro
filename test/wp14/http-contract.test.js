@@ -338,7 +338,7 @@ test('A-11 文案键逐字（抽查 + 键存在性）', () => {
   // 队列（A-3 / A-2 / A-4 / A-5）
   assert.equal(DESKTOP_QUEUE_ROW_ESC, '升级 {id} · 实例 {instanceId} · 节点 {nodeId} {role} · 第 {round} 轮 · {state} · {reason} · {createdAt}');
   assert.equal(DESKTOP_QUEUE_ROW_APR, '审批 {id} · 实例 {instanceId} · 节点 {nodeId} {role} · 第 {round} 轮 · {state} · 动作 {action} · {createdAt}');
-  assert.equal(DESKTOP_QUEUE_EMPTY, '待处理 无');
+  assert.equal(DESKTOP_QUEUE_EMPTY, '暂无待处理项');
   assert.equal(DESKTOP_QUEUE_DISCONNECTED, '已断开 · 正在重连…');
   assert.equal(DESKTOP_QUEUE_ROW_STATE_UNREADABLE, '实例 {id} · 状态不可读');
   assert.equal(DESKTOP_QUEUE_ALREADY_RESOLVED, '已处理（{conclusion}），无需再次处理');
@@ -349,7 +349,7 @@ test('A-11 文案键逐字（抽查 + 键存在性）', () => {
   assert.equal(DESKTOP_ASSET_ITEM_UNREADABLE, '{kind} {id} · 不可读');
   assert.equal(DESKTOP_ASSET_MISSING, '缺失');
   // 占用（A-6）
-  assert.equal(DESKTOP_OCCUPANCY_EMPTY, '角色占用 无');
+  assert.equal(DESKTOP_OCCUPANCY_EMPTY, '暂无角色占用');
   assert.equal(DESKTOP_OCCUPANCY_SKIPPED, '{n} 个实例状态不可读，已跳过');
   // 画布（A-7）
   assert.equal(DESKTOP_CANVAS_TITLE, '工作流 {name} · 定义态 · {n} 节点 · {m} 条边');

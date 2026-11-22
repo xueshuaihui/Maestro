@@ -161,7 +161,7 @@ test('A-3 / AC-08: node-less degraded row keeps node/round segments', () => {
   }, L);
   assert.equal(row.unreadable, true);
   assert.equal(row.text, renderQueueRow({ id: null, instanceId: 'INST-009' }, L).text);
-  assert.equal(queueEmpty(L), '待处理 无');
+  assert.equal(queueEmpty(L), '暂无待处理项');
   assert.equal(queueDisconnected(L), '已断开 · 正在重连…');
 });
 
@@ -226,7 +226,7 @@ test('A-6 / AC-26 AC-28: occupancy row, empty, skipped, hosts are verbatim', () 
   }, L);
   assert.equal(row.text,
     `角色 开发 · ${CLI.ROLE_INSTANCE_STATUS_LABEL.busy} · 参与 2 个实例 · 3 个活跃会话 · 服务 T-001 等 4 个 · 宿主 dsh, cursor`);
-  assert.equal(occupancyEmpty(L), '角色占用 无');
+  assert.equal(occupancyEmpty(L), '暂无角色占用');
   assert.equal(skippedText(['a', 'b'], L), '2 个实例状态不可读，已跳过');
   assert.equal(skippedText([], L), null);
   assert.equal(occupancyDisconnected(L), '已断开 · 正在重连…');
@@ -497,7 +497,7 @@ test('harness: queue-dump exports empty row + prefs verbatim', () => {
     const res = runHarness('queue', file);
     assert.equal(res.status, 0, res.stderr);
     const out = JSON.parse(res.stdout);
-    assert.equal(out.emptyText, '待处理 无');
+    assert.equal(out.emptyText, '暂无待处理项');
     assert.deepEqual(out.prefs.map((p) => p.key), ['enabled', 'escalate', 'completed', 'anomaly']);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });

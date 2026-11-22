@@ -23,6 +23,7 @@ import {
   NODE_LABEL,
   RESOLUTION_LABEL,
   ROLE_INSTANCE_STATUS_LABEL,
+  ROLE_LABEL,
   TEMPLATE_LABEL
 } from '../../cli/labels.js';
 // D-51: A-11 I1.11 top-level single keys are read by name from the same CLI
@@ -346,6 +347,7 @@ export const UI_LABEL_KEYS = Object.freeze({
   ...cliLabels.DESKTOP_V2_LABEL,
   ...flattenTable('INSTANCE_LABEL', INSTANCE_LABEL),
   ...flattenTable('NODE_LABEL', NODE_LABEL),
+  ...flattenTable('ROLE_LABEL', ROLE_LABEL),
   ...flattenTable('APPROVAL_LABEL', APPROVAL_LABEL),
   ...flattenTable('RESOLUTION_LABEL', RESOLUTION_LABEL),
   ...flattenTable('HANDOFF_LABEL', HANDOFF_LABEL),

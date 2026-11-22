@@ -142,7 +142,7 @@ function normalizeRegistry(registry, root) {
  *            servingNodes, status, hosts}>, skipped: Array<{instanceId, reason}>,
  *            disconnected?: boolean}}
  *   `instances` 不是数组（实例清单取不到）时返回断线位（rows / skipped 为空），
- *   形态与 `buildQueue` 一致；完全没有可读实例时 rows 为空（A-6「角色占用 无」
+ *   形态与 `buildQueue` 一致；完全没有可读实例时 rows 为空（A-6「暂无角色占用」
  *   由界面按 OCCUPANCY_LABELS.EMPTY 渲染）。
  */
 export function buildOccupancy(root, { instances = [], registry = null } = {}) {

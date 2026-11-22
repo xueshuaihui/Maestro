@@ -29,6 +29,7 @@ import {
   INSTANCE_LABEL,
   NODE_LABEL,
   ROLE_INSTANCE_STATUS_LABEL,
+  ROLE_LABEL,
   TEMPLATE_LABEL
 } from '../../src/cli/labels.js';
 import {
@@ -368,7 +369,7 @@ test('全集计数：UI_LABEL_KEYS = I1.10a 基线 + I1.10b 下钻 + I1.11 通�
   );
   // 摘掉 beta.2 增量后，必须仍是 I1.11 收口时的 312 键冻结并集。
   const before = all.filter((key) => !(key in DESKTOP_V2_LABEL));
-  assert.equal(before.length, 312, 'I1.10a/I1.10b/I1.11 三方并集必须仍为 312 键');
+  assert.equal(before.length, 312 + Object.keys(ROLE_LABEL).length, '既有并集 + 角色名表');
 });
 
 // ---------------------------------------------------------------------------
