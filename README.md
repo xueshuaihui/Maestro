@@ -79,6 +79,8 @@ npm run desktop:build
 
 构建脚本 `scripts/desktop/build.mjs` 纯 Node 实现、零依赖，流程为：生成编译期占位 UI 与图标 → `cargo build --release` → 组装产物 → macOS ad-hoc 签名。
 
+品牌标识（logo）的几何唯一定义在 `scripts/desktop/brand.mjs`：窗口图标 PNG、Windows 资源 `icon.ico`、界面 favicon 与矢量母版 `desktop/ui/brand/mark.svg`（另有 `mark-mono.svg` 单色版、`mark-mono-invert.svg` 深底反白版）全部由它派生，改标识只需改这一处。系统托盘图在 `desktop/src-tauri/src/tray.rs` 内按同一份 32 格几何绘制（Rust 侧无法 import ESM，注释已标注需与 `brand.mjs` 同步）。
+
 | 平台 | 产物 |
 |---|---|
 | macOS | `desktop/src-tauri/target/release/bundle/macos/Maestro.app` |

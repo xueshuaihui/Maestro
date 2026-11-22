@@ -45,19 +45,47 @@ impl TrayStatus {
 }
 
 /// 16x16 opaque tray icon, generated as raw RGBA (no asset files needed).
+///
+/// Geometry mirrors `scripts/desktop/brand.mjs` (the single source of truth for
+/// the mark: three session tracks converging into one conducting node). Rust
+/// cannot import the ESM module, so the 32-unit design grid is re-declared here
+/// and projected 1:2 — keep both sides in sync when the mark changes.
 fn tray_icon_rgba() -> tauri::image::Image<'static> {
-    let mut rgba = Vec::with_capacity(16 * 16 * 4);
-    for y in 0..16u32 {
-        for x in 0..16u32 {
-            // Dark rounded square with a lighter diagonal mark.
-            let inside = x >= 2 && x < 14 && y >= 2 && y < 14;
-            let mark = (x + y) >= 12 && (x + y) <= 17 && x >= 4 && x < 12 && y >= 4 && y < 12;
-            let (r, g, b) = if mark { (230, 230, 235) } else { (40, 44, 52) };
+    const SIZE: u32 = 16;
+    // Track/node rects on the 32-unit design grid: [x0, y0, x1, y1).
+    const MARK: [[u32; 4]; 4] = [
+        [7, 8, 15, 12], // track 1
+        [7, 14, 19, 18], // track 2 (longest)
+        [7, 20, 13, 24], // track 3
+        [21, 12, 28, 20], // conducting node
+    ];
+    // Corner cells clipped off the node so it reads round rather than square.
+    const HOLES: [[u32; 2]; 4] = [[21, 12], [27, 12], [21, 19], [27, 19]];
+
+    let mut rgba = Vec::with_capacity((SIZE * SIZE * 4) as usize);
+    for y in 0..SIZE {
+        for x in 0..SIZE {
+            let gx = x * 2;
+            let gy = y * 2;
+            let inside = gx >= 4 && gx < 28 && gy >= 4 && gy < 28;
+            let hole = HOLES.iter().any(|h| h[0] == gx && h[1] == gy);
+            let mark = !hole
+                && MARK
+                    .iter()
+                    .any(|r| gx >= r[0] && gx < r[2] && gy >= r[1] && gy < r[3]);
+            // Gradient background, near-white mark — same palette as the brand.
+            let t = (x + y) as f32 / (2 * (SIZE - 1)) as f32;
+            let bg = [
+                (47.0 + (109.0 - 47.0) * t) as u8,
+                (111.0 + (156.0 - 111.0) * t) as u8,
+                (208.0 + (240.0 - 208.0) * t) as u8,
+            ];
+            let (r, g, b) = if mark { (244, 247, 252) } else { (bg[0], bg[1], bg[2]) };
             let alpha = if inside { 255 } else { 0 };
             rgba.extend_from_slice(&[r, g, b, alpha]);
         }
     }
-    tauri::image::Image::new_owned(rgba, 16, 16)
+    tauri::image::Image::new_owned(rgba, SIZE, SIZE)
 }
 
 fn labels_of(app: &AppHandle) -> crate::config::Labels {
