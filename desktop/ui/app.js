@@ -401,6 +401,17 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       return api;
     },
 
+    /**
+     * One label line, resolved against the delivered table.
+     *
+     * The shell layer (`mountApp`) lives outside this closure, so it reaches
+     * the resolver through this one method instead of re-deriving templates:
+     * a missing table yields an empty string, never a throw.
+     */
+    text(key, params) {
+      return noticeText(key, params);
+    },
+
     hasLabels() {
       return typeof state.labels?.DESKTOP_LIST_ROW === 'string'
         && typeof state.labels?.DESKTOP_VIEW_GRAPH === 'string'
@@ -2280,6 +2291,8 @@ export function mountApp({
   const mountProject = resolveMountProject({ project, injected, credentials: creds, labels });
   const transport = { ...createLoopbackTransport(creds), ...(io ?? {}) };
   const app = createApp({ labels, project: mountProject ?? undefined, io: transport, modules });
+  /** Shell-side label resolver: never throws on a missing table. */
+  const labelText = (key, params) => app.text(key, params);
 
   let lastRowsSignature = '[]';
   let lastEmptyDiagAt = 0;
@@ -2408,7 +2421,7 @@ export function mountApp({
       drawer = {
         kind: 'node',
         id: nodeId,
-        title: noticeText('DRILL_CRUMB_NODE', { node: nodeId }) || nodeId,
+        title: labelText('DRILL_CRUMB_NODE', { node: nodeId }) || nodeId,
         subtitle: model.viewTitle ?? '',
       };
       shellModel = { ...model, drill: state.nodeDrawer.view ?? null };
@@ -2431,7 +2444,7 @@ export function mountApp({
       state,
       model: shellModel,
       labels: state.labels,
-      t: noticeText,
+      t: labelText,
       view: activeView,
       inDrawer: drawer !== null,
       detailKey: drawer?.id ?? null,
@@ -2452,8 +2465,8 @@ export function mountApp({
         view: activeView,
         instanceId,
         instancesLabel: model.instancesLabel,
-        detailLabel: activeView === 'node-detail' ? noticeText('DESKTOP_V2_DETAIL', {}) : null,
-        t: noticeText,
+        detailLabel: activeView === 'node-detail' ? labelText('DESKTOP_V2_DETAIL', {}) : null,
+        t: labelText,
       }),
       degradedText: model.notice?.text ?? null,
       hostText: model.statusText ?? '',
@@ -3303,15 +3316,15 @@ export function mountApp({
         paint();
         return;
       case 'export-otel':
-        showToast(shellRefsOf(), noticeText('DESKTOP_V2_EXPORT_OTEL', {}));
+        showToast(shellRefsOf(), labelText('DESKTOP_V2_EXPORT_OTEL', {}));
         return;
       case 'copy-evidence':
-        void copyText(copyTargetOf(node)).then((ok) => showToast(shellRefsOf(), ok ? noticeText('DESKTOP_V2_COPY', {}) : ''));
+        void copyText(copyTargetOf(node)).then((ok) => showToast(shellRefsOf(), ok ? labelText('DESKTOP_V2_COPY', {}) : ''));
         return;
       case 'jump-host': {
         const id = app.hostSession();
         if (id !== null) void copyText(id);
-        showToast(shellRefsOf(), id === null ? noticeText('DRILL_HOST_NONE', {}) : noticeText('DRILL_HOST_HINT', { id }));
+        showToast(shellRefsOf(), id === null ? labelText('DRILL_HOST_NONE', {}) : labelText('DRILL_HOST_HINT', { id }));
         return;
       }
       case 'pick-project':
@@ -3451,14 +3464,14 @@ export function mountApp({
       ['new', 'DESKTOP_NEW_TITLE'],
     ];
     for (const [view, key] of pages) {
-      entries.push({ section: noticeText('DESKTOP_NOTIFY_SEG_INSTANCE', {}), label: noticeText(key, {}), action: 'nav', arg: view });
+      entries.push({ section: labelText('DESKTOP_NOTIFY_SEG_INSTANCE', {}), label: labelText(key, {}), action: 'nav', arg: view });
     }
     for (const item of app.state().instances ?? []) {
       const id = typeof item?.instanceId === 'string' ? item.instanceId : null;
       if (id === null) continue;
-      entries.push({ section: noticeText('DESKTOP_NOTIFY_SEG_INSTANCE', {}), label: id, action: 'open-instance', arg: { instanceId: id } });
+      entries.push({ section: labelText('DESKTOP_NOTIFY_SEG_INSTANCE', {}), label: id, action: 'open-instance', arg: { instanceId: id } });
     }
-    openPalette(refs, { t: (key, params) => noticeText(key, params ?? {}) }, entries, (action, arg) => {
+    openPalette(refs, { t: (key, params) => labelText(key, params ?? {}) }, entries, (action, arg) => {
       handleAction(action, arg, null);
     });
   }
