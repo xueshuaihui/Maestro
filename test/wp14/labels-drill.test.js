@@ -36,6 +36,7 @@ import {
   UI_LABEL_KEYS,
   labelKeysPayload
 } from '../../src/daemon/http/labels.js';
+import { DESKTOP_V2_LABEL } from '../../src/cli/labels.js';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -358,8 +359,16 @@ test('既有复用键零改动：83 个平铺键与 src/cli/labels.js 对应成�
   assert.equal(total, 83, `复用键应为 83，实为 ${total}`);
 });
 
-test('全集计数：UI_LABEL_KEYS = I1.10a 基线 + I1.10b 下钻 + I1.11 通知队列并集 = 312', () => {
-  assert.equal(Object.keys(UI_LABEL_KEYS).length, 312);
+test('全集计数：UI_LABEL_KEYS = I1.10a 基线 + I1.10b 下钻 + I1.11 通知队列并集 + beta.2 外壳增量', () => {
+  const all = Object.keys(UI_LABEL_KEYS);
+  assert.equal(new Set(all).size, all.length, '全集不得出现重复键');
+  assert.ok(
+    Object.keys(DESKTOP_V2_LABEL).every((key) => key in UI_LABEL_KEYS),
+    'beta.2 外壳增量键必须全部并入全集',
+  );
+  // 摘掉 beta.2 增量后，必须仍是 I1.11 收口时的 312 键冻结并集。
+  const before = all.filter((key) => !(key in DESKTOP_V2_LABEL));
+  assert.equal(before.length, 312, 'I1.10a/I1.10b/I1.11 三方并集必须仍为 312 键');
 });
 
 // ---------------------------------------------------------------------------

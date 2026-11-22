@@ -441,7 +441,7 @@ test('D-51: real /ui/labels response carries A-11 keys with non-null Chinese (no
   assert.equal(served.DESKTOP_VIEW_ASSETS, '角色与技能库');
   assert.equal(served.DESKTOP_VIEW_CANVAS, '工作流画布');
   assert.ok(!('DESKTOP_QUEUE_CONCLUSIONS' in served), 'object table must not be served');
-  assert.equal(Object.keys(labelKeysPayload().keys).length, 312);
+  assert.equal(Object.keys(labelKeysPayload().keys).length, Object.keys(UI_LABEL_KEYS).length);
 });
 
 test('D-51: paintViewNav derives five nav buttons from delivered /ui/labels keys', () => {

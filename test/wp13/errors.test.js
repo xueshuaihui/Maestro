@@ -962,7 +962,7 @@ test('S-02: the desktop channel serves labels and all REST routes through the in
     const labels = await fetch(`${base}/ui/labels`, { headers });
     assert.equal(labels.status, 200);
     const payload = await labels.json();
-    assert.equal(Object.keys(payload.keys).length, 312);
+    assert.equal(Object.keys(payload.keys).length, Object.keys(UI_LABEL_KEYS).length);
     for (const key of [
       'DESKTOP_GRAPH_MISSING',
       'DESKTOP_DEF_UNREADABLE',

@@ -483,6 +483,125 @@ const REUSED_TABLES = Object.freeze([
   ['COMMAND_ERROR', COMMAND_ERROR, ['SESSION_NOT_FOUND', 'ESCALATION_NOT_FOUND', 'ESCALATION_NOT_PENDING', 'ESCALATION_DECISION_INVALID', 'ESCALATION_AMBIGUOUS', 'INSTANCE_NOT_SUSPENDED', 'APPROVAL_NOT_FOUND', 'APPROVAL_NOT_PENDING', 'APPROVAL_AMBIGUOUS', 'APPROVAL_SESSION_GONE', 'HANDOFF_NOT_FOUND', 'HANDOFF_AMBIGUOUS', 'INSTANCE_NOT_PAUSABLE', 'INSTANCE_NOT_RESUMABLE']]
 ]);
 
+/**
+ * beta.2 外壳增量键（纯追加纪律）。
+ *
+ * 现有 312 键一字未改：本表只追加 `DESKTOP_V2_*` 前缀的键，键名逐字列出；
+ * `EXPECTED_ALL_KEYS` 把本表接在原有清单尾部，因此「原有键仍在」与「新增键
+ * 精确等于本表」同时成立，不放松为子集判定。
+ */
+const EXPECTED_V2_KEYS = Object.freeze([
+  'DESKTOP_V2_TAB_OVERVIEW',
+  'DESKTOP_V2_NAV_AUDIT',
+  'DESKTOP_V2_NAV_SETTINGS',
+  'DESKTOP_V2_SEARCH',
+  'DESKTOP_V2_CMD_HINT',
+  'DESKTOP_V2_NO_MATCH',
+  'DESKTOP_V2_COMMAND',
+  'DESKTOP_V2_FILTER_ALL',
+  'DESKTOP_V2_BACK',
+  'DESKTOP_V2_CLOSE',
+  'DESKTOP_V2_RETRY',
+  'DESKTOP_V2_EMPTY',
+  'DESKTOP_V2_LOADING',
+  'DESKTOP_V2_HEALTH',
+  'DESKTOP_V2_PENDING',
+  'DESKTOP_V2_NEXT',
+  'DESKTOP_V2_TIMELINE',
+  'DESKTOP_V2_SUMMARY',
+  'DESKTOP_V2_EVIDENCE_REFS',
+  'DESKTOP_V2_HANDOFF_HISTORY',
+  'DESKTOP_V2_ROLE_BAR',
+  'DESKTOP_V2_CARDS',
+  'DESKTOP_V2_LOCAL_DAG',
+  'DESKTOP_V2_DETAIL',
+  'DESKTOP_V2_SESSIONS',
+  'DESKTOP_V2_SERVING',
+  'DESKTOP_V2_ROUND',
+  'DESKTOP_V2_ARTIFACTS',
+  'DESKTOP_V2_COPY',
+  'DESKTOP_V2_EXPORT',
+  'DESKTOP_V2_HASH_CHAIN',
+  'DESKTOP_V2_PERMISSION_DENY',
+  'DESKTOP_V2_EVIDENCE_EXPIRED',
+  'DESKTOP_V2_BUDGET',
+  'DESKTOP_V2_ANTIPATTERN',
+  'DESKTOP_V2_EXPORT_OTEL',
+  'DESKTOP_V2_AUDIT_STREAM',
+  'DESKTOP_V2_SETTINGS_PROJECT',
+  'DESKTOP_V2_SETTINGS_HOST',
+  'DESKTOP_V2_SETTINGS_NOTIFY',
+  'DESKTOP_V2_SETTINGS_INTERACTION',
+  'DESKTOP_V2_SETTINGS_RECOVERY',
+  'DESKTOP_V2_SETTINGS_DATA',
+  'DESKTOP_V2_STATE',
+  'DESKTOP_V2_KIND',
+  'DESKTOP_V2_TIME',
+  'DESKTOP_V2_NODE',
+  'DESKTOP_V2_CHECKPOINT',
+  'DESKTOP_V2_PAUSE',
+  'DESKTOP_V2_COUNT',
+  'DESKTOP_V2_STAGE',
+  'DESKTOP_V2_DURATION',
+  'DESKTOP_V2_OPEN_INSTANCE'
+]);
+
+const EXPECTED_V2_VALUES = Object.freeze({
+  DESKTOP_V2_TAB_OVERVIEW: '概览',
+  DESKTOP_V2_NAV_AUDIT: '审计与治理',
+  DESKTOP_V2_NAV_SETTINGS: '设置',
+  DESKTOP_V2_SEARCH: '搜索实例、节点、页面',
+  DESKTOP_V2_CMD_HINT: '输入页面、实例或节点编号…',
+  DESKTOP_V2_NO_MATCH: '无匹配结果',
+  DESKTOP_V2_COMMAND: '命令面板',
+  DESKTOP_V2_FILTER_ALL: '全部',
+  DESKTOP_V2_BACK: '返回',
+  DESKTOP_V2_CLOSE: '关闭',
+  DESKTOP_V2_RETRY: '重试',
+  DESKTOP_V2_EMPTY: '暂无数据',
+  DESKTOP_V2_LOADING: '加载中…',
+  DESKTOP_V2_HEALTH: '健康度',
+  DESKTOP_V2_PENDING: '待处理',
+  DESKTOP_V2_NEXT: '下一步',
+  DESKTOP_V2_TIMELINE: '时间线',
+  DESKTOP_V2_SUMMARY: '事件摘要',
+  DESKTOP_V2_EVIDENCE_REFS: '证据引用',
+  DESKTOP_V2_HANDOFF_HISTORY: '交接包历史',
+  DESKTOP_V2_ROLE_BAR: '角色栏',
+  DESKTOP_V2_CARDS: '任务卡片',
+  DESKTOP_V2_LOCAL_DAG: '局部图',
+  DESKTOP_V2_DETAIL: '详情',
+  DESKTOP_V2_SESSIONS: '活跃会话',
+  DESKTOP_V2_SERVING: '服务节点',
+  DESKTOP_V2_ROUND: '第 {n} 轮',
+  DESKTOP_V2_ARTIFACTS: '产物',
+  DESKTOP_V2_COPY: '复制',
+  DESKTOP_V2_EXPORT: '导出',
+  DESKTOP_V2_HASH_CHAIN: '链式哈希',
+  DESKTOP_V2_PERMISSION_DENY: '越权拦截',
+  DESKTOP_V2_EVIDENCE_EXPIRED: '证据过期',
+  DESKTOP_V2_BUDGET: '预算配额',
+  DESKTOP_V2_ANTIPATTERN: '反模式信号',
+  DESKTOP_V2_EXPORT_OTEL: '导出追踪',
+  DESKTOP_V2_AUDIT_STREAM: '审计事件流',
+  DESKTOP_V2_SETTINGS_PROJECT: '项目',
+  DESKTOP_V2_SETTINGS_HOST: '宿主',
+  DESKTOP_V2_SETTINGS_NOTIFY: '通知',
+  DESKTOP_V2_SETTINGS_INTERACTION: '交互',
+  DESKTOP_V2_SETTINGS_RECOVERY: '恢复策略',
+  DESKTOP_V2_SETTINGS_DATA: '数据目录',
+  DESKTOP_V2_STATE: '状态',
+  DESKTOP_V2_KIND: '类型',
+  DESKTOP_V2_TIME: '时间',
+  DESKTOP_V2_NODE: '节点',
+  DESKTOP_V2_CHECKPOINT: '检查点',
+  DESKTOP_V2_PAUSE: '暂停',
+  DESKTOP_V2_COUNT: '{n} 项',
+  DESKTOP_V2_STAGE: '阶段',
+  DESKTOP_V2_DURATION: '耗时',
+  DESKTOP_V2_OPEN_INSTANCE: '打开实例'
+});
+
 /** 平铺命名：`表名_成员名`（成员名大写、`-` 归一 `_`、驼峰拆分）。 */
 function flatName(prefix, member) {
   const snake = String(member)
@@ -495,7 +614,8 @@ function flatName(prefix, member) {
 /** 期望全集 = 新增键 + 复用键平铺（均来自上方显式清单，与实现无关）。 */
 const EXPECTED_ALL_KEYS = (() => {
   // D-51: I1.11 top-level keys are delivered by their own names (not flattened).
-  const names = [...EXPECTED_DESKTOP_KEYS, ...I11_DESKTOP_KEYS];
+  // beta.2: 外壳增量键接在尾部，原有两段顺序与内容不变。
+  const names = [...EXPECTED_DESKTOP_KEYS, ...I11_DESKTOP_KEYS, ...EXPECTED_V2_KEYS];
   for (const [prefix, , members] of REUSED_TABLES) {
     for (const member of members) names.push(flatName(prefix, member));
   }
@@ -509,7 +629,12 @@ const EXPECTED_ALL_KEYS = (() => {
 test('键全集冻结：下发键集合与期望清单精确相等（多键/少键都 fail）', () => {
   assert.deepEqual(Object.keys(UI_LABEL_KEYS).sort(), EXPECTED_ALL_KEYS);
   assert.equal(Object.keys(UI_LABEL_KEYS).length, EXPECTED_ALL_KEYS.length);
-  assert.equal(Object.keys(UI_LABEL_KEYS).length, 312, 'I1.10a + I1.10b + I1.11 键并集');
+  assert.equal(Object.keys(UI_LABEL_KEYS).length, 312 + EXPECTED_V2_KEYS.length, 'I1.10a + I1.10b + I1.11 键并集 + beta.2 外壳增量');
+});
+
+test('beta.2 外壳增量键：DESKTOP_V2_LABEL 与期望值逐字相等', () => {
+  assert.deepEqual(Object.keys(cliLabels.DESKTOP_V2_LABEL).sort(), [...EXPECTED_V2_KEYS].sort());
+  assert.deepEqual({ ...cliLabels.DESKTOP_V2_LABEL }, EXPECTED_V2_VALUES);
 });
 
 test('桌面新增键：DESKTOP_LABEL_KEYS 与期望值表逐字相等（A-14 新增段冻结）', () => {

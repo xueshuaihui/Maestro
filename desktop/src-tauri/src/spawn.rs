@@ -10,6 +10,8 @@ use std::io::Write;
 use std::os::unix::net::UnixStream;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
 use std::time::{Duration, Instant};
 use tauri::Manager;
 
@@ -63,6 +65,9 @@ pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
     {
         command.current_dir(root);
         command.stderr(Stdio::piped());
+        // GUI 子系统壳没有控制台；console 子进程默认会被 CreateProcess 新建控制台。
+        // CREATE_NO_WINDOW 让 node.exe 静默运行，stderr 仍由上面的 pipe 接管。
+        command.creation_flags(0x0800_0000);
         // 路径口径留证：CI 实测子进程崩在 `realpathSync('C:')`，说明 node 收到的
         // 入口不是完整路径。把壳这一侧真正传出去的三段字符串写进探针流，
         // 才能分清是「壳给出的字符串就被改了」还是「CreateProcess 传参被打散」。
@@ -317,7 +322,10 @@ fn desktop_channel_alive(root: &Path) -> bool {
 #[cfg(windows)]
 pub fn stop_daemon(root: &Path, _frame: &str, child_pid: Option<u32>) -> bool {
     if let Some(pid) = child_pid {
-        let _ = Command::new("taskkill")
+        // taskkill 也是 console 子系统程序；GUI 壳退出时若不给标志会闪一个黑框。
+        let mut kill = Command::new("taskkill");
+        kill.creation_flags(0x0800_0000);
+        let _ = kill
             .args(["/PID", &pid.to_string(), "/T", "/F"])
             .stdout(Stdio::null())
             .stderr(Stdio::null())

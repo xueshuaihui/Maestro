@@ -102,11 +102,10 @@ function progressOf(instance) {
 }
 
 /**
- * Renders one A-1 row via the `DESKTOP_LIST_ROW` template: the six fields in
- * the fixed order, a zero pending count included. `labels` is the flat key
- * table from `GET /ui/labels`.
+ * One list row as display fields plus the frozen A-1 row text. The card view
+ * consumes the fields; `renderListRow` keeps the server wording unchanged.
  */
-export function renderListRow(instance, labels) {
+export function describeListRow(instance, labels) {
   const template = typeof instance?.template === 'string' ? instance.template : '';
   const templateTitle = wordFor(
     labels,
@@ -118,16 +117,41 @@ export function renderListRow(instance, labels) {
   // Missing level degrades to `normal` exactly like the CLI health line
   // (render.js healthLevelWord): a live run returns its snapshot before the
   // first health write, and the row must still show one of the four words.
-  const health = wordFor(labels, 'HEALTH_LABEL', instance?.health?.level ?? 'normal');
+  const healthLevel = typeof instance?.health?.level === 'string'
+    ? instance.health.level
+    : 'normal';
+  const health = wordFor(labels, 'HEALTH_LABEL', healthLevel);
   const { done, total } = progressOf(instance);
-  return fill(labels?.DESKTOP_LIST_ROW, {
-    id: instance?.instanceId ?? '',
-    template: templateTitle,
+  return {
+    instanceId: instance?.instanceId ?? '',
+    template,
+    templateTitle,
+    phase: instance?.phase ?? '',
     state: phase,
     done,
     total,
     pending: pendingCount(instance),
+    healthLevel,
     health,
+    readable: instance?.readable !== false,
+  };
+}
+
+/**
+ * Renders one A-1 row via the `DESKTOP_LIST_ROW` template: the six fields in
+ * the fixed order, a zero pending count included. `labels` is the flat key
+ * table from `GET /ui/labels`.
+ */
+export function renderListRow(instance, labels) {
+  const row = describeListRow(instance, labels);
+  return fill(labels?.DESKTOP_LIST_ROW, {
+    id: row.instanceId,
+    template: row.templateTitle,
+    state: row.state,
+    done: row.done,
+    total: row.total,
+    pending: row.pending,
+    health: row.health,
   });
 }
 

@@ -1,3 +1,5 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 //! Maestro desktop shell startup sequence:
 //! parse args -> probe init -> single-instance lock -> resolve project root
 //! -> spawn daemon child (bundled interpreter) -> build main window ->

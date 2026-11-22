@@ -338,10 +338,12 @@ const I11_LABEL_TABLE = Object.freeze(
 );
 
 /**
- * 下发全集：桌面新增键 + 复用键 + I1.11 顶层键，扁平 `KEY -> 文案模板`（值与 `src/cli/labels.js` 同一引用）。 */
+ * 下发全集：桌面新增键 + 复用键 + I1.11 顶层键 + beta.2 外壳增量键，
+ * 扁平 `KEY -> 文案模板`（值与 `src/cli/labels.js` 同一引用）。 */
 export const UI_LABEL_KEYS = Object.freeze({
   ...DESKTOP_LABEL_KEYS,
   ...I11_LABEL_TABLE,
+  ...cliLabels.DESKTOP_V2_LABEL,
   ...flattenTable('INSTANCE_LABEL', INSTANCE_LABEL),
   ...flattenTable('NODE_LABEL', NODE_LABEL),
   ...flattenTable('APPROVAL_LABEL', APPROVAL_LABEL),

@@ -128,7 +128,7 @@ test('missing or wrong bearer token yields 401 with a code-only body', async () 
   }
 });
 
-test('GET /ui/labels serves the frozen 312-key union payload via the S-02 seam', async () => {
+test('GET /ui/labels serves the frozen label-key union payload via the S-02 seam', async () => {
   const root = makeRoot();
   try {
     const { server, meta } = await startDesktopServer(root, fakeOrchestrator());
@@ -139,7 +139,7 @@ test('GET /ui/labels serves the frozen 312-key union payload via the S-02 seam',
       assert.equal(res.status, 200);
       const payload = await res.json();
       assert.equal(typeof payload.keys, 'object');
-      assert.equal(Object.keys(payload.keys).length, 312);
+      assert.equal(Object.keys(payload.keys).length, Object.keys(labelKeysPayload().keys).length);
       assert.deepEqual(Object.keys(payload.keys).sort(), Object.keys(labelKeysPayload().keys).sort());
     } finally {
       await server.close();

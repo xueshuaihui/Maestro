@@ -97,6 +97,10 @@
   只用 `${{ github.token }}`）；三平台矩阵出 `.dmg`/NSIS `.exe` + `SHA256SUMS.txt`；`v0.*` → prerelease。
   Actions 证据日志行尾带时间戳，`.gitattributes` 已关掉 `docs/iterations/**/evidence/**` 整棵证据树的空白检查——
   **不得 strip，等于篡改证据**。
+- **同版本重发**：删远端 tag 重推可触发 `push.tags` 流水线（workflow_dispatch 只会出 dryrun 草稿），但
+  **删 tag 会把关联 Release 变成 draft**；CI 的 `gh release view` 仍见它 → 只 `upload --clobber`，不会重新 publish
+  也不会更新 target/body。事后必须 `PATCH /releases/{id}` 设 `draft:false` + `target_commitish` + body，
+  再匿名按 tag 查 API 应 HTTP 200。
 - **门禁台账**：`gates.json` 的 `head` 是「被验证提交」，产物须在**紧随其后的独立提交**落盘；`--amend` 并入会让 sha 变孤儿。
 - **仓库协作**：`origin/main` 会被并行工作树推进；合入前 `git fetch`；分叉时备份 WIP → `reset --hard origin/main` →
   记忆日志按**标题级并集**合并。本地 sha 与远端可能不等（时区），**以 `origin/main` 为权威**。

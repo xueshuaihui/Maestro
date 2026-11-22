@@ -26,7 +26,7 @@ import { createOrchestrator } from '../../src/core/orchestrator.js';
 import { decideEscalation, buildQueue, QUEUE_LABELS } from '../../src/daemon/queue.js';
 import { buildOccupancy } from '../../src/daemon/occupancy.js';
 import { readPrefs, writePrefs, PREFS_KEYS } from '../../src/daemon/prefs.js';
-import { labelKeysPayload, I11_DESKTOP_KEYS } from '../../src/daemon/http/labels.js';
+import { labelKeysPayload, I11_DESKTOP_KEYS, UI_LABEL_KEYS } from '../../src/daemon/http/labels.js';
 import { DESKTOP_TRAY_STATUS } from '../../src/cli/labels.js';
 import { createApp } from '../../desktop/ui/app.js';
 import { renderQueueRow, actionsFor } from '../../desktop/ui/queue/queue.js';
@@ -383,7 +383,7 @@ test('AC-40：零依赖 / 无打包器 / 界面零裸 import / 中文唯一来�
   for (const file of ui) {
     assert.ok(!cjk.test(fs.readFileSync(file, 'utf8')), `界面层出现中文字面量：${path.relative(REPO, file)}`);
   }
-  assert.equal(Object.keys(labelKeysPayload().keys).length, 312);
+  assert.equal(Object.keys(labelKeysPayload().keys).length, Object.keys(UI_LABEL_KEYS).length);
   assert.ok(I11_DESKTOP_KEYS.every((key) => key in labelKeysPayload().keys));
 });
 

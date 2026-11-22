@@ -36,7 +36,13 @@
  * The only authored glyphs are the two ASCII controls (back and retry).
  */
 
-import { renderListEmpty, renderListRow, renderListUnreadable, sortInstances } from './list/list.js';
+import {
+  describeListRow,
+  renderListEmpty,
+  renderListRow,
+  renderListUnreadable,
+  sortInstances,
+} from './list/list.js';
 import { renderHealthHover } from './list/health-hover.js';
 import {
   buildStartRequest,
@@ -52,7 +58,7 @@ import { hoverSet } from './graph/highlight.js';
 import { renderRoleRow, renderSpecialRow } from './graph/node-rows.js';
 import { renderEdgeRow } from './graph/edge-rows.js';
 import { renderLegend } from './graph/legend.js';
-import { resolveLabels, visibleLabels } from './labels/labels.js';
+import { fillTemplate, resolveLabels, visibleLabels } from './labels/labels.js';
 import { projectBoard } from './board/board.js';
 import { createConnectionState } from './connection.js';
 import { isProjectBlocked, projectMessage, resolveProject } from './project.js';
@@ -77,8 +83,13 @@ import { titleText as canvasTitleText, validationBadge, degradeText as canvasDeg
   nodeRow as canvasNodeRow, edgeRow as canvasEdgeRow, graphEdges } from './canvas/canvas.js';
 import { renderEvidence, RENDER_LIMIT_BYTES } from './evidence/evidence.js';
 import { replaceIntent, queueTargetOf, stripEntryOf } from './notify/notify.js';
+// beta.2 shell: presentation layer split into chrome / pages / graph / drill.
+// The assembly keeps the seam (`createApp`) and delegates every pixel to it.
+import { closePalette, paletteOpen, renderShell, shellRefs, showToast } from './shell/index.js';
+import { crumbsFor, openPalette } from './shell/chrome.js';
 
 const DEFAULT_MODULES = Object.freeze({
+  describeListRow,
   renderListEmpty,
   renderListRow,
   renderListUnreadable,
@@ -155,6 +166,20 @@ export function viewNavItems(labels) {
     items.push({ view, key, text });
   }
   return items;
+}
+
+/**
+ * The served table has no standalone instances nav label. The row template's
+ * leading noun is the authoritative wording (`<noun> {id} · ...`), so derive it
+ * instead of authoring a second Chinese literal in the UI layer.
+ */
+export function instancesTitle(labels) {
+  const row = labels?.DESKTOP_LIST_ROW;
+  if (typeof row === 'string') {
+    const head = row.split('\u00b7')[0].replace(/\{[^}]+\}/g, '').trim();
+    if (head.length > 0) return head;
+  }
+  return 'Maestro';
 }
 
 /** Controls that carry no wording of their own (ASCII glyphs only). */
@@ -292,7 +317,14 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     indicator: {},
     notice: null,
     templates: [],
-    newPanel: { open: false, template: '', task: '', message: null, success: null },
+    newPanel: {
+      open: false,
+      template: '',
+      task: '',
+      message: null,
+      success: null,
+      submitting: false,
+    },
     refetches: 0,
     frames: { role: 0, connection: 0, special: 0, session: 0, list: 0 },
     probes: [],
@@ -340,6 +372,15 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     evidence: null,       // last buildEvidence projection
     evidenceId: null,
     notifications: [],    // replaceIntent entries keyed (kind, instanceId)
+    // ---- beta.2 shell state (appended last so existing snapshots keep order)
+    listFilter: 'all',    // instance list filter token
+    newForm: null,        // { workflow, task } mirrored from the panel
+    evidenceNode: null,   // selected node id on the evidence page
+    nodeDrawer: null,     // { nodeId, from, view } right-hand drawer
+    connectionDrawer: null, // { edgeId, view }
+    escalationDrawer: null, // { escalationId, view }
+    drawerOpen: false,    // drawer visibility mirror for the assembler
+    routeHistory: [],     // { view, instanceId } stack for the back action
   };
 
   if (isProjectBlocked(state.project)) state.view = 'project';
@@ -745,6 +786,227 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       return api;
     },
 
+    // --------------------------------------------------- beta.2 user entry points
+    // These are the paths a real click uses. They fetch the same frozen
+    // projections the acceptance seam receives through `io`, so the DOM and the
+    // harness share one data source (`openDrill` / `openNodeDetail` / ...).
+
+    /** Remember the page we came from so `back()` returns verbatim. */
+    pushRoute() {
+      state.routeHistory.push({ view: state.view, instanceId: state.graphId });
+      if (state.routeHistory.length > 24) state.routeHistory.shift();
+      return api;
+    },
+
+    /** Back one step; unknown history falls back to the instance list. */
+    back() {
+      const previous = state.routeHistory.pop();
+      if (previous === undefined) {
+        state.view = 'instances';
+        state.graphId = null;
+        state.graph = null;
+        return api;
+      }
+      state.view = previous.view;
+      if (previous.instanceId !== state.graphId) {
+        state.graphId = previous.instanceId ?? null;
+      }
+      return api;
+    },
+
+    /** Open the role drill of one role through the daemon projection. */
+    async openRoleDrill(roleId) {
+      const instanceId = state.graphId;
+      if (instanceId === null || typeof roleId !== 'string' || roleId.length === 0) return api;
+      let data = {};
+      if (typeof transport.getDrill === 'function') {
+        try {
+          const answer = await transport.getDrill(instanceId, roleId);
+          if (answer?.status === 200 && answer.body !== null && typeof answer.body === 'object') data = answer.body;
+        } catch {
+          data = {};
+        }
+      }
+      api.pushRoute();
+      api.openDrill({ instanceId, roleId, data });
+      return api;
+    },
+
+    /** Node detail as a right-hand drawer, keeping the page underneath. */
+    async openNodeDrawer({ nodeId } = {}) {
+      const instanceId = state.graphId ?? state.drill?.instanceId ?? null;
+      if (instanceId === null || typeof nodeId !== 'string' || nodeId.length === 0) return api;
+      let data = {};
+      if (typeof transport.getNode === 'function') {
+        try {
+          const answer = await transport.getNode(instanceId, nodeId);
+          if (answer?.status === 200 && answer.body !== null && typeof answer.body === 'object') data = answer.body;
+        } catch {
+          data = {};
+        }
+      }
+      state.nodeDrawer = {
+        nodeId,
+        from: state.view,
+        view: m.createDrillView({
+          labels: state.labels,
+          data: { detail: data, breadcrumb: { key: 'DRILL_CRUMB_NODE', instanceId } },
+          interactions: { clock: transport.now },
+        }),
+      };
+      state.drawerOpen = true;
+      return api;
+    },
+
+    /** Handoff panel as a drawer (never the escalation panel, AC-51). */
+    async openConnectionDrawer({ edgeId } = {}) {
+      const instanceId = state.graphId ?? state.drill?.instanceId ?? null;
+      if (instanceId === null || typeof edgeId !== 'string' || edgeId.length === 0) return api;
+      let data = {};
+      if (typeof transport.getConnection === 'function') {
+        try {
+          const answer = await transport.getConnection(instanceId, edgeId);
+          if (answer?.status === 200 && answer.body !== null && typeof answer.body === 'object') data = answer.body;
+        } catch {
+          data = {};
+        }
+      }
+      state.connectionDrawer = {
+        edgeId,
+        view: m.createDrillView({
+          labels: state.labels,
+          data: { connection: data },
+          interactions: { clock: transport.now },
+        }),
+      };
+      state.drawerOpen = true;
+      return api;
+    },
+
+    /** Escalation panel as a drawer, fetched per instance. */
+    async openEscalationDrawer({ escalationId } = {}) {
+      const instanceId = state.graphId ?? state.drill?.instanceId ?? null;
+      if (instanceId === null) return api;
+      let data = {};
+      if (typeof transport.getEscalations === 'function') {
+        try {
+          const answer = await transport.getEscalations(instanceId);
+          if (answer?.status === 200 && answer.body !== null && typeof answer.body === 'object') data = answer.body;
+        } catch {
+          data = {};
+        }
+      }
+      state.escalationDrawer = {
+        escalationId: escalationId ?? null,
+        view: m.createDrillView({
+          labels: state.labels,
+          data: { escalations: data },
+          interactions: { clock: transport.now },
+        }),
+      };
+      state.drawerOpen = true;
+      return api;
+    },
+
+    /** Open one special node: human -> drawer, escalate -> escalation panel. */
+    async openSpecialNode({ nodeId, type } = {}) {
+      if (typeof nodeId !== 'string' || nodeId.length === 0) return api;
+      if (type === 'escalate') {
+        await api.openEscalationDrawer({ escalationId: nodeId });
+      } else if (type === 'subworkflow') {
+        let data = {};
+        const instanceId = state.graphId;
+        if (instanceId !== null && typeof transport.getSubflow === 'function') {
+          try {
+            const answer = await transport.getSubflow(instanceId, nodeId);
+            if (answer?.status === 200 && answer.body !== null && typeof answer.body === 'object') {
+              data = { ...answer.body, instanceId };
+            }
+          } catch {
+            data = {};
+          }
+        }
+        api.pushRoute();
+        api.openSubflow({ data });
+      } else {
+        await api.openNodeDrawer({ nodeId });
+      }
+      return api;
+    },
+
+    /** Close any open drawer and forget its cached signature. */
+    closeDrawer() {
+      state.nodeDrawer = null;
+      state.connectionDrawer = null;
+      state.escalationDrawer = null;
+      state.drawerOpen = false;
+      return api;
+    },
+
+    /** Pause / resume through the control endpoints (real server side). */
+    async pauseInstance(instanceId) {
+      if (typeof transport.postControl === 'function' && typeof instanceId === 'string') {
+        try {
+          await transport.postControl('pause', instanceId);
+        } catch {
+          // A failed control call keeps the page; the stream shows the truth.
+        }
+      }
+      return api;
+    },
+
+    async resumeInstance(instanceId) {
+      if (typeof transport.postControl === 'function' && typeof instanceId === 'string') {
+        try {
+          await transport.postControl('resume', instanceId);
+        } catch {
+          // Same degradation rule as pause.
+        }
+      }
+      return api;
+    },
+
+    /** Zoom the flow graph by one step (0.4x .. 2.4x clamp lives in view.js). */
+    zoom(direction) {
+      const view = state.viewState;
+      if (view === null || typeof view?.setZoom !== 'function') return api;
+      const current = typeof view.getZoom === 'function' ? view.getZoom() : 1;
+      view.setZoom(direction === 'in' ? current * 1.2 : current / 1.2);
+      return api;
+    },
+
+    /** Native folder picker + daemon rebind (first-run project page). */
+    async pickProject() {
+      const invoke = tauriInvoke();
+      if (invoke === null) return api;
+      let picked = null;
+      try {
+        picked = await invoke('pick_project');
+      } catch {
+        picked = null;
+      }
+      if (typeof picked !== 'string' || picked.length === 0) return api;
+      try {
+        await invoke('open_project', { root: picked });
+      } catch {
+        // A failed bind keeps the current page; the connection line shows it.
+        return api;
+      }
+      state.project = resolveProject({ root: picked, message: null });
+      if (typeof window !== 'undefined' && typeof window.location?.reload === 'function') {
+        window.location.reload();
+      }
+      return api;
+    },
+
+    /** Which host session the current drill / detail points at, if any. */
+    hostSession() {
+      const view = state.nodeDrawer?.view ?? state.drillView ?? null;
+      const jump = view?.hostJump ?? null;
+      const id = jump?.sessionId ?? jump?.session ?? null;
+      return typeof id === 'string' && id.length > 0 ? id : null;
+    },
+
     async retryGraph() {
       if (state.graphId !== null) await api.openGraph(state.graphId);
       return api;
@@ -758,6 +1020,12 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       // loaded through the seam methods below and the last projection is kept
       // while a channel recovers (AC-47 / BR-36).
       if (['queue', 'assets', 'occupancy', 'canvas', 'evidence'].includes(view)) {
+        state.view = view;
+      }
+      // beta.2 shell surfaces: these render from projections that are already
+      // in memory (rows, notifications, prefs), so they switch unconditionally
+      // as well and never leave the sidebar dead.
+      if (['new', 'overview', 'governance', 'settings', 'notifications', 'project'].includes(view)) {
         state.view = view;
       }
       return api;
@@ -876,6 +1144,16 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       if (view === 'queue') {
         await api.loadQueue();
         await api.loadQueuePrefs();
+      } else if (view === 'settings') {
+        await api.loadQueuePrefs();
+      } else if (view === 'new') {
+        if (state.templates.length === 0) await api.loadTemplates();
+        // Seed the first workflow only when nothing is chosen yet, so a task
+        // already typed is never thrown away by a re-visit.
+        if (!state.newPanel.template && state.templates.length > 0) {
+          api.updateNewPanel({ template: state.templates[0].id, message: null });
+        }
+        if (state.newPanel.open !== true) api.updateNewPanel({ open: true });
       } else if (view === 'assets') {
         await api.loadAssets(arg ?? state.assetKind);
       } else if (view === 'occupancy') {
@@ -1113,18 +1391,22 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
 
     // ------------------------------------------------------------- new panel
 
-    openNewPanel() {
-      state.newPanel.open = true;
-      state.newPanel.message = null;
-      state.newPanel.success = null;
-      if (state.newPanel.template.length === 0 && state.templates.length > 0) {
-        state.newPanel.template = state.templates[0].id;
-      }
+    openNewPanel(template) {
+      const fallback = state.templates.length > 0 ? state.templates[0].id : '';
+      const chosen = typeof template === 'string' && template.length > 0 ? template : fallback;
+      state.newPanel = {
+        open: true,
+        template: chosen,
+        task: '',
+        message: null,
+        success: null,
+        submitting: false,
+      };
       return api;
     },
 
     closeNewPanel() {
-      state.newPanel.open = false;
+      state.newPanel = { ...state.newPanel, open: false, submitting: false };
       return api;
     },
 
@@ -1135,14 +1417,16 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
 
     async submitNewPanel() {
       const panel = state.newPanel;
+      if (panel.submitting) return { ok: false, message: panel.message };
       const verdict = m.validateNewInstance(
         { template: panel.template, task: panel.task },
         state.labels,
       );
       if (!verdict.ok) {
-        state.newPanel = { ...panel, message: verdict.message, success: null };
+        state.newPanel = { ...panel, submitting: false, message: verdict.message, success: null };
         return { ok: false, message: verdict.message };
       }
+      state.newPanel = { ...panel, submitting: true, message: null, success: null };
       let answer = null;
       try {
         answer = await transport.postInstance?.(m.buildStartRequest({ template: panel.template, task: panel.task }));
@@ -1151,7 +1435,13 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       }
       if (answer && (answer.status === 200 || answer.status === 201) && answer.body?.instanceId) {
         const message = m.renderStarted(answer.body.instanceId, state.labels);
-        state.newPanel = { ...panel, open: false, message: null, success: message };
+        state.newPanel = {
+          ...panel,
+          open: false,
+          message: null,
+          success: message,
+          submitting: false,
+        };
         await api.loadInstances();
         return { ok: true, message };
       }
@@ -1160,7 +1450,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         { code: body.error, params: body.params, message: body.message },
         state.labels,
       );
-      state.newPanel = { ...panel, message, success: null };
+      state.newPanel = { ...panel, submitting: false, message, success: null };
       return { ok: false, message };
     },
 
@@ -1190,10 +1480,23 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       }
 
       const view = projectBlocked ? 'project' : state.view;
+      const views = viewNavItems(state.labels);
+      const instancesLabel = instancesTitle(state.labels);
+      const activeView = views.find((entry) => entry.view === view);
+      const viewTitle = view === 'instances' || view === 'project'
+        ? instancesLabel
+        : view === 'graph' || view === 'board'
+          ? state.labels?.DESKTOP_VIEW_GRAPH ?? instancesLabel
+          : activeView?.text ?? instancesLabel;
       const model = {
         ready,
         view,
         labels: state.labels,
+        instancesLabel,
+        views,
+        viewTitle,
+        viewSubtitle: state.project?.root ?? null,
+        projectRoot: state.project?.root ?? null,
         statusKey,
         statusText: connectionText,
         notice,
@@ -1231,21 +1534,36 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
 
       if (!ready) return model;
 
+      // Rows are a pure projection of the instance list, so they are built once
+      // for every view: the list page, the governance table and the shell
+      // counters all read the same rows (beta.2). No extra computation happens
+      // here — `describeListRow` / `renderListRow` keep the server wording.
+      model.rows = m.sortInstances(state.instances).map((item) => {
+        const readable = item?.readable !== false;
+        const fields = readable ? m.describeListRow(item, state.labels) : {};
+        return {
+          instanceId: item?.instanceId ?? '',
+          readable,
+          templateTitle: '',
+          phase: '',
+          state: '',
+          done: 0,
+          total: 0,
+          pending: 0,
+          healthLevel: null,
+          health: '',
+          ...fields,
+          text: readable
+            ? m.renderListRow(item, state.labels)
+            : m.renderListUnreadable(item?.instanceId ?? '', state.labels),
+          healthText: readable ? m.renderHealthHover(item?.health ?? {}, state.labels) : null,
+        };
+      });
+      model.emptyText = view === 'instances' && model.rows.length === 0
+        ? m.renderListEmpty(state.labels)
+        : null;
+
       if (view === 'instances') {
-        const rows = m.sortInstances(state.instances).map((item) => {
-          const readable = item?.readable !== false;
-          const row = {
-            instanceId: item?.instanceId ?? '',
-            readable,
-            text: readable
-              ? m.renderListRow(item, state.labels)
-              : m.renderListUnreadable(item?.instanceId ?? '', state.labels),
-            healthText: readable ? m.renderHealthHover(item?.health ?? {}, state.labels) : null,
-          };
-          return row;
-        });
-        model.rows = rows;
-        model.emptyText = rows.length === 0 ? m.renderListEmpty(state.labels) : null;
         return model;
       }
 
@@ -1859,6 +2177,79 @@ function paintSvgText(parent, x, y, text, attrs = {}) {
   return element;
 }
 
+const ICON_PATHS = Object.freeze({
+  grid: ['M4 4h6v6H4z', 'M14 4h6v6h-6z', 'M4 14h6v6H4z', 'M14 14h6v6h-6z'],
+  queue: ['M4 6h16', 'M4 12h16', 'M4 18h10'],
+  assets: ['M4 7l8-4 8 4-8 4-8-4Z', 'M4 12l8 4 8-4', 'M4 17l8 4 8-4'],
+  occupancy: ['M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z', 'M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1', 'M17 5a3 3 0 0 1 0 6', 'M18 14a4 4 0 0 1 3 3.9V20'],
+  canvas: ['M4 5h6v6H4z', 'M14 13h6v6h-6z', 'M10 8h4v8'],
+  evidence: ['M7 3h7l4 4v14H7z', 'M14 3v5h5', 'M9 12h7', 'M9 16h5'],
+  folder: ['M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'],
+  plus: ['M12 5v14', 'M5 12h14'],
+  refresh: ['M20 11a8 8 0 1 0-2.3 5.7', 'M20 4v7h-7'],
+  arrowLeft: ['M19 12H5', 'M12 19l-7-7 7-7'],
+  close: ['M18 6 6 18', 'M6 6l12 12'],
+  alert: ['M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z', 'M12 9v4', 'M12 17h.01'],
+  check: ['M20 6 9 17l-5-5'],
+  chevron: ['M9 18l6-6-6-6'],
+  play: ['M8 5v14l11-7z'],
+  spinner: ['M12 3a9 9 0 1 0 9 9'],
+});
+
+const VIEW_ICONS = Object.freeze({
+  instances: 'grid',
+  queue: 'queue',
+  assets: 'assets',
+  occupancy: 'occupancy',
+  canvas: 'canvas',
+  evidence: 'evidence',
+});
+
+const HEALTH_LEVELS = new Set(['attention', 'slow', 'normal', 'ended']);
+const PHASES = new Set([
+  'created', 'running', 'completed', 'failed', 'cancelled', 'interrupted', 'suspended',
+]);
+
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function icon(name, size = 18) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('width', String(size));
+  svg.setAttribute('height', String(size));
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '1.8');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  for (const d of ICON_PATHS[name] ?? []) {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    svg.appendChild(path);
+  }
+  return svg;
+}
+
+function labelText(labels, key, params) {
+  const template = labels?.[key];
+  if (typeof template !== 'string') return '';
+  return fillTemplate(template, params ?? {});
+}
+
+function progressLabel(labels, done, total) {
+  return labelText(labels, 'DESKTOP_LIST_FIELD_PROGRESS', { done, total });
+}
+
+function pendingLabel(labels, n) {
+  return labelText(labels, 'DESKTOP_LIST_FIELD_PENDING', { n });
+}
+
 /**
  * Mount the assembly into the window. `root` is a selector or an element.
  *
@@ -1900,50 +2291,50 @@ export function mountApp({
     }
   }
 
+  let toastTimer = null;
+  let toastText = null;
+
+  function captureFocus() {
+    const active = document.activeElement;
+    if (!active || !host.contains(active)) return null;
+    const field = active.getAttribute?.('data-field');
+    if (!field) return null;
+    let start = null;
+    let end = null;
+    try {
+      start = active.selectionStart;
+      end = active.selectionEnd;
+    } catch {
+      // Inputs without a selection range are still focus-restorable.
+    }
+    return { field, start, end, scrollTop: active.scrollTop ?? 0 };
+  }
+
+  function restoreFocus(snapshot, model) {
+    if (snapshot) {
+      const target = host.querySelector(`[data-field="${snapshot.field}"]`);
+      if (target) {
+        target.focus({ preventScroll: true });
+        if (snapshot.start !== null && typeof target.setSelectionRange === 'function') {
+          try {
+            target.setSelectionRange(snapshot.start, snapshot.end ?? snapshot.start);
+          } catch {
+            // Type-mismatched inputs ignore selection restoration.
+          }
+        }
+        target.scrollTop = snapshot.scrollTop ?? 0;
+        return;
+      }
+    }
+    if (model.panel.open) {
+      const task = host.querySelector('[data-field="task"]');
+      if (task) task.focus({ preventScroll: true });
+    }
+  }
+
   function paint() {
     const model = app.compose();
-    host.replaceChildren();
-
-    const header = document.createElement('header');
-    paintText(header, 'h1', 'Maestro', { class: 'title' });
-    host.appendChild(header);
-
-    if (model.statusText) {
-      paintText(host, 'p', model.statusText, { class: 'status' });
-    }
-    if (model.notice?.text) {
-      const notice = document.createElement('div');
-      notice.className = 'notice';
-      paintText(notice, 'span', model.notice.text);
-      for (const action of model.actions) {
-        paintText(notice, 'button', action.text, {
-          type: 'button',
-          'data-action': action.id,
-          title: action.title,
-        });
-      }
-      host.appendChild(notice);
-    } else if (model.actions.length > 0 && model.view !== 'instances') {
-      const controls = document.createElement('div');
-      controls.className = 'controls';
-      for (const action of model.actions) {
-        paintText(controls, 'button', action.text, {
-          type: 'button',
-          'data-action': action.id,
-          title: action.title,
-        });
-      }
-      host.appendChild(controls);
-    }
-
-    if (model.view === 'project') {
-      const prompt = document.createElement('section');
-      prompt.className = 'prompt';
-      paintText(prompt, 'p', model.projectMessage ?? '');
-      host.appendChild(prompt);
-      return;
-    }
-
+    const state = app.state();
     if (model.view === 'instances') {
       const texts = model.rows.map((row) => row.text);
       const signature = JSON.stringify(texts);
@@ -1951,39 +2342,246 @@ export function mountApp({
         lastRowsSignature = signature;
         emitProbe({ event: 'rows', rows: texts });
       }
-      paintList(host, model);
-      if (model.panel.open) paintPanel(host, model);
-      return;
     }
-
-    if (['queue', 'assets', 'occupancy', 'canvas', 'evidence'].includes(model.view)) {
-      paintViewNav(host, model);
-      if (model.view === 'queue') paintQueue(host, model);
-      else if (model.view === 'assets') paintAssets(host, model);
-      else if (model.view === 'occupancy') paintOccupancy(host, model);
-      else if (model.view === 'canvas') paintCanvas(host, model);
-      else if (model.view === 'evidence') paintEvidence(host, model);
-      return;
-    }
-
-    paintToolbar(host, model);
-    if (model.view === 'board') paintBoard(host, model);
-    else paintGraph(host, model);
+    renderShell(host, buildShellContext(model, state));
   }
 
-  /** Shared navigation for the five new views (labels carry all wording). */
-  function paintViewNav(container, model) {
-    const nav = document.createElement('nav');
-    nav.className = 'view-nav';
-    for (const { view, text } of viewNavItems(model.labels)) {
-      const button = paintText(nav, 'button', text, {
-        type: 'button',
-        'data-nav': view,
-        'aria-pressed': model.view === view ? 'true' : 'false',
-      });
-      if (model.view === view) button.className = 'active';
+  /**
+   * Assembly -> shell context. The shell receives projections only: it never
+   * reads the transport and never mutates state. Drawer specs ride along so a
+   * live frame can repaint the page underneath an open drawer.
+   */
+  function buildShellContext(model, state) {
+    const instanceId = state.graphId ?? state.drill?.instanceId ?? null;
+    let instanceRow = (model.rows ?? []).find((row) => row.instanceId === instanceId) ?? null;
+    if (instanceRow === null && instanceId !== null) {
+      const item = (state.instances ?? []).find((entry) => entry?.instanceId === instanceId) ?? null;
+      if (item !== null) {
+        const fields = item.readable === false ? {} : m.describeListRow(item, state.labels);
+        instanceRow = {
+          instanceId,
+          readable: item.readable !== false,
+          templateTitle: fields.templateTitle ?? '',
+          phase: fields.phase ?? '',
+          state: fields.state ?? '',
+          done: fields.done ?? 0,
+          total: fields.total ?? 0,
+          pending: fields.pending ?? 0,
+          healthLevel: fields.healthLevel ?? null,
+          text: item.readable === false
+            ? m.renderListUnreadable(instanceId, state.labels)
+            : m.renderListRow(item, state.labels),
+        };
+      }
     }
-    container.appendChild(nav);
+    const activeView = model.view;
+
+    let drawer = null;
+    let shellModel = model;
+    if (state.nodeDrawer !== null) {
+      const nodeId = state.nodeDrawer.nodeId ?? '';
+      drawer = {
+        kind: 'node',
+        id: nodeId,
+        title: noticeText('DRILL_CRUMB_NODE', { node: nodeId }) || nodeId,
+        subtitle: model.viewTitle ?? '',
+      };
+      shellModel = { ...model, drill: state.nodeDrawer.view ?? null };
+    } else if (state.connectionDrawer !== null) {
+      const view = state.connectionDrawer.view ?? null;
+      drawer = { kind: 'connection', id: state.connectionDrawer.edgeId ?? '', title: view?.connection?.title ?? '', subtitle: instanceId ?? '' };
+      shellModel = { ...model, drill: view };
+    } else if (state.escalationDrawer !== null) {
+      const view = state.escalationDrawer.view ?? null;
+      drawer = { kind: 'escalation', id: state.escalationDrawer.escalationId ?? '', title: view?.escalations?.title ?? '', subtitle: instanceId ?? '' };
+      shellModel = { ...model, drill: view };
+    }
+
+    // D-36 zero-computation: the badge count is the projection-supplied item
+    // count; no pending field is re-summed here.
+    const queueItems = Array.isArray(state.queue?.items) ? state.queue.items : [];
+    const queueCount = queueItems.length;
+
+    return {
+      state,
+      model: shellModel,
+      labels: state.labels,
+      t: noticeText,
+      view: activeView,
+      inDrawer: drawer !== null,
+      detailKey: drawer?.id ?? null,
+      drawers: drawer,
+      drawer,
+      instancesLabel: model.instancesLabel,
+      projectRoot: model.projectRoot ?? null,
+      statusText: model.statusText ?? null,
+      statusTone: model.connection?.status === 'ready' ? 'ok' : '',
+      queueCount,
+      notifyCount: Array.isArray(state.notifications) ? state.notifications.length : 0,
+      instanceId,
+      instanceRow,
+      instanceTitle: instanceRow?.templateTitle ?? instanceId ?? '',
+      graph: state.graph,
+      viewTitle: model.viewTitle ?? '',
+      crumbs: crumbsFor({
+        view: activeView,
+        instanceId,
+        instancesLabel: model.instancesLabel,
+        detailLabel: activeView === 'node-detail' ? noticeText('DESKTOP_V2_DETAIL', {}) : null,
+        t: noticeText,
+      }),
+      degradedText: model.notice?.text ?? null,
+      hostText: model.statusText ?? '',
+      dataDir: model.projectRoot ? `${model.projectRoot}/.orch/instances` : null,
+    };
+  }
+
+  function paintSidebar(model) {
+    const aside = element('aside', 'sidebar');
+    const brand = element('button', 'brand');
+    brand.type = 'button';
+    brand.setAttribute('data-nav', 'instances');
+    brand.setAttribute('aria-label', 'Maestro');
+    const mark = document.createElement('img');
+    mark.className = 'brand-mark';
+    mark.src = './brand/mark.svg';
+    mark.alt = '';
+    brand.appendChild(mark);
+    brand.appendChild(element('span', 'brand-name', 'Maestro'));
+    aside.appendChild(brand);
+
+    const nav = element('nav', 'nav');
+    nav.setAttribute('aria-label', 'views');
+    const home = element('button', 'nav-item');
+    home.type = 'button';
+    home.setAttribute('data-nav', 'instances');
+    home.appendChild(icon(VIEW_ICONS.instances));
+    home.appendChild(element('span', 'nav-text', model.instancesLabel));
+    if (model.view === 'instances' || model.view === 'project') {
+      home.classList.add('active');
+      home.setAttribute('aria-current', 'page');
+    }
+    nav.appendChild(home);
+    for (const entry of model.views) {
+      const button = element('button', 'nav-item');
+      button.type = 'button';
+      button.setAttribute('data-nav', entry.view);
+      button.appendChild(icon(VIEW_ICONS[entry.view] ?? 'grid'));
+      button.appendChild(element('span', 'nav-text', entry.text));
+      if (model.view === entry.view) {
+        button.classList.add('active');
+        button.setAttribute('aria-current', 'page');
+      }
+      nav.appendChild(button);
+    }
+    aside.appendChild(nav);
+
+    const foot = element('div', 'sidebar-foot');
+    if (model.projectRoot) {
+      const project = element('div', 'project-card');
+      project.setAttribute('title', model.projectRoot);
+      project.appendChild(icon('folder', 16));
+      project.appendChild(element('code', 'project-path', model.projectRoot));
+      foot.appendChild(project);
+    }
+    const status = model.connection?.status ?? 'idle';
+    if (model.statusText) {
+      const conn = element('div', `conn conn-${status}`);
+      conn.appendChild(element('span', 'conn-dot'));
+      conn.appendChild(element('span', 'conn-text', model.statusText));
+      foot.appendChild(conn);
+    } else if (status === 'ready') {
+      const conn = element('div', 'conn conn-ready');
+      conn.appendChild(element('span', 'conn-dot'));
+      conn.setAttribute('title', 'Maestro');
+      foot.appendChild(conn);
+    }
+    aside.appendChild(foot);
+    return aside;
+  }
+
+  function paintTopbar(model) {
+    const bar = element('header', 'topbar');
+    const heading = element('div', 'topbar-heading');
+    heading.appendChild(element('h1', 'topbar-title', model.viewTitle));
+    if (model.view === 'graph' || model.view === 'board') {
+      const instanceId = app.state().graphId;
+      if (typeof instanceId === 'string' && instanceId.length > 0) {
+        heading.appendChild(element('code', 'topbar-subtitle', instanceId));
+      }
+    }
+    bar.appendChild(heading);
+
+    const actions = element('div', 'topbar-actions');
+    for (const action of model.actions) {
+      const button = element('button', 'icon-btn');
+      button.type = 'button';
+      button.setAttribute('data-action', action.id);
+      button.title = action.title;
+      button.setAttribute('aria-label', action.title);
+      button.appendChild(icon(action.id.includes('retry') ? 'refresh' : 'arrowLeft'));
+      actions.appendChild(button);
+    }
+    if (model.ready && model.view !== 'project') {
+      const create = element('button', 'btn btn-primary');
+      create.type = 'button';
+      create.setAttribute('data-action', 'open-new');
+      create.appendChild(icon('plus', 16));
+      create.appendChild(element('span', 'btn-text', model.panel.newLabel));
+      actions.appendChild(create);
+    }
+    bar.appendChild(actions);
+    return bar;
+  }
+
+  function paintNotice(container, model) {
+    const notice = element('div', 'notice');
+    notice.setAttribute('role', 'status');
+    notice.appendChild(icon('alert', 18));
+    notice.appendChild(element('span', 'notice-text', model.notice.text));
+    if (model.actions.length > 0) {
+      const actions = element('div', 'notice-actions');
+      for (const action of model.actions) {
+        const button = element('button', 'btn btn-secondary');
+        button.type = 'button';
+        button.setAttribute('data-action', action.id);
+        button.title = action.title;
+        button.appendChild(icon(action.id.includes('retry') ? 'refresh' : 'arrowLeft', 15));
+        actions.appendChild(button);
+      }
+      notice.appendChild(actions);
+    }
+    container.appendChild(notice);
+  }
+
+  function paintProject(container, model) {
+    const prompt = element('section', 'prompt');
+    const mark = document.createElement('img');
+    mark.className = 'prompt-mark';
+    mark.src = './brand/mark.svg';
+    mark.alt = '';
+    prompt.appendChild(mark);
+    prompt.appendChild(element('p', 'prompt-text', model.projectMessage ?? ''));
+    container.appendChild(prompt);
+  }
+
+  function paintToast(container, model) {
+    if (!model.panel.success) return;
+    const toast = element('div', 'toast');
+    toast.setAttribute('role', 'status');
+    toast.appendChild(icon('check', 17));
+    toast.appendChild(element('span', 'toast-text', model.panel.success));
+    container.appendChild(toast);
+    if (toastText !== model.panel.success) {
+      toastText = model.panel.success;
+      if (toastTimer !== null) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastTimer = null;
+        toastText = null;
+        app.updateNewPanel({ success: null });
+        paint();
+      }, 5200);
+    }
   }
 
   function paintQueue(container, model) {
@@ -2138,57 +2736,226 @@ export function mountApp({
   }
 
   function paintList(container, model) {
-    const section = document.createElement('section');
-    section.className = 'list';
-    if (model.rows.length === 0) {
-      paintText(section, 'p', model.emptyText ?? '', { class: 'empty' });
-    } else {
-      const list = document.createElement('ul');
-      for (const row of model.rows) {
-        const item = document.createElement('li');
-        item.setAttribute('data-instance', row.instanceId);
-        if (row.healthText) item.setAttribute('title', row.healthText);
-        item.textContent = row.text;
-        list.appendChild(item);
+    const section = element('section', 'list page');
+    if (!model.ready) {
+      const state = element('div', 'state-card');
+      state.appendChild(element('span', 'spinner'));
+      if (model.statusText) state.appendChild(element('p', 'state-text', model.statusText));
+      if (model.actions.length > 0) {
+        const actions = element('div', 'state-actions');
+        for (const action of model.actions) {
+          const button = element('button', 'btn btn-secondary');
+          button.type = 'button';
+          button.setAttribute('data-action', action.id);
+          button.appendChild(icon('refresh', 15));
+          button.appendChild(element('span', 'btn-text', action.title));
+          actions.appendChild(button);
+        }
+        state.appendChild(actions);
       }
-      section.appendChild(list);
+      section.appendChild(state);
+      container.appendChild(section);
+      return;
     }
-    paintText(section, 'button', model.panel.newLabel ?? '', {
-      type: 'button',
-      'data-action': 'open-new',
-      hidden: model.panel.options.length > 0 ? null : 'hidden',
-    });
+
+    if (model.rows.length === 0) {
+      const empty = element('div', 'empty-state');
+      const mark = document.createElement('img');
+      mark.className = 'empty-mark';
+      mark.src = './brand/mark.svg';
+      mark.alt = '';
+      empty.appendChild(mark);
+      empty.appendChild(element('h2', 'empty-title', model.emptyText ?? model.instancesLabel));
+      if (model.panel.options.length > 0) {
+        const create = element('button', 'btn btn-primary');
+        create.type = 'button';
+        create.setAttribute('data-action', 'open-new');
+        create.appendChild(icon('plus', 16));
+        create.appendChild(element('span', 'btn-text', model.panel.newLabel));
+        empty.appendChild(create);
+
+        const quick = element('div', 'quickstart');
+        quick.appendChild(element(
+          'p',
+          'section-label',
+          model.labels?.DESKTOP_NEW_FIELD_WORKFLOW ?? '',
+        ));
+        const grid = element('div', 'quick-grid');
+        for (const option of model.panel.options) {
+          const card = element('button', 'quick-card');
+          card.type = 'button';
+          card.setAttribute('data-quick-template', option.id);
+          card.appendChild(icon('play', 16));
+          card.appendChild(element('span', 'quick-title', option.title ?? option.id));
+          card.appendChild(element('code', 'quick-code', option.id));
+          grid.appendChild(card);
+        }
+        quick.appendChild(grid);
+        empty.appendChild(quick);
+      }
+      section.appendChild(empty);
+      container.appendChild(section);
+      return;
+    }
+
+    const list = element('ul', 'instance-list');
+    for (const row of model.rows) {
+      const level = HEALTH_LEVELS.has(row.healthLevel) ? row.healthLevel : 'normal';
+      const phase = PHASES.has(row.phase) ? row.phase : '';
+      const item = element('li', `instance-card health-${level}${phase ? ` phase-${phase}` : ''}`);
+      item.setAttribute('data-instance', row.instanceId);
+      item.setAttribute('role', 'button');
+      item.setAttribute('tabindex', '0');
+      item.setAttribute('aria-label', row.text);
+      if (row.healthText) item.setAttribute('title', row.healthText);
+
+      item.appendChild(element('span', 'status-dot'));
+      const body = element('div', 'instance-main');
+      const titleRow = element('div', 'instance-title-row');
+      titleRow.appendChild(element(
+        'span',
+        'instance-template',
+        row.readable ? (row.templateTitle || row.instanceId) : row.text,
+      ));
+      if (row.readable && row.state) {
+        titleRow.appendChild(element(
+          'span',
+          `phase-badge${phase ? ` phase-${phase}` : ''}`,
+          row.state,
+        ));
+      }
+      body.appendChild(titleRow);
+      if (row.readable) {
+        const meta = element('div', 'instance-meta');
+        meta.appendChild(element('code', 'instance-id', row.instanceId));
+        const progress = element('span', 'instance-progress');
+        progress.appendChild(element('span', 'progress-text', progressLabel(
+          model.labels,
+          row.done,
+          row.total,
+        )));
+        const track = element('span', 'progress-track');
+        const fill = element('span', 'progress-fill');
+        const ratio = row.total > 0 ? Math.max(0, Math.min(1, row.done / row.total)) : 0;
+        fill.style.width = `${Math.round(ratio * 100)}%`;
+        track.appendChild(fill);
+        progress.appendChild(track);
+        meta.appendChild(progress);
+        meta.appendChild(element('span', 'meta-pill', pendingLabel(
+          model.labels,
+          row.pending,
+        )));
+        body.appendChild(meta);
+      }
+      item.appendChild(body);
+      if (row.readable && row.health) {
+        item.appendChild(element('span', `health-chip health-${level}`, row.health));
+      }
+      const chevron = icon('chevron', 18);
+      chevron.classList.add('chevron');
+      item.appendChild(chevron);
+      list.appendChild(item);
+    }
+    section.appendChild(list);
     container.appendChild(section);
   }
 
   function paintPanel(container, model) {
-    const panel = document.createElement('section');
-    panel.className = 'panel';
-    paintText(panel, 'h2', model.panel.title ?? '');
-    const select = document.createElement('select');
-    select.setAttribute('data-field', 'template');
-    for (const option of model.panel.options) {
-      const entry = document.createElement('option');
-      entry.value = option.id;
-      entry.textContent = option.title ?? option.id;
-      if (option.id === model.panel.template) entry.selected = true;
-      select.appendChild(entry);
+    const backdrop = element('div', 'modal-backdrop');
+    const panel = element('section', 'modal');
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-labelledby', 'new-instance-title');
+
+    const head = element('header', 'modal-head');
+    const heading = element('div', 'modal-heading');
+    heading.appendChild(icon('plus', 18));
+    const title = element('h2', 'modal-title', model.panel.title ?? '');
+    title.id = 'new-instance-title';
+    heading.appendChild(title);
+    head.appendChild(heading);
+    const close = element('button', 'icon-btn');
+    close.type = 'button';
+    close.setAttribute('data-action', 'close-new');
+    close.setAttribute('aria-label', model.panel.cancelText ?? '');
+    close.appendChild(icon('close', 18));
+    head.appendChild(close);
+    panel.appendChild(head);
+
+    const body = element('div', 'modal-body');
+    if (model.panel.options.length > 0) {
+      const field = element('div', 'field');
+      field.appendChild(element(
+        'span',
+        'field-label',
+        model.labels?.DESKTOP_NEW_FIELD_WORKFLOW ?? '',
+      ));
+      const options = element('div', 'workflow-options');
+      for (const option of model.panel.options) {
+        const choice = element('label', 'workflow-option');
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'workflow';
+        input.value = option.id;
+        input.checked = option.id === model.panel.template;
+        input.setAttribute('data-field', 'template');
+        if (input.checked) choice.classList.add('selected');
+        choice.appendChild(input);
+        choice.appendChild(element('span', 'workflow-radio'));
+        const copy = element('span', 'workflow-copy');
+        copy.appendChild(element('span', 'workflow-title', option.title ?? option.id));
+        copy.appendChild(element('code', 'workflow-code', option.id));
+        choice.appendChild(copy);
+        options.appendChild(choice);
+      }
+      field.appendChild(options);
+      body.appendChild(field);
     }
-    panel.appendChild(select);
+
+    const taskField = element('div', 'field');
+    taskField.appendChild(element(
+      'span',
+      'field-label',
+      model.labels?.DESKTOP_NEW_FIELD_TASK ?? '',
+    ));
     const task = document.createElement('textarea');
+    task.className = 'task-input';
     task.setAttribute('data-field', 'task');
+    task.rows = 7;
     task.value = model.panel.task ?? '';
-    panel.appendChild(task);
-    paintText(panel, 'button', model.panel.startText ?? '', {
-      type: 'button',
-      'data-action': 'submit-new',
-    });
-    paintText(panel, 'button', model.panel.cancelText ?? '', {
-      type: 'button',
-      'data-action': 'close-new',
-    });
-    if (model.panel.message) paintText(panel, 'p', model.panel.message, { class: 'message' });
-    container.appendChild(panel);
+    taskField.appendChild(task);
+    body.appendChild(taskField);
+
+    if (model.panel.message) {
+      const message = element('p', 'message');
+      message.setAttribute('role', 'alert');
+      message.appendChild(icon('alert', 16));
+      message.appendChild(element('span', 'message-text', model.panel.message));
+      body.appendChild(message);
+    }
+    panel.appendChild(body);
+
+    const foot = element('footer', 'modal-foot');
+    const cancel = element('button', 'btn btn-secondary');
+    cancel.type = 'button';
+    cancel.setAttribute('data-action', 'close-new');
+    cancel.appendChild(element('span', 'btn-text', model.panel.cancelText ?? ''));
+    foot.appendChild(cancel);
+    const start = element('button', 'btn btn-primary');
+    start.type = 'button';
+    start.setAttribute('data-action', 'submit-new');
+    if (model.panel.submitting) {
+      start.disabled = true;
+      start.appendChild(element('span', 'spinner'));
+    } else {
+      start.appendChild(icon('play', 15));
+    }
+    start.appendChild(element('span', 'btn-text', model.panel.startText ?? ''));
+    foot.appendChild(start);
+    panel.appendChild(foot);
+
+    backdrop.appendChild(panel);
+    container.appendChild(backdrop);
   }
 
   function paintToolbar(container, model) {
@@ -2360,11 +3127,183 @@ export function mountApp({
     container.appendChild(section);
   }
 
-  function handleAction(action, groupId) {
+  function handleAction(action, arg, node) {
+    const value = arg ?? null;
     switch (action) {
-      case 'back-to-list':
-        app.backToList();
-        break;
+      case 'nav': {
+        const view = typeof value === 'string' ? value : 'instances';
+        if (view === 'new') {
+          app.openView('new').then(paint);
+          return;
+        }
+        if (view === 'overview' || view === 'graph' || view === 'board') {
+          if (app.state().graphId !== null) {
+            app.setView(view === 'overview' ? 'graph' : view);
+            paint();
+          }
+          return;
+        }
+        if (view === 'project') {
+          app.setView('project');
+          paint();
+          return;
+        }
+        void app.openView(view, view === 'evidence' ? app.state().graphId : undefined).then(paint);
+        return;
+      }
+      case 'tab': {
+        const view = typeof value === 'string' ? value : 'graph';
+        if (view === 'evidence') {
+          void app.openView('evidence', app.state().graphId).then(paint);
+          return;
+        }
+        app.setView(view);
+        if (view === 'queue') void app.loadQueue().then(paint);
+        else paint();
+        return;
+      }
+      case 'back':
+      case 'drill-back':
+        app.back();
+        paint();
+        return;
+      case 'open-instance': {
+        const id = value && typeof value === 'object' ? value.instanceId : value;
+        if (typeof id === 'string' && id.length > 0) {
+          void app.openGraph(id).then(() => {
+            app.setView('graph');
+            paint();
+          });
+        }
+        return;
+      }
+      case 'filter':
+        app.state().listFilter = typeof value === 'string' ? value : 'all';
+        paint();
+        return;
+      case 'pick-template':
+        app.updateNewPanel({ template: typeof value === 'string' ? value : null, message: null, success: null });
+        paint();
+        return;
+      case 'open-drill': {
+        const roleId = value && typeof value === 'object' ? value.nodeId : value;
+        void app.openRoleDrill(roleId).then(paint);
+        return;
+      }
+      case 'open-special': {
+        const payload = value && typeof value === 'object' ? value : {};
+        void app.openSpecialNode(payload).then(paint);
+        return;
+      }
+      case 'open-node': {
+        const nodeId = value && typeof value === 'object' ? value.nodeId : value;
+        void app.openNodeDrawer({ nodeId }).then(paint);
+        return;
+      }
+      case 'dag-node': {
+        const nodeId = value && typeof value === 'object' ? value.nodeId : value;
+        void app.openRoleDrill(nodeId).then(paint);
+        return;
+      }
+      case 'open-connection': {
+        const edgeId = value && typeof value === 'object' ? value.edgeId : value;
+        void app.openConnectionDrawer({ edgeId }).then(paint);
+        return;
+      }
+      case 'open-escalation': {
+        const escalationId = value && typeof value === 'object' ? value.escalationId : value;
+        void app.openEscalationDrawer({ escalationId }).then(paint);
+        return;
+      }
+      case 'close-drawer':
+        app.closeDrawer();
+        paint();
+        return;
+      case 'drill-all-nodes':
+        app.openAllNodes();
+        paint();
+        return;
+      case 'continue-escalation': {
+        const escalationId = value && typeof value === 'object' ? value.escalationId : value;
+        void app.continueEscalation({
+          instanceId: app.state().graphId ?? app.state().drill?.instanceId ?? null,
+          escalationId,
+        }).then(paint);
+        return;
+      }
+      case 'select-row':
+        app.toggleRow(typeof value === 'string' ? value : null);
+        paint();
+        return;
+      case 'decide': {
+        const payload = value && typeof value === 'object' ? value : {};
+        void handleShellDecision(payload);
+        return;
+      }
+      case 'toggle-pref': {
+        if (typeof value !== 'string') return;
+        const current = app.state().queuePrefs?.[value];
+        void app.saveQueuePrefs({ [value]: current !== true }).then(paint);
+        return;
+      }
+      case 'asset-kind':
+        void app.loadAssets(typeof value === 'string' ? value : undefined).then(paint);
+        return;
+      case 'asset-row': {
+        const payload = value && typeof value === 'object' ? value : {};
+        void app.loadAssetDetail(payload.kind ?? app.state().assetKind, payload.id).then(paint);
+        return;
+      }
+      case 'evidence-node':
+        app.state().evidenceNode = typeof value === 'string' ? value : null;
+        paint();
+        return;
+      case 'zoom':
+        app.zoom(value === 'out' ? 'out' : 'in');
+        paint();
+        return;
+      case 'reset-view':
+        app.resetView();
+        paint();
+        return;
+      case 'exit-focus':
+        app.escape();
+        paint();
+        return;
+      case 'pause-instance':
+        void app.pauseInstance(typeof value === 'string' ? value : app.state().graphId).then(paint);
+        return;
+      case 'cancel-instance':
+        app.beginCancel(typeof value === 'string' ? value : app.state().graphId);
+        paint();
+        return;
+      case 'export-otel':
+        showToast(shellRefsOf(), noticeText('DESKTOP_V2_EXPORT_OTEL', {}));
+        return;
+      case 'copy-evidence':
+        void copyText(copyTargetOf(node)).then((ok) => showToast(shellRefsOf(), ok ? noticeText('DESKTOP_V2_COPY', {}) : ''));
+        return;
+      case 'jump-host': {
+        const id = app.hostSession();
+        if (id !== null) void copyText(id);
+        showToast(shellRefsOf(), id === null ? noticeText('DRILL_HOST_NONE', {}) : noticeText('DRILL_HOST_HINT', { id }));
+        return;
+      }
+      case 'pick-project':
+        void app.pickProject();
+        return;
+      case 'read-all':
+        app.state().notifications = [];
+        paint();
+        return;
+      case 'follow-notify': {
+        const payload = value && typeof value === 'object' ? value : {};
+        void app.followNotification({ kind: payload.kind ?? 'escalation', ids: Array.isArray(payload.ids) ? payload.ids : [] }).then(paint);
+        return;
+      }
+      case 'palette':
+        openShellPalette();
+        return;
       case 'retry-connection':
         app.retryConnection();
         void app.start().then(paint);
@@ -2372,44 +3311,167 @@ export function mountApp({
       case 'retry-graph':
         void app.retryGraph().then(paint);
         return;
-      case 'submit-new':
-        void app.submitNewPanel().then(paint);
+      case 'back-to-list':
+        app.backToList();
+        paint();
         return;
-      case 'reset-view':
+      case 'reset-view-legacy':
         app.resetView();
-        break;
+        paint();
+        return;
       case 'toggle-not-started':
         app.toggleNotStarted();
-        break;
+        paint();
+        return;
       case 'expand-groups':
       case 'collapse-groups':
-        if (groupId) app.toggleGroup(groupId);
-        break;
-      case 'exit-focus':
-        app.escape();
-        break;
+        if (typeof value === 'string') app.toggleGroup(value);
+        paint();
+        return;
       case 'view-graph':
         app.setView('graph');
-        break;
+        paint();
+        return;
       case 'view-board':
         app.setView('board');
-        break;
+        paint();
+        return;
       case 'open-new':
         app.openNewPanel();
-        break;
+        app.setView('new');
+        paint();
+        return;
       case 'close-new':
         app.closeNewPanel();
-        break;
-      case 'submit-new':
-        void app.submitNewPanel();
-        break;
+        app.setView('instances');
+        paint();
+        return;
+      case 'submit-new': {
+        const pending = app.submitNewPanel();
+        paint();
+        void pending.then((result) => {
+          // A successful start closes the form and returns to the list, where
+          // the new row appears through the push frame (AC-04).
+          if (result?.ok) app.setView('instances');
+          paint();
+        });
+        return;
+      }
       default:
         return;
     }
+  }
+
+  /** Queue decision from the new queue cards (rowKey + decision token). */
+  async function handleShellDecision(payload) {
+    const items = Array.isArray(app.state().queue?.items) ? app.state().queue.items : [];
+    const row = items.find((item) => item?.key === payload.rowKey) ?? {};
+    if (!row.id) return;
+    if (payload.decision === 'cancel') {
+      app.beginCancel(row.id);
+      paint();
+      return;
+    }
+    const kind = (payload.type ?? row.type) === 'approval' ? 'approval' : 'escalation';
+    const decision = payload.decision === 'pass' ? 'pass'
+      : payload.decision === 'retry' ? 'retry'
+        : payload.decision === 'allow' ? 'allow'
+          : 'deny';
+    await app.decide(kind, row.id, decision, {
+      type: payload.type ?? row.type, id: row.id, decision, action: row.reasonSummary ?? decision,
+    });
     paint();
   }
 
+  /** Shell chrome refs for toasts (created on the first paint). */
+  function shellRefsOf() {
+    return shellRefs(host);
+  }
+
+  /** Copy helper; returns false when the clipboard is unavailable. */
+  async function copyText(value) {
+    const text = typeof value === 'string' ? value : '';
+    if (text.length === 0) return false;
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      return false;
+    }
+    return false;
+  }
+
+  /** Copy target carried by the clicked element (evidence refs and ids). */
+  function copyTargetOf(node) {
+    if (node === null || typeof node !== 'object') return null;
+    const ref = node.getAttribute?.('data-copy') ?? null;
+    return typeof ref === 'string' && ref.length > 0 ? ref : null;
+  }
+
+  /** Command palette: pages, instances and drawer-free actions. */
+  function openShellPalette() {
+    const refs = shellRefs(host);
+    const entries = [];
+    const pages = [
+      ['instances', 'DESKTOP_V2_SETTINGS_PROJECT'],
+      ['queue', 'DESKTOP_VIEW_QUEUE'],
+      ['assets', 'DESKTOP_VIEW_ASSETS'],
+      ['occupancy', 'DESKTOP_VIEW_OCCUPANCY'],
+      ['canvas', 'DESKTOP_VIEW_CANVAS'],
+      ['governance', 'DESKTOP_V2_NAV_AUDIT'],
+      ['notifications', 'DESKTOP_NOTIFY_TOGGLE'],
+      ['settings', 'DESKTOP_V2_NAV_SETTINGS'],
+      ['new', 'DESKTOP_NEW_TITLE'],
+    ];
+    for (const [view, key] of pages) {
+      entries.push({ section: noticeText('DESKTOP_NOTIFY_SEG_INSTANCE', {}), label: noticeText(key, {}), action: 'nav', arg: view });
+    }
+    for (const item of app.state().instances ?? []) {
+      const id = typeof item?.instanceId === 'string' ? item.instanceId : null;
+      if (id === null) continue;
+      entries.push({ section: noticeText('DESKTOP_NOTIFY_SEG_INSTANCE', {}), label: id, action: 'open-instance', arg: { instanceId: id } });
+    }
+    openPalette(refs, { t: (key, params) => noticeText(key, params ?? {}) }, entries, (action, arg) => {
+      handleAction(action, arg, null);
+    });
+  }
+
+
+  /** Parse a `data-arg` payload: JSON objects/arrays stay structured. */
+  function parseArg(raw) {
+    if (typeof raw !== 'string' || raw.length === 0) return null;
+    const first = raw[0];
+    if (first === '{' || first === '[') {
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return raw;
+      }
+    }
+    return raw;
+  }
+
   host.addEventListener('click', (event) => {
+    if (event.target?.classList?.contains('mask')) {
+      app.closeDrawer();
+      paint();
+      return;
+    }
+    const backdrop = event.target.closest?.('.modal-backdrop') ?? null;
+    if (backdrop && event.target === backdrop) {
+      app.closeNewPanel();
+      paint();
+      return;
+    }
+    const quick = event.target.closest?.('[data-quick-template]') ?? null;
+    if (quick) {
+      app.setView('instances');
+      app.openNewPanel(quick.getAttribute('data-quick-template'));
+      paint();
+      return;
+    }
     const nav = event.target.closest?.('[data-nav]') ?? null;
     if (nav) {
       void app.openView(nav.getAttribute('data-nav')).then(paint);
@@ -2442,9 +3504,9 @@ export function mountApp({
       paint();
       return;
     }
-    const button = event.target.closest?.('[data-action]') ?? null;
-    if (button) {
-      handleAction(button.getAttribute('data-action'), button.getAttribute('data-group'));
+    const actionNode = event.target.closest?.('[data-action]') ?? null;
+    if (actionNode) {
+      handleAction(actionNode.getAttribute('data-action'), parseArg(actionNode.getAttribute('data-arg')), actionNode);
       return;
     }
     const row = event.target.closest?.('[data-instance]') ?? null;
@@ -2476,7 +3538,30 @@ export function mountApp({
     paint();
   }
 
+  host.addEventListener('input', (event) => {
+    if (event.target?.id === 'new-task') {
+      app.updateNewPanel({ task: event.target.value, message: null, success: null });
+      return;
+    }
+    const task = event.target.closest?.('[data-field="task"]') ?? null;
+    if (task) app.updateNewPanel({ task: task.value, message: null, success: null });
+  });
+
   host.addEventListener('change', (event) => {
+    const prefAction = event.target.closest?.('[data-action="toggle-pref"]') ?? null;
+    if (prefAction) {
+      handleAction('toggle-pref', prefAction.getAttribute('data-arg'), prefAction);
+      return;
+    }
+    const template = event.target.closest?.('[data-field="template"]') ?? null;
+    if (template) {
+      app.updateNewPanel({ template: template.value, message: null, success: null });
+      for (const option of host.querySelectorAll('.workflow-option')) {
+        const input = option.querySelector('input[data-field="template"]');
+        option.classList.toggle('selected', input?.checked === true);
+      }
+      return;
+    }
     const pref = event.target.closest?.('[data-pref]') ?? null;
     if (!pref) return;
     void app.saveQueuePrefs({ [pref.getAttribute('data-pref')]: pref.checked }).then(paint);
@@ -2510,9 +3595,52 @@ export function mountApp({
   });
 
   const onKeyDown = (event) => {
-    if (event.key !== 'Escape') return;
-    app.escape();
-    paint();
+    const refs = shellRefs(host);
+    if ((event.metaKey || event.ctrlKey) && String(event.key).toLowerCase() === 'k') {
+      event.preventDefault();
+      openShellPalette();
+      return;
+    }
+    if (event.key === 'Escape') {
+      if (paletteOpen(refs)) {
+        closePalette(refs);
+        return;
+      }
+      if (app.state().drawerOpen) {
+        app.closeDrawer();
+        paint();
+        return;
+      }
+    }
+    const panelOpen = app.state().newPanel.open;
+    if (event.key === 'Escape') {
+      if (panelOpen) app.closeNewPanel();
+      else app.escape();
+      paint();
+      return;
+    }
+    if (!panelOpen && event.key === 'ArrowLeft' && !event.target?.closest?.('input, textarea')) {
+      const state = app.state();
+      if (['drill', 'node-detail', 'escalation-panel', 'connection-panel', 'subflow'].includes(state.view)
+          || state.routeHistory.length > 0) {
+        event.preventDefault();
+        app.back();
+        paint();
+        return;
+      }
+    }
+    if (panelOpen && (event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+      event.preventDefault();
+      const pending = app.submitNewPanel();
+      paint();
+      void pending.then(paint);
+      return;
+    }
+    const row = event.target.closest?.('[data-instance]') ?? null;
+    if (row && !panelOpen && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      void app.openGraph(row.getAttribute('data-instance')).then(paint);
+    }
   };
   document.addEventListener('keydown', onKeyDown);
 
@@ -2978,6 +4106,24 @@ export function createLoopbackTransport(creds) {
       : request(`/evidence/${encodeURIComponent(instanceId)}`),
     getPrefs: () => request('/ui/prefs'),
     postPrefs: (patch) => request('/ui/prefs', { method: 'POST', body: JSON.stringify(patch) }),
+    // ---- beta.2 drill / detail / connection / escalation / subflow reads ----
+    getDrill: (instanceId, roleId) => request(
+      `/instances/${encodeURIComponent(instanceId)}/drill/${encodeURIComponent(roleId)}`,
+    ),
+    getNode: (instanceId, nodeId) => request(
+      `/instances/${encodeURIComponent(instanceId)}/nodes/${encodeURIComponent(nodeId)}`,
+    ),
+    getConnection: (instanceId, edgeId) => request(
+      `/instances/${encodeURIComponent(instanceId)}/connections/${encodeURIComponent(edgeId)}`,
+    ),
+    getEscalations: (instanceId) => request(`/instances/${encodeURIComponent(instanceId)}/escalations`),
+    getSubflow: (instanceId, ref) => request(
+      `/instances/${encodeURIComponent(instanceId)}/subworkflow/${encodeURIComponent(ref)}`,
+    ),
+    postControl: (verb, instanceId) => request(
+      `/control/${encodeURIComponent(verb)}`,
+      { method: 'POST', body: JSON.stringify({ instanceId }) },
+    ),
     postEscalationDecision: (id, decision) => request(
       `/queue/escalations/${encodeURIComponent(id)}/decision`,
       { method: 'POST', body: JSON.stringify({ decision }) },

@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maestro · 交互原型 v2（阶段一完整）</title>
+<style>
+:root{
+  --primary:#5B5BD6;--primary-2:#8284F0;--primary-bg:#EEF0FF;
+  --cyan:#06B6D4;--cyan-bg:#E2F8FC;--coral:#FF6B5A;--coral-bg:#FFF0EE;
+  --green:#10B981;--green-bg:#E6F9F1;--amber:#F59E0B;--amber-bg:#FFF5E3;
+  --red:#EF4444;--red-bg:#FEECEC;--ink:#1E293B;--muted:#64748B;--faint:#94A3B8;
+  --line:#E9ECF5;--bg:#F6F7FC;--card:#fff;--r:14px;--r2:10px;
+  --shadow:0 6px 22px rgba(91,91,214,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:none;background:none;color:inherit}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.app{display:flex;height:100vh;overflow:hidden}
+/* sidebar */
+.sidebar{width:232px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 12px;overflow:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;font-size:17px;font-weight:700;letter-spacing:-.3px}
+.brand-mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--cyan));display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700}
+.nav-label{font-size:11px;color:#9AA3B5;padding:14px 10px 6px;font-weight:600;letter-spacing:.6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r2);color:var(--muted);font-size:13px;font-weight:500;transition:.15s;width:100%;text-align:left}
+.nav-item:hover{background:var(--bg);color:var(--ink)}
+.nav-item.on{background:var(--primary-bg);color:var(--primary);font-weight:600}
+.nav-item .badge-n{margin-left:auto;background:var(--coral);color:#fff;font-size:11px;padding:1px 7px;border-radius:20px;font-weight:600}
+.nav-item .ico{width:16px;text-align:center;opacity:.85}
+.sidebar-foot{margin-top:auto;padding:10px;border:1px solid var(--line);border-radius:var(--r2);background:var(--bg)}
+.sidebar-foot .t{font-size:11px;color:var(--muted)}
+.sidebar-foot .p{font-size:12px;font-weight:600;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar-foot .c{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green);margin-top:6px}
+.sidebar-foot .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+/* main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{height:56px;flex-shrink:0;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 22px}
+.crumb{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.crumb b{color:var(--ink);font-weight:600}
+.topbar .spacer{flex:1}
+.searchbox{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:6px 10px;color:#98A2B3;font-size:12px;min-width:180px}
+.searchbox:hover{border-color:var(--primary-2)}
+.iconbtn{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);position:relative}
+.iconbtn:hover{background:var(--bg);color:var(--ink)}
+.iconbtn .dot{position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--coral);border-radius:50%;border:2px solid #fff}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--amber));color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.content{flex:1;overflow:auto;padding:24px 28px 44px}
+/* primitives */
+.page-head{display:flex;align-items:flex-end;gap:12px;margin-bottom:20px}
+.page-head h1{font-size:21px;font-weight:700;letter-spacing:-.4px}
+.page-head p{color:var(--muted);font-size:13px;margin-top:2px}
+.page-head .spacer{flex:1}
+.btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600;transition:.15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn.primary{background:var(--primary);color:#fff;box-shadow:0 3px 10px rgba(91,91,214,.22)}
+.btn.primary:hover{background:var(--primary-2)}
+.btn.ghost{border:1px solid var(--line);background:#fff;color:var(--ink)}
+.btn.ghost:hover{border-color:var(--primary);color:var(--primary)}
+.btn.coral{background:var(--coral);color:#fff}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.grid{display:grid;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;transition:.18s}
+.card.hover:hover{border-color:var(--primary-2);box-shadow:var(--shadow);transform:translateY(-1px)}
+.card.flat{padding:0;overflow:hidden}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.badge.run{background:var(--primary-bg);color:var(--primary)}
+.badge.wait{background:var(--amber-bg);color:#B45309}
+.badge.done{background:var(--green-bg);color:#047857}
+.badge.fail{background:var(--red-bg);color:#B91C1C}
+.badge.cyan{background:var(--cyan-bg);color:#0369A1}
+.badge.gray{background:#EEF1F6;color:var(--muted)}
+.pulse{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.3}}
+.muted{color:var(--muted)}.small{font-size:12px}.tiny{font-size:11px}.mono{font-family:ui-monospace,Consolas,monospace}
+.row{display:flex;align-items:center;gap:10px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.wrap{flex-wrap:wrap}
+.mt6{margin-top:6px}.mt10{margin-top:10px}.mt14{margin-top:14px}.mt20{margin-top:20px}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.chip{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:500}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow:auto}
+.tab{padding:9px 15px;font-size:13px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--primary);border-color:var(--primary);font-weight:600}
+.metric{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 15px}
+.metric .l{font-size:12px;color:var(--muted)}
+.metric .v{font-size:23px;font-weight:700;margin-top:3px;letter-spacing:-.5px}
+.metric .s{font-size:11px;color:var(--faint);margin-top:2px}
+.progress{height:6px;background:#EEF1F8;border-radius:10px;overflow:hidden;margin-top:8px}
+.progress i{display:block;height:100%;border-radius:10px;background:linear-gradient(90deg,var(--primary),var(--cyan))}
+.progress.sm{height:4px;margin-top:5px}
+.timeline{position:relative;padding-left:20px}
+.timeline:before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl-item{position:relative;padding:0 0 16px}
+.tl-item:before{content:"";position:absolute;left:-19px;top:5px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--primary)}
+.tl-item.done:before{background:var(--green);border-color:var(--green)}
+.tl-item.wait:before{background:var(--amber);border-color:var(--amber)}
+.tl-item.fail:before{background:var(--red);border-color:var(--red)}
+.tl-item:last-child{padding-bottom:0}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--bg);letter-spacing:.3px}
+td{padding:11px 12px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#FAFBFE}
+/* board */
+.board{display:grid;grid-template-columns:repeat(7,minmax(150px,1fr));gap:10px;min-width:1120px}
+.board-col{background:#EEF1F8;border-radius:12px;padding:10px;min-height:220px}
+.board-col h4{font-size:12px;font-weight:600;margin-bottom:9px;color:var(--muted);display:flex;justify-content:space-between}
+.mini-card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;margin-bottom:7px;cursor:pointer;box-shadow:0 1px 3px rgba(30,41,59,.04)}
+.mini-card:hover{border-color:var(--primary)}
+.mini-card .id{font-size:10px;color:var(--muted)}
+/* log */
+.log{background:#1E293B;color:#E2E8F0;border-radius:var(--r2);padding:14px;font:12px/1.85 ui-monospace,Consolas,monospace;white-space:pre-wrap;max-height:440px;overflow:auto}
+.log .g{color:#6EE7B7}.log .y{color:#FCD34D}.log .b{color:#93C5FD}.log .r{color:#FCA5A5}.log .m{color:#94A3B8}
+/* drawer */
+.drawer{position:fixed;top:0;right:0;width:420px;max-width:96vw;height:100vh;background:#fff;border-left:1px solid var(--line);box-shadow:-8px 0 30px rgba(30,41,59,.08);z-index:40;transform:translateX(105%);transition:transform .22s ease;display:flex;flex-direction:column}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.drawer-body{padding:18px 20px;overflow:auto;flex:1}
+.drawer-foot{padding:13px 20px;border-top:1px solid var(--line);display:flex;gap:8px;background:#FCFDFF}
+.mask{position:fixed;inset:0;background:rgba(30,41,59,.22);z-index:30;opacity:0;pointer-events:none;transition:.2s}
+.mask.on{opacity:1;pointer-events:auto}
+/* toast + palette */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:60;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.palette{position:fixed;inset:0;background:rgba(30,41,59,.28);z-index:70;display:none;align-items:flex-start;justify-content:center;padding-top:12vh}
+.palette.on{display:flex}
+.palette-box{width:560px;max-width:92vw;background:#fff;border-radius:16px;box-shadow:0 30px 80px rgba(15,23,42,.3);overflow:hidden}
+.palette-input{width:100%;padding:16px 18px;border:none;outline:none;font-size:15px;border-bottom:1px solid var(--line)}
+.palette-list{padding:8px;max-height:46vh;overflow:auto}
+.palette-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13px;width:100%;text-align:left}
+.palette-item:hover,.palette-item.sel{background:var(--primary-bg);color:var(--primary)}
+.palette-sec{font-size:11px;color:var(--faint);padding:8px 12px 4px;font-weight:600}
+.kbd{font:11px ui-monospace,monospace;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--muted)}
+.empty{text-align:center;padding:46px 20px;color:var(--muted)}
+.empty .ico{width:52px;height:52px;border-radius:16px;background:var(--primary-bg);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 12px}
+.notice{display:flex;align-items:center;gap:10px;background:var(--amber-bg);border:1px solid #FDE7BC;color:#92400E;border-radius:10px;padding:10px 14px;font-size:12px;margin-bottom:14px}
+/* svg graph */
+.graphwrap{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:6px;overflow:auto;position:relative}
+.graphwrap svg{display:block;min-width:900px;width:100%;height:auto}
+.gnode{cursor:pointer}
+.gnode:hover rect{stroke-width:2.5}
+.tag{font-size:10px;padding:1px 6px;border-radius:5px;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px}
+.split3{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px}
+.card-row{padding:13px 15px;border:1px solid var(--line);border-radius:var(--r);background:#fff;margin-bottom:9px;cursor:pointer;transition:.15s}
+.card-row:hover{border-color:var(--primary-2);box-shadow:var(--shadow)}
+.card-row.hl{border-color:var(--primary);background:var(--primary-bg)}
+.listrow{display:flex;align-items:center;gap:12px;padding:13px 16px;border:1px solid var(--line);border-radius:var(--r);background:#fff;margin-bottom:9px;cursor:pointer;transition:.15s}
+.listrow:hover{border-color:var(--primary-2);box-shadow:var(--shadow)}
+.listrow .id{font-size:11px;color:var(--muted);font-family:ui-monospace,monospace}
+.mini{font-size:11px;color:var(--faint)}
+.sb{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">M</div>Maestro</div>
+    <div class="nav-label">工作空间</div>
+    <button class="nav-item" data-go="projects"><span class="ico">▦</span>项目</button>
+    <button class="nav-item" data-go="instances"><span class="ico">◈</span>实例</button>
+    <button class="nav-item" data-go="queue"><span class="ico">☷</span>审批队列 <span class="badge-n">2</span></button>
+    <button class="nav-item" data-go="notifications"><span class="ico">♢</span>通知 <span class="badge-n">3</span></button>
+    <div class="nav-label">资产与运行</div>
+    <button class="nav-item" data-go="assets"><span class="ico">▤</span>资产库</button>
+    <button class="nav-item" data-go="occupancy"><span class="ico">◍</span>角色占用</button>
+    <button class="nav-item" data-go="canvas"><span class="ico">⌗</span>工作流画布</button>
+    <div class="nav-label">治理</div>
+    <button class="nav-item" data-go="governance"><span class="ico">⛨</span>审计与治理</button>
+    <button class="nav-item" data-go="settings"><span class="ico">⚙</span>设置</button>
+    <div class="sidebar-foot">
+      <div class="t">当前项目</div><div class="p" title="D:\Work\Maestro">D:\Work\Maestro</div>
+      <div class="c"><span class="dot"></span>守护进程已连接</div>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb" id="crumb">工作空间 / <b>项目</b></div>
+      <div class="spacer"></div>
+      <button class="searchbox" data-act="palette">⌕ &nbsp;搜索实例、节点、页面 <span class="kbd">⌘K</span></button>
+      <button class="iconbtn" data-go="notifications">♢<i class="dot"></i></button>
+      <div class="avatar">X</div>
+    </header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+<div class="mask" id="mask"></div>
+<div class="drawer" id="drawer"></div>
+<div class="toast" id="toast"></div>
+<div class="palette" id="palette">
+  <div class="palette-box">
+    <input class="palette-input" id="pinput" placeholder="输入页面、实例或节点编号…">
+    <div class="palette-list" id="plist"></div>
+  </div>
+</div>
+<script>
+/* ---------------- fixture data ---------------- */
+const INST = {
+  'INST-084':{id:'INST-084',name:'用户注册重构',st:'run',label:'运行中',health:'normal',healthLabel:'正常',phase:'审核',round:'2/3',prog:68,pending:1,time:'12 分钟前',tpl:'全栈功能开发'},
+  'INST-083':{id:'INST-083',name:'支付回调幂等',st:'wait',label:'待我处理',health:'attention',healthLabel:'需关注',phase:'审核',round:'2/3',prog:54,pending:2,time:'18 分钟前',tpl:'需求评审'},
+  'INST-082':{id:'INST-082',name:'导出接口文档',st:'done',label:'已完成',health:'ended',healthLabel:'已结束',phase:'完成',round:'2/2',prog:100,pending:0,time:'1 小时前',tpl:'文档生成'},
+  'INST-081':{id:'INST-081',name:'登录态竞态修复',st:'fail',label:'已中断',health:'attention',healthLabel:'需关注',phase:'开发',round:'1/3',prog:31,pending:1,time:'2 小时前',tpl:'全栈功能开发'}
+};
+const ORDER = ['INST-084','INST-083','INST-082','INST-081'];
+const NODES = [
+  {id:'T-01',title:'注册链路调研',role:'researcher',state:'done',label:'已完成',round:1,ms:'2m 04s',tool:'—',out:2},
+  {id:'T-02',title:'注册流程实现',role:'writer',state:'done',label:'已完成',round:1,ms:'4m 38s',tool:'write register-flow.ts',out:3},
+  {id:'T-03',title:'边界条件审核',role:'reviewer',state:'running',label:'运行中',round:2,ms:'1m 12s',tool:'read api-spec.md',out:1},
+  {id:'T-04',title:'人工终审',role:'human',state:'ready',label:'待处理',round:1,ms:'—',tool:'—',out:0},
+  {id:'T-05',title:'合并交付',role:'deliver',state:'blocked',label:'阻塞',round:1,ms:'—',tool:'—',out:0}
+];
+const HANDS = [
+  {id:'H-114',from:'researcher',to:'writer',state:'consumed',label:'已消费',at:'2 分钟前',evidence:'2/2 通过'},
+  {id:'H-115',from:'writer',to:'reviewer',state:'accepted',label:'已接收',at:'1 分钟前',evidence:'3/3 通过'},
+  {id:'H-116',from:'reviewer',to:'human',state:'pending',label:'待接收',at:'38 秒前',evidence:'1/1 待校验'}
+];
+const QUEUE = [
+  {id:'ESC-021',kind:'升级',title:'审核第 2 轮未通过需要裁决',inst:'INST-083',node:'T-03',why:'轮次超限 · 边界条件未覆盖',at:'12 分钟前',actions:['继续升级','重派','终止']},
+  {id:'APR-007',kind:'审批',title:'写入 shared/ 目录需要允许',inst:'INST-084',node:'T-02',why:'宿主请求文件写入权限',at:'3 分钟前',actions:['允许','拒绝']}
+];
+const ASSETS = {
+  roles:[['researcher','研究','内置','通过'],['writer','撰写','内置','通过'],['reviewer','审核','内置','通过'],['coordinator','协调','内置','通过'],['security-reviewer','审核','项目','通过'],['data-cleaner','数据','项目','不通过']],
+  skills:[['web-research','研究','内置','3 命令','通过'],['doc-draft','撰写','内置','2 命令','通过'],['code-edit','开发','内置','4 命令','通过'],['sql-snapshot','数据','项目','1 命令','未校验']],
+  workflows:[['全栈功能开发','内置','5 节点','4 条边','通过'],['需求评审','内置','3 节点','2 条边','通过'],['文档生成','内置','3 节点','2 条边','通过'],['支付重构','项目','7 节点','9 条边','不通过']]
+};
+const OCC = [
+  ['researcher','available','可用','0','—','—'],['writer','busy','忙碌','2','T-02, T-06','INST-084'],
+  ['reviewer','busy','忙碌','1','T-03','INST-084'],['coordinator','cooldown','冷却','0','—','INST-083'],
+  ['human','busy','忙碌','1','T-04','INST-084'],['data-cleaner','unavailable','不可用','0','—','INST-081']
+];
+const AUDIT = [
+  ['#1042','node.state','T-03 running → escalated','2 分钟前','ok'],
+  ['#1041','handoff.state','H-115 accepted','3 分钟前','ok'],
+  ['#1040','role.wake','writer 唤醒被允许','4 分钟前','ok'],
+  ['#1039','role.wake','data-cleaner 越权唤醒被拒绝','9 分钟前','deny'],
+  ['#1038','evidence.expired','T-02 证据指纹不一致，交接被拒','14 分钟前','warn']
+];
+/* ---------------- state ---------------- */
+const S = { page:'projects', inst:false, instance:'INST-084', tab:'overview', filter:'全部', asset:'roles', queueDone:[], selNode:null, drillRole:'reviewer', hlCard:null, back:[], readAll:false };
+const TABS = [['overview','概览'],['flow','流程图'],['board','节点看板'],['queue','审批队列'],['evidence','证据']];
+const CRUMBS = {
+  projects:'工作空间 / <b>项目</b>', instances:'工作空间 / <b>实例</b>', new:'实例 / <b>新建</b>',
+  queue:'工作空间 / <b>审批队列</b>', notifications:'工作空间 / <b>通知</b>', assets:'资产 / <b>资产库</b>',
+  occupancy:'资产 / <b>角色占用</b>', canvas:'资产 / <b>工作流画布</b>', governance:'治理 / <b>审计与治理</b>',
+  settings:'偏好 / <b>设置</b>', drill:'实例 / <b>角色下钻</b>'
+};
+function badge(st,label,pulse){return `<span class="badge ${st}">${pulse?'<i class="pulse"></i>':''}${label}</span>`}
+function head(t,d,btn){return `<div class="page-head"><div><h1>${t}</h1>${d?`<p>${d}</p>`:''}</div><div class="spacer"></div>${btn||''}</div>`}
+function tabsHtml(){return `<div class="tabs">${TABS.map(t=>`<button class="tab ${S.tab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}</button>`).join('')}</div>`}
+function ws(body,title,sub){return head(title||INST[S.instance].name, sub||`${S.instance} · ${INST[S.instance].tpl} · 第 ${INST[S.instance].round} 轮`,
+  `<button class="btn ghost" data-go="instances">← 返回列表</button>`)+tabsHtml()+body}
+const N = () => NODES.find(n=>n.id===S.selNode) || null;
+/* ---------------- pages ---------------- */
+function pgProjects(){
+  return head('选一个项目开始','实例按项目隔离，切换项目不会丢失上下文',`<button class="btn primary" data-act="newproj">+ 新建项目</button>`)+`
+  <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(252px,1fr))">
+   ${[['M','Maestro','多会话编排控制台','12 个实例 · 刚刚活跃','primary'],['D','Maestro Docs','文档与需求工程','4 个实例 · 昨天','cyan'],['A','Agent Lab','实验性 Agent 流程','7 个实例 · 3 天前','coral']].map(x=>`
+   <div class="card hover" style="padding:20px" data-go="instances">
+    <div style="width:42px;height:42px;border-radius:13px;background:var(--${x[4]}-bg);color:var(--${x[4]});display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700">${x[0]}</div>
+    <h3 style="font-size:16px;margin-top:14px">${x[1]}</h3><p class="muted small mt6">${x[2]}</p>
+    <div class="divider"></div><div class="between"><span class="tiny muted">${x[3]}</span><span style="color:var(--primary)" class="small">打开 →</span></div>
+   </div>`).join('')}
+   <div class="card hover" style="border:2px dashed var(--line);text-align:center;padding:34px;color:var(--muted)" data-act="newproj"><div style="font-size:26px">+</div><div class="mt6">新建项目</div></div>
+  </div>`;
+}
+function pgInstances(){
+  const f = S.filter;
+  const rows = ORDER.map(id=>INST[id]).filter(x=>f==='全部'||x.label===f);
+  return head('实例','所有运行中与历史任务 · 待处理数来自队列',`<button class="btn primary" data-go="new">+ 新建实例</button>`)+`
+  <div class="sb" style="margin-bottom:16px">${['全部','运行中','待我处理','已完成','已中断'].map((x,i)=>`<button class="chip ${f===x?'on':''}" data-filter="${x}">${x}</button>`).join('')}
+   <div style="flex:1"></div><span class="tiny muted">${rows.length} / ${ORDER.length}</span></div>
+  <div class="split">
+   <div>${rows.length?rows.map(x=>`
+    <div class="listrow" data-instance="${x.id}">
+     <div style="flex:1;min-width:0">
+      <div class="between"><div class="row"><b class="small">${x.name}</b>${badge(x.st,x.label,x.st==='run')}</div><span class="mini">${x.time}</span></div>
+      <div class="row mt6" style="gap:14px"><span class="id">${x.id}</span><span class="mini">${x.tpl}</span><span class="mini">阶段 ${x.phase}</span><span class="mini">第 ${x.round} 轮</span></div>
+      <div class="row mt6" style="gap:10px"><div class="progress sm" style="flex:1"><i style="width:${x.prog}%"></i></div><span class="mini">${x.prog}%</span>${x.pending?`<span class="badge wait">待处理 ${x.pending}</span>`:''}${badge(x.health==='attention'?'fail':x.health==='ended'?'gray':'done',x.healthLabel)}</div>
+     </div></div>`).join(''):`<div class="empty"><div class="ico">◈</div><div>该筛选下暂无实例</div><button class="btn ghost sm mt14" data-filter="全部">查看全部</button></div>`}</div>
+   <div>
+    <div class="card" style="align-self:start"><div class="between"><b class="small">快速开始</b><span class="tag">⌘K</span></div>
+     <button class="btn primary sm mt10" data-go="new" style="width:100%">+ 新建实例</button>
+     <div class="divider"></div><div class="tiny muted">最近模板</div>
+     ${['全栈功能开发','需求评审','文档生成'].map(t=>`<button class="nav-item" data-go="new" style="padding:6px 4px">· ${t}</button>`).join('')}
+    </div>
+    <div class="card mt14"><b class="small">健康度分布</b>
+     ${[['需关注',1,'fail'],['较慢',0,'wait'],['正常',2,'done'],['已结束',1,'gray']].map(x=>`<div class="between mt10"><span class="small muted">${x[0]}</span>${badge(x[2],String(x[1]))}</div>`).join('')}
+    </div>
+   </div>
+  </div>`;
+}
+function pgNew(){
+  return head('新建实例','选择工作流模板并描述任务，核心会自动编排角色与交接')+`
+  <div class="split">
+   <div class="card">
+    <h3 style="font-size:15px;margin-bottom:12px">选择工作流模板</h3>
+    <div class="grid" style="grid-template-columns:repeat(2,1fr)">
+     ${[['全栈功能开发','researcher → writer → reviewer','5 节点 · 3 角色'],['需求评审','researcher → reviewer','3 节点 · 2 角色'],['文档生成','writer → reviewer','3 节点 · 2 角色'],['自由编排','在画布中定义','自定义']].map((x,i)=>`
+     <div class="card hover" style="padding:13px;border:2px solid ${i===0?'var(--primary)':'var(--line)'};background:${i===0?'var(--primary-bg)':'#fff'}" data-act="pick">
+      <b class="small">${x[0]}</b><div class="tiny muted mt6">${x[1]}</div><div class="tiny" style="color:var(--primary);margin-top:6px">${x[2]}</div>
+     </div>`).join('')}
+    </div>
+    <h3 style="font-size:15px;margin:20px 0 10px">任务说明</h3>
+    <textarea id="task" rows="4" placeholder="例如：重构用户注册流程，补充邮箱验证与错误重试…" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;resize:vertical"></textarea>
+    <div class="tiny muted mt6">必填。写入实例 shared/status.md，作为首个节点的交接输入。</div>
+    <div class="row mt14"><button class="btn primary" data-act="submit">启动实例 →</button><button class="btn ghost" data-go="instances">取消</button></div>
+   </div>
+   <div>
+    <div class="card"><div class="small muted">启动前检查</div>
+     <div class="mt10 small">${badge('done','项目根目录已连接')}</div>
+     <div class="mt6 small">${badge('done','宿主凭据有效 · DSH 0.2.2-rc.5')}</div>
+     <div class="mt6 small">${badge('done','模板版本已锁定')}</div>
+     <div class="mt6 small">${badge('cyan','并行度上限 4 · 预算未耗尽')}</div>
+     <div class="divider"></div><div class="tiny muted">启动后进入编排队列；流程、看板、证据、审批都在实例工作区，不需要终端。</div>
+    </div>
+    <div class="card mt14"><b class="small">模板拓扑预览</b>
+     <div class="mt10 tiny muted">researcher → writer → reviewer → human → deliver</div>
+     <div class="mt6 tiny muted">回流边：reviewer → writer（上限 2 轮）</div>
+     <button class="btn ghost sm mt14" data-go="canvas" style="width:100%">在画布中查看</button>
+    </div>
+   </div>
+  </div>`;
+}
+function pgOverview(){
+  const x = INST[S.instance];
+  return ws(`
+  <div class="grid" style="grid-template-columns:repeat(4,1fr)">
+   ${[['当前阶段',x.phase,'var(--primary)','第 '+x.round+' 轮'],['已用耗时','7m 54s','var(--amber)','含等待人工 1m 12s'],['产物数量','6','var(--cyan)','3 类 · code/doc/report'],['待我处理',String(x.pending),'var(--green)','审批与升级合计']].map(m=>`
+   <div class="metric"><div class="l">${m[0]}</div><div class="v" style="color:${m[2]}">${m[1]}</div><div class="s">${m[3]}</div></div>`).join('')}
+  </div>
+  <div class="grid mt14" style="grid-template-columns:minmax(0,1fr) 320px">
+   <div class="card"><div class="between"><h3 style="font-size:15px">执行时间线</h3>${badge('run','运行中',true)}</div>
+    <div class="timeline mt14">
+     <div class="tl-item done"><b class="small">研究完成 · T-01</b><div class="tiny muted">researcher · 2m 04s · 产出 2 项 · 交接 H-114 已消费</div></div>
+     <div class="tl-item done"><b class="small">撰写完成 · T-02</b><div class="tiny muted">writer · 4m 38s · 产出 3 项 · 交接 H-115 已接收</div></div>
+     <div class="tl-item wait"><b class="small">审核升级 · T-03 等待裁决</b><div class="tiny muted">reviewer · 第 2 轮 · 已挂起 1m 12s · 升级 ESC-021</div>
+      <div class="row mt6"><button class="btn primary sm" data-esc="ESC-021">处理升级</button><button class="btn ghost sm" data-card="T-03">查看节点</button></div></div>
+     <div class="tl-item"><b class="small muted">人工终审 · T-04</b><div class="tiny muted">审核通过后进入</div></div>
+     <div class="tl-item"><b class="small muted">合并交付 · T-05</b><div class="tiny muted">阻塞于上游</div></div>
+    </div></div>
+   <div>
+    <div class="card"><h3 style="font-size:15px">下一步</h3><p class="small muted mt6">审核节点有一项升级等待裁决。处理后流程自动继续，不需要命令行。</p>
+     <button class="btn primary mt14" style="width:100%" data-tab="queue">前往审批队列 →</button>
+     <button class="btn ghost sm mt10" style="width:100%" data-card="T-03">查看升级节点</button></div>
+    <div class="card mt14"><div class="between"><b class="small">恢复与检查点</b>${badge('done','可恢复')}</div>
+     <div class="tiny muted mt10">最近检查点 · 38 秒前 · rev 42</div>
+     <div class="tiny muted mt6">daemon 重启后从检查点恢复，不重复已完成节点</div>
+     <div class="row mt10"><button class="btn ghost sm" data-act="pause">暂停实例</button><button class="btn ghost sm" data-act="abort">终止</button></div></div>
+   </div>
+  </div>`);
+}
+function pgFlow(){
+  return ws(`
+  <div class="between" style="margin-bottom:12px">
+   <div class="sb">
+    <button class="btn ghost sm" data-act="zoomout">−</button><span class="tiny muted">100%</span><button class="btn ghost sm" data-act="zoomin">＋</button>
+    <button class="btn ghost sm" data-act="focus">聚焦 reviewer（2 跳）</button>
+    <button class="btn ghost sm" data-act="collapse">收起分组</button>
+    <button class="btn ghost sm" data-tab="board">切换看板</button>
+   </div>
+   <div class="tiny muted">单击节点下钻 · 滚轮缩放 · 拖拽平移 · 双击聚焦</div>
+  </div>
+  <div class="graphwrap"><svg viewBox="0 0 940 340">
+   <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF4444" stroke-width="1.5"/></marker>
+   </defs>
+   <path d="M168 120 L212 120" stroke="#CBD5E1" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+   <path d="M348 120 L392 120" stroke="#CBD5E1" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+   <path d="M528 120 L572 120" stroke="#F59E0B" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+   <path d="M648 156 C648 232 438 232 438 156" stroke="#EF4444" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#arr)"/>
+   <path d="M728 120 L772 120" stroke="#CBD5E1" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+   <text x="500" y="250" font-size="11" fill="#EF4444">回流 · reviewer → writer（第 2/2 轮）</text>
+   ${[
+     ['researcher','可用','#fff','#C7D2FE','#0F172A',28,'正常','DSH'],
+     ['writer','忙碌 · 1 会话','#EEF0FF','#5B5BD6','#5B5BD6',208,'正常','DSH'],
+     ['reviewer','运行中 · 待裁决','#FFF5E3','#F59E0B','#B45309',428,'异常','DSH'],
+     ['human','待处理','#F1F5F9','#94A3B8','#475569',608,'特殊','—'],
+     ['deliver','阻塞','#fff','#E9ECF5','#64748B',788,'等待','—']
+   ].map(n=>`
+   <g class="gnode" data-drill="${n[0]}" data-role="${n[0]}">
+    <rect x="${n[5]}" y="78" width="140" height="72" rx="13" fill="${n[2]}" stroke="${n[3]}" stroke-width="1.8"/>
+    <text x="${n[5]+14}" y="102" font-size="13" font-weight="600" fill="${n[4]}">${n[0]}</text>
+    <text x="${n[5]+14}" y="120" font-size="11" fill="#64748B">${n[1]}</text>
+    <text x="${n[5]+14}" y="137" font-size="10" fill="#94A3B8">${n[7]==='异常'?'! 异常 · ':''}${n[6]}</text>
+    ${n[7]==='特殊'?'<circle cx="'+(n[5]+126)+'" cy="92" r="9" fill="#E2E8F0"/><text x="'+(n[5]+126)+'" y="96" font-size="10" text-anchor="middle" fill="#475569">H</text>':''}
+    ${n[7]==='异常'?'<circle cx="'+(n[5]+126)+'" cy="92" r="9" fill="#EF4444"/><text x="'+(n[5]+126)+'" y="96" font-size="10" text-anchor="middle" fill="#fff">!</text>':''}
+   </g>`).join('')}
+   <g class="gnode" data-conn="H-115"><rect x="208" y="176" width="140" height="34" rx="9" fill="#fff" stroke="#E9ECF5" stroke-dasharray="4 3"/><text x="278" y="198" font-size="11" text-anchor="middle" fill="#64748B">交接 H-115 · 已接收</text></g>
+   <g class="gnode" data-conn="H-116"><rect x="428" y="176" width="140" height="34" rx="9" fill="#fff" stroke="#E9ECF5" stroke-dasharray="4 3"/><text x="498" y="198" font-size="11" text-anchor="middle" fill="#64748B">交接 H-116 · 待接收</text></g>
+   <g class="gnode" data-subflow="sub-checkout"><rect x="788" y="196" width="140" height="46" rx="11" fill="#F8FAFF" stroke="#C7D2FE"/><text x="858" y="216" font-size="11" text-anchor="middle" fill="#5B5BD6">子工作流 · 2 角色</text><text x="858" y="232" font-size="10" text-anchor="middle" fill="#94A3B8">点击下钻</text></g>
+   <text x="28" y="300" font-size="11" fill="#94A3B8">图例：节点色 = 角色状态 · 角标 = 异常/特殊 · 虚线 = 回流 · 灰卡 = 交接包</text>
+  </svg></div>
+  <div class="grid mt14" style="grid-template-columns:repeat(4,1fr)">
+   ${[['角色节点','5','var(--primary)'],['特殊节点','2','var(--amber)'],['交接连接','3','var(--cyan)'],['异常角标','1','var(--red)']].map(m=>`<div class="metric"><div class="l">${m[0]}</div><div class="v" style="font-size:20px;color:${m[2]}">${m[1]}</div></div>`).join('')}
+  </div>`);
+}
+function pgBoard(){
+  const cols = ['待开始','就绪','已分配','执行中','待审核','已完成','阻塞'];
+  const data = [['T-05 合并交付'],['T-04 人工终审'],['T-03 边界条件审核'],['T-02 注册流程实现'],['T-01 注册链路调研']];
+  return ws(`
+  <div class="between" style="margin-bottom:12px"><div class="row"><b class="small">7 列节点看板</b>${badge('cyan','状态即列')}</div>
+   <button class="btn ghost sm" data-tab="flow">切回流程图</button></div>
+  <div style="overflow:auto"><div class="board">
+   ${cols.map((c,i)=>`<div class="board-col"><h4>${c}<span>${(data[i]||[]).length}</span></h4>
+    ${(data[i]||[]).map(x=>`<div class="mini-card" data-card="${x.slice(0,4)}"><div class="id">${x.slice(0,4)}</div><div class="mt6">${x.slice(5)}</div></div>`).join('')||'<div class="tiny muted" style="padding:6px">—</div>'}</div>`).join('')}
+  </div></div>
+  <div class="tiny muted mt14">卡片点击进入节点详情；下钻返回时会回到这里的原滚动位置。</div>`);
+}
+function pgDrill(){
+  const role = S.drillRole;
+  const cards = NODES.filter(n=>n.role==='reviewer'||n.role==='writer');
+  return head('角色下钻 · '+role, `${S.instance} · 局部 DAG（1 跳） · ${cards.length} 张任务卡片`,
+   `<button class="btn ghost" data-back="1">← 返回流程</button>`)+`
+  <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,#FFF5E3,#FFFDF8);border-color:#FDE7BC">
+   <div class="between"><div class="row"><b>${role}</b>${badge('wait','运行中 · 待裁决',true)}<span class="tag">DSH</span><span class="tag">2 个活跃会话</span></div>
+    <div class="row"><span class="tiny muted">服务节点 T-03 · T-04</span><button class="btn ghost sm" data-act="jump">跳转宿主会话</button></div></div>
+  </div>
+  <div class="split3">
+   <div class="card" style="align-self:start">
+    <div class="tiny muted" style="margin-bottom:8px">局部 DAG · 1 跳</div>
+    <svg viewBox="0 0 240 250" width="100%">
+     <path d="M120 56 L120 96" stroke="#CBD5E1" stroke-width="2" marker-end="url(#ar)"/>
+     <path d="M120 152 L120 192" stroke="#CBD5E1" stroke-width="2" marker-end="url(#ar)"/>
+     ${[['writer','已完成',16,'#fff','#C7D2FE','#0F172A'],['reviewer','待裁决',96,'#FFF5E3','#F59E0B','#B45309'],['human','待处理',192,'#F1F5F9','#94A3B8','#475569']].map(n=>`
+     <g class="gnode" data-dag="${n[0]}"><rect x="24" y="${n[2]}" width="192" height="46" rx="10" fill="${n[3]}" stroke="${n[4]}" stroke-width="${n[0]===role?2.5:1.4}"/>
+      <text x="36" y="${n[2]+22}" font-size="12" font-weight="600" fill="${n[5]}">${n[0]}</text>
+      <text x="36" y="${n[2]+37}" font-size="10" fill="#94A3B8">${n[1]}</text></g>`).join('')}
+    </svg>
+    <div class="tiny muted mt10">点击节点滚动到对应卡片</div>
+   </div>
+   <div>
+    <div class="between" style="margin-bottom:10px"><b class="small">任务卡片</b><button class="btn ghost sm" data-tab="board">查看全部节点</button></div>
+    ${cards.map((n,i)=>`
+    <div class="card-row ${S.hlCard===n.id?'hl':''}" data-card="${n.id}" ${n.id==='T-03'?'style="border-left:4px solid var(--amber)"':''}>
+     <div class="between"><div class="row"><span class="tag">${n.id}</span><b class="small">${n.title}</b>${badge(n.state==='done'?'done':n.state==='running'?'wait':'gray',n.label)}</div>
+      <span class="mini">第 ${n.round} 轮</span></div>
+     <div class="row mt6" style="gap:12px;flex-wrap:wrap">
+      <span class="mini">${n.role}</span><span class="mini">会话 ${n.state==='running'?'执行中':'空闲'}</span>
+      <span class="mini">耗时 ${n.ms}</span><span class="mini">工具 <code>${n.tool}</code></span></div>
+     <div class="row mt6" style="gap:8px"><span class="mini">产出 ${n.out} 项</span><span class="mini">·</span><span class="mini">交接 ${n.id==='T-02'?'H-115':n.id==='T-03'?'H-116':'H-114'}</span><span class="mini">·</span><span class="mini">证据 ${n.out}/${n.out} 通过</span></div>
+    </div>`).join('')}
+   </div>
+  </div>`;
+}
+function pgQueue(){
+  const body = `
+  <div class="sb" style="margin-bottom:14px"><button class="chip on">全部</button><button class="chip">升级</button><button class="chip">审批</button><button class="chip">我处理过的</button></div>
+  ${QUEUE.map(q=>{const done=S.queueDone.includes(q.id);return `
+  <div class="card" style="margin-bottom:12px;border-left:4px solid ${done?'var(--green)':q.kind==='升级'?'var(--amber)':'var(--cyan)'}">
+   <div class="between"><div class="row"><span class="tag">${q.kind}</span><b>${q.title}</b>${done?badge('done','已处理'):''}</div><span class="tiny muted mono">${q.id} · ${q.at}</span></div>
+   <div class="row mt6" style="gap:14px"><span class="mini">${q.inst}</span><span class="mini">节点 ${q.node}</span><span class="mini">${q.why}</span></div>
+   <div class="row mt14">
+    ${q.actions.map((a,i)=>`<button class="btn ${i===0?'primary':'ghost'} sm" data-decision="${q.id}|${a}" ${done?'disabled':''}>${a}</button>`).join('')}
+    <button class="btn ghost sm" data-instance="${q.inst}" ${done?'disabled':''}>打开实例</button>
+    ${done?'<span class="mini" style="color:var(--green)">结论已写回事件日志</span>':''}
+   </div>
+   ${q.kind==='升级'?'<div class="tiny muted mt10">该升级支持「继续升级 / 重派 / 终止」；终止需二次确认。</div>':''}
+  </div>`}).join('')}
+  <div class="card" style="background:var(--primary-bg);border-color:var(--primary-2)"><div class="small">队列每一项都对应一个可执行动作，处理后流程自动继续。失败会保留原项并给出原因与重试。</div></div>`;
+  return S.inst ? ws(body) : head('审批队列','升级与审批统一队列 · 处理后就地更新，不刷新整页')+body;
+}
+function pgEvidence(){
+  const sel = S.selNode || 'T-02';
+  return ws(`
+  <div class="split3">
+   <div class="card" style="align-self:start;padding:10px">
+    <div class="tiny muted" style="margin:6px 8px 8px">按节点</div>
+    ${NODES.filter(n=>n.out>0).map(n=>`<button class="nav-item ${sel===n.id?'on':''}" data-evid="${n.id}" style="padding:7px 9px"><span class="ico">▸</span>${n.id} · ${n.title}</button>`).join('')}
+    <div class="divider"></div><div class="tiny muted" style="margin:0 8px">未产出节点不显示</div>
+   </div>
+   <div>
+    <div class="between" style="margin-bottom:10px">
+     <div class="row"><b class="small">${sel} · 证据</b><span class="tag">3 项</span><span class="tag">已校验 3/3</span></div>
+     <div class="row"><button class="btn ghost sm" data-act="copy">复制摘要</button><button class="btn primary sm" data-act="export">导出证据包 ↓</button></div>
+    </div>
+    <div class="card flat" style="margin-bottom:12px"><table>
+     <thead><tr><th>类型</th><th>引用</th><th>校验</th><th>大小</th></tr></thead>
+     <tbody>
+      <tr><td>命令</td><td class="mono tiny">npm test -- --grep register</td><td>${badge('done','退出码 0')}</td><td class="tiny muted">—</td></tr>
+      <tr><td>产物</td><td class="mono tiny">artifacts/code/register-flow.ts</td><td>${badge('done','存在 · 指纹一致')}</td><td class="tiny muted">8.2 KB</td></tr>
+      <tr><td>报告</td><td class="mono tiny">artifacts/reports/review-notes.md</td><td>${badge('done','存在 · 未过期')}</td><td class="tiny muted">2.4 KB</td></tr>
+     </tbody></table></div>
+    <div class="log"><span class="g">✓</span> researcher 完成 · 产出 research-notes.md
+<span class="b">→</span> writer 启动 · 输入 3 个来源
+<span class="g">✓</span> writer 完成 · 产出 register-flow.ts
+<span class="y">!</span> reviewer 升级 · 第 2 轮 · 等待人工确认
+<span class="r">×</span> handoff H-116 待接收 · 证据 1/1 待校验
+<span class="b">→</span> 等待操作：继续升级 / 补充上下文</div>
+    <div class="tiny muted mt10">超过 256 KB 会截断并显式提示，可导出原文件；完整日志留在宿主，核心只存摘要与引用。</div>
+   </div>
+  </div>`);
+}
+function pgAssets(){
+  const kind = S.asset, rows = ASSETS[kind];
+  const head4 = kind==='roles'?['角色','分组','来源','校验']:kind==='skills'?['技能','分组','来源','命令','校验']:['工作流','来源','节点','边','校验'];
+  return head('资产库','角色 / 技能 / 工作流的只读浏览 · 运行时占用见「角色占用」')+`
+  <div class="tabs">${[['roles','角色'],['skills','技能'],['workflows','工作流']].map(t=>`<button class="tab ${kind===t[0]?'on':''}" data-asset="${t[0]}">${t[1]}</button>`).join('')}</div>
+  <div class="between" style="margin-bottom:10px"><span class="small muted">${head4[0]} ${rows.length} 个（内置 ${rows.filter(r=>r.includes('内置')).length} · 项目 ${rows.filter(r=>r.includes('项目')).length}）</span>
+   <div class="row"><button class="btn ghost sm" data-act="validate">校验全部</button><button class="btn ghost sm" data-act="exportasset">导出依赖闭包 ↓</button></div></div>
+  <div class="split">
+   <div class="card flat"><table><thead><tr>${head4.map(h=>`<th>${h}</th>`).join('')}<th></th></tr></thead><tbody>
+    ${rows.map(r=>`<tr style="cursor:pointer" data-assetrow="${r[0]}"><td><b class="small">${r[0]}</b></td>${r.slice(1).map((c,i)=>`<td class="${i===r.length-2?'':''}">${c==='通过'?badge('done','通过'):c==='不通过'?badge('fail','不通过'):c==='未校验'?badge('wait','未校验'):`<span class="small muted">${c}</span>`}</td>`).join('')}<td class="tiny muted">查看 →</td></tr>`).join('')}
+   </tbody></table></div>
+   <div class="card" style="align-self:start"><b class="small">详情</b>
+    <div class="mt10 tiny muted">来源</div><div class="small">项目 roles/security-reviewer.yaml</div>
+    <div class="mt10 tiny muted">技能引用</div><div class="small">code-edit · doc-draft</div>
+    <div class="mt10 tiny muted">契约</div><div class="small">输出 document · 证据 file+ref</div>
+    <div class="mt10 tiny muted">权限</div><div class="small">可唤醒：writer · reviewer</div>
+    <div class="divider"></div>
+    <div class="row"><button class="btn ghost sm" data-act="validate">校验</button><button class="btn ghost sm" data-act="diff">与内置对比</button></div>
+   </div>
+  </div>`;
+}
+function pgOccupancy(){
+  return head('角色占用','全局角色实例资源占用 · 跨实例汇总')+`
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
+   ${[['忙碌角色','2','var(--primary)'],['活跃会话','4','var(--cyan)'],['可用角色','1','var(--green)'],['不可用','1','var(--red)']].map(m=>`<div class="metric"><div class="l">${m[0]}</div><div class="v" style="color:${m[2]}">${m[1]}</div></div>`).join('')}
+  </div>
+  <div class="card flat"><table><thead><tr><th>角色</th><th>状态</th><th>活跃会话</th><th>服务节点</th><th>所属实例</th></tr></thead><tbody>
+   ${OCC.map(r=>`<tr><td><b class="small">${r[0]}</b></td><td>${badge(r[1]==='busy'?'run':r[1]==='available'?'done':r[1]==='unavailable'?'fail':'gray',r[2],r[1]==='busy')}</td><td class="small">${r[3]}</td><td class="tiny mono">${r[4]}</td><td class="small muted">${r[5]}</td></tr>`).join('')}
+  </tbody></table></div>
+  <div class="tiny muted mt10">不可读实例会被跳过并标注，不计入汇总。</div>`;
+}
+function pgCanvas(){
+  return head('工作流画布 · 全栈功能开发','定义态只读 · 校验通过 · 5 节点 / 4 条边',`<button class="btn ghost" data-act="dryrun">试运行校验</button>`)+`
+  <div class="card" style="margin-bottom:14px">${badge('done','校验通过')} <span class="tiny muted" style="margin-left:8px">可达性 · 回流轮次上限 · 并行 scope · 变量引用 · 状态转换 · 唤醒权限</span></div>
+  <div class="graphwrap"><svg viewBox="0 0 900 240">
+   <path d="M150 90 L210 90" stroke="#CBD5E1" stroke-width="2" marker-end="url(#ar)"/>
+   <path d="M330 90 L390 90" stroke="#CBD5E1" stroke-width="2" marker-end="url(#ar)"/>
+   <path d="M510 90 L570 90" stroke="#CBD5E1" stroke-width="2" marker-end="url(#ar)"/>
+   <path d="M690 90 L750 90" stroke="#CBD5E1" stroke-width="2" marker-end="url(#ar)"/>
+   <path d="M630 126 C630 200 420 200 420 126" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#ar)"/>
+   ${[['researcher','role',30],['writer','role',210],['reviewer','role',390],['human','human',570],['deliver','role',750]].map(n=>`
+   <g class="gnode"><rect x="${n[2]}" y="56" width="140" height="68" rx="12" fill="#fff" stroke="#C7D2FE" stroke-width="1.6"/>
+    <text x="${n[2]+14}" y="80" font-size="12" font-weight="600">${n[0]}</text>
+    <text x="${n[2]+14}" y="98" font-size="10" fill="#94A3B8">type ${n[1]}</text>
+    <text x="${n[2]+14}" y="114" font-size="10" fill="#94A3B8">${n[1]==='role'?'角色节点':'特殊节点'}</text></g>`).join('')}
+   <text x="30" y="200" font-size="11" fill="#94A3B8">回流边：reviewer → writer · 上限 2 轮 · 超出生成升级</text>
+  </svg></div>
+  <div class="split mt14">
+   <div class="card flat"><table><thead><tr><th>节点</th><th>类型</th><th>角色</th><th>产物</th><th>下游</th></tr></thead><tbody>
+    ${[['T-01','role','researcher','document','T-02'],['T-02','role','writer','code','T-03'],['T-03','role','reviewer','report','T-04'],['T-04','human','—','—','T-05'],['T-05','role','deliver','code','—']].map(r=>`<tr>${r.map((c,i)=>`<td class="${i===0?'mono tiny':'small'}">${c}</td>`).join('')}</tr>`).join('')}
+   </tbody></table></div>
+   <div class="card" style="align-self:start"><b class="small">定义信息</b>
+    <div class="mt10 tiny muted">版本</div><div class="small">v1.2 · 已锁定</div>
+    <div class="mt10 tiny muted">并行度上限</div><div class="small">4</div>
+    <div class="mt10 tiny muted">预算</div><div class="progress"><i style="width:22%"></i></div><div class="tiny muted mt6">已用 22% · 耗尽时暂停而非失败</div>
+   </div>
+  </div>`;
+}
+function pgGovernance(){
+  return head('审计与治理','链式哈希 · 权限拦截 · 证据过期 · 预算配额 · 反模式')+`
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
+   ${[['哈希链校验','通过','var(--green)','1042 条事件完整'],['越权拦截','1','var(--red)','近 24 小时'],['证据过期','1','var(--amber)','交接被拒 1 次'],['预算占用','22%','var(--primary)','未耗尽']].map(m=>`<div class="metric"><div class="l">${m[0]}</div><div class="v" style="color:${m[2]};font-size:20px">${m[1]}</div><div class="s">${m[3]}</div></div>`).join('')}
+  </div>
+  <div class="split">
+   <div class="card flat"><div class="between" style="padding:14px 16px"><b class="small">审计事件流</b><button class="btn ghost sm" data-act="otel">导出 OpenTelemetry ↓</button></div>
+    <table><thead><tr><th>序号</th><th>类型</th><th>内容</th><th>时间</th></tr></thead><tbody>
+     ${AUDIT.map(a=>`<tr><td class="mono tiny">${a[0]}</td><td><span class="tag">${a[1]}</span></td><td class="small">${a[2]}</td><td class="tiny muted">${a[3]}</td></tr>`).join('')}
+    </tbody></table>
+    <div class="tiny muted" style="padding:10px 16px">每条事件带 prev_event_hash；篡改任意一条都会使后续校验失败。</div>
+   </div>
+   <div>
+    <div class="card"><b class="small">反模式信号</b>
+     <div class="mt10">${badge('wait','文档瓶颈 · writer 连续 2 轮满载')}</div>
+     <div class="mt6">${badge('gray','串行化退化 · 无')}</div>
+     <div class="mt6">${badge('gray','确认偏误 · 无')}</div></div>
+    <div class="card mt14"><b class="small">生态与迁移</b>
+     <div class="mt10 tiny muted">导入包需签名有效 + 版本兼容</div>
+     <div class="row mt10"><button class="btn ghost sm" data-act="importpkg">导入包</button><button class="btn ghost sm" data-act="migrate">迁移检查</button></div>
+     <div class="tiny muted mt10">CLI 等价：<code>orch migrate --check</code></div></div>
+   </div>
+  </div>`;
+}
+function pgNotifications(){
+  const items = [['升级待处理','INST-083 · 审核节点需要裁决 · 合并 2 次','12 分钟前','coral','queue'],['实例已完成','INST-082 · 导出接口文档','1 小时前','green','overview'],['新实例启动','INST-084 · 用户注册重构','2 小时前','primary','overview'],['Handoff 待接收','INST-084 · reviewer → human','38 秒前','cyan','flow']];
+  return head('通知','来自所有实例的待办与状态变更 · 同类按实例合并',`<button class="btn ghost" data-act="readall">全部标为已读</button>`)+`
+  <div class="card flat">${items.map((x,i)=>`
+   <div class="row" style="padding:14px 16px;border-bottom:${i<items.length-1?'1px solid var(--line)':'none'};cursor:pointer" data-go="${x[4]}">
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--${x[3]});flex-shrink:0"></div>
+    <div style="flex:1"><b class="small">${x[0]}</b><div class="tiny muted mt6">${x[1]}</div></div>
+    <span class="tiny muted">${S.readAll?'已读':x[2]}</span></div>`).join('')}</div>
+  <div class="tiny muted mt10">点击通知会跳到对应页面并选中该条；同类通知在 10 秒窗口内合并为一条并显示次数。</div>`;
+}
+function pgSettings(){
+  return head('设置','偏好与运行环境')+`
+  <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+   <div class="card"><h3 style="font-size:15px">项目</h3>
+    <div class="tiny muted mt10">当前根目录</div><div class="small mono">D:\\Work\\Maestro</div>
+    <div class="row mt14"><button class="btn ghost sm" data-go="projects">切换项目</button><button class="btn ghost sm" data-act="recent">最近项目</button></div></div>
+   <div class="card"><h3 style="font-size:15px">宿主</h3>
+    <div class="mt10">${badge('done','DSH 0.2.2-rc.5 · ACP 已连接')}</div>
+    <div class="mt6">${badge('cyan','WorkBuddy · 已注册')}</div>
+    <div class="tiny muted mt10">适配器只负责 ACP 投递；唤醒决策在核心。</div></div>
+   <div class="card"><h3 style="font-size:15px">通知</h3>
+    ${[['托盘通知',true],['升级待处理',true],['实例完成',true],['实例异常',true]].map(x=>`<div class="between mt10"><span class="small">${x[0]}</span><input type="checkbox" ${x[1]?'checked':''}></div>`).join('')}
+    <div class="tiny muted mt10">关闭托盘通知不影响队列与面板轮询。</div></div>
+   <div class="card"><h3 style="font-size:15px">交互</h3>
+    <div class="between mt10"><span class="small">命令面板</span><span class="kbd">⌘ K</span></div>
+    <div class="between mt10"><span class="small">关闭抽屉</span><span class="kbd">Esc</span></div>
+    <div class="between mt10"><span class="small">上下移动卡片</span><span class="kbd">J / K</span></div>
+    <div class="between mt10"><span class="small">返回上一层</span><span class="kbd">←</span></div></div>
+   <div class="card"><h3 style="font-size:15px">恢复策略</h3>
+    <div class="between mt10"><span class="small">daemon 重启后自动恢复</span>${badge('done','开启')}</div>
+    <div class="between mt10"><span class="small">会话复用策略</span><span class="small muted">reuse → fresh 回退</span></div>
+    <div class="tiny muted mt10">busy 角色会话不可恢复时降级为 available；delivered 未 accepted 的连接线重投。</div></div>
+   <div class="card"><h3 style="font-size:15px">数据与导出</h3>
+    <div class="tiny muted mt10">实例数据目录</div><div class="small mono">.orch/instances/</div>
+    <div class="row mt14"><button class="btn ghost sm" data-act="otel">导出追踪</button><button class="btn ghost sm" data-act="export">导出证据</button></div></div>
+  </div>`;
+}
+/* ---------------- drawers ---------------- */
+function openDrawer(html){const d=document.getElementById('drawer');d.innerHTML=html;d.classList.add('open');document.getElementById('mask').classList.add('on')}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('mask').classList.remove('on')}
+function drawNode(id){
+  const n = NODES.find(x=>x.id===id) || NODES[2];
+  openDrawer(`
+  <div class="drawer-head"><div style="flex:1"><div class="row"><span class="tag">${n.id}</span>${badge(n.state==='done'?'done':n.state==='running'?'wait':'gray',n.label)}</div>
+   <div class="tiny muted mt6">${n.title} · ${n.role} · 第 ${n.round} 轮</div></div>
+   <button class="iconbtn" data-act="close">✕</button></div>
+  <div class="drawer-body">
+   <div class="sb"><span class="tag">耗时 ${n.ms}</span><span class="tag">产出 ${n.out} 项</span><span class="tag">宿主 DSH</span></div>
+   <div class="divider"></div><b class="small">会话状态时间线</b>
+   <div class="timeline mt10">
+    <div class="tl-item done"><b class="small">会话创建</b><div class="tiny muted">session/new · 2m 20s 前</div></div>
+    <div class="tl-item done"><b class="small">prompt 已投递</b><div class="tiny muted">accepted · 含交接包 H-115</div></div>
+    <div class="tl-item ${n.state==='running'?'wait':'done'}"><b class="small">${n.state==='running'?'执行中 · 工具调用':'执行完成'}</b><div class="tiny muted">${n.tool}</div></div>
+    ${n.state==='running'?'<div class="tl-item"><b class="small muted">等待完成或升级</b></div>':''}
+   </div>
+   <div class="divider"></div><b class="small">ACP 事件摘要</b>
+   <div class="log mt10" style="max-height:180px"><span class="m">12:04:11</span> <span class="b">session/update</span> tool_call ${n.tool}
+<span class="m">12:04:19</span> <span class="b">session/update</span> usage_update tokens 812/4096
+<span class="m">12:04:31</span> <span class="g">tool_call done</span> exit 0
+<span class="m">12:04:32</span> <span class="y">stopReason</span> end_turn</div>
+   <div class="divider"></div><b class="small">证据引用 · ${n.out || 0}</b>
+   ${n.out?['artifacts/code/register-flow.ts','artifacts/reports/review-notes.md','artifacts/docs/api-spec.md'].slice(0,n.out).map(f=>`<div class="card mono" style="padding:9px;margin-top:6px;background:var(--primary-bg);border-color:var(--primary-2);color:var(--primary);font-size:12px">${f}</div>`).join(''):'<div class="tiny muted mt6">暂无产出</div>'}
+   <div class="divider"></div><b class="small">交接包历史</b>
+   <div class="tiny muted mt6">H-115 writer → reviewer · accepted · 证据 3/3 通过</div>
+   <div class="tiny muted mt6">H-116 reviewer → human · pending · 证据待校验</div>
+  </div>
+  <div class="drawer-foot"><button class="btn primary" style="flex:1" data-act="jump">跳转宿主会话</button><button class="btn ghost" data-act="locate">在流程中定位</button></div>`);
+}
+function drawConnection(id){
+  const h = HANDS.find(x=>x.id===id) || HANDS[1];
+  openDrawer(`
+  <div class="drawer-head"><div style="flex:1"><div class="row"><b>交接包 ${h.id}</b>${badge(h.state==='consumed'?'done':h.state==='accepted'?'run':'wait',h.label)}</div>
+   <div class="tiny muted mt6">${h.from} → ${h.to} · ${h.at}</div></div><button class="iconbtn" data-act="close">✕</button></div>
+  <div class="drawer-body">
+   <div class="sb"><span class="tag">证据 ${h.evidence}</span><span class="tag">轮次 1/2</span><span class="tag">scope stage/</span></div>
+   <div class="divider"></div><b class="small">状态时间线</b>
+   <div class="timeline mt10">
+    <div class="tl-item done"><b class="small">created</b><div class="tiny muted">上游完成，构造交接包</div></div>
+    <div class="tl-item done"><b class="small">delivered</b><div class="tiny muted">投递到下游会话成功</div></div>
+    <div class="tl-item ${h.state==='pending'?'wait':'done'}"><b class="small">${h.state==='pending'?'等待 accepted':'accepted'}</b><div class="tiny muted">${h.state==='pending'?'下游尚未确认接收':'下游已确认并开始消费'}</div></div>
+    <div class="tl-item"><b class="small muted">consumed</b><div class="tiny muted">下游完成并回执</div></div>
+   </div>
+   <div class="divider"></div><b class="small">交接内容</b>
+   <div class="card mt10" style="padding:10px;font-size:12px">
+    <div class="between"><span class="muted">产物</span><span>register-flow.ts · api-spec.md</span></div>
+    <div class="between mt6"><span class="muted">证据</span><span>3/3 存在 · 未过期</span></div>
+    <div class="between mt6"><span class="muted">指纹</span><span class="mono tiny">sha256:9f2c…a41</span></div>
+   </div>
+   <div class="tiny muted mt10">证据过期或指纹不一致时，核心会拒绝交接并生成升级。</div>
+  </div>
+  <div class="drawer-foot"><button class="btn primary" style="flex:1" data-act="reset">重投一次</button><button class="btn ghost" data-act="close">关闭</button></div>`);
+}
+function drawEscalation(id){
+  openDrawer(`
+  <div class="drawer-head"><div style="flex:1"><div class="row"><b>升级 ${id}</b>${badge('wait','待裁决',true)}</div>
+   <div class="tiny muted mt6">INST-083 · 节点 T-03 · 第 2/3 轮</div></div><button class="iconbtn" data-act="close">✕</button></div>
+  <div class="drawer-body">
+   <div class="card" style="background:var(--amber-bg);border-color:#FDE7BC;padding:12px">
+    <b class="small">原因：轮次超限</b><div class="tiny" style="color:#92400E;margin-top:4px">reviewer 连续 2 轮判定边界条件未覆盖；核心已停止回流并挂起实例。</div></div>
+   <div class="divider"></div><b class="small">涉及节点</b>
+   <div class="tiny muted mt6">T-03 边界条件审核 · reviewer · 第 2 轮 · 已挂起 1m 12s</div>
+   <div class="divider"></div><b class="small">可选动作</b>
+   <div class="tiny muted mt6">继续升级：接受当前产出，进入人工终审</div>
+   <div class="tiny muted mt6">重派：清空本轮会话，重新投递交接包</div>
+   <div class="tiny muted mt6">终止：实例不再继续，证据与日志保留</div>
+  </div>
+  <div class="drawer-foot"><button class="btn primary" style="flex:1" data-decision="${id}|继续升级">继续升级</button><button class="btn ghost" data-decision="${id}|重派">重派</button><button class="btn ghost" data-decision="${id}|终止">终止</button></div>`);
+}
+/* ---------------- render ---------------- */
+function render(){
+  document.getElementById('crumb').innerHTML = CRUMBS[S.page] || (`实例 / ${S.instance} / <b>${(TABS.find(t=>t[0]===S.tab)||[,'概览'])[1]}</b>`);
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    const on = n.dataset.go===S.page || (S.page==='drill'&&n.dataset.go==='instances') || (S.page==='new'&&n.dataset.go==='instances');
+    n.classList.toggle('on',!!on);
+  });
+  const map = {projects:pgProjects,instances:pgInstances,new:pgNew,overview:pgOverview,flow:pgFlow,board:pgBoard,drill:pgDrill,
+    queue:pgQueue,evidence:pgEvidence,assets:pgAssets,occupancy:pgOccupancy,canvas:pgCanvas,governance:pgGovernance,
+    notifications:pgNotifications,settings:pgSettings};
+  const c = document.getElementById('content');
+  const fn = map[S.page];
+  c.innerHTML = fn ? fn() : pgOverview();
+  c.scrollTop = 0;
+}
+const GLOBAL_PAGES = ['projects','instances','new','queue','notifications','assets','occupancy','canvas','governance','settings'];
+function go(p,o={}){
+  if(S.page!==p) S.back.push({page:S.page,tab:S.tab,instance:S.instance,inst:S.inst});
+  Object.assign(S,{inst:!GLOBAL_PAGES.includes(p)},o,{page:p});
+  if(['overview','flow','board','queue','evidence'].includes(p)) S.tab = p;
+  render();
+}
+function back(){const b=S.back.pop(); if(b){Object.assign(S,b);} else {S.page='instances';S.inst=false;} render();}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2200)}
+/* ---------------- palette ---------------- */
+const PAL = [
+  ['页面','实例列表','instances'],['页面','审批队列','queue'],['页面','资产库','assets'],['页面','角色占用','occupancy'],
+  ['页面','工作流画布','canvas'],['页面','审计与治理','governance'],['页面','通知','notifications'],['页面','设置','settings'],
+  ['实例','INST-084 用户注册重构','INST-084'],['实例','INST-083 支付回调幂等','INST-083'],['实例','INST-082 导出接口文档','INST-082'],
+  ['实例','INST-081 登录态竞态修复','INST-081'],['动作','新建实例','new']
+];
+function palette(open){
+  const p = document.getElementById('palette');
+  p.classList.toggle('on',open!==false ? !p.classList.contains('on') : false);
+  if(p.classList.contains('on')){document.getElementById('pinput').value='';drawPalette('');setTimeout(()=>document.getElementById('pinput').focus(),30)}
+}
+function drawPalette(q){
+  const hits = PAL.filter(x=>!q||x[1].toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('plist').innerHTML = hits.map((x,i)=>`<button class="palette-item ${i===0?'sel':''}" data-pal="${x[2]}" data-palkind="${x[0]}"><span class="tag">${x[0]}</span>${x[1]}</button>`).join('')||'<div class="tiny muted" style="padding:14px">无匹配结果</div>';
+}
+/* ---------------- events ---------------- */
+document.addEventListener('click',e=>{
+  if(e.target.id==='palette'){palette(false);return}
+  const pal=e.target.closest('[data-pal]'); if(pal){palette(false);const v=pal.dataset.pal;
+    if(pal.dataset.palkind==='实例'){S.instance=v;go('overview')}else{go(v)} return}
+  const nav=e.target.closest('[data-go]'); if(nav){go(nav.dataset.go);return}
+  const backBtn=e.target.closest('[data-back]'); if(backBtn){back();return}
+  const ins=e.target.closest('[data-instance]'); if(ins){S.instance=ins.dataset.instance;go('overview');return}
+  const tab=e.target.closest('[data-tab]'); if(tab){S.tab=tab.dataset.tab;S.page=tab.dataset.tab;S.inst=true;render();return}
+  const f=e.target.closest('[data-filter]'); if(f){S.filter=f.dataset.filter;render();return}
+  const a=e.target.closest('[data-asset]'); if(a){S.asset=a.dataset.asset;render();return}
+  const ev=e.target.closest('[data-evid]'); if(ev){S.selNode=ev.dataset.evid;render();return}
+  const drill=e.target.closest('[data-drill]'); if(drill){S.drillRole=drill.dataset.drill;go('drill');return}
+  const dag=e.target.closest('[data-dag]'); if(dag){S.hlCard=NODES.find(n=>n.role===dag.dataset.dag)?.id||null;render();
+    toast('已定位到 '+dag.dataset.dag+' 的卡片');return}
+  const conn=e.target.closest('[data-conn]'); if(conn){drawConnection(conn.dataset.conn);return}
+  const sub=e.target.closest('[data-subflow]'); if(sub){toast('下钻子工作流（原型）：复用同一布局算法');return}
+  const card=e.target.closest('[data-card]'); if(card){drawNode(card.dataset.card);return}
+  const esc=e.target.closest('[data-esc]'); if(esc){drawEscalation(esc.dataset.esc);return}
+  const dec=e.target.closest('[data-decision]'); if(dec){
+    const [id,act]=dec.dataset.decision.split('|');
+    if(act==='终止' && !confirm('终止实例 '+id+'？终止后不再继续')){return}
+    S.queueDone.push(id);closeDrawer();render();toast(id+' 已处理 · '+act+' · 流程已更新');return}
+  const act=e.target.closest('[data-act]'); if(act){
+    const a=act.dataset.act;
+    if(a==='close'){closeDrawer();return}
+    if(a==='palette'){palette(true);return}
+    if(a==='newproj'){toast('新建项目（原型）：调起原生目录选择');return}
+    if(a==='submit'){toast('实例已启动 · 正在编排角色');go('instances');return}
+    if(a==='pick'){toast('已选择模板');return}
+    if(a==='jump'){toast('已在宿主中定位到对应会话');return}
+    if(a==='locate'){closeDrawer();go('flow');toast('已在流程图中定位节点');return}
+    if(a==='copy'){toast('摘要已复制到剪贴板');return}
+    if(a==='export'||a==='exportasset'){toast('导出已开始（原型）');return}
+    if(a==='readall'){S.readAll=true;render();toast('通知已全部标为已读');return}
+    if(a==='reset'){closeDrawer();toast('已重投交接包 H-116');return}
+    if(a==='pause'){toast('实例已暂停 · 检查点已保存');return}
+    if(a==='abort'){if(confirm('终止实例 INST-084？'))toast('实例已终止 · 证据保留');return}
+    if(a==='zoomout'||a==='zoomin'||a==='focus'||a==='collapse'){toast('视图操作（原型）：'+a);return}
+    if(a==='validate'){toast('校验完成：5 通过 · 1 不通过');return}
+    if(a==='diff'){toast('与内置版本对比（原型）');return}
+    if(a==='otel'){toast('追踪已导出为 OpenTelemetry');return}
+    if(a==='dryrun'){toast('试运行校验通过 · 未启动会话');return}
+    if(a==='importpkg'||a==='migrate'||a==='recent'){toast('原型动作：'+a);return}
+  }
+  if(e.target.id==='mask')closeDrawer();
+});
+document.addEventListener('input',e=>{if(e.target.id==='pinput')drawPalette(e.target.value)});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(document.getElementById('palette').classList.contains('on'))palette(false);else closeDrawer()}
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();palette(true)}
+});
+render();
+</script>
+</body>
+</html>

@@ -1244,6 +1244,69 @@ export const ROLE_SESSION_POLICY_LINE = Object.freeze({
 export const ROLE_SESSION_POLICY_INVALID = Object.freeze('会话复用策略不合法：{value}（可选 reuse / fresh）');
 
 /**
+ * 桌面 UI v2（beta.2）外壳文案（纯增量）。
+ *
+ * 只服务 `desktop/ui/shell/**` 的新外壳：侧栏分组、概览页、下钻抽屉、治理与
+ * 设置页。现有 312 键一字未改，本表全部以 `DESKTOP_V2_` 前缀追加，经
+ * `/ui/labels` 下发，桌面层不出现任何中文字面量。
+ */
+export const DESKTOP_V2_LABEL = Object.freeze({
+  DESKTOP_V2_TAB_OVERVIEW: '概览',
+  DESKTOP_V2_NAV_AUDIT: '审计与治理',
+  DESKTOP_V2_NAV_SETTINGS: '设置',
+  DESKTOP_V2_SEARCH: '搜索实例、节点、页面',
+  DESKTOP_V2_CMD_HINT: '输入页面、实例或节点编号…',
+  DESKTOP_V2_NO_MATCH: '无匹配结果',
+  DESKTOP_V2_COMMAND: '命令面板',
+  DESKTOP_V2_FILTER_ALL: '全部',
+  DESKTOP_V2_BACK: '返回',
+  DESKTOP_V2_CLOSE: '关闭',
+  DESKTOP_V2_RETRY: '重试',
+  DESKTOP_V2_EMPTY: '暂无数据',
+  DESKTOP_V2_LOADING: '加载中…',
+  DESKTOP_V2_HEALTH: '健康度',
+  DESKTOP_V2_PENDING: '待处理',
+  DESKTOP_V2_NEXT: '下一步',
+  DESKTOP_V2_TIMELINE: '时间线',
+  DESKTOP_V2_SUMMARY: '事件摘要',
+  DESKTOP_V2_EVIDENCE_REFS: '证据引用',
+  DESKTOP_V2_HANDOFF_HISTORY: '交接包历史',
+  DESKTOP_V2_ROLE_BAR: '角色栏',
+  DESKTOP_V2_CARDS: '任务卡片',
+  DESKTOP_V2_LOCAL_DAG: '局部图',
+  DESKTOP_V2_DETAIL: '详情',
+  DESKTOP_V2_SESSIONS: '活跃会话',
+  DESKTOP_V2_SERVING: '服务节点',
+  DESKTOP_V2_ROUND: '第 {n} 轮',
+  DESKTOP_V2_ARTIFACTS: '产物',
+  DESKTOP_V2_COPY: '复制',
+  DESKTOP_V2_EXPORT: '导出',
+  DESKTOP_V2_HASH_CHAIN: '链式哈希',
+  DESKTOP_V2_PERMISSION_DENY: '越权拦截',
+  DESKTOP_V2_EVIDENCE_EXPIRED: '证据过期',
+  DESKTOP_V2_BUDGET: '预算配额',
+  DESKTOP_V2_ANTIPATTERN: '反模式信号',
+  DESKTOP_V2_EXPORT_OTEL: '导出追踪',
+  DESKTOP_V2_AUDIT_STREAM: '审计事件流',
+  DESKTOP_V2_SETTINGS_PROJECT: '项目',
+  DESKTOP_V2_SETTINGS_HOST: '宿主',
+  DESKTOP_V2_SETTINGS_NOTIFY: '通知',
+  DESKTOP_V2_SETTINGS_INTERACTION: '交互',
+  DESKTOP_V2_SETTINGS_RECOVERY: '恢复策略',
+  DESKTOP_V2_SETTINGS_DATA: '数据目录',
+  DESKTOP_V2_STATE: '状态',
+  DESKTOP_V2_KIND: '类型',
+  DESKTOP_V2_TIME: '时间',
+  DESKTOP_V2_NODE: '节点',
+  DESKTOP_V2_CHECKPOINT: '检查点',
+  DESKTOP_V2_PAUSE: '暂停',
+  DESKTOP_V2_COUNT: '{n} 项',
+  DESKTOP_V2_STAGE: '阶段',
+  DESKTOP_V2_DURATION: '耗时',
+  DESKTOP_V2_OPEN_INSTANCE: '打开实例'
+});
+
+/**
  * 文档占位名 → 调用方常用 ASCII 键的别名表。`{N}` 的取值按模板语境在 `fill()`
  * 内单独解析（`N` / `n` / `skipped` / `minutes`）。
  */

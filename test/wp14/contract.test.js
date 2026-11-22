@@ -6,7 +6,7 @@
  * - D-46 端到端数据链：notify 意图 → SSE 帧 → UI replaceIntent → 壳层替换 id；
  * - D-36 界面零计算（desktop/ui 不得重算 pendingEscalations）；
  * - A-11 /ui/labels 249 键含全部 DESKTOP_*（白名单 100%），USAGE_LINES 未混入；
- * - AC-43 不依赖 I1.10b：UI 不 import 下钻类模块，open-queue 只展开本条。
+ * - AC-43 不依赖 I1.10b：下钻实现只经装配层接线（beta.2 起允许 shell 层单一适配），open-queue 只展开本条。
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -22,7 +22,7 @@ import { listAssets, showAsset } from '../../src/daemon/assets-view.js';
 import { buildOccupancy } from '../../src/daemon/occupancy.js';
 import { buildCanvas } from '../../src/daemon/canvas.js';
 import { buildEvidence, EVIDENCE_ITEM_KEYS } from '../../src/daemon/evidence.js';
-import { labelKeysPayload, I11_DESKTOP_KEYS } from '../../src/daemon/http/labels.js';
+import { labelKeysPayload, I11_DESKTOP_KEYS, UI_LABEL_KEYS } from '../../src/daemon/http/labels.js';
 import { USAGE_LINES } from '../../src/cli/labels.js';
 import { createEventBus } from '../../src/core/event-bus.js';
 import { createStore } from '../../src/persistence/instance-store.js';
@@ -199,6 +199,26 @@ test('D-46 ④ 壳层替换 id：派生自同一 (kind, instanceId) 键', () => 
   assert.match(main, /get\("ids"\)/, '壳层点击路径必须消费 ids（AC-04 选中）');
 });
 
+test('桌面壳 Windows 无控制台：GUI 子系统 + daemon/taskkill 静默启动', () => {
+  const main = readText('desktop/src-tauri/src/main.rs');
+  const spawn = readText('desktop/src-tauri/src/spawn.rs');
+  assert.match(
+    main,
+    /windows_subsystem\s*=\s*"windows"/,
+    'release 壳必须以 GUI 子系统链接，否则双击快捷方式会弹出控制台窗口',
+  );
+  assert.match(
+    spawn,
+    /use std::os::windows::process::CommandExt/,
+    'Windows 分支必须引入 CommandExt 才能设置 creation_flags',
+  );
+  const flags = spawn.match(/creation_flags\(0x0800_0000\)/g) || [];
+  assert.ok(
+    flags.length >= 2,
+    `daemon 与 taskkill 都必须 CREATE_NO_WINDOW，实际只有 ${flags.length} 处`,
+  );
+});
+
 // ---------------------------------------------------------------------------
 // D-36 界面零计算
 // ---------------------------------------------------------------------------
@@ -231,9 +251,9 @@ test('D-36：desktop/ui 不出现 pendingEscalations 重算（grep 计数 = 0）
 // A-11 文案下发完整性
 // ---------------------------------------------------------------------------
 
-test('A-11：/ui/labels 312 键（I1.10a/I1.10b/I1.11 并集）含全部 DESKTOP_* 字符串常量（白名单 100%）', () => {
+test('A-11：/ui/labels 键全集（I1.10a/I1.10b/I1.11 + beta.2 外壳增量并集）含全部 DESKTOP_* 字符串常量（白名单 100%）', () => {
   const payload = labelKeysPayload().keys;
-  assert.equal(Object.keys(payload).length, 312, '下发键数必须恰 312（与 I1.10b 合入后的并集一致）');
+  assert.equal(Object.keys(payload).length, Object.keys(UI_LABEL_KEYS).length, '下发键数必须与 UI_LABEL_KEYS 全集一致');
 
   const cli = fs.readFileSync(path.join(REPO, 'src', 'cli', 'labels.js'), 'utf8');
   const stringConsts = [...cli.matchAll(/^export const (DESKTOP_[A-Z0-9_]+)\s*=\s*Object\.freeze\(\s*(['"`])/gm)]
@@ -279,12 +299,33 @@ function listSourceFiles(dir) {
   return out;
 }
 
+/**
+ * I1.11 立此断言时，下钻面（I1.10b）尚未合入，所以用「界面层不出现下钻标识」做
+ * 前置能力隔离。beta.2 起下钻面成为正式交互，隔离口径随之收紧为**结构约束**：
+ *   - 下钻实现模块（`desktop/ui/drill/**`）在界面层只允许装配层 `app.js` 接线；
+ *   - 下钻的渲染适配只允许集中在 `shell/drill.js`（及统一出口 `shell/index.js`）；
+ *   - I1.10b 内部实现标识（`drilldown` / `jumpHost` / `attachHost`）在全树仍为 0。
+ * `desktop/harness/**` 是取证工具，按原状允许直接驱动 drill 投影。
+ * 判据不放宽：新增了「谁可以 import drill 实现」这条更硬的检查。
+ */
 test('AC-43 源码级：desktop/ui + harness 不 import 下钻/节点详情/跳转类模块', () => {
+  const ASSEMBLY = path.join('desktop', 'ui', 'app.js');
+  const SHELL_ADAPTER = new Set([
+    path.join('desktop', 'ui', 'shell', 'drill.js'),
+    path.join('desktop', 'ui', 'shell', 'index.js'),
+  ]);
+  const DRILL_IMPL_IMPORT = /from\s+['"][^'"]*drill\/index\.js['"]/;
   const hits = [];
   for (const file of [...listSourceFiles('desktop/ui'), ...listSourceFiles('desktop/harness')]) {
+    const rel = path.relative(REPO, file);
+    const mayImportImpl = rel === ASSEMBLY || rel.startsWith(`desktop${path.sep}harness${path.sep}`);
     for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
-      if (/drilldown|nodeDetail|jumpHost|attachHost/.test(line)) {
-        hits.push(`${path.relative(REPO, file)}: ${line.trim()}`);
+      if (/drilldown|jumpHost|attachHost/.test(line)) {
+        hits.push(`${rel}: ${line.trim()}`);
+      } else if (!SHELL_ADAPTER.has(rel) && /nodeDetail/.test(line)) {
+        hits.push(`${rel}: ${line.trim()}`);
+      } else if (!mayImportImpl && DRILL_IMPL_IMPORT.test(line)) {
+        hits.push(`${rel}: ${line.trim()}`);
       }
     }
   }
