@@ -76,15 +76,29 @@
 | 5 | 治理审计表恒为空 | `rows` 只在 `instances` 视图计算 | `rows` 改为所有视图共用同一投影 |
 | 6 | 队列徽章重算 pending 计数 | 违反 D-36「界面零计数」 | 直接取投影条目数 |
 | 7 | 实例列表无法只看待处置 | 筛选只有状态维度 | 新增「待处置」筛选 |
+| 8 | **真实窗口一片空白、列表永远是空** | `mountApp` 内 10 处引用了 `createApp` 作用域的 `noticeText`，首帧 `ReferenceError` → `mountApp` 抛出 → `index.html` 的 `app.start()` 从未执行 → 文案表永远不加载 | 由 `createApp.text()` 统一出口；新增 `test/wp14/mount-smoke.test.js` 真正调用 `mountApp` |
 
-每条都有对应回归：`test/wp13/errors.test.js`（R-06）、`test/wp14/ui-views.test.js`（setView）、
+第 8 条是这一轮最有价值的发现，值得单独说明：
+
+- 它**只在真实窗口里出现**。`createApp` 级测试全部绿灯，界面冒烟脚本是手工构造上下文直接调
+  `renderShell`，两者都不经过 `mountApp`——而真实窗口只走 `mountApp`。
+- 它**在 Windows 门禁上不暴露**：那里 `AC-26` 因 bundle 不新鲜被判 skip，
+  「Windows 过」等于没验证真实壳。只有 macOS 门禁真的开了窗口。
+- 定位靠的是新加的诊断探针：`rows-empty{ready:false, labels:0, instances:2, status:"idle"}`
+  ——实例读得到、文案表永远为空、连接状态还停在 idle，三条合起来才能推出「`start()` 没跑」。
+- 教训：入口层没有被测试真正调用时，等于把整条链路交给 CI 去发现。
+
+每条都有对应回归：`test/wp14/mount-smoke.test.js`（挂载 / 探针 / 侧栏无死链）、
+`test/wp13/errors.test.js`（R-06）、`test/wp14/ui-views.test.js`（setView）、
 `test/wp14/contract.test.js`（D-36 / AC-43 / A-11）、`test/wp13/labels-desktop.test.js`（文案键）。
 
 ---
 
 ## 4. 已知边界（未在本轮解决，需知情）
 
-1. **本机无法构建桌面二进制**：无 Rust / MSVC / Windows SDK，beta.2 的实机观感只能等 CI 产物安装后确认。
+1. **本机无法构建桌面二进制**（无 Rust / MSVC / Windows SDK）：真实壳的自动取证已在 CI 完成
+   （AC-26 在 macOS 上真实开窗并通过），但「装上手的观感」仍需安装后确认——这属于人的判断，
+   自动化测试给不了答案。
 2. **项目选择依赖原生对话框**：Web 预览下「选择项目」无效果，属预期（`pick_project` 只在 Tauri 内可用）。
 3. **全局搜索 = 导航跳转**，不做实例/节点的全文检索；PRD 未要求，但若后续要「搜任务内容」需新增后端接口。
 4. **证据视图只读**：可看、可复制、可定位到节点，但不支持在界面里补录证据。
@@ -93,10 +107,27 @@
 
 ## 5. 回归结论
 
-- 全量：**1929 例 / 1897 通过 / 18 失败 / 14 跳过**（含 5 条并发负载下才红的 flake，串行复跑转绿）。
-- 串行口径（12 个失败文件，`--test-concurrency=1`）：**118 例 / 102 通过 / 14 失败**。
-- 对照基线树（`f201cb2` 的 `git worktree`，同一命令）：**118 例 / 103 通过 / 13 失败**。
-- **新增红 = 0**（唯一差值 `AC-23 #3` 属 `git diff HEAD` 型用例，提交后转绿，已复核）。
+发布门禁（CI run `45043664056`，三平台 + 汇总全 success）的实测数字：
+
+| 平台 | tests | pass | fail | 判定 |
+|---|---|---|---|---|
+| macOS x64（严格面：无平台豁免） | 1932 | 1926 | 4 | 4 条全落在 9 条判定基线内，差集 0 |
+| macOS arm64 | 1932 | 1926 | 4 | 同上 |
+| Windows x64 | 1932 | 1903 | 16 | 16 条全落在 25 条判定基线内（含 16 条 win32 平台敏感项） |
+
+补充口径：
+
+- **新增红 = 0**。macOS 严格面只剩 4 条历史基线项（`readReview` p95、`verifyProducts` p95、
+  `core.stop` 收敛、`cursor.json` 并发消费一类时序/性能断言），与 beta.1 一致。
+- 本地串行复核（12 个失败文件，`--test-concurrency=1`）：**118 例 / 102 通过 / 14 失败**，
+  对照 `f201cb2` 基线树同命令 **118 例 / 103 通过 / 13 失败**，差值为 1 条
+  `AC-23 #3`（`git diff HEAD` 型用例，提交后转绿，已复核）。
+- 并发跑全量会额外造 5 条负载型 flake（三主链、AC-34、AC-62、openHost 500ms、EBUSY），
+  串行复跑全绿——判 flake 前必须串行证伪。
 - purity 门禁：`src/core,src/daemon` 对图/角色字面量零命中。
 - 界面冒烟：19 页 + 3 抽屉在 DOM shim 下全部渲染出非空内容。
+- 挂载链路：`test/wp14/mount-smoke.test.js` 3 例——空文案表首帧不抛、行探针正常发出、
+  侧栏九项 + 「新建实例」全部可达。
 - 文案键 312 → 365（+53，全部 `DESKTOP_V2_` 前缀，既有键值一字未改）。
+- 发布产物：`Maestro_0.0.1-beta.2_x64.dmg`、`_arm64.dmg`、`_win-x64-setup.exe` + `SHA256SUMS.txt`，
+  三条校验和与资产 digest 逐条相等；Release `draft=false / prerelease=true`，匿名访问 HTTP 200。
