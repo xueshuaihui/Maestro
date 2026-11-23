@@ -86,7 +86,12 @@ function isolatedEnv(root) {
  * It is created in os.tmpdir(), never inside the repository.
  */
 function mockAgent(root) {
-  const script = path.join(root, 'codex-mock');
+  const isWin = process.platform === 'win32';
+  // Windows cannot execute an extensionless shebang script: agent CLIs there
+  // are `.cmd` shims over a JS body, so the fixture mirrors that shape instead
+  // of pretending the POSIX layout is portable.
+  const script = path.join(root, isWin ? 'codex-mock.cmd' : 'codex-mock');
+  const body = path.join(root, 'codex-mock.js');
   const lines = [
     '#!/usr/bin/env node',
     'const NL = String.fromCharCode(10);',
@@ -110,8 +115,13 @@ function mockAgent(root) {
     '  process.stdout.write("codex 1.2.3" + NL);',
     '}'
   ];
-  fs.writeFileSync(script, lines.join('\n'), 'utf8');
-  fs.chmodSync(script, 0o755);
+  fs.writeFileSync(body, lines.join('\n'), 'utf8');
+  if (isWin) {
+    fs.writeFileSync(script, `@echo off\r\nnode "%~dp0codex-mock.js" %*\r\n`, 'utf8');
+  } else {
+    fs.copyFileSync(body, script);
+    fs.chmodSync(script, 0o755);
+  }
   return { script };
 }
 

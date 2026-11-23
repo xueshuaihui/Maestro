@@ -136,8 +136,12 @@ test('CLI-A3: invalid input is rejected with readable reasons and no disk write'
   try {
     const tool = executable(fx.root);
     const missing = path.join(fx.root, 'does-not-exist');
-    const notExecutable = path.join(fx.root, 'plain.txt');
-    fs.writeFileSync(notExecutable, 'not an executable\n', 'utf8');
+    // A directory is rejected on every platform: POSIX passes X_OK for it but
+    // `isFile()` fails, while Windows has no exec bit at all so the isFile()
+    // guard is the only portable signal. A plain .txt would pass on Windows
+    // (X_OK degrades to existence there), which would test nothing.
+    const notExecutable = path.join(fx.root, 'plain-dir');
+    fs.mkdirSync(notExecutable, { recursive: true });
 
     const cases = [
       { args: ['add', '--name', '', '--path', tool], text: T.ADD_FAIL_EMPTY_NAME },

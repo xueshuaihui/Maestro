@@ -38,12 +38,19 @@ const isDir = (fileSystem, target) => {
   }
 };
 
-const isExecutable = (fileSystem, target) => {
+/**
+ * `platform` is explicit on purpose: the caller may pin it (tests, capability
+ * matrix previews, cross-platform re-scans of a mounted volume). Reading
+ * `process.platform` here would silently ignore the injected value and, on
+ * Windows, append PATHEXT suffixes to a name the caller asked to resolve
+ * as-is.
+ */
+const isExecutable = (fileSystem, target, platform = process.platform) => {
   try {
     const mode = fileSystem.statSync(target).mode;
     // Windows has no exec bit in the POSIX sense; existence of a resolvable
     // file in a PATH entry is the practical signal there.
-    return process.platform === 'win32' || (mode & 0o111) !== 0;
+    return platform === 'win32' || (mode & 0o111) !== 0;
   } catch {
     return false;
   }
@@ -56,14 +63,16 @@ function splitPath(pathValue, pathSeparator) {
     .filter((entry) => entry.length > 0);
 }
 
-function resolveOnPath(bin, pathEntries, fileSystem, pathApi) {
-  const extensions = process.platform === 'win32'
-    ? String(process.env.PATHEXT ?? '.EXE;.CMD;.BAT').split(';').filter(Boolean)
+function resolveOnPath(bin, pathEntries, fileSystem, pathApi, { platform, env } = {}) {
+  const win = (platform ?? process.platform) === 'win32';
+  const pathext = (env ?? process.env).PATHEXT;
+  const extensions = win
+    ? String(pathext ?? '.EXE;.CMD;.BAT').split(';').filter(Boolean)
     : [''];
   for (const entry of pathEntries) {
     for (const ext of extensions) {
       const candidate = pathApi.join(entry, `${bin}${ext}`);
-      if (exists(fileSystem, candidate) && isExecutable(fileSystem, candidate)) return candidate;
+      if (exists(fileSystem, candidate) && isExecutable(fileSystem, candidate, platform)) return candidate;
     }
   }
   return null;
@@ -170,7 +179,7 @@ export function discoverAgentClis(options = {}) {
     let executable = null;
 
     for (const bin of def.bin ?? []) {
-      const found = resolveOnPath(bin, pathEntries, fileSystem, pathApi);
+      const found = resolveOnPath(bin, pathEntries, fileSystem, pathApi, { platform, env });
       if (found) {
         executable = found;
         evidence.push({ type: 'path', value: found, note: bin });

@@ -18,6 +18,7 @@
  */
 
 import { spawn } from 'node:child_process';
+import path from 'node:path';
 
 import { CLI_STATUS } from './known-agents.js';
 
@@ -25,11 +26,31 @@ function fail(code, cause, extra = {}) {
   return { ok: false, code, params: { cause: String(cause), ...extra } };
 }
 
+/**
+ * Windows cannot spawn a `.cmd` / `.bat` shim directly: Node refuses it without
+ * a shell (EINVAL) since the CVE-2024-27980 fix, and that is exactly what an
+ * npm-installed agent CLI is on Windows (`claude.cmd`, `gemini.cmd`, ...).
+ * Route those through `cmd.exe /d /s /c` explicitly instead of `shell: true`,
+ * so quoting stays in our hands and the POSIX path keeps using spawn verbatim.
+ */
+function spawnTarget(command, args) {
+  if (process.platform !== 'win32') return { file: command, argv: args };
+  const ext = path.extname(String(command)).toLowerCase();
+  if (ext !== '.cmd' && ext !== '.bat') return { file: command, argv: args };
+  const quote = (value) => {
+    const text = String(value);
+    return /[\s"&|<>^]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  };
+  const line = [command, ...args].map(quote).join(' ');
+  return { file: process.env.ComSpec || 'cmd.exe', argv: ['/d', '/s', '/c', line] };
+}
+
 function runCommand({ command, args, cwd, timeoutMs, env, input }) {
   return new Promise((resolve) => {
     let child;
+    const target = spawnTarget(command, args);
     try {
-      child = spawn(command, args, {
+      child = spawn(target.file, target.argv, {
         cwd,
         env,
         stdio: ['pipe', 'pipe', 'pipe'],
