@@ -1250,6 +1250,35 @@ export const ROLE_SESSION_POLICY_INVALID = Object.freeze('会话复用策略不�
  * 设置页。现有 312 键一字未改，本表全部以 `DESKTOP_V2_` 前缀追加，经
  * `/ui/labels` 下发，桌面层不出现任何中文字面量。
  */
+/** A1 (v2): Agent CLI discovery command wording. Single source of truth. */
+export const CLI_DISCOVERY_TEXT = Object.freeze({
+  TITLE: '本机 Agent CLI',
+  SCANNED_AT: '扫描时间',
+  NONE: '未发现可用的 Agent CLI',
+  NONE_HINT: '请安装一个 Agent CLI（如 Codex / Claude Code / Gemini CLI）后重新扫描',
+  USAGE: '用法：orch cli list|scan|probe <cli_id> [--format json]',
+  UNKNOWN_SUB: '未知子命令：{sub}',
+  NOT_FOUND: '未找到 CLI：{id}',
+  SCAN_DONE: '扫描完成，发现 {n} 个 Agent CLI',
+  COL_ID: '标识',
+  COL_NAME: '名称',
+  COL_VERSION: '版本',
+  COL_PATH: '路径',
+  COL_STATUS: '状态',
+  COL_EVIDENCE: '来源',
+  STATUS_IDLE: '可用',
+  STATUS_CONNECTED: '已连接',
+  STATUS_UNREACHABLE: '未就绪',
+  STATUS_PROBING: '检测中',
+  NOT_ON_PATH: '已安装但不在 PATH',
+  PROBE_OK: '{name} 探测完成：ACP {acp}',
+  PROBE_FAIL: '{name} 探测失败：{cause}',
+  PROBE_ACP_YES: '支持',
+  PROBE_ACP_NO: '不支持',
+  SCAN_SAVED: '扫描结果已保存至 {path}',
+  REGISTRY_INVALID: 'CLI 注册表格式不正确'
+});
+
 export const DESKTOP_V2_LABEL = Object.freeze({
   DESKTOP_V2_TAB_OVERVIEW: '概览',
   DESKTOP_V2_NAV_AUDIT: '审计与治理',
