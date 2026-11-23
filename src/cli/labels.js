@@ -1276,7 +1276,26 @@ export const CLI_DISCOVERY_TEXT = Object.freeze({
   PROBE_ACP_YES: '支持',
   PROBE_ACP_NO: '不支持',
   SCAN_SAVED: '扫描结果已保存至 {path}',
-  REGISTRY_INVALID: 'CLI 注册表格式不正确'
+  REGISTRY_INVALID: 'CLI 注册表格式不正确',
+  // --- WP-4 additions: manual add, capability matrix, readable hints --------
+  ADD_OK: '已添加 {name}  {path}',
+  ADD_EXISTS: '已存在：{path}（未重复添加）',
+  ADD_FAIL_EMPTY_NAME: '添加失败：名称为空',
+  ADD_FAIL_EMPTY_PATH: '添加失败：路径为空',
+  ADD_FAIL_NOT_FOUND: '添加失败：文件不存在',
+  ADD_FAIL_NOT_EXECUTABLE: '添加失败：不可执行',
+  HINT_ADD_PATH: '修复建议：可用 orch cli add --name <名称> --path <可执行路径> 手动登记该 CLI',
+  MATRIX_TITLE: 'CLI 能力矩阵',
+  MATRIX_SOURCES: '来源概览',
+  MATRIX_COL_ACP: 'ACP',
+  MATRIX_COL_TRANSPORT: 'stdio·transport',
+  MATRIX_COL_RESUME_DIALECT: '会话恢复方言',
+  MATRIX_COL_CONCURRENCY: '并发上限',
+  MATRIX_COL_EVIDENCE_HOOK: '证据钩子',
+  NOT_PROBED: '未探测',
+  EVIDENCE_LEVEL_MOCK: 'mock 实测',
+  EVIDENCE_LEVEL_PENDING: '待本机实测（需装有目标 CLI 的机器）',
+  EVIDENCE_LEVEL_REAL: '已实测（真实宿主面）'
 });
 
 export const DESKTOP_V2_LABEL = Object.freeze({
