@@ -1,0 +1,102 @@
+{
+  "ac": "AC-04",
+  "commands": [
+    {
+      "label": "夹具：npm 全局根夹具放入 opencode-ai 包目录（不加入 PATH）",
+      "argv": [
+        "(fixture) npm 全局根夹具放入 opencode-ai 包目录（不加入 PATH）"
+      ],
+      "cwd": null,
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/npm/opencode-ai",
+      "stderr": ""
+    },
+    {
+      "label": "注入接缝 discoverAgentClis({npmGlobalRoot,home,pathEntries:[],appDirs:[]})",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "--input-type=module",
+        "-e",
+        "const idx = await import(\"file:///Users/xuesh/www/Maestro/src/adapter/cli-discovery/index.js\");\nconst scan = idx.discoverAgentClis({\"npmGlobalRoot\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/npm\",\"home\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/home\",\"pathEntries\":[],\"appDirs\":[]});\nawait idx.saveCliRegistry(process.cwd(), scan, { userConfig: [] });\nprocess.stdout.write(JSON.stringify(scan));"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 105,
+      "stdout": "{\"ok\":true,\"schemaVersion\":1,\"scanned_at\":\"2026-11-23T14:42:56.597Z\",\"sources\":{\"path_entries\":0,\"home\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/home\",\"app_dirs\":0,\"npm_global_root\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/npm\"},\"findings\":[{\"cli_id\":\"opencode\",\"name\":\"OpenCode\",\"executable\":null,\"version\":null,\"detected_at\":\"2026-11-23T14:42:56.597Z\",\"capabilities\":[],\"acp\":null,\"transport\":null,\"resume_dialect\":null,\"evidence_hook\":null,\"max_concurrent_sessions\":null,\"connection_status\":\"unreachable\",\"not_on_path\":true,\"verified_at\":null,\"evidence\":[{\"type\":\"npm-global\",\"value\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/npm/opencode-ai\"}],\"version_args\":[\"--version\"]}]}",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli list",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 116,
+      "stdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:42:56.597Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nopencode  |  OpenCode  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  npm-global\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nOpenCode:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:0  npm-global:1  user-config:0\n",
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "text": "注入扫描退出码为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "清单出现对应 OpenCode：name 逐字（期望 \"OpenCode\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"OpenCode\""
+    },
+    {
+      "text": "路径/全局包位置来自 npm-global evidence（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/npm/opencode-ai\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/npm/opencode-ai\""
+    },
+    {
+      "text": "来源标注为包管理器全局包（evidence type=npm-global）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"type\":\"npm-global\",\"value\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/npm/opencode-ai\"}]"
+    },
+    {
+      "text": "不在 PATH → 状态 unreachable（用户可见「未就绪」）（期望 \"unreachable\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"unreachable\""
+    },
+    {
+      "text": "not_on_path=true 且提示不在 PATH（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "清单行含「未就绪 (已安装但不在 PATH)」",
+      "ok": true,
+      "blocked": false,
+      "actual": "opencode  |  OpenCode  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  npm-global"
+    },
+    {
+      "text": "来源概览计入 npm-global",
+      "ok": true,
+      "blocked": false,
+      "actual": "来源概览: path:0  home:0  app:0  npm-global:1  user-config:0"
+    },
+    {
+      "text": "注册表保留该全局包项",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"opencode\""
+    }
+  ]
+}

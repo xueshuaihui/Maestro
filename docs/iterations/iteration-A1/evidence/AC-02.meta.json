@@ -1,0 +1,34 @@
+{
+  "ac": "AC-02",
+  "title": "版本信息准确（规划验收句「信息准确」的版本维度）",
+  "face": "mock 面（能力探测：版本）",
+  "phase": "probe",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "startedAt": "2026-11-23T14:42:54.206Z",
+  "finishedAt": "2026-11-23T14:42:55.003Z",
+  "durationMs": 797,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-02",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-02"
+    }
+  ],
+  "checks": 8,
+  "notes": [
+    "版本探测成功但 ACP 握手对纯 shell 脚本返回「不支持」，故探测后状态为未就绪；本 AC 只判版本维度。"
+  ],
+  "evidence": [
+    "docs/iterations/iteration-A1/evidence/AC-02.probe.stdout.txt",
+    "docs/iterations/iteration-A1/evidence/AC-02.probe.output.json",
+    "docs/iterations/iteration-A1/evidence/AC-02.probe.registry.json",
+    "docs/iterations/iteration-A1/evidence/AC-02.probe.mid.json"
+  ]
+}

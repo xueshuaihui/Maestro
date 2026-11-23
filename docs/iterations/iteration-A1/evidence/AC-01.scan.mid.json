@@ -1,0 +1,31 @@
+{
+  "beforeRegistry": null,
+  "finding": {
+    "cli_id": "codex",
+    "name": "Codex CLI",
+    "executable": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex",
+    "version": null,
+    "detected_at": "2026-11-23T14:42:53.430Z",
+    "capabilities": [],
+    "acp": null,
+    "transport": null,
+    "resume_dialect": null,
+    "evidence_hook": null,
+    "max_concurrent_sessions": null,
+    "connection_status": "idle",
+    "not_on_path": false,
+    "verified_at": null,
+    "evidence": [
+      {
+        "type": "path",
+        "value": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex",
+        "note": "codex"
+      }
+    ],
+    "version_args": [
+      "--version"
+    ]
+  },
+  "scanStdout": "扫描完成，发现 2 个 Agent CLI\n本机 Agent CLI\n扫描时间: 2026-11-23T14:42:53.430Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\ncodex  |  Codex CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex  |  path\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\n扫描结果已保存至 /private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/.orch/cli-registry.json\n",
+  "listStdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:42:53.430Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\ncodex  |  Codex CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex  |  path\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nCodex CLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:1  home:0  app:1  npm-global:0  user-config:0\n"
+}

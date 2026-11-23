@@ -1,0 +1,34 @@
+{
+  "ac": "AC-04",
+  "title": "包管理器全局包被识别（规划子项：扫描包管理器）",
+  "face": "mock 面（发现：包管理器 / 注入接缝）",
+  "phase": "scan",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "startedAt": "2026-11-23T14:42:56.503Z",
+  "finishedAt": "2026-11-23T14:42:56.729Z",
+  "durationMs": 226,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-04",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04"
+    }
+  ],
+  "checks": 9,
+  "notes": [
+    "默认 npmGlobalRoot=null 时不臆造全局包发现；本 AC 通过注入接缝提供夹具全局根。"
+  ],
+  "evidence": [
+    "docs/iterations/iteration-A1/evidence/AC-04.scan.stdout.txt",
+    "docs/iterations/iteration-A1/evidence/AC-04.scan.output.json",
+    "docs/iterations/iteration-A1/evidence/AC-04.scan.registry.json",
+    "docs/iterations/iteration-A1/evidence/AC-04.scan.mid.json"
+  ]
+}

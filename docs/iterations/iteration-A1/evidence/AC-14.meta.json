@@ -1,0 +1,34 @@
+{
+  "ac": "AC-14",
+  "title": "规划验收句①的 mock 可复现面：自动发现 + 四项信息准确",
+  "face": "mock 面（验收句支撑：AC-01+02+07 串联）",
+  "phase": "flow",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "startedAt": "2026-11-23T14:43:19.864Z",
+  "finishedAt": "2026-11-23T14:43:20.834Z",
+  "durationMs": 970,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-14",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-14"
+    }
+  ],
+  "checks": 10,
+  "notes": [
+    "本 AC 为 AC-12 规划验收句①的 mock 支撑面（AC-01 + AC-02 + AC-07 三夹具串联）；证据级别 mock 实测，按附录 A-7 与 AC-12 待本机实测严格分开。"
+  ],
+  "evidence": [
+    "docs/iterations/iteration-A1/evidence/AC-14.flow.stdout.txt",
+    "docs/iterations/iteration-A1/evidence/AC-14.flow.output.json",
+    "docs/iterations/iteration-A1/evidence/AC-14.flow.registry.json",
+    "docs/iterations/iteration-A1/evidence/AC-14.flow.mid.json"
+  ]
+}

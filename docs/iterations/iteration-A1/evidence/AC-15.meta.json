@@ -1,0 +1,34 @@
+{
+  "ac": "AC-15",
+  "title": "空态与来源概览可见（§2.3 / §2.6 异常）",
+  "face": "mock 面（罗列：空态 + 来源概览）",
+  "phase": "empty",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "startedAt": "2026-11-23T14:43:21.582Z",
+  "finishedAt": "2026-11-23T14:43:21.799Z",
+  "durationMs": 217,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-15",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-15"
+    }
+  ],
+  "checks": 10,
+  "notes": [
+    "空态判定走 CLI_DISCOVERY_TEXT.NONE / NONE_HINT / HINT_ADD_PATH 文案键，不依赖真实本机 PATH/HOME。"
+  ],
+  "evidence": [
+    "docs/iterations/iteration-A1/evidence/AC-15.empty.stdout.txt",
+    "docs/iterations/iteration-A1/evidence/AC-15.empty.output.json",
+    "docs/iterations/iteration-A1/evidence/AC-15.empty.registry.json",
+    "docs/iterations/iteration-A1/evidence/AC-15.empty.mid.json"
+  ]
+}

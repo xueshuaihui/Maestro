@@ -1,0 +1,252 @@
+{
+  "ac": "AC-13",
+  "commands": [
+    {
+      "label": "夹具：自定义可执行 mytool（speaking agent，自动发现不识别）",
+      "argv": [
+        "(fixture) 自定义可执行 mytool（speaking agent，自动发现不识别）"
+      ],
+      "cwd": null,
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli add --name MyCLI --path <mytool>",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "MyCLI",
+        "--path",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 241,
+      "stdout": "已添加 MyCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli list",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 168,
+      "stdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:44:20.464Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nmycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nMyCLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:0  npm-global:0  user-config:1\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli probe mycli（连接测试）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "probe",
+        "mycli"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 773,
+      "stdout": "MyCLI 探测完成：ACP 支持\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli add 重复路径",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "MyCLI2",
+        "--path",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 138,
+      "stdout": "已存在：/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool（未重复添加）\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli add 空名称",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "",
+        "--path",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 128,
+      "stdout": "添加失败：名称为空\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli add 空路径",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "X",
+        "--path",
+        ""
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 130,
+      "stdout": "添加失败：路径为空\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli add 不存在文件",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "X",
+        "--path",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/nope"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 130,
+      "stdout": "添加失败：文件不存在\n",
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "text": "add 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "添加成功提示含名称与路径",
+      "ok": true,
+      "blocked": false,
+      "actual": "已添加 MyCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool"
+    },
+    {
+      "text": "清单中该 CLI 名称与用户填写一致（期望 \"MyCLI\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"MyCLI\""
+    },
+    {
+      "text": "清单中该 CLI 路径与用户填写一致（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool\""
+    },
+    {
+      "text": "出现在清单中",
+      "ok": true,
+      "blocked": false,
+      "actual": "mycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool  |  user-config / MyCLI:"
+    },
+    {
+      "text": "可连接测试：probe 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "连接测试结果可见（ACP 支持）",
+      "ok": true,
+      "blocked": false,
+      "actual": "MyCLI 探测完成：ACP 支持"
+    },
+    {
+      "text": "探测结果写入该项（acp=true）（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "重复添加同路径被拒绝（exit 1）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "重复添加给出「已存在」原因",
+      "ok": true,
+      "blocked": false,
+      "actual": "已存在：/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool（未重复添加）"
+    },
+    {
+      "text": "重复添加不产生重复项：user_config 仍为 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "空名称被拒绝（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "空名称给出原因",
+      "ok": true,
+      "blocked": false,
+      "actual": "添加失败：名称为空"
+    },
+    {
+      "text": "空路径被拒绝（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "空路径给出原因",
+      "ok": true,
+      "blocked": false,
+      "actual": "添加失败：路径为空"
+    },
+    {
+      "text": "不存在文件被拒绝（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "不存在文件给出原因",
+      "ok": true,
+      "blocked": false,
+      "actual": "添加失败：文件不存在"
+    },
+    {
+      "text": "非法输入均不写入清单：user_config 恒为 1（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    }
+  ]
+}

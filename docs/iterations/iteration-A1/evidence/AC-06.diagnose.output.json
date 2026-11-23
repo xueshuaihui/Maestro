@@ -1,0 +1,151 @@
+{
+  "ac": "AC-06",
+  "commands": [
+    {
+      "label": "夹具：仅 .codex home 标记，codex 不在命令搜索路径",
+      "argv": [
+        "(fixture) 仅 .codex home 标记，codex 不在命令搜索路径"
+      ],
+      "cwd": null,
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-06/home/.codex",
+      "stderr": ""
+    },
+    {
+      "label": "注入接缝 discoverAgentClis({home,pathEntries:[],appDirs:[]})",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "--input-type=module",
+        "-e",
+        "const idx = await import(\"file:///Users/xuesh/www/Maestro/src/adapter/cli-discovery/index.js\");\nconst scan = idx.discoverAgentClis({\"home\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-06/home\",\"pathEntries\":[],\"appDirs\":[]});\nawait idx.saveCliRegistry(process.cwd(), scan, { userConfig: [] });\nprocess.stdout.write(JSON.stringify(scan));"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-06",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 97,
+      "stdout": "{\"ok\":true,\"schemaVersion\":1,\"scanned_at\":\"2026-11-23T14:42:58.658Z\",\"sources\":{\"path_entries\":0,\"home\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-06/home\",\"app_dirs\":0,\"npm_global_root\":null},\"findings\":[{\"cli_id\":\"codex\",\"name\":\"Codex CLI\",\"executable\":null,\"version\":null,\"detected_at\":\"2026-11-23T14:42:58.658Z\",\"capabilities\":[],\"acp\":null,\"transport\":null,\"resume_dialect\":null,\"evidence_hook\":null,\"max_concurrent_sessions\":null,\"connection_status\":\"unreachable\",\"not_on_path\":true,\"verified_at\":null,\"evidence\":[{\"type\":\"home\",\"value\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-06/home/.codex\"}],\"version_args\":[\"--version\"]}]}",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli list（查看不可达诊断）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-06",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 118,
+      "stdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:42:58.658Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\ncodex  |  Codex CLI  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  home\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nCodex CLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:1  app:0  npm-global:0  user-config:0\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli probe codex（不可达项连接测试）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "probe",
+        "codex"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-06",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 125,
+      "stdout": "Codex CLI 探测失败：已安装但不在 PATH\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli list（探测后）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-06",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 121,
+      "stdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:42:58.658Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\ncodex  |  Codex CLI  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  home\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nCodex CLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:1  app:0  npm-global:0  user-config:0\n",
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "text": "注入扫描退出码为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "home marker 单独也列出：cli_id=codex（期望 \"codex\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"codex\""
+    },
+    {
+      "text": "executable=null（无可执行）（期望 null）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    },
+    {
+      "text": "not_on_path=true（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "connection_status=unreachable（用户可见「未就绪」）（期望 \"unreachable\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"unreachable\""
+    },
+    {
+      "text": "清单保留该项且显示「已安装但不在 PATH」可见原因",
+      "ok": true,
+      "blocked": false,
+      "actual": "codex  |  Codex CLI  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  home"
+    },
+    {
+      "text": "不是「什么都没扫到」的空态",
+      "ok": true,
+      "blocked": false,
+      "actual": "本机 Agent CLI / 扫描时间: 2026-11-23T14:42:58.658Z /  / 标识  |  名称  |  版本  |  状态  |  路径  |  来源 / ------------------------------------- / codex  |  Codex CLI  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  home"
+    },
+    {
+      "text": "不可达项连接测试返回失败（exit 1）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "显示「探测失败 + 具体原因」",
+      "ok": true,
+      "blocked": false,
+      "actual": "Codex CLI 探测失败：已安装但不在 PATH"
+    },
+    {
+      "text": "探测后状态保持 unreachable（期望 \"unreachable\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"unreachable\""
+    },
+    {
+      "text": "探测不伪造 ACP 支持",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    },
+    {
+      "text": "清单仍保留该项（探测后不空态）",
+      "ok": true,
+      "blocked": false,
+      "actual": "codex  |  Codex CLI  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  home"
+    }
+  ]
+}

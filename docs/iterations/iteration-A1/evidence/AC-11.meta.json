@@ -1,0 +1,34 @@
+{
+  "ac": "AC-11",
+  "title": "扫描只读，不改动用户机器（BR-01；§8 边界）",
+  "face": "mock 面（只读 / 安全）",
+  "phase": "readonly",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "startedAt": "2026-11-23T14:43:15.895Z",
+  "finishedAt": "2026-11-23T14:43:15.999Z",
+  "durationMs": 104,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-11",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-11"
+    }
+  ],
+  "checks": 9,
+  "notes": [
+    "只读硬约束：扫描不 spawn、不写扫描目录；缓存写入仅在 registry.js 的 saveCliRegistry（原子写）。"
+  ],
+  "evidence": [
+    "docs/iterations/iteration-A1/evidence/AC-11.readonly.stdout.txt",
+    "docs/iterations/iteration-A1/evidence/AC-11.readonly.output.json",
+    "docs/iterations/iteration-A1/evidence/AC-11.readonly.registry.json",
+    "docs/iterations/iteration-A1/evidence/AC-11.readonly.mid.json"
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "ac": "AC-01",
+  "commands": [
+    {
+      "label": "夹具：PATH 专属目录放入 codex 可执行",
+      "argv": [
+        "(fixture) PATH 专属目录放入 codex 可执行"
+      ],
+      "cwd": null,
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli scan（PATH 仅含夹具 bin）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "scan"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 125,
+      "stdout": "扫描完成，发现 2 个 Agent CLI\n本机 Agent CLI\n扫描时间: 2026-11-23T14:42:53.430Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\ncodex  |  Codex CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex  |  path\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\n扫描结果已保存至 /private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/.orch/cli-registry.json\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli list",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 138,
+      "stdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:42:53.430Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\ncodex  |  Codex CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex  |  path\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nCodex CLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:1  home:0  app:1  npm-global:0  user-config:0\n",
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "text": "scan 退出码为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "清单自动出现该项：名称显示为 Codex CLI（期望 \"Codex CLI\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"Codex CLI\""
+    },
+    {
+      "text": "路径显示为刚放入的可执行文件位置（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex\""
+    },
+    {
+      "text": "连接状态显示为「可用」（内部 idle）（期望 \"idle\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"idle\""
+    },
+    {
+      "text": "not_on_path=false（在 PATH 上）（期望 false）",
+      "ok": true,
+      "blocked": false,
+      "actual": "false"
+    },
+    {
+      "text": "来源标注为命令搜索路径（evidence type=path）",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"type\":\"path\",\"value\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex\",\"note\":\"codex\"}]"
+    },
+    {
+      "text": "清单行含名称 / 路径 / 可用 / path",
+      "ok": true,
+      "blocked": false,
+      "actual": "codex  |  Codex CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex  |  path"
+    },
+    {
+      "text": "用户不需要输入任何路径：scan 未带 --path / --name",
+      "ok": true,
+      "blocked": false,
+      "actual": "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli scan"
+    }
+  ]
+}

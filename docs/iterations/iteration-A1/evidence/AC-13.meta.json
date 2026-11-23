@@ -1,0 +1,34 @@
+{
+  "ac": "AC-13",
+  "title": "规划验收句②：手动添加自定义 CLI 可执行",
+  "face": "mock 面（手动添加）",
+  "phase": "add",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "startedAt": "2026-11-23T14:44:20.157Z",
+  "finishedAt": "2026-11-23T14:44:22.047Z",
+  "durationMs": 1890,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-13",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13"
+    }
+  ],
+  "checks": 18,
+  "notes": [
+    "add 只登记路径，不安装、不修改该 CLI 自身配置；非法/重复输入返回失败数据，不改变注册表。"
+  ],
+  "evidence": [
+    "docs/iterations/iteration-A1/evidence/AC-13.add.stdout.txt",
+    "docs/iterations/iteration-A1/evidence/AC-13.add.output.json",
+    "docs/iterations/iteration-A1/evidence/AC-13.add.registry.json",
+    "docs/iterations/iteration-A1/evidence/AC-13.add.mid.json"
+  ]
+}

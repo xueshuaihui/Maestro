@@ -1,0 +1,135 @@
+{
+  "ac": "AC-10",
+  "commands": [
+    {
+      "label": "夹具：初始夹具：bin/codex + 用户手加 mytool",
+      "argv": [
+        "(fixture) 初始夹具：bin/codex + 用户手加 mytool"
+      ],
+      "cwd": null,
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/codex / /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/mytool",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli add MyCLI",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "MyCLI",
+        "--path",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/mytool"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 135,
+      "stdout": "已添加 MyCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/mytool\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli scan（第一次，记 N）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "scan"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 128,
+      "stdout": "扫描完成，发现 3 个 Agent CLI\n本机 Agent CLI\n扫描时间: 2026-11-23T14:43:14.777Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\ncodex  |  Codex CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/codex  |  path\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/mytool  |  user-config\n扫描结果已保存至 /private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/.orch/cli-registry.json\n",
+      "stderr": ""
+    },
+    {
+      "label": "夹具：重扫前在命令搜索路径新放 gemini",
+      "argv": [
+        "(fixture) 重扫前在命令搜索路径新放 gemini"
+      ],
+      "cwd": null,
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/gemini",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli scan（重新扫描）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "scan"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 123,
+      "stdout": "扫描完成，发现 4 个 Agent CLI\n本机 Agent CLI\n扫描时间: 2026-11-23T14:43:14.900Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\ncodex  |  Codex CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/codex  |  path\ngemini  |  Gemini CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/gemini  |  path\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/mytool  |  user-config\n扫描结果已保存至 /private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/.orch/cli-registry.json\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli list（重扫后）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 115,
+      "stdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:43:14.900Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\ncodex  |  Codex CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/codex  |  path\ngemini  |  Gemini CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/gemini  |  path\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/mytool  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nCodex CLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nGemini CLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nMyCLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:2  home:0  app:1  npm-global:0  user-config:1\n",
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "text": "第一次 scan 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "第二次 scan 退出码 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "清单项数 N→N+1（期望 4）",
+      "ok": true,
+      "blocked": false,
+      "actual": "4"
+    },
+    {
+      "text": "新 CLI 出现（gemini，来源 path）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"cli_id\":\"gemini\",\"name\":\"Gemini CLI\",\"executable\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/gemini\",\"version\":null,\"detected_at\":\"2026-11-23T14:43:14.900Z\",\"capabilities\":[],\"acp\":null,\"transport\":null,\"resume_dialect\":null,\"evidence_hook\":null,\"max_concurrent_sessions\":null,\"connection_status\":\"idle\",\"not_on_path\":false,\"verified_at\":null,\"evidence\":[{\"type\":\"path\",\"value\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/gemini\",\"note\":\"gemini\"}],\"version_args\":[\"--version\"]}"
+    },
+    {
+      "text": "扫描时间更新为本次（scanned_at 变化）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"2026-11-23T14:43:14.777Z\" → \"2026-11-23T14:43:14.900Z\""
+    },
+    {
+      "text": "用户手加条目仍在（BR-08：cli_id=mycli，path 不变）",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"cli_id\":\"mycli\",\"name\":\"MyCLI\",\"executable\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/mytool\",\"version\":null,\"detected_at\":\"2026-11-23T14:43:14.649Z\",\"capabilities\":[],\"acp\":null,\"transport\":null,\"resume_dialect\":null,\"evidence_hook\":null,\"max_concurrent_sessions\":null,\"connection_status\":\"idle\",\"not_on_path\":false,\"verified_at\":null,\"evidence\":[{\"type\":\"user-config\",\"value\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/mytool\"}],\"version_args\":[\"--version\"]}"
+    },
+    {
+      "text": "清单可见新 CLI 与手加 CLI",
+      "ok": true,
+      "blocked": false,
+      "actual": "gemini  |  Gemini CLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/bin/gemini  |  path / mycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-10/mytool  |  user-config / Gemini CLI: / MyCLI:"
+    }
+  ]
+}

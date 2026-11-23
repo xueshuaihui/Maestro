@@ -1,0 +1,180 @@
+{
+  "ac": "AC-09",
+  "commands": [
+    {
+      "label": "夹具：两个 CLI：MockCLI 已探测、StubCLI 未探测",
+      "argv": [
+        "(fixture) 两个 CLI：MockCLI 已探测、StubCLI 未探测"
+      ],
+      "cwd": null,
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock / /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub",
+      "stderr": ""
+    },
+    {
+      "label": "add MockCLI",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "MockCLI",
+        "--path",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 243,
+      "stdout": "已添加 MockCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock\n",
+      "stderr": ""
+    },
+    {
+      "label": "add StubCLI",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "StubCLI",
+        "--path",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 227,
+      "stdout": "已添加 StubCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli scan",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "scan"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 231,
+      "stdout": "扫描完成，发现 3 个 Agent CLI\n本机 Agent CLI\n扫描时间: 2026-11-23T14:44:16.103Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmockcli  |  MockCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock  |  user-config\nstubcli  |  StubCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub  |  user-config\n扫描结果已保存至 /private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/.orch/cli-registry.json\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli probe mockcli（仅探测一个）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "probe",
+        "mockcli"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 780,
+      "stdout": "MockCLI 探测完成：ACP 支持\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli list（矩阵）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 134,
+      "stdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:44:16.103Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmockcli  |  MockCLI  |  codex 1.2.3  |  已连接  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock  |  user-config\nstubcli  |  StubCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nMockCLI:\n支持  |  未探测  |  未探测  |  未探测  |  未探测\nStubCLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:1  npm-global:0  user-config:2\n",
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "text": "probe 退出码为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "矩阵恰好包含五类维度（逐字表头）",
+      "ok": true,
+      "blocked": false,
+      "actual": "ACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子"
+    },
+    {
+      "text": "矩阵含维度「ACP」（期望含 \"ACP\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "本机 Agent CLI\n扫描时间: 2026-11-23T14:44:16.103Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmockcli  |  MockCLI  |  codex 1.2.3  |  已连接  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock  |  user-config\nstubcli  |  StubCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nMockCLI:\n支持  |  未探测  |  未探测  |  未探测  |  未探测\nStubCLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:1  npm-global:0  user-config:2\n"
+    },
+    {
+      "text": "矩阵含维度「stdio·transport」（期望含 \"stdio·transport\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "本机 Agent CLI\n扫描时间: 2026-11-23T14:44:16.103Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmockcli  |  MockCLI  |  codex 1.2.3  |  已连接  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock  |  user-config\nstubcli  |  StubCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nMockCLI:\n支持  |  未探测  |  未探测  |  未探测  |  未探测\nStubCLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:1  npm-global:0  user-config:2\n"
+    },
+    {
+      "text": "矩阵含维度「会话恢复方言」（期望含 \"会话恢复方言\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "本机 Agent CLI\n扫描时间: 2026-11-23T14:44:16.103Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmockcli  |  MockCLI  |  codex 1.2.3  |  已连接  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock  |  user-config\nstubcli  |  StubCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nMockCLI:\n支持  |  未探测  |  未探测  |  未探测  |  未探测\nStubCLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:1  npm-global:0  user-config:2\n"
+    },
+    {
+      "text": "矩阵含维度「并发上限」（期望含 \"并发上限\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "本机 Agent CLI\n扫描时间: 2026-11-23T14:44:16.103Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmockcli  |  MockCLI  |  codex 1.2.3  |  已连接  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock  |  user-config\nstubcli  |  StubCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nMockCLI:\n支持  |  未探测  |  未探测  |  未探测  |  未探测\nStubCLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:1  npm-global:0  user-config:2\n"
+    },
+    {
+      "text": "矩阵含维度「证据钩子」（期望含 \"证据钩子\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "本机 Agent CLI\n扫描时间: 2026-11-23T14:44:16.103Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmockcli  |  MockCLI  |  codex 1.2.3  |  已连接  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock  |  user-config\nstubcli  |  StubCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nMockCLI:\n支持  |  未探测  |  未探测  |  未探测  |  未探测\nStubCLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:1  npm-global:0  user-config:2\n"
+    },
+    {
+      "text": "已探测 CLI 行显示真实结论：ACP=支持",
+      "ok": true,
+      "blocked": false,
+      "actual": "mockcli  |  MockCLI  |  codex 1.2.3  |  已连接  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/codex-mock  |  user-config / 未探测  |  未探测  |  未探测  |  未探测  |  未探测 / MockCLI: / 支持  |  未探测  |  未探测  |  未探测  |  未探测"
+    },
+    {
+      "text": "已探测 CLI 未探出的维度显示「未探测」而非臆造",
+      "ok": true,
+      "blocked": false,
+      "actual": "未探测  |  未探测  |  未探测  |  未探测  |  未探测 / 支持  |  未探测  |  未探测  |  未探测  |  未探测 / 未探测  |  未探测  |  未探测  |  未探测  |  未探测"
+    },
+    {
+      "text": "未探测 CLI 五维均为「未探测」而非空白或「不支持」",
+      "ok": true,
+      "blocked": false,
+      "actual": "stubcli  |  StubCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09/bin/stub  |  user-config / 未探测  |  未探测  |  未探测  |  未探测  |  未探测 / StubCLI: / 未探测  |  未探测  |  未探测  |  未探测  |  未探测"
+    },
+    {
+      "text": "矩阵数据源与清单一致：已探测项 acp=true（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "矩阵数据源与清单一致：未探测项 acp=null（期望 null）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    },
+    {
+      "text": "无「清单不支持而矩阵支持」的反向冲突",
+      "ok": true,
+      "blocked": false,
+      "actual": "mock.acp=true stub.acp=null"
+    }
+  ]
+}

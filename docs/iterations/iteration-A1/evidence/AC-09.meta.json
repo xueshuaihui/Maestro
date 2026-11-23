@@ -1,0 +1,34 @@
+{
+  "ac": "AC-09",
+  "title": "CLI 能力矩阵横向对比（规划子项：CLI 能力矩阵）",
+  "face": "mock 面（矩阵 / 五维数据）",
+  "phase": "matrix",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "startedAt": "2026-11-23T14:44:15.256Z",
+  "finishedAt": "2026-11-23T14:44:17.092Z",
+  "durationMs": 1836,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-09",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-09"
+    }
+  ],
+  "checks": 13,
+  "notes": [
+    "证据钩子维度当前无实现支撑（D-1 差距），按规划列示并显示「未探测」，不删维、不臆造；矩阵视图细节由 C1 交付，A1 判数据可支撑横向对比。"
+  ],
+  "evidence": [
+    "docs/iterations/iteration-A1/evidence/AC-09.matrix.stdout.txt",
+    "docs/iterations/iteration-A1/evidence/AC-09.matrix.output.json",
+    "docs/iterations/iteration-A1/evidence/AC-09.matrix.registry.json",
+    "docs/iterations/iteration-A1/evidence/AC-09.matrix.mid.json"
+  ]
+}

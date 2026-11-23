@@ -1,0 +1,25 @@
+$ "(fixture) 应用目录夹具放入 WorkBuddy.app 安装标记（不加入 PATH）"
+# cwd=- exit=0 0ms
+/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-03/apps/WorkBuddy.app
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node --input-type=module -e "const idx = await import(\"file:///Users/xuesh/www/Maestro/src/adapter/cli-discovery/index.js\");\nconst scan = idx.discoverAgentClis({\"appDirs\":[\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-03/apps\"],\"home\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-03/home\",\"pathEntries\":[]});\nawait idx.saveCliRegistry(process.cwd(), scan, { userConfig: [] });\nprocess.stdout.write(JSON.stringify(scan));"
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-03 exit=0 104ms
+{"ok":true,"schemaVersion":1,"scanned_at":"2026-11-23T14:42:55.730Z","sources":{"path_entries":0,"home":"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-03/home","app_dirs":1,"npm_global_root":null},"findings":[{"cli_id":"workbuddy","name":"WorkBuddy","executable":null,"version":null,"detected_at":"2026-11-23T14:42:55.730Z","capabilities":[],"acp":null,"transport":null,"resume_dialect":null,"evidence_hook":null,"max_concurrent_sessions":null,"connection_status":"unreachable","not_on_path":true,"verified_at":null,"evidence":[{"type":"app","value":"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-03/apps/WorkBuddy.app"}],"version_args":["--version"]}]}
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli list
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-03 exit=0 120ms
+本机 Agent CLI
+扫描时间: 2026-11-23T14:42:55.730Z
+
+标识  |  名称  |  版本  |  状态  |  路径  |  来源
+-------------------------------------
+workbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app
+CLI 能力矩阵
+
+ACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子
+----------------------------------------------------
+WorkBuddy:
+未探测  |  未探测  |  未探测  |  未探测  |  未探测
+
+来源概览: path:0  home:0  app:1  npm-global:0  user-config:0
+

@@ -1,0 +1,51 @@
+$ "(fixture) 自定义可执行 mytool（speaking agent，自动发现不识别）"
+# cwd=- exit=0 0ms
+/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli add --name MyCLI --path /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13 exit=0 241ms
+已添加 MyCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli list
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13 exit=0 168ms
+本机 Agent CLI
+扫描时间: 2026-11-23T14:44:20.464Z
+
+标识  |  名称  |  版本  |  状态  |  路径  |  来源
+-------------------------------------
+mycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool  |  user-config
+CLI 能力矩阵
+
+ACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子
+----------------------------------------------------
+MyCLI:
+未探测  |  未探测  |  未探测  |  未探测  |  未探测
+
+来源概览: path:0  home:0  app:0  npm-global:0  user-config:1
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli probe mycli
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13 exit=0 773ms
+MyCLI 探测完成：ACP 支持
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli add --name MyCLI2 --path /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13 exit=1 138ms
+已存在：/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool（未重复添加）
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli add --name  --path /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13 exit=1 128ms
+添加失败：名称为空
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli add --name X --path 
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13 exit=1 130ms
+添加失败：路径为空
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli add --name X --path /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/nope
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13 exit=1 130ms
+添加失败：文件不存在
+

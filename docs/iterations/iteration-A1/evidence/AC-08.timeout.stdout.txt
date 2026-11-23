@@ -1,0 +1,32 @@
+$ "(fixture) 卡死不响应的 CLI（sleep 8，探测默认超时 5s/10s）"
+# cwd=- exit=0 0ms
+/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-08/bin/hung
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli add --name HungCLI --path /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-08/bin/hung
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-08 exit=0 121ms
+已添加 HungCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-08/bin/hung
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli probe hungcli
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-08 exit=0 10127ms
+HungCLI 探测完成：ACP 不支持
+HungCLI 探测失败：probe timed out
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli list
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-08 exit=0 121ms
+本机 Agent CLI
+扫描时间: 2026-11-23T14:43:01.483Z
+
+标识  |  名称  |  版本  |  状态  |  路径  |  来源
+-------------------------------------
+hungcli  |  HungCLI  |  -  |  未就绪  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-08/bin/hung  |  user-config
+CLI 能力矩阵
+
+ACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子
+----------------------------------------------------
+HungCLI:
+未探测  |  未探测  |  未探测  |  未探测  |  未探测
+
+来源概览: path:0  home:0  app:0  npm-global:0  user-config:1
+

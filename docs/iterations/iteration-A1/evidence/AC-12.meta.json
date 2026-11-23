@@ -1,0 +1,37 @@
+{
+  "ac": "AC-12",
+  "title": "规划验收句①（真实宿主面）：装了至少一种 Agent CLI 的机器启动应用自动列出且信息准确",
+  "face": "真实宿主面（AD-08 阻塞）",
+  "phase": "blocked",
+  "verdict": "阻塞",
+  "evidenceLevel": "待本机实测（需装有目标 CLI 的机器）",
+  "startedAt": "2026-11-23T14:44:18.366Z",
+  "finishedAt": "2026-11-23T14:44:19.080Z",
+  "durationMs": 714,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-12",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-12"
+    }
+  ],
+  "checks": 6,
+  "notes": [
+    "需求要求：在一台装了至少一种 Agent CLI 的机器上，启动应用能自动列出该 CLI 且名称/路径/版本/连接状态四项与实际一致（规划 385 行，AC-12 Then 不写 orch 字面）。",
+    "试过路径：PATH 扫描（40 目录 × codex/claude/gemini）：未检出可执行；应用目录证据：/Applications/WorkBuddy.app；本机 WorkBuddy.app 仅安装标记、不在 PATH 且无可执行；home 标记证据：未检出",
+    "为什么观测不到：本机 PATH 无真实 codex/claude/gemini 可执行；/Applications/WorkBuddy.app 仅为安装标记、不在 PATH 且无可执行；无真实宿主握手现场（mock 面 AC-14 仅供逻辑复现，不构成真实宿主达标）。",
+    "升级建议：请主控按 D-4 在装有目标 CLI 的机器上取证（独立项目根执行 NODE_ENV=test node \"$MAESTRO_REPO/bin/orch.js\" cli scan，对照 which <bin> / <bin> --version）；收口若仍阻塞，按执行模板 §4.5 升级用户书面豁免，豁免前不判通过。"
+  ],
+  "evidence": [
+    "docs/iterations/iteration-A1/evidence/AC-12.blocked.stdout.txt",
+    "docs/iterations/iteration-A1/evidence/AC-12.blocked.output.json",
+    "docs/iterations/iteration-A1/evidence/AC-12.blocked.registry.json",
+    "docs/iterations/iteration-A1/evidence/AC-12.blocked.mid.json"
+  ]
+}

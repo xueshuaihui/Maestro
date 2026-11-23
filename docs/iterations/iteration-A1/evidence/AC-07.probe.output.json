@@ -1,0 +1,134 @@
+{
+  "ac": "AC-07",
+  "commands": [
+    {
+      "label": "夹具：speaking-NDJSON 模拟 agent（initialize 应答 close/list/resume）",
+      "argv": [
+        "(fixture) speaking-NDJSON 模拟 agent（initialize 应答 close/list/resume）"
+      ],
+      "cwd": null,
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07/bin/codex-mock",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli add --name MockCLI --path <mock>",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "MockCLI",
+        "--path",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07/bin/codex-mock"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 124,
+      "stdout": "已添加 MockCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07/bin/codex-mock\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli probe mockcli（ACP 握手）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "probe",
+        "mockcli"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 685,
+      "stdout": "MockCLI 探测完成：ACP 支持\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli list（探测后）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 117,
+      "stdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:42:59.924Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nmockcli  |  MockCLI  |  codex 1.2.3  |  已连接  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07/bin/codex-mock  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nMockCLI:\n支持  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:0  npm-global:0  user-config:1\n",
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "text": "add 退出码为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "probe 退出码为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "用户看到「探测完成：ACP 支持」结论",
+      "ok": true,
+      "blocked": false,
+      "actual": "MockCLI 探测完成：ACP 支持"
+    },
+    {
+      "text": "acp=true（握手成功）（期望 true）",
+      "ok": true,
+      "blocked": false,
+      "actual": "true"
+    },
+    {
+      "text": "能看到声明的会话能力 close/list/resume",
+      "ok": true,
+      "blocked": false,
+      "actual": "[\"close\",\"list\",\"resume\"]"
+    },
+    {
+      "text": "状态更新为 connected（用户可见「已连接」）（期望 \"connected\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"connected\""
+    },
+    {
+      "text": "最近探测时间被刷新（探测前 null → 探测后非空）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null → \"2026-11-23T14:43:00.612Z\""
+    },
+    {
+      "text": "清单状态列显示「已连接」",
+      "ok": true,
+      "blocked": false,
+      "actual": "mockcli  |  MockCLI  |  codex 1.2.3  |  已连接  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07/bin/codex-mock  |  user-config / MockCLI:"
+    },
+    {
+      "text": "未探出的维度不臆造：transport=null（期望 null）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    },
+    {
+      "text": "未探出的维度不臆造：resume_dialect=null（期望 null）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    },
+    {
+      "text": "未探出的维度不臆造：evidence_hook=null（期望 null）",
+      "ok": true,
+      "blocked": false,
+      "actual": "null"
+    }
+  ]
+}

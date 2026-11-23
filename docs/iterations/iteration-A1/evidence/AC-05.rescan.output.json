@@ -1,0 +1,145 @@
+{
+  "ac": "AC-05",
+  "commands": [
+    {
+      "label": "夹具：自定义可执行 mytool（自动发现识别表不含该名字）",
+      "argv": [
+        "(fixture) 自定义可执行 mytool（自动发现识别表不含该名字）"
+      ],
+      "cwd": null,
+      "exitCode": 0,
+      "durationMs": 0,
+      "stdout": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli add --name MyCLI --path <tool>",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "add",
+        "--name",
+        "MyCLI",
+        "--path",
+        "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 121,
+      "stdout": "已添加 MyCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli scan（重新扫描）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "scan"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 117,
+      "stdout": "扫描完成，发现 2 个 Agent CLI\n本机 Agent CLI\n扫描时间: 2026-11-23T14:42:57.803Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool  |  user-config\n扫描结果已保存至 /private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/.orch/cli-registry.json\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli list",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "list"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 117,
+      "stdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:42:57.803Z\n\n标识  |  名称  |  版本  |  状态  |  路径  |  来源\n-------------------------------------\nworkbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app\nmycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool  |  user-config\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\nWorkBuddy:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\nMyCLI:\n未探测  |  未探测  |  未探测  |  未探测  |  未探测\n\n来源概览: path:0  home:0  app:1  npm-global:0  user-config:1\n",
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "text": "add 退出码为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "添加成功写入 user_config",
+      "ok": true,
+      "blocked": false,
+      "actual": "{\"cli_id\":\"mycli\",\"name\":\"MyCLI\",\"executable\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\",\"version_args\":[\"--version\"],\"added_at\":\"2026-11-23T14:42:57.687Z\"}"
+    },
+    {
+      "text": "添加时 name=MyCLI（期望 \"MyCLI\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"MyCLI\""
+    },
+    {
+      "text": "添加时 path=夹具路径（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\""
+    },
+    {
+      "text": "添加即出现在清单（cli_id=mycli）（期望 \"mycli\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"mycli\""
+    },
+    {
+      "text": "重扫退出码为 0（期望 0）",
+      "ok": true,
+      "blocked": false,
+      "actual": "0"
+    },
+    {
+      "text": "重扫后 cli_id 不变（期望 \"mycli\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"mycli\""
+    },
+    {
+      "text": "重扫后 path 不变（与添加时一致）（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\""
+    },
+    {
+      "text": "重扫后 user_config 唯一（未产生重复项）（期望 1）",
+      "ok": true,
+      "blocked": false,
+      "actual": "1"
+    },
+    {
+      "text": "重扫后清单条目 cli_id 不变（期望 \"mycli\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"mycli\""
+    },
+    {
+      "text": "重扫后清单 path 不变（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\"）",
+      "ok": true,
+      "blocked": false,
+      "actual": "\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\""
+    },
+    {
+      "text": "重扫后清单仍含该项（未被抹掉）",
+      "ok": true,
+      "blocked": false,
+      "actual": "mycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool  |  user-config / MyCLI:"
+    },
+    {
+      "text": "清单中该条目 evidence type=user-config",
+      "ok": true,
+      "blocked": false,
+      "actual": "[{\"type\":\"user-config\",\"value\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\"}]"
+    }
+  ]
+}

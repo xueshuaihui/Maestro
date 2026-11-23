@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "scanned_at": "2026-11-23T14:42:54.328Z",
+  "sources": {
+    "path_entries": 1,
+    "home": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-02/home",
+    "app_dirs": 2,
+    "npm_global_root": null
+  },
+  "user_config": [],
+  "clis": [
+    {
+      "cli_id": "codex",
+      "name": "Codex CLI",
+      "executable": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-02/bin/codex",
+      "version": "codex 1.2.3",
+      "detected_at": "2026-11-23T14:42:54.328Z",
+      "capabilities": [],
+      "acp": false,
+      "transport": null,
+      "resume_dialect": null,
+      "evidence_hook": null,
+      "max_concurrent_sessions": null,
+      "connection_status": "unreachable",
+      "not_on_path": false,
+      "verified_at": "2026-11-23T14:42:54.878Z",
+      "evidence": [
+        {
+          "type": "path",
+          "value": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-02/bin/codex",
+          "note": "codex"
+        }
+      ],
+      "version_args": [
+        "--version"
+      ]
+    },
+    {
+      "cli_id": "workbuddy",
+      "name": "WorkBuddy",
+      "executable": null,
+      "version": null,
+      "detected_at": "2026-11-23T14:42:54.328Z",
+      "capabilities": [],
+      "acp": null,
+      "transport": null,
+      "resume_dialect": null,
+      "evidence_hook": null,
+      "max_concurrent_sessions": null,
+      "connection_status": "unreachable",
+      "not_on_path": true,
+      "verified_at": null,
+      "evidence": [
+        {
+          "type": "app",
+          "value": "/Applications/WorkBuddy.app"
+        }
+      ],
+      "version_args": [
+        "--version"
+      ]
+    }
+  ]
+}

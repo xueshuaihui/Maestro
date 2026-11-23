@@ -1,0 +1,42 @@
+$ "(fixture) 自定义可执行 mytool（自动发现识别表不含该名字）"
+# cwd=- exit=0 0ms
+/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli add --name MyCLI --path /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05 exit=0 121ms
+已添加 MyCLI  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli scan
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05 exit=0 117ms
+扫描完成，发现 2 个 Agent CLI
+本机 Agent CLI
+扫描时间: 2026-11-23T14:42:57.803Z
+
+标识  |  名称  |  版本  |  状态  |  路径  |  来源
+-------------------------------------
+workbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app
+mycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool  |  user-config
+扫描结果已保存至 /private/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/.orch/cli-registry.json
+
+
+$ /Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/xuesh/www/Maestro/bin/orch.js cli list
+# cwd=/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05 exit=0 117ms
+本机 Agent CLI
+扫描时间: 2026-11-23T14:42:57.803Z
+
+标识  |  名称  |  版本  |  状态  |  路径  |  来源
+-------------------------------------
+workbuddy  |  WorkBuddy  |  -  |  未就绪 (已安装但不在 PATH)  |  -  |  app
+mycli  |  MyCLI  |  -  |  可用  |  /var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool  |  user-config
+CLI 能力矩阵
+
+ACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子
+----------------------------------------------------
+WorkBuddy:
+未探测  |  未探测  |  未探测  |  未探测  |  未探测
+MyCLI:
+未探测  |  未探测  |  未探测  |  未探测  |  未探测
+
+来源概览: path:0  home:0  app:1  npm-global:0  user-config:1
+

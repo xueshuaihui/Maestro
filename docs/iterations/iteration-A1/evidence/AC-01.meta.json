@@ -1,0 +1,34 @@
+{
+  "ac": "AC-01",
+  "title": "PATH 上的 CLI 被自动发现并罗列（规划子项：扫描 PATH + 罗列名称/路径/状态）",
+  "face": "mock 面（发现 + 罗列）",
+  "phase": "scan",
+  "verdict": "通过",
+  "evidenceLevel": "mock 实测",
+  "startedAt": "2026-11-23T14:42:53.311Z",
+  "finishedAt": "2026-11-23T14:42:53.582Z",
+  "durationMs": 271,
+  "platform": "darwin",
+  "node": "v22.22.2",
+  "repo": "/Users/xuesh/www/Maestro",
+  "base": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1",
+  "env": {
+    "NODE_ENV": "test"
+  },
+  "roots": [
+    {
+      "case": "AC-01",
+      "path": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01"
+    }
+  ],
+  "checks": 8,
+  "notes": [
+    "本机 /Applications 可能额外命中 WorkBuddy.app（unreachable），不影响 codex 行的 Then 判据；PATH/HOME 已隔离到夹具根。"
+  ],
+  "evidence": [
+    "docs/iterations/iteration-A1/evidence/AC-01.scan.stdout.txt",
+    "docs/iterations/iteration-A1/evidence/AC-01.scan.output.json",
+    "docs/iterations/iteration-A1/evidence/AC-01.scan.registry.json",
+    "docs/iterations/iteration-A1/evidence/AC-01.scan.mid.json"
+  ]
+}

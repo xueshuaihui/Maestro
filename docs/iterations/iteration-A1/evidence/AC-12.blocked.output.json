@@ -1,0 +1,106 @@
+{
+  "ac": "AC-12",
+  "commands": [
+    {
+      "label": "隔离夹具扫描（PATH/app/home/npm 全空）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "--input-type=module",
+        "-e",
+        "const idx = await import(\"file:///Users/xuesh/www/Maestro/src/adapter/cli-discovery/index.js\");\nconst scan = idx.discoverAgentClis({\"pathEntries\":[],\"appDirs\":[],\"npmGlobalRoot\":null,\"home\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-12/home\"});\nawait idx.saveCliRegistry(process.cwd(), scan, { userConfig: [] });\nprocess.stdout.write(JSON.stringify(scan));"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-12",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 206,
+      "stdout": "{\"ok\":true,\"schemaVersion\":1,\"scanned_at\":\"2026-11-23T14:44:18.559Z\",\"sources\":{\"path_entries\":0,\"home\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-12/home\",\"app_dirs\":0,\"npm_global_root\":null},\"findings\":[]}",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli probe codex（隔离夹具目标）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "probe",
+        "codex"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-12",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 169,
+      "stdout": "未找到 CLI：codex\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli probe claude（隔离夹具目标）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "probe",
+        "claude"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-12",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 136,
+      "stdout": "未找到 CLI：claude\n",
+      "stderr": ""
+    },
+    {
+      "label": "orch cli probe gemini（隔离夹具目标）",
+      "argv": [
+        "/Users/xuesh/.workbuddy/binaries/node/versions/22.22.2-6/bin/node",
+        "/Users/xuesh/www/Maestro/bin/orch.js",
+        "cli",
+        "probe",
+        "gemini"
+      ],
+      "cwd": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-12",
+      "exitCode": 1,
+      "timedOut": false,
+      "durationMs": 133,
+      "stdout": "未找到 CLI：gemini\n",
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "text": "Given：一台装有目标 Agent CLI 且其可执行在命令搜索路径中的机器",
+      "ok": false,
+      "blocked": true,
+      "actual": "本机 PATH 实测无 codex/claude/gemini 可执行；仅有应用/home 安装标记，不具有可执行载体（AD-08 / D-2 / D-4）。"
+    },
+    {
+      "text": "Then：清单自动列出该目标 CLI，名称/路径/版本/连接状态四项与实际一致",
+      "ok": false,
+      "blocked": true,
+      "actual": "无真实宿主可执行可供 scan 发现，无法取得 which <bin> / <bin> --version 实测对照；隔离夹具对三个目标的 probe 全部「未找到 CLI」（exit 1）。"
+    },
+    {
+      "text": "When：在该机器启动应用执行扫描并查看清单",
+      "ok": false,
+      "blocked": true,
+      "actual": "本机隔离夹具扫描 0 项可驱动目标；该项须在装有目标 CLI 的取证机上执行。"
+    },
+    {
+      "text": "用户不需要任何手写配置或命令行参数",
+      "ok": false,
+      "blocked": true,
+      "actual": "目标 CLI 不存在，真实宿主面该可观测性无法在本机取证（mock 面 AC-14 的证明不得顶替）。"
+    },
+    {
+      "text": "未用 mock 冒充真实宿主达标：证据级别为待本机实测",
+      "ok": true,
+      "blocked": false,
+      "actual": "待本机实测（需装有目标 CLI 的机器）；onPath=[]"
+    },
+    {
+      "text": "留下只读观测原始证据（PATH/应用/home 均记录）",
+      "ok": true,
+      "blocked": false,
+      "actual": "PATH 扫描（40 目录 × codex/claude/gemini）：未检出可执行 ｜ 应用目录证据：/Applications/WorkBuddy.app；本机 WorkBuddy.app 仅安装标记、不在 PATH 且无可执行 ｜ home 标记证据：未检出"
+    }
+  ]
+}

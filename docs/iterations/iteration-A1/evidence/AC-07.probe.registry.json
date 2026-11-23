@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "scanned_at": "2026-11-23T14:42:59.924Z",
+  "sources": {
+    "path_entries": 0,
+    "home": null,
+    "app_dirs": 0,
+    "npm_global_root": null
+  },
+  "user_config": [
+    {
+      "cli_id": "mockcli",
+      "name": "MockCLI",
+      "executable": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07/bin/codex-mock",
+      "version_args": [
+        "--version"
+      ],
+      "added_at": "2026-11-23T14:42:59.924Z"
+    }
+  ],
+  "clis": [
+    {
+      "cli_id": "mockcli",
+      "name": "MockCLI",
+      "executable": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07/bin/codex-mock",
+      "version": "codex 1.2.3",
+      "detected_at": "2026-11-23T14:42:59.924Z",
+      "capabilities": [
+        "close",
+        "list",
+        "resume"
+      ],
+      "acp": true,
+      "transport": null,
+      "resume_dialect": null,
+      "evidence_hook": null,
+      "max_concurrent_sessions": null,
+      "connection_status": "connected",
+      "not_on_path": false,
+      "verified_at": "2026-11-23T14:43:00.612Z",
+      "evidence": [
+        {
+          "type": "user-config",
+          "value": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-07/bin/codex-mock"
+        }
+      ],
+      "version_args": [
+        "--version"
+      ]
+    }
+  ]
+}

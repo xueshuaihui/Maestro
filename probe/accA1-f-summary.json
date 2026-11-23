@@ -1,0 +1,867 @@
+{
+  "通过": 14,
+  "不通过": 0,
+  "阻塞": 1,
+  "perAc": [
+    {
+      "id": "AC-01",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "scan 退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单自动出现该项：名称显示为 Codex CLI（期望 \"Codex CLI\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "路径显示为刚放入的可执行文件位置（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-01/bin/codex\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "连接状态显示为「可用」（内部 idle）（期望 \"idle\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "not_on_path=false（在 PATH 上）（期望 false）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "来源标注为命令搜索路径（evidence type=path）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单行含名称 / 路径 / 可用 / path",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "用户不需要输入任何路径：scan 未带 --path / --name",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-02",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "未探测前版本为占位 null（不编造）（期望 null）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "探测前清单版本列为占位「-」",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "probe 退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "探测后版本=实际读到的文本，与可执行文件自报一致（期望 \"codex 1.2.3\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "探测后清单版本列显示 codex 1.2.3",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "版本取首个非空行（A1-11 口径）（期望 \"codex 1.2.3\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "发现阶段不自动探测：beforeF.verified_at 为 null",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "探测刷新 verified_at",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-03",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "注入扫描退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单出现 WorkBuddy：name 逐字（期望 \"WorkBuddy\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "路径/安装位置来自 app evidence（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-03/apps/WorkBuddy.app\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "来源标注为应用目录（evidence type=app）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "不在 PATH → 状态 unreachable（用户可见「未就绪」）（期望 \"unreachable\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "not_on_path=true（未被丢弃）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "executable 为 null（仅安装标记）（期望 null）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单行含「未就绪 (已安装但不在 PATH)」原因（§2.3 允许的路径展示形态）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "来源概览计入 app",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "注册表保留该不可达项（未静默丢弃）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-04",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "注入扫描退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单出现对应 OpenCode：name 逐字（期望 \"OpenCode\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "路径/全局包位置来自 npm-global evidence（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-04/npm/opencode-ai\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "来源标注为包管理器全局包（evidence type=npm-global）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "不在 PATH → 状态 unreachable（用户可见「未就绪」）（期望 \"unreachable\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "not_on_path=true 且提示不在 PATH（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单行含「未就绪 (已安装但不在 PATH)」",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "来源概览计入 npm-global",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "注册表保留该全局包项",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-05",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "add 退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "添加成功写入 user_config",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "添加时 name=MyCLI（期望 \"MyCLI\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "添加时 path=夹具路径（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "添加即出现在清单（cli_id=mycli）（期望 \"mycli\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重扫退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重扫后 cli_id 不变（期望 \"mycli\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重扫后 path 不变（与添加时一致）（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重扫后 user_config 唯一（未产生重复项）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重扫后清单条目 cli_id 不变（期望 \"mycli\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重扫后清单 path 不变（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-05/bin/mytool\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重扫后清单仍含该项（未被抹掉）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单中该条目 evidence type=user-config",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-06",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "注入扫描退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "home marker 单独也列出：cli_id=codex（期望 \"codex\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "executable=null（无可执行）（期望 null）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "not_on_path=true（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "connection_status=unreachable（用户可见「未就绪」）（期望 \"unreachable\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单保留该项且显示「已安装但不在 PATH」可见原因",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "不是「什么都没扫到」的空态",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "不可达项连接测试返回失败（exit 1）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "显示「探测失败 + 具体原因」",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "探测后状态保持 unreachable（期望 \"unreachable\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "探测不伪造 ACP 支持",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单仍保留该项（探测后不空态）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-07",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "add 退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "probe 退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "用户看到「探测完成：ACP 支持」结论",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "acp=true（握手成功）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "能看到声明的会话能力 close/list/resume",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "状态更新为 connected（用户可见「已连接」）（期望 \"connected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "最近探测时间被刷新（探测前 null → 探测后非空）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单状态列显示「已连接」",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "未探出的维度不臆造：transport=null（期望 null）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "未探出的维度不臆造：resume_dialect=null（期望 null）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "未探出的维度不臆造：evidence_hook=null（期望 null）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-08",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "在硬超时内返回（<20s，未无限期卡住）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "未抛异常堆栈",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "用户看到「探测失败 + 具体原因」",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "失败按数据返回：acp=null（不写 false 冒充不支持）（期望 null）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "状态标为 unreachable（用户可见「未就绪」）（期望 \"unreachable\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单保留该项（不静默丢弃）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "探测失败不伪造 ACP 支持",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-09",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "probe 退出码为 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "矩阵恰好包含五类维度（逐字表头）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "矩阵含维度「ACP」（期望含 \"ACP\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "矩阵含维度「stdio·transport」（期望含 \"stdio·transport\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "矩阵含维度「会话恢复方言」（期望含 \"会话恢复方言\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "矩阵含维度「并发上限」（期望含 \"并发上限\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "矩阵含维度「证据钩子」（期望含 \"证据钩子\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "已探测 CLI 行显示真实结论：ACP=支持",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "已探测 CLI 未探出的维度显示「未探测」而非臆造",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "未探测 CLI 五维均为「未探测」而非空白或「不支持」",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "矩阵数据源与清单一致：已探测项 acp=true（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "矩阵数据源与清单一致：未探测项 acp=null（期望 null）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "无「清单不支持而矩阵支持」的反向冲突",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-10",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "第一次 scan 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "第二次 scan 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单项数 N→N+1（期望 4）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "新 CLI 出现（gemini，来源 path）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "扫描时间更新为本次（scanned_at 变化）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "用户手加条目仍在（BR-08：cli_id=mycli，path 不变）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单可见新 CLI 与手加 CLI",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-11",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "扫描退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "被扫 bin 目录字节不变（期望 \"{\\\"codex\\\":\\\"46930c4f61304d72daf844403664ba700b6c425a5c53959c02c6f51737958a4f\\\"}\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "被扫 apps 目录字节不变（期望 \"{\\\"Probe.app/\\\":\\\"dir\\\"}\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "被扫 home 目录字节不变（期望 \"{\\\".codex/\\\":\\\"dir\\\"}\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "唯一写入是 .orch/cli-registry.json（期望 \"cli-registry.json\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "注册表可读（写入成功）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "零运行时依赖（NF-4）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "发现阶段无写操作（writeFile|mkdir|appendFile 零命中）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "领域层零 CJK（中文唯一来源 labels.js）（期望 false）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-12",
+      "verdict": "阻塞",
+      "evidenceLevel": "待本机实测（需装有目标 CLI 的机器）",
+      "checks": [
+        {
+          "text": "Given：一台装有目标 Agent CLI 且其可执行在命令搜索路径中的机器",
+          "ok": false,
+          "blocked": true
+        },
+        {
+          "text": "Then：清单自动列出该目标 CLI，名称/路径/版本/连接状态四项与实际一致",
+          "ok": false,
+          "blocked": true
+        },
+        {
+          "text": "When：在该机器启动应用执行扫描并查看清单",
+          "ok": false,
+          "blocked": true
+        },
+        {
+          "text": "用户不需要任何手写配置或命令行参数",
+          "ok": false,
+          "blocked": true
+        },
+        {
+          "text": "未用 mock 冒充真实宿主达标：证据级别为待本机实测",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "留下只读观测原始证据（PATH/应用/home 均记录）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-13",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "add 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "添加成功提示含名称与路径",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单中该 CLI 名称与用户填写一致（期望 \"MyCLI\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单中该 CLI 路径与用户填写一致（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-13/bin/mytool\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "出现在清单中",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "可连接测试：probe 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "连接测试结果可见（ACP 支持）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "探测结果写入该项（acp=true）（期望 true）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重复添加同路径被拒绝（exit 1）（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重复添加给出「已存在」原因",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "重复添加不产生重复项：user_config 仍为 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "空名称被拒绝（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "空名称给出原因",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "空路径被拒绝（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "空路径给出原因",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "不存在文件被拒绝（期望 1）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "不存在文件给出原因",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "非法输入均不写入清单：user_config 恒为 1（期望 1）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-14",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "scan 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "probe 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "①名称：清单自动列出 Codex CLI（与夹具一致）（期望 \"Codex CLI\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "②路径：=夹具可执行位置（期望 \"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-14/bin/codex\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "③版本：=夹具自报版本 codex 1.2.3（期望 \"codex 1.2.3\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "④状态：探测后为已连接（connected）（期望 \"connected\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "发现阶段不探测：探测前状态 idle（期望 \"idle\"）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "清单四项同时可见",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "用户无需输入任何配置：scan/probe 未带 --name/--path",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "证据分级严格为 mock 实测（不冒充 AC-12 真实宿主）（期望 \"mock 实测\"）",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "AC-15",
+      "verdict": "通过",
+      "evidenceLevel": "mock 实测",
+      "checks": [
+        {
+          "text": "扫描退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "无证据即无 finding（误报 0）（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "list 退出码 0（期望 0）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "明确空态提示「未发现可用的 Agent CLI」",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "安装后重新扫描的引导（逐字）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "修复建议可见（手动添加路径）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "来源概览可见（扫描了哪些来源）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "各来源均发现 0 项",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "不是空白页（含标题 + 空态 + 引导 + 来源概览）",
+          "ok": true,
+          "blocked": false
+        },
+        {
+          "text": "五列矩阵表头仍在空态显示",
+          "ok": true,
+          "blocked": false
+        }
+      ]
+    }
+  ]
+}
