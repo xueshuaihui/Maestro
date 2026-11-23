@@ -179,10 +179,19 @@ export function withProbeResults(finding, { version, acp } = {}) {
       if (!capabilities.includes(item)) capabilities.push(item);
     }
   }
+  // Only the acp handshake is real evidence. A failed or timed-out probe has
+  // no verdict: write null instead of false so it is not mistaken for a
+  // confirmed "unsupported" result. The other dimensions have no probe
+  // implementation yet, so they stay null rather than being guessed.
+  const acpVerdict = acp?.ok === true && typeof acp.acp === 'boolean' ? acp.acp : null;
   return {
     ...finding,
     version: version?.ok ? version.version : finding.version,
     capabilities,
+    acp: acpVerdict,
+    transport: null,
+    resume_dialect: null,
+    evidence_hook: null,
     max_concurrent_sessions: typeof acp?.maxConcurrentSessions === 'number'
       ? acp.maxConcurrentSessions
       : finding.max_concurrent_sessions,

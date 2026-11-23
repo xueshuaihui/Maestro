@@ -153,3 +153,81 @@ test('A1-13: probe timeout returns data, never throws', async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, 'CLI_PROBE_TIMEOUT');
 });
+
+// WP-2 additions: A1-08 ~ A1-13 above are kept verbatim.
+function probeFinding() {
+  return {
+    cli_id: 'codex', name: 'Codex CLI', executable: '/bin/codex',
+    version: null, detected_at: '2026-11-23T00:00:00.000Z',
+    capabilities: [], acp: null, transport: null, resume_dialect: null,
+    max_concurrent_sessions: null, evidence_hook: null,
+    connection_status: CLI_STATUS.IDLE, not_on_path: false,
+    verified_at: null, evidence: []
+  };
+}
+
+test('WP-2: withProbeResults lands acp=true on a successful acp handshake', () => {
+  const merged = withProbeResults(probeFinding(), {
+    version: { ok: true, version: 'codex 1.2.3' },
+    acp: {
+      ok: true, acp: true, protocolVersion: 1,
+      capabilities: ['session'], sessionCapabilities: ['close', 'list', 'resume'],
+      exitCode: 0, connection_status: CLI_STATUS.CONNECTED
+    }
+  });
+  assert.equal(merged.acp, true);
+  assert.equal(merged.version, 'codex 1.2.3');
+  assert.deepEqual(merged.capabilities, ['close', 'list', 'resume']);
+  assert.equal(merged.connection_status, CLI_STATUS.CONNECTED);
+  assert.equal(merged.max_concurrent_sessions, null);
+  assert.ok(merged.verified_at);
+});
+
+test('WP-2: withProbeResults writes acp=null on failed/timed-out acp probe, never false', () => {
+  const timeout = {
+    ok: false, code: 'CLI_PROBE_TIMEOUT',
+    params: { cause: 'probe timed out', timeoutMs: 10000 }
+  };
+  const merged = withProbeResults(probeFinding(), {
+    version: { ok: true, version: '1.2.3' },
+    acp: timeout
+  });
+  assert.equal(merged.acp, null);
+  assert.notEqual(merged.acp, false);
+  assert.deepEqual(merged.capabilities, []);
+  assert.equal(merged.version, '1.2.3');
+  assert.equal(merged.connection_status, CLI_STATUS.UNREACHABLE);
+  assert.equal(merged.max_concurrent_sessions, null);
+  assert.ok(merged.verified_at);
+});
+
+test('WP-2: real acp timeout data lands as acp=null', async () => {
+  const result = await probeAcp(
+    { executable: process.execPath },
+    { args: ['-e', 'setTimeout(()=>{},5000)'], timeoutMs: 300 }
+  );
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'CLI_PROBE_TIMEOUT');
+  const merged = withProbeResults(probeFinding(), { acp: result });
+  assert.equal(merged.acp, null);
+});
+
+test('WP-2: transport, resume_dialect and evidence_hook stay null (no guessing)', () => {
+  const merged = withProbeResults(probeFinding(), {
+    acp: {
+      ok: true, acp: true,
+      sessionCapabilities: ['resume'],
+      transport: 'stdio', resume_dialect: 'resume', evidence_hook: true
+    }
+  });
+  assert.equal(merged.transport, null);
+  assert.equal(merged.resume_dialect, null);
+  assert.equal(merged.evidence_hook, null);
+  assert.equal(merged.acp, true);
+
+  const noResult = withProbeResults(probeFinding());
+  assert.equal(noResult.acp, null);
+  assert.equal(noResult.transport, null);
+  assert.equal(noResult.resume_dialect, null);
+  assert.equal(noResult.evidence_hook, null);
+});
