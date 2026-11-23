@@ -104,6 +104,33 @@ test('CLI-A2: duplicate path is rejected without creating a duplicate entry', ()
   }
 });
 
+test('CLI-A5: a symlink to an already-added executable is rejected as duplicate (realpath canonicalisation)', () => {
+  const fx = fixture();
+  try {
+    const target = executable(fx.root, 'mytool');
+    assert.equal(run(fx.root, ['add', '--name', 'MyCLI', '--path', target]).code, 0);
+
+    // A real symlink (not a `sub/..` spelling) is what canonicalPath's
+    // fs.realpathSync guards against: path.resolve alone would not catch it.
+    const link = path.join(fx.root, 'mytool-link');
+    fs.symlinkSync(target, link);
+    assert.equal(fs.realpathSync(link), fs.realpathSync(target),
+      'symlink resolves to the registered target (macOS realpath normalisation)');
+
+    const dup = run(fx.root, ['add', '--name', 'ViaLink', '--path', link]);
+    assert.equal(dup.code, 1, 'symlink path rejected as duplicate');
+    assert.ok(dup.out.includes(fill(T.ADD_EXISTS, { path: path.resolve(link) })), dup.out);
+
+    const registry = readRegistry(fx);
+    assert.equal(registry.user_config.length, 1, 'still exactly one user_config entry');
+    const userFindings = registry.clis.filter((cli) =>
+      cli.evidence.some((evidence) => evidence.type === 'user-config'));
+    assert.equal(userFindings.length, 1, 'still exactly one cli');
+  } finally {
+    fx.cleanup();
+  }
+});
+
 test('CLI-A3: invalid input is rejected with readable reasons and no disk write', () => {
   const fx = fixture();
   try {

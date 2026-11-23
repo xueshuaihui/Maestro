@@ -10,7 +10,8 @@
  *    for AC-12 / AC-14 / AC-15;
  *  - three-state evidence labelling whose wording is the verbatim
  *    EVIDENCE_LEVEL_* value from CLI_DISCOVERY_TEXT;
- *  - AC-12 blocked record: no target CLI on the local PATH, with tried paths
+ *  - AC-12 record: env-adaptive (blocked when no runnable target on PATH,
+ *    measurable + real handshake when one is present), with tried paths
  *    (PATH scan result + app/home evidence); mock never posed as real;
  *  - AC-14 mock surface isolated from AC-12 real-host surface;
  *  - AD-06 gate wrapper (affected-surface serial + baseline-tree red diff)
@@ -142,7 +143,7 @@ function readOnlyPathScan(envPath) {
       try {
         if (fs.statSync(candidate).isFile()) {
           fs.accessSync(candidate, fs.constants.X_OK);
-          found.push(candidate);
+          if (!found.includes(candidate)) found.push(candidate);
         }
       } catch { /* not present / not executable */ }
     }
@@ -150,9 +151,9 @@ function readOnlyPathScan(envPath) {
   return { entries: entries.length, found, bins: [...TARGET_BINS] };
 }
 
-function readOnlyAppHomeEvidence() {
+function readOnlyAppHomeEvidence(home) {
   const evidence = [];
-  for (const dir of ['/Applications', path.join(os.homedir(), 'Applications')]) {
+  for (const dir of ['/Applications', path.join(home, 'Applications')]) {
     try {
       for (const name of fs.readdirSync(dir)) {
         if (/workbuddy/i.test(name)) evidence.push({ type: 'app', value: path.join(dir, name) });
@@ -160,7 +161,7 @@ function readOnlyAppHomeEvidence() {
     } catch { /* directory unreadable */ }
   }
   for (const marker of ['.codex', '.claude', '.gemini']) {
-    const target = path.join(os.homedir(), marker);
+    const target = path.join(home, marker);
     try {
       fs.accessSync(target);
       evidence.push({ type: 'home', value: target });
@@ -170,30 +171,89 @@ function readOnlyAppHomeEvidence() {
 }
 
 /**
- * Build AC-12's blocked record on this machine. No writes, no probe spawn:
- * it only records what PATH/app/home observation can and cannot see.
+ * Read-only, injectable observation of the host's AC-12 prerequisites.
+ * No writes and no probe spawn: only PATH/app/home facts. Accepting an env
+ * argument lets the tests simulate a forensics machine (runnable target on
+ * PATH) without touching the real host; the default is this machine's env.
  */
-function ac12BlockerRecord() {
-  const pathScan = readOnlyPathScan(process.env.PATH);
-  const appHome = readOnlyAppHomeEvidence();
+function ac12Observation(env = process.env) {
+  const home = env.HOME ?? env.USERPROFILE ?? os.homedir();
+  const pathScan = readOnlyPathScan(env.PATH);
+  const appHome = readOnlyAppHomeEvidence(home);
   const apps = appHome.filter((item) => item.type === 'app').map((item) => item.value);
   const homes = appHome.filter((item) => item.type === 'home').map((item) => item.value);
-  const hasTargetOnPath = pathScan.found.length > 0;
+  const hasRunnable = pathScan.found.length > 0;
   return {
-    ac: 'AC-12',
-    // AD-08: real-host surface not observable here -> blocked, not passed.
-    status: hasTargetOnPath ? '需重新取证（本机检出目标 CLI）' : '阻塞',
-    evidence: hasTargetOnPath ? 'real' : 'pending',
-    prerequisite: '需一台装有目标 Agent CLI 的机器',
+    hasRunnable,
     targetsOnPath: pathScan.found,
-    appHomeEvidence: appHome,
+    pathScan,
+    appHome,
+    apps,
+    homes,
+    hasWorkBuddyApp: apps.some((value) => /workbuddy/i.test(value)),
     triedPaths: [
-      `PATH 扫描（${pathScan.entries} 目录 × ${pathScan.bins.join('/')}）：${hasTargetOnPath ? pathScan.found.join(', ') : '未检出'}`,
+      `PATH 扫描（${pathScan.entries} 目录 × ${pathScan.bins.join('/')}）：${hasRunnable ? pathScan.found.join(', ') : '未检出'}`,
       `应用目录证据：${apps.length ? apps.join(', ') : '未检出'}`,
       `home 标记证据：${homes.length ? homes.join(', ') : '未检出'}`
-    ],
+    ]
+  };
+}
+
+/**
+ * AC-12 ledger record derived purely from a read-only observation. The
+ * blocked/measurable status is a fact of the observed env, never hardcoded:
+ * no runnable target -> 阻塞; a real target on PATH -> 需重新取证 / REAL.
+ */
+function ac12BlockerRecord(env = process.env) {
+  const obs = ac12Observation(env);
+  return {
+    ac: 'AC-12',
+    status: obs.hasRunnable ? '需重新取证（本机检出目标 CLI）' : '阻塞',
+    evidence: obs.hasRunnable ? 'real' : 'pending',
+    prerequisite: '需一台装有目标 Agent CLI 的机器',
+    targetsOnPath: obs.targetsOnPath,
+    appHomeEvidence: obs.appHome,
+    triedPaths: obs.triedPaths,
     mockPosedAsReal: 0
   };
+}
+
+/**
+ * A genuine ACP-capable executable discovered via PATH on the simulated
+ * forensics host. It is spawned by the real probe path (--version / --acp),
+ * so the handshake it returns is a real observed result, not a mock posed as
+ * AC-12. The absolute node shebang keeps it runnable under an injected PATH.
+ */
+function speakingTargetBin(root) {
+  const dir = path.join(root, 'bin');
+  fs.mkdirSync(dir, { recursive: true });
+  const bin = path.join(dir, 'codex');
+  const lines = [
+    `#!${process.execPath}`,
+    'const NL = String.fromCharCode(10);',
+    'const a = process.argv.slice(2);',
+    'if (a.includes("--acp")) {',
+    '  process.stdin.setEncoding("utf8");',
+    '  let buf = "";',
+    '  process.stdin.on("data", (c) => {',
+    '    buf += c;',
+    '    for (const line of buf.split(NL)) {',
+    '      if (!line.trim()) continue;',
+    '      try { const m = JSON.parse(line); if (m.method === "initialize") {',
+    '        process.stdout.write(JSON.stringify({jsonrpc:"2.0",id:m.id,result:{',
+    '          protocolVersion:1,capabilities:{session:true},',
+    '          sessionCapabilities:["close","list","resume"]}}) + NL);',
+    '      } } catch (e) {}',
+    '    }',
+    '  });',
+    '  setTimeout(() => process.exit(0), 200);',
+    '} else {',
+    '  process.stdout.write("codex 1.2.3" + NL);',
+    '}'
+  ];
+  fs.writeFileSync(bin, lines.join('\n'), 'utf8');
+  fs.chmodSync(bin, 0o755);
+  return { dir, bin };
 }
 
 // --- AD-06 gate wrapper (encapsulation + self-check only) -----------------
@@ -352,44 +412,68 @@ test('ACC-3: AC-15 empty fixture shows empty state, fix hint and five-column mat
   }
 });
 
-test('ACC-4: AC-12 blocked record - no target CLI on PATH, tried paths recorded', () => {
+test('ACC-4: AC-12 record adapts to the host (blocked here / measurable on a forensics host)', () => {
+  const obs = ac12Observation();
   const record = ac12BlockerRecord();
-  // Documented precondition on this machine (AD-08 / D-2 / D-4 / P-4).
-  assert.equal(record.targetsOnPath.length, 0,
-    'PATH has no runnable codex/claude/gemini (AC-12 given unavailable)');
-  assert.equal(record.status, '阻塞', 'real-host面判阻塞，不判通过');
-  assert.equal(evidenceLevel(record), T.EVIDENCE_LEVEL_PENDING);
-  assert.ok(record.prerequisite.includes('装有目标 Agent CLI 的机器'));
 
-  // Tried paths: PATH scan result + app/home evidence, all with raw values.
+  // Shared invariants: the record is a raw, read-only observation and mock
+  // never stands in for the real-host surface, whatever the environment is.
+  assert.equal(record.ac, 'AC-12');
+  assert.ok(record.prerequisite.includes('装有目标 Agent CLI 的机器'));
   assert.equal(record.triedPaths.length, 3);
-  assert.ok(record.triedPaths.some((entry) => entry.startsWith('PATH 扫描') && entry.includes('未检出')));
+  assert.ok(record.triedPaths.some((entry) => entry.startsWith('PATH 扫描')));
   assert.ok(record.triedPaths.some((entry) => entry.startsWith('应用目录证据')));
   assert.ok(record.triedPaths.some((entry) => entry.startsWith('home 标记证据')));
-  assert.deepEqual(record.appHomeEvidence, readOnlyAppHomeEvidence(), 'app/home evidence is the actual observation');
-  assert.ok(record.triedPaths.some((entry) => entry.includes('WorkBuddy')),
-    'WorkBuddy.app app evidence recorded as the only install marker');
-
-  // mock never posed as a real-host success on AC-12.
+  assert.deepEqual(record.appHomeEvidence, obs.appHome, 'app/home evidence is the actual observation');
+  assert.deepEqual(record.targetsOnPath, obs.targetsOnPath);
   assert.equal(record.mockPosedAsReal, 0);
-  assert.notEqual(evidenceLevel(record), T.EVIDENCE_LEVEL_MOCK);
-  assert.notEqual(evidenceLevel(record), T.EVIDENCE_LEVEL_REAL);
+  assert.notEqual(evidenceLevel(record), T.EVIDENCE_LEVEL_MOCK, 'mock never posed as real');
+
+  // WorkBuddy app evidence: only require it when the host actually has it.
+  const appEntry = record.triedPaths.find((entry) => entry.startsWith('应用目录证据'));
+  if (obs.hasWorkBuddyApp) {
+    assert.ok(appEntry.includes('WorkBuddy'), 'WorkBuddy.app marker recorded when present');
+  } else {
+    assert.ok(appEntry.includes('未检出'), 'no WorkBuddy.app marker -> recorded as 未检出');
+  }
+
+  if (obs.hasRunnable) {
+    // Forensics host: a real target is on PATH -> 可实测, never forced blocked.
+    assert.ok(obs.targetsOnPath.length > 0);
+    assert.equal(record.status, '需重新取证（本机检出目标 CLI）');
+    assert.equal(record.evidence, 'real');
+    assert.equal(evidenceLevel(record), T.EVIDENCE_LEVEL_REAL);
+    assert.ok(record.triedPaths.some((entry) => entry.startsWith('PATH 扫描') && !entry.includes('未检出')),
+      'tried PATH scan records the detected target');
+  } else {
+    // This host: real-host面 not observable -> 阻塞, never a silent pass.
+    assert.equal(obs.targetsOnPath.length, 0);
+    assert.equal(record.status, '阻塞');
+    assert.equal(evidenceLevel(record), T.EVIDENCE_LEVEL_PENDING);
+    assert.ok(record.triedPaths.some((entry) => entry.startsWith('PATH 扫描') && entry.includes('未检出')));
+    assert.notEqual(evidenceLevel(record), T.EVIDENCE_LEVEL_REAL);
+  }
 });
 
-test('ACC-5: AC-12 fixture - isolated scan finds no runnable target; probe/handshake is blocked', () => {
+test('ACC-5: AC-12 fixture - isolated scan never fabricates a runnable target or ACP success', () => {
   const fx = fixture();
   try {
     const scanned = run(fx.root, ['scan'], isolatedEnv(fx.root));
     assert.equal(scanned.code, 0, scanned.err);
     const registry = readRegistry(fx.root);
+    // PATH='' in the isolated env guarantees no runnable target, regardless
+    // of which CLIs happen to be installed on the host.
     const runnableTargets = registry.clis.filter((cli) =>
       TARGET_IDS.includes(cli.cli_id) && cli.executable);
     assert.equal(runnableTargets.length, 0, 'no runnable target CLI in isolated fixture');
 
-    // App/home evidence is preserved as unreachable, never a real handshake.
+    // App/home evidence, when the host provides any, is retained as
+    // unreachable - never a real handshake. Marker presence is env-dependent.
     const markers = registry.clis.filter((cli) =>
       cli.evidence?.some((item) => item.type === 'app' || item.type === 'home'));
-    assert.ok(markers.length > 0, 'app/home marker retained (not silently dropped)');
+    if (ac12Observation().apps.length > 0) {
+      assert.ok(markers.length > 0, 'host app marker retained (not silently dropped)');
+    }
     for (const marker of markers) {
       assert.equal(marker.executable, null);
       assert.equal(marker.not_on_path, true);
@@ -399,17 +483,30 @@ test('ACC-5: AC-12 fixture - isolated scan finds no runnable target; probe/hands
     // probe of every AC-12 target fails with a readable "not found" result.
     for (const id of TARGET_BINS) {
       const probe = run(fx.root, ['probe', id]);
-      assert.equal(probe.code, 1, `${id} probe blocked on this host`);
+      assert.equal(probe.code, 1, `${id} absent from the isolated registry`);
       assert.ok(probe.out.includes(fill(T.NOT_FOUND, { id })), probe.out);
       assert.equal(probe.out.includes(T.PROBE_ACP_YES), false, 'no ACP success leaked into real-host面');
     }
-    // The app-only marker has no executable: blocked with the "not on PATH" reason.
+    // The app-only marker has no executable: blocked with the "not on PATH"
+    // reason when present; otherwise the id is simply not found. Either way
+    // it is a blocked outcome, never a handshake.
+    const wbInRegistry = registry.clis.some((cli) => cli.cli_id === 'workbuddy');
     const appProbe = run(fx.root, ['probe', 'workbuddy']);
     assert.equal(appProbe.code, 1);
-    assert.ok(appProbe.out.includes(T.NOT_ON_PATH));
+    if (wbInRegistry) {
+      assert.ok(appProbe.out.includes(T.NOT_ON_PATH));
+    } else {
+      assert.ok(appProbe.out.includes(fill(T.NOT_FOUND, { id: 'workbuddy' })));
+    }
     assert.equal(appProbe.out.includes(T.PROBE_ACP_YES), false);
 
-    assert.equal(evidenceLevel(ac12BlockerRecord()), T.EVIDENCE_LEVEL_PENDING);
+    // The host-level record follows the observed environment.
+    const hostRecord = ac12BlockerRecord();
+    if (ac12Observation().hasRunnable) {
+      assert.equal(evidenceLevel(hostRecord), T.EVIDENCE_LEVEL_REAL);
+    } else {
+      assert.equal(evidenceLevel(hostRecord), T.EVIDENCE_LEVEL_PENDING);
+    }
   } finally {
     fx.cleanup();
   }
@@ -422,7 +519,7 @@ test('ACC-6: mock 0 times posed as real - evidence ledger keeps AC-12 and AC-14 
   // AC-14 mock面: all four reproducible fields from ACC-2's mock run.
   record('AC-14', { evidence: 'mock' });
   record('AC-14', { mock: true });
-  // AC-12 real面: blocked, never backed by the mock run above.
+  // AC-12 real面: observed from the host, never backed by the mock run above.
   record('AC-12', ac12BlockerRecord());
 
   const ac12 = ledger.filter((entry) => entry.ac === 'AC-12');
@@ -430,20 +527,31 @@ test('ACC-6: mock 0 times posed as real - evidence ledger keeps AC-12 and AC-14 
   assert.ok(ac12.length > 0 && ac14.length > 0);
   assert.equal(ac12.filter((entry) => entry.level === T.EVIDENCE_LEVEL_MOCK).length, 0,
     'mock 0 次冒充真实宿主面');
-  assert.equal(ac12.filter((entry) => entry.level === T.EVIDENCE_LEVEL_REAL).length, 0,
-    'AC-12 未写「已实测（真实宿主面）」');
+  if (ac12Observation().hasRunnable) {
+    // Forensics host: REAL is legitimate here because the real surface is
+    // observable; it is still backed by a genuine handshake (see ACC-10).
+    assert.equal(ac12.filter((entry) => entry.level === T.EVIDENCE_LEVEL_REAL).length, ac12.length,
+      'AC-12 REAL 由真实宿主面支撑');
+  } else {
+    assert.equal(ac12.filter((entry) => entry.level === T.EVIDENCE_LEVEL_REAL).length, 0,
+      'AC-12 未写「已实测（真实宿主面）」');
+  }
   assert.ok(ac14.every((entry) => entry.level === T.EVIDENCE_LEVEL_MOCK),
     'AC-14 全量标注 mock 实测');
   assert.equal(ac12BlockerRecord().mockPosedAsReal, 0);
 });
 
-test('ACC-7: AC-14 mock evidence level differs from AC-12 real-host evidence level', () => {
+test('ACC-7: AC-14 mock evidence level differs from the host-adaptive AC-12 level', () => {
   const mockLevel = evidenceLevel({ evidence: 'mock' });
-  const blockedLevel = evidenceLevel(ac12BlockerRecord());
+  const hostLevel = evidenceLevel(ac12BlockerRecord());
   assert.equal(mockLevel, T.EVIDENCE_LEVEL_MOCK);
-  assert.equal(blockedLevel, T.EVIDENCE_LEVEL_PENDING);
-  assert.notEqual(mockLevel, blockedLevel, 'AC-14 与 AC-12 证据级别必须不同');
-  // The unused third state remains available for a genuine取证 machine.
+  if (ac12Observation().hasRunnable) {
+    assert.equal(hostLevel, T.EVIDENCE_LEVEL_REAL);
+  } else {
+    assert.equal(hostLevel, T.EVIDENCE_LEVEL_PENDING);
+  }
+  assert.notEqual(mockLevel, hostLevel, 'AC-14 与 AC-12 证据级别必须不同');
+  // The REAL state is exercised end-to-end on the simulated forensics host.
   assert.equal(evidenceLevel({ evidence: 'real' }), T.EVIDENCE_LEVEL_REAL);
 });
 
@@ -492,4 +600,56 @@ test('ACC-9: no background auto-probe (autoProbe|setInterval) in discovery surfa
   assert.equal(result.stdout.trim(), '', 'no autoProbe/setInterval line in either surface');
   // Zero-dependency read-only re-check over the same two surfaces.
   assert.deepEqual(tokenHits(), []);
+});
+
+test('ACC-10: AC-12 measurable branch - injected PATH with a runnable CLI gives a real handshake and EVIDENCE_LEVEL_REAL', () => {
+  const fx = fixture();
+  try {
+    // Simulate the forensics host: a genuine ACP-capable executable on PATH.
+    const speaking = speakingTargetBin(fx.root);
+    const injected = { PATH: speaking.dir, HOME: path.join(fx.root, 'home') };
+
+    // Branch driver: the observation itself must flip to the measurable side
+    // from environment facts, not from a hardcoded expectation.
+    const obs = ac12Observation(injected);
+    assert.equal(obs.hasRunnable, true, 'read-only scan sees the runnable CLI');
+    assert.deepEqual(obs.targetsOnPath, [speaking.bin]);
+    const record = ac12BlockerRecord(injected);
+    assert.equal(record.status, '需重新取证（本机检出目标 CLI）');
+    assert.equal(record.evidence, 'real');
+    assert.notEqual(evidenceLevel(record), T.EVIDENCE_LEVEL_PENDING);
+
+    // Real-host面: scan discovers it via PATH, probe really spawns it. No
+    // `add` and no AC-14 mock is involved, so nothing poses as real.
+    const scanned = run(fx.root, ['scan'], injected);
+    assert.equal(scanned.code, 0, scanned.err);
+    const registry = readRegistry(fx.root);
+    const target = registry.clis.find((cli) => cli.cli_id === 'codex' && cli.executable);
+    assert.ok(target, 'runnable target discovered from PATH');
+    assert.equal(target.executable, speaking.bin);
+    assert.equal(target.connection_status, 'idle', 'discovery alone does not probe');
+    assert.ok(target.evidence.some((item) => item.type === 'path'), 'PATH carrier evidence recorded');
+
+    const probed = run(fx.root, ['probe', 'codex']);
+    assert.equal(probed.code, 0, probed.err);
+    assert.ok(probed.out.includes(fill(T.PROBE_OK, {
+      name: target.name, acp: T.PROBE_ACP_YES
+    })), probed.out, 'real ACP handshake succeeded');
+
+    const after = readRegistry(fx.root);
+    const probedFinding = after.clis.find((cli) => cli.cli_id === 'codex');
+    assert.equal(probedFinding.acp, true, 'ACP verdict is a real observed true');
+    assert.equal(probedFinding.connection_status, 'connected');
+    for (const key of ['transport', 'resume_dialect', 'evidence_hook']) {
+      assert.equal(probedFinding[key], null, `${key} not fabricated even on the real surface`);
+    }
+
+    // Evidence level is earned by the real handshake, not written by hand.
+    const realResult = { evidence: 'real', cli: 'codex', probed: probedFinding };
+    assert.equal(evidenceLevel(realResult), T.EVIDENCE_LEVEL_REAL);
+    assert.notEqual(evidenceLevel(realResult), T.EVIDENCE_LEVEL_MOCK,
+      'no mock substituted for the real handshake');
+  } finally {
+    fx.cleanup();
+  }
 });
