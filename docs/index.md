@@ -344,7 +344,20 @@ Agent 无法完成 → 退回重派；需求不明 → 发起澄清；接口不�
   → 阶段 12 完成 → 产物归档 + 复盘
 ```
 
-数据布局在 v1 的 `.orch/` 下新增：`cli-registry.json`（CLI 发现结果）、`organization/`（部门/角色/员工）、`teams/`（团队定义）、`workflows/`（12 阶段）、`knowledge/`（项目知识库）。v1 的 `hosts/` 保留为单个 CLI 的 transport 方言配置，**不再需要手写即可运行**。
+**实际落盘布局（beta.4 已实现，以此为准）**：
+
+| 路径 | 内容 | 归属 |
+|---|---|---|
+| `.orch/cli-registry.json` | CLI 发现结果（识别表命中 + 能力探测） | A1 |
+| `.orch/studio.json` | **单一状态文件**：部门/角色/员工/会话/团队/工作流/运行/任务/缺陷/变更 | A2~A6 |
+| `.orch/kb/<runId>/<stageId>/*.md` | 阶段产物骨架（`simulate` 模式前置 `mode: simulate`，不宣称模型产出） | A5 |
+| `.orch/kb/<runId>/run.md` | 运行摘要（阶段×状态×角色×门禁） | A5 |
+| `.orch/roles/*.yaml`、`.orch/workflows/*.yaml` | 编译出的 `role/v1` + `workflow/v1` 引擎资产 | B |
+| `~/.maestro/projects.json` | 多项目登记（跨项目共享，不进单个项目工作区） | D |
+
+v1 的 `hosts/` 降级为**可选的** transport 方言覆盖：缺省时按 A1 探测结果自动推断，不再需要手写即可运行。
+
+> 设计取舍：组织态用**单文件 + 原子整体替换**（`studio.json`），而不是目录树。理由是组织态需要跨实体一致性（删角色要查引用、删团队要查角色占用），单文件一次 `updateStudio` 读写天然满足；运行态的体积增长走 `kb/` 与引擎资产，不进 `studio.json`。
 
 ---
 
@@ -411,6 +424,25 @@ Agent 无法完成 → 退回重派；需求不明 → 发起澄清；接口不�
 - **验收**：制造一次"QA 发现需求缺失"，能走通退回产品评审的完整链路。
 
 **阶段 A 退出条件**：A1~A5 全绿且 A6 可用；**"能配出并跑通一个 Agent Team + 工作流（12 阶段为验收样例，非唯一形态）"是唯一硬判据**。
+
+### 阶段 A / B 接线 / C 搭建台 / D 多项目 — beta.4 实现状态
+
+按 `AD-11` 快速通道执行（需求一版评审、只卡阻塞性问题）。判定证据见 `docs/iterations/beta.4-release.md`。
+
+| 任务 | 状态 | 落点 | 证据 |
+|---|---|---|---|
+| A1 CLI 发现 | 已完成（真实宿主握手判阻塞） | `src/adapter/cli-discovery/**` | 扫描命中并写入 `.orch/cli-registry.json` |
+| A2 角色/员工 | 已完成 | `src/studio/org.js` | 23 角色 / 46 员工，引用校验生效 |
+| A3 Team 搭建 | 已完成 | `src/studio/team.js` | 就绪判定 `ready=true`、覆盖 23/23 |
+| A4 工作流 | 已完成 | `src/studio/flow.js` | 12 阶段 / 3 门禁 / DAG 校验 |
+| A5 端到端 | **已可配通**（真实会话未取证） | `src/studio/run.js` | 门禁拦停 → 3 次批准 → 12/12 完成 → 知识库落盘 |
+| A6 横向机制 | 已完成 | `src/studio/tasks.js` | 需求缺口 → 变更 pending-review + 任务 blocked |
+| B 引擎接线 | 已完成（不拉起进程） | `src/studio/compile.js` | 38 个 stage-scoped 角色 + 工作流过引擎 schema |
+| C 搭建台 | 已完成（视觉待打磨） | `desktop/ui/studio.*` | 六步向导 16/16 通道验证 |
+| D 多项目 | 已完成 | `src/studio/projects.js` | 项目登记 + 宿主矩阵 |
+
+**一句话**：形态闭环已经成立——核心旅程在**域层**（11/11）和**桌面真实通道**（16/16）双双跑通；剩下的缺口是"真实宿主的 ACP 会话"，属环境缺口（本机无目标 CLI 的可执行能力），按 `AD-08` 判阻塞但**不阻塞发版**，且产品在任何模式下都不宣称发生过真实模型调用。
+
 
 ---
 

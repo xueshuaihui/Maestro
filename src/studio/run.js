@@ -193,14 +193,18 @@ export async function startRun({ root, doc, teamId, flowId, mode = 'simulate' })
     slot.taskId = created.task.id;
   }
 
+  let waiting = null;
   if (mode !== 'plan') {
     const advanced = await advanceRun({ root, doc, run, flow, team });
     if (!advanced.ok) return advanced;
+    // The caller (CLI / Studio action) needs to know which gate stopped the
+    // walk, otherwise it can only guess from `run.status`.
+    waiting = advanced.waiting ?? null;
   } else {
     const summary = await writeRunSummary(root, run, flow);
     if (!summary.ok) return summary;
   }
-  return { ok: true, run, planned };
+  return { ok: true, run, planned, waiting };
 }
 
 /**

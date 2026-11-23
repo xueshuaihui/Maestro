@@ -1,6 +1,6 @@
 {
   "name": "maestro",
-  "version": "0.0.1-beta.3",
+  "version": "0.0.1-beta.4",
   "private": true,
   "type": "module",
   "engines": {
@@ -12,6 +12,8 @@
   "scripts": {
     "test": "node --test test/",
     "desktop:build": "node scripts/desktop/build.mjs",
-    "verify:core": "node scripts/verify-core.mjs"
+    "verify:core": "node scripts/verify-core.mjs",
+    "verify:ui-flow": "node scripts/verify-ui-flow.mjs",
+    "verify:release": "node scripts/verify-core.mjs && node scripts/verify-ui-flow.mjs"
   }
 }

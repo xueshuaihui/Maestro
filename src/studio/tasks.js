@@ -110,12 +110,27 @@ export function resolveDefect(doc, id, { status = 'fixed' } = {}) {
  * task is blocked so no one "fixes" it in code.
  */
 export function raiseRequirementGap(doc, input = {}) {
-  const defect = addDefect(doc, { ...input, kind: 'requirement' });
+  // Resolve the stage first: the Studio UI reports a gap with only the run in
+  // hand, so falling back to "the stage that is currently being worked on" is
+  // what keeps the blocked-task guarantee true for both callers.
+  const run = typeof input.runId === 'string'
+    ? (doc.runs ?? []).find((row) => row.id === input.runId) ?? null
+    : null;
+  const stageId = typeof input.stageId === 'string'
+    ? input.stageId
+    : (run
+      ? (run.stages.find((slot) => slot.status === 'awaiting-approval')
+        ?? run.stages.find((slot) => slot.status === 'running')
+        ?? run.stages.find((slot) => slot.status === 'pending')
+        ?? null)?.stageId ?? null
+      : null);
+
+  const defect = addDefect(doc, { ...input, stageId, kind: 'requirement' });
   if (!defect.ok) return defect;
   const change = {
     id: `C-${String((doc.changes ?? []).length + 1).padStart(3, '0')}`,
-    runId: typeof input.runId === 'string' ? input.runId : null,
-    stageId: typeof input.stageId === 'string' ? input.stageId : null,
+    runId: run ? run.id : null,
+    stageId,
     type: 'requirement-gap',
     summary: defect.defect.summary,
     status: 'pending-review',

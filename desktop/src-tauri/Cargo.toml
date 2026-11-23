@@ -1,6 +1,6 @@
 [package]
 name = "maestro"
-version = "0.0.1-beta.3"
+version = "0.0.1-beta.4"
 edition = "2021"
 description = "Maestro desktop shell (Tauri 2, bundled node runtime)"
 
