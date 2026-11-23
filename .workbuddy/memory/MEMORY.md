@@ -9,8 +9,16 @@
   B=引擎底座接入(复用v1不重写)，C=桌面治理，D=多宿主多项目。**A5 是阶段一唯一硬判据**。
 - **引擎是底座不是卖点**：v1 13 迭代 PASS 只证明引擎成立，不证明形态成立（beta.3 反证）。ACP适配器/工作流引擎/调度/Session/Handoff/Policy/Artifact/四层状态/三层日志/治理全保留。
 - **v1 原文备份** `docs/index.v1-baseline-20261123.md`（1062行逐字）；v2 正文 507 行；附 v1→v2 逐条处置对照 + 裁决清单 D-1~D-6。
-- **待用户裁决**（D-1~6，未拍板不写需求正文）：工作形态是否唯一以目标文档为准 / 首版支持哪些 CLI（当前 macOS 机仅检出 WorkBuddy.app，目标文档列 Codex/Claude Code/Cursor/Gemini/OpenCode，旧代码接 DSH/WorkBuddy）/ beta处置 / 真实宿主取证机器 / A-B-C-D 编号 / 模板口径同步。
-- **本机 macOS 事实**：PATH 上无 dsh/cursor-agent/codex/claude/gemini CLI；装了 WorkBuddy.app、VS Code、Xcode、agent-browser@0.27.0。chatgpt.com 与 r.jina.ai 在本机不可达（HTTP 000），百度/GitHub 通。
+- **★ D-1 已裁决（2026-11-23）**：用户给的那份 12 阶段研发组织设计**只是一种使用场景**，不是产品唯一形态。
+  产品 = **多 Agent 团队搭建与运行平台**；工作流 = 任意 DAG；12 阶段 = 官方内置模板之一 + 阶段一验收样例（commit `b3abbcc`）。
+- **★ D-2 技术结论（2026-11-23 实测）**：CLI 静态发现层有现成开源可用——`geiger-scan`（`Atomburstofficial/geiger`，MIT，
+  npm 0.4.0，零依赖，Node≥18），`data/known-agents.json` 内置 Claude Code/Codex/Gemini/Qwen/OpenCode/DSH/Cursor 识别表 +
+  11 detector，输出 `schemaVersion:1` JSON；**但源码核对确认无 acp/initialize/session/new/stdio，不做运行时能力握手**。
+  Trove（`Intevity/trove`, MIT）只检测+转 OTEL，也无 ACP 会话。结论：**识别表移植到 `src/adapter/cli-discovery/` 自研零依赖实现，
+  能力握手与员工调度必须自研**；不把 `npx geiger-scan` 作为运行时硬依赖（桌面端不能要求用户有 Node/联网）。
+- **待用户裁决**（D-3~6，未拍板不写需求正文）：beta处置 / 真实宿主取证机器 / A-B-C-D 编号确认 / 模板口径同步；
+  D-2 剩余项 = 首版优先支持的具体 CLI 清单（需在有目标 CLI 的机器取证）。
+- **本机 macOS 事实**：PATH 上无 dsh/cursor-agent/codex/claude/gemini CLI；装了 WorkBuddy.app、VS Code、Xcode、agent-browser@0.27.0。chatgpt.com 与 r.jina.ai 在本机不可达（HTTP 000），百度/GitHub/api.github.com（用 `--noproxy '*'`）通。
 - **下方 I1.1~I1.12 的"收口/退出条件/当前状态"表全部是 v1 历史资产口径**，新工作一律以 v2 阶段 A 为准，勿再按旧表判断"产品已完成"。
 
 ## 项目与工作方式（v1 历史，流程规范仍适用）
