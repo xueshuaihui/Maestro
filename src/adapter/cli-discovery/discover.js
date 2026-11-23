@@ -6,6 +6,7 @@
  *   2. home markers      - config dirs, evidence only (not proof of an executable).
  *   3. npm global root   - package dirs, read via `npm root -g` when available.
  *   4. application dirs  - macOS /Applications, Windows Program Files, XDG.
+ *   5. user config       - explicitly registered executables (options.userConfig).
  *
  * Discipline:
  * - Zero CJK here; wording lives in labels.js and is attached by the CLI layer.
@@ -94,6 +95,43 @@ function npmPackagePaths(def, npmGlobalRoot, pathApi, fileSystem) {
     .filter((target) => isDir(fileSystem, target));
 }
 
+// A persisted user entry has no guaranteed cli_id. Derive a stable one from
+// name (then executable basename) so the id survives repeated scans.
+function userConfigCliId(entry) {
+  if (typeof entry?.cli_id === 'string' && entry.cli_id.trim()) return entry.cli_id.trim();
+  const slug = (value) => String(value ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  const fromName = slug(entry?.name);
+  if (fromName) return fromName;
+  const executable = String(entry?.executable ?? '');
+  const base = executable ? path.basename(executable, path.extname(executable)) : '';
+  return slug(base) || 'user-cli';
+}
+
+function userConfigFinding(entry, detectedAt) {
+  const executable = entry?.executable ?? null;
+  return {
+    cli_id: userConfigCliId(entry),
+    name: entry?.name ?? '',
+    executable,
+    version: null,
+    detected_at: entry?.added_at ?? detectedAt,
+    capabilities: [],
+    acp: null,
+    transport: null,
+    resume_dialect: null,
+    max_concurrent_sessions: null,
+    evidence_hook: null,
+    connection_status: CLI_STATUS.IDLE,
+    not_on_path: false,
+    verified_at: null,
+    evidence: [{ type: 'user-config', value: executable }],
+    version_args: entry?.version_args ?? ['--version']
+  };
+}
+
 /**
  * @param {{
  *   env?: Record<string, string|undefined>,
@@ -107,6 +145,7 @@ function npmPackagePaths(def, npmGlobalRoot, pathApi, fileSystem) {
  *   fileSystem?: object,
  *   known?: Array<object>,
  *   pathApi?: object,
+ *   userConfig?: Array<{cli_id?: string, name: string, executable: string, version_args?: string[], added_at?: string}>,
  * }} options
  */
 export function discoverAgentClis(options = {}) {
@@ -161,6 +200,10 @@ export function discoverAgentClis(options = {}) {
       version: null,
       detected_at: detectedAt,
       capabilities: [],
+      acp: null,
+      transport: null,
+      resume_dialect: null,
+      evidence_hook: null,
       max_concurrent_sessions: null,
       connection_status: executable ? CLI_STATUS.IDLE : CLI_STATUS.UNREACHABLE,
       not_on_path: executable ? false : true,
@@ -168,6 +211,12 @@ export function discoverAgentClis(options = {}) {
       evidence,
       version_args: def.versionArgs ?? ['--version']
     });
+  }
+
+  // Fourth source: explicitly registered entries. They are appended after the
+  // automatic sources so re-scans can rehydrate them from the registry.
+  for (const entry of Array.isArray(options.userConfig) ? options.userConfig : []) {
+    findings.push(userConfigFinding(entry, detectedAt));
   }
 
   return {

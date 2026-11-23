@@ -19,6 +19,7 @@ import {
   CLI_STATUS,
   SCHEMA_VERSION
 } from '../../src/adapter/cli-discovery/index.js';
+import { saveCliRegistry, loadCliRegistry } from '../../src/adapter/cli-discovery/registry.js';
 
 const noCjk = (source) => assert.equal(/[\u3400-\u9fff]/.test(String(source)), false, 'CJK literal in discovery module');
 
@@ -176,4 +177,166 @@ test('A1-07: known-agent table is stable and CJK-free', () => {
   noCjk(fs.readFileSync(new URL('../../src/adapter/cli-discovery/discover.js', import.meta.url), 'utf8'));
   noCjk(fs.readFileSync(new URL('../../src/adapter/cli-discovery/probe.js', import.meta.url), 'utf8'));
   noCjk(fs.readFileSync(new URL('../../src/cli/cli-discovery.js', import.meta.url), 'utf8'));
+});
+
+// --- WP-1 additions: fourth source (user config) + finding contract --------
+const MATRIX_FIELDS = [
+  'acp', 'transport', 'resume_dialect', 'max_concurrent_sessions', 'evidence_hook'
+];
+
+test('WP1-01: user-config entry is discovered with user-config evidence', () => {
+  const fx = fixture();
+  try {
+    const tool = path.join(fx.root, 'mytool');
+    const result = discoverAgentClis({
+      env: {}, home: fx.home, platform: 'darwin',
+      pathEntries: [], appDirs: [], npmGlobalRoot: null,
+      userConfig: [{
+        name: 'MyCLI', executable: tool,
+        version_args: ['--version'], added_at: '2026-11-23T00:05:00.000Z'
+      }]
+    });
+    const item = result.findings.find((f) =>
+      f.evidence.some((e) => e.type === 'user-config'));
+    assert.ok(item, 'user-config finding is present');
+    assert.equal(item.cli_id, 'mycli');
+    assert.equal(item.name, 'MyCLI');
+    assert.equal(item.executable, tool);
+    assert.equal(item.detected_at, '2026-11-23T00:05:00.000Z');
+    assert.equal(item.connection_status, CLI_STATUS.IDLE);
+    assert.equal(item.not_on_path, false);
+    assert.equal(item.verified_at, null);
+    assert.deepEqual(item.version_args, ['--version']);
+    assert.deepEqual(item.evidence, [{ type: 'user-config', value: tool }]);
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test('WP1-02: every finding starts with all five matrix fields null', () => {
+  const fx = fixture();
+  try {
+    const tool = path.join(fx.root, 'mytool');
+    const result = discoverAgentClis({
+      env: {}, home: fx.home, platform: 'darwin',
+      pathEntries: [], appDirs: [],
+      userConfig: [{ name: 'MyCLI', executable: tool }]
+    });
+    assert.ok(result.findings.length > 0, 'at least one finding');
+    for (const finding of result.findings) {
+      for (const field of MATRIX_FIELDS) {
+        assert.equal(finding[field], null, `${finding.cli_id}.${field} is null`);
+      }
+    }
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test('WP1-03: source overview covers all discovery sources', () => {
+  const fx = fixture();
+  try {
+    fakePathBin(fx.bin, 'codex');
+    fs.mkdirSync(path.join(fx.apps, 'WorkBuddy.app'), { recursive: true });
+    const npmRoot = path.join(fx.root, 'npm');
+    fs.mkdirSync(path.join(npmRoot, 'opencode-ai'), { recursive: true });
+    const tool = path.join(fx.root, 'mytool');
+    const result = discoverAgentClis({
+      env: { PATH: fx.bin }, home: fx.home, platform: 'darwin',
+      pathEntries: [fx.bin], appDirs: [fx.apps], npmGlobalRoot: npmRoot,
+      userConfig: [{ name: 'MyCLI', executable: tool }]
+    });
+    assert.deepEqual(Object.keys(result.sources).sort(),
+      ['app_dirs', 'home', 'npm_global_root', 'path_entries'].sort());
+    assert.equal(result.sources.path_entries, 1);
+    assert.equal(result.sources.app_dirs, 1);
+    assert.equal(result.sources.npm_global_root, npmRoot);
+    const types = new Set();
+    for (const finding of result.findings) {
+      for (const evidence of finding.evidence) types.add(evidence.type);
+    }
+    for (const expected of ['path', 'home', 'app', 'npm-global', 'user-config']) {
+      assert.ok(types.has(expected), `evidence type ${expected} present`);
+    }
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test('WP1-04: rescans keep user_config and refresh scanned_at', async () => {
+  const fx = fixture();
+  try {
+    const tool = path.join(fx.root, 'mytool');
+    const userConfig = [{
+      cli_id: 'mycli', name: 'MyCLI', executable: tool,
+      version_args: ['--version'], added_at: '2026-11-23T00:05:00.000Z'
+    }];
+    const scan1 = discoverAgentClis({
+      env: {}, home: fx.home, platform: 'darwin',
+      pathEntries: [], appDirs: [], userConfig,
+      clock: () => '2026-11-23T00:00:00.000Z'
+    });
+    const saved1 = await saveCliRegistry(fx.root, scan1, { userConfig });
+    assert.equal(saved1.ok, true);
+    assert.equal(saved1.registry.scanned_at, '2026-11-23T00:00:00.000Z');
+
+    const loaded = await loadCliRegistry(fx.root);
+    assert.equal(loaded.ok, true);
+    assert.equal(loaded.registry.user_config.length, 1);
+
+    const scan2 = discoverAgentClis({
+      env: {}, home: fx.home, platform: 'darwin',
+      pathEntries: [], appDirs: [], userConfig: loaded.registry.user_config,
+      clock: () => '2026-11-23T01:00:00.000Z'
+    });
+    const saved2 = await saveCliRegistry(fx.root, scan2, {
+      userConfig: loaded.registry.user_config
+    });
+    assert.equal(saved2.ok, true);
+    assert.equal(saved2.registry.scanned_at, '2026-11-23T01:00:00.000Z');
+    assert.equal(saved2.registry.user_config.length, 1);
+    assert.equal(saved2.registry.user_config[0].cli_id, 'mycli');
+    assert.equal(saved2.registry.user_config[0].executable, tool);
+    assert.equal(saved2.registry.user_config[0].added_at, '2026-11-23T00:05:00.000Z');
+    const userFindings = saved2.registry.clis.filter((c) =>
+      c.evidence.some((e) => e.type === 'user-config'));
+    assert.equal(userFindings.length, 1);
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test('WP1-05: save without options.userConfig keeps persisted user items', async () => {
+  const fx = fixture();
+  try {
+    const tool = path.join(fx.root, 'mytool');
+    const userConfig = [{ cli_id: 'mycli', name: 'MyCLI', executable: tool }];
+    const scan = discoverAgentClis({
+      env: {}, home: fx.home, platform: 'darwin',
+      pathEntries: [], appDirs: [], userConfig, clock: () => 'T0'
+    });
+    const first = await saveCliRegistry(fx.root, scan, { userConfig });
+    assert.equal(first.ok, true);
+    // probe write-back passes only the scan result
+    const saved = await saveCliRegistry(fx.root, scan);
+    assert.equal(saved.ok, true);
+    assert.equal(saved.registry.user_config.length, 1);
+    assert.equal(saved.registry.user_config[0].executable, tool);
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test('WP1-06: legacy registry without user_config loads as []', async () => {
+  const fx = fixture();
+  try {
+    fs.mkdirSync(path.join(fx.root, '.orch'), { recursive: true });
+    fs.writeFileSync(path.join(fx.root, '.orch', 'cli-registry.json'),
+      JSON.stringify({ schemaVersion: 1, scanned_at: 'T0', clis: [] }), 'utf8');
+    const loaded = await loadCliRegistry(fx.root);
+    assert.equal(loaded.ok, true);
+    assert.deepEqual(loaded.registry.user_config, []);
+  } finally {
+    fx.cleanup();
+  }
 });
