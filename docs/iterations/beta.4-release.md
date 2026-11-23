@@ -18,9 +18,14 @@ beta.4 交付的正是这条主线：**A 形态闭环 / B 引擎接线 / C 桌�
 | 核心旅程可**经桌面通道配置**跑通（页面真实请求序列） | **PASS 16/16** | `npm run verify:ui-flow` → `UI_FLOW_OK`，exit 0 |
 | 搭建台页面静态面可取、标签全解析 | PASS | `studio.html` 200 / `studio.js` 200；引用 49 键、缺失 0 |
 | 既有测试无新增红 | **PASS 差集 0** | 基线树 26 红 → 当前树 24 红，新增红 0 |
+| 三平台发版流水线 | **PASS** | `45235795178`（第 2 次尝试）三平台 success + 汇总发布 success |
+| 产物内资源与路由可用 | **PASS** | 下载 arm64 dmg 校验 SHA256 一致；包内 11 个 studio 模块 + 页面齐全；用包内源码树起服务，`/studio/state` `/studio/labels` `/ui/studio.html` 均 200 |
 | 真实宿主（本机 Agent CLI）驱动 ACP 会话 | **未取证（非阻塞）** | 本机无目标 CLI 的 ACP 能力，`AD-08` 口径保留 |
 
-**发版结论：可以发。** 阻塞项为 0；未取证的只有"真实宿主执行"，它是环境缺口而不是代码缺口，且从不宣称已发生（`mode: simulate` 产物带显式标注、`engine` 模式的 `no_host_config` 如实上报）。
+**发版结论：已发布。** Release `v0.0.1-beta.4`（prerelease）已上线，产物：
+`Maestro_0.0.1-beta.4_arm64.dmg` / `_x64.dmg` / `_win-x64-setup.exe` / `SHA256SUMS.txt`。
+
+阻塞项为 0；未取证的只有"真实宿主执行"，它是环境缺口而不是代码缺口，且从不宣称已发生（`mode: simulate` 产物带显式标注、`engine` 模式的 `no_host_config` 如实上报）。
 
 ## 3. 域层核心旅程（`npm run verify:core`）
 
@@ -104,6 +109,18 @@ UI_FLOW_OK
 
 **验证边界（如实登记）**：Windows 分支逻辑用注入 `platform: 'win32'` + `PATHEXT` 在 macOS 上单独跑通（`.CMD` 命中、无扩展名不命中），但**无法在本机做 Windows 实机验证**，最终以 CI 复验为准。
 
+### 5.1 四轮 CI 的实际收敛过程
+
+| 轮次 | Windows | macOS | 处理 |
+|---|---|---|---|
+| #1 `45226749230` | 6 条意外失败 | x64 ok / arm64 被跳过 | 定位到上述两类产品缺陷 |
+| #2 `45230050593` | 4 条 | arm64 出现 `AC-60` 超时 | 夹具按宿主平台建模；放宽 `waitForNode` 等待上界（15s→30s，只改上界不改断言） |
+| #3 `45233516559` | 1 条（ACC-10） | 双绿 | `ACC-10` 的 JS 本体放在 PATH 目录里，被 `PATHEXT` 里的 `.JS` 再次命中 → 移到目录外 |
+| #4 `45235795178` | 门禁 7/7 通过，冒烟 4/5 | 双绿 | 失败项是"探针 ready 30s 超时"；`ready` 在窗口构建完成后即发射，早于页面 JS，与本次改动无因果关系 → 只重跑失败作业 |
+| #4 重跑 | **success** | **success** | 汇总发布 success，Release 上线 |
+
+**教训**：`AC-60` 那条在 arm64 runner 上 `duration 15.16s` 正好命中 15s 上界——CI 冷启动的首次 spawn 比本地慢一个量级，等待上界要按最慢硬件留余量，而不是按本机观察值。
+
 ## 6. 回归与差集门禁
 | 项 | 结果 |
 |---|---|
@@ -117,6 +134,10 @@ UI_FLOW_OK
 - 桌面壳/单实例/托盘/冒烟（`AC-26`、`AC-44`、`desktop-shell`、`single-instance`、`bundle`）——需要真实构建产物；
 - SSE 推送时序（`AC-08/09/10/37`、`sinceRev`、`the pulse seam`）——重负载下时序敏感；
 - NFR 性能与历史遗留（`NFR-02`、`copyToBackup`、`core.stop`、`main --cwd`、`task-loop 审核提示词`）。
+
+**重负载下的口径复核（如实登记）**：发版后补跑的一次全量（与本机其它任务并发，`duration 653s`）出现 37 红，比基线多 13 个名字，全部落在上述时序族（`AC-04`/`AC-32`/`AC-34`/`AC-35`/`AC-61`/`F-1`/`buildOccupancy`/`escalate resolve`/产品路径自然升级/审批·允许/连发两次 `POST continue`/三主链两接口）。对 8 个所在文件做 `--test-concurrency=1` 独占复跑：7 个文件全绿，`AC-04` 首轮仍红（断言首帧进度 `0/1`，实测拿到 `1/1`），连跑 3 次后全绿，基线树同样 3/3 绿。
+
+结论：**新增红仍为 0**，但那 13 个名字属于"负载一变就红"的时序断言，不是本次改动的产物；`AC-04` 的断言（首帧必须 `0/1`）依赖 mock 宿主的完成速度，属既有脆弱点，不在本次快速通道口径内修。
 
 ## 7. 发版内容清单
 
@@ -150,3 +171,17 @@ npm run verify:release  # 两条串联，任一失败即 exit 1
 ```
 
 两个脚本都在临时夹具内运行并隔离 `HOME`，不会写入 `~/.maestro/projects.json`，也不读写仓库内任何证据目录。
+
+## 10. 发版后的状态与下一步
+
+发版事实（可核对）：
+
+| 项 | 值 |
+|---|---|
+| 版本号 | `0.0.1-beta.4`（`package.json` / `tauri.conf.json` / `Cargo.toml` 三处一致） |
+| 标签 | `v0.0.1-beta.4` → `a3d87d6`（含 Windows `.cmd` 修复与夹具平台自适应两个后续提交） |
+| Release | prerelease，3 平台产物 + `SHA256SUMS.txt` |
+| 分支 | `origin/main` 与本地同点 |
+
+阶段级进度台账（A/B/C/D 各自的已交付、缺口、剩余工作与前置条件）维护在 `docs/index.md` §"实施进度总览"。
+一句话：**核心形态已可配通，剩余缺口是"真实宿主执行"（需一台装目标 Agent CLI 的机器）与 C/B/D 旧视图向新概念维度的迁移。**
