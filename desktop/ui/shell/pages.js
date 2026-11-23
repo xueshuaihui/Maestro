@@ -753,6 +753,21 @@ export function governancePage(ctx) {
 // settings
 // ---------------------------------------------------------------------------
 
+/**
+ * Studio page: the authoring surface (A2~A6). It is a same-origin iframe so the
+ * wizard keeps its own DOM/state without touching the shell's paint loop; the
+ * frame resolves the desktop token from localStorage like the shell does.
+ */
+export function studioPage() {
+  const wrap = el('div', 'studio-frame');
+  const frame = document.createElement('iframe');
+  frame.className = 'studio-iframe';
+  frame.src = './studio.html';
+  frame.title = 'Studio';
+  wrap.appendChild(frame);
+  return wrap;
+}
+
 export function settingsPage(ctx) {
   const frag = document.createDocumentFragment();
   frag.appendChild(pageHead(ctx.t('DESKTOP_V2_NAV_SETTINGS'), null));

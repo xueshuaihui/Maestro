@@ -199,6 +199,7 @@ export function createHttpServer({
   let meta = null; // { port, token }
   let lazySeamsAttached = false;
   let fallbackDispatcher = null; // WP-3 routes.handle(req, res, url)
+  let studioRoutesRegistered = false; // v2 Studio API (additive, once)
 
   /** @type {Array<{method: string, pattern: string, handler: Function}>} */
   const injectedRoutes = [];
@@ -282,6 +283,20 @@ export function createHttpServer({
         }
       } catch {
         // WP-3 not landed: REST degrades to structured 503.
+      }
+    }
+
+    // v2 (A2~A6/B/D): Studio authoring API. Additive table, registered once,
+    // after the frozen v1 table so v1 paths keep their exact handlers.
+    if (!studioRoutesRegistered) {
+      try {
+        const studio = await import('./studio-routes.js');
+        if (typeof studio.createStudioRoutes === 'function') {
+          registerRoutes(studio.createStudioRoutes({ root }));
+          studioRoutesRegistered = true;
+        }
+      } catch {
+        // Studio API unavailable: the page degrades to an explicit error.
       }
     }
   }

@@ -14,7 +14,7 @@ import {
 import {
   assetsPage, canvasPage, evidencePage, fallbackPage, governancePage, instancesPage,
   newPage, notificationsPage, occupancyPage, overviewPage, projectPage, queuePage,
-  settingsPage,
+  settingsPage, studioPage,
 } from './pages.js';
 import { boardPage, flowPage } from './graph.js';
 import {
@@ -41,6 +41,7 @@ const PAGE_BY_VIEW = Object.freeze({
   evidence: evidencePage,
   governance: governancePage,
   settings: settingsPage,
+  studio: studioPage,
   notifications: notificationsPage,
 });
 

@@ -8,6 +8,7 @@
  */
 import { main } from '../src/cli/main.js';
 import { cliDiscoveryMain } from '../src/cli/cli-discovery.js';
+import { studioMain, STUDIO_ROOTS } from '../src/cli/studio.js';
 
 const argv = process.argv.slice(2);
 
@@ -25,6 +26,11 @@ if (isInternalChannel(argv)) {
   // v2 A1: CLI discovery is a separate command family; its parser and writes
   // are isolated from the frozen I1.x command surface in main.js.
   const code = await cliDiscoveryMain(argv.slice(1));
+  process.exit(code);
+} else if (STUDIO_ROOTS.includes(argv[0])) {
+  // v2 A2~A6/B/D: org / team / flow / studio / task / project. Same isolation
+  // rule as `cli`: the v1 parser and its flag whitelist are never touched.
+  const code = await studioMain(argv);
   process.exit(code);
 } else {
   const code = await main(argv);

@@ -19,6 +19,7 @@ const NAV_GROUPS = Object.freeze([
     { view: 'notifications', key: 'DESKTOP_NOTIFY_TOGGLE', glyph: '\u2662', count: 'notify' },
   ],
   [
+    { view: 'studio', key: 'DESKTOP_V2_NAV_STUDIO', glyph: '\u25a3' },
     { view: 'assets', key: 'DESKTOP_VIEW_ASSETS', glyph: '\u25a4' },
     { view: 'occupancy', key: 'DESKTOP_VIEW_OCCUPANCY', glyph: '\u25cd' },
     { view: 'canvas', key: 'DESKTOP_VIEW_CANVAS', glyph: '\u2317' },
@@ -377,6 +378,7 @@ export function crumbsFor(ctx) {
     assets: 'DESKTOP_VIEW_ASSETS',
     occupancy: 'DESKTOP_VIEW_OCCUPANCY',
     canvas: 'DESKTOP_VIEW_CANVAS',
+    studio: 'DESKTOP_V2_NAV_STUDIO',
     governance: 'DESKTOP_V2_NAV_AUDIT',
     settings: 'DESKTOP_V2_NAV_SETTINGS',
     notifications: 'DESKTOP_NOTIFY_TOGGLE',

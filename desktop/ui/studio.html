@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maestro Studio</title>
+<link rel="stylesheet" href="./studio/studio.css">
+</head>
+<body>
+<header class="top">
+  <div class="brandline">
+    <span class="mark"></span>
+    <h1 id="title">Studio</h1>
+    <span class="root" id="root"></span>
+  </div>
+  <div class="actions">
+    <button id="btn-scan" class="btn"></button>
+    <button id="btn-demo" class="btn primary"></button>
+    <button id="btn-refresh" class="btn ghost"></button>
+  </div>
+</header>
+<main id="app">
+  <div class="loading" id="loading"></div>
+</main>
+<div class="toast" id="toast" hidden></div>
+<script type="module" src="./studio/studio.js"></script>
+</body>
+</html>
