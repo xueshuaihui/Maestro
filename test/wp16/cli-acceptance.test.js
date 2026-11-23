@@ -249,7 +249,10 @@ function speakingTargetBin(root) {
   // shebang script, so the forked host is modelled the way it really looks
   // there: a `.CMD` shim over a `.js` body invoking this same node binary.
   const bin = path.join(dir, isWin ? 'codex.CMD' : 'codex');
-  const body = path.join(dir, 'codex.js');
+  // The JS body must live OUTSIDE the PATH directory: Windows PATHEXT commonly
+  // includes `.JS`, so keeping it next to the shim makes the read-only PATH
+  // scan report two targets instead of one.
+  const body = path.join(root, 'speaking-target.js');
   const lines = [
     `#!${process.execPath}`,
     'const NL = String.fromCharCode(10);',
@@ -275,7 +278,7 @@ function speakingTargetBin(root) {
   ];
   fs.writeFileSync(body, lines.join('\n'), 'utf8');
   if (isWin) {
-    fs.writeFileSync(bin, `@echo off\r\n"${process.execPath}" "%~dp0codex.js" %*\r\n`, 'utf8');
+    fs.writeFileSync(bin, `@echo off\r\n"${process.execPath}" "${body}" %*\r\n`, 'utf8');
   } else {
     fs.copyFileSync(body, bin);
     fs.chmodSync(bin, 0o755);
