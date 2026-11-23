@@ -1,8 +1,21 @@
 # Maestro 项目长期记忆
 
-## 项目与工作方式
+## ★ v2 形态校正（2026-11-23，最高优先级，覆盖下方所有 I1.x 旧口径）
+- **用户对 beta.3 的裁决**：v1 产品形态"用不起来"，核心入口缺失、迭代顺序拆乱 → 选择**全面重写** PRD + 迭代规划。
+- **新形态**（`docs/index.md` v2，commit `1c5a8ca`）：Maestro = **多 Agent 软件研发组织**；核心旅程 =
+  打开应用**自动扫描本机 Agent CLI 并罗列 → 基于 CLI 建角色/员工 → 搭 Agent Team → 建 12 阶段研发工作流 → 端到端跑通**。
+- **概念模型**：组织→部门→角色→员工(Agent)→会话；**角色≠Agent**（一角色多员工），角色声明所需 CLI 能力、员工绑定具体 CLI。
+- **迭代重编号 A/B/C/D**（v1 的 I1.x 冻结为历史引用）：A=核心形态闭环(A1发现/A2建角色员工/A3 Team/A4 12阶段工作流/A5端到端/A6横向机制)，
+  B=引擎底座接入(复用v1不重写)，C=桌面治理，D=多宿主多项目。**A5 是阶段一唯一硬判据**。
+- **引擎是底座不是卖点**：v1 13 迭代 PASS 只证明引擎成立，不证明形态成立（beta.3 反证）。ACP适配器/工作流引擎/调度/Session/Handoff/Policy/Artifact/四层状态/三层日志/治理全保留。
+- **v1 原文备份** `docs/index.v1-baseline-20261123.md`（1062行逐字）；v2 正文 507 行；附 v1→v2 逐条处置对照 + 裁决清单 D-1~D-6。
+- **待用户裁决**（D-1~6，未拍板不写需求正文）：工作形态是否唯一以目标文档为准 / 首版支持哪些 CLI（当前 macOS 机仅检出 WorkBuddy.app，目标文档列 Codex/Claude Code/Cursor/Gemini/OpenCode，旧代码接 DSH/WorkBuddy）/ beta处置 / 真实宿主取证机器 / A-B-C-D 编号 / 模板口径同步。
+- **本机 macOS 事实**：PATH 上无 dsh/cursor-agent/codex/claude/gemini CLI；装了 WorkBuddy.app、VS Code、Xcode、agent-browser@0.27.0。chatgpt.com 与 r.jina.ai 在本机不可达（HTTP 000），百度/GitHub 通。
+- **下方 I1.1~I1.12 的"收口/退出条件/当前状态"表全部是 v1 历史资产口径**，新工作一律以 v2 阶段 A 为准，勿再按旧表判断"产品已完成"。
+
+## 项目与工作方式（v1 历史，流程规范仍适用）
 多会话编排控制台（DSH / Cursor / WorkBuddy 三种 ACP 宿主）。需求基线与迭代规划 `docs/index.md`
-（第一部分=基线，第二部分=`#### I1.<N>` 规划）；流程标准 `docs/templates/execution-template.md`，
+（第一部分=基线，第二部分=`#### I1.<N>` 规划，v2 起改为 `A/B/C/D` 阶段）；流程标准 `docs/templates/execution-template.md`，
 需求模板 `docs/templates/requirement-template.md`。产物：`docs/iterations/iteration-N/requirement.md`
 → `iteration-N.md`（拆分）→ `iteration-N/{report,acceptance-*,final-verification}.md` + `evidence/`。
 - 五阶段 S0~S4，主控只调度/复核/裁决，不写需求正文、不写实现代码、不写验收用例。
