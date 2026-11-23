@@ -617,7 +617,10 @@ async function waitForPath(target, timeoutMs = 15000) {
   }
 }
 
-async function waitForNode(store, instanceId, nodeId, predicate, timeoutMs = 15000) {
+// 15s 在冷启动的 CI（尤其 arm64 runner 首次 spawn node）上会正好卡在边界：
+// 实测 duration 15.16s 命中上限而断言未执行。放宽到 30s 只改等待上界，
+// 断言强度不变（仍要求 T-003 被派发、T-002 原地不动）。
+async function waitForNode(store, instanceId, nodeId, predicate, timeoutMs = 30000) {
   const until = Date.now() + timeoutMs;
   for (;;) {
     const loaded = await store.load(instanceId);

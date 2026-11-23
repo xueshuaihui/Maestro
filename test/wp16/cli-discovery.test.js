@@ -35,11 +35,28 @@ function fixture() {
   return { root, bin, home, apps, cleanup: () => fs.rmSync(root, { recursive: true, force: true }) };
 }
 
-function fakePathBin(dir, name) {
-  const target = path.join(dir, name);
-  fs.writeFileSync(target, '#!/bin/sh\necho test\n', 'utf8');
-  fs.chmodSync(target, 0o755);
+/**
+ * Host-native shape of a PATH-installed CLI.
+ *
+ * The POSIX exec bit cannot be represented on NTFS, so asserting `mode & 0o111`
+ * on a Windows runner tests the filesystem rather than our resolver. On win32
+ * the fixture therefore uses the real Windows shape — a `<name>.CMD` shim
+ * resolved through PATHEXT — which is what the product must handle there.
+ */
+const HOST = process.platform;
+const HOST_PATHEXT = '.CMD;.EXE;.BAT';
+
+function fakePathBin(dir, name, platform = HOST) {
+  const win = platform === 'win32';
+  const target = path.join(dir, win ? `${name}.CMD` : name);
+  fs.writeFileSync(target, win ? '@echo off\r\n' : '#!/bin/sh\necho test\n', 'utf8');
+  if (!win) fs.chmodSync(target, 0o755);
   return target;
+}
+
+/** Env that mirrors the host's real executable-resolution inputs. */
+function hostEnv(extra = {}) {
+  return HOST === 'win32' ? { PATHEXT: HOST_PATHEXT, ...extra } : { ...extra };
 }
 
 test('A1-01: PATH executable is discovered with evidence and idle status', () => {
@@ -47,9 +64,9 @@ test('A1-01: PATH executable is discovered with evidence and idle status', () =>
   try {
     const codexBin = fakePathBin(fx.bin, 'codex');
     const result = discoverAgentClis({
-      env: { PATH: fx.bin },
+      env: hostEnv({ PATH: fx.bin }),
       home: fx.home,
-      platform: 'darwin',
+      platform: HOST,
       pathEntries: [fx.bin],
       appDirs: [fx.apps],
       npmGlobalRoot: null,
@@ -97,9 +114,9 @@ test('A1-03: duplicate executable names resolve to the first PATH entry', () => 
   try {
     const first = fakePathBin(fx.bin, 'claude');
     const result = discoverAgentClis({
-      env: {},
+      env: hostEnv(),
       home: fx.home,
-      platform: 'darwin',
+      platform: HOST,
       pathEntries: [fx.bin, fx.bin],
       appDirs: [],
       clock: () => 'T0'
@@ -242,7 +259,7 @@ test('WP1-03: source overview covers all discovery sources', () => {
     fs.mkdirSync(path.join(npmRoot, 'opencode-ai'), { recursive: true });
     const tool = path.join(fx.root, 'mytool');
     const result = discoverAgentClis({
-      env: { PATH: fx.bin }, home: fx.home, platform: 'darwin',
+      env: hostEnv({ PATH: fx.bin }), home: fx.home, platform: HOST,
       pathEntries: [fx.bin], appDirs: [fx.apps], npmGlobalRoot: npmRoot,
       userConfig: [{ name: 'MyCLI', executable: tool }]
     });

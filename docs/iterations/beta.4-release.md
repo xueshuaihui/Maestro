@@ -79,8 +79,32 @@ UI_FLOW_OK
 
 > 注：`verify-core.mjs` 用 `--stage s08` 显式传参，所以两条都通过；此类"参数被验证脚本替用户补齐"的假绿，正是必须再走一遍真实通道的理由。
 
-## 5. 回归与差集门禁
+## 5. Windows 门禁：首次运行抓到的两类真缺陷
 
+首次发版流水线（`45226749230`）在 Windows 上被质量门禁拦下，报 6 条"意外失败"（不在判定基线内）。原因是 A1 是本轮新增能力，其用例从未在 Windows 上跑过。逐条核对后，**其中两类是产品缺陷，不是夹具水土不服**：
+
+**缺陷 1：发现层忽略了调用方注入的 `platform` / `env`**
+
+`discover.js` 在 `isExecutable` 与 `resolveOnPath` 里直接读 `process.platform` 和 `process.env.PATHEXT`，把已解析出的 `options.platform` / `options.env` 静默丢弃。后果有两个：显式指定平台的行为不可信；Windows 上会给"要求按原名解析"的文件追加 `.EXE;.CMD;.BAT` 后缀而找不到。
+
+修复：把 `platform` / `env` 一路透传到两个函数。
+
+**缺陷 2：Windows 上无法启动 `.cmd` / `.bat` 形态的 CLI（更严重）**
+
+`probe.js` 用裸 `spawn(command, args)` 启动探测目标。Node 自 CVE-2024-27980 修复后**拒绝直接 spawn `.cmd` / `.bat`**（`EINVAL`），而 Windows 上 npm 安装的 agent CLI 几乎全是 `.cmd` shim（`claude.cmd`、`gemini.cmd` 等）。
+
+后果：**Windows 上版本探测与 ACP 握手永远失败**——A1 的整个能力在该平台形同不存在。这条不是测试问题，是"Windows 用户装上 beta.4 会看到 CLI 都探测不出能力"。
+
+修复：仅当 `win32` 且扩展名为 `.cmd`/`.bat` 时经 `cmd.exe /d /s /c` 启动，参数自行加引号；**不用 `shell: true`**（避免把注入面扩大到所有平台），POSIX 路径逐字不变。
+
+**夹具可移植性（非产品行为变更）**
+
+- `cli-acceptance` 的 mock 在 win32 上生成 `codex-mock.cmd`（内含 `node codex-mock.js %*`），与真实 Windows CLI 形态一致；POSIX 仍是可执行单文件。
+- `cli-add` 的 CLI-A3 把"不可执行"样本从 `plain.txt` 换成**目录**：Windows 上 `X_OK` 退化为存在性判断，`.txt` 会通过，那条断言在 Windows 等于没测。
+
+**验证边界（如实登记）**：Windows 分支逻辑用注入 `platform: 'win32'` + `PATHEXT` 在 macOS 上单独跑通（`.CMD` 命中、无扩展名不命中），但**无法在本机做 Windows 实机验证**，最终以 CI 复验为准。
+
+## 6. 回归与差集门禁
 | 项 | 结果 |
 |---|---|
 | 全量用例 | **1999 条 / 1972 pass / 24 fail / 3 skip** |
@@ -94,7 +118,7 @@ UI_FLOW_OK
 - SSE 推送时序（`AC-08/09/10/37`、`sinceRev`、`the pulse seam`）——重负载下时序敏感；
 - NFR 性能与历史遗留（`NFR-02`、`copyToBackup`、`core.stop`、`main --cwd`、`task-loop 审核提示词`）。
 
-## 6. 发版内容清单
+## 7. 发版内容清单
 
 | 阶段 | 交付 | 关键文件 |
 |---|---|---|
@@ -110,14 +134,14 @@ UI_FLOW_OK
 
 命令面：`orch org / team / flow / studio / task / project`（从 `bin/orch.js` 独立分发，不碰 `main.js` 冻结解析器）。
 
-## 7. 未取证与风险（如实登记）
+## 8. 未取证与风险（如实登记）
 
 1. **真实宿主执行未取证**（`AD-08`，非阻塞）：本机无法提供目标 Agent CLI 的 ACP 会话能力，A1 的 `AC-12`、A5 的"真实会话驱动"仍判阻塞。发版不含任何"已跑过模型"的宣称——`simulate` 产物前置 `mode: simulate`，`engine` 模式在无宿主配置时如实回 `no_host_config`。
 2. **搭建台为单页向导，不是最终视觉**：`desktop/ui/studio.html` 六步线性推进，够用但未做大规模组织（数百员工）下的列表虚拟化与搜索。属 C 阶段后续打磨，不阻塞形态验证。
 3. **`engine` 模式只到"资产就绪"**：编译产物已过引擎 schema 校验，但真正拉起宿主进程需要用户配置 `.orch/hosts/*.json`；未配置时状态停在 `prepared`。
 4. **三主链逐字回归**不在本次快速通道口径内（属 v1 冻结面），基线红名单里 `三主链：A-0 归一化后逐字命中` 一条在重负载下波动，独占复跑可复现为基线红。
 
-## 8. 复现方式
+## 9. 复现方式
 
 ```bash
 npm run verify:core     # 域层核心旅程 11 步

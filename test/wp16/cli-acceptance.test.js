@@ -146,16 +146,23 @@ export function evidenceLevel(result) {
 
 function readOnlyPathScan(envPath) {
   const entries = String(envPath ?? '').split(path.delimiter).filter(Boolean);
+  // Windows finds PATH executables through PATHEXT, so the read-only scan has
+  // to widen each target name the same way; POSIX resolves the bare name.
+  const exts = process.platform === 'win32'
+    ? String(process.env.PATHEXT ?? '.CMD;.EXE;.BAT').split(';').filter(Boolean)
+    : [''];
   const found = [];
   for (const dir of entries) {
     for (const bin of TARGET_BINS) {
-      const candidate = path.join(dir, bin);
-      try {
-        if (fs.statSync(candidate).isFile()) {
-          fs.accessSync(candidate, fs.constants.X_OK);
-          if (!found.includes(candidate)) found.push(candidate);
-        }
-      } catch { /* not present / not executable */ }
+      for (const ext of exts) {
+        const candidate = path.join(dir, `${bin}${ext}`);
+        try {
+          if (fs.statSync(candidate).isFile()) {
+            fs.accessSync(candidate, fs.constants.X_OK);
+            if (!found.includes(candidate)) found.push(candidate);
+          }
+        } catch { /* not present / not executable */ }
+      }
     }
   }
   return { entries: entries.length, found, bins: [...TARGET_BINS] };
@@ -237,7 +244,12 @@ function ac12BlockerRecord(env = process.env) {
 function speakingTargetBin(root) {
   const dir = path.join(root, 'bin');
   fs.mkdirSync(dir, { recursive: true });
-  const bin = path.join(dir, 'codex');
+  const isWin = process.platform === 'win32';
+  // Windows resolves PATH entries through PATHEXT and refuses to spawn a
+  // shebang script, so the forked host is modelled the way it really looks
+  // there: a `.CMD` shim over a `.js` body invoking this same node binary.
+  const bin = path.join(dir, isWin ? 'codex.CMD' : 'codex');
+  const body = path.join(dir, 'codex.js');
   const lines = [
     `#!${process.execPath}`,
     'const NL = String.fromCharCode(10);',
@@ -261,8 +273,13 @@ function speakingTargetBin(root) {
     '  process.stdout.write("codex 1.2.3" + NL);',
     '}'
   ];
-  fs.writeFileSync(bin, lines.join('\n'), 'utf8');
-  fs.chmodSync(bin, 0o755);
+  fs.writeFileSync(body, lines.join('\n'), 'utf8');
+  if (isWin) {
+    fs.writeFileSync(bin, `@echo off\r\n"${process.execPath}" "%~dp0codex.js" %*\r\n`, 'utf8');
+  } else {
+    fs.copyFileSync(body, bin);
+    fs.chmodSync(bin, 0o755);
+  }
   return { dir, bin };
 }
 
