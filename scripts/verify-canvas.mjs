@@ -11,7 +11,7 @@
  *
  * Run: node scripts/verify-canvas.mjs
  */
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -20,6 +20,11 @@ import { setTimeout as delay } from 'node:timers/promises';
 const REPO = path.resolve(import.meta.dirname, '..');
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const sleep = (ms) => delay(ms);
+// `--app` runs the same assertions against the built bundle: the shipped copy
+// of desktop/ui is what the user opens, not the source tree.
+const USE_APP = process.argv.includes('--app');
+const APP = path.join(REPO, 'desktop', 'src-tauri', 'target', 'release', 'bundle', 'macos', 'Maestro.app');
+const APP_BIN = path.join(APP, 'Contents', 'MacOS', 'maestro');
 let pass = 0;
 const failures = [];
 function step(name, ok, detail = '') {
@@ -98,21 +103,29 @@ function readDoc() {
 
 try {
   const logFd = fs.openSync(path.join(root, 'daemon.log'), 'w');
-  daemon = spawn(process.execPath, [
-    path.join(REPO, 'src', 'daemon', 'serve-entry.js'), '--project', root, '--desktop'
-  ], {
-    cwd: root,
-    env: { ...process.env, HOME: home, USERPROFILE: home, NODE_ENV: 'test' },
-    stdio: ['ignore', logFd, logFd],
-  });
+  if (USE_APP) {
+    if (!fs.existsSync(APP_BIN)) throw new Error(`built app missing: ${APP_BIN} (run npm run desktop:build)`);
+    spawnSync('killall', ['-9', 'maestro'], { stdio: 'ignore' });
+    daemon = spawn(APP_BIN, ['--project', root, '--probe', path.join(root, 'probe.jsonl')], {
+      cwd: root, env: process.env, stdio: ['ignore', logFd, logFd],
+    });
+  } else {
+    daemon = spawn(process.execPath, [
+      path.join(REPO, 'src', 'daemon', 'serve-entry.js'), '--project', root, '--desktop'
+    ], {
+      cwd: root,
+      env: { ...process.env, HOME: home, USERPROFILE: home, NODE_ENV: 'test' },
+      stdio: ['ignore', logFd, logFd],
+    });
+  }
   const meta = await waitFor(() => {
     try { return JSON.parse(fs.readFileSync(path.join(root, '.orch', 'desktop.json'), 'utf8')); }
     catch { return null; }
-  }, 20000);
+  }, 30000);
   if (!meta?.port) {
     throw new Error('daemon not ready: ' + fs.readFileSync(path.join(root, 'daemon.log'), 'utf8').slice(0, 500));
   }
-  step('真实 daemon 就绪', true, `port ${meta.port}`);
+  step(USE_APP ? '打包产物 .app 就绪' : '真实 daemon 就绪', true, `port ${meta.port}`);
 
   chrome = spawn(CHROME, [
     '--headless=new', '--disable-gpu', '--no-sandbox', '--no-first-run', '--no-default-browser-check',
