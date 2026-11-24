@@ -235,6 +235,138 @@ export function resolveStageRole(doc, stage, team) {
   return null;
 }
 
+/**
+ * Shared read-modify-write seam for canvas/CLI flow edits.
+ *
+ * The draft is a shallow copy with fresh stage/edge arrays, so a rejected
+ * edit never leaves a partially mutated document. Every successful edit goes
+ * through the same `validateFlow` gate `createFlow` uses: cycles, dangling
+ * edges, empty role sets and duplicate ids are refused before the caller
+ * persists anything.
+ *
+ * @returns {{ok:true, flow:object}|{ok:false, code:string, params:object}}
+ */
+function editFlow(doc, flowId, mutate) {
+  const flow = findById(doc.flows, flowId);
+  if (!flow) return fail('STUDIO_FLOW_UNKNOWN', { flow: String(flowId) });
+  const draft = {
+    ...flow,
+    name: typeof flow.name === 'string' ? flow.name : '',
+    stages: (Array.isArray(flow.stages) ? flow.stages : []).map((stage) => ({ ...stage })),
+    edges: (Array.isArray(flow.edges) ? flow.edges : []).map((edge) => ({ ...edge })),
+  };
+  const changed = mutate(draft);
+  if (changed && changed.ok === false) return changed;
+  const checked = validateFlow(draft);
+  if (!checked.ok) return fail('STUDIO_FLOW_INVALID', { errors: checked.errors });
+  flow.name = draft.name;
+  flow.titleKey = draft.titleKey ?? null;
+  flow.gates = draft.gates;
+  flow.runMode = draft.runMode;
+  flow.stages = draft.stages;
+  flow.edges = draft.edges;
+  flow.updatedAt = new Date().toISOString();
+  return { ok: true, flow };
+}
+
+/** Patch a flow's display name / run mode without touching its DAG. */
+export function updateFlow(doc, flowId, patch = {}) {
+  return editFlow(doc, flowId, (flow) => {
+    if (patch.name !== undefined) {
+      if (typeof patch.name !== 'string' || patch.name.trim().length === 0) {
+        return fail('STUDIO_FLOW_NAME_REQUIRED');
+      }
+      flow.name = patch.name.trim().slice(0, 80);
+      flow.titleKey = null;
+    }
+    if (patch.runMode !== undefined) flow.runMode = patch.runMode;
+    return { ok: true };
+  });
+}
+
+/** Append one stage. `roleCodes` defaults to the first stage's roles. */
+export function addStage(doc, flowId, input = {}) {
+  let created = null;
+  const result = editFlow(doc, flowId, (flow) => {
+    const n = flow.stages.length + 1;
+    const used = new Set(flow.stages.map((stage) => stage.id));
+    let id = isId(input.id) ? input.id : `s${String(n).padStart(2, '0')}`;
+    while (used.has(id)) id = `${id}-${n}`;
+    const inherited = input.roleCodes ?? flow.stages[0]?.roleCodes ?? [];
+    const roleCodes = Array.isArray(inherited) ? inherited.filter((code) => typeof code === 'string') : [];
+    created = normalizeStage({ ...input, id, roleCodes }, flow.stages.length);
+    if (typeof input.name === 'string' && input.name.trim().length > 0) created.titleKey = null;
+    flow.stages.push(created);
+    return { ok: true };
+  });
+  return result.ok ? { ...result, stage: created } : result;
+}
+
+/** Rename / re-role one stage. */
+export function updateStage(doc, flowId, stageId, patch = {}) {
+  let updated = null;
+  const result = editFlow(doc, flowId, (flow) => {
+    const stage = flow.stages.find((item) => item.id === stageId);
+    if (!stage) return fail('STUDIO_FLOW_STAGE_UNKNOWN', { stage: String(stageId) });
+    if (patch.name !== undefined) {
+      if (typeof patch.name !== 'string' || patch.name.trim().length === 0) {
+        return fail('STUDIO_FLOW_STAGE_NAME_REQUIRED', { stage: String(stageId) });
+      }
+      stage.name = patch.name.trim().slice(0, 80);
+      stage.titleKey = null;
+    }
+    if (Array.isArray(patch.roleCodes) && patch.roleCodes.every((code) => typeof code === 'string')) {
+      stage.roleCodes = patch.roleCodes.slice();
+    }
+    if (patch.gate !== undefined) stage.gate = GATE_KINDS.includes(patch.gate) ? patch.gate : null;
+    updated = stage;
+    return { ok: true };
+  });
+  return result.ok ? { ...result, stage: updated } : result;
+}
+
+/** Delete a stage together with every edge that touches it. */
+export function removeStage(doc, flowId, stageId) {
+  return editFlow(doc, flowId, (flow) => {
+    if (!flow.stages.some((stage) => stage.id === stageId)) {
+      return fail('STUDIO_FLOW_STAGE_UNKNOWN', { stage: String(stageId) });
+    }
+    flow.stages = flow.stages.filter((stage) => stage.id !== stageId);
+    flow.edges = flow.edges.filter((edge) => edge.from !== stageId && edge.to !== stageId);
+    flow.gates = flow.stages.map((stage) => stage.gate).filter(Boolean);
+    return { ok: true };
+  });
+}
+
+/** Add one dependency. Duplicate/self edges are refused; cycles hit validateFlow. */
+export function addFlowEdge(doc, flowId, from, to) {
+  return editFlow(doc, flowId, (flow) => {
+    if (typeof from !== 'string' || typeof to !== 'string' || from.length === 0 || to.length === 0) {
+      return fail('STUDIO_FLOW_EDGE_INVALID', { from: String(from), to: String(to) });
+    }
+    if (from === to) return fail('STUDIO_FLOW_EDGE_SELF', { stage: from });
+    if (!flow.stages.some((stage) => stage.id === from) || !flow.stages.some((stage) => stage.id === to)) {
+      return fail('STUDIO_FLOW_EDGE_INVALID', { from, to });
+    }
+    if (flow.edges.some((edge) => edge.from === from && edge.to === to)) {
+      return fail('STUDIO_FLOW_EDGE_EXISTS', { from, to });
+    }
+    flow.edges.push({ from, to });
+    return { ok: true };
+  });
+}
+
+/** Remove one dependency by its endpoints. */
+export function removeFlowEdge(doc, flowId, from, to) {
+  return editFlow(doc, flowId, (flow) => {
+    const index = flow.edges.findIndex((edge) => edge.from === from && edge.to === to);
+    if (index < 0) return fail('STUDIO_FLOW_EDGE_UNKNOWN', { from: String(from), to: String(to) });
+    flow.edges.splice(index, 1);
+    flow.gates = flow.stages.map((stage) => stage.gate).filter(Boolean);
+    return { ok: true };
+  });
+}
+
 export function removeFlow(doc, id) {
   const flow = findById(doc.flows, id);
   if (!flow) return fail('STUDIO_FLOW_UNKNOWN', { flow: String(id) });

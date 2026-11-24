@@ -18,6 +18,7 @@
     "verify:shell": "node scripts/verify-shell-boot.mjs",
     "verify:journey": "node scripts/verify-journey.mjs",
     "verify:authoring": "node scripts/verify-authoring-ui.mjs",
-    "verify:release": "node scripts/verify-core.mjs && node scripts/verify-ui-flow.mjs && node scripts/verify-authoring-ui.mjs && node scripts/verify-desktop-boot.mjs && node scripts/verify-shell-boot.mjs"
+    "verify:canvas": "node scripts/verify-canvas.mjs",
+    "verify:release": "node scripts/verify-core.mjs && node scripts/verify-ui-flow.mjs && node scripts/verify-authoring-ui.mjs && node scripts/verify-canvas.mjs && node scripts/verify-desktop-boot.mjs && node scripts/verify-shell-boot.mjs"
   }
 }

@@ -375,3 +375,50 @@ git push origin v0.0.1-beta.4
 > shell 验证一度误报：`com.maestro.desktop` 的 single-instance 锁被早前手动启动的旧 shell
 > 持有，新启动只触发 `activated`、不写 desktop.json。已在 `verify-shell-boot.mjs` 启动前
 > 清理同名进程（`killall`/`taskkill`），并对 `activated` 给出明确诊断，避免误判为产品缺陷。
+
+---
+
+## 15. 工作流画布从只读架子补成可用编辑面（2026-11-25）
+
+### 15.1 问题与根因
+
+用户反馈「画布啥都看不到也不能编辑」。逐文件核对后是三处渲染缺陷 + 两处能力缺口叠加，不是单一故障：
+
+| # | 现象 | 根因（代码位置） |
+|---|---|---|
+| 1 | 连线完全不可见 | `pages.js` 把 `computeLayout` 返回的 `{kind:'arc',ctrl}` 对象直接写进 SVG `d` 属性，序列化成 `"[object Object]"`（`desktop/ui/shell/pages.js` 旧 580–586；`desktop/ui/graph/layout.js:137-145`）。实例流程图早有正确的 `edgeGeometry()`，画布页没用。 |
+| 2 | 节点只显示裸 id | 渲染读 `placed.id`，而 `composeCanvas` 已算好中文 `text` 却没被消费（旧 `pages.js:603`）。 |
+| 3 | 自定义/Studio 工作流看不到 | 选择器只列 `GET /workflows` 的三个内置模板（`routes.js:417-422`），Studio 编译产物与 `.orch/studio.json` 里的 flow 都不在列表。 |
+| 4 | 看不到进度 | 定义态投影按 AC-30 故意不含运行时状态（`src/daemon/canvas.js:6-7`），Studio 的 `runs[].stages[].status` 没有接到画布。 |
+| 5 | 不能编辑 | 画布节点/边没有 `data-action`，HTTP 也没有工作流编辑 action；需求文档把编辑划在范围外。 |
+
+### 15.2 改动
+
+| 层 | 改动 | 位置 |
+|---|---|---|
+| 投影 | 新增 `studioCanvas()`：id 命中 `.orch/studio.json` 的 flow 时，投影阶段为节点并附带最新 run 的 `status/statusKey/progress`，顶层带 `source/editable/progress`；**冻结的 YAML/内置投影形状逐字不变**（AC-30 只约束那一路），id 未命中仍回落到原逻辑 | `src/daemon/canvas.js` |
+| 纯几何 | 新增 `canvasEdgePath()`，把布局的 `{kind,ctrl}` 转成真实 `M/L/Q` 路径；回两端缺失时返回空串 | `desktop/ui/canvas/canvas.js` |
+| 域层 | 新增 `updateFlow / addStage / updateStage / removeStage / addFlowEdge / removeFlowEdge`，全部经同一个 `editFlow` 草案 + `validateFlow` 门禁；非法边、自环、重复、成环在写盘前被拒 | `src/studio/flow.js`、`src/studio/index.js` |
+| HTTP | 新增 `flow.update / flow.stage.add / flow.stage.update / flow.stage.remove / flow.edge.add / flow.edge.remove` 六个 `/studio/action`，与 UI 共用域函数 | `src/daemon/http/studio-routes.js` |
+| 错误与文案 | 新增 7 个 `STUDIO_FLOW_*` 错误码映射与 `ERR_FLOW_*` 文案；新增 12 个 `UI_CANVAS_*`/`UI_SAVE`/`UI_CLOSE` 到 `STUDIO_TEXT`（不碰冻结的 `UI_LABEL_KEYS`） | `src/studio/messages.js`、`src/cli/labels.js` |
+| UI | 画布重画：合法路径 + 箭头、中文阶段名、状态色、进度条、动态 viewBox；节点点选改名/删除、连线模式表单增删依赖、新增阶段、重置布局；节点拖拽落 localStorage 并在重绘后复用 | `desktop/ui/shell/pages.js`、`desktop/ui/canvas/drag.js`、`desktop/ui/app.js`、`desktop/ui/theme.css` |
+| 防竞态 | `loadCanvas` 加单调 `canvasLoadSeq`：连续两次编辑时，较慢的旧请求不得把刚保存的 DAG 覆盖回旧帧（真实浏览器实测抓到过这个回退） | `desktop/ui/app.js` |
+| 验证 | 新增 `test/wp18/canvas-authoring.test.js` 与 `scripts/verify-canvas.mjs`（真实 daemon + Chrome/CDP 驱动真实 DOM） | 测试与脚本 |
+
+### 15.3 验证结果
+
+| 验证 | 结果 |
+|---|---|
+| `test/wp18/canvas-authoring.test.js` | **5/5**（路径字符串、Studio 进度投影、内置回落、编辑落盘、拒绝后文档逐字不变） |
+| wp14 画布/契约/文案冻结 + wp13 纯净扫描 | 41/41（1 skip），冻结键集合与 CJK/purity 零命中均保持 |
+| **真实浏览器** `npm run verify:canvas` | **15/15**：节点中文名、合法 `d` 路径、进度 1/2、选择器列出 Studio flow、改名落盘、新增阶段立即出现、增/删依赖落盘、拖拽留存、重载后保留 |
+| 全量回归（工作区未提交） | `2011 / 1992 pass / 17 fail / 2 skip` |
+| HEAD 基线工作树（`7e9df51`） | `2006 / 1986 pass / 15 fail / 5 skip` |
+| 差集复核 | 唯一确定新增是 `AC-23 #3`（`git diff HEAD` 型，提交后归零）；`NFR-02` 与 `cursor.json 并发消费` 在全量下互有红、独占 `--test-concurrency=1` 复跑 **6/6 全绿**，判定为既有负载型 flake；基线另有 `detached 自动拉起` 红而本轮未红，同属资源波动 |
+
+### 15.4 边界
+
+- 本次只修本地工作区，**没有重发 tag / Release**；要进安装包需另起发版流程。
+- 拖拽坐标属于视图偏好，存浏览器 localStorage，不跨设备同步，也不写进 Studio 文档。
+- CLI 侧新增了域函数但没有加对应的 `orch flow stage/edge` 子命令；当前编辑入口是画布与 `/studio/action`，CLI 仍用既有 `flow create --stages`。
+- 画布编辑改的是 Studio 源（`.orch/studio.json`）；下次 `run start --mode engine` 重新编译时，`.orch/workflows/*.yaml` 会按新 DAG 覆盖。

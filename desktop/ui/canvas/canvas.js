@@ -171,6 +171,48 @@ export function edgeRow(edge, labels) {
 }
 
 /**
+ * SVG path of one laid-out canvas edge.
+ *
+ * `graph/layout.js` deliberately returns geometry as a shape
+ * (`{ kind: 'straight' }` / `{ kind: 'arc', ctrl }`) and leaves the SVG string
+ * to the renderer. This helper is that renderer, kept pure so both the
+ * harness and the browser produce byte-equal `d` attributes. Endpoints come
+ * from the placed node boxes (centre-to-centre), matching the layout module's
+ * own centre calculation.
+ *
+ * @param {{from?:string, to?:string, path?:{kind?:string, ctrl?:{x:number,y:number}}}} edge
+ * @param {Array<{id:string, x:number, y:number, width?:number, height?:number}>} placed
+ * @returns {{d:string, mid:{x:number,y:number}}}
+ */
+export function canvasEdgePath(edge, placed) {
+  const boxes = new Map(
+    (Array.isArray(placed) ? placed : []).map((node) => [node?.id, node])
+  );
+  const from = boxes.get(edge?.from);
+  const to = boxes.get(edge?.to);
+  if (!from || !to) return { d: '', mid: { x: 0, y: 0 } };
+  const a = {
+    x: Number(from.x) + Number(from.width ?? 180) / 2,
+    y: Number(from.y) + Number(from.height ?? 80) / 2,
+  };
+  const b = {
+    x: Number(to.x) + Number(to.width ?? 180) / 2,
+    y: Number(to.y) + Number(to.height ?? 80) / 2,
+  };
+  const ctrl = edge?.path?.ctrl;
+  if (edge?.path?.kind === 'arc' && ctrl && Number.isFinite(ctrl.x) && Number.isFinite(ctrl.y)) {
+    return {
+      d: `M ${a.x} ${a.y} Q ${ctrl.x} ${ctrl.y} ${b.x} ${b.y}`,
+      mid: { x: (a.x + 2 * ctrl.x + b.x) / 4, y: (a.y + 2 * ctrl.y + b.y) / 4 },
+    };
+  }
+  return {
+    d: `M ${a.x} ${a.y} L ${b.x} ${b.y}`,
+    mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+  };
+}
+
+/**
  * Edges shaped for `graph/layout.js` `computeLayout` (D-4): stable ids plus a
  * `direction` field; backflow edges stay arcs. Layout itself is the caller's
  * job — this is pure shape mapping, never coordinate math.

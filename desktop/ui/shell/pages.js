@@ -10,9 +10,10 @@
  */
 
 import {
-  append, badge, button, callout, card, divider, el, emptyBox, fieldLine,
-  kv, logBlock, metric, pageHead, progress, sectionTitle, table, tag, timeline,
+  append, badge, button,   callout, card, divider, el, emptyBox, fieldLine,
+  kv, logBlock, metric, pageHead, progress, sectionTitle, svgEl, table, tag, timeline,
 } from './kit.js';
+import { canvasEdgePath } from '../canvas/canvas.js';
 
 /** Instance status word -> badge tone. */
 const STATE_TONE = Object.freeze({
@@ -541,20 +542,36 @@ export function occupancyPage(ctx) {
 // canvas
 // ---------------------------------------------------------------------------
 
+const CANVAS_STATUS_COLOR = Object.freeze({
+  STAGE_DONE: '#16a34a',
+  STAGE_RUNNING: '#2563eb',
+  STAGE_WAITING: '#d97706',
+  STAGE_BLOCKED: '#dc2626',
+  STAGE_PENDING: '#94a3b8',
+});
+
+/**
+ * Canvas page. Renders the projection's own placement (never recomputes
+ * layout) and, for Studio flows, exposes the authoring controls. All labels
+ * come from the label tables through `ctx.t` / `ctx.st`; this file authors no
+ * wording.
+ */
 export function canvasPage(ctx) {
   const frag = document.createDocumentFragment();
   const view = ctx.model.canvas ?? { nodes: [], edges: [] };
+  const st = (key, fallback) => (typeof ctx.st === 'function' ? ctx.st(key, fallback) : (fallback ?? key));
   frag.appendChild(pageHead(ctx.t('DESKTOP_VIEW_CANVAS'), view.title ?? null));
 
-  // Workflow switch: the canvas is a projection of ONE workflow, so the page
-  // needs its own selector instead of depending on whichever id loaded first.
-  const templates = Array.isArray(ctx.state.templates) ? ctx.state.templates : [];
-  if (templates.length > 0) {
+  // The canvas is a projection of ONE workflow, so it owns its selector.
+  const sources = Array.isArray(ctx.state.canvasSources) && ctx.state.canvasSources.length > 0
+    ? ctx.state.canvasSources
+    : (Array.isArray(ctx.state.templates) ? ctx.state.templates : []);
+  if (sources.length > 0) {
     const chips = el('div', 'sb mb14');
-    for (const item of templates) {
+    for (const item of sources) {
       const id = typeof item?.id === 'string' ? item.id : null;
       if (id === null) continue;
-      const active = (ctx.state.canvasId ?? templates[0]?.id) === id;
+      const active = id === (ctx.state.canvasId ?? sources[0]?.id);
       const chip = el('button', active ? 'chip on' : 'chip', typeof item?.title === 'string' ? item.title : id);
       chip.type = 'button';
       chip.setAttribute('data-action', 'canvas-pick');
@@ -570,51 +587,141 @@ export function canvasPage(ctx) {
     for (const reason of view.degrade.reasons ?? []) box.appendChild(el('div', 'tiny muted mt6', reason));
     frag.appendChild(box);
   }
-  const layout = ctx.state.canvasLayout ?? null;
-  const wrap = el('div', 'graphwrap');
-  const ns = 'http://www.w3.org/2000/svg';
-  const node = document.createElementNS(ns, 'svg');
-  node.setAttribute('viewBox', '0 0 960 360');
-  node.setAttribute('width', '100%');
-  if (layout !== null) {
-    for (const edge of layout.edges ?? []) {
-      const path = document.createElementNS(ns, 'path');
-      path.setAttribute('d', edge.path);
-      path.setAttribute('fill', 'none');
-      path.setAttribute('stroke', '#cbd5e1');
-      path.setAttribute('stroke-width', '2');
-      node.appendChild(path);
-    }
-    for (const placed of layout.nodes ?? []) {
-      const g = document.createElementNS(ns, 'g');
-      const rect = document.createElementNS(ns, 'rect');
-      rect.setAttribute('x', placed.x);
-      rect.setAttribute('y', placed.y);
-      rect.setAttribute('width', placed.width ?? 160);
-      rect.setAttribute('height', placed.height ?? 64);
-      rect.setAttribute('rx', '12');
-      rect.setAttribute('fill', '#fff');
-      rect.setAttribute('stroke', '#c7d2fe');
-      g.appendChild(rect);
-      const label = document.createElementNS(ns, 'text');
-      label.setAttribute('x', Number(placed.x) + 14);
-      label.setAttribute('y', Number(placed.y) + 30);
-      label.setAttribute('font-size', '12');
-      label.textContent = placed.id ?? '';
-      g.appendChild(label);
-      node.appendChild(g);
-    }
-  } else {
-    for (const item of view.nodes ?? []) {
-      const label = document.createElementNS(ns, 'text');
-      label.setAttribute('x', item.x ?? 10);
-      label.setAttribute('y', item.y ?? 10);
-      label.setAttribute('font-size', '12');
-      label.textContent = item.text ?? item.id ?? '';
-      node.appendChild(label);
-    }
+
+  const tools = el('div', 'row wrap mb14');
+  if (view.editable === true) {
+    tools.appendChild(button(st('UI_CANVAS_ADD_STAGE', 'Add stage'), { action: 'canvas-add-stage', variant: 'primary' }));
+    tools.appendChild(button(
+      ctx.state.canvasLinkMode === true
+        ? st('UI_CANVAS_LINK_ON', 'Link: on') : st('UI_CANVAS_LINK', 'Link'),
+      { action: 'canvas-link-mode', variant: ctx.state.canvasLinkMode === true ? 'primary' : 'ghost' }
+    ));
+    tools.appendChild(button(st('UI_CANVAS_RESET_LAYOUT', 'Reset layout'), { action: 'canvas-reset-layout' }));
   }
-  wrap.appendChild(node);
+  if (view.progress) {
+    tools.appendChild(el('span', 'tiny muted', `${st('UI_CANVAS_PROGRESS', 'Progress')} ${view.progress.done}/${view.progress.total}`));
+  }
+  if (tools.childNodes.length > 0) frag.appendChild(tools);
+
+  const selection = ctx.state.canvasSelection ?? null;
+  if (selection !== null) {
+    const box = card([], { flat: true, className: 'mb14' });
+    if (selection.kind === 'edge') {
+      const edge = (view.edges ?? []).find((item) => item.id === selection.id) ?? null;
+      box.appendChild(el('div', 'tiny muted', edge ? `${edge.from} -> ${edge.to}` : String(selection.id)));
+      box.appendChild(button(st('UI_CANVAS_REMOVE_EDGE', 'Remove link'), {
+        action: 'canvas-edge-remove', arg: selection.id, variant: 'danger',
+      }));
+    } else {
+      const node = (view.nodes ?? []).find((item) => item.id === selection.id) ?? null;
+      const input = el('input', 'input');
+      input.id = 'canvas-stage-name';
+      input.value = node?.text ?? String(selection.id);
+      box.appendChild(input);
+      box.appendChild(button(st('UI_SAVE', 'Save'), { action: 'canvas-stage-save', arg: selection.id, variant: 'primary' }));
+      box.appendChild(button(st('UI_CANVAS_REMOVE_STAGE', 'Remove stage'), {
+        action: 'canvas-stage-remove', arg: selection.id, variant: 'danger',
+      }));
+    }
+    box.appendChild(button(st('UI_CLOSE', 'Close'), { action: 'canvas-clear-selection' }));
+    frag.appendChild(box);
+  }
+
+  if (ctx.state.canvasLinkMode === true && view.editable === true) {
+    const box = card([], { flat: true, className: 'mb14' });
+    box.appendChild(el('div', 'tiny muted', st('UI_CANVAS_LINK_HINT', 'Select source and target stage')));
+    const options = (Array.isArray(ctx.state.canvas?.nodes) ? ctx.state.canvas.nodes : view.nodes)
+      .map((node) => node.id);
+    const from = el('select', 'input');
+    from.id = 'canvas-link-from';
+    const to = el('select', 'input');
+    to.id = 'canvas-link-to';
+    for (const id of options) {
+      from.appendChild(el('option', null, id)).value = id;
+      to.appendChild(el('option', null, id)).value = id;
+    }
+    box.appendChild(from);
+    box.appendChild(to);
+    box.appendChild(button(st('UI_CANVAS_ADD_EDGE', 'Add link'), { action: 'canvas-edge-add', variant: 'primary' }));
+    frag.appendChild(box);
+  }
+
+  const placed = Array.isArray(view.nodes) ? view.nodes : [];
+  const wrap = el('div', 'graphwrap canvas-wrap');
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = svgEl('svg', { width: '100%', class: 'canvas-svg' });
+  const xs = placed.map((node) => Number(node.x));
+  const ys = placed.map((node) => Number(node.y));
+  const minX = xs.length > 0 ? Math.min(...xs) : 0;
+  const minY = ys.length > 0 ? Math.min(...ys) : 0;
+  const maxX = xs.length > 0 ? Math.max(...xs.map((x, i) => x + Number(placed[i].width ?? 180))) : 960;
+  const maxY = ys.length > 0 ? Math.max(...ys.map((y, i) => y + Number(placed[i].height ?? 80))) : 360;
+  svg.setAttribute('viewBox', `${minX - 40} ${minY - 40} ${Math.max(maxX - minX + 80, 960)} ${Math.max(maxY - minY + 80, 360)}`);
+
+  const defs = svgEl('defs');
+  for (const [name, color] of [['arrow', '#cbd5e1'], ['arrow-run', '#2563eb'], ['arrow-done', '#16a34a']]) {
+    const marker = svgEl('marker', {
+      id: `canvas-${name}`, viewBox: '0 0 10 10', refX: 9, refY: 5,
+      markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse',
+    });
+    marker.appendChild(svgEl('path', { d: 'M 1 1 L 9 5 L 1 9', fill: 'none', stroke: color, 'stroke-width': 1.5 }));
+    defs.appendChild(marker);
+  }
+  svg.appendChild(defs);
+
+  for (const edge of view.edges ?? []) {
+    const geometry = canvasEdgePath(edge, placed);
+    if (geometry.d.length === 0) continue;
+    const selected = selection?.kind === 'edge' && selection.id === edge.id;
+    const target = placed.find((node) => node.id === edge.to);
+    const color = target?.statusKey === 'STAGE_DONE'
+      ? '#16a34a' : target?.statusKey === 'STAGE_RUNNING' ? '#2563eb' : '#cbd5e1';
+    const path = svgEl('path', {
+      d: geometry.d, fill: 'none', stroke: selected ? '#0f172a' : color,
+      'stroke-width': selected ? 3 : 2,
+      'marker-end': `url(#canvas-${target?.statusKey === 'STAGE_DONE' ? 'arrow-done' : target?.statusKey === 'STAGE_RUNNING' ? 'arrow-run' : 'arrow'})`,
+      'data-action': 'canvas-edge',
+      'data-arg': JSON.stringify({ id: edge.id, from: edge.from, to: edge.to }),
+      class: 'canvas-edge',
+    });
+    if (edge.kind === 'backflow') path.setAttribute('stroke-dasharray', '6 4');
+    svg.appendChild(path);
+  }
+
+  for (const node of placed) {
+    const group = svgEl('g', {
+      'data-action': 'canvas-node',
+      'data-arg': JSON.stringify({ id: node.id }),
+      class: 'canvas-node',
+    });
+    const x = Number(node.x);
+    const y = Number(node.y);
+    const width = Number(node.width ?? 180);
+    const height = Number(node.height ?? 80);
+    const color = CANVAS_STATUS_COLOR[node.statusKey] ?? '#c7d2fe';
+    const selected = selection?.kind === 'node' && selection.id === node.id;
+    group.appendChild(svgEl('rect', {
+      x, y, width, height, rx: 12, fill: '#fff',
+      stroke: selected ? '#0f172a' : color, 'stroke-width': selected ? 2.5 : 1.8,
+    }));
+    group.appendChild(svgEl('rect', { x, y, width: 4, height, rx: 2, fill: color }));
+    const title = svgEl('text', { x: x + 14, y: y + 26, 'font-size': 13, 'font-weight': 600, fill: '#0f172a' });
+    title.textContent = String(node.text ?? node.id ?? '').slice(0, 18);
+    group.appendChild(title);
+    const status = svgEl('text', { x: x + 14, y: y + 45, 'font-size': 11, fill: '#64748b' });
+    status.textContent = `${node.id}${node.status ? ` · ${node.status}` : ''}`.slice(0, 26);
+    group.appendChild(status);
+    const pct = Number(node.progress);
+    if (Number.isFinite(pct) && pct > 0) {
+      group.appendChild(svgEl('rect', { x: x + 14, y: y + height - 14, width: width - 28, height: 5, rx: 2, fill: '#e2e8f0' }));
+      group.appendChild(svgEl('rect', {
+        x: x + 14, y: y + height - 14, width: (width - 28) * Math.min(Math.max(pct, 0), 100) / 100,
+        height: 5, rx: 2, fill: color,
+      }));
+    }
+    svg.appendChild(group);
+  }
+  wrap.appendChild(svg);
   frag.appendChild(wrap);
 
   const rows = (view.nodes ?? []).map((item) => [item.id ?? '', item.text ?? '']);

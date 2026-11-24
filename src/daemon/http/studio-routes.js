@@ -26,6 +26,12 @@ import {
   createTeam,
   checkTeam,
   createFlow,
+  updateFlow,
+  addStage,
+  updateStage,
+  removeStage,
+  addFlowEdge,
+  removeFlowEdge,
   updateTeam,
   startRun,
   approveRun,
@@ -414,6 +420,74 @@ const ACTIONS = Object.freeze({
     });
     if (!saved.ok) return saved;
     return { ok: true, flow: created };
+  },
+
+  async 'flow.update'(root, payload) {
+    let updated = null;
+    const saved = await updateStudio(root, (doc) => {
+      const patch = {};
+      if (payload.name !== undefined) patch.name = payload.name;
+      if (payload.runMode !== undefined) patch.runMode = payload.runMode;
+      const result = updateFlow(doc, payload.flowId ?? payload.id, patch);
+      if (!result.ok) return result;
+      updated = result.flow;
+      return { ok: true };
+    });
+    if (!saved.ok) return saved;
+    return { ok: true, flow: updated };
+  },
+
+  async 'flow.stage.add'(root, payload) {
+    let stage = null;
+    const saved = await updateStudio(root, (doc) => {
+      const result = addStage(doc, payload.flowId ?? payload.flow, {
+        name: payload.name,
+        id: payload.stageId,
+        roleCodes: payload.roleCodes,
+      });
+      if (!result.ok) return result;
+      stage = result.stage;
+      return { ok: true };
+    });
+    if (!saved.ok) return saved;
+    return { ok: true, stage };
+  },
+
+  async 'flow.stage.update'(root, payload) {
+    let stage = null;
+    const saved = await updateStudio(root, (doc) => {
+      const result = updateStage(doc, payload.flowId ?? payload.flow, payload.stageId ?? payload.id, {
+        name: payload.name,
+        roleCodes: payload.roleCodes,
+        gate: payload.gate,
+      });
+      if (!result.ok) return result;
+      stage = result.stage;
+      return { ok: true };
+    });
+    if (!saved.ok) return saved;
+    return { ok: true, stage };
+  },
+
+  async 'flow.stage.remove'(root, payload) {
+    const saved = await updateStudio(root, (doc) => removeStage(
+      doc, payload.flowId ?? payload.flow, payload.stageId ?? payload.id
+    ));
+    return saved.ok ? { ok: true } : saved;
+  },
+
+  async 'flow.edge.add'(root, payload) {
+    const saved = await updateStudio(root, (doc) => addFlowEdge(
+      doc, payload.flowId ?? payload.flow, payload.from, payload.to
+    ));
+    return saved.ok ? { ok: true } : saved;
+  },
+
+  async 'flow.edge.remove'(root, payload) {
+    const saved = await updateStudio(root, (doc) => removeFlowEdge(
+      doc, payload.flowId ?? payload.flow, payload.from, payload.to
+    ));
+    return saved.ok ? { ok: true } : saved;
   },
 
   async 'run.start'(root, payload) {

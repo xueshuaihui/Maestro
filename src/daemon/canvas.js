@@ -46,11 +46,13 @@ import {
   DESKTOP_CANVAS_UNREADABLE,
   NODE_TYPE_LABEL,
   REGISTRY_ERROR,
+  STUDIO_TEXT as T,
   TEMPLATE_LABEL,
   WORKFLOW_REASON_TEXT,
   WORKFLOW_TRANSITION_TEXT,
   YAML_DETAIL,
 } from '../cli/labels.js';
+import { STUDIO_FILE } from '../studio/index.js';
 
 /**
  * 画布侧中文文案键（附录 A-7 逐字；中文唯一来源 = src/cli/labels.js，BR-26）：
@@ -237,6 +239,104 @@ function builtinCanvas(id, result) {
   return problems.length > 0 ? { ...body, problems } : body;
 }
 
+// ---------------------------------------------------------------------------
+// Studio flow canvas (v2). The definition canvas used to only project the
+// engine's `.orch/workflows/*.yaml`, which made every Studio-authored flow
+// invisible until a separate compile step ran. Studio's `studio.json` is the
+// authoring source of truth, so a matching flow is projected here — with the
+// latest run's stage status attached. The frozen AC-30 YAML/builtin shape is
+// untouched: only this extra source carries runtime fields.
+// ---------------------------------------------------------------------------
+
+/** Run stage status -> STUDIO_TEXT key (single Chinese source). */
+const STAGE_STATUS_KEY = Object.freeze({
+  pending: 'STAGE_PENDING',
+  running: 'STAGE_RUNNING',
+  'awaiting-approval': 'STAGE_WAITING',
+  done: 'STAGE_DONE',
+  blocked: 'STAGE_BLOCKED',
+});
+
+function stageStatusOf(slot) {
+  const key = STAGE_STATUS_KEY[slot?.status] ?? 'STAGE_PENDING';
+  return { key, text: typeof T[key] === 'string' ? T[key] : key, progress: slot?.status === 'done' ? 100 : 0 };
+}
+
+function stageTitleOf(stage, id) {
+  if (typeof stage?.titleKey === 'string' && typeof T[stage.titleKey] === 'string') return T[stage.titleKey];
+  if (typeof stage?.name === 'string' && stage.name.length > 0) return stage.name;
+  return id;
+}
+
+/**
+ * Project one Studio flow when the id matches `.orch/studio.json`.
+ * Returns null when there is no document or no matching flow, so `buildCanvas`
+ * can fall through to the frozen YAML/builtin behaviour.
+ *
+ * @returns {object|null}
+ */
+export function studioCanvas(root, id) {
+  if (typeof id !== 'string' || id.length === 0) return null;
+  let raw = null;
+  try {
+    raw = fs.readFileSync(path.join(root, STUDIO_FILE), 'utf8');
+  } catch {
+    return null;
+  }
+  let doc = null;
+  try {
+    doc = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (!isPlainObject(doc) || !Array.isArray(doc.flows)) return null;
+  const flow = doc.flows.find((item) => isPlainObject(item) && item.id === id);
+  if (!flow) return null;
+
+  const runs = Array.isArray(doc.runs) ? doc.runs.filter((run) => isPlainObject(run) && run.flowId === id) : [];
+  const latest = runs.length > 0 ? runs[runs.length - 1] : null;
+  const slots = new Map(
+    (Array.isArray(latest?.stages) ? latest.stages : [])
+      .filter((slot) => isPlainObject(slot) && typeof slot.stageId === 'string')
+      .map((slot) => [slot.stageId, slot])
+  );
+  const stages = Array.isArray(flow.stages) ? flow.stages.filter(isPlainObject) : [];
+  const ids = new Set(stages.map((stage) => stage.id));
+  const nodes = stages.map((stage) => {
+    const stageId = typeof stage.id === 'string' ? stage.id : '';
+    const status = stageStatusOf(slots.get(stageId));
+    return {
+      id: stageId,
+      nodeType: 'role',
+      roleId: Array.isArray(stage.roleCodes) && typeof stage.roleCodes[0] === 'string' ? stage.roleCodes[0] : null,
+      label: stageTitleOf(stage, stageId),
+      // Appended fields: the frozen YAML/builtin canvas keeps its exact shape;
+      // only this source carries runtime state (see the AC-30 comment above).
+      status: status.text,
+      statusKey: status.key,
+      progress: status.progress,
+      roleCodes: Array.isArray(stage.roleCodes) ? stage.roleCodes.slice() : [],
+      gate: typeof stage.gate === 'string' ? stage.gate : null,
+    };
+  });
+  const edges = (Array.isArray(flow.edges) ? flow.edges : [])
+    .filter((edge) => isPlainObject(edge) && ids.has(edge.from) && ids.has(edge.to))
+    .map((edge) => ({ from: edge.from, to: edge.to, kind: 'forward' }));
+  const done = nodes.filter((node) => node.statusKey === 'STAGE_DONE').length;
+  return {
+    title: typeof flow.name === 'string' && flow.name.length > 0 ? flow.name : id,
+    readable: true,
+    valid: true,
+    nodes,
+    edges,
+    source: 'studio',
+    editable: true,
+    progress: { done, total: nodes.length },
+    runId: latest?.id ?? null,
+    runStatus: typeof latest?.status === 'string' ? latest.status : null,
+  };
+}
+
 /**
  * 定义态画布投影（只读，同步）。
  *
@@ -249,6 +349,8 @@ function builtinCanvas(id, result) {
 export function buildCanvas(root, workflowId) {
   const base = typeof root === 'string' && root.length > 0 ? root : process.cwd();
   const id = typeof workflowId === 'string' ? workflowId : '';
+  const studio = studioCanvas(base, id);
+  if (studio !== null) return studio;
   const file = path.join(base, '.orch', 'workflows', `${id}.yaml`);
 
   const registry = loadRegistry({ root: base });

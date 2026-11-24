@@ -81,6 +81,7 @@ import { renderOccupancyRow, emptyText as occupancyEmptyText,
   skippedText, disconnectedText as occupancyDisconnectedText } from './occupancy/occupancy.js';
 import { titleText as canvasTitleText, validationBadge, degradeText as canvasDegradeText,
   nodeRow as canvasNodeRow, edgeRow as canvasEdgeRow, graphEdges } from './canvas/canvas.js';
+import { attachCanvasDrag, readCanvasOffsets, saveCanvasOffset, clearCanvasOffsets } from './canvas/drag.js';
 import { renderEvidence, RENDER_LIMIT_BYTES } from './evidence/evidence.js';
 import { replaceIntent, queueTargetOf, stripEntryOf } from './notify/notify.js';
 // beta.2 shell: presentation layer split into chrome / pages / graph / drill.
@@ -381,6 +382,14 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     escalationDrawer: null, // { escalationId, view }
     drawerOpen: false,    // drawer visibility mirror for the assembler
     routeHistory: [],     // { view, instanceId } stack for the back action
+    // ---- workflow canvas authoring (v2, appended last)
+    studioState: null,    // last /studio/state projection
+    studioLabels: null,   // last /studio/labels table (canvas authoring words)
+    canvasSources: null,  // merged workflow picker: builtins + Studio flows
+    canvasSelection: null, // { kind: 'node'|'edge', id }
+    canvasLinkMode: false,
+    canvasOffsets: {},    // workflow id -> { nodeId: {x,y} } (local layout prefs)
+    canvasLoadSeq: 0,     // monotonic guard: a slower older load must not win
   };
 
   if (isProjectBlocked(state.project)) state.view = 'project';
@@ -1114,22 +1123,118 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
 
     async loadCanvas(id) {
       const canvasId = typeof id === 'string' && id.length > 0 ? id : state.canvasId;
+      const seq = state.canvasLoadSeq + 1;
+      state.canvasLoadSeq = seq;
       state.canvasId = canvasId;
-      if (canvasId === null || typeof transport.getCanvas !== 'function') return api;
+      // The picker is built from the same Studio state the authoring page
+      // uses, so a flow becomes visible on the canvas the moment it is saved.
+      const calls = [
+        canvasId !== null && typeof transport.getCanvas === 'function'
+          ? transport.getCanvas(canvasId) : Promise.resolve(null),
+        typeof transport.getStudioState === 'function' ? transport.getStudioState() : Promise.resolve(null),
+        typeof transport.getStudioLabels === 'function' ? transport.getStudioLabels() : Promise.resolve(null),
+      ];
+      const [answer, studioAnswer, labelAnswer] = await Promise.all(
+        calls.map((call) => Promise.resolve(call).catch(() => null))
+      );
+      // Two rapid authoring commands can overlap. Only the newest load may
+      // write projections; an older frame would roll back a just-saved DAG.
+      if (seq !== state.canvasLoadSeq) return api;
+      if (studioAnswer?.status === 200 && studioAnswer.body?.ok === true) state.studioState = studioAnswer.body;
+      if (labelAnswer?.status === 200 && labelAnswer.body?.ok === true) {
+        state.studioLabels = labelAnswer.body.labels ?? {};
+      }
+
+      const seen = new Set();
+      const sources = [];
+      for (const flow of state.studioState?.flows ?? []) {
+        const flowId = typeof flow?.id === 'string' ? flow.id : null;
+        if (flowId === null || seen.has(flowId)) continue;
+        seen.add(flowId);
+        sources.push({ id: flowId, title: typeof flow.name === 'string' ? flow.name : flowId, source: 'studio' });
+      }
+      for (const item of state.templates ?? []) {
+        const templateId = typeof item?.id === 'string' ? item.id : null;
+        if (templateId === null || seen.has(templateId)) continue;
+        seen.add(templateId);
+        sources.push({ id: templateId, title: typeof item.title === 'string' ? item.title : templateId, source: 'builtin' });
+      }
+      state.canvasSources = sources;
+
+      // A slower earlier request must never overwrite a newer selection.
+      if (state.canvasId !== canvasId) return api;
+      state.canvasSelection = null;
+      state.canvasLinkMode = false;
+      state.canvasOffsets = readCanvasOffsets(globalThis.localStorage, canvasId ?? '');
+      if (canvasId === null || answer === null) return api;
       try {
-        const answer = await transport.getCanvas(canvasId);
-        if (answer && answer.status === 200 && answer.body && typeof answer.body === 'object') {
+        if (answer.status === 200 && answer.body && typeof answer.body === 'object') {
           state.canvas = answer.body;
           // Reuse the one layout module; never copy a second layout here.
-          state.canvasLayout = m.computeLayout({
+          const layout = m.computeLayout({
             nodes: Array.isArray(answer.body.nodes) ? answer.body.nodes : [],
             edges: m.graphEdges(answer.body),
           });
+          for (const pos of layout.nodes ?? []) {
+            const offset = state.canvasOffsets[pos.id];
+            if (!offset) continue;
+            if (Number.isFinite(Number(offset.x))) pos.x = Number(offset.x);
+            if (Number.isFinite(Number(offset.y))) pos.y = Number(offset.y);
+          }
+          state.canvasLayout = layout;
         }
       } catch (error) {
         state.lastError = error?.message ?? String(error);
       }
       return api;
+    },
+
+    /** Select a canvas node/edge for the inline authoring panel. */
+    setCanvasSelection(kind, id) {
+      state.canvasSelection = (kind === 'node' || kind === 'edge') && typeof id === 'string'
+        ? { kind, id } : null;
+      return api;
+    },
+
+    toggleCanvasLinkMode() {
+      state.canvasLinkMode = state.canvasLinkMode !== true;
+      if (state.canvasLinkMode === false) state.canvasSelection = null;
+      return api;
+    },
+
+    /** Commit one dragged node position (layout prefs, never the domain doc). */
+    moveCanvasNode(id, x, y) {
+      const nodeId = typeof id === 'string' ? id : '';
+      if (nodeId.length === 0) return api;
+      saveCanvasOffset(globalThis.localStorage, state.canvasId ?? '', nodeId, x, y);
+      state.canvasOffsets[nodeId] = { x, y };
+      for (const pos of state.canvasLayout?.nodes ?? []) {
+        if (pos.id === nodeId) {
+          pos.x = x;
+          pos.y = y;
+        }
+      }
+      return api;
+    },
+
+    async resetCanvasLayout() {
+      clearCanvasOffsets(globalThis.localStorage, state.canvasId ?? '');
+      state.canvasOffsets = {};
+      return api.loadCanvas(state.canvasId);
+    },
+
+    /** One `/studio/action` call from the canvas, with the raw result returned. */
+    async canvasAction(action, payload = {}) {
+      if (typeof transport.studioAction !== 'function') {
+        return { ok: false, code: 'STUDIO_ACTION_UNAVAILABLE' };
+      }
+      try {
+        const answer = await transport.studioAction({ action, ...payload });
+        if (answer?.status === 200 && answer.body && typeof answer.body === 'object') return answer.body;
+        return { ok: false, code: 'STUDIO_ACTION_HTTP', params: { status: answer?.status ?? 0 } };
+      } catch (error) {
+        return { ok: false, code: 'STUDIO_ACTION_HTTP', params: { message: error?.message ?? String(error) } };
+      }
     },
 
     async loadEvidence(instanceId, nodeId) {
@@ -1169,7 +1274,19 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       } else if (view === 'occupancy') {
         await api.loadOccupancy();
       } else if (view === 'canvas') {
-        await api.loadCanvas(arg ?? state.canvasId ?? state.templates?.[0]?.id ?? null);
+        // The canvas defaults to the first Studio flow (the v2 authoring
+        // source), not to an arbitrary builtin template id.
+        if (state.studioState === null && typeof transport.getStudioState === 'function') {
+          try {
+            const answer = await transport.getStudioState();
+            if (answer?.status === 200 && answer.body?.ok === true) state.studioState = answer.body;
+          } catch {
+            // the picker still falls back to builtins
+          }
+        }
+        const chosen = arg ?? state.canvasId ?? state.studioState?.flows?.[0]?.id
+          ?? state.canvasSources?.[0]?.id ?? state.templates?.[0]?.id ?? null;
+        await api.loadCanvas(chosen);
       } else if (view === 'evidence') {
         await api.loadEvidence(arg ?? state.evidenceId ?? state.instances?.[0]?.instanceId ?? null);
       }
@@ -2073,22 +2190,45 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     const nodeRows = (Array.isArray(projection.nodes) ? projection.nodes : [])
       .filter((node) => !(degrade.key !== ''))
       .map((node) => modules.canvasNodeRow(node, labels));
-    const edgeRows = (Array.isArray(projection.edges) ? projection.edges : [])
+    const edgeRowsRaw = (Array.isArray(projection.edges) ? projection.edges : [])
       .map((edge) => modules.canvasEdgeRow(edge, labels));
     // Placement comes from the single layout module; the pure view model only
     // maps edges to its input shape (D-23 / D-36).
     const layout = current.canvasLayout ?? { nodes: [], edges: [] };
+    const sourceById = new Map(
+      (Array.isArray(projection.nodes) ? projection.nodes : []).map((node) => [node?.id, node])
+    );
     const placed = [];
-    for (const pos of Array.isArray(layout.nodes) ? layout.nodes : []) {
+    for (const pos of layout.nodes ?? []) {
       const row = nodeRows.find((entry) => entry.id === pos.id);
-      if (row) placed.push({ ...row, x: pos.x, y: pos.y, layer: pos.layer });
+      if (!row) continue;
+      const source = sourceById.get(pos.id) ?? {};
+      placed.push({
+        ...row,
+        ...pos,
+        status: typeof source.status === 'string' ? source.status : null,
+        statusKey: typeof source.statusKey === 'string' ? source.statusKey : null,
+        progress: Number.isFinite(Number(source.progress)) ? Number(source.progress) : null,
+        gate: typeof source.gate === 'string' ? source.gate : null,
+      });
     }
+    const edgeRows = (Array.isArray(layout.edges) ? layout.edges : []).map((pos, index) => {
+      const source = edgeRowsRaw[index] ?? {};
+      return {
+        ...source,
+        id: typeof pos.id === 'string' ? pos.id : `E-${index + 1}`,
+        path: pos.path ?? { kind: 'straight' },
+      };
+    });
     return {
       title: modules.canvasTitleText(projection, labels),
       badge: modules.validationBadge(projection, labels),
       degrade,
       nodes: placed,
       edges: edgeRows,
+      source: typeof projection.source === 'string' ? projection.source : 'workflow',
+      editable: projection.editable === true,
+      progress: projection.progress && typeof projection.progress === 'object' ? projection.progress : null,
       rows: [...nodeRows.map((row) => row.text), ...edgeRows.map((row) => row.text)].filter((text) => typeof text === 'string'),
     };
   }
@@ -2333,6 +2473,7 @@ export function mountApp({
 
   let toastTimer = null;
   let toastText = null;
+  let detachCanvasDrag = null;
 
   function captureFocus() {
     const active = document.activeElement;
@@ -2385,6 +2526,18 @@ export function mountApp({
     }
     probeEmptyRows(model, state);
     renderShell(host, buildShellContext(model, state));
+    if (typeof detachCanvasDrag === 'function') {
+      detachCanvasDrag();
+      detachCanvasDrag = null;
+    }
+    if (model.view === 'canvas') {
+      detachCanvasDrag = attachCanvasDrag(host, {
+        onMove: (id, x, y) => {
+          app.moveCanvasNode(id, x, y);
+          paint();
+        },
+      });
+    }
   }
 
   let pendingPaint = null;
@@ -2464,6 +2617,10 @@ export function mountApp({
       model: shellModel,
       labels: state.labels,
       t: labelText,
+      st: (key, fallback) => {
+        const value = state.studioLabels?.[key];
+        return typeof value === 'string' ? value : (fallback ?? key);
+      },
       view: activeView,
       inDrawer: drawer !== null,
       detailKey: drawer?.id ?? null,
@@ -3187,6 +3344,26 @@ export function mountApp({
     container.appendChild(section);
   }
 
+  /** One canvas authoring command: apply, re-read the flow, repaint. */
+  async function runCanvasEdit(action, payload = {}) {
+    const result = await app.canvasAction(action, payload);
+    if (result.ok !== true) {
+      const labels = app.state().studioLabels ?? {};
+      const text = result.params?.message
+        ?? labels[result.labelKey]
+        ?? result.labelKey
+        ?? result.code
+        ?? 'failed';
+      showToast(shellRefsOf(), String(text));
+      return false;
+    }
+    app.setCanvasSelection(null, null);
+    app.state().canvasLinkMode = false;
+    await app.loadCanvas(app.state().canvasId);
+    paint();
+    return true;
+  }
+
   function handleAction(action, arg, node) {
     const value = arg ?? null;
     switch (action) {
@@ -3223,6 +3400,52 @@ export function mountApp({
         paint();
         void app.loadCanvas(String(value)).then(paint);
         return;
+      case 'canvas-node':
+        app.setCanvasSelection('node', value?.id ?? null);
+        paint();
+        return;
+      case 'canvas-edge':
+        app.setCanvasSelection('edge', value?.id ?? null);
+        paint();
+        return;
+      case 'canvas-clear-selection':
+        app.setCanvasSelection(null, null);
+        paint();
+        return;
+      case 'canvas-link-mode':
+        app.toggleCanvasLinkMode();
+        paint();
+        return;
+      case 'canvas-reset-layout':
+        void app.resetCanvasLayout().then(paint);
+        return;
+      case 'canvas-add-stage':
+        void runCanvasEdit('flow.stage.add', { flowId: app.state().canvasId });
+        return;
+      case 'canvas-stage-save': {
+        const name = host.querySelector('#canvas-stage-name')?.value ?? '';
+        void runCanvasEdit('flow.stage.update', { flowId: app.state().canvasId, stageId: value, name });
+        return;
+      }
+      case 'canvas-stage-remove':
+        void runCanvasEdit('flow.stage.remove', { flowId: app.state().canvasId, stageId: value });
+        return;
+      case 'canvas-edge-add': {
+        const from = host.querySelector('#canvas-link-from')?.value ?? '';
+        const to = host.querySelector('#canvas-link-to')?.value ?? '';
+        void runCanvasEdit('flow.edge.add', { flowId: app.state().canvasId, from, to });
+        return;
+      }
+      case 'canvas-edge-remove': {
+        const edgeId = typeof value === 'string' ? value : value?.id;
+        const edge = (app.state().canvas?.edges ?? []).find((item, index) => (
+          (item.id ?? `E-${index + 1}`) === edgeId
+        ));
+        void runCanvasEdit('flow.edge.remove', {
+          flowId: app.state().canvasId, from: edge?.from, to: edge?.to,
+        });
+        return;
+      }
       case 'tab': {
         const view = typeof value === 'string' ? value : 'graph';
         if (view === 'evidence') {
@@ -4223,6 +4446,11 @@ export function createLoopbackTransport(creds) {
     getAsset: (kind, id) => request(`/assets/${encodeURIComponent(kind)}/${encodeURIComponent(id)}`),
     getOccupancy: () => request('/occupancy/roles'),
     getCanvas: (id) => request(`/workflows/${encodeURIComponent(id)}/canvas`),
+    getStudioState: () => request('/studio/state'),
+    getStudioLabels: () => request('/studio/labels'),
+    studioAction: (payload) => request('/studio/action', {
+      method: 'POST', body: JSON.stringify(payload),
+    }),
     getEvidence: (instanceId, nodeId) => nodeId
       ? request(`/evidence/${encodeURIComponent(instanceId)}/${encodeURIComponent(nodeId)}`)
       : request(`/evidence/${encodeURIComponent(instanceId)}`),
