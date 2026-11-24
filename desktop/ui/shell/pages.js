@@ -29,6 +29,25 @@ const STATE_TONE = Object.freeze({
 /** Health level -> badge tone. */
 const HEALTH_TONE = Object.freeze({ attention: 'fail', slow: 'wait', normal: 'done', ended: 'gray' });
 
+/** Studio run status -> badge tone + the label key that names it. */
+const RUN_TONE = Object.freeze({
+  running: 'run',
+  completed: 'done',
+  'awaiting-approval': 'wait',
+  blocked: 'fail',
+  planned: 'cyan',
+  prepared: 'cyan',
+});
+const RUN_STATUS_KEY = Object.freeze({
+  running: 'RUN_RUNNING_STATUS',
+  completed: 'RUN_COMPLETED_STATUS',
+  'awaiting-approval': 'RUN_WAITING_STATUS',
+  blocked: 'RUN_BLOCKED_STATUS',
+  planned: 'RUN_PLANNED_STATUS',
+  prepared: 'RUN_PREPARED_STATUS',
+});
+const RUN_MODE_KEY = Object.freeze({ plan: 'MODE_PLAN', simulate: 'MODE_SIMULATE', engine: 'MODE_ENGINE' });
+
 /** Node state -> badge tone (nine-state vocabulary). */
 const NODE_TONE = Object.freeze({
   done: 'done',
@@ -228,6 +247,50 @@ export function instancesPage(ctx) {
   }
   grid.appendChild(rail);
   frag.appendChild(grid);
+
+  // Authoring runs are not orchestration instances (no ACP session is opened
+  // in `simulate`), but they are still something the user started and expects
+  // to find again. Showing them here keeps "I ran it" and "I can see it" from
+  // diverging; clicking a run opens its flow on the canvas.
+  const studio = ctx.state.studioState ?? null;
+  const runs = Array.isArray(studio?.runs) ? studio.runs : [];
+  const runsCard = card([], { className: 'mt14' });
+  runsCard.appendChild(sectionTitle(ctx.t('DESKTOP_V2_RUNS_TITLE')));
+  runsCard.appendChild(el('div', 'tiny muted mt6', ctx.t('DESKTOP_V2_RUNS_HINT')));
+  if (runs.length === 0) {
+    runsCard.appendChild(el('div', 'tiny muted mt10', ctx.t('DESKTOP_V2_RUNS_EMPTY')));
+  }
+  const flowName = (id) => {
+    const flow = (studio?.flows ?? []).find((item) => item.id === id);
+    return typeof flow?.name === 'string' && flow.name.length > 0 ? flow.name : String(id ?? '');
+  };
+  for (const run of runs.slice().reverse().slice(0, 8)) {
+    const row = el('div', 'listrow mt10');
+    row.setAttribute('data-action', 'open-run');
+    row.setAttribute('data-arg', JSON.stringify({ flowId: run.flowId ?? null, runId: run.id ?? null }));
+    const body = el('div', 'grow');
+    const line = el('div', 'between');
+    const left = el('div', 'row');
+    left.appendChild(el('b', 'small', flowName(run.flowId)));
+    left.appendChild(badge(ctx.t(RUN_STATUS_KEY[run.status] ?? 'DESKTOP_V2_NOT_AVAILABLE'),
+      RUN_TONE[run.status] ?? 'gray'));
+    line.appendChild(left);
+    if (typeof run.id === 'string') line.appendChild(tag(run.id, true));
+    body.appendChild(line);
+
+    const stages = Array.isArray(run.stages) ? run.stages : [];
+    const total = stages.length;
+    const done = stages.filter((slot) => slot?.status === 'done').length;
+    const meta = el('div', 'row mt6 meta');
+    const modeKey = RUN_MODE_KEY[run.mode];
+    if (modeKey) meta.appendChild(el('span', 'mini', ctx.t(modeKey)));
+    if (total > 0) meta.appendChild(el('span', 'mini', `${done}/${total}`));
+    if (meta.childNodes.length > 0) body.appendChild(meta);
+    if (total > 0) body.appendChild(progress(Math.round((done / total) * 100), true));
+    row.appendChild(body);
+    runsCard.appendChild(row);
+  }
+  frag.appendChild(runsCard);
   return frag;
 }
 
@@ -304,6 +367,11 @@ export function newPage(ctx) {
 
   if (panel.message) {
     main.appendChild(el('div', 'form-error', panel.message));
+    // A spawn failure names a machine path the user cannot act on. When the
+    // start failed because no host CLI exists, say what to do next.
+    if (panel.errorCode === 'DSH_SPAWN_FAILED' || panel.errorCode === 'CORE_START_FAILED') {
+      main.appendChild(el('div', 'tiny muted mt6', ctx.t('DESKTOP_NEW_HOST_HINT')));
+    }
   }
   if (panel.success) {
     main.appendChild(el('div', 'form-ok', panel.success));

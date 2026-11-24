@@ -422,3 +422,65 @@ git push origin v0.0.1-beta.4
 - 拖拽坐标属于视图偏好，存浏览器 localStorage，不跨设备同步，也不写进 Studio 文档。
 - CLI 侧新增了域函数但没有加对应的 `orch flow stage/edge` 子命令；当前编辑入口是画布与 `/studio/action`，CLI 仍用既有 `flow create --stages`。
 - 画布编辑改的是 Studio 源（`.orch/studio.json`）；下次 `run start --mode engine` 重新编译时，`.orch/workflows/*.yaml` 会按新 DAG 覆盖。
+
+---
+
+## 16. 按用户场景重新验收（2026-11-25）
+
+### 16.1 为什么上一轮验收不成立
+
+上一轮（§12~§15）的结论建立在两类证据上：域层单测 + 单向导的接口断言。两者都**不检查页面本身**——不打开侧边栏的每一项，不点按钮看结果，不读用户实际看到的文字。所以下面这些缺陷全都能在"全绿"下存活：
+
+| 存活下来的缺陷 | 为什么旧验收抓不到 |
+|---|---|
+| 画布连线渲染成 `[object Object]` | 单测只断言 `computeLayout` 返回对象，不断言 SVG 的 `d` 属性 |
+| 画布节点只显示裸 id | 投影测试断言 `text` 字段存在，但没人断言它被画出来 |
+| 跑了工作流，实例列表仍然空白 | `/studio/state` 断言 run 状态正确，从没从"实例"这个用户入口回看 |
+| 失败提示显示 `{cause}` 原文 | 契约测试断言 `message` 前缀匹配，占位符残留在前缀之后 |
+| 无 CLI 时的报错不可操作 | 断言只要求"有错误文案"，不要求文案能指导下一步 |
+
+**结论：验收口径必须改成"用户看得见、点得动、落得盘"，接口断言不能替代。**
+
+### 16.2 场景矩阵与结果
+
+新增 `scripts/verify-scenarios.mjs`：真实 loopback daemon + 真实 Chrome/CDP，逐场景驱动真实 DOM。已并入 `npm run verify:release`。
+
+| 场景 | 用户动作 | 判据 | 结果 |
+|---|---|---|---|
+| S0 冷启动 | 打开应用 | 首屏有内容、不卡「正在连接」、十个侧边栏入口齐全 | PASS |
+| S1 逐页可达 | 点每一个侧边栏项 | 每页有内容；无 `undefined`、`[object Object]`、未替换 `{token}` | **10/10 PASS** |
+| S2 重复切换 | 同一入口连点两次 | 仍能切换、无异常 | PASS |
+| S3 画布可见 | 打开工作流画布 | 中文阶段名、合法 SVG 路径、项目工作流出现在选择器 | PASS |
+| S3b 画布编辑 | 改名 / 增阶段 / 增删依赖 / 拖拽 | 落盘且重载后保留 | **15/15 PASS**（`verify:canvas`） |
+| S4 实例页 | 打开实例 | 有可操作条目（筛选、新建） | PASS |
+| S5 设置 | 打开设置 | 显示真实项目路径 | PASS |
+| S6 跑一次工作流 | 启动 → 推进 → 回看 | 运行推进到完成、画布显示「进度 2/2」、**实例页能看到这次运行** | PASS（修复后） |
+| S7 新建实例 | 选模板 → 填任务 → 提交 | 要么创建成功，要么给出已填充参数的中文错误 + 下一步引导 | PASS（修复后） |
+| S8 搭建台六步 | 扫描→组织→流程→团队→运行→门禁 | 22 条断言 | **22/22 PASS**（`verify:journey`） |
+| S9 真实壳 | 启动 `.app` | shell→bundled node→daemon→ready/tray | **6/6 PASS** |
+| S10 角色与技能 | 编辑角色 / 新建技能 | 表单回填、保存落盘、`SKILL.md` 写出 | **7/7 PASS** |
+
+汇总：`verify:core` 11/11、`verify:ui-flow` 16/16、`verify:scenarios` 41/41、`verify:canvas` 15/15、`verify:authoring` 7/7、`verify:journey(none)` 22/22、`verify:shell` 6/6。
+
+### 16.3 本轮修掉的缺陷
+
+| # | 缺陷（用户可见） | 根因 | 修复 |
+|---|---|---|---|
+| 1 | 跑完工作流，实例列表什么都没有 | Studio `run` 与 orchestration `instance` 是两套模型，列表只读后者 | 实例页新增「工作流运行」区块，列出 Studio 运行、状态、模式与阶段进度；点一条跳到画布定位该工作流（`desktop/ui/shell/pages.js`、`app.js`） |
+| 2 | 启动失败显示 `无法启动 DSH：{cause}` | `POST /instances` 422 只回 `message`，不带 `params`，而面板按 `ERROR_TEMPLATE + params` 渲染 | 422 响应补 `params`，占位符正确替换为真实原因（`src/daemon/http/routes.js`） |
+| 3 | 没有 CLI 时报底层路径错误，用户不知道怎么办 | 失败文案只有机器原因，没有产品动作 | 失败且 `errorCode` 为宿主类错误时，追加「先在搭建台扫描并绑定 CLI」引导（`DESKTOP_NEW_HOST_HINT`） |
+| 4 | 画布连线不可见 / 节点裸 id / 不能编辑 | 见 §15 | 见 §15 |
+
+### 16.4 回归与差集
+
+| 项 | 结果 |
+|---|---|
+| 桌面相关单测（wp13+wp14+wp18） | 639 pass / 10 fail / 1 skip |
+| HEAD 基线树（`a5e0f0a`）同组 | 638 pass / 8 fail |
+| 差集 | 基线同样红的 8 条（AC-37/AC-08×3/AC-09/AC-10/AC-43/AC-27）**不是本迭代引入**；本条多出的 `desktop-shell` 与 `shell-notify 真实探针` 两条，**独占 `--test-concurrency=1` 复跑均全绿**，判定为并行负载型 flake，新增红 **0** |
+
+### 16.5 仍然存在的边界（不掩盖）
+
+- **Studio 运行不创建 orchestration 实例**。`simulate` 不打开 ACP 会话，`engine` 模式只编译资产（`launched:false` 写死）。因此实例下钻、图/看板、证据浏览对这些运行仍是空的——它们属于 v1 的会话执行面。本轮的做法是让用户在实例页**看得到这次运行并跳到画布看进度**，不是把两套模型合并。合并需要在 core 增加「项目 workflow → graph」的适配，属 B 阶段工作。
+- `S7` 在无宿主机器上的正确结果是「可读失败 + 引导」，不是「创建成功」；真实创建需要 `.orch/hosts/*.json` 指向可用 CLI。
+- 验收脚本本身有两条曾被误判的规则（空态页长度阈值、iframe 内容不在父文档 `innerText` 里），已在脚本内修正——这也说明「脚本红了」不等于「产品坏了」，需要逐条回看。

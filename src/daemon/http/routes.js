@@ -501,10 +501,15 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root, hub, graph, 
       return res;
     }
     const code = started?.code ?? 'UNKNOWN_ERROR';
+    // `params` travels with the answer: the desktop panel renders the wording
+    // from `ERROR_TEMPLATE` + params, so dropping them here left `{cause}`
+    // on screen instead of the reason.
+    const failureParams = started?.params && typeof started.params === 'object' ? started.params : {};
     sendJson(res, 422, {
       ok: false,
       error: code,
-      message: errorText(code, started?.params ?? {}),
+      params: failureParams,
+      message: errorText(code, failureParams),
     });
     return res;
   }

@@ -325,6 +325,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       message: null,
       success: null,
       submitting: false,
+      errorCode: null,
     },
     refetches: 0,
     frames: { role: 0, connection: 0, special: 0, session: 0, list: 0 },
@@ -1259,6 +1260,17 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       api.setView(view);
       if (view === 'queue') {
         await Promise.all([api.loadQueue(), api.loadQueuePrefs()]);
+      } else if (view === 'instances') {
+        // A run started in Studio must still be findable after it starts. The
+        // page renders without it, so a failed read degrades to the old list.
+        if (typeof transport.getStudioState === 'function') {
+          try {
+            const answer = await transport.getStudioState();
+            if (answer?.status === 200 && answer.body?.ok === true) state.studioState = answer.body;
+          } catch {
+            // keep the previous projection
+          }
+        }
       } else if (view === 'settings') {
         await api.loadQueuePrefs();
       } else if (view === 'new') {
@@ -1577,7 +1589,9 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         { code: body.error, params: body.params, message: body.message },
         state.labels,
       );
-      state.newPanel = { ...panel, submitting: false, message, success: null };
+      // Keep the code so the page can add an actionable hint for the one
+      // failure users actually hit on a fresh machine: no usable CLI.
+      state.newPanel = { ...panel, submitting: false, message, errorCode: body.error ?? null, success: null };
       return { ok: false, message };
     },
 
@@ -3395,6 +3409,11 @@ export function mountApp({
         void app.openView(view, view === 'evidence' ? app.state().graphId : undefined).then(paint);
         return;
       }
+      case 'open-run':
+        app.setView('canvas');
+        paint();
+        void app.loadCanvas(value?.flowId ?? app.state().canvasId).then(paint);
+        return;
       case 'canvas-pick':
         app.setView('canvas');
         paint();

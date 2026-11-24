@@ -558,7 +558,12 @@ const EXPECTED_V2_KEYS = Object.freeze([
   'DESKTOP_V2_GOVERNANCE_HINT',
   'DESKTOP_V2_NO_ANOMALY',
   'DESKTOP_V2_READ_ALL',
-  'DESKTOP_V2_SELECT_ITEM'
+  'DESKTOP_V2_SELECT_ITEM',
+  // beta.4 canvas/run visibility increment (append-only).
+  'DESKTOP_V2_RUNS_TITLE',
+  'DESKTOP_V2_RUNS_HINT',
+  'DESKTOP_V2_RUNS_EMPTY',
+  'DESKTOP_NEW_HOST_HINT'
 ]);
 
 const EXPECTED_V2_VALUES = Object.freeze({
@@ -627,7 +632,11 @@ const EXPECTED_V2_VALUES = Object.freeze({
   DESKTOP_V2_GOVERNANCE_HINT: '治理计数来自实例证据链，当前还没有可汇总的证据。',
   DESKTOP_V2_NO_ANOMALY: '没有检测到异常信号',
   DESKTOP_V2_READ_ALL: '全部标记已读',
-  DESKTOP_V2_SELECT_ITEM: '从左侧选择一个条目查看详情'
+  DESKTOP_V2_SELECT_ITEM: '从左侧选择一个条目查看详情',
+  DESKTOP_V2_RUNS_TITLE: '工作流运行',
+  DESKTOP_V2_RUNS_HINT: '由搭建台启动；点一条运行可在画布上查看阶段进度',
+  DESKTOP_V2_RUNS_EMPTY: '还没有工作流运行；在搭建台选好团队与工作流后启动',
+  DESKTOP_NEW_HOST_HINT: '本机还没有可用的 Agent CLI：先在搭建台扫描，再把员工绑定到可用的 CLI，然后重新启动。'
 });
 
 /** 平铺命名：`表名_成员名`（成员名大写、`-` 归一 `_`、驼峰拆分）。 */
