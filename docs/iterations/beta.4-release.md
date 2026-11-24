@@ -370,7 +370,7 @@ git push origin v0.0.1-beta.4
 | **真实浏览器表单交互** `verify-authoring-ui.mjs` | **7/7**（编辑按钮 23 个、表单回填、保存后 state 更新、新建技能写盘、无未捕获异常） |
 | `verify-journey` 无 CLI / opencode | 22/22 + 22/22（六步向导未被表单改动破坏） |
 | `npm run verify:release`（串入 authoring） | **全绿**（core + ui-flow + authoring + desktop + shell） |
-| 全量回归（提交前） | `2006 / 1995 pass / 9 fail / 2 skip`；9 条中 7 条为已知基线红，`AC-23 #3` 为 `git diff HEAD` 型（提交后归零），`desktop-shell` 为沙箱超时（单跑亦 SIGTERM）→ 无新增断言红 |
+| 全量回归（提交前） | `2006 / 1995 pass / 9 fail / 2 skip`；提交后 `AC-23 #3`（`git diff HEAD` 型）复跑归零 → 8 条：7 条已知基线红 + `desktop-shell` 沙箱超时（单跑亦 SIGTERM）→ 无新增断言红 |
 
 > shell 验证一度误报：`com.maestro.desktop` 的 single-instance 锁被早前手动启动的旧 shell
 > 持有，新启动只触发 `activated`、不写 desktop.json。已在 `verify-shell-boot.mjs` 启动前
