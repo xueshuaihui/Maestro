@@ -204,20 +204,14 @@ function stepCli(state) {
 function stepOrg(state) {
   const box = card(t('UI_STEP_ORG'), `${state.roles.length} / ${state.employees.length}`);
 
-  const roleRows = state.roles.map((role) => [
-    role.name,
-    role.code ?? '-',
-    role.department,
-    String(role.employeeCount),
-    role.employeeCount === 0 ? badge(t('UI_BLOCKED'), 'warn') : badge(t('UI_READY'), 'ok')
-  ]);
-  box.body.appendChild(table(
-    [t('COL_NAME'), t('COL_CODE'), t('COL_DEPT'), t('COL_EMPLOYEES'), t('COL_STATUS')],
-    roleRows,
-    t('UI_EMPTY_ROLE')
-  ));
+  const acpOptions = [
+    { value: '', label: t('UI_OPTION_UNSET') },
+    { value: 'true', label: t('UI_OPTION_REQUIRED') },
+    { value: 'false', label: t('UI_OPTION_FORBIDDEN') }
+  ];
 
-  const form = el('div', 'form-row');
+  // The role form is shared by add and edit. `editId` is null in add mode.
+  const form = el('div', 'form-row role-form');
   const name = input(t('UI_NAME'));
   const code = select(
     (state.roleCodes ?? []).map((value) => ({ value, label: codeLabel(value) })),
@@ -227,17 +221,104 @@ function stepOrg(state) {
   );
   let dept = state.departments[0]?.id ?? 'product';
   const deptSel = select(deptOptions(state), dept, (value) => { dept = value; });
-  form.appendChild(field(t('UI_NAME'), name));
-  form.appendChild(field(t('UI_CODE'), code));
-  form.appendChild(field(t('UI_DEPT'), deptSel));
-  form.appendChild(button(t('UI_ADD_ROLE'), async () => {
+  const duty = input(t('UI_DUTY'));
+  const skills = input(t('UI_SKILLS'));
+  let acp = '';
+  const acpSel = select(acpOptions, '', (value) => { acp = value; });
+  const submitBtn = button(t('UI_ADD_ROLE'), async () => {
     if (!name.value.trim() || !code.value) {
       showToast(t('ERR_ROLE_NAME_REQUIRED'));
       return;
     }
-    await act('role.add', { name: name.value.trim(), code: code.value, departmentId: dept });
-  }));
+    const splitList = (v) => v.split(',').map((x) => x.trim()).filter(Boolean);
+    const payload = {
+      name: name.value.trim(),
+      code: code.value,
+      departmentId: dept,
+      duty: duty.value.trim(),
+      skills: splitList(skills.value),
+      requires: { acp: acp === '' ? null : acp === 'true' }
+    };
+    const result = editId
+      ? await act('role.update', { id: editId, ...payload })
+      : await act('role.add', payload);
+    if (result) resetForm();
+  });
+  let editId = null;
+  function resetForm() {
+    editId = null;
+    name.value = ''; code.value = ''; duty.value = ''; skills.value = '';
+    dept = state.departments[0]?.id ?? 'product'; deptSel.value = dept;
+    acp = ''; acpSel.value = '';
+    submitBtn.textContent = t('UI_ADD_ROLE');
+  }
+  function fillForm(role) {
+    editId = role.id;
+    name.value = role.name ?? '';
+    code.value = role.code ?? '';
+    duty.value = role.duty ?? '';
+    skills.value = (role.skills ?? []).join(', ');
+    dept = role.departmentId ?? 'product'; deptSel.value = dept;
+    acp = role.requires?.acp === true ? 'true' : role.requires?.acp === false ? 'false' : '';
+    acpSel.value = acp;
+    submitBtn.textContent = t('UI_SAVE_ROLE');
+  }
+  form.appendChild(field(t('UI_NAME'), name));
+  form.appendChild(field(t('UI_CODE'), code));
+  form.appendChild(field(t('UI_DEPT'), deptSel));
+  form.appendChild(field(t('UI_DUTY'), duty));
+  form.appendChild(field(t('UI_SKILLS'), skills));
+  form.appendChild(field(t('UI_REQUIRES_ACP'), acpSel));
+  form.appendChild(submitBtn);
+
+  const roleRows = state.roles.map((role) => [
+    role.name,
+    role.code ?? '-',
+    role.department,
+    (role.skills ?? []).join(', ') || '-',
+    String(role.employeeCount),
+    role.employeeCount === 0 ? badge(t('UI_BLOCKED'), 'warn') : badge(t('UI_READY'), 'ok'),
+    button(t('UI_EDIT_ROLE'), () => { fillForm(role); }, 'btn small')
+  ]);
+  box.body.appendChild(table(
+    [t('COL_NAME'), t('COL_CODE'), t('COL_DEPT'), t('UI_SKILLS'), t('COL_EMPLOYEES'), t('COL_STATUS'), t('UI_EDIT_ROLE')],
+    roleRows,
+    t('UI_EMPTY_ROLE')
+  ));
   box.body.appendChild(form);
+
+  // Custom skill creation (writes .orch/skills/<id>/SKILL.md via the same
+  // registry validators the CLI uses; /assets/* stays read-only).
+  const skillForm = el('div', 'form-row skill-form');
+  const skId = input(t('UI_SKILL_ID'));
+  const skName = input(t('UI_SKILL_NAME'));
+  const skSummary = input(t('UI_SUMMARY'));
+  const skGroups = input(t('UI_APPLIES_TO'));
+  const skCommands = input(t('UI_COMMANDS'));
+  skillForm.appendChild(field(t('UI_SKILL_ID'), skId));
+  skillForm.appendChild(field(t('UI_SKILL_NAME'), skName));
+  skillForm.appendChild(field(t('UI_SUMMARY'), skSummary));
+  skillForm.appendChild(field(t('UI_APPLIES_TO'), skGroups));
+  skillForm.appendChild(field(t('UI_COMMANDS'), skCommands));
+  skillForm.appendChild(button(t('UI_ADD_SKILL'), async () => {
+    if (!skId.value.trim() || !skName.value.trim() || !skSummary.value.trim()) {
+      showToast(t('ERR_SKILL_ID_REQUIRED'));
+      return;
+    }
+    const payload = {
+      id: skId.value.trim(),
+      name: skName.value.trim(),
+      summary: skSummary.value.trim()
+    };
+    const groups = skGroups.value.split(',').map((x) => x.trim()).filter(Boolean);
+    if (groups.length > 0) payload.appliesTo = groups;
+    const commands = skCommands.value.split(',').map((x) => x.trim()).filter(Boolean);
+    if (commands.length > 0) payload.commands = commands;
+    const result = await act('skill.create', payload, fill(t('UI_SKILL_CREATED'), { id: payload.id }));
+    if (result) { skId.value = ''; skName.value = ''; skSummary.value = ''; }
+  }));
+  box.body.appendChild(el('h3', 'sub', t('UI_ADD_SKILL')));
+  box.body.appendChild(skillForm);
 
   const empForm = el('div', 'form-row');
   const empName = input(t('UI_NAME'));

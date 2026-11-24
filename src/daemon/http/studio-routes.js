@@ -21,6 +21,7 @@ import {
   employeesOfRole,
   checkOrganization,
   addRole,
+  updateRole,
   addEmployee,
   createTeam,
   checkTeam,
@@ -38,8 +39,14 @@ import {
 } from '../../studio/index.js';
 import { errorLabelKey } from '../../studio/messages.js';
 import { discoverAgentClis, loadCliRegistry, saveCliRegistry } from '../../adapter/cli-discovery/index.js';
-import { STUDIO_TEXT as T } from '../../cli/labels.js';
+import { STUDIO_TEXT as T, SKILL_DEFAULT_BODY } from '../../cli/labels.js';
 import { seedOrganization } from '../../templates/studio-seed.js';
+import { loadRegistry } from '../../registry/index.js';
+import { checkSkillMeta, GROUPS, SKILL_SCHEMA_VERSION } from '../../registry/role-schema.js';
+import { serializeSkill, atomicWrite } from '../../registry/asset-write.js';
+import { projectSkillsDir } from '../../registry/assets.js';
+import { isId } from '../../studio/schema.js';
+import path from 'node:path';
 
 const BODY_LIMIT = 64 * 1024;
 
@@ -96,6 +103,9 @@ async function buildState(root) {
     departmentId: role.departmentId,
     department: labelize({ id: role.departmentId }),
     duty: role.duty ?? '',
+    summary: role.summary ?? '',
+    skills: role.skills ?? [],
+    contract: role.contract ?? null,
     employeeCount: employeesOfRole(doc, role.id).length,
     requires: role.requires ?? null
   }));
@@ -251,7 +261,12 @@ const ACTIONS = Object.freeze({
         name: payload.name,
         code: payload.code ?? null,
         departmentId: payload.departmentId ?? 'product',
-        duty: payload.duty ?? ''
+        duty: payload.duty ?? '',
+        summary: payload.summary ?? '',
+        inputs: payload.inputs ?? [],
+        outputs: payload.outputs ?? [],
+        skills: payload.skills ?? [],
+        requires: payload.requires ?? {}
       });
       if (!result.ok) return result;
       created = result.role;
@@ -259,6 +274,70 @@ const ACTIONS = Object.freeze({
     });
     if (!saved.ok) return saved;
     return { ok: true, role: created };
+  },
+
+  async 'role.update'(root, payload) {
+    let updated = null;
+    const saved = await updateStudio(root, (doc) => {
+      const patch = {};
+      for (const field of ['name', 'summary', 'duty', 'departmentId', 'code']) {
+        if (payload[field] !== undefined) patch[field] = payload[field];
+      }
+      if (Array.isArray(payload.skills)) patch.skills = payload.skills;
+      if (payload.requires !== undefined && typeof payload.requires === 'object') {
+        patch.requires = payload.requires;
+      }
+      const contract = {};
+      if (Array.isArray(payload.inputs)) contract.inputs = payload.inputs;
+      if (Array.isArray(payload.outputs)) contract.outputs = payload.outputs;
+      if (typeof payload.doneWhen === 'string') contract.doneWhen = payload.doneWhen;
+      if (Object.keys(contract).length > 0) patch.contract = contract;
+      const result = updateRole(doc, payload.id ?? payload.role, patch);
+      if (!result.ok) return result;
+      updated = result.role;
+      return { ok: true };
+    });
+    if (!saved.ok) return saved;
+    return { ok: true, role: updated };
+  },
+
+  async 'skill.create'(root, payload) {
+    const skillId = typeof payload.id === 'string' ? payload.id.trim() : '';
+    if (!isId(skillId)) return { ok: false, code: 'STUDIO_ID_INVALID', params: { id: skillId } };
+    const registry = loadRegistry({ root });
+    const existing = registry.skillMap.get(skillId);
+    if (existing?.source === 'builtin') {
+      return { ok: false, code: 'STUDIO_SKILL_READONLY', params: { id: skillId } };
+    }
+    if (existing && payload.force !== true) {
+      return { ok: false, code: 'STUDIO_SKILL_EXISTS', params: { id: skillId } };
+    }
+    const meta = {
+      schema: SKILL_SCHEMA_VERSION,
+      id: skillId,
+      name: typeof payload.name === 'string' ? payload.name.trim() : '',
+      summary: typeof payload.summary === 'string' ? payload.summary.trim() : ''
+    };
+    const appliesTo = Array.isArray(payload.appliesTo)
+      ? payload.appliesTo.filter((v) => typeof v === 'string')
+      : [];
+    if (appliesTo.length > 0) {
+      const bad = appliesTo.find((group) => !GROUPS.includes(group));
+      if (bad) return { ok: false, code: 'SKILL_GROUP_INVALID', params: { value: bad } };
+      meta.applies_to = appliesTo;
+    }
+    if (Array.isArray(payload.commands) && payload.commands.every((v) => typeof v === 'string')) {
+      meta.commands = payload.commands;
+    }
+    const issues = checkSkillMeta(meta, { dirId: skillId });
+    if (issues.length > 0) return { ok: false, code: issues[0].code, params: issues[0].params ?? {} };
+    const body = typeof payload.body === 'string' && payload.body.trim().length > 0
+      ? payload.body
+      : SKILL_DEFAULT_BODY;
+    const target = path.join(projectSkillsDir(root), skillId, 'SKILL.md');
+    const written = await atomicWrite({ target, text: serializeSkill(meta, body) });
+    if (!written.ok) return written;
+    return { ok: true, skill: { id: skillId, name: meta.name, appliesTo, file: `.orch/skills/${skillId}/SKILL.md` } };
   },
 
   async 'emp.add'(root, payload) {

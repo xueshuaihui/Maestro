@@ -325,3 +325,53 @@ git push origin v0.0.1-beta.4
 `v0.0.1-beta.4` 已重发完成，tag 与 Release 均指向 `bd37df9`，包含 §12 的 A1 真实 ACP 握手
 修复（探针方言 `acp_args` + 标准 `agentCapabilities.sessionCapabilities` 对象解析）与全流程
 真实验证产物。此前"tag 停在旧 hotfix、访客下载不含修复"的问题已消除。
+
+---
+
+## 14. 补齐角色/技能自定义（UI + HTTP action，2026-11-24）
+
+### 14.1 问题
+
+用户问「如何自定义角色和技能？不支持吗？」——核对后确认：域层 `addRole/updateRole`
+完整支持 `duty / summary / skills / inputs / outputs / requires`，CLI `org role add --skills`
+也能用，但 **桌面 UI 只有 3 个字段**（name/code/dept）、**HTTP `role.add` 只传 4 个字段**、
+**技能资产创建只有 CLI**（`orch skill create`），资产页 `/assets/*` 只读（AC-25）。
+准确结论是「底层支持、CLI 支持、UI/HTTP 不支持」。本次把 UI 与 HTTP 入口补齐。
+
+### 14.2 改动
+
+| 层 | 改动 | 位置 |
+|---|---|---|
+| HTTP | `role.add` 补齐 `summary/inputs/outputs/skills/requires`；新增 `role.update`（patch name/summary/duty/dept/contract/skills/requires）；新增 `skill.create` | `src/daemon/http/studio-routes.js` |
+| 技能写入 | 复用 registry 同源 `checkSkillMeta` / `serializeSkill` / `atomicWrite`，写 `.orch/skills/<id>/SKILL.md`；builtin 只读 / 重复 / 非法分组均返回可渲染 code+labelKey；**不碰只读 `/assets/*`** | 同上 |
+| 错误映射 | 新增 `STUDIO_SKILL_*` / `SKILL_*` → `ERR_SKILL_*` labelKey | `src/studio/messages.js` |
+| 文案 | `STUDIO_TEXT` 追加 27 键（UI 字段 + 技能错误）；零 CJK 落在 UI/daemon，中文唯一来源仍在 labels.js | `src/cli/labels.js` |
+| UI | 搭建台组织卡：角色表格加「技能」列 +「编辑角色」按钮；表单加 duty/skills/requires.acp（新增/编辑共用）；新增「新建技能」表单 | `desktop/ui/studio/studio.js` |
+| 验证 | 新增 `test/wp17/studio-authoring.test.js`（3 条 HTTP action）+ `scripts/verify-authoring-ui.mjs`（真实浏览器点按钮/填表单/落盘，7 步）；`verify:release` 串入 authoring | 测试与脚本 |
+
+### 14.3 约束守住
+
+- **AC-25** 只约束 `/assets/*` 只读浏览（目录哈希不变、无写按钮）；技能写入走 `/studio/action` 创作面，不违反。
+- **CJK 唯一来源**：`studio.js` / `studio-routes.js` 零中文字面量（机检 0 命中），全部走 `t()`。
+- **purity**：src/core+daemon 角色字面量零命中。
+- **STUDIO_TEXT** 无计数冻结（冻结的是 `UI_LABEL_KEYS` / `DESKTOP_V2_LABEL`），追加键不破坏 `labels-desktop` 27/27。
+
+### 14.4 验证结果
+
+| 验证 | 结果 |
+|---|---|
+| `test/wp17/studio-authoring.test.js` | 3/3（全字段落盘 / role.update 部分更新 / skill.create + 错误路径） |
+| wp17 全域 | 19/19 |
+| `labels-desktop` 冻结 | 27/27 |
+| purity + CJK | 零命中 |
+| `verify:core` | 11/11 |
+| `verify:ui-flow` | 16/16（标签表 288 键、页面引用 64 键全解析） |
+| `verify:desktop` | 14/14（冷启动、iframe、token、按钮操作无异常） |
+| **真实浏览器表单交互** `verify-authoring-ui.mjs` | **7/7**（编辑按钮 23 个、表单回填、保存后 state 更新、新建技能写盘、无未捕获异常） |
+| `verify-journey` 无 CLI / opencode | 22/22 + 22/22（六步向导未被表单改动破坏） |
+| `npm run verify:release`（串入 authoring） | **全绿**（core + ui-flow + authoring + desktop + shell） |
+| 全量回归（提交前） | `2006 / 1995 pass / 9 fail / 2 skip`；9 条中 7 条为已知基线红，`AC-23 #3` 为 `git diff HEAD` 型（提交后归零），`desktop-shell` 为沙箱超时（单跑亦 SIGTERM）→ 无新增断言红 |
+
+> shell 验证一度误报：`com.maestro.desktop` 的 single-instance 锁被早前手动启动的旧 shell
+> 持有，新启动只触发 `activated`、不写 desktop.json。已在 `verify-shell-boot.mjs` 启动前
+> 清理同名进程（`killall`/`taskkill`），并对 `activated` 给出明确诊断，避免误判为产品缺陷。

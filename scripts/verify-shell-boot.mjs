@@ -14,7 +14,7 @@
  *   - `tray-created` event
  *   - `<root>/.orch/desktop.json` has port + token + generation
  */
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -36,6 +36,13 @@ if (!fs.existsSync(BIN)) {
   console.error(`SHELL_BOOT_FAIL: built binary missing: ${BIN}\nRun \`npm run desktop:build\` first.`);
   process.exit(1);
 }
+
+// The app uses a single-instance lock (com.maestro.desktop). A leftover shell
+// from an earlier run turns this launch into a mere "activated" of that old
+// process — no daemon, no ready event — which would be a false negative. Clear
+// same-named processes first (best effort; ignore failures on other platforms).
+if (process.platform === 'darwin') spawnSync('killall', ['-9', 'maestro'], { stdio: 'ignore' });
+else if (process.platform === 'win32') spawnSync('taskkill', ['/F', '/IM', 'maestro.exe'], { stdio: 'ignore' });
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-shell-boot-'));
 const probePath = path.join(root, 'shell-probe.jsonl');
@@ -63,9 +70,13 @@ try {
     try { return JSON.parse(fs.readFileSync(path.join(root, '.orch', 'desktop.json'), 'utf8')); }
     catch { return null; }
   }, 25_000);
+  let activated = false;
+  try { activated = fs.readFileSync(probePath, 'utf8').includes('"event":"activated"'); } catch { /* ignore */ }
+  const metaDetail = meta ? `port=${meta.port} daemonPid=${meta.pid}`
+    : activated ? 'no desktop.json — second launch was only "activated" (stale single-instance lock)'
+    : 'no desktop.json';
   step('shell 拉起 bundled node daemon 并写出 desktop.json',
-    Boolean(meta?.port && meta?.token && meta?.generation),
-    meta ? `port=${meta.port} daemonPid=${meta.pid}` : 'no desktop.json');
+    Boolean(meta?.port && meta?.token && meta?.generation), metaDetail);
 
   const events = await waitFor(() => {
     try {
