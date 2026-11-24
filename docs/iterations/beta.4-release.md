@@ -202,3 +202,17 @@ npm run verify:release  # 两条串联，任一失败即 exit 1
 `verify:release` 已串联三条：core → UI 通道 → 真实浏览器。
 
 **回归护栏**：`test/wp14/ui-views.test.js` 新增两条断言——`setView('studio')` 必须切换视图；token 解析必须 session 优先于 local、URL 优先于两者。
+
+### 11.1 重新发版结果（hotfix）
+
+| 项 | 结果 |
+|---|---|
+| 代码提交 | `7078c65`（hotfix 三处阻断缺陷 + 浏览器验证脚本 + 护栏断言） |
+| 标签 | `v0.0.1-beta.4` 重新指向 `7078c65`（先删远端旧标签，再推新标签） |
+| CI | `45401521008`：Windows 第 1 次被 `AC-31`（释放 hold 后重新派发）4s 等待上界命中；重跑失败作业后四作业全 success |
+| Release | 因删标签变成 draft，CI 只上传附件不重新发布；已用 API `PATCH draft:false, prerelease:true, target_commitish:<full sha>` 恢复 |
+| 产物 | 4 个附件全部重新上传（asset id 更新），`Maestro_0.0.1-beta.4_x64.dmg` 48.1MB / arm64 43.6MB / win 35.3MB + SHA256SUMS |
+
+**`AC-31` 说明**：`test/wp13/role-recovery.test.js:169` 的 `waitFor` 上界是 4s，Windows cold runner 上实测 `duration_ms 4215` 正好命中；本机独占及 CI 重跑均通过。与 `AC-60` 同类（等待上界按本机观察值设，未按最慢 CI 留余量），属既有脆弱点，下一次收口时统一放宽。
+
+**回归**：串行全量 `2001 / 1981 pass / 17 fail / 3 skip`，对照 `b1efef9` 基线树失败名差集 **新增红 0**。
