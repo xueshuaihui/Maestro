@@ -20,6 +20,7 @@
     "verify:authoring": "node scripts/verify-authoring-ui.mjs",
     "verify:canvas": "node scripts/verify-canvas.mjs",
     "verify:scenarios": "node scripts/verify-scenarios.mjs",
+    "verify:app": "node scripts/verify-scenarios.mjs --app",
     "verify:release": "node scripts/verify-core.mjs && node scripts/verify-ui-flow.mjs && node scripts/verify-authoring-ui.mjs && node scripts/verify-canvas.mjs && node scripts/verify-scenarios.mjs && node scripts/verify-desktop-boot.mjs && node scripts/verify-shell-boot.mjs"
   }
 }
