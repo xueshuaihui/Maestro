@@ -52,7 +52,10 @@ const CLI = Object.freeze({
     bin: ['opencode'],
     npmPackages: ['opencode-ai', 'opencode'],
     homeDirs: ['.opencode'],
-    versionArgs: ['--version']
+    versionArgs: ['--version'],
+    // Verified 2026-11-24 against opencode 1.19.6: `opencode acp` starts a
+    // real ACP NDJSON server; `--acp` is not a valid flag (exit 1).
+    acpArgs: ['acp']
   },
   aider: {
     cli_id: 'aider',

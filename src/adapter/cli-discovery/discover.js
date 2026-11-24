@@ -21,6 +21,12 @@ import path from 'node:path';
 
 import { KNOWN_AGENT_CLI, CLI_STATUS, SCHEMA_VERSION } from './known-agents.js';
 
+/** ACP entrypoint args from the known table; legacy flag for unknown CLIs. */
+function acpArgsForKnown(cliId, known = KNOWN_AGENT_CLI) {
+  const def = typeof cliId === 'string' ? known.find((item) => item.cli_id === cliId) : null;
+  return def?.acpArgs ?? ['--acp'];
+}
+
 const exists = (fileSystem, target) => {
   try {
     fileSystem.accessSync(target);
@@ -137,7 +143,8 @@ function userConfigFinding(entry, detectedAt) {
     not_on_path: false,
     verified_at: null,
     evidence: [{ type: 'user-config', value: executable }],
-    version_args: entry?.version_args ?? ['--version']
+    version_args: entry?.version_args ?? ['--version'],
+    acp_args: entry?.acp_args ?? acpArgsForKnown(entry?.cli_id)
   };
 }
 
@@ -218,7 +225,8 @@ export function discoverAgentClis(options = {}) {
       not_on_path: executable ? false : true,
       verified_at: null,
       evidence,
-      version_args: def.versionArgs ?? ['--version']
+      version_args: def.versionArgs ?? ['--version'],
+      acp_args: def.acpArgs ?? ['--acp']
     });
   }
 

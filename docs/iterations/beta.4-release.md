@@ -216,3 +216,48 @@ npm run verify:release  # 两条串联，任一失败即 exit 1
 **`AC-31` 说明**：`test/wp13/role-recovery.test.js:169` 的 `waitFor` 上界是 4s，Windows cold runner 上实测 `duration_ms 4215` 正好命中；本机独占及 CI 重跑均通过。与 `AC-60` 同类（等待上界按本机观察值设，未按最慢 CI 留余量），属既有脆弱点，下一次收口时统一放宽。
 
 **回归**：串行全量 `2001 / 1981 pass / 17 fail / 3 skip`，对照 `b1efef9` 基线树失败名差集 **新增红 0**。
+
+---
+
+## 12. 「环境缺口」口径纠正与真实宿主取证（2026-11-24）
+
+**用户追问**：「环境缺口？在本地搭建环境呢？」——复核后确认原口径过于笼统，必须纠正。
+
+### 12.1 原口径错在哪
+
+§2 / §8 曾把「真实宿主执行未取证」整体归为**环境缺口**（本机无目标 CLI）。实测证明这个归因不成立：`npmmirror` 可达（HTTP 200 / 1.4s）、Node 22 在，装一个带 ACP 的 CLI 只需 15s；装好后握手、会话、真实模型推理**全部可跑**。真正的问题不是环境，而是产品探针有两处缺陷，把能跑的 CLI 判成了「不支持」：
+
+| # | 缺陷 | 实测证据 | 修复 |
+|---|---|---|---|
+| 1 | `probeAcp` 默认发 `--acp` 开关，但真实 CLI（opencode）用 `acp` 子命令 | `probeAcp(--acp)` → `exitCode:1 / acp:false`；`probeAcp(acp)` → `acp:true / protocolVersion:1` | `acpArgsFor()` 按 `cli_id` 查 known 表；known 表给 opencode 加 `acpArgs:['acp']`；finding / user_config / registry 全链路带 `acp_args` |
+| 2 | 能力只认旧格式 `sessionCapabilities:[...]`，不认标准 ACP 的 `agentCapabilities.sessionCapabilities:{close:{},...}` | 真实 initialize 帧把 `close/fork/list/resume` 放在 `agentCapabilities` 下，旧解析取到空数组 | `probeAcp` 兼容两种 ACP wire shape（数组取元素 / 对象取键），`capabilities` 同步从 `agentCapabilities` 取键 |
+
+### 12.2 本地搭建环境与取证结果
+
+| 项 | 结果 | 证据级别 |
+|---|---|---|
+| 环境搭建 | `npm install opencode-ai@1.19.6`（15s / 3 包），本机原先 PATH、npm 全局、`~/.local/bin` 均无 Agent CLI | **本机实测** |
+| A1 握手 | `cli add` → `cli probe opencode` → 「ACP 支持」；registry 落盘 `acp:true / version:1.19.6 / capabilities:[close,fork,list,resume] / connection_status:connected` | **真实 CLI 实测**（经产品命令面，非直调探针） |
+| A5 会话 | `initialize → session/new → session/prompt → agent_message_chunk("PONG") → end_turn`，`inputTokens:7637 / outputTokens:4` | **真实模型推理实测**（opencode 自带免费模型 `big-pickle`，无需用户凭据） |
+| 回归 | `test/wp16/cli-probe.test.js` 新增 2 条（标准 ACP 对象能力 / acp_args 方言），wp16 全量 51/51、`verify:core` 11/11、purity 零命中；全量 `2003 / 1991 pass / 10 fail / 2 skip`，10 条独占复跑后 9 条转绿（并发负载 flake），剩 1 条 `core.stop` 经 `git worktree` @ HEAD 基线树同口径复现 → **新增红 0** | mock 实测 + 机检 |
+
+> 证据分级与 §8 的关系：§8 第 1 条「真实宿主执行未取证」**作废**——它此前把「没装 CLI」误当成「装了也不能跑」。修正后的口径是：真实宿主握手与真实模型推理由本机实测取证；「需用户自有账号凭据（如 Claude/Codex/Gemini 付费模型）」的场景仍未取证，但产品不依赖它，也不宣称发生过。
+
+### 12.3 复现方式
+
+```bash
+# 环境
+T=$(mktemp -d); cd "$T"; npm init -y >/dev/null
+npm i opencode-ai --registry=https://registry.npmmirror.com/
+OC="$T/node_modules/.bin/opencode"
+
+# A1：经产品命令面握手
+R=$(mktemp -d); cd "$R"
+node <repo>/bin/orch.js cli add --name OpenCode --path "$OC"
+node <repo>/bin/orch.js cli probe opencode     # → ACP 支持
+node -e "console.log(require('$R/.orch/cli-registry.json').clis.find(c=>c.cli_id==='opencode'))"
+
+# A5：真实会话（NDJSON over stdio）
+printf '%s\n' \
+  '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":1,"clientInfo":{"name":"m","version":"1"}}}' | "$OC" acp
+```

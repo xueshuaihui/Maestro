@@ -20,6 +20,7 @@ import {
   discoverAgentClis,
   probeVersion,
   probeAcp,
+  acpArgsFor,
   withProbeResults,
   loadCliRegistry,
   saveCliRegistry,
@@ -259,6 +260,7 @@ export async function cliDiscoveryMain(argv) {
         name,
         executable,
         version_args: ['--version'],
+        acp_args: acpArgsFor({ cli_id: cliIdFor(name, executable) }),
         added_at: addedAt
       }
     ];

@@ -20,7 +20,19 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 
-import { CLI_STATUS } from './known-agents.js';
+import { CLI_STATUS, KNOWN_AGENT_CLI } from './known-agents.js';
+
+/**
+ * ACP entrypoint args declared on the known-agent table. Falls back to the
+ * legacy `--acp` flag only when the CLI is unknown, so a user-registered
+ * opencode (which has no acp_args in user_config) still starts correctly.
+ */
+export function acpArgsFor(finding) {
+  if (Array.isArray(finding?.acp_args) && finding.acp_args.length > 0) return finding.acp_args;
+  const id = finding?.cli_id;
+  const known = typeof id === 'string' ? KNOWN_AGENT_CLI.find((item) => item.cli_id === id) : null;
+  return known?.acpArgs ?? ['--acp'];
+}
 
 function fail(code, cause, extra = {}) {
   return { ok: false, code, params: { cause: String(cause), ...extra } };
@@ -136,7 +148,10 @@ export async function probeAcp(finding, options = {}) {
     return fail('CLI_PROBE_INVALID', 'finding.executable required');
   }
   const timeoutMs = options.timeoutMs ?? 10_000;
-  const args = options.args ?? ['--acp'];
+  // ACP entrypoints differ per CLI: some expose a subcommand (`opencode acp`),
+  // others a flag (`codex --acp`). Caller override wins, then the finding's
+  // declared args, then the known-agent table lookup. Never hardcode a dialect.
+  const args = options.args ?? acpArgsFor(finding);
   const request = {
     jsonrpc: '2.0',
     id: 1,
@@ -175,17 +190,30 @@ export async function probeAcp(finding, options = {}) {
     };
   }
 
-  const sessionCapabilities = Array.isArray(response.sessionCapabilities)
-    ? response.sessionCapabilities
-    : Array.isArray(response.capabilities?.session)
-      ? response.capabilities.session
-      : [];
+  // ACP wire shapes seen in the wild (all must be accepted, never guessed):
+  //   1. legacy Maestro fixture: sessionCapabilities: ['close','list','resume']
+  //   2. legacy variant:         capabilities: { session: [...] }
+  //   3. standard ACP (opencode, Zed agents):
+  //        agentCapabilities: { sessionCapabilities: { close:{}, list:{}, ... },
+  //                              mcpCapabilities: {...}, promptCapabilities: {...},
+  //                              loadSession: true }
+  // For the object form, the capability NAMES are the object keys; the values
+  // are option bags and are intentionally discarded (no guessing of semantics).
+  const caps = response.agentCapabilities ?? response.capabilities ?? {};
+  let sessionCapabilities = [];
+  if (Array.isArray(response.sessionCapabilities)) {
+    sessionCapabilities = response.sessionCapabilities;
+  } else if (Array.isArray(response.capabilities?.session)) {
+    sessionCapabilities = response.capabilities.session;
+  } else if (caps.sessionCapabilities && typeof caps.sessionCapabilities === 'object') {
+    sessionCapabilities = Object.keys(caps.sessionCapabilities);
+  }
 
   return {
     ok: true,
     acp: true,
     protocolVersion: response.protocolVersion ?? null,
-    capabilities: Object.keys(response.capabilities ?? {}),
+    capabilities: Object.keys(caps),
     sessionCapabilities,
     exitCode: result.code,
     connection_status: CLI_STATUS.CONNECTED

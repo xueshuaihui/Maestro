@@ -112,6 +112,74 @@ test('A1-10: probeAcp parses NDJSON initialize response and extracts session cap
   }
 });
 
+test('A1-10b: probeAcp accepts standard ACP agentCapabilities.sessionCapabilities object', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-acp-std-'));
+  const script = path.join(root, 'std-acp.mjs');
+  const NL = String.fromCharCode(10);
+  fs.writeFileSync(script, [
+    "process.stdin.setEncoding('utf8');",
+    "process.stdin.on('data', (chunk) => {",
+    "  for (const line of chunk.split(String.fromCharCode(10))) {",
+    "    if (!line.trim()) continue;",
+    "    try { const msg = JSON.parse(line); if (msg.method === 'initialize') {",
+    "      process.stdout.write(JSON.stringify({ jsonrpc:'2.0', id: msg.id, result: {",
+    "        protocolVersion: 1, agentCapabilities: { loadSession: true,",
+    "          mcpCapabilities: { http:true },",
+    "          sessionCapabilities: { close:{}, fork:{}, list:{}, resume:{} } },",
+    "        agentInfo: { name:'std', version:'1' } } }) + String.fromCharCode(10));",
+    "    } } catch {}",
+    "  }",
+    "});",
+    "setTimeout(() => process.exit(0), 250);"
+  ].join(NL), 'utf8');
+  try {
+    const result = await probeAcp(
+      { executable: process.execPath },
+      { args: [script], timeoutMs: 3000 }
+    );
+    assert.equal(result.ok, true);
+    assert.equal(result.acp, true);
+    assert.deepEqual(result.sessionCapabilities, ['close', 'fork', 'list', 'resume']);
+    assert.ok(result.capabilities.includes('sessionCapabilities'));
+    assert.ok(result.capabilities.includes('loadSession'));
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('A1-10c: probeAcp honors finding.acp_args (subcommand dialect, no override)', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-acp-args-'));
+  const marker = path.join(root, 'args-seen.json');
+  const script = path.join(root, 'acp-sub.mjs');
+  const NL = String.fromCharCode(10);
+  fs.writeFileSync(script, [
+    "import fs from 'node:fs';",
+    `fs.writeFileSync(${JSON.stringify(marker)}, JSON.stringify(process.argv.slice(2)));`,
+    "process.stdin.setEncoding('utf8');",
+    "process.stdin.on('data', (chunk) => {",
+    "  for (const line of chunk.split(String.fromCharCode(10))) {",
+    "    if (!line.trim()) continue;",
+    "    try { const msg = JSON.parse(line); if (msg.method === 'initialize') {",
+    "      process.stdout.write(JSON.stringify({ jsonrpc:'2.0', id: msg.id, result: {",
+    "        protocolVersion: 1, sessionCapabilities: ['close'] } }) + String.fromCharCode(10));",
+    "    } } catch {}",
+    "  }",
+    "});",
+    "setTimeout(() => process.exit(0), 250);"
+  ].join(NL), 'utf8');
+  try {
+    const result = await probeAcp(
+      { executable: process.execPath, acp_args: [script, 'acp'] },
+      { timeoutMs: 3000 }
+    );
+    assert.equal(result.acp, true);
+    // script lands in process.argv[1]; only declared args reach slice(2).
+    assert.deepEqual(JSON.parse(fs.readFileSync(marker, 'utf8')), ['acp']);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('A1-11: probeVersion captures first output line', async () => {
   const mock = mockAcpScript();
   try {
