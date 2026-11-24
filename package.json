@@ -15,6 +15,8 @@
     "verify:core": "node scripts/verify-core.mjs",
     "verify:ui-flow": "node scripts/verify-ui-flow.mjs",
     "verify:desktop": "node scripts/verify-desktop-boot.mjs",
-    "verify:release": "node scripts/verify-core.mjs && node scripts/verify-ui-flow.mjs && node scripts/verify-desktop-boot.mjs"
+    "verify:shell": "node scripts/verify-shell-boot.mjs",
+    "verify:journey": "node scripts/verify-journey.mjs",
+    "verify:release": "node scripts/verify-core.mjs && node scripts/verify-ui-flow.mjs && node scripts/verify-desktop-boot.mjs && node scripts/verify-shell-boot.mjs"
   }
 }
