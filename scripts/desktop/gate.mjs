@@ -195,7 +195,10 @@ function main() {
       encoding: 'utf8',
       env: { ...process.env, NODE_ENV: 'test' },
       maxBuffer: 64 * 1024 * 1024,
-      timeout: 30 * 60 * 1000,
+      // 45 min, not 30: the suite grew past 2000 cases and the Windows runner
+      // needs ~30 min just for the run. A kill at the old cap produced
+      // `tests=null` — a red gate that says nothing about correctness.
+      timeout: 45 * 60 * 1000,
     });
     const output = `${run.stdout ?? ''}\n${run.stderr ?? ''}`;
     const tap = parseTap(output);

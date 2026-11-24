@@ -508,3 +508,16 @@ git push origin v0.0.1-beta.4
 | 全程无未捕获异常 | PASS |
 
 源码树 **14/14**、打包产物 **14/14**。已并入 `verify:release`；`verify:app` 现在一次跑三套（scenarios / canvas / drilldown）全部针对 `.app`。
+
+### 16.8 第三次重发：Windows 门禁超时（非代码缺陷）
+
+tag `v0.0.1-beta.4` → `00cb281` 的流水线（run `45450622449`）macOS x64 / arm64 均成功，Windows 在「质量门禁」判红：
+
+```
+[gate] FAIL 全量单测可运行并产出 TAP 摘要 — tests=null pass=0 fail=0
+[gate] PASS 失败集合与判定基线差集为 0 — 17 条失败全部落在判定基线 25 条内
+```
+
+时间戳给出结论：门禁 `17:39:26` 起跑、`18:09:33` 报错 = **30 分 07 秒**，正好撞上 `gate.mjs` 的 `timeout: 30 * 60 * 1000`。测试被 SIGTERM 杀掉后没有 TAP 摘要，于是"跑了多少条"判空。**功能面无新增失败（差集 0），这是超时不是缺陷。**
+
+修复：上限提到 45 分钟（套件已过 2000 条，Windows runner 单跑就要约 30 分钟），并重发 tag。
