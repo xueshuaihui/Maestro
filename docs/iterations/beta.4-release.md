@@ -261,3 +261,67 @@ node -e "console.log(require('$R/.orch/cli-registry.json').clis.find(c=>c.cli_id
 printf '%s\n' \
   '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":1,"clientInfo":{"name":"m","version":"1"}}}' | "$OC" acp
 ```
+
+---
+
+## 13. 重发 beta.4（含 A1 真实握手修复 + 全流程真实验证，2026-11-24）
+
+### 13.1 背景与动机
+
+§12 的 A1 修复（`2493200`）与全流程真实验证（`bd37df9`）此前只在本地/远端 main，**tag
+`v0.0.1-beta.4` 仍指向旧 hotfix 提交 `7078c65`**——即访客下载到的 `.4` 产物不含真实 ACP 握手
+修复。本次把 tag 迁到 `bd37df9` 并重发。
+
+### 13.2 关键决策：走"删 Release + 删 tag → 重推"的干净路径
+
+前次同版本重发的教训（见长期记忆）：**只删 tag、保留 Release** 会让 Release 变 draft，而 CI
+的 publish job 对已存在的 Release 只做 `gh release upload --clobber`，不会重新 publish、也不会
+更新 `target_commitish`——结果是产物换了但 Release 元数据仍指向旧提交。本次改为先删 Release
+再删 tag，让 CI 全新创建 Release，`target_commitish` 自然指向新提交。
+
+```bash
+# 1. 推送含修复的本地提交
+git push origin main                       # 2493200..bd37df9
+
+# 2. 删旧 Release + 旧 tag（关键：两者都删，不留 draft）
+gh release delete v0.0.1-beta.4 --yes
+git push origin :refs/tags/v0.0.1-beta.4
+git tag -d v0.0.1-beta.4
+
+# 3. 基于最新提交重建 annotated tag 并推送 → 触发 Release workflow
+git tag -a v0.0.1-beta.4 -m "release: v0.0.1-beta.4 — 含 A1 真实 ACP 握手修复 + 全流程真实验证" bd37df9
+git push origin v0.0.1-beta.4
+```
+
+### 13.3 发版前门禁预检
+
+| 项 | 结果 | 备注 |
+|---|---|---|
+| 版本三处对齐 | PASS `0.0.1-beta.4` | package.json / tauri.conf.json / Cargo.toml |
+| 31 词 purity（src/core+daemon、desktop/ui） | PASS 两轮 exit 0 | 新增 verify 脚本不在扫描范围 |
+| 测试条数 | PASS 2003 ≥ 1157 | — |
+| 失败集合差集 | 本机 FAIL 2 条 | `copyToBackup`(EIO≠ENOENT)、`AC-43 会话重建`(running≠escalated) |
+| 差集归因 | **本机沙箱固有红** | `git worktree` 拉旧 tag 提交 `7078c65`（CI 上次全绿的同提交）复跑同样红 → 与本次改动无关；CI Windows job 门禁已 PASS 佐证 |
+
+### 13.4 CI 与产物核验（证据：真实 API 查询）
+
+| 核验项 | 实测 | 结论 |
+|---|---|---|
+| Release workflow run `45421794691` | 三平台构建 + 汇总发布 **全 success** | tag push 正确触发 |
+| 三平台 job | macOS arm64 / macOS x64 / Windows x64 均 success（含质量门禁、打包、冒烟） | 通过 |
+| `isDraft` / `isPrerelease` | `false` / `true` | 访客可见 + 预发布，符合 `v0.*` 口径 |
+| `target_commitish` | `bd37df9c0de19df08c029c26e1f4d3417c18ae03` | 精确指向含修复的最新提交 |
+| `publishedAt` | `2026-11-24T15:22:44Z` | 已正式发布（非草稿） |
+| 资产 4 个 | arm64.dmg(45.7MB) / win-x64-setup.exe(37.0MB) / x64.dmg(48.1MB) / SHA256SUMS.txt(297B)，均 `state=uploaded` | 齐全 |
+| 匿名 API 按 tag 查询 | **HTTP 200**，未带凭据 | 访客可见 |
+| SHA256SUMS 匿名下载 | 297B，含三平台哈希 | 可获取 |
+| 资产下载端点 | HTTP 200 | 可下载 |
+
+> 注：本地下载 48MB dmg 做哈希逐字比对被沙箱 SIGTERM 中断，未纳入证据。三平台产物的
+> `产物冒烟` job 在 CI 已通过，Release 元数据与匿名访问均已核实。
+
+### 13.5 结论
+
+`v0.0.1-beta.4` 已重发完成，tag 与 Release 均指向 `bd37df9`，包含 §12 的 A1 真实 ACP 握手
+修复（探针方言 `acp_args` + 标准 `agentCapabilities.sessionCapabilities` 对象解析）与全流程
+真实验证产物。此前"tag 停在旧 hotfix、访客下载不含修复"的问题已消除。
