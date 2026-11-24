@@ -494,3 +494,17 @@ git push origin v0.0.1-beta.4
 - `npm run verify:app`（`verify-scenarios.mjs --app`）走**真实 `.app` 二进制** → 内置 node daemon → 同一套 41 条场景断言，打开的是包内的 `desktop/ui`。
 - 记录：新构建的 `.app` 上 **41/41 PASS**，含画布中文节点、`M/L` 连线、运行区块显示两条运行（`RUN-1` 1/2、`R-...` 2/2）、失败提示带真实原因与引导。
 - 发版前置顺序固定为：`desktop:build` → `verify:app` → `verify:release`（源码树）→ 推 tag。
+
+### 16.7 实例下钻链路（此前从未走过）
+
+上一轮只验到"实例出现在列表"，没验"点进去能看到什么"。补 `scripts/verify-drilldown.mjs`：用仓库自带的 mock ACP 宿主（走与生产 CLI 完全相同的 `hosts/dsh.json` launch seam）真的创建一个实例，再从 UI 点进去走完工作区全部页签。
+
+| 断言 | 结果 |
+|---|---|
+| 通过新建表单创建真实实例（表单 → 实例列表出现 `INST-001`） | PASS |
+| 打开实例进入工作区（页签可点） | PASS |
+| 概览 / 流程图 / 看板 / 证据 四页均有内容、无脏文本 | 4/4 PASS |
+| 流程图真的画出节点（SVG 元素 3 个） | PASS |
+| 全程无未捕获异常 | PASS |
+
+源码树 **14/14**、打包产物 **14/14**。已并入 `verify:release`；`verify:app` 现在一次跑三套（scenarios / canvas / drilldown）全部针对 `.app`。
