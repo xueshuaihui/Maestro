@@ -521,3 +521,16 @@ tag `v0.0.1-beta.4` → `00cb281` 的流水线（run `45450622449`）macOS x64 /
 时间戳给出结论：门禁 `17:39:26` 起跑、`18:09:33` 报错 = **30 分 07 秒**，正好撞上 `gate.mjs` 的 `timeout: 30 * 60 * 1000`。测试被 SIGTERM 杀掉后没有 TAP 摘要，于是"跑了多少条"判空。**功能面无新增失败（差集 0），这是超时不是缺陷。**
 
 修复：上限提到 45 分钟（套件已过 2000 条，Windows runner 单跑就要约 30 分钟），并重发 tag。
+
+### 16.9 发版结果（run `45457208196`）
+
+| 项 | 结果 |
+|---|---|
+| 流水线 | macOS x64 / macOS arm64 / Windows x64 / 汇总发布 **四 job 全绿** |
+| tag | `v0.0.1-beta.4` → `4de9ad8`（含 §16 全部修复与验证脚本） |
+| Release | `isDraft=false` / `isPrerelease=true` / `target_commitish=4de9ad8`，4 个资产时间戳 `18:19` |
+| 匿名 API | `GET /releases/tags/v0.0.1-beta.4` → **200**（未登录可见） |
+| 资产 | 两个 dmg + 一个 exe + `SHA256SUMS.txt`，下载 200，校验文件内容与三个包一一对应 |
+| 本地打包产物 | `npm run verify:app` = scenarios 41 + canvas 15 + drilldown 14，**全绿** |
+
+处理细节：删 tag 会让关联 Release 变 `draft`，且 `target_commitish` 停在旧 sha；改写时 `gh release edit --target` 只接受**完整 40 位 sha**，短 sha 返回 `422 target_commitish is invalid`。
