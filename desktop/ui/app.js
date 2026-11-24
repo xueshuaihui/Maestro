@@ -1036,7 +1036,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       // beta.2 shell surfaces: these render from projections that are already
       // in memory (rows, notifications, prefs), so they switch unconditionally
       // as well and never leave the sidebar dead.
-      if (['new', 'overview', 'governance', 'settings', 'notifications', 'project'].includes(view)) {
+      if (['new', 'overview', 'governance', 'settings', 'notifications', 'project', 'studio'].includes(view)) {
         state.view = view;
       }
       return api;

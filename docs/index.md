@@ -391,13 +391,13 @@ v1 的 `hosts/` 降级为**可选的** transport 方言覆盖：缺省时按 A1 
 ### 实施进度总览（截至 `v0.0.1-beta.4` 发布，2026-11-24）
 
 > 状态口径只有四档：**已交付**（有可复现证据）/ **部分交付**（主干可用、边界未取证）/ **未开工** / **阻塞**（缺环境，非缺代码）。
-> 证据文件：`docs/iterations/beta.4-release.md`；判定脚本：`npm run verify:core` + `npm run verify:ui-flow`。
+> 证据文件：`docs/iterations/beta.4-release.md`；判定脚本：`npm run verify:core` + `npm run verify:ui-flow` + `npm run verify:desktop`（真实浏览器，发版后 hotfix 补入）。
 
 | 阶段 | 进度 | 已交付 | 未交付 / 缺口 | 状态 |
 |---|---|---|---|---|
 | **A 核心形态闭环** | 6/6 任务 | 扫描 → 建角色员工 → 组 Team → 建 12 阶段流 → 门禁拦停/逐级批准 → 12/12 完成 + 知识库落盘；横向机制（任务/缺陷/变更/需求缺口回流） | A5 的"真实宿主会话驱动"未取证（本机无目标 CLI 的 ACP 能力，`AD-08`） | **部分交付** |
 | **B 引擎底座接入** | 接线层 1/1 | `compile.js`：组织+流程 → 38 个 stage-scoped `role/v1` + `workflow/v1`，过引擎自身 `checkRoleShape`/`checkWorkflowShape` | B1~B4 的会话驱动、交接包、三层日志**挂到新概念模型**上仍走 v1 旧入口，未按员工/任务维度重挂 | **部分交付** |
-| **C 桌面完整化与治理** | 搭建台 1/1 | `desktop/ui/studio.*` 六步向导 + `GET /studio/state`、`GET /studio/labels`、`POST /studio/action`；49 键标签零缺失 | C1~C4 的实例列表/下钻/通知队列/治理审计是 v1 已交付视图，仍是**实例维度**，未换成组织/团队维度；搭建台未做数百员工下的虚拟化与搜索 | **部分交付** |
+| **C 桌面完整化与治理** | 搭建台 1/1（发布后补真实浏览器 hotfix） | `desktop/ui/studio.*` 六步向导 + `GET /studio/state`、`GET /studio/labels`、`POST /studio/action`；49 键标签零缺失；浏览器实测导航点击 → iframe → 一键配出组织/流程/团队/运行 | C1~C4 的实例列表/下钻/通知队列/治理审计是 v1 已交付视图，仍是**实例维度**，未换成组织/团队维度；搭建台未做数百员工下的虚拟化与搜索 | **部分交付** |
 | **D 多宿主与多项目** | 项目登记 1/1 | `projects.js`：`~/.maestro/projects.json` 登记/切换/移除 + 宿主能力矩阵投影 | D1 第二 CLI 接入、D2 跨 CLI 混跑、D4 宿主矩阵回归套件均未开工（前提是拿到第二种 CLI 的实机） | **部分交付** |
 
 **一句话进度**：用户要的形态（打开即扫描本机 CLI → 建角色员工 → 组 Team → 建工作流 → 跑通）**已经能配出来并跑完**，域层与桌面真实通道双通路验证通过；剩下的是"真实宿主执行"这一条环境依赖，以及 B/C/D 把 v1 旧视图换成新概念维度。

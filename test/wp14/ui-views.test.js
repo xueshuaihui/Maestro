@@ -364,6 +364,29 @@ test('AC-43 / setView: five new keys switch view, existing four unchanged', () =
   assert.equal(app.state().view, 'instances');
 });
 
+test('beta.4 / setView: the Studio nav entry actually switches the view', () => {
+  const app = makeApp();
+  // Before beta.4 hotfix `studio` was missing from the setView whitelist:
+  // the nav item rendered but clicking it left the instance list in place.
+  app.setView('studio');
+  assert.equal(app.state().view, 'studio');
+  app.setView('instances');
+  assert.equal(app.state().view, 'instances');
+});
+
+test('beta.4 / studio token: session storage outranks local, URL outranks both', async () => {
+  const { readDesktopToken, TOKEN_KEY } = await import(
+    '../../desktop/ui/studio/token.js'
+  );
+  const store = (value) => ({ getItem: (key) => key === TOKEN_KEY ? value : null });
+  const blocked = { getItem() { throw new Error('blocked'); } };
+
+  assert.equal(readDesktopToken('', { sessionStorage: store('session-token'), localStorage: store('local-token') }), 'session-token');
+  assert.equal(readDesktopToken('', { sessionStorage: blocked, localStorage: store('local-token') }), 'local-token');
+  assert.equal(readDesktopToken('?token=url-token', { sessionStorage: store('session-token') }), 'url-token');
+  assert.equal(readDesktopToken('', { sessionStorage: blocked, localStorage: blocked }), '');
+});
+
 test('AC-04 / AC-49: followNotification navigates to queue and selects the row', async () => {
   const app = makeApp();
   const target = await app.followNotification({

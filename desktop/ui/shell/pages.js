@@ -756,7 +756,7 @@ export function governancePage(ctx) {
 /**
  * Studio page: the authoring surface (A2~A6). It is a same-origin iframe so the
  * wizard keeps its own DOM/state without touching the shell's paint loop; the
- * frame resolves the desktop token from localStorage like the shell does.
+ * frame reads the same sessionStorage token the shell wrote.
  */
 export function studioPage() {
   const wrap = el('div', 'studio-frame');

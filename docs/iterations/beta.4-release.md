@@ -185,3 +185,20 @@ npm run verify:release  # 两条串联，任一失败即 exit 1
 
 阶段级进度台账（A/B/C/D 各自的已交付、缺口、剩余工作与前置条件）维护在 `docs/index.md` §"实施进度总览"。
 一句话：**核心形态已可配通，剩余缺口是"真实宿主执行"（需一台装目标 Agent CLI 的机器）与 C/B/D 旧视图向新概念维度的迁移。**
+
+## 11. 发布后真实浏览器复验（阻断性 hotfix）
+
+**用户实测反馈**：装上 beta.4 后一直处于连接状态、无法使用。此前三条验证（域层、HTTP 通道、包内路由）**都没有驱动浏览器点击**，因此全部漏掉了下面这些缺陷。补上 `npm run verify:desktop`（无头 Chrome + CDP，走 `serve-entry.js --desktop` 的真实启动入口）后，一次抓出三处阻断：
+
+| # | 缺陷 | 现象 | 修复 |
+|---|---|---|---|
+| 1 | `desktop/ui/app.js` 的 `setView()` 白名单没有 `studio` | 「搭建台」导航项渲染出来了，但点击不切换视图，iframe 根本没挂载——**核心入口仍然点不进去** | 白名单加入 `studio` |
+| 2 | 壳把 token 写入 `sessionStorage`，`studio.js` 只读 `localStorage` | 即使 iframe 挂上，也拿不到 loopback token，页面停在未认证态 | 抽出纯函数 `desktop/ui/studio/token.js`：URL → sessionStorage → localStorage 依次回退；iframe 与父页共享 session |
+| 3 | `studio.js` 的 `render()` 用 `app.replaceChildren()` 删掉了 `#loading`，后续 `load()` 仍写它 | 点「一键演示」只建出 23 个角色就抛 `Cannot set properties of null`，流程/团队/运行全部没发生——**表现为“按钮点了没反应”** | `setLoading()` 容错节点缺失；`DEMO_DONE` 模板补齐占位符参数 |
+
+> 缺陷 1 是 beta.3 同一类问题（核心入口缺失）的回归：只把页面文件放进包里，不等于用户能点到它。**页面存在 ≠ 入口可用**。
+
+**新增验证**：`scripts/verify-desktop-boot.mjs`（`npm run verify:desktop`）共 16 项，覆盖冷启动绘制、token 落点、无卡死在「正在连接」、导航点击、iframe 内容、无未捕获异常、`/studio/state` 可读、页面按钮一键配出组织/流程/团队/运行、完成提示无占位符、无凭据首启不挂死。判定输出 `DESKTOP_BOOT_OK`。
+`verify:release` 已串联三条：core → UI 通道 → 真实浏览器。
+
+**回归护栏**：`test/wp14/ui-views.test.js` 新增两条断言——`setView('studio')` 必须切换视图；token 解析必须 session 优先于 local、URL 优先于两者。

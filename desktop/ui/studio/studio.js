@@ -7,11 +7,11 @@
  * its own (readiness, gates and stage order are all computed server-side).
  */
 
+import { readDesktopToken } from './token.js';
+
 const STATE_URL = '/studio/state';
 const LABELS_URL = '/studio/labels';
 const ACTION_URL = '/studio/action';
-
-const TOKEN_KEY = 'maestro.desktop.token';
 
 const app = document.getElementById('app');
 const toastEl = document.getElementById('toast');
@@ -21,13 +21,10 @@ let S = null;
 let busy = false;
 
 function token() {
-  const fromUrl = new URLSearchParams(location.search).get('token');
-  if (fromUrl) return fromUrl;
-  try {
-    return localStorage.getItem(TOKEN_KEY) ?? '';
-  } catch {
-    return '';
-  }
+  return readDesktopToken(location.search, {
+    sessionStorage: globalThis.sessionStorage,
+    localStorage: globalThis.localStorage,
+  });
 }
 
 async function request(path, init = {}) {
@@ -558,8 +555,16 @@ function render() {
 
 // ------------------------------------------------------------------- boot ---
 
+// render() replaces every child of #app, including the initial #loading node.
+// Every later load() must therefore tolerate its absence instead of throwing
+// halfway through a wizard action.
+function setLoading(text) {
+  const node = document.getElementById('loading');
+  if (node) node.textContent = text;
+}
+
 async function load() {
-  if (busy === false) document.getElementById('loading').textContent = t('UI_LOADING');
+  if (busy === false) setLoading(t('UI_LOADING'));
   const [labelBody, state] = await Promise.all([
     request(LABELS_URL),
     request(STATE_URL)
@@ -571,7 +576,7 @@ async function load() {
   document.getElementById('btn-demo').textContent = t('UI_DEMO', 'demo');
   document.getElementById('btn-refresh').textContent = t('UI_REFRESH', 'refresh');
   document.getElementById('btn-demo').title = t('UI_DEMO_HINT2', '');
-  document.getElementById('loading').textContent = '';
+  setLoading('');
   render();
 }
 
@@ -592,7 +597,18 @@ async function demo() {
   }
   const latest = await request(STATE_URL);
   if (latest?.ok) S = latest;
-  if (S?.teams?.length) await act('run.start', { teamId: S.teams[0].id, mode: 'simulate' }, t('DEMO_DONE', 'done'));
+  if (S?.teams?.length) {
+    const started = await act('run.start', { teamId: S.teams[0].id, mode: 'simulate' });
+    if (started) {
+      showToast(fill(t('DEMO_DONE', ''), {
+        roles: S.roles?.length ?? 0,
+        employees: S.employees?.length ?? 0,
+        teams: S.teams?.length ?? 0,
+        flows: S.flows?.length ?? 0,
+        run: started.run?.id ?? '-'
+      }), 'ok');
+    }
+  }
 }
 
 document.getElementById('btn-scan').addEventListener('click', async () => {
@@ -603,7 +619,7 @@ document.getElementById('btn-refresh').addEventListener('click', load);
 
 if (!token()) {
   app.replaceChildren(el('p', 'empty', 'TOKEN'));
-  document.getElementById('loading').textContent = 'TOKEN';
+  setLoading('TOKEN');
 } else {
   load().catch((err) => {
     app.replaceChildren(el('p', 'empty', String(err?.message ?? err)));
