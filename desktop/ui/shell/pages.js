@@ -236,6 +236,7 @@ function startGuide(ctx) {
   const area = el('textarea', 'input-area');
   area.rows = 3;
   area.setAttribute('data-field', 'task');
+  area.placeholder = ctx.t('DESKTOP_TASK_PLACEHOLDER');
   area.value = typeof panel.task === 'string' ? panel.task : '';
   box.appendChild(area);
   const hint = taskHint(ctx, chosen);
@@ -328,16 +329,26 @@ export function instancesPage(ctx) {
   quick.lastChild.style.width = '100%';
   quick.appendChild(divider());
   quick.appendChild(el('div', 'tiny muted', ctx.t('DESKTOP_NEW_FIELD_WORKFLOW')));
-  for (const item of (ctx.state.templates ?? []).slice(0, 4)) {
-    const name = typeof item?.title === 'string' ? item.title : (typeof item?.id === 'string' ? item.id : '');
+  const quickFlows = (ctx.state.templates ?? []).slice(0, 4);
+  for (const item of quickFlows) {
+    const id = typeof item?.id === 'string' ? item.id : '';
+    if (id.length === 0) continue;
+    const name = typeof item?.title === 'string' ? item.title : id;
     const line = el('button', 'link-row', name);
     line.type = 'button';
-    line.setAttribute('data-action', 'nav');
-    line.setAttribute('data-arg', 'new');
+    // A workflow name here used to be a dead end: it navigated to the form but
+    // silently kept whichever workflow was selected before. Carry the choice.
+    line.setAttribute('data-action', 'run-canvas-flow');
+    line.setAttribute('data-arg', id);
     quick.appendChild(line);
   }
-  if ((ctx.state.templates ?? []).length === 0) quick.appendChild(el('div', 'tiny muted mt6', ctx.t('DESKTOP_V2_EMPTY')));
-  rail.appendChild(quick);
+  if ((ctx.state.templates ?? []).length === 0) {
+    quick.appendChild(el('div', 'tiny muted mt6', ctx.t('DESKTOP_QUICK_EMPTY')));
+  }
+  // On a cold start the guide already is the whole job (connect, choose, type),
+  // so a second "new instance" block beside it only asks the user to pick
+  // between two identical entrances.
+  if (!empty) rail.appendChild(quick);
 
   if (!empty) {
     const healthCard = card([]);
@@ -545,6 +556,7 @@ export function newPage(ctx) {
   // The field tag is what keeps the caret alive across a live repaint; without
   // it this page dropped focus on every pushed frame while the guide kept it.
   area.setAttribute('data-field', 'task');
+  area.placeholder = ctx.t('DESKTOP_TASK_PLACEHOLDER');
   area.value = panel.task ?? '';
   main.appendChild(area);
   const newHint = taskHint(ctx, chosen);

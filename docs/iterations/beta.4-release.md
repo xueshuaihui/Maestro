@@ -694,3 +694,127 @@ tag `v0.0.1-beta.4` → `00cb281` 的流水线（run `45450622449`）macOS x64 /
 
 - 搭建台里的 Team/工作流仍是Studio自己的运行（`run.start` 走 simulate），与引擎实例不是同一份执行状态；「一键搭出示例团队」和首屏实例之间还没有数据桥。
 - 实例内仍有五个页签（概览/流程图/看板/队列/证据）+ 下钻多层，属于深入查看，不属首次上手路径。
+
+---
+
+## 20. 统一资源平台：把四个壳接成一条可维护的闭环（2026-11-25 夜 → 26 日）
+
+用户定性「四个模块都只有展示壳，缺可维护、可沉淀的闭环」。grounded 核对（`docs/iterations/resource-platform-plan.md` §1）确认三套数据域的写入面是断的：
+
+| 数据域 | 谁能写 | 谁能删 | 谁能回流 |
+|---|---|---|---|
+| 内置资产 `assets/*` | 无人（HTTP 全 GET） | 无 | 仅 `--from` 派生 |
+| 项目编排 `.orch/studio.json` | domain 全可写，HTTP/UI 只有增改 | domain 有 `remove*`，HTTP 一条没接 | 只编译期单向导出 YAML |
+| 引擎执行 `.orch/instances/<id>/*` | 建/暂停/继续/取消 | 无 delete/archive/clone | 无 instance → template |
+
+### 20.1 改动
+
+1. **一层门面** `src/resources/facade.js`：`department / role / skill / employee / team / flow / instance / run` 八类资源统一投影出 `{id,type,name,source,origin,archived,createdAt,updatedAt}`，`list / get / create / update / archive / restore / remove / clone / fork / export / import / refs` 全部落地，不新建数据库——`.orch/studio.json` 升级为项目资源真相源，内置资产以只读镜像挂进同一视图。
+2. **HTTP 增补表** `src/daemon/http/resources-routes.js`：`GET/POST /resources`、`PATCH|DELETE /resources/:type/:id`、`archive|restore|clone|fork|export|refs`、`POST /resources/import`、`GET /resources/labels`。错误沿用 studio 口径 `{ok:false,code,params}` + HTTP 200，UI 用一张表本地化。
+3. **实例维护面** `src/daemon/instance-maintenance.js` + routes：归档/恢复/克隆/导出，以及「完成实例 → 工作流模板」的 `saveAsTemplate`。
+4. **编译桥** `src/templates/workflow-graph.js` + `src/daemon/project-graphs.js`：把项目流程（`compileStudio` 产物 + YAML→graph 适配）注入 orchestrator 的图集合，`flow.run` 不再只是 simulate。
+5. **引用完整性** `src/resources/refs.js`：归档前能回答「谁在用我」，删除按 `?force=1` 分级。
+
+### 20.2 验收
+
+| 套件 | 结果 |
+|---|---|
+| `test/wp20/resource-platform.test.js` / `resource-routes.test.js` / `instance-maintenance.test.js` / `workflow-graph.test.js` | 全绿 |
+| `verify:resources`（真实 daemon + Chrome） | 8/8（含新建部门 → 出现在表 → 归档 → 恢复） |
+| `verify:assets` | 8/8（fork 内置角色为项目副本） |
+| `verify:workflow-run` / `verify:instance-flow` | 6/6、6/6 |
+
+---
+
+## 21. 菜单按「任务」重组：11 个平铺页 → 5 个任务段 + 常驻标签栏（2026-11-26）
+
+用户反馈「页面菜单交互不连贯，不符合用户使用操作习惯」。先按**用户真的要办的事**把 11 个侧栏入口过一遍，不连贯不是样式问题，是信息架构问题：
+
+| 用户想做的事 | 上一版的落点 | 卡在哪 |
+|---|---|---|
+| 看我这台机器能跑什么、正在跑什么 | 侧栏「实例」「队列」「通知」「占用」四个平级项 | 四件事被拆成四个平行世界，用户得先知道它们属于同一个任务 |
+| 搭团队 / 建角色 / 找资源 | 「搭建台」「角色与技能库」「内置资产」三个平级项 | 同上；「内置资产」和「资源库」看起来是同一件事 |
+| 编辑一条流程并跑起来 | 侧栏**没有**流程列表；画布只能从命令面板 `⌘K` 进 | 有画布没入口，用户不知道流程存在哪 |
+| 看审计 / 改项目配置 | 「治理」「项目」「偏好」平级 | 配置类入口混在业务入口里 |
+
+### 21.1 新的信息架构（`desktop/ui/shell/nav.js`，唯一真相源）
+
+| 任务段 | 落地页 | 常驻标签 |
+|---|---|---|
+| 运行 | 实例 | 实例 / 待处理 / 通知 / 占用 |
+| 团队 | 组织 | 组织 / 资源库 / 内置资产 |
+| 流程 | 工作流 | 工作流 / 画布 |
+| 治理 | 审计 | 审计（单标签段整条隐藏） |
+| 设置 | 项目 | 项目 / 偏好 |
+
+`nav.js` 导出 `SECTIONS / sectionOf / tabsOf / landingView / tabKey`，侧栏、二级标签栏、面包屑、命令面板四处都从它算，不再各自维护一份列表。面包屑相应改为「段 / 标签 / 详情」三段式；单标签段（治理）不显示标签栏；切段时按记忆位置回到上次停留的标签。
+
+### 21.2 补齐的入口
+
+1. **新增工作流页**（`flowsPage`）：一条表列出「项目流程 + 内置模板」，来源列区分 `项目` / `内置`，行内四个动作——打开画布、运行、复制、查看阶段数。此前画布只能靠命令面板进入，流程创建后无处可查。
+2. **「运行这个流程」直达表单**：画布上的运行按钮现在落到「新建实例」并选中该流程，而不是把用户丢回列表重新找按钮。
+3. **资源库按类型给正确入口**：只有「部门」是可新建的；角色/员工/团队给「去组织搭建」，实例/运行给「由运行产生」，流程给「去工作流页」——上一版对所有类型都摆一个新建按钮，点了要么无效要么建出空对象。
+4. **命令面板按段分组**：`⌘K` 里 `运行 › 实例` 这样的路径，取代一长串无分组的页名。
+
+### 21.3 这一轮抓到的真实缺陷
+
+| # | 缺陷 | 根因 | 处置 |
+|---|---|---|---|
+| 1 | 新建部门后列表里看不到 | `POST /resources` 返回 `{id:"",name:""}`，投影键为空 | `nextId()` 生成 `dept-n`，返回体合并真实 `id/name` |
+| 2 | 部门行显示 `backend` 而不是「后端部」 | 列表用了内部 id 当显示名 | `listResources` 对带 `labelKey` 的部门回落到 `STUDIO_TEXT`，用户自填名优先 |
+| 3 | 从内置模板建出的流程在列表里只是一串 id | `flow.create` 传了 `name`，实例化时被丢弃 | 内置模板实例化写入 `flow.name` 并清空 `titleKey` |
+| 4 | 表头/按钮/toast 空白 | 读的是 `UI_*` 键，`GET /ui/labels` 不下发，兜底又被空串覆盖 | 改为 `DESKTOP_*` 专用键，并新增门禁 `test/wp13/ui-label-keys.test.js`：`desktop/ui/**` 里出现的每个 `ctx.t('KEY')` 必须由 `/ui/labels` 下发，否则红 |
+| 5 | 新建页任务框打字时丢光标 | 该 `textarea` 只有 `id`，没有 `data-field`，实时帧重绘后 `captureFocus/restoreFocus` 认不出它 | 补 `data-field="task"`（引导卡与新建页现在是同一套焦点保持） |
+| 6 | 打包直接中断（本机 macOS） | `tray.rs` 图标光栅化 `fold(0.0, …)` 累加器类型推断成 `{float}`，rustc 1.98 报 `E0689` | 显式 `0.0f32`（`ff3d705` 引入，CI 三平台此前没在本机复现） |
+| 7 | **装好的应用里内置资产是空的** | `build.mjs` 只复制了 `bin/ src/ desktop/ui`，没复制 `assets/`；而 `assetsRoot()` 从 `src/registry/assets.js` 反推到 `<repo>/assets`，安装包内该目录不存在 | `assets/` 一并入包。源码树 16 个内置角色，装好的应用里是 0 个——用户会以为项目数据丢了 |
+| 8 | 冷启动首屏有两个「新建实例」入口 | 左侧引导卡（连 CLI → 选流程 → 写任务）与右侧快捷卡（同名标题 + 同名按钮 + 流程名）并排出现 | 列表为空时不再渲染右侧快捷卡，引导卡就是全部工作 |
+| 9 | 右侧快捷卡里点流程名等于没点 | 这些行只是 `nav → new`，不携带模板，落到表单时用的是「上一次选中的流程」 | 改为携带模板 id，直接预选 |
+| 10 | 任务框是一个没有提示的大空框 | `textarea` 没有 placeholder | 加占位文案（`DESKTOP_TASK_PLACEHOLDER`，引导卡与新建页共用） |
+
+第 6、7 条是「发版前才发现」：`build.mjs` 的 cargo 步骤整树失败时 `verify:app` 无从谈起；cargo 修好后 `verify:assets --app` 立刻抓到第 7 条——**源码模式 8/8 绿、打包模式 3 条红**，这正是只跑源码验收会漏掉的那一类缺陷。
+
+### 21.4 用户视角的场景走查（`verify:nav`，真实 daemon + Chrome，25/25）
+
+| 场景 | 断言 |
+|---|---|
+| 冷启动看菜单 | 侧栏恰好 5 项、段名 = 运行/团队/流程/治理/设置、首屏高亮「运行」 |
+| 每段都有专属标签栏 | 每段标签集合逐字相符；单标签段标签栏隐藏；任一时刻只有一个当前标签 |
+| 点遍所有标签（11 个落点） | 每个落点都有非空标题与非空内容，无死链、无 `undefined` / `[object Object]` |
+| 想建一条流程 | 工作流页输入名称 → 出现在表里 → 来源显示「项目」→ 带阶段数 → 可复制成项目副本 |
+| 想建一个部门 | 资源库页输入名称 → 出现在表里 → 归档后从默认列表消失 |
+| 全程 | 浏览器内无未捕获异常 |
+
+`verify:nav` 已挂进 `npm run verify:app` 与 `npm run verify:release`，菜单回归不再靠人眼。
+
+### 21.5 打包产物验收（`--app`，真实 opencode 1.19.6 作宿主）
+
+| 套件 | 结果 |
+|---|---|
+| `verify:nav` | 25/25 |
+| `verify:scenarios` | 45/45 |
+| `verify:canvas` | 15/15 |
+| `verify:drilldown` | 14/14 |
+| `verify:instance-flow` | 33/33 |
+| `verify:first-run` | 9/9 |
+| `verify:assets` | 8/8（内置角色 16 个在装好的应用里可见） |
+| `verify:resources` | 8/8 |
+| `verify:workflow-run` | 7/7 |
+
+### 21.6 回归与差集
+
+| 项 | 值 |
+|---|---|
+| 全量单测（HEAD `ac8cd19`） | 2044 条 / 2027 pass / 15 fail / 2 skip |
+| 基线树 `origin/main`（`ff3d705`）稳定红 | 9 条：`copyToBackup`、`main --cwd`、`task-loop` 绝对路径、`core.stop`、`mountApp`+侧栏 5 条（同一 `window.addEventListener is not a function`） |
+| 独占复跑转绿（负载型 flake） | 6 条：`NFR-02 verifyProducts p95`、`AC-26 壳面`、`AC-43`、`三主链 A-0`、`自动拉起 detached`、`早返回 turn-delay` |
+| **新增红** | **0** |
+
+`AC-23 #3`（`git diff HEAD` 型）在提交前必红、提交后为绿，不计入差集——这也是本仓库第 3 次踩同一个坑。
+
+纯净门禁这轮抓到我自己写的两处英文注释里夹了中文示例（`desktop/ui/app.js:2432`、`desktop/ui/shell/pages.js:829`），注释同样算字面量，已改为无 CJK 表述。
+
+### 21.7 仍未解决
+
+- 「组织（搭建台）」仍是 iframe 里 Studio 自己的 UI，与主壳标签栏是两套视觉；本轮只保证入口正确（团队段 → 组织），没有把它重写成主壳页面。
+- 流程页的「运行」走 `new` 页人工确认，还没有「一键按上次参数重跑」。
+- 治理段只有一个标签，标签栏被隐藏；等审计之外再加第二项（如策略）时自动出现。

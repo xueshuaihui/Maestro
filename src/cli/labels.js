@@ -1830,7 +1830,11 @@ export const DESKTOP_V2_LABEL = Object.freeze({
   DESKTOP_FLOWS_CREATED: '已新建流程：{name}',
   DESKTOP_FLOWS_COPIED: '已复制流程',
   DESKTOP_FLOWS_CREATE_FAILED: '流程操作失败，请稍后重试',
-  DESKTOP_FLOWS_NAME_REQUIRED: '请先填写流程名称'
+  DESKTOP_FLOWS_NAME_REQUIRED: '请先填写流程名称',
+  // The task box is a large empty rectangle on a cold start; a placeholder is
+  // the only thing telling the user what belongs in it.
+  DESKTOP_TASK_PLACEHOLDER: '描述要 Agent 做的事，例如：修复登录页按钮文案，产物：login.js',
+  DESKTOP_QUICK_EMPTY: '还没有工作流可选，先到「团队」建角色，或到「流程」新建一条。'
 });
 
 /**

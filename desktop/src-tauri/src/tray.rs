@@ -123,7 +123,9 @@ fn tray_icon_rgba() -> tauri::image::Image<'static> {
 
                     let tile_t = projection(gx, gy, [8.0, 6.0, 56.0, 58.0]);
                     let mut color = mix_color(TILE_A, TILE_B, tile_t);
-                    let track_coverage = TRACKS.iter().fold(0.0, |current, track| {
+                    // Type annotation is required: `current.max(f32)` leaves the
+                    // accumulator in `{float}`, which rustc refuses to resolve.
+                    let track_coverage = TRACKS.iter().fold(0.0f32, |current, track| {
                         let distance = segment_distance(gx, gy, *track).0;
                         current.max(coverage(distance - TRACK_WIDTH / 2.0, antialias))
                     });

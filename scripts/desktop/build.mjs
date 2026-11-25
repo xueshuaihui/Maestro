@@ -131,6 +131,11 @@ if (process.platform !== 'darwin') {
   // Runtime sources: bin/ + src/ (+ desktop/ui when the UI batch has landed).
   copyDir(path.join(REPO, 'bin'), path.join(resDir, 'bin'));
   copyDir(path.join(REPO, 'src'), path.join(resDir, 'src'));
+  // assets/ is not optional: `assetsRoot()` resolves to `<repo>/assets` from
+  // `src/registry/assets.js`, so a bundle without it lists zero built-in
+  // roles, skills and workflows while the source tree shows sixteen. The
+  // installed app looked like the project data had been lost.
+  copyDir(path.join(REPO, 'assets'), path.join(resDir, 'assets'));
   const uiSrc = path.join(REPO, 'desktop', 'ui');
   if (!fs.existsSync(path.join(uiSrc, 'index.html'))) {
     die(`desktop UI missing: ${path.join(uiSrc, 'index.html')}`);
