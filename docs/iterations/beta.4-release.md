@@ -818,3 +818,16 @@ tag `v0.0.1-beta.4` → `00cb281` 的流水线（run `45450622449`）macOS x64 /
 - 「组织（搭建台）」仍是 iframe 里 Studio 自己的 UI，与主壳标签栏是两套视觉；本轮只保证入口正确（团队段 → 组织），没有把它重写成主壳页面。
 - 流程页的「运行」走 `new` 页人工确认，还没有「一键按上次参数重跑」。
 - 治理段只有一个标签，标签栏被隐藏；等审计之外再加第二项（如策略）时自动出现。
+
+### 21.8 本轮发布
+
+| 项 | 值 |
+|---|---|
+| 提交 | `0218759`（`test(desktop): give the mount double…`），其上 `e2ab1e7` 为本记录的正文提交 |
+| 发布流水线 | run `45678224448`：三平台构建全成功；arm64 首次因 GitHub 没有派到 runner 被 cancelled，`gh run rerun --failed` 后成功 |
+| 资产 | `Maestro_0.0.1-beta.4_arm64.dmg`（46.6 MB）/ `_x64.dmg`（48.4 MB）/ `_win-x64-setup.exe`（37.0 MB）/ `SHA256SUMS.txt` |
+| Release | prerelease，`draft=false`，`target_commitish = 02187596c9a0ceaba20ff2bddf77df8a691f2712`；匿名 `GET /releases/tags/v0.0.1-beta.4` 返回 200、4 个资产 |
+
+流水线第一次跑挂在质量门禁：`mountApp` 5 条用例报 `window.addEventListener is not a function` —— 产品侧新增了 Studio iframe 的 `message` 监听，而测试的假 `window` 从没提供这两个方法，5 条用例在断言前就死了。修的是替身（补 `addEventListener`/`removeEventListener`，并把「侧栏九项」改成按段 → 标签走），不是产品；修完 `mount-smoke` 5/5、`test/wp14/*` 299 条全绿，门禁的「意外失败」集合清空。
+
+顺带记一个操作坑：`gh release edit --target` 只接受**完整 40 位 sha**，短 sha 返回 `Release.target_commitish is invalid`（HTTP 422）。
