@@ -804,9 +804,9 @@ tag `v0.0.1-beta.4` → `00cb281` 的流水线（run `45450622449`）macOS x64 /
 
 | 项 | 值 |
 |---|---|
-| 全量单测（HEAD `ac8cd19`） | 2044 条 / 2027 pass / 15 fail / 2 skip |
+| 全量单测（HEAD `1ac4892`） | 2044 条 / 2026 pass / 16 fail / 2 skip |
 | 基线树 `origin/main`（`ff3d705`）稳定红 | 9 条：`copyToBackup`、`main --cwd`、`task-loop` 绝对路径、`core.stop`、`mountApp`+侧栏 5 条（同一 `window.addEventListener is not a function`） |
-| 独占复跑转绿（负载型 flake） | 6 条：`NFR-02 verifyProducts p95`、`AC-26 壳面`、`AC-43`、`三主链 A-0`、`自动拉起 detached`、`早返回 turn-delay` |
+| 独占复跑转绿（负载型 flake） | 7 条：`NFR-02 readReview` / `NFR-02 verifyProducts`、`AC-37`、`AC-43`、`cursor.json 并发消费`、`早返回 turn-delay`、`自动拉起 detached`（另有 `AC-26 壳面`、`三主链 A-0` 在两轮连跑中交替出现，同样独占复跑转绿） |
 | **新增红** | **0** |
 
 `AC-23 #3`（`git diff HEAD` 型）在提交前必红、提交后为绿，不计入差集——这也是本仓库第 3 次踩同一个坑。
