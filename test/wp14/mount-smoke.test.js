@@ -22,6 +22,15 @@ import { labelKeysPayload } from '../../src/daemon/http/labels.js';
 
 const LABELS = labelKeysPayload().keys;
 
+/** Which job section owns each page (beta.4 information architecture). */
+const SECTION_OF = {
+  instances: 'run', queue: 'run', notifications: 'run', occupancy: 'run', new: 'run',
+  studio: 'team', resources: 'team', assets: 'team',
+  flows: 'flow', canvas: 'flow',
+  governance: 'govern',
+  project: 'setup', settings: 'setup',
+};
+
 /** Minimal selector match used by `FakeNode.closest`. */
 function matchesSelector(node, selector) {
   const attr = /^\[([a-zA-Z0-9_-]+)(?:="([^"]*)")?\]$/.exec(selector);
@@ -192,6 +201,12 @@ async function mountWith(io, { labels = null } = {}) {  const doc = {
     __MAESTRO_DESKTOP__: { project: { root: '/tmp/maestro-mount-smoke', view: 'instances' } },
     document: doc,
     location: { reload() {} },
+    // The shell listens for the Studio iframe's "view instances" exit message,
+    // which is a plain browser API. This double predates that listener; without
+    // the two methods every test in this file dies with
+    // "window.addEventListener is not a function" before asserting anything.
+    addEventListener() {},
+    removeEventListener() {},
   };
   globalThis.window.EventSource = class {
     constructor() {}
@@ -304,7 +319,17 @@ test('mountApp：侧栏九项都能跳到对应视图（无死链、不抛异常
 
   const views = ['queue', 'notifications', 'assets', 'occupancy', 'canvas', 'governance', 'settings', 'instances'];
   for (const view of views) {
-    const entry = actionNode(host, 'nav', view);
+    // beta.4: the menu is five job sections with a tab strip each, so a page is
+    // reached through its section. Either the entry is already on screen (its
+    // section is active) or the section itself is one click away.
+    let entry = actionNode(host, 'nav', view);
+    if (entry === null) {
+      const section = actionNode(host, 'section', SECTION_OF[view]);
+      assert.ok(section !== null, `侧栏缺少能到「${view}」的任务段`);
+      click(host, section);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      entry = actionNode(host, 'nav', view);
+    }
     assert.ok(entry !== null, `侧栏缺少入口：${view}`);
     click(host, entry);
     await new Promise((resolve) => setTimeout(resolve, 20));
