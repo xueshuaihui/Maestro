@@ -88,6 +88,7 @@ import { replaceIntent, queueTargetOf, stripEntryOf } from './notify/notify.js';
 // The assembly keeps the seam (`createApp`) and delegates every pixel to it.
 import { closePalette, paletteOpen, renderShell, shellRefs, showToast } from './shell/index.js';
 import { crumbsFor, openPalette } from './shell/chrome.js';
+import { isTabView, landingView, sectionById, sectionOf, sectionOfView, SECTIONS, tabsOf } from './shell/nav.js';
 
 const DEFAULT_MODULES = Object.freeze({
   describeListRow,
@@ -399,6 +400,10 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     canvasLinkMode: false,
     canvasOffsets: {},    // workflow id -> { nodeId: {x,y} } (local layout prefs)
     canvasLoadSeq: 0,     // monotonic guard: a slower older load must not win
+    // ---- beta.4 menu: last sub-tab per section (`run` -> `occupancy` ...) ----
+    // Only tab views are remembered, so clicking a section never drops the user
+    // back inside whatever instance happened to be open before.
+    sectionTab: {},
   };
 
   if (isProjectBlocked(state.project)) state.view = 'project';
@@ -1082,7 +1087,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       // I1.11 WP-8: the five new views switch unconditionally; their data is
       // loaded through the seam methods below and the last projection is kept
       // while a channel recovers (AC-47 / BR-36).
-      if (['queue', 'assets', 'resources', 'occupancy', 'canvas', 'evidence'].includes(view)) {
+      if (['queue', 'assets', 'resources', 'occupancy', 'canvas', 'evidence', 'flows'].includes(view)) {
         state.view = view;
       }
       // beta.2 shell surfaces: these render from projections that are already
@@ -1091,10 +1096,75 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       if (['new', 'overview', 'governance', 'settings', 'notifications', 'project', 'studio'].includes(view)) {
         state.view = view;
       }
+      // Remember the position inside a section, but only for real tabs: a
+      // transient screen (instance workspace, new-instance form) is not a place
+      // a section click should return to.
+      if (isTabView(state.view)) state.sectionTab[sectionOf(state.view)] = state.view;
+      return api;
+    },
+
+    /**
+     * Open a sidebar section. `id` is a section id (`run` / `team` / ...); a
+     * section with a remembered sub-tab reopens on it, otherwise on its
+     * landing view. A view id is accepted too so old call sites keep working.
+     */
+    enterSection(id) {
+      const section = sectionById(id) ?? sectionOfView(String(id ?? ''));
+      if (section === null) return api.setView('instances');
+      const remembered = state.sectionTab[section.id] ?? null;
+      const target = landingView(section, remembered);
+      api.setView(target);
       return api;
     },
 
     // --------------------------------------------- I1.11 WP-8 view seams
+
+    /** Re-read the workflow sources behind the flow list / canvas picker. */
+    async loadFlows() {
+      if (typeof transport.getStudioState === 'function') {
+        try {
+          const answer = await transport.getStudioState();
+          if (answer?.status === 200 && answer.body?.ok === true) state.studioState = answer.body;
+        } catch {
+          // keep the previous projection; the page degrades to built-ins
+        }
+      }
+      if (state.templates.length === 0) await api.loadTemplates();
+      return api;
+    },
+
+    /**
+     * Create a project flow from the built-in organisation template. The id is
+     * generated here (never a workflow literal in the UI) because the built-in
+     * template id is already taken once a flow exists.
+     */
+    async createFlow(name) {
+      const trimmed = typeof name === 'string' ? name.trim() : '';
+      if (trimmed.length === 0) return { ok: false, code: 'DESKTOP_FLOW_NAME_REQUIRED' };
+      const id = `flow-${Date.now().toString(36)}`;
+      const result = await api.canvasAction('flow.create', { name: trimmed, id, builtin: true });
+      if (result.ok === true) {
+        state.studioState = null;
+        await api.loadFlows();
+      }
+      return result;
+    },
+
+    /** Duplicate a flow (project or built-in) into an editable project copy. */
+    async copyFlow(id) {
+      if (typeof transport.resourceAction !== 'function') return { ok: false, code: 'RESOURCE_UNAVAILABLE' };
+      try {
+        const answer = await transport.resourceAction('flow', id, 'clone');
+        const body = answer?.body ?? { ok: false, code: 'RESOURCE_HTTP' };
+        if (body.ok === true) {
+          state.studioState = null;
+          await api.loadFlows();
+        }
+        return body;
+      } catch (error) {
+        return { ok: false, code: 'RESOURCE_HTTP', params: { message: error?.message ?? String(error) } };
+      }
+    },
 
     /**
      * Load one projection through the HTTP seam. On a failed / non-200 answer
@@ -1339,7 +1409,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         state.newPanel = {
           ...state.newPanel,
           message: (typeof state.studioLabels?.UI_HOST_NO_EXEC === 'string'
-            ? state.studioLabels.UI_HOST_NO_EXEC : labelText('UI_HOST_NO_EXEC', {})),
+            ? state.studioLabels.UI_HOST_NO_EXEC : labelText('DESKTOP_HOST_NO_EXEC', {})),
           errorCode: null,
           success: null,
         };
@@ -1439,6 +1509,20 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         const chosen = arg ?? state.canvasId ?? state.studioState?.flows?.[0]?.id
           ?? state.canvasSources?.[0]?.id ?? state.templates?.[0]?.id ?? null;
         await api.loadCanvas(chosen);
+      } else if (view === 'flows') {
+        // The list needs the same two sources the canvas picker uses: the
+        // project flows (editable) and the built-in engine templates
+        // (startable). Both are read before the page is painted, so the first
+        // frame is not an empty list that fills in a second later.
+        if (state.studioState === null && typeof transport.getStudioState === 'function') {
+          try {
+            const answer = await transport.getStudioState();
+            if (answer?.status === 200 && answer.body?.ok === true) state.studioState = answer.body;
+          } catch {
+            // degrade to built-ins only
+          }
+        }
+        if (state.templates.length === 0) await api.loadTemplates();
       } else if (view === 'evidence') {
         await api.loadEvidence(arg ?? state.evidenceId ?? state.instances?.[0]?.instanceId ?? null);
       }
@@ -1914,6 +1998,10 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         model.canvas = composeCanvas(state, m);
         return model;
       }
+      if (view === 'flows') {
+        model.flows = composeFlows(state, m);
+        return model;
+      }
       if (view === 'evidence') {
         model.evidence = composeEvidence(state, m);
         return model;
@@ -2336,14 +2424,13 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       ? all.filter((item) => item.type === current.resourceType)
       : all;
     const typeSet = [...new Set(all.map((item) => item.type))].sort();
-    const counts = projection.counts ?? {};
-    const countText = Object.keys(counts).sort()
-      .map((type) => `${type} ${counts[type]}`).join(' · ');
     return {
       items,
       type: current.resourceType ?? 'all',
       types: ['all', ...typeSet],
-      countText,
+      // Counts travel raw: the page owns the word for each type, so it can
+      // render the localised type word plus a count instead of a raw id.
+      counts: projection.counts ?? {},
     };
   }
 
@@ -2362,6 +2449,46 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         || current.connection.status() === 'failed'
         ? modules.occupancyDisconnectedText(labels)
         : null,
+    };
+  }
+
+  /**
+   * Workflow list. Two sources, one table: project flows (editable, carry a
+   * stage count) first, then the built-in engine templates that are startable
+   * but not editable. Deduplicated by id, project wins.
+   */
+  function composeFlows(current) {
+    const rows = [];
+    const seen = new Set();
+    const flows = Array.isArray(current.studioState?.flows) ? current.studioState.flows : [];
+    for (const flow of flows) {
+      const id = typeof flow?.id === 'string' ? flow.id : null;
+      if (id === null || seen.has(id)) continue;
+      seen.add(id);
+      rows.push({
+        id,
+        name: typeof flow.name === 'string' && flow.name.length > 0 ? flow.name : id,
+        source: 'project',
+        stages: Array.isArray(flow.stages) ? flow.stages.length : 0,
+        editable: true,
+      });
+    }
+    for (const item of current.templates ?? []) {
+      const id = typeof item?.id === 'string' ? item.id : null;
+      if (id === null || seen.has(id)) continue;
+      seen.add(id);
+      rows.push({
+        id,
+        name: typeof item.title === 'string' && item.title.length > 0 ? item.title : id,
+        source: 'builtin',
+        stages: 0,
+        editable: false,
+      });
+    }
+    return {
+      rows,
+      projectCount: rows.filter((row) => row.source === 'project').length,
+      builtinCount: rows.filter((row) => row.source === 'builtin').length,
     };
   }
 
@@ -3566,6 +3693,43 @@ export function mountApp({
   function handleAction(action, arg, node) {
     const value = arg ?? null;
     switch (action) {
+      case 'section': {
+        // Sidebar entry: land on the section's remembered sub-tab, then load
+        // that page's projections. Painting first keeps a slow read from
+        // looking like a dead menu.
+        const before = app.state().view;
+        app.enterSection(String(value ?? 'run'));
+        const target = app.state().view;
+        if (target === before && target !== 'instances') {
+          // Same view: the click still has to repaint, never swallow it.
+          paint();
+        } else {
+          paint();
+        }
+        void app.openView(target).then(paint);
+        return;
+      }
+      case 'flow-create': {
+        const input = host.querySelector('#flow-name');
+        const name = input?.value ?? '';
+        void app.createFlow(name).then((result) => {
+          if (result.ok === true) {
+            showToast(shellRefsOf(), labelText('DESKTOP_FLOWS_CREATED', { name: name.trim() }));
+          } else {
+            showToast(shellRefsOf(), labelText('DESKTOP_FLOWS_CREATE_FAILED', {}));
+          }
+          paint();
+        });
+        return;
+      }
+      case 'flow-copy': {
+        void app.copyFlow(String(value ?? '')).then((result) => {
+          showToast(shellRefsOf(), labelText(
+            result.ok === true ? 'DESKTOP_FLOWS_COPIED' : 'DESKTOP_FLOWS_CREATE_FAILED', {}));
+          paint();
+        });
+        return;
+      }
       case 'nav': {
         const view = typeof value === 'string' ? value : 'instances';
         if (view === 'overview' || view === 'graph' || view === 'board') {
@@ -3698,9 +3862,11 @@ export function mountApp({
         const template = typeof value === 'string' && value.length > 0
           ? value : app.state().canvasId;
         app.updateNewPanel({ template, message: null, success: null });
-        app.setView('instances');
+        // "Run this workflow" must land on the form where the task is written,
+        // not on the list where the user has to find the button again.
+        app.setView('new');
         paint();
-        void app.loadInstances().then(paint);
+        void app.openView('new').then(paint);
         return;
       }
       case 'scan-hosts':
@@ -3784,12 +3950,30 @@ export function mountApp({
         void app.loadResources(typeof value === 'string' ? value : 'all').then(paint);
         return;
       }
+      case 'resource-create': {
+        // The form lives on the page; reading it here keeps the shell free of
+        // hidden state and makes an empty name an explicit refusal.
+        const name = (host.querySelector('#resource-name')?.value ?? '').trim();
+        const type = app.state().resourceType;
+        if (name.length === 0 || typeof type !== 'string' || type === 'all') return;
+        void transport.createResource?.(type, name).then((answer) => {
+          const ok = answer?.body?.ok === true;
+          showToast(shellRefsOf(), ok
+            ? labelText('DESKTOP_RES_CREATED', { name }) : labelText('DESKTOP_ACTION_SKIPPED', {}));
+          if (ok) return app.loadResources(type);
+          return undefined;
+        }).then(paint);
+        return;
+      }
       case 'resource-clone': {
         const payload = value && typeof value === 'object' ? value : {};
         void transport.resourceAction?.(payload.type, payload.id, 'clone').then((answer) => {
-          showToast(shellRefsOf(), answer?.ok === true
-            ? labelText('DESKTOP_INST_CLONED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
-          if (answer?.ok === true) return app.loadResources(state.resourceType);
+          const item = answer?.body?.item ?? null;
+          const ok = answer?.body?.ok === true;
+          showToast(shellRefsOf(), ok
+            ? labelText('DESKTOP_RES_CLONED', { name: item?.name ?? payload.id ?? '' })
+            : labelText('DESKTOP_ACTION_SKIPPED', {}));
+          if (ok) return app.loadResources(app.state().resourceType);
           return undefined;
         }).then(paint);
         return;
@@ -3802,9 +3986,13 @@ export function mountApp({
           ? transport.resourceAction?.(payload.type, payload.id, 'restore')
           : transport.resourceAction?.(payload.type, payload.id, '', 'DELETE');
         void call.then((answer) => {
-          showToast(shellRefsOf(), answer?.ok === true
-            ? labelText(restore ? 'UI_RESTORE' : 'DESKTOP_INST_ARCHIVED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
-          if (answer?.ok === true) return app.loadResources(state.resourceType);
+          const item = answer?.body?.item ?? null;
+          const ok = answer?.body?.ok === true;
+          const name = item?.name ?? payload.id ?? '';
+          showToast(shellRefsOf(), ok
+            ? labelText(restore ? 'DESKTOP_RES_RESTORED' : 'DESKTOP_RES_ARCHIVED', { name })
+            : labelText('DESKTOP_ACTION_SKIPPED', {}));
+          if (ok) return app.loadResources(app.state().resourceType);
           return undefined;
         }).then(paint);
         return;
@@ -3812,8 +4000,8 @@ export function mountApp({
       case 'asset-fork': {
         const payload = value && typeof value === 'object' ? value : {};
         void transport.forkAsset?.(payload.kind, payload.id).then((answer) => {
-          if (answer && answer.ok !== true) {
-            showToast(shellRefsOf(), labelText('UI_NO_DELETE', {}));
+          if (answer && answer.body?.ok !== true) {
+            showToast(shellRefsOf(), labelText('DESKTOP_REF_BLOCKED', {}));
             return;
           }
           showToast(shellRefsOf(), labelText('DESKTOP_ASSET_FORKED', {}));
@@ -3860,7 +4048,7 @@ export function mountApp({
         if (!id) { showToast(shellRefsOf(), labelText('DESKTOP_V2_NEED_INSTANCE', {})); return; }
         void transport.exportInstance?.(id).then((answer) => {
           if (!answer || answer.ok !== true) {
-            showToast(shellRefsOf(), labelText('UI_CONTROL_SKIPPED', {}));
+            showToast(shellRefsOf(), labelText('DESKTOP_ACTION_SKIPPED', {}));
             return;
           }
           const count = (answer.payload?.events ?? []).length + (answer.payload?.spans ?? []).length;
@@ -3870,10 +4058,10 @@ export function mountApp({
       }
       case 'archive-instance': {
         const id = typeof value === 'string' ? value : app.state().graphId;
-        if (!window.confirm(labelText('UI_DELETE_CONFIRM', { name: id }))) return;
+        if (!window.confirm(labelText('DESKTOP_CONFIRM_DELETE', { name: id }))) return;
         void transport.archiveInstance?.(id).then((answer) => {
           showToast(shellRefsOf(), answer?.ok === true
-            ? labelText('DESKTOP_INST_ARCHIVED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+            ? labelText('DESKTOP_INST_ARCHIVED', {}) : labelText('DESKTOP_ACTION_SKIPPED', {}));
           if (answer?.ok === true) return app.loadInstances().then(() => app.setView('instances'));
           return undefined;
         }).then(paint);
@@ -3883,7 +4071,7 @@ export function mountApp({
         const id = typeof value === 'string' ? value : app.state().graphId;
         void transport.cloneInstance?.(id).then((answer) => {
           showToast(shellRefsOf(), answer?.ok === true
-            ? labelText('DESKTOP_INST_CLONED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+            ? labelText('DESKTOP_INST_CLONED', {}) : labelText('DESKTOP_ACTION_SKIPPED', {}));
           if (answer?.ok === true) return app.loadInstances();
           return undefined;
         }).then(paint);
@@ -3895,7 +4083,7 @@ export function mountApp({
         if (name.trim().length === 0) return;
         void transport.renameInstance?.(id, name).then((answer) => {
           showToast(shellRefsOf(), answer?.ok === true
-            ? labelText('DESKTOP_INST_RENAMED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+            ? labelText('DESKTOP_INST_RENAMED', {}) : labelText('DESKTOP_ACTION_SKIPPED', {}));
           if (answer?.ok === true) return app.loadInstances();
           return undefined;
         }).then(paint);
@@ -3905,7 +4093,7 @@ export function mountApp({
         const id = typeof value === 'string' ? value : app.state().graphId;
         void transport.saveInstanceTemplate?.(id).then((answer) => {
           showToast(shellRefsOf(), answer?.ok === true
-            ? labelText('DESKTOP_INST_TEMPLATE_SAVED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+            ? labelText('DESKTOP_INST_TEMPLATE_SAVED', {}) : labelText('DESKTOP_ACTION_SKIPPED', {}));
           if (answer?.ok === true) return app.loadTemplates();
           return undefined;
         }).then(paint);
@@ -4041,28 +4229,28 @@ export function mountApp({
     return typeof ref === 'string' && ref.length > 0 ? ref : null;
   }
 
-  /** Command palette: pages, instances and drawer-free actions. */
+  /** Command palette: sections, their pages, and the open instances. */
   function openShellPalette() {
     const refs = shellRefs(host);
     const entries = [];
-    const pages = [
-      ['instances', 'DESKTOP_V2_SETTINGS_PROJECT'],
-      ['queue', 'DESKTOP_VIEW_QUEUE'],
-      ['assets', 'DESKTOP_VIEW_ASSETS'],
-      ['occupancy', 'DESKTOP_VIEW_OCCUPANCY'],
-      ['canvas', 'DESKTOP_VIEW_CANVAS'],
-      ['governance', 'DESKTOP_V2_NAV_AUDIT'],
-      ['notifications', 'DESKTOP_NOTIFY_TOGGLE'],
-      ['settings', 'DESKTOP_V2_NAV_SETTINGS'],
-      ['new', 'DESKTOP_NEW_TITLE'],
-    ];
-    for (const [view, key] of pages) {
-      entries.push({ section: labelText('DESKTOP_NOTIFY_SEG_INSTANCE', {}), label: labelText(key, {}), action: 'nav', arg: view });
+    const t = (key) => labelText(key, {});
+    const instancesLabel = instancesTitle(app.state().labels);
+    for (const section of SECTIONS) {
+      entries.push({ section: t('DESKTOP_V2_COMMAND'), label: t(section.key), action: 'section', arg: section.id });
+      for (const tab of tabsOf(section.view)) {
+        entries.push({
+          section: t(section.key),
+          label: tab.label === 'instances' ? instancesLabel : t(tab.key),
+          action: 'nav',
+          arg: tab.view,
+        });
+      }
     }
+    entries.push({ section: t('DESKTOP_V2_COMMAND'), label: t('DESKTOP_NEW_TITLE'), action: 'nav', arg: 'new' });
     for (const item of app.state().instances ?? []) {
       const id = typeof item?.instanceId === 'string' ? item.instanceId : null;
       if (id === null) continue;
-      entries.push({ section: labelText('DESKTOP_NOTIFY_SEG_INSTANCE', {}), label: id, action: 'open-instance', arg: { instanceId: id } });
+      entries.push({ section: instancesLabel, label: id, action: 'open-instance', arg: { instanceId: id } });
     }
     openPalette(refs, { t: (key, params) => labelText(key, params ?? {}) }, entries, (action, arg) => {
       handleAction(action, arg, null);
@@ -4098,6 +4286,9 @@ export function mountApp({
     'drill-all-nodes', 'expand-groups', 'collapse-groups', 'zoom', 'reset-view',
     'exit-focus', 'toggle-not-started', 'retry-graph', 'back-to-list', 'jump-host',
     'pick-project', 'read-all', 'follow-notify', 'toggle-pref', 'export-otel', 'canvas-pick',
+    // beta.4 menu: the sidebar section and the workflow list's own verbs are
+    // pressed, not clicked-after-a-live-frame, so a refresh cannot eat them.
+    'section', 'flow-create', 'flow-copy', 'run-canvas-flow', 'resource-create',
   ]);
 
   let pressAt = 0;

@@ -143,18 +143,15 @@ function cdp() {
   });
 }
 
-const NAV = [
-  ['project', '项目'],
-  ['instances', '实例'],
-  ['queue', '人工干预队列'],
-  ['notifications', '通知'],
-  ['studio', '搭建台'],
-  ['assets', '角色与技能库'],
-  ['occupancy', '角色占用'],
-  ['canvas', '工作流画布'],
-  ['governance', '治理'],
-  ['settings', '设置'],
+// beta.4 menu: five job-shaped sections, each with its own tab strip.
+const SECTIONS = [
+  ['run', '运行', ['instances', 'queue', 'notifications', 'occupancy']],
+  ['team', '团队', ['studio', 'resources', 'assets']],
+  ['flow', '流程', ['flows', 'canvas']],
+  ['govern', '治理', ['governance']],
+  ['setup', '设置', ['project', 'settings']],
 ];
+const SECTION_OF = Object.fromEntries(SECTIONS.flatMap(([id, , tabs]) => tabs.map((view) => [view, id])));
 
 try {
   const logFd = fs.openSync(path.join(root, 'daemon.log'), 'w');
@@ -220,16 +217,23 @@ try {
   step('S0 未卡在连接态', !/正在连接/.test(boot), boot.split('\n').filter(Boolean).slice(0, 2).join(' | '));
 
   const navExists = await evaluate(`(() => {
-    const want=${JSON.stringify(NAV.map(([v]) => v))};
-    const have=[...document.querySelectorAll('[data-action="nav"]')]
-      .map(n=>n.getAttribute('data-arg')).filter(Boolean);
-    return want.filter(v=>!have.includes(v));
+    const want=${JSON.stringify(SECTIONS.map(([id]) => id))};
+    const have=[...document.querySelectorAll('.sidebar [data-section]')]
+      .map(n=>n.getAttribute('data-section'));
+    return { missing: want.filter(v=>!have.includes(v)), extra: have.filter(v=>!want.includes(v)) };
   })()`);
-  step('S0 侧边栏十项入口齐全', Array.isArray(navExists) && navExists.length === 0,
-    Array.isArray(navExists) && navExists.length ? `缺少 ${navExists.join(',')}` : '');
+  step('S0 侧边栏五个任务段齐全', Array.isArray(navExists?.missing) && navExists.missing.length === 0
+    && Array.isArray(navExists?.extra) && navExists.extra.length === 0, JSON.stringify(navExists));
 
   async function open(view) {
+    const section = SECTION_OF[view] ?? 'run';
     const ok = await evaluate(`(() => {
+      const sec=document.querySelector('[data-section="${section}"]');
+      if(!sec) return false;
+      sec.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
+      const strip=[...document.querySelectorAll('.secbar .sec-tab')]
+        .map(t=>t.getAttribute('data-tab'));
+      if(strip.length <= 1) return ${JSON.stringify(view)} === strip[0];
       const n=[...document.querySelectorAll('[data-action="nav"]')]
         .find(x=>x.getAttribute('data-arg')===${JSON.stringify(view)});
       if(!n) return false;
@@ -274,9 +278,10 @@ try {
   }
 
   // --- every nav entry: opens, has content, has no leaked placeholders ------
-  for (const [view, label] of NAV) {
+  const PAGES = SECTIONS.flatMap(([, , tabs]) => tabs.map((view) => [view, view]));
+  for (const [view, label] of PAGES) {
     const opened = await open(view);
-    if (!opened) { step(`S1 导航「${label}」可点击`, false, 'sidebar entry missing'); continue; }
+    if (!opened) { step(`S1 导航「${label}」可点击`, false, 'tab entry missing'); continue; }
     const snap = await waitFor(async () => {
       const s = await snapshot();
       return s.len > 0 || s.iframe ? s : null;
@@ -368,7 +373,13 @@ try {
     await open('instances');
     const listed = await evaluate(`(() => {
       const box=document.querySelector('.content');
-      return { text:(box?.innerText ?? '').slice(0,400), cards: box?.querySelectorAll('[data-action="open-instance"]').length ?? 0 };
+      // A simulate-mode studio run creates no orchestration instance by design;
+      // it must still be findable as a run row on the same page.
+      return {
+        text:(box?.innerText ?? '').slice(0,400),
+        cards: (box?.querySelectorAll('[data-action="open-instance"]').length ?? 0)
+          + (box?.querySelectorAll('[data-action="open-run"]').length ?? 0),
+      };
     })()`);
     step('S6 运行后实例列表能看到对应条目',
       listed.cards > 0 || (runId !== null && listed.text.includes(runId)),

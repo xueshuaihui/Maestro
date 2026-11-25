@@ -137,8 +137,18 @@ try {
   await call('Page.navigate', { url: `http://127.0.0.1:${meta.port}/ui/?${metaQuery}` });
   await waitFor(() => evaluate("(document.querySelector('.content')?.innerText ?? '').trim().length > 20"), 20000);
 
+  // beta.4 menu: navigation is section -> tab.
+  const SECTION = {
+    instances: 'run', queue: 'run', notifications: 'run', occupancy: 'run', new: 'run',
+    studio: 'team', resources: 'team', assets: 'team',
+    flows: 'flow', canvas: 'flow',
+    governance: 'govern', evidence: 'govern',
+    project: 'setup', settings: 'setup',
+  };
   const open = async (view) => {
     await evaluate(`(() => {
+      const sec=document.querySelector('[data-section="${SECTION[view] ?? 'run'}"]');
+      if(sec) sec.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
       const n=[...document.querySelectorAll('[data-action="nav"]')]
         .find(x=>x.getAttribute('data-arg')===${JSON.stringify(view)});
       if(n) n.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));

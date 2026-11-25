@@ -131,6 +131,41 @@ h1, h2, h3, h4, p { margin: 0; }
 
 .nav-sep { height: 1px; background: var(--line); margin: 10px 8px; }
 
+/* Second level: the sub-screens of the section selected in the sidebar. It is
+   chrome, not page content, so it never scrolls away with the page. */
+.secbar {
+  flex-shrink: 0;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  padding: 0 22px;
+  min-height: 44px;
+}
+.secbar-row { display: flex; align-items: center; gap: 4px; height: 44px; overflow-x: auto; }
+.sec-tab {
+  position: relative;
+  height: 100%;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: 0.15s;
+}
+.sec-tab:hover { color: var(--ink); }
+.sec-tab.on { color: var(--primary); border-color: var(--primary); font-weight: 600; }
+.sec-tab .badge-n {
+  background: var(--coral);
+  color: #fff;
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
 .nav-item {
   display: flex;
   align-items: center;
@@ -371,10 +406,31 @@ tbody tr:hover { background: var(--surface-2); }
 .input-area { width: 100%; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 11px; resize: vertical; background: var(--card); color: var(--ink); }
 .input-area:focus { outline: none; border-color: var(--primary); }
 
+/* Single-line text field. It had no rule at all before, so every "type a name"
+   form rendered as a bare browser input the width of its placeholder. */
+.input {
+  min-width: 260px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 13px;
+}
+.input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-bg); }
+.input::placeholder { color: var(--faint); }
+
 .prompt-card { max-width: 520px; text-align: center; padding: 32px 24px; }
 .prompt-mark { width: 56px; height: 56px; margin-bottom: 14px; }
 .prompt-text { color: var(--muted); font-size: 13px; }
 .prompt-card .row { justify-content: center; }
+
+/* The first-run guide is a form, not a poster: left aligned, room for the
+   workflow tiles and the task box, no centred headings in the middle of it. */
+.guide-card { max-width: 620px; padding: 22px 22px 18px; }
+.guide-card .section-title { margin-top: 18px; }
+.guide-card .tile-grid { margin-top: 8px; }
+.guide-card .btn.primary { margin-top: 12px; }
 
 .notify-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); cursor: pointer; }
 .notify-row:last-child { border-bottom: none; }
@@ -490,5 +546,5 @@ tbody tr:hover { background: var(--surface-2); }
 }
 
 /* Studio page frame (v2): full-height same-origin iframe inside the shell. */
-.studio-frame { display: block; height: calc(100vh - 96px); min-height: 480px; }
+.studio-frame { display: block; height: calc(100vh - 140px); min-height: 480px; }
 .studio-iframe { width: 100%; height: 100%; border: 0; border-radius: 10px; background: transparent; }

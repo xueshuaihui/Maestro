@@ -116,11 +116,15 @@ try {
   await call('Page.navigate', { url: `http://127.0.0.1:${meta.port}/ui/?${query}` });
   await waitFor(() => evaluate("document.querySelectorAll('[data-action=\"nav\"]').length > 0"), 25000);
 
+  // beta.4 menu: resource library is a tab of the "team" section.
   const navOk = await evaluate(`(() => {
+    const sec=document.querySelector('[data-section="team"]');
+    if(!sec) return false;
+    sec.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
     const n=[...document.querySelectorAll('[data-action="nav"]')].find(x=>x.getAttribute('data-arg')==='resources');
     if(!n) return false; n.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0})); return true;
   })()`);
-  step('资源平台导航项存在且可点', navOk === true, `nav=${navOk}`);
+  step('团队段的资源库标签存在且可点', navOk === true, `nav=${navOk}`);
   await waitFor(() => evaluate("document.querySelectorAll('[data-action=\"resource-type\"]').length > 0"), 15000);
   await sleep(600);
 

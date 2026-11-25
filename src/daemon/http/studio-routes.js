@@ -421,7 +421,9 @@ const ACTIONS = Object.freeze({
   async 'flow.create'(root, payload) {
     let created = null;
     const saved = await updateStudio(root, (doc) => {
-      const spec = payload.template === 'rd-12'
+      // `builtin` means "instantiate the built-in organisation flow under a
+      // fresh id"; the caller never has to know the template id.
+      const spec = payload.builtin === true || payload.template === 'rd-12'
         ? { template: 'rd-12' }
         : { stages: payload.stages ?? [], edges: payload.edges ?? [] };
       const result = createFlow(doc, {

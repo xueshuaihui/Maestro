@@ -115,7 +115,11 @@ try {
   await call('Page.navigate', { url: `http://127.0.0.1:${meta.port}/ui/?${query}` });
   await waitFor(() => evaluate("document.querySelectorAll('[data-action=\"nav\"]').length > 0"), 25000);
 
+  // beta.4 menu: built-in assets are a tab of the "team" section.
   const nav = await evaluate(`(() => {
+    const sec=document.querySelector('[data-section="team"]');
+    if(!sec) return false;
+    sec.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
     const n=[...document.querySelectorAll('[data-action="nav"]')].find(x=>x.getAttribute('data-arg')==='assets');
     if(!n) return false; n.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0})); return true;
   })()`);

@@ -8,11 +8,11 @@
  */
 
 import {
-  closeDrawer, closePalette, crumbsFor, drawerOpen, openDrawer, paintSidebar, paintTopbar,
+  closeDrawer, closePalette, crumbsFor, drawerOpen, openDrawer, paintSectionTabs, paintSidebar, paintTopbar,
   paletteOpen, shellRefs, showToast,
 } from './chrome.js';
 import {
-  assetsPage, canvasPage, evidencePage, fallbackPage, governancePage, instancesPage,
+  assetsPage, canvasPage, evidencePage, fallbackPage, flowsPage, governancePage, instancesPage,
   newPage, notificationsPage, occupancyPage, overviewPage, projectPage, queuePage,
   resourcesPage, settingsPage, studioPage,
 } from './pages.js';
@@ -38,6 +38,7 @@ const PAGE_BY_VIEW = Object.freeze({
   assets: assetsPage,
   resources: resourcesPage,
   occupancy: occupancyPage,
+  flows: flowsPage,
   canvas: canvasPage,
   evidence: evidencePage,
   governance: governancePage,
@@ -53,6 +54,7 @@ export function renderShell(host, ctx) {
   const previousKey = refs.content.dataset.key ?? '';
 
   paintSidebar(refs, ctx);
+  paintSectionTabs(refs, ctx);
   paintTopbar(refs, ctx);
 
   clear(refs.content);

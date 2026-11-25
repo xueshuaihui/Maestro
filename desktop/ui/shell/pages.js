@@ -200,7 +200,7 @@ function startGuide(ctx) {
   const chosen = typeof panel.template === 'string' && panel.template.length > 0
     ? panel.template : (templates[0]?.id ?? '');
 
-  const box = card([], { className: 'prompt-card' });
+  const box = card([], { className: 'guide-card' });
   box.appendChild(sectionTitle(st('UI_START_TITLE', 'Start here')));
 
   box.appendChild(el('h3', 'section-title mt14', st('UI_START_STEP_CLI', 'Connect an Agent')));
@@ -542,6 +542,9 @@ export function newPage(ctx) {
   const area = el('textarea', 'input-area');
   area.rows = 4;
   area.id = 'new-task';
+  // The field tag is what keeps the caret alive across a live repaint; without
+  // it this page dropped focus on every pushed frame while the guide kept it.
+  area.setAttribute('data-field', 'task');
   area.value = panel.task ?? '';
   main.appendChild(area);
   const newHint = taskHint(ctx, chosen);
@@ -784,43 +787,83 @@ export function queuePage(ctx) {
 }
 
 // ---------------------------------------------------------------------------
-// assets
+// resources (unified resource platform)
 // ---------------------------------------------------------------------------
 
-// ---------------------------------------------------------------------------
-// unified resource platform
-// ---------------------------------------------------------------------------
+/** Resource type -> the label key that names it in a tab or a column. */
+const RESOURCE_TYPE_KEY = Object.freeze({
+  department: 'DESKTOP_RES_DEPARTMENT',
+  role: 'DESKTOP_RES_ROLE',
+  skill: 'DESKTOP_RES_SKILL',
+  employee: 'DESKTOP_RES_EMPLOYEE',
+  team: 'DESKTOP_RES_TEAM',
+  flow: 'DESKTOP_RES_FLOW',
+  instance: 'DESKTOP_RES_INSTANCE',
+  run: 'DESKTOP_RES_RUN',
+});
+
+/** Types the user can create by hand; the rest are produced by running. */
+const RESOURCE_CREATABLE = Object.freeze(['department', 'role', 'skill', 'employee', 'team', 'flow']);
+
+function resourceWord(ctx, type) {
+  const key = RESOURCE_TYPE_KEY[type] ?? null;
+  return key === null ? String(type ?? '') : ctx.t(key);
+}
 
 /** One table for every project resource: create, archive, restore, clone. */
 export function resourcesPage(ctx) {
   const frag = document.createDocumentFragment();
   const view = ctx.model.resources ?? { items: [], counts: {}, type: null };
-  frag.appendChild(pageHead(ctx.t('DESKTOP_V2_NAV_RESOURCES'), ctx.resourcesSubtitle ?? null));
+  frag.appendChild(pageHead(ctx.t('DESKTOP_TAB_RESOURCES'), ctx.t('DESKTOP_RES_HINT')));
 
   const tabs = el('div', 'tabs');
   for (const type of (view.types ?? [])) {
     const node = el('button', view.type === type || view.type === null && type === 'all' ? 'tab on' : 'tab',
-      type === 'all' ? ctx.t('DESKTOP_V2_FILTER_ALL') : type);
+      type === 'all' ? ctx.t('DESKTOP_V2_FILTER_ALL') : resourceWord(ctx, type));
     node.type = 'button';
     node.setAttribute('data-action', 'resource-type');
     node.setAttribute('data-arg', type);
     tabs.appendChild(node);
   }
   frag.appendChild(tabs);
-  if (view.countText) frag.appendChild(el('div', 'small muted mb10', view.countText));
+  // Count line: a localised type word plus its count. A raw type id here
+  // would read as a debug dump, not as a product.
+  const counts = view.counts ?? {};
+  const countParts = Object.keys(counts).sort()
+    .filter((type) => Number(counts[type]) > 0)
+    .map((type) => `${resourceWord(ctx, type)} ${ctx.t('DESKTOP_V2_COUNT', { n: String(counts[type]) })}`);
+  if (countParts.length > 0) frag.appendChild(el('div', 'small muted mb10', countParts.join(' \u00b7 ')));
 
-  const createForm = el('div', 'row wrap mb14');
-  const nameInput = el('input', 'input');
-  nameInput.placeholder = ctx.t('UI_NAME');
-  nameInput.id = 'resource-name';
-  createForm.appendChild(nameInput);
-  const add = button(ctx.t('UI_DEPT_NAME'), () => {
-    const name = nameInput.value.trim();
-    if (name.length === 0) return;
-    ctx.actions.createResource?.(view.type, name);
-  }, 'btn primary');
-  createForm.appendChild(add);
-  frag.appendChild(createForm);
+  // A create form only exists where a name is genuinely enough. Roles carry a
+  // code, teams carry a lead and a flow, flows carry stages: collecting just a
+  // name there would produce a resource that cannot be used, so the page
+  // sends the user to the surface that owns that shape instead of showing a
+  // form that half-works.
+  const activeType = view.type ?? 'all';
+  if (activeType === 'department') {
+    const createForm = el('div', 'row wrap mb14');
+    const nameInput = el('input', 'input');
+    nameInput.placeholder = ctx.t('DESKTOP_RES_NAME');
+    nameInput.id = 'resource-name';
+    createForm.appendChild(nameInput);
+    createForm.appendChild(button(`${ctx.t('DESKTOP_RES_CREATE')}${resourceWord(ctx, activeType)}`, {
+      variant: 'primary', action: 'resource-create',
+    }));
+    frag.appendChild(createForm);
+  } else if (activeType === 'flow') {
+    const line = el('div', 'row wrap mb14');
+    line.appendChild(el('span', 'small muted', ctx.t('DESKTOP_RES_FLOW_HINT')));
+    line.appendChild(button(ctx.t('DESKTOP_RES_GOTO_FLOW'), { size: 'sm', action: 'nav', arg: 'flows' }));
+    frag.appendChild(line);
+  } else if (activeType !== 'all') {
+    const line = el('div', 'row wrap mb14');
+    line.appendChild(el('span', 'small muted',
+      RESOURCE_CREATABLE.includes(activeType) ? ctx.t('DESKTOP_RES_ORG_HINT') : ctx.t('DESKTOP_RES_AUTO')));
+    if (RESOURCE_CREATABLE.includes(activeType)) {
+      line.appendChild(button(ctx.t('DESKTOP_RES_GOTO_ORG'), { size: 'sm', action: 'nav', arg: 'studio' }));
+    }
+    frag.appendChild(line);
+  }
 
   const box = card([], { flat: true });
   const items = Array.isArray(view.items) ? view.items : [];
@@ -835,20 +878,79 @@ export function resourcesPage(ctx) {
         b.setAttribute('data-arg', JSON.stringify({ type: item.type, id: item.id }));
         return b;
       };
-      if (item.archived) ops.appendChild(make('UI_RESTORE', 'resource-restore'));
+      if (item.archived) ops.appendChild(make('DESKTOP_RES_RESTORE', 'resource-restore'));
       else {
-        ops.appendChild(make('DESKTOP_INST_CLONE', 'resource-clone'));
-        ops.appendChild(make('UI_DELETE', 'resource-archive'));
+        // A run belongs to an instance; only authored resources are cloneable.
+        if (RESOURCE_CREATABLE.includes(item.type)) ops.appendChild(make('DESKTOP_INST_CLONE', 'resource-clone'));
+        ops.appendChild(make('DESKTOP_RES_ARCHIVE', 'resource-archive'));
       }
-      return [item.type, item.id, item.name, item.source ?? '-',
-        item.archived ? badge(ctx.t('DESKTOP_V2_ARCHIVED'), 'gray') : badge(ctx.t('UI_READY'), 'ok'), ops];
+      return [resourceWord(ctx, item.type), item.id, item.name,
+        item.source === 'builtin'
+          ? badge(ctx.t('DESKTOP_FLOWS_BUILTIN'), 'gray')
+          : badge(ctx.t('DESKTOP_FLOWS_PROJECT'), 'cyan'),
+        item.archived ? badge(ctx.t('DESKTOP_V2_ARCHIVED'), 'gray') : badge(ctx.t('DESKTOP_RES_READY'), 'ok'), ops];
     });
     box.appendChild(table(
-      [ctx.t('DESKTOP_V2_KIND'), ctx.t('COL_ID'), ctx.t('COL_NAME'), ctx.t('DESKTOP_ASSET_SOURCE_BUILTIN'),
-        ctx.t('COL_STATUS'), ctx.t('UI_DELETE')],
+      [ctx.t('DESKTOP_V2_KIND'), ctx.t('DESKTOP_COL_ID'), ctx.t('DESKTOP_COL_NAME'), ctx.t('DESKTOP_FLOWS_SOURCE'),
+        ctx.t('DESKTOP_COL_STATUS'), ctx.t('DESKTOP_RES_OPS')],
       rows, ctx.t('DESKTOP_V2_EMPTY')
     ));
   }
+  frag.appendChild(box);
+  return frag;
+}
+
+// ---------------------------------------------------------------------------
+// flows (workflow list: the door into the canvas)
+// ---------------------------------------------------------------------------
+
+/**
+ * Workflow list. Project flows are editable and copyable in place; the
+ * built-in engine templates are startable but read-only. Both open the same
+ * canvas, so "list -> see -> edit -> run" is one route instead of three.
+ */
+export function flowsPage(ctx) {
+  const frag = document.createDocumentFragment();
+  const view = ctx.model.flows ?? { rows: [] };
+  frag.appendChild(pageHead(ctx.t('DESKTOP_TAB_FLOWS'), ctx.t('DESKTOP_FLOWS_HINT')));
+
+  const form = el('div', 'row wrap mb14');
+  const input = el('input', 'input');
+  input.id = 'flow-name';
+  input.placeholder = ctx.t('DESKTOP_FLOWS_NAME');
+  form.appendChild(input);
+  form.appendChild(button(ctx.t('DESKTOP_FLOWS_CREATE'), { variant: 'primary', action: 'flow-create' }));
+  frag.appendChild(form);
+
+  const rows = Array.isArray(view.rows) ? view.rows : [];
+  if (rows.length === 0) {
+    frag.appendChild(emptyBox('\u2317', ctx.t('DESKTOP_FLOWS_EMPTY')));
+    return frag;
+  }
+
+  const box = card([], { flat: true });
+  const body = rows.map((row) => {
+    const ops = el('div', 'row');
+    ops.appendChild(button(ctx.t('DESKTOP_FLOWS_OPEN'), { size: 'sm', action: 'canvas-pick', arg: row.id }));
+    ops.appendChild(button(ctx.t('DESKTOP_FLOWS_RUN'), {
+      size: 'sm', variant: 'primary', action: 'run-canvas-flow', arg: row.id,
+    }));
+    if (row.editable) ops.appendChild(button(ctx.t('DESKTOP_FLOWS_COPY'), { size: 'sm', action: 'flow-copy', arg: row.id }));
+    return [
+      row.name,
+      tag(row.id, true),
+      row.source === 'project'
+        ? badge(ctx.t('DESKTOP_FLOWS_PROJECT'), 'cyan')
+        : badge(ctx.t('DESKTOP_FLOWS_BUILTIN'), 'gray'),
+      row.stages > 0 ? ctx.t('DESKTOP_FLOWS_STAGES', { n: String(row.stages) }) : ctx.t('DESKTOP_PLACEHOLDER'),
+      ops,
+    ];
+  });
+  box.appendChild(table(
+    [ctx.t('DESKTOP_COL_NAME'), ctx.t('DESKTOP_COL_ID'), ctx.t('DESKTOP_FLOWS_SOURCE'), ctx.t('DESKTOP_V2_STAGE'), ctx.t('DESKTOP_RES_OPS')],
+    body,
+    ctx.t('DESKTOP_V2_EMPTY'),
+  ));
   frag.appendChild(box);
   return frag;
 }

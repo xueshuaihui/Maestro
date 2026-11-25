@@ -161,14 +161,19 @@ try {
   await call('Page.navigate', { url: `http://127.0.0.1:${meta.port}/ui/?${query}` });
   await waitFor(() => evaluate("Boolean(document.querySelector('#app')?.textContent?.trim())"), 20000);
 
+  // beta.4 menu: the canvas lives under the "flow" section, so the entry is the
+  // section plus its tab, not a flat sidebar row.
   const openCanvas = `(() => {
+    const sec=document.querySelector('[data-section="flow"]');
+    if(!sec) return false;
+    sec.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
     const nav=[...document.querySelectorAll('[data-action="nav"]')]
       .find(x=>x.getAttribute('data-arg')==='canvas');
     if(!nav) return false;
     nav.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
     return true;
   })()`;
-  step('侧边栏存在画布入口', await evaluate(openCanvas) === true);
+  step('流程段有画布入口且可点', await evaluate(openCanvas) === true);
   const ready = await waitFor(
     () => evaluate("document.querySelectorAll('g.canvas-node').length >= 2"), 15000
   );

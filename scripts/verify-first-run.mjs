@@ -148,6 +148,27 @@ try {
   // back. Asserting then would test the fallback words, not the product.
   await waitFor(() => evaluate("(document.querySelector('.content')?.innerText ?? '').includes('从这里开始')"), 15000);
 
+  // beta.4 menu: a page is reached through its section, then its tab.
+  const SECTION_OF = {
+    instances: 'run', queue: 'run', notifications: 'run', occupancy: 'run', new: 'run',
+    studio: 'team', resources: 'team', assets: 'team',
+    flows: 'flow', canvas: 'flow', governance: 'govern', project: 'setup', settings: 'setup',
+  };
+  const clickSection = (id) => evaluate(`(() => {
+    const node=document.querySelector('.sidebar [data-section="${id}"]');
+    if(!node) return false;
+    node.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
+    node.click();
+    return true;
+  })()`);
+  const openView = async (view) => {
+    const section = SECTION_OF[view] ?? 'run';
+    await clickSection(section);
+    await sleep(500);
+    const strip = await evaluate("document.querySelectorAll('.secbar .sec-tab').length");
+    if (strip <= 1) return true;
+    return click('nav', view);
+  };
   const click = (action, arg) => evaluate(`(() => {
     const list=[...document.querySelectorAll('[data-action=' + JSON.stringify(${JSON.stringify(action)}) + ']')]
       .filter(n => n.getClientRects().length > 0);
@@ -189,19 +210,22 @@ try {
     step('F3 工作流隐藏规则前置可见', /这个工作流要求任务里有一行/.test(hinted), hinted.slice(0, 180));
 
     // --- F4: canvas can hand its workflow to the guide ---------------------
-    await click('nav', 'canvas');
+    await openView('canvas');
     await sleep(700);
     await click('canvas-pick', 'code-loop');
     await sleep(700);
     await click('run-canvas-flow');
     await sleep(900);
+    // beta.4: "run this workflow" lands on the new-instance form with the
+    // workflow preselected, instead of dropping the user back on a list.
     const handed = await evaluate(`(() => {
       const page = document.querySelector('.content') ?? document;
       const tile = [...page.querySelectorAll('[data-action="pick-template"]')]
         .find(n => n.getAttribute('data-arg') === 'code-loop');
-      return { guide: (page.innerText ?? '').includes('从这里开始'), selected: tile?.classList.contains('on') === true };
+      const head = (page.querySelector('.page-head h1')?.textContent ?? '').trim();
+      return { head, selected: tile?.classList.contains('on') === true };
     })()`);
-    step('F4 画布工作流直接带入引导', handed.guide && handed.selected, JSON.stringify(handed));
+    step('F4 画布工作流直接带入新建页', handed.head === '新建实例' && handed.selected, JSON.stringify(handed));
 
     // --- F5: type and start without leaving the page -----------------------
     await evaluate(`(() => {
@@ -224,7 +248,7 @@ try {
       : `POST /instances ×${postInstances.length}；表单错误：${reason || '(空)'}；${after.slice(0, 200)}`);
 
     // --- F7: the authoring surface has an exit back to the run surface -----
-    await click('nav', 'studio');
+    await openView('studio');
     await sleep(900);
     const sent = await evaluate(`(() => {
       const frame = document.querySelector('.studio-iframe');
@@ -234,7 +258,12 @@ try {
       return true;
     })()`);
     await sleep(1000);
-    const back = await evaluate("(document.querySelector('.nav-item.on')?.innerText ?? '').includes('实例')");
+    // beta.4: the run surface is a section ("运行") whose landing tab is the
+    // instance list, so the check is on the section strip, not the sidebar.
+    const back = await evaluate(`(() => {
+      const on = document.querySelector('.secbar .sec-tab.on');
+      return (on?.innerText ?? '').includes('实例');
+    })()`);
     step('F7 搭建台可回到实例页', sent && back, JSON.stringify({ sent, back }));
   } else {
     skip('F3 工作流隐藏规则前置可见', '没有可连接的 CLI，流程未进入输入步骤');

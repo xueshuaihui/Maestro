@@ -8,36 +8,22 @@
  */
 
 import { append, badge, button, clear, el, iconButton, text } from './kit.js';
+import { SECTIONS, sectionOf, sectionOfView, tabsOf } from './nav.js';
 
 const SHELLS = new WeakMap();
-
-const NAV_GROUPS = Object.freeze([
-  [
-    { view: 'project', key: 'DESKTOP_V2_SETTINGS_PROJECT', glyph: '\u25a6' },
-    { view: 'instances', key: null, glyph: '\u25c8' },
-    { view: 'queue', key: 'DESKTOP_VIEW_QUEUE', glyph: '\u2637', count: 'queue' },
-    { view: 'notifications', key: 'DESKTOP_NOTIFY_TOGGLE', glyph: '\u2662', count: 'notify' },
-  ],
-  [
-    { view: 'studio', key: 'DESKTOP_V2_NAV_STUDIO', glyph: '\u25a3' },
-    { view: 'assets', key: 'DESKTOP_VIEW_ASSETS', glyph: '\u25a4' },
-    { view: 'resources', key: 'DESKTOP_V2_NAV_RESOURCES', glyph: '\u25a0' },
-    { view: 'occupancy', key: 'DESKTOP_VIEW_OCCUPANCY', glyph: '\u25cd' },
-    { view: 'canvas', key: 'DESKTOP_VIEW_CANVAS', glyph: '\u2317' },
-  ],
-  [
-    { view: 'governance', key: 'DESKTOP_V2_NAV_AUDIT', glyph: '\u26e8' },
-    { view: 'settings', key: 'DESKTOP_V2_NAV_SETTINGS', glyph: '\u2699' },
-  ],
-]);
 
 function buildSkeleton(host) {
   const root = el('div', 'app-shell');
   const sidebar = el('aside', 'sidebar');
   const main = el('main', 'main');
   const topbar = el('header', 'topbar');
+  // One persistent strip between the top bar and the page: the section owns
+  // its sub-screens, so switching "instances / queue / occupancy" happens in
+  // place instead of through a trip back to the sidebar.
+  const secbar = el('nav', 'secbar');
+  secbar.setAttribute('aria-label', 'section');
   const content = el('div', 'content');
-  append(main, topbar, content);
+  append(main, topbar, secbar, content);
   append(root, sidebar, main);
 
   const mask = el('div', 'mask');
@@ -53,7 +39,7 @@ function buildSkeleton(host) {
   palette.appendChild(paletteBox);
 
   append(host, root, mask, drawer, toast, palette);
-  const refs = { root, sidebar, main, topbar, content, mask, drawer, toast, palette, paletteInput, paletteList };
+  const refs = { root, sidebar, main, topbar, secbar, content, mask, drawer, toast, palette, paletteInput, paletteList };
   SHELLS.set(host, refs);
   return refs;
 }
@@ -85,26 +71,24 @@ function buildSidebar(refs) {
   box.appendChild(brand);
 
   const items = [];
-  for (const group of NAV_GROUPS) {
-    box.appendChild(el('div', 'nav-sep'));
-    for (const item of group) {
-      const node = el('button', 'nav-item');
-      node.type = 'button';
-      node.setAttribute('data-action', 'nav');
-      node.setAttribute('data-arg', item.view);
-      node.appendChild(el('span', 'ico', item.glyph));
-      const label = el('span', 'nav-text');
-      node.appendChild(label);
-      box.appendChild(node);
-      items.push({
-        view: item.view,
-        key: item.key,
-        counter: item.count ?? null,
-        node,
-        label,
-        badge: null,
-      });
-    }
+  for (const section of SECTIONS) {
+    const node = el('button', 'nav-item');
+    node.type = 'button';
+    node.setAttribute('data-action', 'section');
+    node.setAttribute('data-arg', section.id);
+    node.setAttribute('data-section', section.id);
+    node.appendChild(el('span', 'ico', section.glyph));
+    const label = el('span', 'nav-text');
+    node.appendChild(label);
+    box.appendChild(node);
+    items.push({
+      id: section.id,
+      key: section.key,
+      counter: section.counter ?? null,
+      node,
+      label,
+      badge: null,
+    });
   }
 
   const foot = el('div', 'sidebar-foot');
@@ -126,20 +110,23 @@ function buildSidebar(refs) {
 /**
  * Sidebar. `ctx` supplies `t`, the active view and the two counters
  * (`queueCount`, `notifyCount`); counters at zero render no badge.
+ *
+ * One entry per job. The active entry is derived from the view, so an instance
+ * workspace deep inside "run" still highlights "run".
  */
 export function paintSidebar(refs, ctx) {
   const ui = refs.sidebarUi ?? buildSidebar(refs);
+  const activeSection = sectionOf(ctx.view);
 
   // The brand is the product name, not a projection: it never changes with the
   // active project or the label table.
   if (ui.brandLabel.textContent !== 'Maestro') ui.brandLabel.textContent = 'Maestro';
 
   for (const item of ui.items) {
-    const label = item.key === null ? (ctx.instancesLabel ?? 'Maestro') : ctx.t(item.key);
+    const label = ctx.t(item.key);
     if (item.label.textContent !== label) item.label.textContent = label;
 
-    const active = ctx.view === item.view
-      || (item.view === 'instances' && ['graph', 'board', 'drill', 'node-detail', 'escalation-panel', 'connection-panel', 'subflow', 'evidence'].includes(ctx.view));
+    const active = activeSection === item.id;
     item.node.classList.toggle('on', active);
     if (active) item.node.setAttribute('aria-current', 'page');
     else item.node.removeAttribute('aria-current');
@@ -178,6 +165,77 @@ export function paintSidebar(refs, ctx) {
     const tone = typeof ctx.statusTone === 'string' ? ctx.statusTone : '';
     ui.status.className = tone.length > 0 ? `c ${tone}` : 'c';
     if (ui.statusText.textContent !== ctx.statusText) ui.statusText.textContent = ctx.statusText;
+  }
+}
+
+/**
+ * Section tab strip: the sub-screens of the job selected in the sidebar.
+ *
+ * Built once per section and then updated in place (identity is kept across
+ * live frames, same reason as the sidebar). A single-tab section renders no
+ * strip at all: a lone tab is a decoration, not a choice.
+ */
+function buildSectionTabs(refs) {
+  clear(refs.secbar);
+  const row = el('div', 'secbar-row');
+  refs.secbar.appendChild(row);
+  const ui = { row, sectionId: null, items: [] };
+  refs.sectionUi = ui;
+  return ui;
+}
+
+function sectionTabLabel(ctx, tab) {
+  if (tab.label === 'instances') return ctx.instancesLabel ?? 'Maestro';
+  return ctx.t(tab.key);
+}
+
+export function paintSectionTabs(refs, ctx) {
+  const ui = refs.sectionUi ?? buildSectionTabs(refs);
+  const sectionId = sectionOf(ctx.view);
+  const tabs = tabsOf(ctx.view);
+
+  if (ui.sectionId !== sectionId) {
+    clear(ui.row);
+    ui.items = [];
+    for (const tab of tabs) {
+      const node = el('button', 'sec-tab');
+      node.type = 'button';
+      node.setAttribute('data-action', 'nav');
+      node.setAttribute('data-arg', tab.view);
+      node.setAttribute('data-tab', tab.view);
+      const label = el('span');
+      node.appendChild(label);
+      ui.row.appendChild(node);
+      ui.items.push({ view: tab.view, tab, node, label, badge: null });
+    }
+    ui.sectionId = sectionId;
+  }
+
+  refs.secbar.style.display = ui.items.length > 1 ? '' : 'none';
+
+  for (const item of ui.items) {
+    const label = sectionTabLabel(ctx, item.tab);
+    if (item.label.textContent !== label) item.label.textContent = label;
+
+    const active = ctx.view === item.view;
+    item.node.classList.toggle('on', active);
+    if (active) item.node.setAttribute('aria-current', 'page');
+    else item.node.removeAttribute('aria-current');
+
+    const raw = item.tab.counter === 'queue' ? ctx.queueCount
+      : item.tab.counter === 'notify' ? ctx.notifyCount
+        : 0;
+    const count = Number.isFinite(raw) ? raw : 0;
+    if (count > 0) {
+      if (item.badge === null) {
+        item.badge = el('span', 'badge-n');
+        item.node.appendChild(item.badge);
+      }
+      if (item.badge.textContent !== String(count)) item.badge.textContent = String(count);
+    } else if (item.badge !== null) {
+      item.node.removeChild(item.badge);
+      item.badge = null;
+    }
   }
 }
 
@@ -356,37 +414,30 @@ export function paletteOpen(refs) {
   return refs.palette.classList.contains('on');
 }
 
-/** Breadcrumb segments for the active view. */
+/** Breadcrumb segments for the active view: section / place / detail. */
 export function crumbsFor(ctx) {
+  const WORKSPACE = [
+    'overview', 'graph', 'board', 'drill', 'node-detail', 'escalation-panel',
+    'connection-panel', 'subflow', 'evidence',
+  ];
   const parts = [];
-  if (ctx.view === 'project') {
-    parts.push({ text: ctx.t('DESKTOP_V2_SETTINGS_PROJECT'), bold: true });
-    return parts;
+  const section = sectionOfView(ctx.view);
+  parts.push({ text: section === null ? 'Maestro' : ctx.t(section.key) });
+
+  if (WORKSPACE.includes(ctx.view)) {
+    if (ctx.instanceId) parts.push({ text: ctx.instanceId });
+    if (ctx.detailLabel) parts.push({ text: ctx.detailLabel });
+  } else if (ctx.view === 'new') {
+    parts.push({ text: ctx.t('DESKTOP_NEW_TITLE') });
+  } else {
+    const tab = tabsOf(ctx.view).find((entry) => entry.view === ctx.view) ?? null;
+    if (tab !== null) {
+      parts.push({
+        text: tab.label === 'instances' ? (ctx.instancesLabel ?? 'Maestro') : ctx.t(tab.key),
+      });
+    }
   }
-  if (['instances'].includes(ctx.view)) {
-    parts.push({ text: ctx.instancesLabel ?? 'Maestro', bold: true });
-    return parts;
-  }
-  if (['graph', 'board', 'drill', 'node-detail', 'escalation-panel', 'connection-panel', 'subflow', 'evidence'].includes(ctx.view)) {
-    parts.push({ text: ctx.instancesLabel ?? 'Maestro' });
-    parts.push({ text: ctx.instanceId ?? '', bold: !ctx.detailLabel });
-    if (ctx.detailLabel) parts.push({ text: ctx.detailLabel, bold: true });
-    return parts;
-  }
-  const nav = {
-    projects: 'DESKTOP_V2_SETTINGS_PROJECT',
-    queue: 'DESKTOP_VIEW_QUEUE',
-    assets: 'DESKTOP_VIEW_ASSETS',
-    resources: 'DESKTOP_V2_NAV_RESOURCES',
-    occupancy: 'DESKTOP_VIEW_OCCUPANCY',
-    canvas: 'DESKTOP_VIEW_CANVAS',
-    studio: 'DESKTOP_V2_NAV_STUDIO',
-    governance: 'DESKTOP_V2_NAV_AUDIT',
-    settings: 'DESKTOP_V2_NAV_SETTINGS',
-    notifications: 'DESKTOP_NOTIFY_TOGGLE',
-    new: 'DESKTOP_NEW_TITLE',
-  }[ctx.view];
-  parts.push({ text: nav ? ctx.t(nav) : 'Maestro', bold: true });
+  parts[parts.length - 1].bold = true;
   return parts;
 }
 

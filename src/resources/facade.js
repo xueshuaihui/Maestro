@@ -13,6 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { loadStudio, updateStudio, findById } from '../studio/store.js';
+import { STUDIO_TEXT } from '../cli/labels.js';
 import {
   addRole,
   updateRole,
@@ -64,6 +65,20 @@ function normalizeInput(input) {
   return input !== null && typeof input === 'object' ? input : {};
 }
 
+/**
+ * Deterministic free id for a resource the user named but did not identify:
+ * `dept-1`, `dept-2`, ... Ids are slugs (ASCII) by contract, so a display name
+ * is never reused as one.
+ */
+function nextId(prefix, list = []) {
+  const used = new Set((Array.isArray(list) ? list : []).map((entry) => entry?.id).filter(Boolean));
+  for (let n = 1; n < 10000; n += 1) {
+    const candidate = `${prefix}-${n}`;
+    if (!used.has(candidate)) return candidate;
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // read
 // ---------------------------------------------------------------------------
@@ -86,7 +101,16 @@ export async function listResources(root, options = {}) {
     const field = studioField(type);
     for (const raw of loaded.doc[field] ?? []) {
       const item = projectMeta(type, raw, { source: 'project' });
-      if (item !== null) items.push(item);
+      if (item === null) continue;
+      // Seeded departments carry a label key and the id as their name, so the
+      // table would read `backend` instead of `后端部`. The Chinese word is the
+      // display name; a name the user typed always wins.
+      const label = typeof raw.labelKey === 'string' ? STUDIO_TEXT[raw.labelKey] : null;
+      if (typeof label === 'string' && label.length > 0) {
+        const typed = typeof raw.name === 'string' ? raw.name.trim() : '';
+        if (typed.length === 0 || typed === item.id) item.name = label;
+      }
+      items.push(item);
     }
   }
 
@@ -182,10 +206,18 @@ function studioMutation(type, input, id) {
     case 'department':
       return (doc) => {
         const raw = normalizeInput(input);
-        const deptId = typeof raw.id === 'string' && raw.id.length > 0 ? raw.id : id;
+        const given = typeof raw.id === 'string' && raw.id.length > 0 ? raw.id : id;
+        // A department id is a slug, but the UI only collects a display name.
+        // Deriving `dept-N` here is what makes "type a name, press new" an
+        // actual write instead of a row with an empty id that silently
+        // disappears from every projection.
+        const deptId = typeof given === 'string' && given.length > 0
+          ? given
+          : nextId('dept', doc.departments);
         if (doc.departments.some((d) => d.id === deptId)) return failure('RESOURCE_EXISTS', { id: deptId });
-        doc.departments.push({ id: deptId, labelKey: raw.labelKey ?? null, name: raw.name ?? deptId, createdAt: new Date().toISOString() });
-        return { ok: true, value: { id: deptId } };
+        const name = typeof raw.name === 'string' && raw.name.trim().length > 0 ? raw.name.trim() : deptId;
+        doc.departments.push({ id: deptId, labelKey: raw.labelKey ?? null, name, createdAt: new Date().toISOString() });
+        return { ok: true, value: { id: deptId, name } };
       };
     case 'role':
       return (doc) => {
@@ -220,7 +252,9 @@ export async function createResource(root, type, input = {}) {
   if (!isStudioType(type)) return failure('RESOURCE_CREATE_UNSUPPORTED', { type });
   const saved = await updateStudio(asRoot(root), studioMutation(type, raw, raw.id));
   if (!saved.ok) return saved;
-  return { ok: true, item: projectMeta(type, saved.value?.role ?? saved.value?.employee ?? saved.value?.team ?? saved.value?.flow ?? { id: saved.value?.id }, { source: 'project' }) };
+  const value = saved.value?.role ?? saved.value?.employee ?? saved.value?.team ?? saved.value?.flow
+    ?? { id: saved.value?.id, name: saved.value?.name };
+  return { ok: true, item: projectMeta(type, value, { source: 'project' }) };
 }
 
 function studioUpdate(type, id, patch) {

@@ -173,6 +173,8 @@ try {
 
   // ---- step 1: CLI scan, via the real page button ------------------------
   await evaluate(`(() => {
+    const sec = document.querySelector('[data-section="team"]');
+    if (sec) sec.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
     const n=[...document.querySelectorAll('[data-action="nav"]')]
       .find(x=>x.getAttribute('data-arg')==='studio');
     if(n) n.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));

@@ -152,17 +152,20 @@ try {
     text: document.body.innerText.slice(0, 400),
     tokenInSession: sessionStorage.getItem('maestro.desktop.token'),
     tokenInLocal: localStorage.getItem('maestro.desktop.token'),
-    navStudio: [...document.querySelectorAll('[data-action="nav"]')]
-      .some((n) => n.getAttribute('data-arg') === 'studio'),
+    navTeam: document.querySelectorAll('.sidebar [data-section]').length,
   }))()`);
   step('壳把 token 存进 sessionStorage', typeof boot.tokenInSession === 'string'
     && boot.tokenInSession.length > 0, `session=${boot.tokenInSession ? 'yes' : 'no'} / local=${boot.tokenInLocal ? 'yes' : 'no'}`);
   step('冷启动未卡在「正在连接守护进程」', !boot.text.includes('正在连接守护进程'),
     boot.text.split('\n').filter(Boolean).slice(0, 3).join(' | '));
-  step('搭建台导航项存在', boot.navStudio === true);
+  step('侧栏五个任务段齐全', boot.navTeam === 5, `sections=${boot.navTeam}`);
 
   // ---- click the Studio nav, then inspect the iframe ----------------------
+  // beta.4 menu: "team" -> "org builder" tab.
   const clicked = await evaluate(`(() => {
+    const sec = document.querySelector('[data-section="team"]');
+    if (!sec) return false;
+    sec.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
     const node = [...document.querySelectorAll('[data-action="nav"]')]
       .find((n) => n.getAttribute('data-arg') === 'studio');
     if (!node) return false;

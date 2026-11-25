@@ -197,6 +197,14 @@ export function createFlow(doc, input = {}) {
   if (base) {
     flow.id = idBase;
     flow.kind = 'builtin';
+    // Instantiating the built-in shape must keep the name the user gave it:
+    // the base template carries no name and no label key of its own, so an
+    // unassigned name produced an unnamed flow that every list showed as its
+    // id.
+    if (name.length > 0) {
+      flow.name = name;
+      flow.titleKey = null;
+    }
     flow.mode = 'template';
   } else {
     flow.id = idBase;

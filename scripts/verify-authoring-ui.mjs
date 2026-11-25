@@ -104,7 +104,10 @@ try {
   const query = new URLSearchParams({ token: String(meta.token), project: root });
   await call('Page.navigate', { url: `http://127.0.0.1:${meta.port}/ui/?${query}` });
   await waitFor(async () => evaluate("Boolean(document.querySelector('#app')?.textContent?.trim())"), 20000);
+  // beta.4 menu: the org builder is the first tab of the "team" section.
   await evaluate(`(() => {
+    const sec=document.querySelector('[data-section="team"]');
+    if(sec) sec.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
     const n=[...document.querySelectorAll('[data-action="nav"]')].find(x=>x.getAttribute('data-arg')==='studio');
     if(n) n.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
     return true;
