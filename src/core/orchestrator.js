@@ -5216,7 +5216,12 @@ export function createOrchestrator({
     const firstWrite = prevLevel === null;
     const changed = prevLevel !== null && prevLevel !== computed.level;
 
-    if (firstWrite || changed) {
+    // A freshly claimed instance is between two snapshot saves (created ->
+    // running). A list read in that window must not take the health CAS: doing
+    // so bumps rev under the in-flight start and turns a successful start into
+    // STORE_CONFLICT. The next read after the claim writes the same health.
+    const claiming = reserved.has(instanceId);
+    if (!claiming && (firstWrite || changed)) {
       healthState.health = { ...nextHealth };
       const saved = await saveState(instanceId, healthState, { expectedState: expectedOf(healthState) });
       if (saved?.ok && changed) {

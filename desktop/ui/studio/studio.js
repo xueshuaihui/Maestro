@@ -203,6 +203,9 @@ function stepCli(state) {
 
 function stepOrg(state) {
   const box = card(t('UI_STEP_ORG'), `${state.roles.length} / ${state.employees.length}`);
+  // The role library and the project organization are different layers. Say
+  // so while the project list is empty, or a newcomer reads 0/0 as "lost data".
+  if (state.roles.length === 0) box.body.appendChild(el('p', 'hint', t('UI_ORG_HINT')));
 
   const acpOptions = [
     { value: '', label: t('UI_OPTION_UNSET') },
@@ -656,6 +659,7 @@ async function load() {
   document.getElementById('btn-scan').textContent = t('UI_SCAN', 'scan');
   document.getElementById('btn-demo').textContent = t('UI_DEMO', 'demo');
   document.getElementById('btn-refresh').textContent = t('UI_REFRESH', 'refresh');
+  document.getElementById('btn-instances').textContent = t('UI_STUDIO_TO_INSTANCES', 'View instances');
   document.getElementById('btn-demo').title = t('UI_DEMO_HINT2', '');
   setLoading('');
   render();
@@ -697,6 +701,9 @@ document.getElementById('btn-scan').addEventListener('click', async () => {
 });
 document.getElementById('btn-demo').addEventListener('click', demo);
 document.getElementById('btn-refresh').addEventListener('click', load);
+document.getElementById('btn-instances').addEventListener('click', () => {
+  window.parent.postMessage({ action: 'studio-nav-instances' }, '*');
+});
 
 if (!token()) {
   app.replaceChildren(el('p', 'empty', 'TOKEN'));

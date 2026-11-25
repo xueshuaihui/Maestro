@@ -174,6 +174,96 @@ const FILTERS = Object.freeze([
   ['failed', 'INSTANCE_LABEL_FAILED'],
 ]);
 
+/**
+ * First-run guide: the three decisions a newcomer has to make, all on the
+ * page they land on. The engine needs a host config on disk, but "host" is
+ * not a decision the user should have to learn before running anything, so
+ * the scan connects the first usable CLI automatically.
+ *
+ * The labels come from the Studio table (`ctx.st`), same as the host picker.
+ */
+/** Surface a template's hidden task syntax before the user presses start. */
+function taskHint(ctx, chosen) {
+  if (typeof chosen !== 'string' || chosen.length === 0 || typeof ctx.st !== 'function') return null;
+  // The mapping is derived, never hard-coded: the UI is not allowed to carry
+  // workflow-graph literals, and new templates can supply their own hint key.
+  const hint = ctx.st(`UI_TASK_HINT_${chosen.toUpperCase().replace(/-/g, '_')}`, '');
+  return typeof hint === 'string' && hint.length > 0 ? hint : null;
+}
+
+function startGuide(ctx) {
+  const st = (key, fallback) => (typeof ctx.st === 'function' ? ctx.st(key, fallback) : (fallback ?? key));
+  const panel = ctx.state.newPanel ?? {};
+  const hosts = Array.isArray(ctx.state.hosts) ? ctx.state.hosts : [];
+  const ready = hosts.filter((host) => host.usable === true);
+  const templates = Array.isArray(ctx.state.templates) ? ctx.state.templates : [];
+  const chosen = typeof panel.template === 'string' && panel.template.length > 0
+    ? panel.template : (templates[0]?.id ?? '');
+
+  const box = card([], { className: 'prompt-card' });
+  box.appendChild(sectionTitle(st('UI_START_TITLE', 'Start here')));
+
+  box.appendChild(el('h3', 'section-title mt14', st('UI_START_STEP_CLI', 'Connect an Agent')));
+  if (ready.length > 0) {
+    const line = el('div', 'row');
+    line.appendChild(badge(ready[0].id, 'done'));
+    line.appendChild(el('span', 'tiny muted', st('UI_START_CLI_READY', 'connected')));
+    box.appendChild(line);
+  } else {
+    const scan = button(st('UI_START_CLI_ACTION', 'Scan and connect this machine'), {
+      size: 'sm', variant: 'primary', action: 'quick-connect',
+    });
+    scan.disabled = ctx.state.hostBusy === true;
+    box.appendChild(scan);
+    if (ctx.state.hostBusy === true) box.appendChild(el('div', 'tiny muted mt6', st('UI_START_CLI_BUSY', 'Scanning')));
+  }
+
+  box.appendChild(el('h3', 'section-title mt14', st('UI_START_STEP_FLOW', 'Choose a workflow')));
+  const tiles = el('div', 'tile-grid');
+  for (const item of templates) {
+    const id = typeof item?.id === 'string' ? item.id : '';
+    if (id.length === 0) continue;
+    const tile = el('button', chosen === id ? 'tile-card on' : 'tile-card');
+    tile.type = 'button';
+    tile.setAttribute('data-action', 'pick-template');
+    tile.setAttribute('data-arg', id);
+    tile.appendChild(el('b', 'small', typeof item?.title === 'string' ? item.title : id));
+    tiles.appendChild(tile);
+  }
+  box.appendChild(tiles);
+
+  box.appendChild(el('h3', 'section-title mt14', st('UI_START_STEP_TASK', 'Write a task and start')));
+  const area = el('textarea', 'input-area');
+  area.rows = 3;
+  area.setAttribute('data-field', 'task');
+  area.value = typeof panel.task === 'string' ? panel.task : '';
+  box.appendChild(area);
+  const hint = taskHint(ctx, chosen);
+  if (hint !== null) box.appendChild(el('div', 'tiny muted mt6', hint));
+  if (panel.message) box.appendChild(el('div', 'form-error', panel.message));
+  if (panel.success) box.appendChild(el('div', 'tiny mt6', panel.success));
+  const go = button(st('UI_START_GO', 'Start'), {
+    variant: 'primary', action: 'submit-new',
+  });
+  go.disabled = ready.length === 0 || chosen.length === 0 || panel.submitting === true;
+  if (panel.submitting === true) go.textContent = st('UI_START_GO_BUSY', 'Starting');
+  box.appendChild(go);
+
+  box.appendChild(divider());
+  box.appendChild(el('div', 'tiny muted', st('UI_START_HINT', 'The instance then appears on this page.')));
+  const advanced = el('button', 'link-row', st('UI_START_STUDIO_LINK', 'Build a team and workflow in Studio'));
+  advanced.type = 'button';
+  advanced.setAttribute('data-action', 'nav');
+  advanced.setAttribute('data-arg', 'studio');
+  box.appendChild(advanced);
+  const manual = el('button', 'link-row', st('UI_START_ADVANCED', 'Advanced: hosts, organization and roles'));
+  manual.type = 'button';
+  manual.setAttribute('data-action', 'nav');
+  manual.setAttribute('data-arg', 'new');
+  box.appendChild(manual);
+  return box;
+}
+
 export function instancesPage(ctx) {
   const frag = document.createDocumentFragment();
   const st = (key, fallback) => (typeof ctx.st === 'function' ? ctx.st(key, fallback) : (fallback ?? key));
@@ -221,9 +311,9 @@ export function instancesPage(ctx) {
   const listBox = el('div');
   const empty = rows.length === 0;
   if (empty) {
-    // The right rail already carries the create entry, so the empty state
-    // explains what to do instead of repeating the same button a second time.
-    listBox.appendChild(emptyBox('\u25c8', ctx.t('DESKTOP_V2_NO_INSTANCE')));
+    // Cold start is not an empty list to stare at: it is a three-step guide
+    // that ends with a running instance on this very page.
+    listBox.appendChild(startGuide(ctx));
   } else {
     for (const row of rows) {
       listBox.appendChild(instanceRow(ctx, row));
@@ -454,6 +544,8 @@ export function newPage(ctx) {
   area.id = 'new-task';
   area.value = panel.task ?? '';
   main.appendChild(area);
+  const newHint = taskHint(ctx, chosen);
+  if (newHint !== null) main.appendChild(el('div', 'tiny muted mt6', newHint));
 
   if (panel.message) {
     main.appendChild(el('div', 'form-error', panel.message));
@@ -809,6 +901,14 @@ export function canvasPage(ctx) {
   }
 
   const tools = el('div', 'row wrap mb14');
+  // A workflow the engine already knows can be run without going back to the
+  // list and picking it again by name.
+  const canvasId = ctx.state.canvasId ?? null;
+  if ((ctx.state.templates ?? []).some((item) => item?.id === canvasId)) {
+    tools.appendChild(button(st('UI_CANVAS_RUN', 'Run this workflow'), {
+      action: 'run-canvas-flow', arg: canvasId, variant: 'primary',
+    }));
+  }
   if (view.editable === true) {
     tools.appendChild(button(st('UI_CANVAS_ADD_STAGE', 'Add stage'), { action: 'canvas-add-stage', variant: 'primary' }));
     tools.appendChild(button(

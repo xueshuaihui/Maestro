@@ -451,10 +451,14 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         // The Studio label table carries the authoring words the shell pages
         // use too (host picker, canvas actions). Loading it only when the
         // canvas opens left every other page falling back to English.
-        api.loadStudioLabels();
+        await api.loadStudioLabels();
         if (state.view !== 'project') {
           await api.loadInstances();
           await api.loadTemplates();
+          // The first screen says whether this machine can run anything.
+          // Without this read, a project that already has a host still shows
+          // the "no host" warning until a second navigation.
+          await api.loadHosts();
         }
         state.connection.markReady();
       } catch (error) {
@@ -1306,6 +1310,38 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       // Re-scan so the row flips to "bound" instead of offering it twice.
       await api.scanHosts();
       return { ok: true };
+    },
+
+    /**
+     * First-run shortcut: scan the machine and connect the first usable CLI
+     * in one step. The engine still needs a host config on disk, but the word
+     * "host" is an implementation detail — a newcomer should only have to
+     * choose an Agent, a workflow and a task on the same page.
+     */
+    async quickConnectHost() {
+      const ready = state.hosts.find((host) => host.usable === true);
+      if (ready) {
+        state.newPanel = { ...state.newPanel, hostId: ready.id, message: null };
+        return { ok: true, host: ready };
+      }
+      await api.scanHosts();
+      const findings = Array.isArray(state.hostFindings) ? state.hostFindings : [];
+      const found = findings.find((item) => typeof item?.executable === 'string' && item.executable.length > 0);
+      if (!found) {
+        state.newPanel = {
+          ...state.newPanel,
+          message: (typeof state.studioLabels?.UI_HOST_NO_EXEC === 'string'
+            ? state.studioLabels.UI_HOST_NO_EXEC : labelText('UI_HOST_NO_EXEC', {})),
+          errorCode: null,
+          success: null,
+        };
+        return { ok: false };
+      }
+      const done = await api.bindHost(found.executable);
+      if (!done?.ok) return { ok: false };
+      const host = state.hosts.find((item) => item.usable === true
+        && item.id === state.newPanel.hostId) ?? state.hosts[0] ?? null;
+      return { ok: host !== null, host };
     },
 
     /** One `/studio/action` call from the canvas, with the raw result returned. */
@@ -3612,6 +3648,19 @@ export function mountApp({
         app.updateNewPanel({ hostId: typeof value === 'string' ? value : null, message: null, success: null });
         paint();
         return;
+      case 'quick-connect':
+        paint();
+        void app.quickConnectHost().then(paint);
+        return;
+      case 'run-canvas-flow': {
+        const template = typeof value === 'string' && value.length > 0
+          ? value : app.state().canvasId;
+        app.updateNewPanel({ template, message: null, success: null });
+        app.setView('instances');
+        paint();
+        void app.loadInstances().then(paint);
+        return;
+      }
       case 'scan-hosts':
         paint();
         void app.scanHosts().then(paint);
@@ -4129,6 +4178,15 @@ export function mountApp({
   };
   document.addEventListener('keydown', onKeyDown);
 
+  // The Studio authoring page lives in an iframe. Its "view instances" exit
+  // arrives here so the two starting surfaces remain one product, not two
+  // unrelated windows the user has to stitch together by hand.
+  const onStudioMessage = (event) => {
+    if (event?.data?.action !== 'studio-nav-instances') return;
+    handleAction('nav', 'instances');
+  };
+  window.addEventListener('message', onStudioMessage);
+
   // ------------------------------------------------------------------ streams
   let listClose = null;
   let graphClose = null;
@@ -4329,6 +4387,7 @@ export function mountApp({
     },
     destroy() {
       document.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('message', onStudioMessage);
       clearInterval(ticker);
       stopStreams();
       host.replaceChildren();
