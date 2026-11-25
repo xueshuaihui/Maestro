@@ -641,3 +641,14 @@ tag `v0.0.1-beta.4` → `00cb281` 的流水线（run `45450622449`）macOS x64 /
 ### 18.6 边界（未变）
 
 §17.5 的四条依旧成立：画布产出的流程不能直接当实例模板、Studio `engine` 只编译不启动、证据页不取回宿主会话内容。本轮没有新增能力面，只把「已有按钮点了没反应」补成真的会动。
+
+### 18.7 本轮发布
+
+| 项 | 值 |
+|---|---|
+| 提交 | `40028e7`（`fix(desktop): stop offering dead controls…`） |
+| 发布流水线 | run `45626050188`，7 分 57 秒，三平台全成功 |
+| 资产 | `Maestro_0.0.1-beta.4_arm64.dmg` / `_x64.dmg` / `_win-x64-setup.exe` / `SHA256SUMS.txt`（13:49Z 覆盖式补传） |
+| Release | prerelease，`draft=false`，`target_commitish = 40028e7`；匿名 `GET /releases/tags/v0.0.1-beta.4` 返回 200、4 个资产 |
+
+同上一版一样，重发走的是「删远端 tag → 重推」。删 tag 会把 Release 打回 draft，而流水线只做 `upload --clobber`（它见 Release 已存在就不 republish、也不改 target/body），所以事后必须手工 `gh release edit --draft=false --prerelease --target <sha> --notes-file`，再用匿名接口核验 —— 否则页面上看到的仍是被删 tag 时那份草稿。
