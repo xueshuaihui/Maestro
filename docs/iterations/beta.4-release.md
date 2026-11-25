@@ -534,3 +534,56 @@ tag `v0.0.1-beta.4` → `00cb281` 的流水线（run `45450622449`）macOS x64 /
 | 本地打包产物 | `npm run verify:app` = scenarios 41 + canvas 15 + drilldown 14，**全绿** |
 
 处理细节：删 tag 会让关联 Release 变 `draft`，且 `target_commitish` 停在旧 sha；改写时 `gh release edit --target` 只接受**完整 40 位 sha**，短 sha 返回 `422 target_commitish is invalid`。
+
+---
+
+## 17. 实例页从「点了没反应」补成可配置可操作（2026-11-25）
+
+### 17.1 用户判据
+
+「实例也用不起来，交互不完整，从用户操作角度验证完整场景能不能配置出来。」按这个口径逐项点下去，结论是**当时的实例页根本不可能跑起来**：新建实例只问「模板 + 任务」，而 `POST /instances` 需要 `.orch/hosts/<id>.json` 才可能拉起宿主，界面上没有任何地方能生成这个文件。扫描到的 CLI 只被用来建员工，从未落成宿主配置。
+
+### 17.2 补上的配置面
+
+| 缺口（用户可见） | 之前 | 现在 |
+|---|---|---|
+| 不知道实例靠什么运行 | 新建页只有工作流与任务 | 新增「运行宿主」区：已绑定宿主卡片 + 「扫描本机 CLI」 |
+| 扫到 CLI 也没法用 | `cli.scan` 只写 CLI 注册表，没有任何后续动作 | 扫描结果每行「绑定为宿主」，写入 `.orch/hosts/<id>.json`（`transport:stdio` + `launch.command/args`，参数取自发现的 `acp_args`） |
+| 绑定后不知道选哪个 | 无选择面 | 宿主卡片可点选，可用/不可用分别标注；`POST /instances` 带 `hostId` |
+| 没有宿主时静默失败 | 只有提交后的机器错误 | 实例页顶部直接说明「还没有绑定宿主」，扫描为空时给出可操作提示 |
+
+新增：`src/studio/host.js`（`listHosts / bindHost / removeHost / hostIdForCli`）、`host.list|host.bind|host.remove` 三个 `/studio/action`、`GET /studio/state` 的 `hosts` 字段、8 个 `STUDIO_HOST_*` 错误码。
+
+### 17.3 修掉的四个真缺陷
+
+| # | 缺陷 | 根因 | 验证 |
+|---|---|---|---|
+| 1 | 暂停点了没反应 | `GET /instances` 的桌面投影（`routes.js: projectItem`）不带 `paused`；而 `orchestrator.pause` 只把 `paused` 置 true、`state` 仍是 `running`。界面拿不到这个标志，行与页头都停在「运行中」 | 投影补 `paused`，行与页头按标志渲染「已挂起」，控制按钮翻成「继续」 |
+| 2 | 暂停会暂停所有实例 | `handleControl` 完全忽略请求体里的 `instanceId`，逐条扫全部实例 | 带 `instanceId` 时只处理该实例；不带时保持原来的汇总语义（托盘路径逐字不变） |
+| 3 | 终态实例还挂「暂停」 | 按钮不看状态 | `completed/failed/cancelled` 不再提供暂停/继续；控制被拒时给出中文原因 |
+| 4 | 节点看板七个空列 | `boardPage` 把 `columns`（字符串键）当对象读 `column.title`/`column.cards`，且没用 `columnNames`/`cards` | 按 `{columns, columnNames, cards[].column}` 渲染，七列有名字有卡片 |
+| 5 | 证据页整块抛异常 | `evidence.js` 直接调 `Buffer.byteLength`，浏览器里 `Buffer` 不存在 → `ReferenceError` | 先试 `Buffer`，再退 `TextEncoder`；Node 侧字节数不变 |
+| 6 | 宿主区/画布动作显示英文 | `studioLabels` 只在打开画布时加载，其余页面 `st()` 全部回落英文默认值 | 启动时加载一次 `/studio/labels` |
+
+### 17.4 验收（`scripts/verify-instance-flow.mjs`）
+
+全程真实点击 + 真实输入，不直接调接口：真实 daemon + 真实 Chrome/CDP + **真实 opencode 1.19.6 作为宿主**（`MAESTRO_CLI_BIN` 指向安装目录）。
+
+| 场景 | 断言 | 结果 |
+|---|---|---|
+| S1 | 实例页明说没有宿主 | PASS |
+| S2 | 新建页有宿主区与扫描按钮 → 扫描列出 CLI → 绑定按钮带绝对路径 → 落盘 `{transport:'stdio', launch:{command,args}}` | PASS ×5 |
+| S3 | 选模板 + 写任务 + 开始 → 实例真的出现、有 id、目录落盘 | PASS ×4 |
+| S4 | 打开实例 → 概览/流程图/看板/证据 四页签都有内容、无脏文本 | PASS ×5 |
+| S5 | 暂停 → 显示「已挂起」→ 出现「继续」→ 继续后恢复 | PASS ×4 |
+
+`MAESTRO_CLI_BIN=/tmp/oc-npm/node_modules/.bin` → **25/25 PASS**；不设该变量（本机无 CLI）→ 扫描为空时仍断言「可操作提示」，其余 SKIP，**6 passed / 0 failed**（CI 用 `MAESTRO_REQUIRE_CLI=1` 可强制要求）。
+
+回归：`verify:scenarios` 41/41、`verify:canvas` 15/15、`verify:drilldown` 14/14、`verify:core` 11/11、`verify:ui-flow` 16/16；`test/wp19/host-binding.test.js` 5/5（新增）；桌面四组单测 646 pass / 8 fail，与 HEAD 基线（637/9）红名单**同集**，新增红 0。
+
+### 17.5 仍然不能「配置出来」的部分（不掩盖）
+
+1. **画布/搭建台配好的流程不能直接当实例跑**。新建页的模板仍来自 `GET /workflows`（三条内置图）；`.orch/workflows/*.yaml` 与 Studio 编译产物没有 yaml → 执行图（`nodes[].roleId/order/prompt`）的适配，`resolveTemplate` 找不到就报 `TEMPLATE_UNKNOWN`。要补的是 `src/core` 里一个 `workflowYamlToGraph()` 加 daemon 启动时把项目工作流并入 `graphs`。
+2. **Studio 的 `engine` 模式仍只编译不启动**（`engineRun` 写死 `launched:false`），所以「团队 + 角色 + 技能」这套配置目前只影响编译产物，不影响真实实例的派发。
+3. **证据页只有产物指针与「完整日志留在宿主」**，没有把宿主会话内容取回渲染；人工干预队列的端到端仍只在 mock 宿主上验证过。
+4. 本轮只改本地，**未重发 tag/Release**；要让安装包带上这些修复，需 `desktop:build → verify:app → 推 tag`。

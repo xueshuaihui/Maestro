@@ -353,6 +353,9 @@ test('WP-3 routes take over 503 NOT_READY when injected; unattached seam still d
           progress: { done: 1, total: 2 },
           pending: { escalations: 0, approvals: 1 },
           health: { level: 'ok', reasons: [] },
+          // Additive: pause is a flag on a still-`running` snapshot, so the
+          // list must carry it or the row cannot show 已挂起 / offer 继续.
+          paused: false,
           updatedAt: '2026-11-13T00:00:00.000Z',
           readable: true,
         });

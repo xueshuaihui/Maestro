@@ -38,6 +38,10 @@ import {
   engineRun,
   raiseRequirementGap,
   teamMembers,
+  listHosts,
+  bindHost,
+  removeHost,
+  hostIdForCli,
   roleCoverage,
   DEPARTMENT_SEEDS,
   departmentLabelKey,
@@ -229,6 +233,9 @@ async function buildState(root) {
       version: cli.version ?? null
     })),
     readiness: { ok: org.ok, errors: org.errors, warnings: org.warnings },
+    // Hosts are what `POST /instances` actually needs; surfacing them here
+    // means the instance page can tell "no runnable host" from "not scanned".
+    hosts: (await listHosts(root)).hosts ?? [],
     seedDepartments: DEPARTMENT_SEEDS.length,
     roleCodes: ROLE_CODES,
     runModes: ['auto', 'semi', 'manual'],
@@ -559,13 +566,49 @@ const ACTIONS = Object.freeze({
     return { ok: true, change: result.change, defect: result.defect, task: result.task };
   },
 
+  async 'host.list'(root) {
+    return listHosts(root);
+  },
+
+  /**
+   * Bind a discovered CLI as a runnable host.
+   *
+   * The only caller is the instance page: without this the scan can report
+   * "opencode is here" forever while `POST /instances` keeps failing on a
+   * missing `.orch/hosts/*.json`.
+   */
+  async 'host.bind'(root, payload) {
+    return bindHost(root, {
+      id: payload.id ?? (payload.cliId ? hostIdForCli(payload.cliId) : undefined),
+      cliId: payload.cliId,
+      command: payload.executable ?? payload.command,
+      args: payload.acpArgs ?? payload.args,
+      permissionPolicy: payload.permissionPolicy ?? null
+    });
+  },
+
+  async 'host.remove'(root, payload) {
+    return removeHost(root, payload.id);
+  },
+
   async 'cli.scan'(root) {
     const loaded = await loadCliRegistry(root);
     if (!loaded.ok) return loaded;
     const scan = discoverAgentClis({ userConfig: loaded.registry.user_config });
     const saved = await saveCliRegistry(root, scan, { userConfig: loaded.registry.user_config });
     if (!saved.ok) return saved;
-    return { ok: true, count: scan.findings.length, findings: scan.findings };
+    // Mark the findings a host already exists for: the page must not offer
+    // "bind" twice for the same executable.
+    const bound = await listHosts(root);
+    const byCommand = new Map();
+    for (const host of bound.ok ? bound.hosts : []) {
+      if (host.command) byCommand.set(host.command, host.id);
+    }
+    const findings = scan.findings.map((item) => ({
+      ...item,
+      bound_host: item.executable ? (byCommand.get(item.executable) ?? null) : null
+    }));
+    return { ok: true, count: findings.length, findings };
   }
 });
 

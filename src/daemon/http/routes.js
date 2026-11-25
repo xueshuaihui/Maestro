@@ -297,6 +297,10 @@ function projectItem(instanceId, snapshot) {
       approvals: Number.isInteger(snapshot?.pendingApprovals) ? snapshot.pendingApprovals : 0,
     },
     health: healthPayload(snapshot),
+    // Pause is a flag on a still-`running` snapshot, so the list has to carry
+    // it: without it the row (and the instance page) looked untouched after
+    // the user pressed 暂停, and the only offered control stayed 暂停.
+    paused: snapshot?.paused === true,
     updatedAt: typeof snapshot?.updatedAt === 'string' ? snapshot.updatedAt : null,
     readable: true,
   };
@@ -311,6 +315,7 @@ function unreadableItem(entry) {
     progress: null,
     pending: null,
     health: null,
+    paused: false,
     updatedAt: typeof entry?.updatedAt === 'string' ? entry.updatedAt : null,
     readable: false,
   };
@@ -490,12 +495,20 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root, hub, graph, 
     const template = typeof params.template === 'string' && params.template.length > 0
       ? params.template
       : null;
-    const started = await orchestrator.startRun({
+    // A machine can have several hosts configured (`.orch/hosts/<id>.json`).
+    // When the panel did not pick one the key is omitted entirely, so the
+    // historical `{cwd, task, template, earlyReturn}` call shape is unchanged.
+    const hostId = typeof params.hostId === 'string' && params.hostId.length > 0
+      ? params.hostId
+      : null;
+    const startArgs = {
       cwd: projectRoot,
       task,
       template,
       earlyReturn: true,
-    });
+    };
+    if (hostId !== null) startArgs.hostId = hostId;
+    const started = await orchestrator.startRun(startArgs);
     if (started && started.ok === true && typeof started.instanceId === 'string') {
       sendJson(res, 200, { instanceId: started.instanceId });
       return res;
@@ -1015,16 +1028,37 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root, hub, graph, 
    * （等价 `workflow.pause` / `workflow.resume` RPC），收集成功 / 跳过并汇
    * 总返回；全量失败不报错（D-8）。
    */
-  async function handleControl(res, mode) {
+  async function handleControl(req, res, mode) {
     const method = mode === 'pause' ? 'pause' : 'resume';
+    // The tray calls this with no body and means "everything"; the instance
+    // page sends `{instanceId}` and means exactly that instance. Ignoring the
+    // id (the old behaviour) paused every instance from a single row's button.
+    let asked = null;
+    try {
+      const raw = await readBody(req, BODY_LIMIT_BYTES);
+      const parsed = raw.length > 0 ? JSON.parse(raw.toString('utf8')) : null;
+      if (parsed && typeof parsed === 'object' && typeof parsed.instanceId === 'string' && parsed.instanceId.length > 0) {
+        asked = parsed.instanceId;
+      }
+    } catch {
+      asked = null;
+    }
     const listed = await orchestrator.listInstances();
     if (!listed || listed.ok !== true || !Array.isArray(listed.items)) {
       sendJson(res, 500, { ok: false, error: listed?.code ?? 'STORE_READ_FAILED' });
       return res;
     }
+    const targets = asked === null
+      ? listed.items
+      : listed.items.filter((entry) => entry?.instanceId === asked);
+    if (asked !== null && targets.length === 0) {
+      sendJson(res, 404, { ok: false, error: 'NOT_FOUND', instanceId: asked });
+      return res;
+    }
     let paused = 0;
     let skipped = 0;
-    for (const entry of listed.items) {
+    let reason = null;
+    for (const entry of targets) {
       if (!entry || entry.readable !== true || typeof orchestrator[method] !== 'function') {
         skipped += 1;
         continue;
@@ -1032,12 +1066,22 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root, hub, graph, 
       try {
         const outcome = await orchestrator[method]({ instanceId: entry.instanceId });
         if (outcome && outcome.ok === true) paused += 1;
-        else skipped += 1;
-      } catch {
+        else {
+          skipped += 1;
+          reason = outcome?.code ?? reason;
+        }
+      } catch (error) {
         skipped += 1;
+        reason = error?.code ?? reason;
       }
     }
-    sendJson(res, 200, { ok: true, paused, skipped });
+    // The tray path keeps the frozen `{ok,paused,skipped}` body byte for byte;
+    // a targeted call adds the id/reason so one row can report its own result.
+    if (asked === null) {
+      sendJson(res, 200, { ok: true, paused, skipped });
+      return res;
+    }
+    sendJson(res, 200, { ok: true, paused, skipped, instanceId: asked, reason });
     return res;
   }
 
@@ -1349,15 +1393,15 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root, hub, graph, 
     {
       method: 'POST',
       pattern: '/control/pause',
-      handler(_req, res) {
-        return handleControl(res, 'pause');
+      handler(req, res) {
+        return handleControl(req, res, 'pause');
       },
     },
     {
       method: 'POST',
       pattern: '/control/resume',
-      handler(_req, res) {
-        return handleControl(res, 'resume');
+      handler(req, res) {
+        return handleControl(req, res, 'resume');
       },
     },
   ];

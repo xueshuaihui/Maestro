@@ -250,30 +250,39 @@ export function boardPage(ctx) {
   frag.appendChild(pageHead(ctx.t('DESKTOP_VIEW_BOARD'), ctx.instanceId ?? null, headActions));
   frag.appendChild(workspaceTabs(ctx));
 
-  const columns = Array.isArray(board.columns) ? board.columns : [];
-  if (columns.length === 0) {
+  // The board model is `{columns: [key...], columnNames: [name...], cards}`
+  // where every card carries its own `column`. Reading `column.title` off a
+  // string key produced seven empty headings with a literal `0` count each.
+  const keys = Array.isArray(board.columns) ? board.columns : [];
+  if (keys.length === 0) {
     frag.appendChild(emptyBox('\u25a4', ctx.t('DESKTOP_V2_EMPTY')));
     return frag;
   }
+  const names = Array.isArray(board.columnNames) ? board.columnNames : [];
+  const cards = Array.isArray(board.cards) ? board.cards : [];
   const wrap = el('div', 'board-scroll');
   const grid = el('div', 'board');
-  for (const column of columns) {
+  keys.forEach((key, index) => {
+    const name = typeof names[index] === 'string' && names[index].length > 0 ? names[index] : String(key);
+    const columnCards = cards.filter((card) => card?.column === key);
     const col = el('div', 'board-col');
     const head = el('h4');
-    head.appendChild(el('span', null, column.title ?? column.key ?? ''));
-    head.appendChild(el('span', null, String((column.cards ?? []).length)));
+    head.appendChild(el('span', null, name));
+    head.appendChild(el('span', null, String(columnCards.length)));
     col.appendChild(head);
-    for (const item of column.cards ?? []) {
+    for (const item of columnCards) {
       const mini = el('div', 'mini-card');
       mini.setAttribute('data-action', 'open-node');
       mini.setAttribute('data-arg', JSON.stringify({ nodeId: item.id }));
       mini.appendChild(el('div', 'id', item.id ?? ''));
       mini.appendChild(el('div', 'mt6', item.title ?? ''));
-      if (item.unknown === true) mini.appendChild(el('div', 'tiny muted mt6', board.unknownTag ?? ''));
+      if (item.unknown === true && board.unknownTag) {
+        mini.appendChild(el('div', 'tiny muted mt6', board.unknownTag));
+      }
       col.appendChild(mini);
     }
     grid.appendChild(col);
-  }
+  });
   wrap.appendChild(grid);
   frag.appendChild(wrap);
   if (board.cancelledFold) frag.appendChild(el('div', 'tiny muted mt10', board.cancelledFold));

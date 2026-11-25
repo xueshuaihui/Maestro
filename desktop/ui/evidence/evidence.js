@@ -192,10 +192,23 @@ export function itemLines(item, labels) {
 }
 
 /**
- * UTF-8 byte length of a string (Node built-in encoding, no dependency).
+ * UTF-8 byte length of a string.
+ *
+ * This module runs in the desktop shell's browser context, where `Buffer` does
+ * not exist: calling it unguarded threw `ReferenceError: Buffer is not defined`
+ * and left the evidence tab blank. Node's Buffer is preferred when present so
+ * the unit tests keep their exact byte counts; `TextEncoder` is the browser
+ * equivalent (same UTF-8 encoding, same numbers).
  */
 function byteLength(text) {
-  return Buffer.byteLength(text, 'utf8');
+  const source = typeof text === 'string' ? text : '';
+  if (typeof Buffer !== 'undefined' && typeof Buffer.byteLength === 'function') {
+    return Buffer.byteLength(source, 'utf8');
+  }
+  if (typeof TextEncoder === 'function') return new TextEncoder().encode(source).length;
+  // Last resort: count code points at worst-case 3 bytes. Only reachable in an
+  // environment with neither Buffer nor TextEncoder.
+  return source.length * 3;
 }
 
 /**

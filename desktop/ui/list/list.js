@@ -128,6 +128,9 @@ export function describeListRow(instance, labels) {
     templateTitle,
     phase: instance?.phase ?? '',
     state: phase,
+    // Pause is a flag on a still-`running` snapshot, so the state word alone
+    // can never show it; the row needs the flag to offer resume instead.
+    paused: instance?.paused === true,
     done,
     total,
     pending: pendingCount(instance),

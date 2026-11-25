@@ -46,14 +46,19 @@ export function validateNewInstance(form = {}, labels = {}) {
 }
 
 /**
- * Builds the `POST /instances` request body: exactly `{template, task}` —
- * the panel offers no host / concurrency / policy fields (D-2).
+ * Builds the `POST /instances` request body.
+ *
+ * `hostId` is omitted when the panel has none, so the historical
+ * `{template, task}` shape (and the default-host behaviour behind it) is
+ * byte-identical for callers that never picked a host.
  */
 export function buildStartRequest(form = {}) {
-  return {
+  const body = {
     template: typeof form.template === 'string' ? form.template : '',
     task: typeof form.task === 'string' ? form.task : '',
   };
+  if (typeof form.hostId === 'string' && form.hostId.length > 0) body.hostId = form.hostId;
+  return body;
 }
 
 /**

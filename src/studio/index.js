@@ -62,6 +62,8 @@ export { compileStudio, roleDocFromRole } from './compile.js';
 
 export { planRun, startRun, advanceRun, approveRun, prepareEngine, engineRun } from './run.js';
 
+export { listHosts, bindHost, removeHost, hostIdForCli } from './host.js';
+
 export {
   addTask,
   transitionTask,

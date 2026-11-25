@@ -176,8 +176,28 @@ const FILTERS = Object.freeze([
 
 export function instancesPage(ctx) {
   const frag = document.createDocumentFragment();
+  const st = (key, fallback) => (typeof ctx.st === 'function' ? ctx.st(key, fallback) : (fallback ?? key));
   const headActions = [button(`+ ${ctx.t('DESKTOP_NEW_TITLE')}`, { variant: 'primary', action: 'nav', arg: 'new' })];
   frag.appendChild(pageHead(ctx.instancesLabel ?? 'Maestro', ctx.projectRoot ?? null, headActions));
+
+  // Whether a host exists decides if the new-instance form can produce anything, so it is
+  // stated before the list instead of only surfacing as a failure after submit.
+  const hosts = Array.isArray(ctx.state.hosts) ? ctx.state.hosts : [];
+  const usable = hosts.filter((host) => host.usable === true);
+  if (usable.length === 0) {
+    const box = callout(st('UI_HOST_NONE', 'No host bound yet'), { tone: 'amber' });
+    box.appendChild(button(st('UI_HOST_SCAN', 'Scan this machine'), {
+      size: 'sm',
+      action: 'nav',
+      arg: 'new',
+    }));
+    frag.appendChild(box);
+  } else {
+    const line = el('div', 'row mb14');
+    line.appendChild(el('span', 'tiny muted', st('UI_HOST_TITLE', 'Run host')));
+    for (const host of usable) line.appendChild(badge(host.id, 'done'));
+    frag.appendChild(line);
+  }
 
   const chips = el('div', 'sb mb14');
   for (const [key, labelKey] of FILTERS) {
@@ -312,6 +332,9 @@ function instanceRow(ctx, row) {
   meta.appendChild(el('span', 'mini', row.phase ? `${row.phase}` : ''));
   if (row.total > 0) meta.appendChild(el('span', 'mini', `${row.done ?? 0}/${row.total}`));
   if (row.pending > 0) meta.appendChild(badge(String(row.pending), 'wait'));
+  // A paused instance keeps state `running` on disk, so without this badge the
+  // row looks untouched after the user presses pause.
+  if (row.paused === true) meta.appendChild(badge(stateWord(ctx, 'suspended'), 'wait'));
   const health = healthWord(ctx, row.healthLevel);
   if (health) meta.appendChild(badge(health, HEALTH_TONE[row.healthLevel] ?? 'gray'));
   body.appendChild(meta);
@@ -331,6 +354,7 @@ function instanceRow(ctx, row) {
 export function newPage(ctx) {
   const frag = document.createDocumentFragment();
   const panel = ctx.model.panel ?? {};
+  const st = (key, fallback) => (typeof ctx.st === 'function' ? ctx.st(key, fallback) : (fallback ?? key));
   frag.appendChild(pageHead(ctx.t('DESKTOP_NEW_TITLE'), panel.title ?? null));
 
   const grid = el('div', 'split');
@@ -357,6 +381,72 @@ export function newPage(ctx) {
     list.appendChild(tile);
   });
   main.appendChild(list);
+
+  // A workflow is only half the answer: `POST /instances` launches an Agent
+  // CLI, so the page has to show which host will be used and let the user
+  // bind one from the scan. Without this the start button could only fail.
+  main.appendChild(el('h3', 'section-title mt20', st('UI_HOST_TITLE', 'Run host')));
+  const hosts = Array.isArray(ctx.state.hosts) ? ctx.state.hosts : [];
+  if (hosts.length === 0) {
+    main.appendChild(el('div', 'tiny muted', st('UI_HOST_NONE', 'No host bound yet')));
+  } else {
+    const hostGrid = el('div', 'tile-grid');
+    for (const host of hosts) {
+      const active = panel.hostId === host.id;
+      const tile = el('button', active ? 'tile-card on' : 'tile-card');
+      tile.type = 'button';
+      tile.setAttribute('data-action', 'pick-host');
+      tile.setAttribute('data-arg', host.id);
+      const head = el('div', 'between');
+      head.appendChild(el('b', 'small', host.id));
+      head.appendChild(badge(
+        host.usable === true ? st('UI_HOST_READY', 'ready') : st('UI_HOST_UNUSABLE', 'unusable'),
+        host.usable === true ? 'done' : 'fail',
+      ));
+      tile.appendChild(head);
+      tile.appendChild(el('div', 'tiny muted mt6', host.command || st('UI_HOST_NO_COMMAND', 'no command')));
+      hostGrid.appendChild(tile);
+    }
+    main.appendChild(hostGrid);
+  }
+
+  const hostTools = el('div', 'row mt10');
+  const scan = button(st('UI_HOST_SCAN', 'Scan this machine'), {
+    size: 'sm',
+    action: 'scan-hosts',
+    variant: hosts.length === 0 ? 'primary' : undefined,
+  });
+  if (ctx.state.hostBusy === true) scan.disabled = true;
+  hostTools.appendChild(scan);
+  main.appendChild(hostTools);
+
+  const findings = Array.isArray(ctx.state.hostFindings) ? ctx.state.hostFindings : null;
+  if (findings !== null) {
+    const usable = findings.filter((item) => typeof item?.executable === 'string' && item.executable.length > 0);
+    if (usable.length === 0) {
+      main.appendChild(el('div', 'tiny muted mt6', st('UI_HOST_NO_EXEC', 'No executable Agent CLI found')));
+    }
+    for (const item of usable) {
+      const row = el('div', 'listrow mt10');
+      const body = el('div', 'grow');
+      const line = el('div', 'between');
+      const left = el('div', 'row');
+      left.appendChild(el('b', 'small', item.name ?? item.cli_id ?? item.executable));
+      const bound = typeof item.bound_host === 'string' && item.bound_host.length > 0;
+      if (bound) left.appendChild(badge(st('UI_HOST_BOUND', 'bound'), 'done'));
+      if (item.version) left.appendChild(el('span', 'mini', String(item.version)));
+      line.appendChild(left);
+      body.appendChild(line);
+      body.appendChild(el('div', 'tiny muted mt6', item.executable));
+      row.appendChild(body);
+      if (!bound) {
+        const bind = button(st('UI_HOST_BIND', 'Use as host'), { size: 'sm', action: 'bind-host', arg: item.executable });
+        if (ctx.state.hostBusy === true) bind.disabled = true;
+        row.appendChild(bind);
+      }
+      main.appendChild(row);
+    }
+  }
 
   main.appendChild(el('h3', 'section-title mt20', ctx.t('DESKTOP_NEW_FIELD_TASK')));
   const area = el('textarea', 'input-area');
@@ -407,16 +497,28 @@ export function overviewPage(ctx) {
   const nodes = Array.isArray(ctx.graph?.nodes) ? ctx.graph.nodes : [];
   const done = nodes.filter((node) => node.state === 'done' || node.status === 'done').length;
   const pending = row?.pending ?? 0;
+  // Pause keeps the snapshot state at `running` and only sets a flag, so every
+  // "is it paused" surface reads the flag, not the state word.
+  const paused = row?.paused === true;
 
   frag.appendChild(pageHead(
     row?.templateTitle || ctx.instanceId || '',
-    [ctx.instanceId, stateWord(ctx, row?.state)].filter(Boolean).join(' \u00b7 '),
+    [ctx.instanceId, paused ? stateWord(ctx, 'suspended') : stateWord(ctx, row?.state)].filter(Boolean).join(' \u00b7 '),
     [button(ctx.t('DESKTOP_V2_BACK'), { action: 'nav', arg: 'instances' })],
   ));
   frag.appendChild(workspaceTabs(ctx));
 
   const metrics = el('div', 'metric-grid');
-  metrics.appendChild(metric(ctx.t('DESKTOP_V2_STAGE'), row?.phase ?? ctx.t('DESKTOP_PLACEHOLDER')));
+  // `phase` is the raw snapshot value, so a running instance printed the
+  // English word "running" next to an otherwise Chinese page. Map it through
+  // the same label table the state badge uses; a real node id falls through.
+  const phaseKey = `INSTANCE_LABEL_${String(row?.phase ?? '').toUpperCase()}`;
+  const phaseText = paused
+    ? stateWord(ctx, 'suspended')
+    : (typeof ctx.labels?.[phaseKey] === 'string'
+      ? ctx.labels[phaseKey]
+      : (row?.phase ?? ctx.t('DESKTOP_PLACEHOLDER')));
+  metrics.appendChild(metric(ctx.t('DESKTOP_V2_STAGE'), phaseText));
   metrics.appendChild(metric(ctx.t('DESKTOP_V2_PENDING'), String(pending), { tone: pending > 0 ? 'amber' : 'green' }));
   metrics.appendChild(metric(ctx.t('DESKTOP_V2_NODE'), `${done}/${nodes.length || 0}`));
   metrics.appendChild(metric(ctx.t('DESKTOP_V2_HEALTH'), healthWord(ctx, row?.healthLevel) ?? ctx.t('DESKTOP_PLACEHOLDER'), { tone: row?.healthLevel === 'attention' ? 'red' : 'green' }));
@@ -448,10 +550,23 @@ export function overviewPage(ctx) {
   side.appendChild(next);
 
   const controls = card([]);
-  controls.appendChild(sectionTitle(ctx.t('DESKTOP_V2_CHECKPOINT'), badge(ctx.t('DESKTOP_V2_STATE'), 'cyan')));
+  controls.appendChild(sectionTitle(ctx.t('DESKTOP_V2_CHECKPOINT'),
+    badge(paused ? stateWord(ctx, 'suspended') : stateWord(ctx, row?.state),
+      paused ? 'wait' : (STATE_TONE[String(row?.state ?? '').toLowerCase()] ?? 'cyan'))));
   controls.appendChild(kv(ctx.t('DESKTOP_V2_STATE'), stateWord(ctx, row?.state)));
   const rowActions = el('div', 'row mt10');
-  rowActions.appendChild(button(ctx.t('DESKTOP_V2_PAUSE'), { size: 'sm', action: 'pause-instance', arg: ctx.instanceId }));
+  // Pause and resume are two halves of one control. A paused instance keeps
+  // state `running` on disk and only sets the flag, so the flag — not the
+  // state word — decides which half is offered. A terminal instance offers
+  // neither: a button that can only answer "not pausable" is a dead control.
+  const stateText = String(row?.state ?? '').toLowerCase();
+  const terminal = ['completed', 'failed', 'cancelled'].includes(stateText);
+  if (!terminal) {
+    rowActions.appendChild(button(
+      paused ? ctx.t('DESKTOP_V2_RESUME') : ctx.t('DESKTOP_V2_PAUSE'),
+      { size: 'sm', action: paused ? 'resume-instance' : 'pause-instance', arg: ctx.instanceId },
+    ));
+  }
   rowActions.appendChild(button(ctx.t('DESKTOP_QUEUE_ACTION_CANCEL'), { size: 'sm', action: 'cancel-instance', arg: ctx.instanceId }));
   controls.appendChild(rowActions);
   side.appendChild(controls);

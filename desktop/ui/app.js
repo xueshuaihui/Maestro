@@ -318,9 +318,15 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     indicator: {},
     notice: null,
     templates: [],
+    // A runnable instance needs a host config on disk; these two are the
+    // difference between "scanned something" and "can press start".
+    hosts: [],
+    hostFindings: null,   // null = never scanned in this session
+    hostBusy: false,
     newPanel: {
       open: false,
       template: '',
+      hostId: null,
       task: '',
       message: null,
       success: null,
@@ -442,6 +448,10 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         const labelsAnswer = await transport.getLabels?.();
         if (!labelsAnswer || labelsAnswer.status !== 200) throw new Error('labels unavailable');
         api.setLabels(labelsAnswer.body);
+        // The Studio label table carries the authoring words the shell pages
+        // use too (host picker, canvas actions). Loading it only when the
+        // canvas opens left every other page falling back to English.
+        api.loadStudioLabels();
         if (state.view !== 'project') {
           await api.loadInstances();
           await api.loadTemplates();
@@ -450,6 +460,20 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       } catch (error) {
         state.lastError = error?.message ?? String(error);
         // Stay connecting: the visible line is owned by the state machine.
+      }
+      return api;
+    },
+
+    /** Read the Studio label table once; shell pages fall back to English without it. */
+    async loadStudioLabels() {
+      if (typeof transport.getStudioLabels !== 'function') return api;
+      try {
+        const answer = await transport.getStudioLabels();
+        if (answer?.status === 200 && answer.body?.ok === true) {
+          state.studioLabels = answer.body.labels ?? {};
+        }
+      } catch {
+        // A missing table degrades to the built-in English defaults.
       }
       return api;
     },
@@ -966,25 +990,37 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
 
     /** Pause / resume through the control endpoints (real server side). */
     async pauseInstance(instanceId) {
-      if (typeof transport.postControl === 'function' && typeof instanceId === 'string') {
-        try {
-          await transport.postControl('pause', instanceId);
-        } catch {
-          // A failed control call keeps the page; the stream shows the truth.
-        }
-      }
-      return api;
+      return api.controlInstance('pause', instanceId);
     },
 
     async resumeInstance(instanceId) {
-      if (typeof transport.postControl === 'function' && typeof instanceId === 'string') {
-        try {
-          await transport.postControl('resume', instanceId);
-        } catch {
-          // Same degradation rule as pause.
-        }
+      return api.controlInstance('resume', instanceId);
+    },
+
+    /**
+     * One control call for ONE instance. The old code swallowed the answer,
+     * so a rejected pause looked exactly like a successful one.
+     */
+    async controlInstance(verb, instanceId) {
+      if (typeof transport.postControl !== 'function' || typeof instanceId !== 'string') {
+        return { ok: false, message: '' };
       }
-      return api;
+      let answer = null;
+      try {
+        answer = await transport.postControl(verb, instanceId);
+      } catch (error) {
+        return { ok: false, message: String(error?.message ?? error) };
+      }
+      const body = answer?.body ?? {};
+      const applied = answer?.status === 200 && Number(body.paused ?? 0) > 0;
+      // The list owns the state column, so a successful control has to be
+      // re-read or the row keeps showing the old word.
+      if (applied) await api.loadInstances();
+      const text = state.studioLabels?.UI_CONTROL_SKIPPED;
+      return {
+        ok: applied,
+        message: applied ? '' : (typeof text === 'string' ? text : ''),
+      };
     },
 
     /** Zoom the flow graph by one step (0.4x .. 2.4x clamp lives in view.js). */
@@ -1224,6 +1260,54 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       return api.loadCanvas(state.canvasId);
     },
 
+    /**
+     * Configured run hosts (`.orch/hosts/*.json`). `POST /instances` cannot
+     * start anything without one, so this is read on every instance view.
+     */
+    async loadHosts() {
+      const answer = await api.canvasAction('host.list');
+      if (answer?.ok === true) state.hosts = Array.isArray(answer.hosts) ? answer.hosts : [];
+      return api;
+    },
+
+    /** Scan the machine for Agent CLIs; the raw findings feed the bind buttons. */
+    async scanHosts() {
+      state.hostBusy = true;
+      const answer = await api.canvasAction('cli.scan');
+      state.hostBusy = false;
+      if (answer?.ok === true) {
+        state.hostFindings = Array.isArray(answer.findings) ? answer.findings : [];
+      } else {
+        state.hostFindings = [];
+        state.lastError = labelText(`ERR_${answer?.code ?? 'UNKNOWN_ERROR'}`, answer?.params ?? {});
+      }
+      return api;
+    },
+
+    /** Bind one discovered CLI as a runnable host, then select it. */
+    async bindHost(executable) {
+      const findings = Array.isArray(state.hostFindings) ? state.hostFindings : [];
+      const found = findings.find((item) => item?.executable === executable);
+      if (!found) return { ok: false };
+      state.hostBusy = true;
+      const answer = await api.canvasAction('host.bind', {
+        cliId: found.cli_id ?? null,
+        executable,
+        acpArgs: found.acp_args ?? null,
+      });
+      state.hostBusy = false;
+      if (answer?.ok !== true) {
+        const message = labelText(`ERR_${answer?.code ?? 'UNKNOWN_ERROR'}`, answer?.params ?? {});
+        state.newPanel = { ...state.newPanel, message, success: null };
+        return { ok: false, message };
+      }
+      await api.loadHosts();
+      state.newPanel = { ...state.newPanel, hostId: answer.host?.id ?? null, message: null };
+      // Re-scan so the row flips to "bound" instead of offering it twice.
+      await api.scanHosts();
+      return { ok: true };
+    },
+
     /** One `/studio/action` call from the canvas, with the raw result returned. */
     async canvasAction(action, payload = {}) {
       if (typeof transport.studioAction !== 'function') {
@@ -1261,6 +1345,9 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       if (view === 'queue') {
         await Promise.all([api.loadQueue(), api.loadQueuePrefs()]);
       } else if (view === 'instances') {
+        // The list answers "can this machine run anything at all?", so the
+        // host read rides along with the instance read.
+        await api.loadHosts();
         // A run started in Studio must still be findable after it starts. The
         // page renders without it, so a failed read degrades to the old list.
         if (typeof transport.getStudioState === 'function') {
@@ -1275,10 +1362,17 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         await api.loadQueuePrefs();
       } else if (view === 'new') {
         if (state.templates.length === 0) await api.loadTemplates();
+        // The host list decides whether "start" can succeed at all, so it is
+        // read before the panel is shown instead of after a failure.
+        await api.loadHosts();
         // Seed the first workflow only when nothing is chosen yet, so a task
         // already typed is never thrown away by a re-visit.
         if (!state.newPanel.template && state.templates.length > 0) {
           api.updateNewPanel({ template: state.templates[0].id, message: null });
+        }
+        if (!state.newPanel.hostId && state.hosts.length > 0) {
+          const usable = state.hosts.find((host) => host.usable === true) ?? state.hosts[0];
+          api.updateNewPanel({ hostId: usable.id });
         }
         if (state.newPanel.open !== true) api.updateNewPanel({ open: true });
       } else if (view === 'assets') {
@@ -1533,9 +1627,11 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     openNewPanel(template) {
       const fallback = state.templates.length > 0 ? state.templates[0].id : '';
       const chosen = typeof template === 'string' && template.length > 0 ? template : fallback;
+      const usable = state.hosts.find((host) => host.usable === true) ?? state.hosts[0] ?? null;
       state.newPanel = {
         open: true,
         template: chosen,
+        hostId: usable?.id ?? null,
         task: '',
         message: null,
         success: null,
@@ -1568,7 +1664,11 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       state.newPanel = { ...panel, submitting: true, message: null, success: null };
       let answer = null;
       try {
-        answer = await transport.postInstance?.(m.buildStartRequest({ template: panel.template, task: panel.task }));
+        answer = await transport.postInstance?.(m.buildStartRequest({
+          template: panel.template,
+          task: panel.task,
+          hostId: panel.hostId,
+        }));
       } catch (error) {
         answer = { status: 0, body: { error: 'UNKNOWN_ERROR', message: error?.message ?? String(error) } };
       }
@@ -2588,6 +2688,7 @@ export function mountApp({
           templateTitle: fields.templateTitle ?? '',
           phase: fields.phase ?? '',
           state: fields.state ?? '',
+          paused: fields.paused === true,
           done: fields.done ?? 0,
           total: fields.total ?? 0,
           pending: fields.pending ?? 0,
@@ -3501,6 +3602,18 @@ export function mountApp({
         app.updateNewPanel({ template: typeof value === 'string' ? value : null, message: null, success: null });
         paint();
         return;
+      case 'pick-host':
+        app.updateNewPanel({ hostId: typeof value === 'string' ? value : null, message: null, success: null });
+        paint();
+        return;
+      case 'scan-hosts':
+        paint();
+        void app.scanHosts().then(paint);
+        return;
+      case 'bind-host':
+        paint();
+        void app.bindHost(String(value ?? '')).then(paint);
+        return;
       case 'open-drill': {
         const roleId = value && typeof value === 'object' ? value.nodeId : value;
         void app.openRoleDrill(roleId).then(paint);
@@ -3587,7 +3700,18 @@ export function mountApp({
         paint();
         return;
       case 'pause-instance':
-        void app.pauseInstance(typeof value === 'string' ? value : app.state().graphId).then(paint);
+        void app.pauseInstance(typeof value === 'string' ? value : app.state().graphId)
+          .then((result) => {
+            if (result && result.ok === false && result.message) showToast(shellRefsOf(), result.message);
+            paint();
+          });
+        return;
+      case 'resume-instance':
+        void app.resumeInstance(typeof value === 'string' ? value : app.state().graphId)
+          .then((result) => {
+            if (result && result.ok === false && result.message) showToast(shellRefsOf(), result.message);
+            paint();
+          });
         return;
       case 'cancel-instance':
         app.beginCancel(typeof value === 'string' ? value : app.state().graphId);
