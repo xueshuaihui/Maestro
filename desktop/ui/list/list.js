@@ -127,7 +127,13 @@ export function describeListRow(instance, labels) {
     template,
     templateTitle,
     phase: instance?.phase ?? '',
+    // `state` is the word a reader sees; `stateRaw` is the snapshot value it
+    // came from. Any decision that branches on a state (terminal? which tone?
+    // which filter?) must use `stateRaw` — comparing the Chinese word against
+    // an English list silently never matches, which is how a finished run kept
+    // offering a pause button that could only answer "not pausable".
     state: phase,
+    stateRaw: typeof instance?.phase === 'string' ? instance.phase : '',
     // Pause is a flag on a still-`running` snapshot, so the state word alone
     // can never show it; the row needs the flag to offer resume instead.
     paused: instance?.paused === true,

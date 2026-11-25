@@ -152,7 +152,11 @@ try {
   await waitFor(() => evaluate("(document.body.innerText ?? '').trim().length > 40"), 20000);
 
   const click = (action, arg) => evaluate(`(() => {
-    const list=[...document.querySelectorAll('[data-action=' + JSON.stringify(${JSON.stringify(action)}) + ']')];
+    // Only visible nodes are clickable for a user; the shell keeps a hidden
+    // drawer copy of the last page, and clicking that copy would silently do
+    // nothing while the test blamed the action.
+    const list=[...document.querySelectorAll('[data-action=' + JSON.stringify(${JSON.stringify(action)}) + ']')]
+      .filter((n) => n.getClientRects().length > 0);
     const hit=${arg === undefined ? 'list[0]' : `list.find(n=>n.getAttribute('data-arg')===${JSON.stringify(arg)})`};
     if(!hit) return false;
     hit.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,button:0}));
@@ -276,14 +280,23 @@ try {
     // --- S5: 控制按钮只在能生效时出现，且操作必须有可见结果 -----------------
     await click('tab', 'overview');
     await sleep(800);
-    const ctl = await evaluate(`(() => ({
-      pause: Boolean(document.querySelector('[data-action="pause-instance"]')),
-      resume: Boolean(document.querySelector('[data-action="resume-instance"]')),
-      state: (document.querySelector('.content')?.innerText ?? '').replace(/\\s+/g,' ').slice(0, 90),
-    }))()`);
-    const terminal = /已完成|失败|已取消/.test(ctl.state);
-    step('S5 终态实例不提供暂停按钮', terminal ? (ctl.pause === false && ctl.resume === false) : true, ctl.state);
-    if (ctl.pause === true) {
+    const ctl = await evaluate(`(() => {
+      // Scoped to the visible page: the shell keeps a drawer copy of the last
+      // page it rendered, and a whole-document lookup would read that stale
+      // copy instead of what the user is looking at.
+      const page = document.querySelector('.content') ?? document;
+      const btn = page.querySelector('[data-action="pause-instance"], [data-action="resume-instance"]');
+      return {
+        pause: Boolean(page.querySelector('[data-action="pause-instance"]')),
+        resume: Boolean(page.querySelector('[data-action="resume-instance"]')),
+        state: (document.querySelector('.content')?.innerText ?? '').replace(/\\s+/g,' ').slice(0, 90),
+        // 按钮所在区块的原文：终态却仍渲染按钮时，靠它区分是「判定没生效」
+        // 还是「页面还是旧快照」，省得再猜一遍。
+        where: btn ? (btn.closest('.card')?.innerText ?? btn.parentElement?.innerText ?? '').replace(/\\s+/g,' ').slice(0, 80) : '',
+      };
+    })()`);
+    const terminal = /已完成|失败|已取消|已中断/.test(ctl.state);
+    if (ctl.pause === true && terminal === false) {
       await click('pause-instance');      // Either the state word flips to 已挂起, or a reason appears. A silent
       // no-op is what the old handler did and is the failure this step exists for.
       const paused = await waitFor(async () => {
@@ -309,6 +322,73 @@ try {
       }
     } else {
       skip('S5 暂停/继续交互', '实例在本轮已被跑完；控制面由 orchestrator 用例覆盖');
+    }
+
+    // --- S6: 跑到终态后，控制按钮必须消失 ---------------------------------
+    // --- S6: 终态实例不提供任何控制按钮 -----------------------------------
+    // 终态靠「终止」自己造出来，不等模型跑完：cancel 是本地裁决，毫秒级生效，
+    // 而「等一次真实运行结束」取决于网络与凭据，会时快时慢（上一版就因此
+    // 时而过、时而跳过）。终态判定取接口 `phase`，不从页面文字里猜——概览页
+    // 的节点时间线也会出现「已完成」，按文字猜会把运行中的实例误判成终态。
+    const stateOf = async () => {
+      try {
+        const res = await fetch(`http://127.0.0.1:${meta.port}/instances`, {
+          headers: { authorization: `Bearer ${meta.token}` },
+        });
+        if (res.status !== 200) return null;
+        const body = await res.json();
+        const rows = Array.isArray(body?.items) ? body.items : [];
+        const hit = rows.find((row) => row?.instanceId === instanceId);
+        return hit ? String(hit.phase ?? '').toLowerCase() : null;
+      } catch {
+        return null;
+      }
+    };
+    const TERMINAL = ['completed', 'failed', 'cancelled', 'interrupted'];
+    await click('tab', 'overview');
+    await sleep(600);
+    let current = await stateOf();
+    if (current !== null && !TERMINAL.includes(current)) {
+      step('S6 终止按钮可点', (await click('cancel-instance')) === true);
+      const confirmed = await evaluate(`(() => {
+        const ok = document.querySelector('[data-confirm="ok"]');
+        if (!ok) return false;
+        ok.click();
+        return true;
+      })()`);
+      step('S6 终止前有二次确认', confirmed === true);
+      current = await waitFor(async () => {
+        const value = await stateOf();
+        return value !== null && TERMINAL.includes(value) ? value : null;
+      }, 30000, 400);
+    }
+    if (current === null || !TERMINAL.includes(current)) {
+      step('S6 实例进入终态', false, `state=${current ?? '未知'}`);
+    } else {
+      step('S6 实例进入终态', true, `state=${current}`);
+      await click('tab', 'overview');
+      await sleep(900);
+      const end = await evaluate(`(() => {
+        // Scoped to the visible page: the shell keeps a drawer copy of the last
+        // page it rendered, so a whole-document lookup would read a stale copy.
+        const page = document.querySelector('.content') ?? document;
+        const btn = page.querySelector('[data-action="pause-instance"], [data-action="resume-instance"], [data-action="cancel-instance"]');
+        return {
+          any: Boolean(btn),
+          word: (page.innerText ?? '').replace(/\\s+/g, ' ').slice(0, 70),
+          where: btn ? (btn.closest('.card')?.innerText ?? '').replace(/\\s+/g, ' ').slice(0, 70) : '',
+        };
+      })()`);
+      step('S6 终态实例不提供暂停/继续/终止', end.any === false,
+        end.any ? `state=${current} || 按钮区块：${end.where}` : `state=${current} :: ${end.word}`);
+      if (end.any && process.env.DEBUG_FLOW === '1') {
+        const raw = await evaluate(`(() => {
+          const page = document.querySelector('.content') ?? document;
+          const btn = page.querySelector('[data-action="pause-instance"], [data-action="resume-instance"], [data-action="cancel-instance"]');
+          return { html: btn ? btn.parentElement.parentElement.outerHTML.slice(0, 700) : '' };
+        })()`);
+        console.log('[debug]', JSON.stringify(raw, null, 2));
+      }
     }
   }
 

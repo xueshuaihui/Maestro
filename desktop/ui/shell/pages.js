@@ -214,7 +214,7 @@ export function instancesPage(ctx) {
     const filter = ctx.state.listFilter ?? 'all';
     if (filter === 'all') return true;
     if (filter === 'pending') return (Number(row.pending) || 0) > 0;
-    return String(row.state ?? '').toLowerCase() === filter;
+    return String(row.stateRaw ?? '').toLowerCase() === filter;
   });
 
   const grid = el('div', 'split');
@@ -323,7 +323,7 @@ function instanceRow(ctx, row) {
   const line1 = el('div', 'between');
   const left = el('div', 'row');
   left.appendChild(el('b', 'small', row.templateTitle || row.instanceId));
-  left.appendChild(badge(stateWord(ctx, row.state), STATE_TONE[String(row.state ?? '').toLowerCase()] ?? 'gray', String(row.state ?? '').toLowerCase() === 'running'));
+  left.appendChild(badge(row.state || stateWord(ctx, row.stateRaw), STATE_TONE[String(row.stateRaw ?? '').toLowerCase()] ?? 'gray', String(row.stateRaw ?? '').toLowerCase() === 'running'));
   line1.appendChild(left);
   line1.appendChild(tag(row.instanceId, true));
   body.appendChild(line1);
@@ -491,6 +491,33 @@ export function newPage(ctx) {
 // overview
 // ---------------------------------------------------------------------------
 
+/**
+ * The two-step confirmation for a cancel. The pending id lives in app state
+ * (`beginCancel`) and is projected as `model.queue.confirm`; these two buttons
+ * are the only way to resolve it. It is shared by the queue page and the
+ * overview page because the cancel button exists on both, and a pending
+ * question rendered on the *other* page is a confirmation nobody can answer —
+ * the click looked inert.
+ */
+function confirmStrip(texts) {
+  if (texts === null || texts === undefined) return null;
+  const box = card([], { className: 'confirm' });
+  if (typeof texts.line === 'string' && texts.line.length > 0) {
+    box.appendChild(el('p', 'small', texts.line));
+  }
+  const row = el('div', 'row mt10');
+  const ok = el('button', 'btn primary sm', texts.ok ?? '');
+  ok.type = 'button';
+  ok.setAttribute('data-confirm', 'ok');
+  const no = el('button', 'btn ghost sm', texts.dismiss ?? '');
+  no.type = 'button';
+  no.setAttribute('data-confirm', 'dismiss');
+  row.appendChild(ok);
+  row.appendChild(no);
+  box.appendChild(row);
+  return box;
+}
+
 export function overviewPage(ctx) {
   const frag = document.createDocumentFragment();
   const row = ctx.instanceRow;
@@ -551,25 +578,33 @@ export function overviewPage(ctx) {
 
   const controls = card([]);
   controls.appendChild(sectionTitle(ctx.t('DESKTOP_V2_CHECKPOINT'),
-    badge(paused ? stateWord(ctx, 'suspended') : stateWord(ctx, row?.state),
-      paused ? 'wait' : (STATE_TONE[String(row?.state ?? '').toLowerCase()] ?? 'cyan'))));
-  controls.appendChild(kv(ctx.t('DESKTOP_V2_STATE'), stateWord(ctx, row?.state)));
+    badge(paused ? stateWord(ctx, 'suspended') : (row?.state || stateWord(ctx, row?.stateRaw)),
+      paused ? 'wait' : (STATE_TONE[String(row?.stateRaw ?? '').toLowerCase()] ?? 'cyan'))));
+  controls.appendChild(kv(ctx.t('DESKTOP_V2_STATE'), row?.state || stateWord(ctx, row?.stateRaw)));
   const rowActions = el('div', 'row mt10');
   // Pause and resume are two halves of one control. A paused instance keeps
   // state `running` on disk and only sets the flag, so the flag — not the
   // state word — decides which half is offered. A terminal instance offers
-  // neither: a button that can only answer "not pausable" is a dead control.
-  const stateText = String(row?.state ?? '').toLowerCase();
-  const terminal = ['completed', 'failed', 'cancelled'].includes(stateText);
+  // none of the three: pause, resume and cancel can only answer "not allowed" on a
+  // run that already ended, and a button that can only refuse is a dead control.
+  // The branch reads `stateRaw`: `state` is the localized word, so a
+  // comparison against these English values would never match.
+  const stateText = String(row?.stateRaw ?? '').toLowerCase();
+  const terminal = ['completed', 'failed', 'cancelled', 'interrupted'].includes(stateText);
   if (!terminal) {
     rowActions.appendChild(button(
       paused ? ctx.t('DESKTOP_V2_RESUME') : ctx.t('DESKTOP_V2_PAUSE'),
       { size: 'sm', action: paused ? 'resume-instance' : 'pause-instance', arg: ctx.instanceId },
     ));
+    rowActions.appendChild(button(ctx.t('DESKTOP_QUEUE_ACTION_CANCEL'), { size: 'sm', action: 'cancel-instance', arg: ctx.instanceId }));
+    controls.appendChild(rowActions);
   }
-  rowActions.appendChild(button(ctx.t('DESKTOP_QUEUE_ACTION_CANCEL'), { size: 'sm', action: 'cancel-instance', arg: ctx.instanceId }));
-  controls.appendChild(rowActions);
   side.appendChild(controls);
+  const pendingCancel = ctx.pendingConfirm ?? null;
+  if (pendingCancel !== null && String(pendingCancel.id ?? '') === String(ctx.instanceId ?? '')) {
+    const strip = confirmStrip(pendingCancel.texts ?? null);
+    if (strip !== null) side.appendChild(strip);
+  }
   grid.appendChild(side);
   frag.appendChild(grid);
   return frag;
@@ -644,6 +679,8 @@ export function queuePage(ctx) {
   }
 
   if (view.notice?.text) frag.appendChild(callout(view.notice.text, { tone: 'primary' }));
+  const pendingCancel = confirmStrip(view.confirm?.texts ?? null);
+  if (pendingCancel !== null) frag.appendChild(pendingCancel);
   return frag;
 }
 

@@ -2688,6 +2688,7 @@ export function mountApp({
           templateTitle: fields.templateTitle ?? '',
           phase: fields.phase ?? '',
           state: fields.state ?? '',
+          stateRaw: fields.stateRaw ?? '',
           paused: fields.paused === true,
           done: fields.done ?? 0,
           total: fields.total ?? 0,
@@ -2752,6 +2753,11 @@ export function mountApp({
       prefs: Array.isArray(model.prefs) ? model.prefs : [],
       instanceId,
       instanceRow,
+      // The pending cancel question travels with the shell context, not inside
+      // `model.queue`: that projection is only built for the queue view, so the
+      // overview page — where the cancel button also lives — could never see it
+      // and rendered nothing after the click.
+      pendingConfirm: state.queueConfirm ?? null,
       instanceTitle: instanceRow?.templateTitle ?? instanceId ?? '',
       graph: state.graph,
       viewTitle: model.viewTitle ?? '',

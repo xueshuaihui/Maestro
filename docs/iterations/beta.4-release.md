@@ -587,3 +587,57 @@ tag `v0.0.1-beta.4` → `00cb281` 的流水线（run `45450622449`）macOS x64 /
 2. **Studio 的 `engine` 模式仍只编译不启动**（`engineRun` 写死 `launched:false`），所以「团队 + 角色 + 技能」这套配置目前只影响编译产物，不影响真实实例的派发。
 3. **证据页只有产物指针与「完整日志留在宿主」**，没有把宿主会话内容取回渲染；人工干预队列的端到端仍只在 mock 宿主上验证过。
 4. 本轮只改本地，**未重发 tag/Release**；要让安装包带上这些修复，需 `desktop:build → verify:app → 推 tag`。
+
+---
+
+## 18. 打包产物验收又抓出三个真缺陷（2026-11-25 晚）
+
+§17 的修复是在**开发态 daemon**上验的。把 `.app` 重新打出来后重跑同一套脚本，又掉出三个只在真实产物上才暴露的问题 —— 都是「用户点了看不到任何反应」这一类。
+
+### 18.1 `row.state` 里装的是中文词，不是状态值
+
+`desktop/ui/list/list.js` 的 `describeListRow` 把 `state` 填成 `wordFor(labels,'INSTANCE_LABEL', phase)` 的结果，也就是**已经翻译好的「已完成」**。而所有按状态分支的地方都在拿它跟英文比：
+
+| 位置 | 症状 |
+|---|---|
+| `pages.js` 概览页控制区 | `['completed','failed','cancelled'].includes('已完成')` 恒为 false → 跑完的实例上永远挂着一个「暂停」，点了只会回「该实例当前状态不允许这个操作」 |
+| `pages.js` 列表筛选 chip | `row.state.toLowerCase() === 'completed'` 恒为 false → 「运行中/已完成」这些筛选永远筛不出东西 |
+| `pages.js` 列表行徽章 | `STATE_TONE['已完成']` 恒为 undefined → 所有行的色调都是同一个灰 |
+
+修法：投影补 `stateRaw`（原始快照值），`state` 仍保留中文词给模板渲染；**凡是分支判断一律读 `stateRaw`**，显示仍读 `state`。改在 `list.js`（`describeListRow`）、`pages.js`（筛选、行徽章、概览控制区）、`app.js`（`buildShellContext` 的兜底投影）三处。
+
+### 18.2 「终止」点了什么都不会发生
+
+`beginCancel()` 只把 `{id, texts}` 写进 `state.queueConfirm`，而 v2 壳里**没有任何地方渲染它**：
+
+- `pages.js` 的 `queuePage` 从来没读过 `view.confirm`（旧 painter 有，迁移时丢了）；
+- 更根本的是 `app.js:1852` 只在 `view === 'queue'` 时才 `composeQueue`，而「终止」按钮长在**概览页**的控制卡里 —— 就算队列页渲染了，用户在概览页也看不见。
+
+修法：把确认条抽成 `confirmStrip(texts)`，队列页与概览页共用；待确认的取消由 `buildShellContext` 通过 `pendingConfirm` 直接投影给壳，不再依赖只在队列视图才构建的 `model.queue`。
+
+### 18.3 终态实例仍提供「终止」
+
+上一轮只把「暂停/继续」按终态隐藏，`cancel-instance` 是无条件追加的。已完成/已取消的实例点「终止」同样只能得到拒绝。现在三个控制按钮统一按 `stateRaw` 在终态一起隐藏。
+
+### 18.4 验收脚本自己也被修了三处
+
+| 问题 | 症状 | 修法 |
+|---|---|---|
+| `MAESTRO_CLI_BIN` 指到**文件** | 扫描器按 `目录/bin` 拼路径，传可执行文件路径时永远扫不到 → 误判「本机没有 CLI」 | 文档与用法按**目录**；本轮实测 25/25 → 28/28 |
+| `click()` 全文档取第一个同名按钮 | 壳的抽屉里留着一份旧页面副本，点到不可见的那一份，动作静默失败、用例却记在功能头上 | 只点 `getClientRects().length > 0` 的可见节点 |
+| 终态断言是「碰巧」才执行 | 原写法等实例自己跑完，跑得快就断言、跑得慢就跳过（实测同一提交时过时跳） | 用「终止」自己造终态（cancel 是本地裁决，毫秒级），终态取值读接口 `phase` 而不是从页面文字里猜（概览页时间线也会出现「已完成」） |
+
+### 18.5 本轮的验收数字
+
+| 套件 | 结果 |
+|---|---|
+| `verify:instance --app`（真实 opencode 宿主） | **28/28 PASS**，连跑三次稳定 |
+| `verify:app`（scenarios / canvas / drilldown / instance-flow） | **41 + 15 + 14 + 28，全绿** |
+| `test/wp19` | 5/5 |
+| 全量单测 | 2016 条 / 1996 pass / 18 fail |
+| 基线树 `origin/main`（`19556e8`） | 2011 条 / 1987 pass / 20 fail |
+| **新增红** | **0**（唯一差异 AC-23 #3 是 `git diff HEAD` 型用例，未提交时必红，提交后归零） |
+
+### 18.6 边界（未变）
+
+§17.5 的四条依旧成立：画布产出的流程不能直接当实例模板、Studio `engine` 只编译不启动、证据页不取回宿主会话内容。本轮没有新增能力面，只把「已有按钮点了没反应」补成真的会动。
