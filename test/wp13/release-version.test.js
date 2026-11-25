@@ -28,6 +28,7 @@ import {
   readTauriVersion,
   readVersion,
 } from '../../scripts/desktop/version.mjs';
+import { iconIcoBuffer, iconIcnsBuffer } from '../../scripts/desktop/brand.mjs';
 
 const BUILD_SCRIPT = path.join(REPO, 'scripts', 'desktop', 'build.mjs');
 
@@ -89,13 +90,55 @@ test('AC-39 产物命名带版本与架构', () => {
   assert.throws(() => archLabel('ia32'), /不支持的架构/);
 });
 
-test('Windows 目标所需图标由构建脚本生成（ico 头合法）', () => {
+test('Windows 目标所需图标由构建脚本生成（多尺寸 ICO 合法）', () => {
   const text = fs.readFileSync(BUILD_SCRIPT, 'utf8');
   assert.match(text, /writeIconIco\(/, 'build.mjs 必须在 cargo build 之前生成 icons/icon.ico');
   assert.match(text, /icons['"],\s*['"]icon\.ico/, 'ico 落点必须是 src-tauri/icons/icon.ico');
 
-  const ico = path.join(REPO, 'desktop', 'src-tauri', 'icons', 'icon.ico');
-  if (!fs.existsSync(ico)) return; // 未构建过则跳过（CI 的构建步骤会先产出）
-  const head = fs.readFileSync(ico).subarray(0, 6);
-  assert.deepEqual([...head], [0x00, 0x00, 0x01, 0x00, 0x01, 0x00], 'ICO 头必须是 00 00 01 00 01 00');
+  const icoPath = path.join(REPO, 'desktop', 'src-tauri', 'icons', 'icon.ico');
+  const ico = fs.existsSync(icoPath) ? fs.readFileSync(icoPath) : iconIcoBuffer();
+  assert.deepEqual([...ico.subarray(0, 6)], [0x00, 0x00, 0x01, 0x00, 0x04, 0x00], 'ICO 必须包含 16/32/48/256 四张图');
+  const sizes = [16, 32, 48, 256];
+  sizes.forEach((size, index) => {
+    const entry = 6 + index * 16;
+    const encodedSize = size === 256 ? 0 : size;
+    assert.equal(ico[entry], encodedSize, `第 ${index + 1} 张图宽度应为 ${size}`);
+    assert.equal(ico[entry + 1], encodedSize, `第 ${index + 1} 张图高度应为 ${size}`);
+    const length = ico.readUInt32LE(entry + 8);
+    const offset = ico.readUInt32LE(entry + 12);
+    assert.ok(offset + length <= ico.length, `第 ${index + 1} 张图不得越界`);
+    assert.deepEqual([...ico.subarray(offset, offset + 8)], [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    assert.equal(ico.readUInt32BE(offset + 16), size, `第 ${index + 1} 张 PNG 宽度应为 ${size}`);
+    assert.equal(ico.readUInt32BE(offset + 20), size, `第 ${index + 1} 张 PNG 高度应为 ${size}`);
+  });
+});
+
+test('macOS 应用图标由构建脚本生成并绑定到 app bundle', () => {
+  const text = fs.readFileSync(BUILD_SCRIPT, 'utf8');
+  assert.match(text, /writeIconIcns\(/, 'build.mjs 必须生成 target/icon.icns');
+  assert.match(text, /copyFileSync\(path\.join\(TARGET, 'icon\.icns'\), path\.join\(resDir, 'icon\.icns'\)\)/, 'ICNS 必须复制进 app bundle');
+  assert.match(text, /CFBundleIconFile<\/key><string>icon\.icns<\/string>/, 'Info.plist 必须声明 CFBundleIconFile');
+
+  const config = JSON.parse(fs.readFileSync(TAURI_CONF, 'utf8'));
+  assert.deepEqual(config.bundle.icon, ['target/icon.png', 'target/icon.icns', 'icons/icon.ico']);
+
+  const icns = iconIcnsBuffer();
+  assert.equal(icns.subarray(0, 4).toString('ascii'), 'icns');
+  assert.equal(icns.readUInt32BE(4), icns.length, 'ICNS 总长度必须与文件一致');
+  const types = [];
+  let offset = 8;
+  while (offset < icns.length) {
+    types.push(icns.subarray(offset, offset + 4).toString('ascii'));
+    const length = icns.readUInt32BE(offset + 4);
+    assert.ok(length >= 8 && offset + length <= icns.length, 'ICNS chunk 长度必须合法');
+    offset += length;
+  }
+  assert.deepEqual(types, ['icp4', 'icp5', 'icp6', 'ic07', 'ic08', 'ic09', 'ic10', 'ic11', 'ic12']);
+});
+
+test('Windows 安装包与卸载器显式使用新应用图标', () => {
+  const text = fs.readFileSync(path.join(REPO, 'scripts', 'desktop', 'package-win.mjs'), 'utf8');
+  assert.match(text, /Icon "\$\{iconPath\}"/, '安装包必须设置 Icon');
+  assert.match(text, /UninstallIcon "\$\{iconPath\}"/, '卸载器必须设置 UninstallIcon');
+  assert.match(text, /iconPath: path\.join\(SRC_TAURI, 'icons', 'icon\.ico'\)/, '安装包图标必须来自 Tauri 资源 ICO');
 });

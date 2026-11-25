@@ -70,11 +70,13 @@ function nsisNumericVersion(version) {
 }
 
 /** NSIS 脚本：安装到 %LOCALAPPDATA%，建开始菜单与桌面快捷方式，可卸载。 */
-function nsiScript({ outFile, stagingDir, version }) {
+function nsiScript({ outFile, stagingDir, version, iconPath }) {
   const numeric = nsisNumericVersion(version);
   return `Unicode true
 !include "MUI2.nsh"
 Name "Maestro"
+Icon "${iconPath}"
+UninstallIcon "${iconPath}"
 OutFile "${outFile}"
 InstallDir "$LOCALAPPDATA\\Maestro"
 InstallDirRegKey HKCU "Software\\Maestro" "InstallDir"
@@ -185,7 +187,16 @@ function main() {
 
   fs.mkdirSync(outDir, { recursive: true });
   const nsiPath = path.join(outDir, '.maestro-installer.nsi');
-  fs.writeFileSync(nsiPath, nsiScript({ outFile: exePath, stagingDir: staging, version }), 'utf8');
+  fs.writeFileSync(
+    nsiPath,
+    nsiScript({
+      outFile: exePath,
+      stagingDir: staging,
+      version,
+      iconPath: path.join(SRC_TAURI, 'icons', 'icon.ico'),
+    }),
+    'utf8',
+  );
   run(makensis, ['/V2', nsiPath]);
   fs.rmSync(staging, { recursive: true, force: true });
   fs.rmSync(nsiPath, { force: true });

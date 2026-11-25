@@ -17,6 +17,6 @@
     "active": false,
     "targets": [],
     "resources": [],
-    "icon": ["target/icon.png"]
+    "icon": ["target/icon.png", "target/icon.icns", "icons/icon.ico"]
   }
 }

@@ -21,7 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // 品牌标识唯一几何来源（窗口 PNG / Windows ICO / 矢量母版共用同一份定义）。
-import { writeIconPng, writeIconIco, writeBrandSvg } from './brand.mjs';
+import { writeIconPng, writeIconIco, writeIconIcns, writeBrandSvg } from './brand.mjs';
 
 // 版本号唯一来源（需求 v4 裁决 U-13 / AC-41）：本文件不得再写版本字面量。
 import { readVersion, REPO as VERSION_REPO } from './version.mjs';
@@ -59,8 +59,9 @@ fs.rmSync(placeholderDir, { recursive: true, force: true });
 fs.mkdirSync(placeholderDir, { recursive: true });
 fs.copyFileSync(shellUiSrc, path.join(placeholderDir, 'index.html'));
 
-// 1b. Compile-time window icon (PNG generated in-process, zero dependencies).
+// 1b. Compile-time window and bundle icons (generated in-process, zero dependencies).
 writeIconPng(path.join(TARGET, 'icon.png'));
+writeIconIcns(path.join(TARGET, 'icon.icns'));
 
 // 1c. Windows resource icon. `tauri-build` requires `icons/icon.ico` for the
 // Windows target (missing file fails the build outright); it is generated here
@@ -70,6 +71,7 @@ writeIconIco(path.join(SRC_TAURI, 'icons', 'icon.ico'));
 // 1d. Vector masters for the web UI (favicon + inline brand), written into
 // `desktop/ui/brand` so both dev and bundle layouts serve them at /ui/brand/.
 writeBrandSvg(path.join(REPO, 'desktop', 'ui', 'brand'));
+fs.cpSync(path.join(REPO, 'desktop', 'ui', 'brand'), path.join(placeholderDir, 'brand'), { recursive: true });
 
 // 2. cargo build --release
 run('cargo', ['build', '--release'], { cwd: SRC_TAURI });
@@ -94,6 +96,7 @@ if (process.platform !== 'darwin') {
 
   fs.copyFileSync(binPath, path.join(macosDir, 'maestro'));
   fs.chmodSync(path.join(macosDir, 'maestro'), 0o755);
+  fs.copyFileSync(path.join(TARGET, 'icon.icns'), path.join(resDir, 'icon.icns'));
 
   fs.writeFileSync(
     path.join(contents, 'Info.plist'),
@@ -105,6 +108,7 @@ if (process.platform !== 'darwin') {
       '  <key>CFBundleDisplayName</key><string>Maestro</string>',
       '  <key>CFBundleIdentifier</key><string>com.maestro.desktop</string>',
       '  <key>CFBundleExecutable</key><string>maestro</string>',
+      '  <key>CFBundleIconFile</key><string>icon.icns</string>',
       '  <key>CFBundlePackageType</key><string>APPL</string>',
       `  <key>CFBundleShortVersionString</key><string>${VERSION}</string>`,
       `  <key>CFBundleVersion</key><string>${VERSION}</string>`,

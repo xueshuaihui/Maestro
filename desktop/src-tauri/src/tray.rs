@@ -44,47 +44,115 @@ impl TrayStatus {
     }
 }
 
-/// 16x16 opaque tray icon, generated as raw RGBA (no asset files needed).
-///
-/// Geometry mirrors `scripts/desktop/brand.mjs` (the single source of truth for
-/// the mark: three session tracks converging into one conducting node). Rust
-/// cannot import the ESM module, so the 32-unit design grid is re-declared here
-/// and projected 1:2 — keep both sides in sync when the mark changes.
+/// 16x16 RGBA tray icon, generated in-process with the same 64-unit geometry
+/// and supersampling as `scripts/desktop/brand.mjs`.
 fn tray_icon_rgba() -> tauri::image::Image<'static> {
     const SIZE: u32 = 16;
-    // Track/node rects on the 32-unit design grid: [x0, y0, x1, y1).
-    const MARK: [[u32; 4]; 4] = [
-        [7, 8, 15, 12], // track 1
-        [7, 14, 19, 18], // track 2 (longest)
-        [7, 20, 13, 24], // track 3
-        [21, 12, 28, 20], // conducting node
+    const SAMPLES: u32 = 4;
+    const TRACK_WIDTH: f32 = 5.5;
+    const TRACKS: [[f32; 4]; 3] = [
+        [15.0, 18.0, 44.0, 18.0],
+        [15.0, 32.0, 38.0, 32.0],
+        [15.0, 46.0, 32.0, 46.0],
     ];
-    // Corner cells clipped off the node so it reads round rather than square.
-    const HOLES: [[u32; 2]; 4] = [[21, 12], [27, 12], [21, 19], [27, 19]];
+    const BATON: [f32; 4] = [34.0, 49.0, 49.0, 18.0];
+    const BATON_WIDTH: f32 = 6.0;
+    const TILE_A: [f32; 3] = [17.0, 26.0, 44.0];
+    const TILE_B: [f32; 3] = [24.0, 34.0, 56.0];
+    const TRACK_COLOR: [f32; 3] = [244.0, 247.0, 252.0];
+    const BATON_A: [f32; 3] = [6.0, 182.0, 212.0];
+    const BATON_B: [f32; 3] = [53.0, 208.0, 232.0];
 
+    fn clamp01(value: f32) -> f32 {
+        value.max(0.0).min(1.0)
+    }
+
+    fn mix(a: f32, b: f32, t: f32) -> f32 {
+        a + (b - a) * t
+    }
+
+    fn mix_color(a: [f32; 3], b: [f32; 3], t: f32) -> [f32; 3] {
+        [mix(a[0], b[0], t), mix(a[1], b[1], t), mix(a[2], b[2], t)]
+    }
+
+    fn projection(x: f32, y: f32, segment: [f32; 4]) -> f32 {
+        let dx = segment[2] - segment[0];
+        let dy = segment[3] - segment[1];
+        clamp01(((x - segment[0]) * dx + (y - segment[1]) * dy) / (dx * dx + dy * dy))
+    }
+
+    fn rounded_tile_distance(x: f32, y: f32) -> f32 {
+        let qx = (x - 32.0).abs() - 12.0;
+        let qy = (y - 32.0).abs() - 12.0;
+        qx.max(0.0).hypot(qy.max(0.0)) + qx.max(qy).min(0.0) - 16.0
+    }
+
+    fn segment_distance(x: f32, y: f32, segment: [f32; 4]) -> (f32, f32) {
+        let t = projection(x, y, segment);
+        let dx = segment[2] - segment[0];
+        let dy = segment[3] - segment[1];
+        let distance =
+            (x - (segment[0] + dx * t)).hypot(y - (segment[1] + dy * t));
+        (distance, t)
+    }
+
+    fn coverage(distance: f32, antialias: f32) -> f32 {
+        clamp01(0.5 - distance / antialias)
+    }
+
+    let scale = 64.0 / SIZE as f32;
+    let antialias = scale / SAMPLES as f32;
+    let sample_count = SAMPLES * SAMPLES;
     let mut rgba = Vec::with_capacity((SIZE * SIZE * 4) as usize);
+
     for y in 0..SIZE {
         for x in 0..SIZE {
-            let gx = x * 2;
-            let gy = y * 2;
-            let inside = gx >= 4 && gx < 28 && gy >= 4 && gy < 28;
-            let hole = HOLES.iter().any(|h| h[0] == gx && h[1] == gy);
-            let mark = !hole
-                && MARK
-                    .iter()
-                    .any(|r| gx >= r[0] && gx < r[2] && gy >= r[1] && gy < r[3]);
-            // Gradient background, near-white mark — same palette as the brand.
-            let t = (x + y) as f32 / (2 * (SIZE - 1)) as f32;
-            let bg = [
-                (47.0 + (109.0 - 47.0) * t) as u8,
-                (111.0 + (156.0 - 111.0) * t) as u8,
-                (208.0 + (240.0 - 208.0) * t) as u8,
-            ];
-            let (r, g, b) = if mark { (244, 247, 252) } else { (bg[0], bg[1], bg[2]) };
-            let alpha = if inside { 255 } else { 0 };
-            rgba.extend_from_slice(&[r, g, b, alpha]);
+            let mut red = 0.0;
+            let mut green = 0.0;
+            let mut blue = 0.0;
+            let mut alpha = 0.0;
+
+            for sy in 0..SAMPLES {
+                for sx in 0..SAMPLES {
+                    let gx = (x as f32 + (sx as f32 + 0.5) / SAMPLES as f32) * scale;
+                    let gy = (y as f32 + (sy as f32 + 0.5) / SAMPLES as f32) * scale;
+                    let tile_coverage = coverage(rounded_tile_distance(gx, gy), antialias);
+                    if tile_coverage <= 0.0 {
+                        continue;
+                    }
+
+                    let tile_t = projection(gx, gy, [8.0, 6.0, 56.0, 58.0]);
+                    let mut color = mix_color(TILE_A, TILE_B, tile_t);
+                    let track_coverage = TRACKS.iter().fold(0.0, |current, track| {
+                        let distance = segment_distance(gx, gy, *track).0;
+                        current.max(coverage(distance - TRACK_WIDTH / 2.0, antialias))
+                    });
+                    color = mix_color(color, TRACK_COLOR, track_coverage);
+
+                    let (baton_distance, baton_t) = segment_distance(gx, gy, BATON);
+                    let baton_coverage = coverage(baton_distance - BATON_WIDTH / 2.0, antialias);
+                    color = mix_color(color, mix_color(BATON_A, BATON_B, baton_t), baton_coverage);
+
+                    red += color[0] * tile_coverage;
+                    green += color[1] * tile_coverage;
+                    blue += color[2] * tile_coverage;
+                    alpha += tile_coverage;
+                }
+            }
+
+            if alpha > 0.0 {
+                rgba.extend_from_slice(&[
+                    (red / alpha).round() as u8,
+                    (green / alpha).round() as u8,
+                    (blue / alpha).round() as u8,
+                    (alpha / sample_count as f32 * 255.0).round() as u8,
+                ]);
+            } else {
+                rgba.extend_from_slice(&[0, 0, 0, 0]);
+            }
         }
     }
+
     tauri::image::Image::new_owned(rgba, SIZE, SIZE)
 }
 
@@ -180,7 +248,7 @@ pub fn init(app: &AppHandle) -> tauri::Result<()> {
     )?;
     let _tray = TrayIconBuilder::with_id("maestro-tray")
         .icon(tray_icon_rgba())
-        .icon_as_template(true)
+        .icon_as_template(false)
         .menu(&menu)
         .on_menu_event(|app, event| match event.id().as_ref() {
             "tray-open" => open_main_window(app),

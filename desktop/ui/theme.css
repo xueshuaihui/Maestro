@@ -119,7 +119,7 @@ h1, h2, h3, h4, p { margin: 0; }
   width: 30px;
   height: 30px;
   border-radius: 9px;
-  background: linear-gradient(135deg, var(--primary), var(--cyan));
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;

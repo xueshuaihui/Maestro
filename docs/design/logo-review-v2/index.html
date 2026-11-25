@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maestro · Logo 方向审核</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --paper: #f6f7fc;
+      --indigo: #5b5bd6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 1180px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page { width: 1440px; margin: 0 auto; padding: 54px 48px 40px; }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--indigo);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--indigo); }
+    .header { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin: 14px 0 34px; }
+    h1 { margin: 0; font-size: 42px; line-height: 1.15; letter-spacing: -1.8px; }
+    .header p { max-width: 560px; margin: 0 0 3px; color: var(--muted); font-size: 14px; line-height: 1.8; text-align: right; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .card { overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 12px 34px rgba(30, 41, 59, 0.05); }
+    .card-body { padding: 26px 26px 24px; }
+    .card-head { display: flex; align-items: center; gap: 12px; }
+    .index {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: #eef0ff;
+      color: var(--indigo);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .title { font-size: 19px; font-weight: 760; letter-spacing: -0.4px; }
+    .title span { margin-left: 7px; color: #94a3b8; font-size: 12px; font-weight: 650; letter-spacing: 1px; text-transform: uppercase; }
+    .desc { min-height: 48px; margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
+    .tags { display: flex; gap: 7px; margin-top: 14px; }
+    .tag { padding: 4px 9px; border: 1px solid #e9ecf5; border-radius: 999px; color: #64748b; background: #fafbfe; font-size: 11px; }
+    .lockup { display: flex; align-items: center; gap: 20px; min-height: 132px; margin-top: 20px; padding: 22px 20px; border: 1px solid #eef1f8; border-radius: 18px; background: #fbfcff; }
+    .lockup img { width: 82px; height: 82px; flex: none; }
+    .wordmark { font-size: 37px; font-weight: 760; line-height: 1; letter-spacing: -1.8px; }
+    .submark { margin-top: 10px; color: #7c869a; font-size: 8.5px; font-weight: 700; letter-spacing: 1.55px; }
+    .section-label { display: flex; justify-content: space-between; margin: 22px 1px 9px; color: #94a3b8; font-size: 10px; font-weight: 750; letter-spacing: 1.3px; text-transform: uppercase; }
+    .sizes { display: flex; align-items: flex-end; justify-content: space-between; height: 86px; padding: 14px 20px 12px; border: 1px solid #eef1f8; border-radius: 16px; background: #fff; }
+    .size { display: grid; justify-items: center; gap: 8px; }
+    .size img { display: block; }
+    .size span { color: #94a3b8; font-size: 9px; }
+    .dark { display: flex; align-items: center; justify-content: space-between; min-height: 118px; padding: 20px; border-radius: 16px; background: #0a101d; }
+    .dark-copy { color: #e8eef9; font-size: 13px; font-weight: 650; line-height: 1.6; }
+    .dark-copy small { display: block; margin-top: 4px; color: #64748b; font-size: 10px; font-weight: 500; }
+    .dark-icons { display: flex; align-items: center; gap: 12px; }
+    .dark-icons img { display: block; border-radius: 9px; }
+    .note { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 24px; padding: 18px 22px; border: 1px solid #e2e8f0; border-radius: 16px; background: rgba(255,255,255,0.72); }
+    .note strong { color: var(--ink); font-size: 13px; }
+    .note span { color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .reply { flex: none; padding: 10px 16px; border-radius: 11px; background: var(--indigo); color: #fff; font-size: 12px; font-weight: 750; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="eyebrow">Maestro / Brand exploration 02</div>
+    <header class="header">
+      <h1>新 Logo 方向审核</h1>
+      <p>保留“多会话编排”的核心语义，统一到当前界面的靛蓝主色。<br>这一轮只看方向，现有品牌文件尚未改动。</p>
+    </header>
+
+    <section class="grid" aria-label="三版 Logo 候选">
+      <article class="card">
+        <div class="card-body">
+          <div class="card-head"><div class="index">A</div><div class="title">汇流<span>Flow</span></div></div>
+          <p class="desc">三条会话轨迹自然汇入同一出口，强调编排、协作与交接，延续现有标识的产品内涵。</p>
+          <div class="tags"><span class="tag">流动感</span><span class="tag">亲和</span><span class="tag">语义直接</span></div>
+          <div class="lockup"><img src="./a-flow.svg" alt="A 汇流 Logo"><div><div class="wordmark">Maestro</div><div class="submark">MULTI-SESSION ORCHESTRATION</div></div></div>
+          <div class="section-label"><span>Scale test</span><span>64 → 16 px</span></div>
+          <div class="sizes">
+            <div class="size"><img src="./a-flow.svg" width="64" height="64" alt=""><span>64</span></div>
+            <div class="size"><img src="./a-flow.svg" width="40" height="40" alt=""><span>40</span></div>
+            <div class="size"><img src="./a-flow.svg" width="32" height="32" alt=""><span>32</span></div>
+            <div class="size"><img src="./a-flow.svg" width="24" height="24" alt=""><span>24</span></div>
+            <div class="size"><img src="./a-flow.svg" width="16" height="16" alt=""><span>16</span></div>
+          </div>
+          <div class="section-label"><span>Dark surface</span><span>Sidebar / tray</span></div>
+          <div class="dark"><div class="dark-copy">渐变图标在深色界面保持清晰<small>适合侧栏、窗口与品牌页</small></div><div class="dark-icons"><img src="./a-flow.svg" width="40" height="40" alt=""><img src="./a-flow.svg" width="24" height="24" alt=""></div></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-body">
+          <div class="card-head"><div class="index">B</div><div class="title">M 字标<span>Monogram</span></div></div>
+          <p class="desc">用几何 M 直接绑定品牌名，轮廓更硬朗、记忆点更强，适合作为长期使用的应用图标。</p>
+          <div class="tags"><span class="tag">稳重</span><span class="tag">高辨识</span><span class="tag">品牌感</span></div>
+          <div class="lockup"><img src="./b-monogram.svg" alt="B M 字标 Logo"><div><div class="wordmark">Maestro</div><div class="submark">MULTI-SESSION ORCHESTRATION</div></div></div>
+          <div class="section-label"><span>Scale test</span><span>64 → 16 px</span></div>
+          <div class="sizes">
+            <div class="size"><img src="./b-monogram.svg" width="64" height="64" alt=""><span>64</span></div>
+            <div class="size"><img src="./b-monogram.svg" width="40" height="40" alt=""><span>40</span></div>
+            <div class="size"><img src="./b-monogram.svg" width="32" height="32" alt=""><span>32</span></div>
+            <div class="size"><img src="./b-monogram.svg" width="24" height="24" alt=""><span>24</span></div>
+            <div class="size"><img src="./b-monogram.svg" width="16" height="16" alt=""><span>16</span></div>
+          </div>
+          <div class="section-label"><span>Dark surface</span><span>Sidebar / tray</span></div>
+          <div class="dark"><div class="dark-copy">实心字标在小尺寸最稳<small>适合应用图标与正式品牌背书</small></div><div class="dark-icons"><img src="./b-monogram.svg" width="40" height="40" alt=""><img src="./b-monogram.svg" width="24" height="24" alt=""></div></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-body">
+          <div class="card-head"><div class="index">C</div><div class="title">指挥棒<span>Cue</span></div></div>
+          <p class="desc">让指挥棒串联并行轨道，保留 Maestro 的音乐隐喻；深色底与青色笔触更有专业工具气质。</p>
+          <div class="tags"><span class="tag">专业</span><span class="tag">克制</span><span class="tag">音乐隐喻</span></div>
+          <div class="lockup"><img src="./c-cue.svg" alt="C 指挥棒 Logo"><div><div class="wordmark">Maestro</div><div class="submark">MULTI-SESSION ORCHESTRATION</div></div></div>
+          <div class="section-label"><span>Scale test</span><span>64 → 16 px</span></div>
+          <div class="sizes">
+            <div class="size"><img src="./c-cue.svg" width="64" height="64" alt=""><span>64</span></div>
+            <div class="size"><img src="./c-cue.svg" width="40" height="40" alt=""><span>40</span></div>
+            <div class="size"><img src="./c-cue.svg" width="32" height="32" alt=""><span>32</span></div>
+            <div class="size"><img src="./c-cue.svg" width="24" height="24" alt=""><span>24</span></div>
+            <div class="size"><img src="./c-cue.svg" width="16" height="16" alt=""><span>16</span></div>
+          </div>
+          <div class="section-label"><span>Dark surface</span><span>Sidebar / tray</span></div>
+          <div class="dark"><div class="dark-copy">深色底强化轨道与指挥棒<small>浅色场景需保留深色图标底</small></div><div class="dark-icons"><img src="./c-cue.svg" width="40" height="40" alt=""><img src="./c-cue.svg" width="24" height="24" alt=""></div></div>
+        </div>
+      </article>
+    </section>
+
+    <footer class="note">
+      <div><strong>请选择方向：A / B / C</strong><br><span>也可以告诉我哪一版的形状、配色或气质更接近预期，我再做融合与细化。</span></div>
+      <div class="reply">等待审核 · 暂不替换</div>
+    </footer>
+  </main>
+</body>
+</html>

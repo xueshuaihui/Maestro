@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Maestro Cue logo concept</title>
+  <defs>
+    <linearGradient id="tile" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111A2C"/>
+      <stop offset="1" stop-color="#182238"/>
+    </linearGradient>
+    <linearGradient id="baton" x1="34" y1="49" x2="49" y2="18" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#06B6D4"/>
+      <stop offset="1" stop-color="#35D0E8"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#tile)"/>
+  <g fill="none" stroke="#F4F7FC" stroke-width="5.5" stroke-linecap="round">
+    <path d="M15 18H44"/>
+    <path d="M15 32H38"/>
+    <path d="M15 46H32"/>
+  </g>
+  <path d="M34 49L49 18" fill="none" stroke="url(#baton)" stroke-width="6" stroke-linecap="round"/>
+</svg>
