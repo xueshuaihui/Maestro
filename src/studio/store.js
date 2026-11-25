@@ -32,7 +32,15 @@ function normalizeDoc(raw) {
   if (Array.isArray(raw.departments) && raw.departments.length > 0) {
     doc.departments = raw.departments
       .filter((d) => isPlainObject(d) && typeof d.id === 'string')
-      .map((d) => ({ id: d.id, labelKey: d.labelKey ?? departmentLabelKey(d.id) }));
+      .map((d) => {
+        const row = { id: d.id, labelKey: d.labelKey ?? departmentLabelKey(d.id) };
+        // Custom departments carry a literal name; archived ones carry the
+        // marker. Dropping either here made user maintenance impossible.
+        if (typeof d.name === 'string') row.name = d.name;
+        if (d.archived === true) row.archived = true;
+        if (typeof d.archivedAt === 'string') row.archivedAt = d.archivedAt;
+        return row;
+      });
   }
   if (typeof raw.updatedAt === 'string') doc.updatedAt = raw.updatedAt;
   doc.schemaVersion = STUDIO_SCHEMA_VERSION;

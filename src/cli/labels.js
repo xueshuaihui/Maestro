@@ -1664,6 +1664,15 @@ export const STUDIO_TEXT = Object.freeze({
   UI_OPTION_FORBIDDEN: '禁止',
   UI_EMPTY_SKILL: '还没有自定义技能',
   UI_SKILL_CREATED: '技能已创建：{id}',
+  UI_DELETE: '删除',
+  UI_DELETE_CONFIRM: '确定删除「{name}」吗？此操作会归档该资源。',
+  UI_DELETED: '已归档：{name}',
+  UI_RESTORE: '恢复',
+  UI_ADD_DEPT: '新增部门',
+  UI_DEPT_ID: '部门标识',
+  UI_DEPT_NAME: '部门名称',
+  UI_DEPT_CREATED: '部门已创建：{name}',
+  UI_NO_DELETE: '该资源仍被引用，请先解除引用后再删除。',
   ERR_ACTION: '请给出子命令。{usage}'
 });
 
@@ -1738,7 +1747,23 @@ export const DESKTOP_V2_LABEL = Object.freeze({
   DESKTOP_V2_GOVERNANCE_HINT: '治理计数来自实例证据链，当前还没有可汇总的证据。',
   DESKTOP_V2_NO_ANOMALY: '没有检测到异常信号',
   DESKTOP_V2_READ_ALL: '全部标记已读',
-  DESKTOP_V2_SELECT_ITEM: '从左侧选择一个条目查看详情'
+  DESKTOP_V2_SELECT_ITEM: '从左侧选择一个条目查看详情',
+  DESKTOP_ASSET_FORK: '加入项目',
+  DESKTOP_ASSET_FORKED: '已加入项目，可在搭建台编辑',
+  DESKTOP_ASSET_DELETE: '删除项目副本',
+  DESKTOP_ASSET_EDIT: '编辑',
+  DESKTOP_INST_ARCHIVE: '归档',
+  DESKTOP_INST_CLONE: '克隆',
+  DESKTOP_INST_RENAME: '重命名',
+  DESKTOP_INST_SAVE_TEMPLATE: '存为工作流',
+  DESKTOP_INST_EXPORT: '下载追踪',
+  DESKTOP_INST_ARCHIVED: '实例已归档',
+  DESKTOP_INST_CLONED: '实例已克隆',
+  DESKTOP_INST_RENAMED: '实例已重命名',
+  DESKTOP_INST_TEMPLATE_SAVED: '已存为工作流模板',
+  DESKTOP_INST_EXPORTED: '追踪数据已生成',
+  DESKTOP_V2_NAV_RESOURCES: '资源平台',
+  DESKTOP_V2_ARCHIVED: '已归档'
 });
 
 /**

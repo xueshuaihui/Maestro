@@ -19,6 +19,7 @@ import { coreLogPath, ensureLayout, projectRoot } from '../persistence/paths.js'
 import { createStore } from '../persistence/instance-store.js';
 import { createAdapterFactory } from '../adapter/factory.js';
 import { createEventBus } from '../core/event-bus.js';
+import { loadProjectGraphs } from './project-graphs.js';
 import { createServer } from './server.js';
 
 const args = parseArgs(process.argv.slice(2));
@@ -77,7 +78,14 @@ async function loadOrchestrator({ store: s, bus: b, generation: g, root: project
     // 宿主配置根 = `--project` 传入的项目根（不是 process.cwd()）：
     // <projectDir>/.orch/hosts/<hostId>.json 才是验收时替换宿主的入口。
     const adapterFactory = createAdapterFactory({ root: projectDir, clock: Date.now });
-    const orch = await factory({ store: s, bus: b, adapterFactory, generation: g, clock: Date.now });
+    // Project workflows (asset YAML + compiled Studio flows) become real
+    // startable templates. Built-ins are never overwritten by project ids.
+    const projectGraphs = await loadProjectGraphs(projectDir);
+    if (!projectGraphs.ok) throw new Error('loadProjectGraphs failed');
+    const orch = await factory({
+      store: s, bus: b, adapterFactory, generation: g, clock: Date.now,
+      graphs: projectGraphs.graphs,
+    });
     if (!orch || typeof orch.startRun !== 'function') throw new Error('createOrchestrator 返回值缺少 startRun');
     if (typeof orch.waitForRun !== 'function') throw new Error('createOrchestrator 返回值缺少 waitForRun');
     orch.mode = 'real';

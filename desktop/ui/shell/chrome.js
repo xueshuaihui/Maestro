@@ -21,6 +21,7 @@ const NAV_GROUPS = Object.freeze([
   [
     { view: 'studio', key: 'DESKTOP_V2_NAV_STUDIO', glyph: '\u25a3' },
     { view: 'assets', key: 'DESKTOP_VIEW_ASSETS', glyph: '\u25a4' },
+    { view: 'resources', key: 'DESKTOP_V2_NAV_RESOURCES', glyph: '\u25a0' },
     { view: 'occupancy', key: 'DESKTOP_VIEW_OCCUPANCY', glyph: '\u25cd' },
     { view: 'canvas', key: 'DESKTOP_VIEW_CANVAS', glyph: '\u2317' },
   ],
@@ -376,6 +377,7 @@ export function crumbsFor(ctx) {
     projects: 'DESKTOP_V2_SETTINGS_PROJECT',
     queue: 'DESKTOP_VIEW_QUEUE',
     assets: 'DESKTOP_VIEW_ASSETS',
+    resources: 'DESKTOP_V2_NAV_RESOURCES',
     occupancy: 'DESKTOP_VIEW_OCCUPANCY',
     canvas: 'DESKTOP_VIEW_CANVAS',
     studio: 'DESKTOP_V2_NAV_STUDIO',

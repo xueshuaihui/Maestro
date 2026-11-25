@@ -83,6 +83,18 @@ function showToast(text, tone = 'err') {
   }, 4200);
 }
 
+/**
+ * Archive a resource after an explicit confirmation. Uses `resource.remove`
+ * so the same reference guards apply as on the /resources channel.
+ */
+function deleteButton(type, id, name) {
+  return button(t('UI_DELETE'), async () => {
+    if (window.confirm(fill(t('UI_DELETE_CONFIRM'), { name })) !== true) return;
+    const result = await act('resource.remove', { type, id });
+    if (result) showToast(fill(t('UI_DELETED'), { name }), 'ok');
+  }, 'btn small danger');
+}
+
 function badge(text, tone) {
   return el('span', `badge ${tone ?? ''}`, text);
 }
@@ -207,6 +219,40 @@ function stepOrg(state) {
   // so while the project list is empty, or a newcomer reads 0/0 as "lost data".
   if (state.roles.length === 0) box.body.appendChild(el('p', 'hint', t('UI_ORG_HINT')));
 
+  // Departments used to be six frozen seeds with no maintenance surface at
+  // all. They are now real project resources: add and archive go through the
+  // same facade everything else uses.
+  const deptForm = el('div', 'form-row dept-form');
+  const deptId = input(t('UI_DEPT_ID'));
+  const deptName = input(t('UI_DEPT_NAME'));
+  deptForm.appendChild(deptId);
+  deptForm.appendChild(deptName);
+  deptForm.appendChild(button(t('UI_ADD_DEPT'), async () => {
+    const id = deptId.value.trim();
+    const label = deptName.value.trim();
+    if (id.length === 0 || label.length === 0) {
+      showToast(t('ERR_ROLE_NAME_REQUIRED'));
+      return;
+    }
+    const result = await act('dept.add', { id, name: label });
+    if (result) {
+      deptId.value = '';
+      deptName.value = '';
+      showToast(fill(t('UI_DEPT_CREATED'), { name: label }), 'ok');
+    }
+  }));
+  box.body.appendChild(deptForm);
+  const deptRows = (state.departments ?? []).map((dept) => [
+    dept.label,
+    String(dept.roleCount),
+    deleteButton('department', dept.id, dept.label)
+  ]);
+  box.body.appendChild(table(
+    [t('UI_DEPT_NAME'), t('COL_ROLES'), t('UI_DELETE')],
+    deptRows,
+    t('UI_EMPTY_ROLE')
+  ));
+
   const acpOptions = [
     { value: '', label: t('UI_OPTION_UNSET') },
     { value: 'true', label: t('UI_OPTION_REQUIRED') },
@@ -281,10 +327,11 @@ function stepOrg(state) {
     (role.skills ?? []).join(', ') || '-',
     String(role.employeeCount),
     role.employeeCount === 0 ? badge(t('UI_BLOCKED'), 'warn') : badge(t('UI_READY'), 'ok'),
-    button(t('UI_EDIT_ROLE'), () => { fillForm(role); }, 'btn small')
+    button(t('UI_EDIT_ROLE'), () => { fillForm(role); }, 'btn small'),
+    deleteButton('role', role.id, role.name)
   ]);
   box.body.appendChild(table(
-    [t('COL_NAME'), t('COL_CODE'), t('COL_DEPT'), t('UI_SKILLS'), t('COL_EMPLOYEES'), t('COL_STATUS'), t('UI_EDIT_ROLE')],
+    [t('COL_NAME'), t('COL_CODE'), t('COL_DEPT'), t('UI_SKILLS'), t('COL_EMPLOYEES'), t('COL_STATUS'), t('UI_EDIT_ROLE'), t('UI_DELETE')],
     roleRows,
     t('UI_EMPTY_ROLE')
   ));
@@ -354,10 +401,13 @@ function stepOrg(state) {
   }));
   box.body.appendChild(empForm);
 
-  const employees = state.employees.map((emp) => [emp.name, emp.roleName, emp.cliId, String(emp.maxConcurrentSessions)]);
+  const employees = state.employees.map((emp) => [
+    emp.name, emp.roleName, emp.cliId, String(emp.maxConcurrentSessions),
+    deleteButton('employee', emp.id, emp.name)
+  ]);
   box.body.appendChild(el('h3', 'sub', t('COL_EMPLOYEES')));
   box.body.appendChild(table(
-    [t('COL_NAME'), t('COL_ROLE'), t('COL_CLI'), t('COL_MAX')],
+    [t('COL_NAME'), t('COL_ROLE'), t('COL_CLI'), t('COL_MAX'), t('UI_DELETE')],
     employees,
     t('NO_EMPLOYEES')
   ));
@@ -373,10 +423,11 @@ function stepTeam(state) {
     String(team.employeeCount),
     state.runModeLabels?.[team.runMode] ?? team.runMode,
     team.flowId ?? '-',
-    team.ready ? badge(t('UI_READY'), 'ok') : badge(t('UI_BLOCKED'), 'warn')
+    team.ready ? badge(t('UI_READY'), 'ok') : badge(t('UI_BLOCKED'), 'warn'),
+    deleteButton('team', team.id, team.name)
   ]);
   box.body.appendChild(table(
-    [t('COL_NAME'), t('UI_LEAD'), t('COL_ROLES'), t('COL_EMPLOYEES'), t('UI_RUN_MODE'), t('UI_FLOW'), t('COL_STATUS')],
+    [t('COL_NAME'), t('UI_LEAD'), t('COL_ROLES'), t('COL_EMPLOYEES'), t('UI_RUN_MODE'), t('UI_FLOW'), t('COL_STATUS'), t('UI_DELETE')],
     rows,
     t('UI_EMPTY_TEAM')
   ));
@@ -439,10 +490,11 @@ function stepFlow(state) {
     flow.kind,
     String(flow.stageCount),
     String(flow.gates.length),
-    flow.stages.some((stage) => stage.gate) ? t('GATE_PRD_FREEZE') + '…' : t('GATE_NONE')
+    flow.stages.some((stage) => stage.gate) ? t('GATE_PRD_FREEZE') + '…' : t('GATE_NONE'),
+    deleteButton('flow', flow.id, flow.name)
   ]);
   box.body.appendChild(table(
-    [t('COL_NAME'), 'kind', t('COL_STAGE'), t('COL_GATE'), t('GATE_PENDING')],
+    [t('COL_NAME'), 'kind', t('COL_STAGE'), t('COL_GATE'), t('GATE_PENDING'), t('UI_DELETE')],
     rows,
     t('UI_EMPTY_FLOW')
   ));

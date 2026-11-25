@@ -56,6 +56,7 @@ import { checkSkillMeta, GROUPS, SKILL_SCHEMA_VERSION } from '../../registry/rol
 import { serializeSkill, atomicWrite } from '../../registry/asset-write.js';
 import { projectSkillsDir } from '../../registry/assets.js';
 import { isId } from '../../studio/schema.js';
+import { createResource, updateResource, removeResource, restoreResource, collectRefs } from '../../resources/index.js';
 import path from 'node:path';
 
 const BODY_LIMIT = 64 * 1024;
@@ -75,8 +76,15 @@ function t(key, fallback = '') {
 }
 
 function labelize(dept) {
+  // Custom departments carry a literal `name`; built-in seeds carry a label
+  // key. Prefer the literal so a user-created department is visible by name.
+  if (typeof dept.name === 'string' && dept.name.length > 0 && !dept.labelKey) {
+    return dept.name;
+  }
   const key = dept.labelKey ?? departmentLabelKey(dept.id);
-  return t(key, dept.id);
+  const translated = t(key, null);
+  if (typeof translated === 'string' && translated.length > 0) return translated;
+  return typeof dept.name === 'string' && dept.name.length > 0 ? dept.name : dept.id;
 }
 
 function stageTitle(flow, stage) {
@@ -206,6 +214,7 @@ async function buildState(root) {
     departments: (doc.departments ?? []).map((dept) => ({
       id: dept.id,
       label: labelize(dept),
+      archived: dept.archived === true,
       roleCount: (doc.roles ?? []).filter((role) => role.departmentId === dept.id).length
     })),
     roles,
@@ -609,6 +618,43 @@ const ACTIONS = Object.freeze({
       bound_host: item.executable ? (byCommand.get(item.executable) ?? null) : null
     }));
     return { ok: true, count: findings.length, findings };
+  },
+
+  // -------------------------------------------------------------------------
+  // Maintenance actions. Same domain functions the resource platform uses;
+  // exposed here so the existing studio UI gains real delete/maintain without
+  // a rewrite. All are additive - none of the 21 frozen actions changed.
+  // -------------------------------------------------------------------------
+
+  async 'dept.add'(root, payload) {
+    return createResource(root, 'department', {
+      id: payload.id,
+      name: payload.name,
+      labelKey: payload.labelKey ?? null
+    });
+  },
+
+  async 'dept.update'(root, payload) {
+    return updateResource(root, 'department', payload.id, {
+      name: payload.name,
+      labelKey: payload.labelKey
+    });
+  },
+
+  async 'resource.remove'(root, payload) {
+    const { type, id, force, archive } = payload;
+    return removeResource(root, type, id, {
+      force: force === true,
+      archive: archive !== false
+    });
+  },
+
+  async 'resource.restore'(root, payload) {
+    return restoreResource(root, payload.type, payload.id);
+  },
+
+  async 'resource.refs'(root, payload) {
+    return collectRefs(root, payload.type, payload.id);
   }
 });
 

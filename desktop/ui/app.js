@@ -371,6 +371,8 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     expandedRow: null,    // expanded queue row id (AC-43)
     selectedQueueIds: [], // ids selected by a notification click (AC-04)
     assets: null,         // last assets projection for the active kind
+    resources: null,      // last unified resource projection
+    resourceType: 'all',
     assetKind: ASSET_KINDS[0],
     assetDetail: null,    // last showAsset projection
     occupancy: null,      // last buildOccupancy projection
@@ -1080,7 +1082,7 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       // I1.11 WP-8: the five new views switch unconditionally; their data is
       // loaded through the seam methods below and the last projection is kept
       // while a channel recovers (AC-47 / BR-36).
-      if (['queue', 'assets', 'occupancy', 'canvas', 'evidence'].includes(view)) {
+      if (['queue', 'assets', 'resources', 'occupancy', 'canvas', 'evidence'].includes(view)) {
         state.view = view;
       }
       // beta.2 shell surfaces: these render from projections that are already
@@ -1139,6 +1141,12 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       state.assetKind = active;
       state.assetDetail = null;
       return api.loadProjection('assets', 'assets', () => transport.getAssets?.(active));
+    },
+
+    async loadResources(type) {
+      const active = typeof type === 'string' && type.length > 0 ? type : 'all';
+      state.resourceType = active;
+      return api.loadProjection('resources', 'resources', () => transport.getResources?.(active));
     },
 
     async loadAssetDetail(kind, id) {
@@ -1413,6 +1421,8 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         if (state.newPanel.open !== true) api.updateNewPanel({ open: true });
       } else if (view === 'assets') {
         await api.loadAssets(arg ?? state.assetKind);
+      } else if (view === 'resources') {
+        await api.loadResources(arg ?? state.resourceType);
       } else if (view === 'occupancy') {
         await api.loadOccupancy();
       } else if (view === 'canvas') {
@@ -1892,6 +1902,10 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
         model.assets = composeAssets(state, m);
         return model;
       }
+      if (view === 'resources') {
+        model.resources = composeResources(state);
+        return model;
+      }
       if (view === 'occupancy') {
         model.occupancy = composeOccupancy(state, m);
         return model;
@@ -2291,7 +2305,10 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     }));
     const projection = current.assets ?? {};
     const items = Array.isArray(projection.items) ? projection.items : [];
-    const rows = items.map((item) => modules.assetRowText(kind, item, labels));
+    const rows = items.map((item) => ({
+      ...modules.assetRowText(kind, item, labels),
+      source: typeof item.source === 'string' ? item.source : null,
+    }));
     return {
       tabs,
       kind,
@@ -2308,6 +2325,25 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       disconnectedText: current.connection.status() === 'reconnecting' || current.connection.status() === 'failed'
         ? modules.queueDisconnectedText(labels)
         : null,
+    };
+  }
+
+  /** Unified resource platform: one table for every project resource. */
+  function composeResources(current) {
+    const projection = current.resources ?? {};
+    const all = Array.isArray(projection.items) ? projection.items : [];
+    const items = current.resourceType && current.resourceType !== 'all'
+      ? all.filter((item) => item.type === current.resourceType)
+      : all;
+    const typeSet = [...new Set(all.map((item) => item.type))].sort();
+    const counts = projection.counts ?? {};
+    const countText = Object.keys(counts).sort()
+      .map((type) => `${type} ${counts[type]}`).join(' · ');
+    return {
+      items,
+      type: current.resourceType ?? 'all',
+      types: ['all', ...typeSet],
+      countText,
     };
   }
 
@@ -2772,6 +2808,12 @@ export function mountApp({
       st: (key, fallback) => {
         const value = state.studioLabels?.[key];
         return typeof value === 'string' ? value : (fallback ?? key);
+      },
+      actions: {
+        createResource: (type, name) => {
+          if (!type || type === 'all') return;
+          void transport.createResource?.(type, name).then(() => app.loadResources(state.resourceType)).then(paint);
+        },
       },
       view: activeView,
       inDrawer: drawer !== null,
@@ -3738,6 +3780,47 @@ export function mountApp({
         void app.loadAssetDetail(payload.kind ?? app.state().assetKind, payload.id).then(paint);
         return;
       }
+      case 'resource-type': {
+        void app.loadResources(typeof value === 'string' ? value : 'all').then(paint);
+        return;
+      }
+      case 'resource-clone': {
+        const payload = value && typeof value === 'object' ? value : {};
+        void transport.resourceAction?.(payload.type, payload.id, 'clone').then((answer) => {
+          showToast(shellRefsOf(), answer?.ok === true
+            ? labelText('DESKTOP_INST_CLONED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+          if (answer?.ok === true) return app.loadResources(state.resourceType);
+          return undefined;
+        }).then(paint);
+        return;
+      }
+      case 'resource-archive':
+      case 'resource-restore': {
+        const payload = value && typeof value === 'object' ? value : {};
+        const restore = action === 'resource-restore';
+        const call = restore
+          ? transport.resourceAction?.(payload.type, payload.id, 'restore')
+          : transport.resourceAction?.(payload.type, payload.id, '', 'DELETE');
+        void call.then((answer) => {
+          showToast(shellRefsOf(), answer?.ok === true
+            ? labelText(restore ? 'UI_RESTORE' : 'DESKTOP_INST_ARCHIVED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+          if (answer?.ok === true) return app.loadResources(state.resourceType);
+          return undefined;
+        }).then(paint);
+        return;
+      }
+      case 'asset-fork': {
+        const payload = value && typeof value === 'object' ? value : {};
+        void transport.forkAsset?.(payload.kind, payload.id).then((answer) => {
+          if (answer && answer.ok !== true) {
+            showToast(shellRefsOf(), labelText('UI_NO_DELETE', {}));
+            return;
+          }
+          showToast(shellRefsOf(), labelText('DESKTOP_ASSET_FORKED', {}));
+          return app.loadAssets(app.state().assetKind);
+        }).then(paint);
+        return;
+      }
       case 'evidence-node':
         app.state().evidenceNode = typeof value === 'string' ? value : null;
         paint();
@@ -3772,9 +3855,62 @@ export function mountApp({
         app.beginCancel(typeof value === 'string' ? value : app.state().graphId);
         paint();
         return;
-      case 'export-otel':
-        showToast(shellRefsOf(), labelText('DESKTOP_V2_EXPORT_OTEL', {}));
+      case 'export-otel': {
+        const id = typeof value === 'string' && value.length > 0 ? value : app.state().graphId;
+        if (!id) { showToast(shellRefsOf(), labelText('DESKTOP_V2_NEED_INSTANCE', {})); return; }
+        void transport.exportInstance?.(id).then((answer) => {
+          if (!answer || answer.ok !== true) {
+            showToast(shellRefsOf(), labelText('UI_CONTROL_SKIPPED', {}));
+            return;
+          }
+          const count = (answer.payload?.events ?? []).length + (answer.payload?.spans ?? []).length;
+          showToast(shellRefsOf(), labelText('DESKTOP_INST_EXPORTED', {}) + ` · ${count}`);
+        });
         return;
+      }
+      case 'archive-instance': {
+        const id = typeof value === 'string' ? value : app.state().graphId;
+        if (!window.confirm(labelText('UI_DELETE_CONFIRM', { name: id }))) return;
+        void transport.archiveInstance?.(id).then((answer) => {
+          showToast(shellRefsOf(), answer?.ok === true
+            ? labelText('DESKTOP_INST_ARCHIVED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+          if (answer?.ok === true) return app.loadInstances().then(() => app.setView('instances'));
+          return undefined;
+        }).then(paint);
+        return;
+      }
+      case 'clone-instance': {
+        const id = typeof value === 'string' ? value : app.state().graphId;
+        void transport.cloneInstance?.(id).then((answer) => {
+          showToast(shellRefsOf(), answer?.ok === true
+            ? labelText('DESKTOP_INST_CLONED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+          if (answer?.ok === true) return app.loadInstances();
+          return undefined;
+        }).then(paint);
+        return;
+      }
+      case 'rename-instance': {
+        const id = typeof value === 'string' ? value : app.state().graphId;
+        const name = window.prompt(labelText('DESKTOP_INST_RENAME', {}), '') ?? '';
+        if (name.trim().length === 0) return;
+        void transport.renameInstance?.(id, name).then((answer) => {
+          showToast(shellRefsOf(), answer?.ok === true
+            ? labelText('DESKTOP_INST_RENAMED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+          if (answer?.ok === true) return app.loadInstances();
+          return undefined;
+        }).then(paint);
+        return;
+      }
+      case 'save-instance-template': {
+        const id = typeof value === 'string' ? value : app.state().graphId;
+        void transport.saveInstanceTemplate?.(id).then((answer) => {
+          showToast(shellRefsOf(), answer?.ok === true
+            ? labelText('DESKTOP_INST_TEMPLATE_SAVED', {}) : labelText('UI_CONTROL_SKIPPED', {}));
+          if (answer?.ok === true) return app.loadTemplates();
+          return undefined;
+        }).then(paint);
+        return;
+      }
       case 'copy-evidence':
         void copyText(copyTargetOf(node)).then((ok) => showToast(shellRefsOf(), ok ? labelText('DESKTOP_V2_COPY', {}) : ''));
         return;
@@ -4659,6 +4795,17 @@ export function createLoopbackTransport(creds) {
     studioAction: (payload) => request('/studio/action', {
       method: 'POST', body: JSON.stringify(payload),
     }),
+    forkAsset: (kind, id) => request(`/resources/${encodeURIComponent(kind === 'skills' ? 'skill' : 'role')}/${encodeURIComponent(id)}/fork`, {
+      method: 'POST', body: '{}',
+    }),
+    getResources: (type) => request(`/resources${type && type !== 'all' ? `?types=${encodeURIComponent(type)}` : ''}`),
+    resourceAction: (type, id, action, method = 'POST', body = '{}') => request(
+      `/resources/${encodeURIComponent(type)}/${encodeURIComponent(id)}${action ? `/${action}` : ''}`,
+      { method, body: method === 'DELETE' || method === 'GET' ? undefined : body }
+    ),
+    createResource: (type, name) => request('/resources', {
+      method: 'POST', body: JSON.stringify({ type, input: { name } }),
+    }),
     getEvidence: (instanceId, nodeId) => nodeId
       ? request(`/evidence/${encodeURIComponent(instanceId)}/${encodeURIComponent(nodeId)}`)
       : request(`/evidence/${encodeURIComponent(instanceId)}`),
@@ -4691,6 +4838,15 @@ export function createLoopbackTransport(creds) {
       { method: 'POST', body: JSON.stringify({ decision }) },
     ),
     postCancel: (id) => request(`/instances/${encodeURIComponent(id)}/cancel`, { method: 'POST' }),
+    archiveInstance: (id) => request(`/instances/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+    cloneInstance: (id) => request(`/instances/${encodeURIComponent(id)}/clone`, { method: 'POST', body: '{}' }),
+    renameInstance: (id, name) => request(`/instances/${encodeURIComponent(id)}`, {
+      method: 'PATCH', body: JSON.stringify({ name }),
+    }),
+    saveInstanceTemplate: (id) => request(`/instances/${encodeURIComponent(id)}/save-template`, {
+      method: 'POST', body: '{}',
+    }),
+    exportInstance: (id) => request(`/instances/${encodeURIComponent(id)}/export`),
     // The shell wraps the map into `{ offsets, updatedAt }` (split 3.2), so
     // the invoke argument is the offsets map itself, never a second envelope.
     writeViewOffsets: async ({ root, instance_id: instanceId, offsets } = {}) => {

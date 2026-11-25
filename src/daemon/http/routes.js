@@ -54,6 +54,7 @@ import { buildCanvas } from '../canvas.js';
 import { buildEvidence } from '../evidence.js';
 import { parseYaml } from '../../registry/yaml-lite.js';
 import { GRAPHS } from '../../templates/index.js';
+import { loadProjectGraphs } from '../project-graphs.js';
 import { buildGraph } from '../graph.js';
 import {
   buildConnectionPanel,
@@ -419,9 +420,23 @@ export function createRoutes({ orchestrator, loadWorkflowDef, root, hub, graph, 
     return res;
   }
 
-  /** `GET /workflows`: the three runnable built-in templates (D-2). */
-  function handleWorkflows(res) {
+  /** `GET /workflows`: built-in templates first, then project workflows. */
+  async function handleWorkflows(res) {
     const items = Object.keys(TEMPLATE_LABEL).map((id) => ({ id, title: TEMPLATE_LABEL[id] }));
+    // Project flows are real startable templates now. Keep the frozen built-in
+    // prefix byte-identical and append project entries after it.
+    try {
+      const graphs = await loadProjectGraphs(projectRoot);
+      if (graphs.ok) {
+        const builtinIds = new Set(items.map((item) => item.id));
+        for (const id of graphs.ids) {
+          if (builtinIds.has(id)) continue;
+          items.push({ id, title: graphs.graphs[id]?.title ?? id });
+        }
+      }
+    } catch {
+      // A broken project workflow degrades to built-ins only.
+    }
     sendJson(res, 200, { items });
     return res;
   }

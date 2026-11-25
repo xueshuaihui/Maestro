@@ -14,7 +14,7 @@ import {
 import {
   assetsPage, canvasPage, evidencePage, fallbackPage, governancePage, instancesPage,
   newPage, notificationsPage, occupancyPage, overviewPage, projectPage, queuePage,
-  settingsPage, studioPage,
+  resourcesPage, settingsPage, studioPage,
 } from './pages.js';
 import { boardPage, flowPage } from './graph.js';
 import {
@@ -36,6 +36,7 @@ const PAGE_BY_VIEW = Object.freeze({
   subflow: subflowPage,
   queue: queuePage,
   assets: assetsPage,
+  resources: resourcesPage,
   occupancy: occupancyPage,
   canvas: canvasPage,
   evidence: evidencePage,

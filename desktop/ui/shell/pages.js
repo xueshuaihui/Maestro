@@ -689,8 +689,15 @@ export function overviewPage(ctx) {
       { size: 'sm', action: paused ? 'resume-instance' : 'pause-instance', arg: ctx.instanceId },
     ));
     rowActions.appendChild(button(ctx.t('DESKTOP_QUEUE_ACTION_CANCEL'), { size: 'sm', action: 'cancel-instance', arg: ctx.instanceId }));
-    controls.appendChild(rowActions);
   }
+  rowActions.appendChild(button(ctx.t('DESKTOP_INST_RENAME'), { size: 'sm', action: 'rename-instance', arg: ctx.instanceId }));
+  rowActions.appendChild(button(ctx.t('DESKTOP_INST_CLONE'), { size: 'sm', action: 'clone-instance', arg: ctx.instanceId }));
+  rowActions.appendChild(button(ctx.t('DESKTOP_INST_ARCHIVE'), { size: 'sm', action: 'archive-instance', arg: ctx.instanceId }));
+  if (terminal) {
+    rowActions.appendChild(button(ctx.t('DESKTOP_INST_SAVE_TEMPLATE'), { size: 'sm', action: 'save-instance-template', arg: ctx.instanceId }));
+  }
+  rowActions.appendChild(button(ctx.t('DESKTOP_INST_EXPORT'), { size: 'sm', action: 'export-otel', arg: ctx.instanceId }));
+  controls.appendChild(rowActions);
   side.appendChild(controls);
   const pendingCancel = ctx.pendingConfirm ?? null;
   if (pendingCancel !== null && String(pendingCancel.id ?? '') === String(ctx.instanceId ?? '')) {
@@ -780,6 +787,72 @@ export function queuePage(ctx) {
 // assets
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// unified resource platform
+// ---------------------------------------------------------------------------
+
+/** One table for every project resource: create, archive, restore, clone. */
+export function resourcesPage(ctx) {
+  const frag = document.createDocumentFragment();
+  const view = ctx.model.resources ?? { items: [], counts: {}, type: null };
+  frag.appendChild(pageHead(ctx.t('DESKTOP_V2_NAV_RESOURCES'), ctx.resourcesSubtitle ?? null));
+
+  const tabs = el('div', 'tabs');
+  for (const type of (view.types ?? [])) {
+    const node = el('button', view.type === type || view.type === null && type === 'all' ? 'tab on' : 'tab',
+      type === 'all' ? ctx.t('DESKTOP_V2_FILTER_ALL') : type);
+    node.type = 'button';
+    node.setAttribute('data-action', 'resource-type');
+    node.setAttribute('data-arg', type);
+    tabs.appendChild(node);
+  }
+  frag.appendChild(tabs);
+  if (view.countText) frag.appendChild(el('div', 'small muted mb10', view.countText));
+
+  const createForm = el('div', 'row wrap mb14');
+  const nameInput = el('input', 'input');
+  nameInput.placeholder = ctx.t('UI_NAME');
+  nameInput.id = 'resource-name';
+  createForm.appendChild(nameInput);
+  const add = button(ctx.t('UI_DEPT_NAME'), () => {
+    const name = nameInput.value.trim();
+    if (name.length === 0) return;
+    ctx.actions.createResource?.(view.type, name);
+  }, 'btn primary');
+  createForm.appendChild(add);
+  frag.appendChild(createForm);
+
+  const box = card([], { flat: true });
+  const items = Array.isArray(view.items) ? view.items : [];
+  if (items.length === 0) box.appendChild(emptyBox('\u25a0', ctx.t('DESKTOP_V2_EMPTY')));
+  else {
+    const rows = items.map((item) => {
+      const ops = el('div', 'row');
+      const make = (key, action) => {
+        const b = el('button', 'btn small', ctx.t(key));
+        b.type = 'button';
+        b.setAttribute('data-action', action);
+        b.setAttribute('data-arg', JSON.stringify({ type: item.type, id: item.id }));
+        return b;
+      };
+      if (item.archived) ops.appendChild(make('UI_RESTORE', 'resource-restore'));
+      else {
+        ops.appendChild(make('DESKTOP_INST_CLONE', 'resource-clone'));
+        ops.appendChild(make('UI_DELETE', 'resource-archive'));
+      }
+      return [item.type, item.id, item.name, item.source ?? '-',
+        item.archived ? badge(ctx.t('DESKTOP_V2_ARCHIVED'), 'gray') : badge(ctx.t('UI_READY'), 'ok'), ops];
+    });
+    box.appendChild(table(
+      [ctx.t('DESKTOP_V2_KIND'), ctx.t('COL_ID'), ctx.t('COL_NAME'), ctx.t('DESKTOP_ASSET_SOURCE_BUILTIN'),
+        ctx.t('COL_STATUS'), ctx.t('UI_DELETE')],
+      rows, ctx.t('DESKTOP_V2_EMPTY')
+    ));
+  }
+  frag.appendChild(box);
+  return frag;
+}
+
 export function assetsPage(ctx) {
   const frag = document.createDocumentFragment();
   const view = ctx.model.assets ?? { tabs: [], rows: [], detail: null };
@@ -808,6 +881,17 @@ export function assetsPage(ctx) {
       node.setAttribute('data-action', 'asset-row');
       node.setAttribute('data-arg', JSON.stringify({ kind: ctx.state.assetKind, id: row.id }));
       node.appendChild(el('span', 'grow', textOf(row)));
+      // The asset projection localizes `source`, so compare against the
+      // rendered word via the label table instead of an English enum.
+      const builtinWord = ctx.t('DESKTOP_ASSET_SOURCE_BUILTIN');
+      if ((ctx.state.assetKind === 'roles' || ctx.state.assetKind === 'skills')
+          && row.source === builtinWord && row.id) {
+        const fork = el('button', 'btn small', ctx.t('DESKTOP_ASSET_FORK'));
+        fork.type = 'button';
+        fork.setAttribute('data-action', 'asset-fork');
+        fork.setAttribute('data-arg', JSON.stringify({ kind: ctx.state.assetKind, id: row.id }));
+        node.appendChild(fork);
+      }
       node.appendChild(el('span', 'tiny muted', '\u2192'));
       box.appendChild(node);
     }

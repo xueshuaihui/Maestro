@@ -390,6 +390,45 @@ try {
         console.log('[debug]', JSON.stringify(raw, null, 2));
       }
     }
+
+    // S7: instance maintenance. The overview must offer real maintenance
+    // controls (not the earlier toast-only export), and the HTTP seam must
+    // actually mutate/persist state.
+    const actions = await evaluate(`(() => {
+      const page = document.querySelector('.content') ?? document;
+      const has = (a) => Boolean(page.querySelector('[data-action="' + a + '"]'));
+      return {
+        rename: has('rename-instance'), clone: has('clone-instance'),
+        archive: has('archive-instance'), export: has('export-otel'),
+        template: has('save-instance-template'),
+      };
+    })()`);
+    step('S7 概览页提供实例维护控件', actions.rename && actions.clone && actions.archive && actions.export,
+      JSON.stringify(actions));
+
+    if (typeof instanceId === 'string' && instanceId.length > 0) {
+      const headers = { 'content-type': 'application/json', authorization: `Bearer ${meta.token}` };
+      const base = `http://127.0.0.1:${meta.port}`;
+      const renamed = await fetch(`${base}/instances/${encodeURIComponent(instanceId)}`, {
+        method: 'PATCH', headers, body: JSON.stringify({ name: 'UI 维护改名' })
+      }).then((r) => r.json()).catch(() => ({ ok: false }));
+      step('S7 重命名真的落盘', renamed.ok === true && renamed.name === 'UI 维护改名', JSON.stringify(renamed));
+
+      const exported = await fetch(`${base}/instances/${encodeURIComponent(instanceId)}/export`, { headers })
+        .then((r) => r.json()).catch(() => ({ ok: false }));
+      step('S7 导出返回真实事件数据', exported.ok === true && exported.payload?.format === 'maestro-instance-export/v1',
+        `events=${exported.payload?.events?.length ?? 0}`);
+
+      const clone = await fetch(`${base}/instances/${encodeURIComponent(instanceId)}/clone`, {
+        method: 'POST', headers, body: '{}'
+      }).then((r) => r.json()).catch(() => ({ ok: false }));
+      step('S7 克隆生成独立实例', clone.ok === true && clone.id !== instanceId, JSON.stringify(clone).slice(0, 160));
+
+      const saved = await fetch(`${base}/instances/${encodeURIComponent(instanceId)}/save-template`, {
+        method: 'POST', headers, body: '{}'
+      }).then((r) => r.json()).catch(() => ({ ok: false }));
+      step('S7 实例可沉淀为工作流模板', saved.ok === true, JSON.stringify(saved).slice(0, 160));
+    }
   }
 
   const errors = runtimeErrors.filter((line) => !/favicon|ERR_/.test(line));

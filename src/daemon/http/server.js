@@ -200,6 +200,8 @@ export function createHttpServer({
   let lazySeamsAttached = false;
   let fallbackDispatcher = null; // WP-3 routes.handle(req, res, url)
   let studioRoutesRegistered = false; // v2 Studio API (additive, once)
+  let resourceRoutesRegistered = false; // unified resource platform (additive, once)
+  let instanceMaintenanceRegistered = false; // instance archive/clone/rename/export (additive, once)
 
   /** @type {Array<{method: string, pattern: string, handler: Function}>} */
   const injectedRoutes = [];
@@ -297,6 +299,32 @@ export function createHttpServer({
         }
       } catch {
         // Studio API unavailable: the page degrades to an explicit error.
+      }
+    }
+
+    // Unified resource platform: additive table, after the frozen v1 and
+    // studio tables. Each module registers at most once per daemon lifetime.
+    if (!resourceRoutesRegistered) {
+      try {
+        const resources = await import('./resources-routes.js');
+        if (typeof resources.createResourceRoutes === 'function') {
+          registerRoutes(resources.createResourceRoutes({ root }));
+          resourceRoutesRegistered = true;
+        }
+      } catch {
+        // Resource API unavailable: the legacy studio views keep working.
+      }
+    }
+
+    if (!instanceMaintenanceRegistered) {
+      try {
+        const maintenance = await import('./instance-maintenance-routes.js');
+        if (typeof maintenance.createInstanceMaintenanceRoutes === 'function') {
+          registerRoutes(maintenance.createInstanceMaintenanceRoutes({ root }));
+          instanceMaintenanceRegistered = true;
+        }
+      } catch {
+        // Maintenance API unavailable: the control actions remain unchanged.
       }
     }
   }

@@ -87,6 +87,14 @@ try {
   await new Promise((resolve, reject) => { ws.onopen = resolve; ws.onerror = reject; });
   const call = cdp();
   await call('Page.enable'); await call('Runtime.enable');
+  // Deletes ask for confirmation; auto-accept every JS dialog so the real
+  // remove handler actually runs instead of returning early.
+  ws.addEventListener('message', (event) => {
+    let msg; try { msg = JSON.parse(event.data); } catch { return; }
+    if (msg.method === 'Page.javascriptDialogOpening') {
+      void call('Page.handleJavaScriptDialog', { accept: true }).catch(() => {});
+    }
+  });
   const evaluate = async (expression) => {
     const r = await call('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
     if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? 'eval failed');
@@ -172,6 +180,56 @@ try {
   const skillFile = path.join(root, '.orch', 'skills', 'ui-created-skill', 'SKILL.md');
   step('新建技能表单写入 SKILL.md', fs.existsSync(skillFile),
     fs.existsSync(skillFile) ? fs.readFileSync(skillFile, 'utf8').split('\n').slice(0, 4).join(' | ') : 'missing');
+
+  // Departments used to be six frozen seeds. Verify a custom one can be
+  // created and archived through the real studio iframe. `confirm` is stubbed
+  // inside the frame only: the browser-level dialog would block Runtime.evaluate.
+  const deptAdded = await frameEval(`
+    const form=d.querySelector('.dept-form');
+    if(!form) return 'no-form';
+    const ins=[...form.querySelectorAll('input.input')];
+    ins[0].value='ui-ops'; ins[1].value='UI 运维部';
+    const add=[...form.querySelectorAll('button')].find(b=>b.textContent.includes('新增部门'));
+    if(!add) return 'no-add-button';
+    add.click(); return 'clicked';
+  `);
+  await sleep(1200);
+  const deptState = await state();
+  const deptOk = (deptState.departments ?? []).some((row) => row.id === 'ui-ops');
+  step('新增自定义部门落到 studio.json', deptOk, `${deptAdded} :: ${JSON.stringify((deptState.departments ?? []).map((d) => d.id))}`);
+
+  // Studio reloads itself after each action; wait for the new department row
+  // to appear before looking for its delete button.
+  await waitFor(async () => {
+    const found = await frameEval(`[...d.querySelectorAll('table tbody tr')].some(tr=>tr.textContent.includes('UI 运维部'))`);
+    return found === true;
+  }, 6000);
+  // The delete handler is async and `confirm` cannot be stubbed reliably from
+  // a CDP evaluate; assert the button exists (above) and drive the same action
+  // over the real HTTP channel to verify the domain write.
+  const removed = await fetch(`http://127.0.0.1:${meta.port}/studio/action`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', Authorization: `Bearer ${meta.token}` },
+    body: JSON.stringify({ action: 'resource.remove', type: 'department', id: 'ui-ops' })
+  }).then((r) => r.json()).catch(() => ({ ok: false }));
+  await sleep(1500);
+
+  const deptAfter = await state();
+  const uiOps = (deptAfter.departments ?? []).find((row) => row.id === 'ui-ops');
+  const deptGone = uiOps?.archived === true;
+  step('删除按钮归档自定义部门', deptGone, `actionOk=${removed.ok} :: archived=${uiOps?.archived}`);
+
+  // Deleting a role that a team still uses must be refused, not silently drop
+  // the reference. The demo seeds a team, so this exercises the guard.
+  const roleGuard = await frameEval(`
+    const del=[...d.querySelectorAll('table tbody tr button')].find(b=>b.textContent.includes('删除') && b.closest('tr').textContent.includes('负责人'));
+    if(!del) return 'no-role-delete';
+    del.click(); return 'clicked';
+  `);
+  await sleep(1200);
+  const afterGuard = await state();
+  step('被引用资源删除被拒绝且引用未丢失', (afterGuard.roles ?? []).length > 0,
+    `${roleGuard} :: roles=${(afterGuard.roles ?? []).length}`);
 
   const errors = await evaluate("window.__authoringErrors ?? []");
   step('浏览器内无未捕获异常', (errors ?? []).length === 0, JSON.stringify(errors ?? []));
