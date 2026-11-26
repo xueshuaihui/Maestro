@@ -149,6 +149,69 @@ test('A1-04: app directory marker is reported for WorkBuddy', () => {
   }
 });
 
+test('A1-08: a CLI bundled inside an app package resolves to its shim, not just evidence', () => {
+  const fx = fixture();
+  try {
+    // DeepSeek Harness ships `dsh` in Contents/Resources/runtime/cli/bin and
+    // never links it onto PATH; the app marker alone used to yield
+    // executable: null, so the finding read "installed but not on PATH".
+    const appDir = path.join(fx.apps, 'DeepSeek Harness.app');
+    const shimDir = path.join(appDir, 'Contents', 'Resources', 'runtime', 'cli', 'bin');
+    fs.mkdirSync(shimDir, { recursive: true });
+    const shim = path.join(shimDir, 'dsh');
+    fs.writeFileSync(shim, '#!/bin/sh\necho dsh\n', 'utf8');
+    fs.chmodSync(shim, 0o755);
+
+    const result = discoverAgentClis({
+      env: {},
+      home: fx.home,
+      platform: 'darwin',
+      pathEntries: [],
+      appDirs: [fx.apps],
+      npmGlobalRoot: null,
+      clock: () => '2026-11-26T00:00:00.000Z'
+    });
+    const dsh = result.findings.find((item) => item.cli_id === 'dsh');
+    assert.ok(dsh, 'bundled dsh must be discovered');
+    assert.equal(dsh.executable, shim, 'the bundled shim is the executable');
+    assert.equal(dsh.not_on_path, false, 'a bundled shim is launchable');
+    assert.equal(dsh.bundled, true);
+    assert.ok(dsh.evidence.some((item) => item.type === 'app-bin'));
+    // `dsh --acp` rejects the flag: the ACP entry is a profile launcher.
+    assert.deepEqual(dsh.acp_args, ['--profile', 'acp']);
+  } finally {
+    fx.cleanup();
+  }
+});
+
+test('A1-09: npm global root falls back to nvm when the GUI process has no npm', () => {
+  const fx = fixture();
+  try {
+    // A window launched from Finder has no npm on PATH, so `npm root -g`
+    // cannot run; without the fallback every npm-distributed CLI stayed
+    // "not ready" forever on such machines.
+    const pkg = path.join(fx.home, '.nvm', 'versions', 'node', 'v22.10.0', 'lib', 'node_modules',
+      '@anthropic-ai', 'claude-code');
+    fs.mkdirSync(pkg, { recursive: true });
+
+    const result = discoverAgentClis({
+      env: {},
+      home: fx.home,
+      platform: 'darwin',
+      pathEntries: [],
+      appDirs: [],
+      clock: () => '2026-11-26T00:00:00.000Z'
+    });
+    assert.equal(result.sources.npm_global_root, path.join(fx.home, '.nvm', 'versions', 'node',
+      'v22.10.0', 'lib', 'node_modules'));
+    const claude = result.findings.find((item) => item.cli_id === 'claude-code');
+    assert.ok(claude, 'claude-code discovered through the nvm root');
+    assert.ok(claude.evidence.some((item) => item.type === 'npm-global'));
+  } finally {
+    fx.cleanup();
+  }
+});
+
 test('A1-05: no evidence means no finding (no false positives)', () => {
   const fx = fixture();
   try {
