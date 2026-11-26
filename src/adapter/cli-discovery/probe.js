@@ -130,10 +130,21 @@ export async function probeVersion(finding, options = {}) {
   });
   if (!result.ok) return result;
 
-  const line = (result.stdout || result.stderr).split(/\r?\n/).find((v) => v.trim().length > 0);
+  // Version output is often mixed with launcher noise. `dsh --version` exits 0
+  // after printing two Electron `SecCodeCheckValidity` / `NODE_OPTIONS`
+  // warnings to stderr, so "first non-empty line" reported a warning instead
+  // of a version. Prefer the first line that actually carries a version
+  // number, and fall back to the last non-empty line (built tools often print
+  // a banner first and the version last).
+  const lines = [result.stdout, result.stderr]
+    .flatMap((text) => String(text ?? '').split(/\r?\n/))
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+  const versioned = lines.find((line) => /\d+\.\d+\.\d+/.test(line));
+  const line = versioned ?? lines[lines.length - 1] ?? null;
   return {
     ok: true,
-    version: line ? line.trim().slice(0, 200) : null,
+    version: line ? line.slice(0, 200) : null,
     exitCode: result.code
   };
 }

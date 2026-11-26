@@ -59,6 +59,9 @@ pub struct ShellState {
     pub notify_enabled: AtomicBool,
     /// One-shot guard so the A-2 "notification unavailable" hint is recorded once.
     pub notify_hint_shown: AtomicBool,
+    /// Set once the window has been pointed at the daemon-served UI, so the
+    /// `startup_status` poll never re-navigates a page the user is using.
+    pub ui_navigated: AtomicBool,
     /// Last delivered `mergedCount` per `(kind, instanceId)` key (D-46 dedup).
     pub notify_seen: Mutex<HashMap<String, u64>>,
 }
@@ -148,6 +151,7 @@ fn main() {
         last_notify: Mutex::new(None),
         notify_enabled: AtomicBool::new(!args.no_notify),
         notify_hint_shown: AtomicBool::new(false),
+        ui_navigated: AtomicBool::new(false),
         notify_seen: Mutex::new(HashMap::new()),
     };
 
@@ -174,10 +178,13 @@ fn main() {
         ])
         .setup(move |app| {
             // Daemon child first: it starts serving while the window builds.
-            let daemon_pid = spawn_root
-                .as_deref()
-                .map(|root| spawn::spawn_daemon(app.handle(), root))
-                .unwrap_or(0);
+            // A healthy core for the same project is adopted instead of
+            // spawning a second one (which would exit immediately and leave
+            // the shell pointing at whatever `desktop.json` happened to say).
+            let (daemon_pid, adopted) = match spawn_root.as_deref() {
+                Some(root) => ensure_daemon(app.handle(), root),
+                None => (0, false),
+            };
 
             let win = tauri::WebviewWindowBuilder::new(
                 app,
@@ -198,14 +205,14 @@ fn main() {
                     },
                     "view": probe_view,
                     "message": missing_message,
-                    "daemon": { "pid": daemon_pid },
+                    "daemon": { "pid": daemon_pid, "adopted": adopted },
                 }),
             );
 
             tray::init(app.handle())?;
 
             if let Some(root) = spawn_root.as_deref() {
-                if daemon_pid != 0 {
+                if daemon_pid != 0 || adopted {
                     let stop = app.state::<ShellState>().stop.clone();
                     start_tray_status_poller(app.handle().clone(), root.to_path_buf(), stop);
                     start_project_services(app.handle().clone(), root.to_path_buf());
@@ -234,6 +241,36 @@ fn main() {
             stop_run.store(true, Ordering::Relaxed);
         }
     });
+}
+
+/// Start (or adopt) the core for `root`.
+///
+/// Adoption is the important half. The previous version spawned a child and
+/// then trusted `.orch/desktop.json` to describe it; a record left behind by a
+/// crashed core made the window navigate to a dead port, so it spun on
+/// "connecting" forever. Here a channel only counts as running when it answers
+/// `core.ping`, its pid is alive and its generation matches the record. A core
+/// that holds the socket but cannot serve is retired first — otherwise the new
+/// child exits with `CORE_ALREADY_RUNNING` and nothing is listening.
+fn ensure_daemon(app: &tauri::AppHandle, root: &std::path::Path) -> (u32, bool) {
+    if spawn::channel_ready(root) {
+        probe::event(
+            "daemon-adopted",
+            json!({ "root": root.to_string_lossy() }),
+        );
+        return (0, true);
+    }
+    if spawn::core_answers(root) {
+        // Alive but unusable: a stale record, a generation mismatch, or an
+        // HTTP channel that never came up. Ask it to stop, then start fresh.
+        probe::event(
+            "daemon-unhealthy",
+            json!({ "root": root.to_string_lossy() }),
+        );
+        spawn::retire_core(root, 3000);
+    }
+    spawn::clear_stale(root);
+    (spawn::spawn_daemon(app, root), false)
 }
 
 /// Labels before the channel is live; the values are the A-3/A-6 baselines.
@@ -299,21 +336,25 @@ async fn pick_project(app: tauri::AppHandle) -> Option<String> {
 
 /// Whether the daemon HTTP channel for the bound project is serving. The token
 /// never leaves the shell; the page only needs the boolean.
-#[tauri::command]
+///
+/// `async` on purpose: the liveness check is a real round trip (a wedged core
+/// burns the full timeout), and a synchronous command would run it on the main
+/// thread — the window would freeze exactly when the daemon is unhealthy.
+#[tauri::command(async)]
 fn startup_status(app: tauri::AppHandle) -> Value {
     let root = app.state::<ShellState>().project_root.lock().unwrap().clone();
     let ready = root
         .as_deref()
-        .and_then(config::read_desktop_json)
-        .map(|meta| {
-            let port = meta.get("port").and_then(Value::as_u64).unwrap_or(0);
-            let token = meta.get("token").and_then(Value::as_str).unwrap_or("");
-            port != 0 && !token.is_empty()
-        })
+        .map(spawn::channel_ready)
         .unwrap_or(false);
     if ready {
         if let Some(root) = root.as_deref() {
-            spawn::navigate_to_ui(&app, root);
+            // Re-navigate only until the window has actually been pointed at
+            // the daemon UI; re-issuing navigation on every poll would reload
+            // the page the user is already working in.
+            if !app.state::<ShellState>().ui_navigated.load(Ordering::SeqCst) {
+                spawn::navigate_to_ui(&app, root);
+            }
         }
     }
     json!({ "ready": ready })
@@ -334,7 +375,16 @@ pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
     let current = app.state::<ShellState>().project_root.lock().unwrap().clone();
     if let Some(current) = current {
         if current == root {
-            return Ok(0);
+            // "试了还是连不上" must be a real retry: the same root re-enters the
+            // same ensure path, which retires a wedged core and respawns it.
+            app.state::<ShellState>()
+                .ui_navigated
+                .store(false, Ordering::SeqCst);
+            let (pid, adopted) = ensure_daemon(app, &root);
+            if pid == 0 && !adopted {
+                return Err(labels.conn_failed.clone());
+            }
+            return Ok(pid);
         }
         return Err(labels.conn_failed.clone());
     }
@@ -345,10 +395,11 @@ pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
         *state.project_root.lock().unwrap() = Some(root.clone());
         *state.invalid_project.lock().unwrap() = None;
         *state.view.lock().unwrap() = "instances".to_string();
+        state.ui_navigated.store(false, Ordering::SeqCst);
     }
 
-    let pid = spawn::spawn_daemon(app, &root);
-    if pid == 0 {
+    let (pid, adopted) = ensure_daemon(app, &root);
+    if pid == 0 && !adopted {
         app.state::<ShellState>().project_root.lock().unwrap().take();
         return Err(labels.conn_failed);
     }
@@ -357,7 +408,7 @@ pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
     start_project_services(app.clone(), root.clone());
     probe::event(
         "project-opened",
-        json!({ "root": root, "daemonPid": pid }),
+        json!({ "root": root, "daemonPid": pid, "adopted": adopted }),
     );
     Ok(pid)
 }
@@ -443,10 +494,11 @@ pub fn http_post_json(port: u16, path: &str, token: &str) -> Option<Value> {
 /// disconnected info line and emits a `tray-status` line with null numbers.
 fn start_tray_status_poller(app: tauri::AppHandle, root: PathBuf, stop: Arc<AtomicBool>) {
     std::thread::spawn(move || {
-        // Wait for the channel descriptor before the first poll so a cold
-        // start never emits a spurious disconnected line.
+        // Wait for a channel that actually answers before the first poll so a
+        // cold start never emits a spurious disconnected line (and a stale
+        // `desktop.json` is not mistaken for a live one).
         while !stop.load(Ordering::Relaxed) {
-            if config::read_desktop_json(&root).is_some() {
+            if spawn::channel_ready(&root) {
                 break;
             }
             std::thread::sleep(Duration::from_millis(200));

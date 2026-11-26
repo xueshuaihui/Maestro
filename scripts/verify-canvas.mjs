@@ -308,6 +308,68 @@ try {
   step('拖拽位置写入本地布局偏好', Boolean(stored && stored.x !== before.x),
     JSON.stringify({ dragDiag, stored, before }));
 
+  // --- zoom & pan ---------------------------------------------------------
+  // The canvas shipped with a fixed viewBox, so a 12-stage flow was a wall of
+  // unreadable miniatures. Zoom is a first-class control now: wheel, buttons
+  // and "fit" must all move the viewBox (and the percentage readout).
+  const readViewport = () => evaluate(`(() => ({
+    box: document.querySelector('.canvas-svg')?.getAttribute('viewBox') ?? '',
+    zoom: document.querySelector('.canvas-zoom-text')?.textContent ?? '',
+  }))()`);
+  const view0 = await readViewport();
+  await evaluate(`(() => {
+    const svg=document.querySelector('.canvas-svg');
+    if(!svg) return false;
+    const r=svg.getBoundingClientRect();
+    svg.dispatchEvent(new WheelEvent('wheel', {
+      deltaY:-120, clientX:r.left+r.width/2, clientY:r.top+r.height/2,
+      bubbles:true, cancelable:true
+    }));
+    return true;
+  })()`);
+  await sleep(200);
+  const view1 = await readViewport();
+  step('滚轮放大改变视口并更新百分比', view1.box !== view0.box && view1.zoom !== '100%',
+    JSON.stringify({ before: view0, after: view1 }));
+
+  await evaluate(`(() => {
+    const b=[...document.querySelectorAll('button')]
+      .find(x=>x.getAttribute('data-action')==='canvas-zoom-fit');
+    if(!b) return false; b.click(); return true;
+  })()`);
+  await sleep(250);
+  const viewFit = await readViewport();
+  step('适应窗口回到 100%', viewFit.zoom.trim() === '100%' || viewFit.box === view0.box,
+    JSON.stringify(viewFit));
+
+  await evaluate(`(() => {
+    const b=[...document.querySelectorAll('button')]
+      .find(x=>x.getAttribute('data-action')==='canvas-zoom-in');
+    if(!b) return false; b.click(); return true;
+  })()`);
+  await sleep(250);
+  const viewIn = await readViewport();
+  step('放大按钮生效', viewIn.box !== viewFit.box, JSON.stringify(viewIn));
+
+  // Pan: drag the empty canvas (not a node) and expect the box to move while
+  // the zoom level stays put.
+  const panTarget = await evaluate(`(() => {
+    const svg=document.querySelector('.canvas-svg');
+    if(!svg) return null;
+    const r=svg.getBoundingClientRect();
+    return { x:r.left+8, y:r.top+8 };
+  })()`);
+  if (panTarget) {
+    await call('Input.dispatchMouseEvent', { type: 'mousePressed', x: panTarget.x, y: panTarget.y, button: 'left', buttons: 1, clickCount: 1 });
+    await call('Input.dispatchMouseEvent', { type: 'mouseMoved', x: panTarget.x + 40, y: panTarget.y + 24, button: 'left', buttons: 1 });
+    await call('Input.dispatchMouseEvent', { type: 'mouseReleased', x: panTarget.x + 40, y: panTarget.y + 24, button: 'left', buttons: 0, clickCount: 1 });
+  }
+  await sleep(200);
+  const viewPan = await readViewport();
+  step('拖拽空白处平移画布且缩放不变',
+    viewPan.box !== viewIn.box && viewPan.zoom === viewIn.zoom,
+    JSON.stringify({ before: viewIn, after: viewPan }));
+
   await call('Page.reload', { ignoreCache: true });
   await waitFor(() => evaluate("Boolean(document.querySelector('#app')?.textContent?.trim())"), 20000);
   await evaluate(openCanvas);

@@ -71,6 +71,25 @@ const CLI = Object.freeze({
     bin: ['dsh'],
     npmPackages: ['@deepseek-ai/dsh'],
     homeDirs: ['.dsh', '.deepseek-harness'],
+    // The macOS/Windows installer never writes an entry into PATH: the only
+    // CLI is the launcher shim shipped inside the bundle
+    // (`Contents/Resources/runtime/cli/bin/dsh`). Without `appNames` the app
+    // directory was never a candidate, so a working install reported
+    // "installed but not on PATH" forever.
+    appNames: ['DeepSeek Harness.app', 'DeepSeek Harness'],
+    appBins: [
+      'Contents/Resources/runtime/cli/bin/dsh',
+      'Contents/Resources/runtime/bin/dsh',
+      'Contents/Resources/cli/bin/dsh',
+      'Contents/MacOS/dsh',
+      'resources/runtime/cli/bin/dsh',
+      'resources/cli/bin/dsh',
+      'resources/app.asar.unpacked/bin/dsh'
+    ],
+    // `dsh --acp` exits with `error: --profile <name> is required`: dsh is a
+    // profile launcher, not a flag-driven binary. The bundled ACP server runs
+    // behind the `acp` profile, so the handshake starts with that profile.
+    acpArgs: ['--profile', 'acp'],
     versionArgs: ['--version']
   },
   copilot: {

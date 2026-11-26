@@ -156,8 +156,11 @@
       const status = document.getElementById('status');
       const error = document.getElementById('error');
 
-      const POLL_MS = 300;
-      const TIMEOUT_MS = 15000;
+      const POLL_MS = 400;
+      // A cold start compiles the orchestrator graph before the HTTP channel
+      // is up; 15s produced false failures on slow disks. The channel probe
+      // itself is bounded (ping + HTTP), so the ceiling stays honest.
+      const TIMEOUT_MS = 25000;
 
       let info = {};
       let busy = false;
@@ -244,7 +247,7 @@
       }
 
       function stopPolling() {
-        if (polling !== null) clearInterval(polling);
+        if (polling !== null) clearTimeout(polling);
         polling = null;
       }
 
@@ -261,7 +264,10 @@
       function startPolling() {
         stopPolling();
         const startedAt = Date.now();
-        polling = setInterval(async () => {
+        // Self-scheduling instead of setInterval: `startup_status` performs a
+        // real liveness round trip, so an overlapping timer would stack calls.
+        const tick = async () => {
+          polling = null;
           if (Date.now() - startedAt > TIMEOUT_MS) {
             fail(info.failed ?? '');
             return;
@@ -277,7 +283,9 @@
           } catch {
             // A transient IPC failure is treated like "not ready yet".
           }
-        }, POLL_MS);
+          if (polling === null) polling = setTimeout(tick, POLL_MS);
+        };
+        polling = setTimeout(tick, POLL_MS);
       }
 
       async function submit() {

@@ -52,7 +52,7 @@ const MATRIX_COLUMN_TEXT = Object.freeze({
   evidence_hook: T.MATRIX_COL_EVIDENCE_HOOK
 });
 
-const SOURCE_TYPES = Object.freeze(['path', 'home', 'app', 'npm-global', 'user-config']);
+const SOURCE_TYPES = Object.freeze(['path', 'app-bin', 'app', 'home', 'npm-global', 'user-config']);
 
 function statusText(status) {
   return STATUS_TEXT[status] ?? String(status);
@@ -81,7 +81,8 @@ function renderList(clis, scannedAt) {
       cli.cli_id,
       cli.name,
       cli.version ?? '-',
-      statusText(cli.connection_status) + (cli.not_on_path ? ` (${T.NOT_ON_PATH})` : ''),
+      statusText(cli.connection_status)
+        + (cli.not_on_path ? ` (${T.NOT_ON_PATH})` : (cli.bundled ? ` (${T.BUNDLED})` : '')),
       cli.executable ?? '-',
       evidenceText(cli)
     ].join('  |  '));

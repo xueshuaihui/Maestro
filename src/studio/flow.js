@@ -62,7 +62,9 @@ export function buildRd12() {
   return {
     id: 'rd-12',
     name: '',
-    titleKey: 'STUDIO_FLOW_RD12',
+    // Same key the CLI prints for this template (`STUDIO_TEXT.FLOW_RD12`);
+    // a key with no entry rendered the flow as its bare id in every list.
+    titleKey: 'FLOW_RD12',
     kind: 'builtin',
     runMode: 'semi',
     gates: ['prd-freeze', 'arch-confirm', 'release-approve'],

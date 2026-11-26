@@ -239,7 +239,12 @@ async function buildState(root) {
       executable: cli.executable ?? null,
       status: cli.connection_status,
       acp: cli.acp ?? null,
-      version: cli.version ?? null
+      version: cli.version ?? null,
+      bundled: cli.bundled === true,
+      notOnPath: cli.not_on_path === true,
+      // The ACP entrypoint is per-CLI (`acp`, `--acp`, `--profile acp`); the
+      // page must not guess, or binding dsh starts a process that exits 1.
+      acpArgs: Array.isArray(cli.acp_args) ? cli.acp_args : ['--acp']
     })),
     readiness: { ok: org.ok, errors: org.errors, warnings: org.warnings },
     // Hosts are what `POST /instances` actually needs; surfacing them here
@@ -250,6 +255,26 @@ async function buildState(root) {
     runModes: ['auto', 'semi', 'manual'],
     runModeLabels: { auto: T.MODE_AUTO, semi: T.MODE_SEMI, manual: T.MODE_MANUAL }
   };
+}
+
+/**
+ * A free `flow-<n>` id for a create without an explicit id.
+ *
+ * The page used to let `createFlow` derive the id from the template (`rd-12`),
+ * so the second "create workflow" click always failed with
+ * `STUDIO_FLOW_EXISTS` — the button looked broken. A generated id keeps the
+ * domain rule ("explicit duplicate id is an error") intact while making the
+ * button idempotent-by-identity: every click really creates a new flow.
+ */
+function nextFlowId(doc) {
+  const used = new Set((doc.flows ?? []).map((flow) => flow.id));
+  let n = used.size + 1;
+  let id = `flow-${n}`;
+  while (used.has(id)) {
+    n += 1;
+    id = `flow-${n}`;
+  }
+  return id;
 }
 
 /** Deterministic wrappers: each returns `{ok:true, ...}` or a domain failure. */
@@ -403,12 +428,16 @@ const ACTIONS = Object.freeze({
   async 'team.update'(root, payload) {
     let updated = null;
     const saved = await updateStudio(root, (doc) => {
-      const result = updateTeam(doc, payload.teamId, {
+      const result = updateTeam(doc, payload.teamId ?? payload.id, {
         name: payload.name,
         flowId: payload.flowId === undefined ? undefined : payload.flowId,
         runMode: payload.runMode,
         gates: Array.isArray(payload.gates) ? payload.gates : undefined,
-        addRole: payload.addRole
+        // The team form sets the whole member set in one save; `addRole` /
+        // `removeRole` stay for the CLI's incremental verbs.
+        roleIds: Array.isArray(payload.roleIds) ? payload.roleIds : undefined,
+        leadRoleId: typeof payload.leadRoleId === 'string' ? payload.leadRoleId : undefined,
+        addRole: typeof payload.addRole === 'string' ? payload.addRole : undefined
       });
       if (!result.ok) return result;
       updated = result.team;
@@ -423,13 +452,22 @@ const ACTIONS = Object.freeze({
     const saved = await updateStudio(root, (doc) => {
       // `builtin` means "instantiate the built-in organisation flow under a
       // fresh id"; the caller never has to know the template id.
-      const spec = payload.builtin === true || payload.template === 'rd-12'
+      const builtin = payload.builtin === true || payload.template === 'rd-12';
+      const spec = builtin
         ? { template: 'rd-12' }
         : { stages: payload.stages ?? [], edges: payload.edges ?? [] };
+      const explicitId = typeof payload.id === 'string' && payload.id.trim().length > 0
+        ? payload.id.trim()
+        : null;
+      const rawName = typeof payload.name === 'string' ? payload.name.trim() : '';
+      // An unnamed template instance still needs a human name; showing the
+      // generated id in every list is what made "新建工作流" look like it
+      // produced a broken row.
+      const name = rawName.length > 0 || !builtin ? rawName : t('FLOW_RD12');
       const result = createFlow(doc, {
         ...spec,
-        name: payload.name ?? '',
-        id: payload.id,
+        name,
+        id: explicitId ?? nextFlowId(doc),
         runMode: payload.runMode ?? 'semi'
       });
       if (!result.ok) return result;

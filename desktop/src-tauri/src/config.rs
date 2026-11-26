@@ -312,9 +312,14 @@ pub fn read_desktop_json(root: &Path) -> Option<Value> {
 
 /// Minimal loopback HTTP GET (`GET /ui/labels` with Bearer token).
 fn http_get_json(port: u16, path: &str, token: &str) -> Option<Value> {
+    http_get_json_with(port, path, token, Duration::from_secs(3))
+}
+
+fn http_get_json_with(port: u16, path: &str, token: &str, timeout: Duration) -> Option<Value> {
     let mut stream =
         TcpStream::connect(("127.0.0.1", port)).ok()?;
-    stream.set_read_timeout(Some(Duration::from_secs(3))).ok()?;
+    stream.set_read_timeout(Some(timeout)).ok()?;
+    stream.set_write_timeout(Some(timeout)).ok()?;
     let request = format!(
         "GET {path} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\nAuthorization: Bearer {token}\r\nConnection: close\r\n\r\n"
     );
@@ -326,6 +331,16 @@ fn http_get_json(port: u16, path: &str, token: &str) -> Option<Value> {
     let start = body.find('{')?;
     let end = body.rfind('}')?;
     serde_json::from_str(&body[start..=end]).ok()
+}
+
+/// Liveness check for the desktop channel: the endpoint the window is about
+/// to load must answer with the token from `desktop.json`, within 800 ms.
+/// A readable file proves nothing after a crash (the port is dead), which is
+/// the state that left the shell spinning on "connecting" forever.
+pub fn http_get_labels_ok(port: u16, token: &str) -> bool {
+    http_get_json_with(port, "/ui/labels", token, Duration::from_millis(800))
+        .map(|payload| payload.get("ok").and_then(Value::as_bool) != Some(false))
+        .unwrap_or(false)
 }
 
 /// Fetch labels from the daemon channel; `None` when unavailable (fallbacks stay).

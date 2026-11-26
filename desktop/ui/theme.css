@@ -450,7 +450,9 @@ tbody tr:hover { background: var(--surface-2); }
 .gnode.abnormal rect { animation: pulse-stroke 1.8s infinite; }
 @keyframes pulse-stroke { 50% { stroke-opacity: 0.45; } }
 
-.canvas-svg { display: block; min-height: 320px; }
+.canvas-svg { display: block; min-height: 320px; cursor: grab; touch-action: none; }
+.canvas-svg.panning { cursor: grabbing; }
+.canvas-zoom-text { min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
 .canvas-node { cursor: grab; }
 .canvas-node:active { cursor: grabbing; }
 .canvas-node:hover rect { stroke-width: 2.6; }

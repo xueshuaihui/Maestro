@@ -82,6 +82,7 @@ import { renderOccupancyRow, emptyText as occupancyEmptyText,
 import { titleText as canvasTitleText, validationBadge, degradeText as canvasDegradeText,
   nodeRow as canvasNodeRow, edgeRow as canvasEdgeRow, graphEdges } from './canvas/canvas.js';
 import { attachCanvasDrag, readCanvasOffsets, saveCanvasOffset, clearCanvasOffsets } from './canvas/drag.js';
+import { attachCanvasViewport, baseBox, normalizeViewport, zoomAround, ZOOM_STEP } from './canvas/viewport.js';
 import { renderEvidence, RENDER_LIMIT_BYTES } from './evidence/evidence.js';
 import { replaceIntent, queueTargetOf, stripEntryOf } from './notify/notify.js';
 // beta.2 shell: presentation layer split into chrome / pages / graph / drill.
@@ -400,6 +401,9 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
     canvasLinkMode: false,
     canvasOffsets: {},    // workflow id -> { nodeId: {x,y} } (local layout prefs)
     canvasLoadSeq: 0,     // monotonic guard: a slower older load must not win
+    // Zoom/pan of the workflow canvas. `1` always means "the whole flow fits",
+    // so the control stays meaningful whatever the flow's size is.
+    canvasViewport: { zoom: 1, pan: { x: 0, y: 0 } },
     // ---- beta.4 menu: last sub-tab per section (`run` -> `occupancy` ...) ----
     // Only tab views are remembered, so clicking a section never drops the user
     // back inside whatever instance happened to be open before.
@@ -1242,6 +1246,11 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
 
     async loadCanvas(id) {
       const canvasId = typeof id === 'string' && id.length > 0 ? id : state.canvasId;
+      // Switching flows starts a fresh viewport; re-reading the same flow (a
+      // save, a live frame) keeps the zoom the user set.
+      if (canvasId !== state.canvasId) {
+        state.canvasViewport = { zoom: 1, pan: { x: 0, y: 0 } };
+      }
       const seq = state.canvasLoadSeq + 1;
       state.canvasLoadSeq = seq;
       state.canvasId = canvasId;
@@ -1340,6 +1349,31 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       clearCanvasOffsets(globalThis.localStorage, state.canvasId ?? '');
       state.canvasOffsets = {};
       return api.loadCanvas(state.canvasId);
+    },
+
+    /**
+     * Commit a viewport produced by a gesture (wheel / drag). No repaint: the
+     * gesture already wrote the same `viewBox`, and repainting on every wheel
+     * tick would restart the flow's node drag targets mid-gesture.
+     */
+    setCanvasViewport(viewport) {
+      state.canvasViewport = normalizeViewport(viewport);
+      return api;
+    },
+
+    /** Zoom from a control: `in` / `out` / `fit`. */
+    zoomCanvas(mode) {
+      if (mode === 'fit') {
+        state.canvasViewport = { zoom: 1, pan: { x: 0, y: 0 } };
+        return api;
+      }
+      const current = normalizeViewport(state.canvasViewport);
+      const factor = mode === 'in' ? ZOOM_STEP : 1 / ZOOM_STEP;
+      const base = baseBox(state.canvas?.nodes ?? []);
+      // No anchor point: zoom about the current centre, which is what a
+      // keyboard/button zoom should do (the wheel anchors at the cursor).
+      state.canvasViewport = zoomAround(base, current, current.zoom * factor, null);
+      return api;
     },
 
     /**
@@ -2787,6 +2821,7 @@ export function mountApp({
   let toastTimer = null;
   let toastText = null;
   let detachCanvasDrag = null;
+  let detachCanvasViewport = null;
 
   function captureFocus() {
     const active = document.activeElement;
@@ -2843,7 +2878,33 @@ export function mountApp({
       detachCanvasDrag();
       detachCanvasDrag = null;
     }
+    if (typeof detachCanvasViewport === 'function') {
+      detachCanvasViewport();
+      detachCanvasViewport = null;
+    }
     if (model.view === 'canvas') {
+      // The page writes its fitted box onto the wrapper; the viewport module
+      // only needs that box plus the stored zoom/pan to reproduce the view.
+      let base = null;
+      const wrap = host.querySelector('.canvas-wrap');
+      try {
+        base = JSON.parse(wrap?.getAttribute('data-canvas-base') ?? 'null');
+      } catch {
+        base = null;
+      }
+      if (base !== null) {
+        detachCanvasViewport = attachCanvasViewport(host, {
+          base,
+          viewport: state.canvasViewport,
+          onChange: (viewport) => {
+            app.setCanvasViewport(viewport);
+            // The gesture already wrote the viewBox; without this the readout
+            // would freeze at the value from the last full repaint.
+            const label = host.querySelector('.canvas-zoom-text');
+            if (label) label.textContent = `${Math.round(viewport.zoom * 100)}%`;
+          },
+        });
+      }
       detachCanvasDrag = attachCanvasDrag(host, {
         onMove: (id, x, y) => {
           app.moveCanvasNode(id, x, y);
@@ -3768,6 +3829,12 @@ export function mountApp({
         paint();
         void app.loadCanvas(String(value)).then(paint);
         return;
+      case 'canvas-zoom-in':
+      case 'canvas-zoom-out':
+      case 'canvas-zoom-fit':
+        app.zoomCanvas(action === 'canvas-zoom-in' ? 'in' : action === 'canvas-zoom-out' ? 'out' : 'fit');
+        paint();
+        return;
       case 'canvas-node':
         app.setCanvasSelection('node', value?.id ?? null);
         paint();
@@ -4286,6 +4353,7 @@ export function mountApp({
     'drill-all-nodes', 'expand-groups', 'collapse-groups', 'zoom', 'reset-view',
     'exit-focus', 'toggle-not-started', 'retry-graph', 'back-to-list', 'jump-host',
     'pick-project', 'read-all', 'follow-notify', 'toggle-pref', 'export-otel', 'canvas-pick',
+    'canvas-zoom-in', 'canvas-zoom-out', 'canvas-zoom-fit',
     // beta.4 menu: the sidebar section and the workflow list's own verbs are
     // pressed, not clicked-after-a-live-frame, so a refresh cannot eat them.
     'section', 'flow-create', 'flow-copy', 'run-canvas-flow', 'resource-create',
@@ -4505,12 +4573,22 @@ export function mountApp({
   };
   document.addEventListener('keydown', onKeyDown);
 
-  // The Studio authoring page lives in an iframe. Its "view instances" exit
-  // arrives here so the two starting surfaces remain one product, not two
-  // unrelated windows the user has to stitch together by hand.
+  // The Studio authoring page lives in an iframe. Its "view instances" and
+  // "edit on canvas" exits arrive here so the two starting surfaces remain
+  // one product, not two unrelated windows the user has to stitch together.
   const onStudioMessage = (event) => {
-    if (event?.data?.action !== 'studio-nav-instances') return;
-    handleAction('nav', 'instances');
+    const action = event?.data?.action;
+    if (action === 'studio-nav-instances') {
+      handleAction('nav', 'instances');
+      return;
+    }
+    if (action === 'studio-open-canvas') {
+      const flowId = typeof event.data.flowId === 'string' ? event.data.flowId : null;
+      if (flowId === null) return;
+      app.setView('canvas');
+      paint();
+      void app.loadCanvas(flowId).then(paint);
+    }
   };
   window.addEventListener('message', onStudioMessage);
 

@@ -242,6 +242,166 @@ pub fn pipe_alive(root: &Path) -> bool {
     UnixStream::connect(pipe_path(root)).is_ok()
 }
 
+/// A decoded `core.ping` answer: who is actually serving this socket.
+#[cfg(unix)]
+#[derive(Clone, Debug)]
+pub struct CoreAnswer {
+    pub pid: u32,
+    pub generation: String,
+}
+
+/// Ask the core who it is, with a hard deadline.
+///
+/// `connect()` succeeding only proves a listener exists on the socket file:
+/// a wedged process (event loop blocked, half-dead child) still accepts the
+/// connection and then never answers. That is exactly the state that made the
+/// window spin forever on "connecting", so liveness must be a round trip.
+#[cfg(unix)]
+pub fn core_answer(root: &Path, timeout_ms: u64) -> Option<CoreAnswer> {
+    let id = format!("shell-ping-{}", std::process::id());
+    let frame = json!({ "v": 1, "kind": "req", "id": id, "method": "core.ping", "params": {} });
+    let mut stream = UnixStream::connect(pipe_path(root)).ok()?;
+    stream.set_read_timeout(Some(Duration::from_millis(timeout_ms))).ok()?;
+    stream.set_write_timeout(Some(Duration::from_millis(timeout_ms))).ok()?;
+    stream
+        .write_all(format!("{}\n", serde_json::to_string(&frame).ok()?).as_bytes())
+        .ok()?;
+    let reader = BufReader::new(stream);
+    for line in reader.lines() {
+        let Ok(line) = line else { break };
+        let Ok(value) = serde_json::from_str::<Value>(&line) else { continue };
+        if value.get("kind").and_then(Value::as_str) != Some("res") {
+            continue;
+        }
+        if value.get("id").and_then(Value::as_str) != Some(id.as_str()) {
+            continue;
+        }
+        let result = value.get("result")?;
+        let pid = result.get("pid").and_then(Value::as_u64).unwrap_or(0) as u32;
+        let generation = result
+            .get("generation")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+            .to_string();
+        return Some(CoreAnswer { pid, generation });
+    }
+    None
+}
+
+/// Is the process still there? `kill -0` needs no extra crate and never sends
+/// a signal; ESRCH is the only answer that means "gone".
+#[cfg(unix)]
+pub fn pid_alive(pid: u32) -> bool {
+    if pid == 0 {
+        return false;
+    }
+    Command::new("/bin/kill")
+        .args(["-0", &pid.to_string()])
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map(|status| status.success())
+        .unwrap_or(false)
+}
+
+/// Is any core listening on this project's socket (even an unresponsive one)?
+#[cfg(unix)]
+pub fn core_answers(root: &Path) -> bool {
+    core_answer(root, 500).is_some()
+}
+
+#[cfg(windows)]
+pub fn core_answers(_root: &Path) -> bool {
+    false
+}
+
+/// Remove the stale desktop record and socket file left behind by a core that
+/// is gone (crash, force quit, container restart). Without this, the next
+/// launch sees a `desktop.json` pointing at a dead port and the window keeps
+/// showing the connecting line.
+pub fn clear_stale(root: &Path) {
+    let meta = root.join(".orch").join("desktop.json");
+    let mut removed = false;
+    if meta.exists() {
+        removed = std::fs::remove_file(&meta).is_ok() || removed;
+    }
+    #[cfg(unix)]
+    {
+        let socket = pipe_path(root);
+        if socket.exists() {
+            removed = std::fs::remove_file(&socket).is_ok() || removed;
+        }
+    }
+    if removed {
+        crate::probe::event(
+            "daemon-stale-cleared",
+            json!({ "root": root.to_string_lossy() }),
+        );
+    }
+}
+
+/// Send `core.stop` and wait (bounded) for the pipe to disappear.
+#[cfg(unix)]
+pub fn retire_core(root: &Path, wait_ms: u64) -> bool {
+    let frame = format!(
+        "{{\"v\":1,\"kind\":\"req\",\"id\":\"shell-retire-{}\",\"method\":\"core.stop\",\"params\":{{}}}}",
+        std::process::id()
+    );
+    send_frame(root, &frame);
+    let deadline = Instant::now() + Duration::from_millis(wait_ms);
+    while Instant::now() < deadline {
+        if !pipe_alive(root) {
+            return true;
+        }
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    false
+}
+
+/// Windows: the pipe name is not derivable here, so a wedged core cannot be
+/// asked to stop over IPC; the kill-based `stop_daemon` path owns that case.
+#[cfg(windows)]
+pub fn retire_core(_root: &Path, _wait_ms: u64) -> bool {
+    false
+}
+
+/// Is the desktop HTTP channel actually serving?
+///
+/// Verifying `desktop.json` alone is not enough: the file survives a crash and
+/// keeps pointing at a port nobody listens on. A ready channel requires the
+/// file, a live pid, an HTTP answer with the file's own token, and — on Unix —
+/// a `core.ping` whose `generation` matches the recorded one.
+pub fn channel_ready(root: &Path) -> bool {
+    let Some(meta) = crate::config::read_desktop_json(root) else {
+        return false;
+    };
+    let port = meta.get("port").and_then(Value::as_u64).unwrap_or(0) as u16;
+    let token = meta.get("token").and_then(Value::as_str).unwrap_or("");
+    let recorded_pid = meta.get("pid").and_then(Value::as_u64).unwrap_or(0) as u32;
+    let recorded_gen = meta.get("generation").and_then(Value::as_str).unwrap_or("");
+    if port == 0 || token.is_empty() {
+        return false;
+    }
+    #[cfg(unix)]
+    {
+        if !pid_alive(recorded_pid) {
+            return false;
+        }
+        let Some(answer) = core_answer(root, 800) else {
+            return false;
+        };
+        if !recorded_gen.is_empty() && answer.generation != recorded_gen {
+            return false;
+        }
+        if recorded_pid != 0 && answer.pid != recorded_pid {
+            return false;
+        }
+    }
+    // The window will load this exact endpoint, so it has to answer too.
+    crate::config::http_get_labels_ok(port, token)
+}
+
+
 /// Stop the daemon: the caller sends the encoded stop request frame, then we
 /// wait for the pipe to disappear, escalating to SIGTERM / SIGKILL on the
 /// child process as a backstop. Returns true when the pipe is gone.
@@ -308,12 +468,11 @@ fn http_get_json(port: u16, path: &str, token: &str) -> Option<Value> {
     serde_json::from_str(&body[start..=end]).ok()
 }
 
-/// Windows: the desktop channel descriptor is the liveness signal, since there
-/// is no socket file to probe (the named pipe name is not derivable here by
-/// design — see `running_instance_count`).
+/// Windows: the desktop channel descriptor plus a live HTTP answer is the
+/// liveness signal (the named pipe name is not derivable here by design).
 #[cfg(windows)]
 fn desktop_channel_alive(root: &Path) -> bool {
-    crate::config::read_desktop_json(root).is_some()
+    channel_ready(root)
 }
 
 /// Windows: there is no IPC frame to deliver (the pipe name lives on the Node
@@ -379,15 +538,26 @@ pub fn navigate_to_ui(app: &tauri::AppHandle, root: &std::path::Path) -> bool {
         query.append_pair("token", token);
         query.append_pair("project", &root.to_string_lossy());
     }
-    win.navigate(url).is_ok()
+    let navigated = win.navigate(url).is_ok();
+    if navigated {
+        app.state::<ShellState>()
+            .ui_navigated
+            .store(true, std::sync::atomic::Ordering::SeqCst);
+    }
+    navigated
 }
 
-/// Poll `<root>/.orch/desktop.json` until present (daemon HTTP channel up),
+/// Poll until the desktop channel is genuinely serving (see `channel_ready`),
 /// then refresh labels and point the window at the served UI.
+///
+/// The old loop returned on the first readable `desktop.json`, so a record
+/// left over from a crashed core navigated the window to a dead port and the
+/// connecting line never cleared.
 pub fn wait_desktop_channel(app: tauri::AppHandle, root: PathBuf) {
     std::thread::spawn(move || {
-        for _ in 0..100 {
-            if crate::config::read_desktop_json(&root).is_some() {
+        let deadline = Instant::now() + Duration::from_secs(20);
+        while Instant::now() < deadline {
+            if channel_ready(&root) {
                 if let Some(labels) = crate::config::fetch_labels(&root) {
                     let state = app.state::<ShellState>();
                     *state.labels.lock().unwrap() = labels;
@@ -397,7 +567,7 @@ pub fn wait_desktop_channel(app: tauri::AppHandle, root: PathBuf) {
                 navigate_to_ui(&app, &root);
                 return;
             }
-            std::thread::sleep(Duration::from_millis(100));
+            std::thread::sleep(Duration::from_millis(200));
         }
         // The shell page polls `startup_status` and turns this timeout into the
         // A-4 failure line; `startup_status` also retries navigation if the

@@ -143,9 +143,14 @@ export async function saveCliRegistry(root, scanResult, options = {}) {
       max_concurrent_sessions: finding.max_concurrent_sessions ?? null,
       connection_status: finding.connection_status ?? CLI_STATUS.IDLE,
       not_on_path: finding.not_on_path === true,
+      bundled: finding.bundled === true,
       verified_at: finding.verified_at ?? null,
       evidence: finding.evidence ?? [],
-      version_args: finding.version_args ?? ['--version']
+      version_args: finding.version_args ?? ['--version'],
+      // The ACP entrypoint differs per CLI (`--acp`, `acp`, `--profile acp`).
+      // Persisting it means a later bind (new session, another page) starts the
+      // same host instead of falling back to the legacy `--acp` flag.
+      acp_args: Array.isArray(finding.acp_args) ? finding.acp_args.slice() : ['--acp']
     }))
   };
 

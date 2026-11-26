@@ -133,7 +133,14 @@ try {
   step('点击一键示例按钮', demoClicked === true, `clicked=${demoClicked}`);
   if (!demoClicked) throw new Error('btn-demo not available in studio iframe');
   await waitFor(async () => (await state()).roles?.length > 0, 12000);
-  await sleep(800);
+  // The demo chains seed -> flow -> team -> run and repaints after each step.
+  // Wait for its completion toast, otherwise a later repaint replaces the role
+  // form between "fill" and "save".
+  await waitFor(async () => {
+    const text = await frameEval(`return d.getElementById('toast')?.textContent ?? '';`);
+    return typeof text === 'string' && text.includes('核心旅程已完成');
+  }, 25000);
+  await sleep(400);
 
   // Locate the edit-role buttons contributed by the new authoring UI.
   const editCount = await frameEval(`
@@ -236,6 +243,75 @@ try {
 
   const errors = await evaluate("window.__authoringErrors ?? []");
   step('浏览器内无未捕获异常', (errors ?? []).length === 0, JSON.stringify(errors ?? []));
+
+  // Creating a workflow twice must work twice. The page used to derive the id
+  // from the template (`rd-12`), so the second click always failed with
+  // STUDIO_FLOW_EXISTS and the button looked dead.
+  const flowTab = await frameEval(`
+    const tab=[...d.querySelectorAll('button[data-tab]')].find(b=>b.getAttribute('data-tab')==='flows');
+    if(!tab) return 'no-tab'; tab.click(); return 'ok';
+  `);
+  await sleep(500);
+  const clickCreate = () => frameEval(`
+    const b=[...d.querySelectorAll('button')].find(x=>x.textContent.includes('创建工作流'));
+    if(!b) return 'no-button'; b.click(); return 'clicked';
+  `);
+  const flowsBefore = ((await state()).flows ?? []).length;
+  const first = await clickCreate();
+  await waitFor(async () => ((await state()).flows ?? []).length === flowsBefore + 1, 10000);
+  const afterFirst = ((await state()).flows ?? []).length;
+  await sleep(300);
+  const second = await clickCreate();
+  await waitFor(async () => ((await state()).flows ?? []).length === flowsBefore + 2, 10000);
+  const afterSecond = ((await state()).flows ?? []).length;
+  step('新建工作流连续两次都成功', flowTab === 'ok' && afterFirst === flowsBefore + 1 && afterSecond === flowsBefore + 2,
+    `tab=${flowTab} first=${first} second=${second} flows=${flowsBefore}->${afterFirst}->${afterSecond}`);
+
+  // Team management runs through one drawer: new and edit share the same form,
+  // and the member set is saved in one call.
+  await frameEval(`
+    const tab=[...d.querySelectorAll('button[data-tab]')].find(b=>b.getAttribute('data-tab')==='teams');
+    if(!tab) return 'no-tab'; tab.click(); return 'ok';
+  `);
+  await sleep(400);
+  const teamsBefore = ((await state()).teams ?? []).length;
+  const opened = await frameEval(`
+    const b=[...d.querySelectorAll('button')].find(x=>x.textContent.trim()==='新建团队');
+    if(!b) return 'no-button'; b.click(); return 'clicked';
+  `);
+  await waitFor(async () => (await frameEval("return Boolean(d.querySelector('.drawer'))")) === true, 6000);
+  await frameEval(`
+    const form=d.querySelector('.drawer-form');
+    const name=form?.querySelector('input.input');
+    if(!name) return 'no-name';
+    name.value='UI 验证团队';
+    const save=[...d.querySelectorAll('.drawer button')].find(b=>b.textContent.includes('创建团队'));
+    if(!save) return 'no-save'; save.click(); return 'clicked';
+  `);
+  await waitFor(async () => ((await state()).teams ?? []).length === teamsBefore + 1, 10000);
+  const afterCreate = ((await state()).teams ?? []).length;
+  step('团队抽屉新建成功且列表更新', opened === 'clicked' && afterCreate === teamsBefore + 1,
+    `opened=${opened} teams=${teamsBefore}->${afterCreate}`);
+
+  await sleep(300);
+  const editOpened = await frameEval(`
+    const card=[...d.querySelectorAll('.team-card')].find(c=>c.textContent.includes('UI 验证团队'));
+    const b=card ? [...card.querySelectorAll('button')].find(x=>x.textContent.trim()==='编辑') : null;
+    if(!b) return 'no-edit'; b.click(); return 'clicked';
+  `);
+  await waitFor(async () => (await frameEval("return Boolean(d.querySelector('.drawer'))")) === true, 6000);
+  await frameEval(`
+    const sels=[...d.querySelectorAll('.drawer select')];
+    const mode=sels[sels.length-1];
+    if(!mode) return 'no-mode';
+    mode.value='manual'; mode.dispatchEvent(new Event('change',{bubbles:true}));
+    const save=[...d.querySelectorAll('.drawer button')].find(b=>b.textContent.includes('保存'));
+    if(!save) return 'no-save'; save.click(); return 'clicked';
+  `);
+  await waitFor(async () => ((await state()).teams ?? []).some((team) => team.name === 'UI 验证团队' && team.runMode === 'manual'), 10000);
+  const editedTeam = ((await state()).teams ?? []).find((team) => team.name === 'UI 验证团队');
+  step('团队抽屉编辑保存到磁盘', editOpened === 'clicked' && editedTeam?.runMode === 'manual',
+    `edit=${editOpened} runMode=${editedTeam?.runMode}`);
 } catch (err) {
   step('脚本执行', false, String(err?.stack ?? err).slice(0, 400));
 } finally {

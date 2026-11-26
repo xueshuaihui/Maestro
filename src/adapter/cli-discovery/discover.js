@@ -103,6 +103,126 @@ function appPaths(def, options, pathApi, fileSystem) {
   return result;
 }
 
+/**
+ * Executable candidates *inside* an application bundle.
+ *
+ * A GUI-packaged agent (DeepSeek Harness) ships its CLI as a launcher shim
+ * under `Contents/Resources/...` and never touches PATH. Treating the bundle
+ * as evidence only left `executable: null` even though a perfectly good shim
+ * was on disk. Two passes:
+ *
+ *   1. the declared relative paths (`appBins` in the known table);
+ *   2. a bounded scan of `app.asar.unpacked` for `<...>/bin/<name>`, because
+ *      the unpacked tree layout is not stable across packaging tools.
+ *
+ * The scan is depth-limited (6) and only looks for the exact basename, so it
+ * cannot walk a whole bundle.
+ */
+function appBinPaths(def, appPath, pathApi, fileSystem, platform) {
+  const found = [];
+  const bins = (def.bin ?? []).filter((name) => typeof name === 'string' && name.length > 0);
+  for (const rel of def.appBins ?? []) {
+    const target = pathApi.join(appPath, ...String(rel).split('/'));
+    if (exists(fileSystem, target) && isExecutable(fileSystem, target, platform)) found.push(target);
+  }
+  if (found.length > 0) return found;
+  const unpacked = pathApi.join(appPath, 'Contents', 'Resources', 'app.asar.unpacked');
+  const queue = [{ dir: unpacked, depth: 0 }];
+  while (queue.length > 0 && found.length === 0) {
+    const { dir, depth } = queue.shift();
+    if (depth > 6 || !isDir(fileSystem, dir)) continue;
+    let entries = [];
+    try {
+      entries = fileSystem.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      const child = pathApi.join(dir, entry.name);
+      if (entry.isDirectory?.()) queue.push({ dir: child, depth: depth + 1 });
+      else if (bins.includes(entry.name) && isExecutable(fileSystem, child, platform)) found.push(child);
+    }
+  }
+  return found;
+}
+
+/** Directory candidates for a global npm root, most specific first. */
+function npmRootCandidates(env, home, platform, pathApi) {
+  const out = [];
+  const prefix = env?.NPM_CONFIG_PREFIX;
+  if (typeof prefix === 'string' && prefix.length > 0) out.push(pathApi.join(prefix, 'lib', 'node_modules'));
+  if (platform === 'win32') {
+    const appData = env?.APPDATA;
+    const localAppData = env?.LOCALAPPDATA;
+    if (typeof appData === 'string' && appData.length > 0) out.push(pathApi.join(appData, 'npm', 'node_modules'));
+    if (typeof localAppData === 'string' && localAppData.length > 0) {
+      out.push(pathApi.join(localAppData, 'npm', 'node_modules'));
+    }
+    out.push(pathApi.join(env?.ProgramFiles ?? 'C:\\Program Files', 'nodejs', 'node_modules'));
+    return out;
+  }
+  if (!home) return out;
+  out.push(pathApi.join(home, '.npm-global', 'lib', 'node_modules'));
+  out.push('/opt/homebrew/lib/node_modules');
+  out.push('/usr/local/lib/node_modules');
+  out.push(pathApi.join(home, '.nvm', 'versions', 'node', '*', 'lib', 'node_modules'));
+  out.push(pathApi.join(home, '.volta', 'tools', 'image', 'node', '*', 'lib', 'node_modules'));
+  out.push(pathApi.join(home, '.fnm', 'node-versions', '*', 'installation', 'lib', 'node_modules'));
+  return out;
+}
+
+/** Expand one trailing `*` segment by listing directories (version roots). */
+function expandStar(candidate, pathApi, fileSystem) {
+  const marker = `${pathApi.sep}*${pathApi.sep}`;
+  const index = candidate.indexOf(marker);
+  if (index < 0) return [candidate];
+  const base = candidate.slice(0, index);
+  const rest = candidate.slice(index + marker.length);
+  let entries = [];
+  try {
+    entries = fileSystem.readdirSync(base, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  // Newest version first: a user with several nvm installs wants the one the
+  // shell would pick, and directory names sort lexically by version.
+  const names = entries
+    .filter((entry) => entry.isDirectory?.())
+    .map((entry) => entry.name)
+    .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+  return names.map((name) => pathApi.join(base, name, rest));
+}
+
+/**
+ * A usable npm global root without running `npm root -g`.
+ *
+ * The packaged GUI process has no `npm` on PATH, so the scan used to report
+ * `npm_global_root: null` and every npm-distributed CLI looked "not ready".
+ * These are the roots a Homebrew/nvm/volta/fnm install actually writes; the
+ * first one that exists wins, and a miss stays `null` (never a guess).
+ */
+export function resolveNpmGlobalRoot(options = {}) {
+  const fileSystem = options.fileSystem ?? fsSync;
+  const pathApi = options.pathApi ?? path;
+  const env = options.env ?? process.env;
+  const platform = options.platform ?? process.platform;
+  const home = options.home ?? env.HOME ?? env.USERPROFILE ?? '';
+  const existing = [];
+  for (const candidate of npmRootCandidates(env, home, platform, pathApi)) {
+    for (const expanded of expandStar(candidate, pathApi, fileSystem)) {
+      if (!isDir(fileSystem, expanded)) continue;
+      // Prefer a root that actually holds an agent CLI: a Homebrew install
+      // with an empty `lib/node_modules` must not shadow the nvm root where
+      // the user's CLIs really live.
+      const hasKnown = KNOWN_AGENT_CLI.some((def) => (def.npmPackages ?? [])
+        .some((pkg) => isDir(fileSystem, pathApi.join(expanded, pkg))));
+      if (hasKnown) return expanded;
+      existing.push(expanded);
+    }
+  }
+  return existing[0] ?? null;
+}
+
 function npmPackagePaths(def, npmGlobalRoot, pathApi, fileSystem) {
   if (!npmGlobalRoot) return [];
   return (def.npmPackages ?? [])
@@ -176,7 +296,11 @@ export function discoverAgentClis(options = {}) {
 
   const pathEntries = options.pathEntries ?? splitPath(env.PATH, separator);
   const appDirs = options.appDirs ?? defaultAppDirs(home, platform, pathApi);
-  const npmGlobalRoot = options.npmGlobalRoot ?? null;
+  // Never default straight to `null`: a packaged GUI has no `npm` to ask, and
+  // that turned every npm-distributed CLI into "installed, not on PATH".
+  const npmGlobalRoot = options.npmGlobalRoot !== undefined
+    ? options.npmGlobalRoot
+    : resolveNpmGlobalRoot({ env, home, platform, pathApi, fileSystem });
 
   const detectedAt = clock();
   const findings = [];
@@ -196,8 +320,22 @@ export function discoverAgentClis(options = {}) {
     for (const marker of homeMarkerPaths(def, home, pathApi)) {
       evidence.push({ type: 'home', value: marker });
     }
-    for (const app of appPaths(def, { appDirs }, pathApi, fileSystem)) {
+    const apps = appPaths(def, { appDirs }, pathApi, fileSystem);
+    for (const app of apps) {
       evidence.push({ type: 'app', value: app });
+    }
+    // A bundle-internal shim is a real, spawnable executable: it becomes the
+    // finding's `executable` (never just evidence), so the row stops reading
+    // "installed but not on PATH" while the CLI is perfectly runnable.
+    if (executable === null) {
+      for (const app of apps) {
+        const bins = appBinPaths(def, app, pathApi, fileSystem, platform);
+        if (bins.length > 0) {
+          executable = bins[0];
+          evidence.push({ type: 'app-bin', value: bins[0] });
+          break;
+        }
+      }
     }
     for (const pkg of npmPackagePaths(def, npmGlobalRoot, pathApi, fileSystem)) {
       evidence.push({ type: 'npm-global', value: pkg });
@@ -223,6 +361,10 @@ export function discoverAgentClis(options = {}) {
       max_concurrent_sessions: null,
       connection_status: executable ? CLI_STATUS.IDLE : CLI_STATUS.UNREACHABLE,
       not_on_path: executable ? false : true,
+      // True when the executable came from inside an application bundle: it
+      // runs, but a terminal still has no `dsh`/`claude` on PATH. The UI can
+      // explain that instead of offering a fix that is not needed.
+      bundled: evidence.some((item) => item.type === 'app-bin'),
       verified_at: null,
       evidence,
       version_args: def.versionArgs ?? ['--version'],

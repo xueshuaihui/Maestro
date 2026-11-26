@@ -14,6 +14,7 @@ import {
   kv, logBlock, metric, pageHead, progress, sectionTitle, svgEl, table, tag, timeline,
 } from './kit.js';
 import { canvasEdgePath } from '../canvas/canvas.js';
+import { baseBox, viewBoxAttr } from '../canvas/viewport.js';
 
 /** Instance status word -> badge tone. */
 const STATE_TONE = Object.freeze({
@@ -1099,6 +1100,16 @@ export function canvasPage(ctx) {
   }
 
   const tools = el('div', 'row wrap mb14');
+  const placed = Array.isArray(view.nodes) ? view.nodes : [];
+  // A 12-stage flow fitted into one panel is unreadable, so the viewport is
+  // part of the page: zoom out to see the shape, zoom in to read a stage.
+  if (placed.length > 0) {
+    const viewport = ctx.state.canvasViewport ?? { zoom: 1, pan: { x: 0, y: 0 } };
+    tools.appendChild(button('\u2212', { action: 'canvas-zoom-out', size: 'sm' }));
+    tools.appendChild(el('span', 'tiny muted canvas-zoom-text', `${Math.round((viewport.zoom ?? 1) * 100)}%`));
+    tools.appendChild(button('+', { action: 'canvas-zoom-in', size: 'sm' }));
+    tools.appendChild(button(st('UI_CANVAS_FIT', 'Fit'), { action: 'canvas-zoom-fit', size: 'sm' }));
+  }
   // A workflow the engine already knows can be run without going back to the
   // list and picking it again by name.
   const canvasId = ctx.state.canvasId ?? null;
@@ -1164,17 +1175,14 @@ export function canvasPage(ctx) {
     frag.appendChild(box);
   }
 
-  const placed = Array.isArray(view.nodes) ? view.nodes : [];
   const wrap = el('div', 'graphwrap canvas-wrap');
   const ns = 'http://www.w3.org/2000/svg';
   const svg = svgEl('svg', { width: '100%', class: 'canvas-svg' });
-  const xs = placed.map((node) => Number(node.x));
-  const ys = placed.map((node) => Number(node.y));
-  const minX = xs.length > 0 ? Math.min(...xs) : 0;
-  const minY = ys.length > 0 ? Math.min(...ys) : 0;
-  const maxX = xs.length > 0 ? Math.max(...xs.map((x, i) => x + Number(placed[i].width ?? 180))) : 960;
-  const maxY = ys.length > 0 ? Math.max(...ys.map((y, i) => y + Number(placed[i].height ?? 80))) : 360;
-  svg.setAttribute('viewBox', `${minX - 40} ${minY - 40} ${Math.max(maxX - minX + 80, 960)} ${Math.max(maxY - minY + 80, 360)}`);
+  // One fitted box per render; the viewport (zoom/pan) is a pure transform of
+  // it, so a repaint can never lose the user's zoom or shift the flow.
+  const base = baseBox(placed);
+  wrap.setAttribute('data-canvas-base', JSON.stringify(base));
+  svg.setAttribute('viewBox', viewBoxAttr(base, ctx.state.canvasViewport));
 
   const defs = svgEl('defs');
   for (const [name, color] of [['arrow', '#cbd5e1'], ['arrow-run', '#2563eb'], ['arrow-done', '#16a34a']]) {
