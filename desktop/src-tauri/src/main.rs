@@ -390,12 +390,21 @@ async fn pick_project(app: tauri::AppHandle) -> Option<String> {
         .unwrap()
         .project_choose_title
         .clone();
-    app.dialog()
+    // Two probe points, not one: a click that never reaches Rust and a dialog
+    // that never returns look identical to the user ("nothing happened"), and
+    // only the shell can tell them apart.
+    probe::event("pick-open", json!({}));
+    let picked = app
+        .dialog()
         .file()
         .set_title(title)
         .blocking_pick_folder()
-        .and_then(|picked| picked.into_path().ok())
-        .map(|path| path.to_string_lossy().to_string())
+        .and_then(|picked| picked.into_path().ok());
+    probe::event(
+        "pick-done",
+        json!({ "cancelled": picked.is_none() }),
+    );
+    picked.map(|path| path.to_string_lossy().to_string())
 }
 
 /// Whether the daemon HTTP channel for the bound project is serving. The token
@@ -502,8 +511,13 @@ pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
     Ok(pid)
 }
 
+/// Switch the bound project. `async` on purpose: binding retires the old core
+/// (up to 3s of waiting), probes the new channel over HTTP and may spawn a
+/// daemon. A synchronous command would run all of that on the main thread, and
+/// the window would spend the whole switch unable to repaint — which is
+/// indistinguishable from a dead button.
 #[tauri::command]
-fn open_project(app: tauri::AppHandle, root: String) -> Result<Value, String> {
+async fn open_project(app: tauri::AppHandle, root: String) -> Result<Value, String> {
     let pid = bind_project(&app, &root)?;
     Ok(json!({ "ok": true, "daemonPid": pid }))
 }

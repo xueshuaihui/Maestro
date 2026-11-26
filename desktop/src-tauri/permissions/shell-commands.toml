@@ -1,0 +1,28 @@
+# Permissions for the commands the application itself defines.
+#
+# The window lives on two origins. The start page is bundled (local), while the
+# working UI is served by the project's daemon on loopback — which Tauri treats
+# as a *remote* origin. Without an explicit grant the ACL rejects every command
+# coming from the loopback page, and a button that triggers one looks dead
+# ("cannot click") because the only trace is a rejected promise.
+#
+# The list is deliberately closed: these are the commands the two pages call,
+# nothing more. Adding a command to the UI means adding it here, otherwise the
+# new button will fail exactly the same silent way.
+
+[[permission]]
+identifier = "allow-shell-commands"
+description = "Shell commands the Maestro window is allowed to call."
+commands.allow = [
+  "probe_emit",
+  "startup_info",
+  "startup_status",
+  "pick_project",
+  "open_project",
+  "pick_file",
+  "env_scan",
+  "env_add_cli",
+  "forget_project_command",
+  "read_view_command",
+  "write_view_command",
+]

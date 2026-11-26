@@ -138,6 +138,40 @@ try {
   const scan = await waitFor(() => readEvents(probePath).find((e) => e.event === 'env-scan') ?? null, 15_000);
   step('启动页打开即自动扫描本机 CLI', Boolean(scan), JSON.stringify(scan ?? {}));
 
+  // The working UI is served by the project daemon on loopback, which Tauri
+  // classes as a *remote* origin. Application commands are only allowed there
+  // when a capability grants it; with no capability every button that calls
+  // back into the shell is rejected with "not allowed by ACL" and looks dead.
+  // That is exactly how "switch project does nothing" reached the user, so the
+  // page's own bridge gets exercised here, not just the Rust entry points.
+  const booted = await waitFor(
+    () => readEvents(probePath).find((e) => e.event === 'ui-boot') ?? null,
+    30_000
+  );
+  step('主界面进入 daemon UI（ui-boot）', Boolean(booted));
+  if (booted) {
+    fs.writeFileSync(path.join(ctlDir, 'eval-js-ipc'), `
+      (() => {
+        const inv = (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke)
+          || window.__TAURI_INTERNALS__.invoke;
+        inv('startup_status')
+          .then((state) => inv('probe_emit', {
+            payload: JSON.stringify({ event: 'ui-ipc', ok: true, ready: state.ready }),
+          }))
+          .catch((err) => inv('probe_emit', {
+            payload: JSON.stringify({ event: 'ui-ipc', ok: false, message: String(err) }),
+          }));
+      })();
+    `, 'utf8');
+    const ipc = await waitFor(
+      () => readEvents(probePath).find((e) => e.event === 'ui-ipc') ?? null,
+      15_000
+    );
+    step('主界面能通过 IPC 调通应用命令（capability 放行 loopback 来源）',
+      ipc?.ok === true && ipc?.ready === true,
+      JSON.stringify(ipc ?? 'no ui-ipc event — the page could not call back at all'));
+  }
+
   // Switching projects used to be refused outright: `bind_project` returned an
   // error for any root other than the bound one, and the page swallowed it. The
   // ctl seam drives the exact same bind path the project page uses.

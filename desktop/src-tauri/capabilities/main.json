@@ -1,0 +1,10 @@
+{
+  "identifier": "main-window",
+  "description": "The Maestro window. Covers the bundled start page (local) and the project UI the daemon serves on loopback, which Tauri classes as a remote origin.",
+  "windows": ["main"],
+  "local": true,
+  "remote": {
+    "urls": ["http://127.0.0.1:*", "http://localhost:*"]
+  },
+  "permissions": ["core:default", "allow-shell-commands"]
+}

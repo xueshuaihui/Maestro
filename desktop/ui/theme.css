@@ -201,6 +201,22 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 .sidebar-foot .t { font-size: 11px; color: var(--muted); }
 .sidebar-foot .p { font-size: 12px; font-weight: 600; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The project card is the switch, so it has to read as one: full-width hit
+   area, a hover state and the verb spelled out under the path. */
+.sidebar-foot .proj-switch {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.sidebar-foot .proj-switch .sw { display: block; margin-top: 4px; font-size: 11px; color: var(--primary); }
+.sidebar-foot .proj-switch:hover .p { text-decoration: underline; }
+.sidebar-foot .proj-switch:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
 .sidebar-foot .c { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 6px; }
 .sidebar-foot .c.ok { color: var(--green); }
 .sidebar-foot .dot-sm { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }

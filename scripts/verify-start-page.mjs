@@ -136,7 +136,7 @@ const FAKE = `
         case 'startup_status': return { ready: true };
         case 'pick_project': return null;
         case 'pick_file': return '/tmp/fake-cli';
-        case 'forget_project': return null;
+        case 'forget_project_command': return null;
         default: return null;
       }
     }

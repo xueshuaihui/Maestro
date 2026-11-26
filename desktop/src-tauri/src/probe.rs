@@ -164,6 +164,45 @@ pub fn start_ctl_watcher(app: tauri::AppHandle, dir: PathBuf) {
                     }
                     continue;
                 }
+                // Acceptance seam: run a snippet inside the live window so a
+                // test can drive the real page (press a button, read the DOM)
+                // and report the result back through `probe_emit`. Only
+                // `--ctl` launches can reach this; the trigger file's content
+                // is the script, so no production path ever evals anything.
+                // Drive the live page from a test: the file content is the
+                // script. Acceptance needs this because the working UI is
+                // served over loopback and cannot be reached by CDP, so the
+                // only way to press its buttons is from inside the window.
+                // The script reports back through `probe_emit`.
+                if name.starts_with("eval-js") && is_file {
+                    use tauri::Manager as _;
+                    let script = std::fs::read_to_string(&path).unwrap_or_default();
+                    event("ctl-fired", serde_json::json!({ "action": name }));
+                    let _ = std::fs::rename(&path, dir.join(format!("{name}.done")));
+                    match app.get_webview_window("main") {
+                        Some(win) => {
+                            // `eval` must run on the main thread: wry calls
+                            // `evaluateJavaScript` on the caller's thread and
+                            // silently drops the script from a worker.
+                            if let Err(err) = app.run_on_main_thread(move || {
+                                let _ = win.eval(&script);
+                            }) {
+                                event(
+                                    "ctl-error",
+                                    serde_json::json!({
+                                        "action": name,
+                                        "cause": err.to_string(),
+                                    }),
+                                );
+                            }
+                        }
+                        None => event(
+                            "ctl-error",
+                            serde_json::json!({ "action": name, "cause": "no-window" }),
+                        ),
+                    }
+                    continue;
+                }
                 if CTL_ACTIONS.contains(&name.as_str()) {
                     event("ctl-fired", serde_json::json!({ "action": name }));
                 } else {

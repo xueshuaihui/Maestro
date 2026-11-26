@@ -553,7 +553,7 @@
           remove.addEventListener('click', async () => {
             if (busy) return;
             try {
-              await invoke('forget_project', { root });
+              await invoke('forget_project_command', { root });
             } catch { /* a failed removal keeps the list as it is */ }
             knownRoots = knownRoots.filter((item) => item !== root);
             renderProjects();

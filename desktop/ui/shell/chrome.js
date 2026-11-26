@@ -92,17 +92,25 @@ function buildSidebar(refs) {
   }
 
   const foot = el('div', 'sidebar-foot');
-  const projectBox = el('div');
-  const projectTitle = el('div', 't');
-  const projectPath = el('div', 'p');
-  append(projectBox, projectTitle, projectPath);
+  // The block that names the current project is where a user looks to change
+  // it, so it is the switch: pressing it opens the folder picker. It used to be
+  // plain text next to a path, which reads as a dead control.
+  const projectBox = el('button', 'proj-switch');
+  projectBox.type = 'button';
+  projectBox.setAttribute('data-action', 'pick-project');
+  const projectTitle = el('span', 't');
+  const projectPath = el('span', 'p');
+  const projectHint = el('span', 'sw');
+  append(projectBox, projectTitle, projectPath, projectHint);
   const status = el('div', 'c');
   const statusText = el('span');
   append(status, el('span', 'dot-sm'), statusText);
   append(foot, projectBox, status);
   box.appendChild(foot);
 
-  const ui = { brand, brandLabel, items, foot, projectBox, projectTitle, projectPath, status, statusText };
+  const ui = {
+    brand, brandLabel, items, foot, projectBox, projectTitle, projectPath, projectHint, status, statusText,
+  };
   refs.sidebarUi = ui;
   return ui;
 }
@@ -158,6 +166,9 @@ export function paintSidebar(refs, ctx) {
       ui.projectPath.textContent = ctx.projectRoot;
       ui.projectPath.title = ctx.projectRoot;
     }
+    const hint = ctx.t('DESKTOP_V2_SWITCH_PROJECT');
+    if (ui.projectHint.textContent !== hint) ui.projectHint.textContent = hint;
+    if (ui.projectBox.title !== hint) ui.projectBox.title = hint;
   }
 
   ui.status.style.display = ctx.statusText ? '' : 'none';
