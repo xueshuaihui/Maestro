@@ -55,6 +55,9 @@
 11. 默认图 `single` 输出必须逐字保持 I1.1；三主链逐字回归口径 = `git worktree` 基线树 + 交替 ≥6 对 + A-0 归一化 diff。
 12. 验收脚本禁止硬编码测试条数，用 `fail=0 && pass===tests && tests>=基线`。
 13. **核心独立进程 + 命名管道**：管道名 `sha256(realpath(root).toLowerCase()).slice(0,16)`；`--project`/管道按项目根非 shell cwd 算。
+    **POSIX 侧 `sun_path` 定长 104 字节，超长时内核静默截断**（核心绑 `core.soc`、客户端连 `core.sock` → 永远「正在连接」）。
+    现规则：`>` 103 字节退到 `<tmpdir>/maestro-<sha16>.sock`（`paths.pipeName`），Rust `spawn.rs::pipe_path` 用
+    `canonicalize` 做同款长度判定，超长时从 `.orch/core.json` 读回真实端点。新增长路径用例前先想这条。
 14. `load` 后 drain-quiet（idle 40ms / cap 400ms）；`-32602` 同码双义（会话不存在 / prompt 在飞）；`accepted` 排除
     `usage_update` 等噪声；cancel 非即时（实测 4.3s），容忍迟到 update。
 15. **`newState` 新字段只能追加在最后**（`traceId` 之后）；`sessionPolicies` 不进 checkpoint（九字段白名单），
@@ -92,6 +95,10 @@
 - **Tauri 同步 command 跑在主线程**：任何带超时往返（`core.ping`、`/ui/labels`）必须 `#[tauri::command(async)]`，
   否则核心不健康时窗口一起冻住（「一直显示正在连接」的观感来源）。
 - 测试替身要跟着产品长：壳层用了 `window.addEventListener('message')`，假 `window` 没补就会让 `mountApp` 5 条在断言前全死。
+- **启动页是两阶段**（环境 → 项目），且「已有绑定项目」时 `boot()` 立刻 `startPolling()` 自动进主界面：
+  带 `--project` 的启动不会停在启动页，AC-26 壳面（`rows` 探针）依赖这条。
+- 验收脚本启动真实 `.app` **必须隔离 `MAESTRO_CONFIG_DIR`（或假 `HOME`）**，否则会把 tmp 项目写进用户真实
+  `~/.maestro/projects.json`（`verify-shell-boot` 曾如此，已修）。
 
 ## 六、发布面
 
