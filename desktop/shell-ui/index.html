@@ -691,12 +691,11 @@
         // Step one starts immediately: the scan is the first thing the app
         // does, because every later screen depends on its result.
         void runScan();
-        // ... but a core that is already bound is not a thing to click through.
-        // The start page is the first-run path; on a launch that already knows
-        // its project the window enters it as soon as the channel answers, and
-        // the scan above keeps running alongside (it refreshes the machine
-        // registry either way).
-        if (boundRoot) startPolling();
+        // A launch that named its project goes straight in — that is an
+        // explicit "open this one". A plain double-click only remembers the
+        // last project, so it stops here: scan first, then the project list,
+        // which is also where switching happens.
+        if (boundRoot && info.explicit === true) startPolling();
       }
 
       // ----------------------------------------------------------- handlers

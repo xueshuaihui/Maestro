@@ -62,6 +62,9 @@ pub struct ShellState {
     /// Set once the window has been pointed at the daemon-served UI, so the
     /// `startup_status` poll never re-navigates a page the user is using.
     pub ui_navigated: AtomicBool,
+    /// True when this launch named its project (`--project`), as opposed to
+    /// only remembering it from last time.
+    pub launch_explicit: bool,
     /// Last delivered `mergedCount` per `(kind, instanceId)` key (D-46 dedup).
     pub notify_seen: Mutex<HashMap<String, u64>>,
 }
@@ -138,6 +141,18 @@ fn main() {
     };
 
     let stop = Arc::new(AtomicBool::new(false));
+    // A launch that named its project (`--project` / `MAESTRO_PROJECT_ROOT`) is
+    // an explicit "open this one": the window goes straight in. A plain
+    // double-click only remembers where it was last time, so it still has to
+    // pass the start page (scan the machine, then list the projects) — that is
+    // the order the dependency chain implies, and the list is also how the user
+    // switches projects.
+    let launch_explicit = args
+        .project
+        .as_deref()
+        .map(|value| !value.is_empty())
+        .unwrap_or(false)
+        || !std::env::var("MAESTRO_PROJECT_ROOT").unwrap_or_default().is_empty();
     let state = ShellState {
         project_root: Mutex::new(project_root.clone()),
         invalid_project: Mutex::new(invalid_path.clone()),
@@ -152,6 +167,7 @@ fn main() {
         notify_enabled: AtomicBool::new(!args.no_notify),
         notify_hint_shown: AtomicBool::new(false),
         ui_navigated: AtomicBool::new(false),
+        launch_explicit,
         notify_seen: Mutex::new(HashMap::new()),
     };
 
@@ -304,6 +320,9 @@ fn startup_info(app: tauri::AppHandle) -> Value {
         "project": project,
         "invalid": invalid,
         "invalidMessage": invalid_message,
+        // Whether the root came from `--project` (enter it directly) or from
+        // memory (show the start page and let the user pick).
+        "explicit": state.launch_explicit,
         "missing": labels.project_missing,
         "connecting": labels.conn_connecting,
         "failed": labels.conn_failed,
