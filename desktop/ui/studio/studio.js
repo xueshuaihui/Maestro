@@ -690,6 +690,21 @@ function flowsPanel() {
 
 // -------------------------------------------------------------------- runs --
 
+/**
+ * Starting text for the engine's task field, derived from the chosen team's
+ * flow: one product line per stage. The engine rejects a task with no product
+ * line, so prefilling this is what makes "start" work without teaching the user
+ * the syntax first; they only edit what they disagree with.
+ */
+function scaffoldFor(team) {
+  const flow = (S.flows ?? []).find((item) => item.id === team.flowId);
+  const lines = [`${t('TASK_GOAL_PREFIX')}${team.name}`];
+  for (const stage of flow?.stages ?? []) {
+    lines.push(`${t('TASK_PRODUCT_PREFIX')}${stage.title || stage.id}.md`);
+  }
+  return lines.join('\n');
+}
+
 function runsPanel() {
   const frag = document.createDocumentFragment();
 
@@ -703,7 +718,11 @@ function runsPanel() {
     const teamSel = select(
       S.teams.map((team) => ({ value: team.id, label: `${team.name}${team.ready ? '' : ' \u00b7 !'}` })),
       teamId,
-      (value) => { teamId = value; }
+      (value) => {
+        teamId = value;
+        const next = (S.teams ?? []).find((item) => item.id === value);
+        if (next) retarget(next);
+      }
     );
     let mode = 'simulate';
     const modeSel = select(
@@ -717,11 +736,26 @@ function runsPanel() {
     );
     form.appendChild(field(t('COL_NAME'), teamSel));
     form.appendChild(field(t('UI_MODE'), modeSel));
-    form.appendChild(button(t('UI_START_RUN'), async () => {
-      const result = await act('run.start', { teamId, mode });
+    box.body.appendChild(form);
+
+    const taskArea = el('textarea', 'task-input');
+    taskArea.rows = 6;
+    taskArea.value = scaffoldFor(preferred);
+    let taskDirty = false;
+    taskArea.addEventListener('input', () => { taskDirty = true; });
+    function retarget(team) {
+      if (!taskDirty) taskArea.value = scaffoldFor(team);
+    }
+    const taskField = field(t('UI_RUN_TASK'), taskArea);
+    taskField.appendChild(el('p', 'hint', t('UI_RUN_TASK_HINT')));
+    box.body.appendChild(taskField);
+
+    const actions = el('div', 'row mt14');
+    actions.appendChild(button(t('UI_START_RUN'), async () => {
+      const result = await act('run.start', { teamId, mode, task: taskArea.value });
       if (result) RUN_TEAM = teamId;
     }, 'btn primary'));
-    box.body.appendChild(form);
+    box.body.appendChild(actions);
     frag.appendChild(box);
   }
 
@@ -735,6 +769,11 @@ function runsPanel() {
     line.appendChild(badge(`${run.progress.done}/${run.progress.total}`, 'ok'));
     line.appendChild(badge(run.status, run.status === 'completed' ? 'ok' : run.status === 'blocked' ? 'warn' : ''));
     line.appendChild(el('span', 'card-sub', `${run.mode} · ${run.teamId} · ${run.flowId}`));
+    // An engine run that really launched says so with its instance id: that id
+    // is what the run page and the tray count are about.
+    if (run.engine?.launched === true && run.engine.instanceId) {
+      line.appendChild(badge(fill(t('UI_RUN_INSTANCE'), { id: run.engine.instanceId }), 'ok'));
+    }
     list.body.appendChild(line);
 
     const stageRows = run.stages.map((stage) => {
@@ -757,6 +796,15 @@ function runsPanel() {
       stageRows,
       ''
     ));
+    // A run that prepared but could not start has to say why; otherwise the
+    // stage table just sits at "pending" and looks stuck.
+    if (run.mode === 'engine' && run.engine && run.engine.launched !== true) {
+      const code = run.engine.error;
+      const text = run.engine.reason === 'launch_failed' && code
+        ? fill(t('UI_RUN_LAUNCH_FAILED'), { code })
+        : t('UI_RUN_NO_HOST');
+      list.body.appendChild(el('p', 'hint warn', text));
+    }
     list.body.appendChild(el('p', 'hint', t('UI_RUNNING_HINT')));
   }
   frag.appendChild(list);

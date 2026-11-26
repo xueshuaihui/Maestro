@@ -57,7 +57,9 @@ import { serializeSkill, atomicWrite } from '../../registry/asset-write.js';
 import { projectSkillsDir } from '../../registry/assets.js';
 import { isId } from '../../studio/schema.js';
 import { createResource, updateResource, removeResource, restoreResource, collectRefs } from '../../resources/index.js';
+import fs from 'node:fs/promises';
 import path from 'node:path';
+import { statePath } from '../../persistence/paths.js';
 
 const BODY_LIMIT = 64 * 1024;
 
@@ -104,6 +106,47 @@ function fail(res, result) {
     labelKey: errorLabelKey(result.code),
     params: result.params ?? {}
   });
+}
+
+/**
+ * Stage progress for an engine run, read from the instance it launched.
+ *
+ * The compiled node id is `${roleId}-${stageId}`, and a stage can own several
+ * nodes (one per role), so a stage is done only when every one of its nodes is.
+ * Returns null when the instance cannot be read: the caller then keeps the
+ * statuses the studio recorded rather than inventing progress.
+ */
+async function readInstanceStages(root, instanceId, stageIds) {
+  let state;
+  try {
+    state = JSON.parse(await fs.readFile(statePath(root, instanceId), 'utf8'));
+  } catch {
+    return null;
+  }
+  const nodes = Array.isArray(state?.nodes) ? state.nodes : [];
+  const byStage = new Map();
+  for (const node of nodes) {
+    const nodeId = typeof node?.nodeId === 'string' ? node.nodeId : '';
+    const stageId = stageIds.find((id) => nodeId.endsWith(`-${id}`));
+    if (!stageId) continue;
+    const list = byStage.get(stageId) ?? [];
+    // Node state lives in `state` (NODE_STATES), not `status`.
+    list.push(String(node.state ?? ''));
+    byStage.set(stageId, list);
+  }
+  const result = new Map();
+  for (const [stageId, states] of byStage) {
+    if (states.some((value) => value === 'failed' || value === 'cancelled')) {
+      result.set(stageId, 'blocked');
+    } else if (states.length > 0 && states.every((value) => value === 'done')) {
+      result.set(stageId, 'done');
+    } else if (states.some((value) => value === 'running' || value === 'review')) {
+      result.set(stageId, 'running');
+    } else {
+      result.set(stageId, 'pending');
+    }
+  }
+  return result;
 }
 
 async function buildState(root) {
@@ -180,8 +223,31 @@ async function buildState(root) {
     edges: (flow.edges ?? []).map((edge) => `${edge.from}->${edge.to}`)
   }));
 
+  // An engine run executes in a real instance, and that instance is the only
+  // source of truth for stage progress. A plan/simulate run has no instance and
+  // keeps the statuses the studio recorded.
+  const liveProgress = new Map();
+  for (const run of doc.runs ?? []) {
+    const instanceId = run.engine?.instanceId;
+    if (typeof instanceId !== 'string' || instanceId.length === 0) continue;
+    const stageIds = (run.stages ?? []).map((slot) => slot.stageId);
+    const byStage = await readInstanceStages(root, instanceId, stageIds);
+    if (byStage !== null) liveProgress.set(run.id, byStage);
+  }
+
   const runs = (doc.runs ?? []).slice().reverse().map((run) => {
     const flow = findById(doc.flows, run.flowId);
+    const live = liveProgress.get(run.id) ?? null;
+    const stages = run.stages.map((slot) => ({
+      id: slot.stageId,
+      title: flow ? stageTitle(flow, findById(flow.stages, slot.stageId) ?? { id: slot.stageId }) : slot.stageId,
+      // A missing entry in the instance means the stage has not started yet.
+      status: live?.get(slot.stageId) ?? slot.status,
+      gate: slot.gate ?? null,
+      gateStatus: slot.gateStatus ?? null,
+      artifactCount: (slot.artifacts ?? []).length,
+      taskId: slot.taskId ?? null
+    }));
     return {
       id: run.id,
       status: run.status,
@@ -190,19 +256,15 @@ async function buildState(root) {
       flowId: run.flowId,
       startedAt: run.startedAt,
       finishedAt: run.finishedAt,
+      // The engine half of the run: whether a real instance was launched, and
+      // which one. Null for plan/simulate, where no engine is involved.
+      engine: run.engine ?? null,
+      task: typeof run.task === 'string' ? run.task : null,
       progress: {
-        done: run.stages.filter((s) => s.status === 'done').length,
-        total: run.stages.length
+        done: stages.filter((stage) => stage.status === 'done').length,
+        total: stages.length
       },
-      stages: run.stages.map((slot) => ({
-        id: slot.stageId,
-        title: flow ? stageTitle(flow, findById(flow.stages, slot.stageId) ?? { id: slot.stageId }) : slot.stageId,
-        status: slot.status,
-        gate: slot.gate ?? null,
-        gateStatus: slot.gateStatus ?? null,
-        artifactCount: (slot.artifacts ?? []).length,
-        taskId: slot.taskId ?? null
-      }))
+      stages
     };
   });
 
@@ -551,6 +613,10 @@ const ACTIONS = Object.freeze({
     if (!loaded.ok) return loaded;
     const doc = loaded.doc;
     const mode = payload.mode ?? 'simulate';
+    // The task text is what the engine hands to the agents. It only matters
+    // in `engine` mode, but it travels with the run so a later retry can reuse
+    // the same wording instead of asking the user to type it again.
+    const task = typeof payload.task === 'string' ? payload.task : '';
     const started = await startRun({
       root,
       doc,
@@ -563,9 +629,31 @@ const ACTIONS = Object.freeze({
     if (mode === 'engine') {
       const team = findById(doc.teams, started.run.teamId);
       const flow = findById(doc.flows, started.run.flowId);
-      const prepared = await engineRun({ root, doc, run: started.run, team, flow });
+      // The CLI registry is machine-level; reading it here keeps the domain
+      // module free of adapter imports.
+      const cliLoaded = await loadCliRegistry(root);
+      const clis = cliLoaded.ok ? cliLoaded.registry.clis : [];
+      const prepared = await engineRun({
+        root,
+        doc,
+        run: started.run,
+        team,
+        flow,
+        clis,
+        // The daemon owns the orchestrator, so the launch is injected. Without
+        // an injector the run still prepares its yaml and says it did not
+        // start, which is the honest fallback for a non-daemon caller.
+        launch: typeof startEngine === 'function'
+          ? ({ workflowId }) => startEngine({
+            workflowId,
+            task,
+            hostId: typeof payload.hostId === 'string' && payload.hostId.length > 0 ? payload.hostId : null
+          })
+          : null
+      });
       if (!prepared.ok) return prepared;
       engine = prepared;
+      if (typeof task === 'string' && task.length > 0) started.run.task = task;
     }
     const persisted = await updateStudio(root, (target) => {
       target.runs = doc.runs;
@@ -698,7 +786,7 @@ const ACTIONS = Object.freeze({
   }
 });
 
-export function createStudioRoutes({ root }) {
+export function createStudioRoutes({ root, startEngine = null }) {
   return [
     {
       method: 'GET',

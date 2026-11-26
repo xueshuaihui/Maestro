@@ -123,6 +123,17 @@ const CLI = Object.freeze({
     npmPackages: [],
     homeDirs: [],
     appNames: ['WorkBuddy.app'],
+    // Same failure mode dsh had: `appNames` only ever produced evidence, so the
+    // bundle was recognised and the executable stayed null. These are the
+    // places an Electron bundle keeps a shim; a missing one is simply skipped.
+    appBins: [
+      'Contents/Resources/app/bin/workbuddy',
+      'Contents/Resources/app/bin/wb',
+      'Contents/Resources/bin/workbuddy',
+      'Contents/MacOS/workbuddy',
+      'resources/app/bin/workbuddy',
+      'resources/bin/workbuddy'
+    ],
     versionArgs: ['--version']
   },
   cursor: {
@@ -132,6 +143,15 @@ const CLI = Object.freeze({
     npmPackages: [],
     homeDirs: ['.cursor'],
     appNames: ['Cursor.app'],
+    appBins: [
+      'Contents/Resources/app/bin/cursor-agent',
+      'Contents/Resources/app/bin/agent',
+      'Contents/Resources/app/bin/cursor',
+      'Contents/MacOS/cursor-agent',
+      'resources/app/bin/cursor-agent'
+    ],
+    // Cursor's agent CLI starts ACP with a subcommand, not a flag.
+    acpArgs: ['acp'],
     versionArgs: ['--version']
   }
 });

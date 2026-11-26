@@ -54,10 +54,17 @@ function freshRoot(tag) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `maestro-shell-${tag}-`));
 }
 
-function launch(root, probePath, logPath) {
+function launch(root, probePath, logPath, ctlDir = null) {
   const fd = fs.openSync(logPath, 'w');
-  const proc = spawn(BIN, ['--project', root, '--probe', probePath], {
-    cwd: root, env: process.env, stdio: ['ignore', fd, fd],
+  const args = ['--project', root, '--probe', probePath];
+  if (ctlDir !== null) args.push('--ctl', ctlDir);
+  const proc = spawn(BIN, args, {
+    cwd: root,
+    // Isolate the machine-level config (`projects.json`, CLI registry): a
+    // verification run opens scratch projects, and those must never end up in
+    // the user's real `~/.maestro/projects.json` (they did, once).
+    env: { ...process.env, MAESTRO_CONFIG_DIR: path.join(root, 'config') },
+    stdio: ['ignore', fd, fd],
   });
   fs.closeSync(fd);
   spawned.push(proc);
@@ -99,8 +106,9 @@ try {
   const root = freshRoot('boot');
   const probePath = path.join(root, 'shell-probe.jsonl');
   const stdoutPath = path.join(root, 'shell-stdout.log');
+  const ctlDir = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-ctl-'));
 
-  child = launch(root, probePath, stdoutPath);
+  child = launch(root, probePath, stdoutPath, ctlDir);
   step('真实 .app 二进制启动', Boolean(child.pid), `pid=${child.pid}`);
 
   const meta = await waitFor(() => readMeta(root), 25_000);
@@ -123,6 +131,30 @@ try {
     JSON.stringify(ready?.daemon ?? {}));
   step('probe 记录 tray-created 事件', has('tray-created', events));
 
+  // Opening the app must scan the machine before anything else: every later
+  // screen (team, workflow, run) depends on a CLI existing. The probe line is
+  // emitted by the scan command itself, so it proves the page ran the scan
+  // rather than merely being able to.
+  const scan = await waitFor(() => readEvents(probePath).find((e) => e.event === 'env-scan') ?? null, 15_000);
+  step('启动页打开即自动扫描本机 CLI', Boolean(scan), JSON.stringify(scan ?? {}));
+
+  // Switching projects used to be refused outright: `bind_project` returned an
+  // error for any root other than the bound one, and the page swallowed it. The
+  // ctl seam drives the exact same bind path the project page uses.
+  const switchTo = freshRoot('switch');
+  fs.writeFileSync(path.join(ctlDir, 'open-project'), switchTo, 'utf8');
+  const switched = await waitFor(
+    () => readEvents(probePath).find((e) => e.event === 'project-switched') ?? null,
+    30000
+  );
+  const switchedMeta = await waitFor(() => readMeta(switchTo), 20000);
+  step('切换项目：换根后新核心就绪',
+    Boolean(switched?.daemonPid) && Boolean(switchedMeta?.port),
+    JSON.stringify({ event: switched ?? null, port: switchedMeta?.port ?? null }));
+  const oldRecord = await waitFor(() => readMeta(root), 10000);
+  step('切换项目：旧项目的通道记录被清掉', oldRecord === null,
+    oldRecord === null ? 'cleared' : `still ${oldRecord?.port}`);
+
   const stderr = fs.readFileSync(stdoutPath, 'utf8').trim();
   step('shell 启动无 stderr 错误输出', !/error|panic|incomplete/i.test(stderr),
     stderr.slice(0, 160) || 'clean');
@@ -131,14 +163,16 @@ try {
   // A force quit / container restart / OOM kill leaves BOTH the socket file and
   // desktop.json on disk. The old shell trusted the file, navigated the window
   // at a port nobody served and the connecting line never cleared.
-  const stalePid = daemonPid(meta);
-  const staleGen = meta?.generation ?? '';
-  const stalePort = meta?.port ?? 0;
-  const staleToken = meta?.token ?? '';
+  // The bound project is now `switchTo`: the crash scene must be built on the
+  // project the shell is actually serving, not the one it started with.
+  const stalePid = daemonPid(switchedMeta);
+  const staleGen = switchedMeta?.generation ?? '';
+  const stalePort = switchedMeta?.port ?? 0;
+  const staleToken = switchedMeta?.token ?? '';
   let killed = false;
   try { process.kill(stalePid, 'SIGKILL'); killed = true; } catch { /* ignore */ }
   await sleep(500);
-  const leftover = readMeta(root);
+  const leftover = readMeta(switchTo);
   // The killed daemon stays a zombie until its parent reaps it, so "pid alive"
   // says nothing here. The stale condition the shell must detect is: the record
   // still points at that pid while its channel no longer answers.
@@ -154,13 +188,13 @@ try {
   try { child.kill('SIGKILL'); } catch { /* ignore */ }
   await sleep(1500);
 
-  const probe2 = path.join(root, 'shell-probe-restart.jsonl');
-  const stdout2 = path.join(root, 'shell-stdout-restart.log');
-  second = launch(root, probe2, stdout2);
+  const probe2 = path.join(switchTo, 'shell-probe-restart.jsonl');
+  const stdout2 = path.join(switchTo, 'shell-stdout-restart.log');
+  second = launch(switchTo, probe2, stdout2);
   step('崩溃后二次启动 .app', Boolean(second.pid), `pid=${second.pid}`);
 
   const recovered = await waitFor(() => {
-    const next = readMeta(root);
+    const next = readMeta(switchTo);
     return next && next.pid !== stalePid ? next : null;
   }, 30_000);
   step('崩溃后重新拉起核心并改写 desktop.json',

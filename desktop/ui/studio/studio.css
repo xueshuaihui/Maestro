@@ -271,3 +271,15 @@ tbody tr:hover { background: color-mix(in srgb, var(--accent) 5%, transparent); 
 
 /* While the demo runs, its repaints must not eat a form the user is editing. */
 main.is-busy { opacity: 0.7; pointer-events: none; }
+
+/* Engine task text: monospace, because every line is a directive the engine
+   parses ("goal" then one product line per stage). */
+.task-input {
+  width: 100%; min-height: 116px; resize: vertical;
+  font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: inherit; padding: 10px 12px;
+  background: transparent;
+  border: 1px solid var(--line); border-radius: 8px;
+}
+.task-input:focus { outline: 2px solid color-mix(in srgb, var(--accent) 28%, transparent); outline-offset: 1px; }
+.hint.warn { color: var(--warn); }

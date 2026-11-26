@@ -5,6 +5,7 @@
  * 所有路径一律经 `node:path` 生成，避免手拼分隔符在 Windows 上出错。
  */
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
@@ -12,6 +13,14 @@ export const isWindows = process.platform === 'win32';
 
 // 管道名只取 sha256 十六进制摘要的前 16 位，长度稳定且足够区分不同项目。
 const PIPE_HASH_LEN = 16;
+
+/**
+ * POSIX 域套接字地址的可用字节数（不含结尾 NUL）。
+ *
+ * macOS 的 `sun_path` 是定长 104 字节，Linux 是 108。这里取较小值：宁可早一点
+ * 换短端点，也不要靠平台差异碰运气。
+ */
+const POSIX_SUN_PATH_MAX = 103;
 
 // Windows 命名管道不在文件系统里，只能以 `\\.\pipe\` 命名空间字面量表达；
 // 这不是文件路径，故不使用 path.join（path.join 会规范化反斜杠）。
@@ -132,10 +141,17 @@ export function coreLogPath(root) {
  * 本地通信端点名。
  *
  * - win32：`\\.\pipe\maestro-<sha256(realpath(root)).slice(0,16)>`
- * - 其他：`<root>/.orch/core.sock`（仅开发/CI 兜底，不作验收面）
+ * - 其他：`<root>/.orch/core.sock`；路径超出 `sun_path` 上限时退到
+ *   `<tmpdir>/maestro-<sha256(realpath(root)).slice(0,16)>.sock`
  *
  * Windows 路径大小写不敏感，哈希前先 `toLowerCase()`，否则 `D:\WWW` 与 `d:\www`
  * 会算出两个管道名，导致同一项目被当成两个核心。
+ *
+ * POSIX 侧为什么要退短端点：`sun_path` 定长，内核在 `bind()` 时**静默截断**
+ * 过长的路径。项目目录一深，核心就把自己绑在 `core.soc` 上，而所有客户端仍去连
+ * `core.sock` —— 拿到 ECONNREFUSED，且没有任何一处报错。表现就是「装好的应用
+ * 一直显示正在连接」，CLI 侧则是「核心没在跑」。既然两端都由本函数推导端点，
+ * 换短端点是对称的，不影响任何调用方。
  */
 export function pipeName(root) {
   if (isWindows) {
@@ -146,7 +162,15 @@ export function pipeName(root) {
       .slice(0, PIPE_HASH_LEN);
     return `${WINDOWS_PIPE_PREFIX}${digest}`;
   }
-  return path.join(resolveForHash(root), '.orch', 'core.sock');
+  const resolved = resolveForHash(root);
+  const natural = path.join(resolved, '.orch', 'core.sock');
+  if (Buffer.byteLength(natural) <= POSIX_SUN_PATH_MAX) return natural;
+  const digest = crypto
+    .createHash('sha256')
+    .update(resolved)
+    .digest('hex')
+    .slice(0, PIPE_HASH_LEN);
+  return path.join(os.tmpdir(), `maestro-${digest}.sock`);
 }
 
 /** 建出 `.orch/instances/`（幂等）。 */

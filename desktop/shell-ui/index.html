@@ -16,9 +16,13 @@
       --accent: #2f6fd0;
       --accent-ink: #ffffff;
       --warn: #b42318;
+      --ok: #0f7b5f;
+      --ok-soft: #e7f5f0;
+      --warn-soft: #fdf1e7;
+      --idle: #8a94a6;
     }
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
+    html, body { min-height: 100%; }
     body {
       margin: 0; padding: 32px 20px;
       font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
@@ -28,7 +32,7 @@
         var(--wash);
       display: grid; place-items: center;
     }
-    .shell { width: 100%; max-width: 600px; }
+    .shell { width: 100%; max-width: 620px; }
     .card {
       padding: 28px;
       background: var(--paper);
@@ -36,46 +40,102 @@
       border-radius: 16px;
       box-shadow: 0 18px 60px rgba(16, 24, 40, .12);
     }
-    .brand { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 24px; }
-    .mark {
-      flex: none; width: 40px; height: 40px;
-      display: grid; place-items: center;
-      filter: drop-shadow(0 8px 18px rgba(47, 111, 208, .28));
-    }
+    .brand { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 22px; }
+    .mark { flex: none; width: 40px; height: 40px; }
     .mark img { width: 40px; height: 40px; display: block; }
     h1 { margin: 0 0 5px; font-size: 22px; line-height: 1.2; letter-spacing: -.01em; }
+    h2 { margin: 0; font-size: 15px; line-height: 1.3; }
     .hint { margin: 0; color: var(--muted); font-size: 13px; }
-    .recent { margin: 0 0 22px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+    .step-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .step-head .link {
+      background: none; border: 0; padding: 0;
+      color: var(--accent); font-size: 12px;
+    }
+    .step-head .link:hover:not(:disabled) { text-decoration: underline; }
+    .summary { margin: 6px 0 16px; color: var(--muted); font-size: 12px; }
+    .groups { display: grid; gap: 6px; }
+    .group-label {
+      margin: 10px 0 2px; color: var(--muted);
+      font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    }
+    .group-label:first-child { margin-top: 0; }
+    .cli-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 11px;
+      background: #fbfcfe; border: 1px solid var(--line); border-radius: 9px;
+    }
+    .cli-row.ready { background: var(--ok-soft); border-color: #c4e5da; }
+    .cli-row.partial { background: var(--warn-soft); border-color: #f3ddc9; }
+    .cli-row.missing { background: #fafbfc; border-color: #edf0f4; color: var(--muted); }
+    .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--idle); }
+    .cli-row.ready .dot { background: var(--ok); }
+    .cli-row.partial .dot { background: #b45309; }
+    .cli-row.missing .dot { background: #cbd3df; }
+    .cli-text { min-width: 0; flex: 1; display: grid; gap: 1px; }
+    .cli-name { font-weight: 600; font-size: 13px; }
+    .cli-meta {
+      color: var(--muted); font-size: 11.5px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mini {
+      flex: none; padding: 5px 9px; font-size: 12px;
+      color: var(--ink); background: #fff;
+      border: 1px solid var(--line); border-radius: 7px;
+    }
+    .mini:hover:not(:disabled) { background: #f4f6f9; border-color: #cbd5e1; }
+    details.missing-wrap { margin-top: 12px; }
+    details.missing-wrap > summary {
+      cursor: pointer; color: var(--muted); font-size: 12px;
+      padding: 4px 0; list-style: none;
+    }
+    details.missing-wrap > summary::-webkit-details-marker { display: none; }
+    details.missing-wrap > summary::before { content: "\25B8  "; }
+    details.missing-wrap[open] > summary::before { content: "\25BE  "; }
+    .bind {
+      margin-top: 14px; padding: 14px;
+      background: #fbfcfe; border: 1px dashed #c7d2e5; border-radius: 10px;
+    }
+    .bind[hidden] { display: none; }
+    .bind .field-label { margin-bottom: 4px; }
+    .bind .field-label + input { margin-bottom: 10px; }
+    .why { margin: 14px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .actions { display: flex; gap: 8px; margin-top: 16px; align-items: center; }
+    .actions .grow { flex: 1; }
     .section-label {
       margin: 0 0 8px; color: var(--muted);
-      font-size: 12px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase;
+      font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
     }
+    .recent { margin: 0 0 16px; }
     .recent ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-    .recent button {
-      width: 100%; display: flex; align-items: center; gap: 10px;
+    .recent li { display: flex; gap: 6px; align-items: stretch; }
+    .recent .pick {
+      flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;
       padding: 10px 12px; text-align: left; font: inherit; color: inherit;
       background: #fbfcfe; border: 1px solid var(--line); border-radius: 9px; cursor: pointer;
     }
-    .recent button:hover { background: #f4f8ff; border-color: #b9cdf0; }
-    .recent button:disabled { cursor: default; }
+    .recent .pick:hover:not(:disabled) { background: #f4f8ff; border-color: #b9cdf0; }
+    .recent .pick[aria-current="true"] { border-color: #a9c4ee; background: #f2f7ff; }
     .recent svg { flex: none; color: #7b8798; }
     .recent-text { min-width: 0; display: grid; gap: 1px; }
-    .recent-name {
-      font-weight: 600;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .recent-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .recent-path {
       color: var(--muted); font-size: 12px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+    .remove {
+      flex: none; width: 34px;
+      color: var(--muted); background: #fff;
+      border: 1px solid var(--line); border-radius: 9px;
+    }
+    .remove:hover:not(:disabled) { color: var(--warn); border-color: #f0c2bd; }
     .field-label { display: block; margin: 0 0 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
     .row { display: flex; gap: 8px; }
-    input {
+    input[type="text"] {
       flex: 1; min-width: 0; font: inherit; color: var(--ink);
       padding: 9px 11px;
       background: #fff; border: 1px solid var(--line); border-radius: 8px;
     }
-    input:focus { outline: 2px solid rgba(47, 111, 208, .22); outline-offset: 1px; border-color: var(--accent); }
+    input[type="text"]:focus { outline: 2px solid rgba(47, 111, 208, .22); outline-offset: 1px; border-color: var(--accent); }
     button { font: inherit; cursor: pointer; }
     button:disabled { opacity: .55; cursor: default; }
     .secondary {
@@ -84,14 +144,15 @@
     }
     .secondary:hover:not(:disabled) { background: #f4f6f9; border-color: #cbd5e1; }
     .primary {
-      width: 100%; margin-top: 10px; padding: 10px 14px;
+      padding: 10px 18px; white-space: nowrap;
       color: var(--accent-ink); background: var(--accent);
       border: 1px solid var(--accent); border-radius: 8px; font-weight: 600;
     }
     .primary:hover:not(:disabled) { background: #2861b8; border-color: #2861b8; }
+    .primary.wide { width: 100%; margin-top: 10px; }
     .status {
       display: flex; align-items: center; gap: 8px;
-      min-height: 20px; margin: 12px 0 0; color: var(--muted); font-size: 13px;
+      min-height: 20px; margin: 12px 0 0; color: var(--muted); font-size: 12.5px;
     }
     .status.busy::before {
       content: ""; width: 12px; height: 12px; border-radius: 50%;
@@ -99,12 +160,13 @@
       animation: spin .8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .error { min-height: 20px; margin: 8px 0 0; color: var(--warn); font-size: 13px; }
+    .error { min-height: 20px; margin: 6px 0 0; color: var(--warn); font-size: 12.5px; }
     @media (max-width: 520px) {
       body { padding: 18px 14px; }
       .card { padding: 22px; }
       .row { flex-direction: column; }
       .secondary { width: 100%; }
+      .actions { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -119,22 +181,68 @@
         </div>
       </header>
 
-      <section id="recent" class="recent" hidden>
-        <p id="recent-label" class="section-label"></p>
-        <ul id="recent-list"></ul>
+      <!-- Step one: the machine-level environment. It runs before any project
+           exists, because the dependency chain starts here: no CLI, no employee,
+           no team, nothing to run. -->
+      <section id="env-step" aria-labelledby="env-title">
+        <div class="step-head">
+          <h2 id="env-title"></h2>
+          <button id="rescan" type="button" class="link"></button>
+        </div>
+        <p id="env-summary" class="summary"></p>
+        <div id="env-groups" class="groups"></div>
+        <details id="env-missing-wrap" class="missing-wrap" hidden>
+          <summary id="env-missing-label"></summary>
+          <div id="env-missing" class="groups"></div>
+        </details>
+        <div id="bind" class="bind" hidden>
+          <p id="bind-hint" class="hint" style="margin-bottom:10px"></p>
+          <label id="bind-name-label" class="field-label" for="bind-name"></label>
+          <input id="bind-name" type="text" spellcheck="false" autocomplete="off">
+          <label id="bind-path-label" class="field-label" for="bind-path"></label>
+          <div class="row">
+            <input id="bind-path" type="text" spellcheck="false" autocomplete="off">
+            <button id="bind-pick" type="button" class="secondary"></button>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button id="bind-save" type="button" class="primary"></button>
+            <button id="bind-cancel" type="button" class="secondary"></button>
+          </div>
+        </div>
+        <p id="env-why" class="why"></p>
+        <div class="actions">
+          <button id="env-add" type="button" class="secondary"></button>
+          <span class="grow"></span>
+          <button id="env-continue" type="button" class="primary"></button>
+        </div>
+        <p id="env-status" class="status" aria-live="polite"></p>
+        <p id="env-error" class="error" role="alert"></p>
       </section>
 
-      <form id="form" autocomplete="off">
-        <label id="path-label" class="field-label" for="root"></label>
-        <div class="row">
-          <input id="root" type="text" spellcheck="false" autocomplete="off" autofocus>
-          <button id="browse" type="button" class="secondary"></button>
+      <!-- Step two: which project. One directory is one project. -->
+      <section id="project-step" aria-labelledby="projects-title" hidden>
+        <div class="step-head">
+          <h2 id="projects-title"></h2>
+          <button id="back-env" type="button" class="link"></button>
         </div>
-        <button id="open" type="submit" class="primary" disabled></button>
-      </form>
-
-      <p id="status" class="status" aria-live="polite"></p>
-      <p id="error" class="error" role="alert"></p>
+        <p id="projects-hint" class="hint" style="margin:6px 0 16px"></p>
+        <section id="recent" class="recent" hidden>
+          <p id="recent-label" class="section-label"></p>
+          <ul id="recent-list"></ul>
+        </section>
+        <p id="projects-empty" class="hint" hidden></p>
+        <form id="form" autocomplete="off" style="margin-top:14px">
+          <label id="path-label" class="field-label" for="root"></label>
+          <div class="row">
+            <input id="root" type="text" spellcheck="false" autocomplete="off" autofocus>
+            <button id="browse" type="button" class="secondary"></button>
+          </div>
+          <button id="open" type="submit" class="primary wide" disabled></button>
+        </form>
+        <button id="project-pick" type="button" class="secondary wide" style="width:100%;margin-top:8px"></button>
+        <p id="status" class="status" aria-live="polite"></p>
+        <p id="error" class="error" role="alert"></p>
+      </section>
     </section>
   </main>
 
@@ -144,27 +252,64 @@
         ?? window.__TAURI_INTERNALS__?.invoke
         ?? null;
 
-      const hint = document.getElementById('hint');
-      const recentWrap = document.getElementById('recent');
-      const recentLabel = document.getElementById('recent-label');
-      const recentList = document.getElementById('recent-list');
-      const pathLabel = document.getElementById('path-label');
-      const input = document.getElementById('root');
-      const form = document.getElementById('form');
-      const browse = document.getElementById('browse');
-      const open = document.getElementById('open');
-      const status = document.getElementById('status');
-      const error = document.getElementById('error');
+      const byId = (id) => document.getElementById(id);
+      const hint = byId('hint');
+
+      const envStep = byId('env-step');
+      const envTitle = byId('env-title');
+      const envSummary = byId('env-summary');
+      const envGroups = byId('env-groups');
+      const envMissingWrap = byId('env-missing-wrap');
+      const envMissingLabel = byId('env-missing-label');
+      const envMissing = byId('env-missing');
+      const envWhy = byId('env-why');
+      const envAdd = byId('env-add');
+      const envContinue = byId('env-continue');
+      const envStatus = byId('env-status');
+      const envError = byId('env-error');
+      const rescan = byId('rescan');
+
+      const bind = byId('bind');
+      const bindHint = byId('bind-hint');
+      const bindNameLabel = byId('bind-name-label');
+      const bindPathLabel = byId('bind-path-label');
+      const bindName = byId('bind-name');
+      const bindPath = byId('bind-path');
+      const bindPick = byId('bind-pick');
+      const bindSave = byId('bind-save');
+      const bindCancel = byId('bind-cancel');
+
+      const projectStep = byId('project-step');
+      const projectsTitle = byId('projects-title');
+      const projectsHint = byId('projects-hint');
+      const projectsEmpty = byId('projects-empty');
+      const projectPick = byId('project-pick');
+      const backEnv = byId('back-env');
+
+      const recentWrap = byId('recent');
+      const recentLabel = byId('recent-label');
+      const recentList = byId('recent-list');
+      const pathLabel = byId('path-label');
+      const input = byId('root');
+      const form = byId('form');
+      const browse = byId('browse');
+      const open = byId('open');
+      const status = byId('status');
+      const error = byId('error');
 
       const POLL_MS = 400;
-      // A cold start compiles the orchestrator graph before the HTTP channel
-      // is up; 15s produced false failures on slow disks. The channel probe
-      // itself is bounded (ping + HTTP), so the ceiling stays honest.
       const TIMEOUT_MS = 25000;
 
       let info = {};
+      let env = {};
+      let strings = {};
+      let knownRoots = [];
+      let boundRoot = null;
       let busy = false;
       let polling = null;
+      let scanning = false;
+      let binding = null;
+      let lastRegistry = null;
 
       function textOf(value) {
         if (typeof value === 'string') return value;
@@ -172,9 +317,20 @@
         return String(value ?? '');
       }
 
+      function fill(template, values) {
+        return String(template ?? '').replace(/\{(\w+)\}/g, (whole, key) => (
+          Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : whole
+        ));
+      }
+
       function baseName(root) {
         const parts = String(root).split(/[\\/]+/).filter(Boolean);
         return parts.length > 0 ? parts[parts.length - 1] : String(root);
+      }
+
+      function tailOf(path) {
+        const text = String(path ?? '');
+        return text.length > 58 ? `…${text.slice(-57)}` : text;
       }
 
       function folderIcon() {
@@ -193,35 +349,186 @@
         return svg;
       }
 
-      function setStatus(text, isBusy) {
-        status.textContent = text ?? '';
-        status.classList.toggle('busy', Boolean(isBusy));
+      function setStatus(el, text, isBusy) {
+        el.textContent = text ?? '';
+        el.classList.toggle('busy', Boolean(isBusy));
       }
 
       function setBusy(next) {
         busy = next;
         input.disabled = next;
         browse.disabled = next;
+        projectPick.disabled = next;
+        backEnv.disabled = next;
+        envContinue.disabled = next;
+        envAdd.disabled = next;
+        rescan.disabled = next;
         if (next) open.disabled = true;
         else open.disabled = input.value.trim().length === 0;
         for (const button of recentList.querySelectorAll('button')) button.disabled = next;
         form.setAttribute('aria-busy', next ? 'true' : 'false');
       }
 
-      function resetOpenLabel() {
-        open.textContent = info.open ?? '';
+      // ---------------------------------------------------------------- env
+
+      function cliRow(item, kind) {
+        const row = document.createElement('div');
+        row.className = `cli-row ${kind}`;
+        row.appendChild(Object.assign(document.createElement('span'), { className: 'dot' }));
+
+        const text = document.createElement('div');
+        text.className = 'cli-text';
+        const name = document.createElement('span');
+        name.className = 'cli-name';
+        name.textContent = item.name || item.cli_id || '';
+        const meta = document.createElement('span');
+        meta.className = 'cli-meta';
+        text.appendChild(name);
+        text.appendChild(meta);
+        row.appendChild(text);
+        return { row, meta };
       }
 
-      function renderRecent(roots) {
-        const items = Array.isArray(roots) ? roots.filter((root) => typeof root === 'string' && root.length > 0) : [];
+      function renderRegistry(registry) {
+        lastRegistry = registry;
+        const clis = Array.isArray(registry?.clis) ? registry.clis : [];
+        const known = Array.isArray(registry?.known) ? registry.known : [];
+        const ready = clis.filter((item) => typeof item.executable === 'string' && item.executable.length > 0);
+        const partial = clis.filter((item) => !(typeof item.executable === 'string' && item.executable.length > 0));
+        const seen = new Set(clis.map((item) => item.cli_id));
+        const missing = known.filter((item) => !seen.has(item.cli_id));
+
+        envSummary.textContent = fill(strings.summary, {
+          ready: ready.length,
+          partial: partial.length,
+          total: known.length || clis.length
+        });
+
+        envGroups.replaceChildren();
+        if (ready.length > 0) {
+          envGroups.appendChild(Object.assign(document.createElement('p'), {
+            className: 'group-label', textContent: `${strings.groupReady} · ${ready.length}`
+          }));
+          for (const item of ready) {
+            const { row, meta } = cliRow(item, 'ready');
+            meta.textContent = [item.version, tailOf(item.executable)].filter(Boolean).join(' · ');
+            envGroups.appendChild(row);
+          }
+        }
+        if (partial.length > 0) {
+          envGroups.appendChild(Object.assign(document.createElement('p'), {
+            className: 'group-label', textContent: `${strings.groupPartial} · ${partial.length}`
+          }));
+          for (const item of partial) {
+            const { row, meta } = cliRow(item, 'partial');
+            meta.textContent = strings.reasonNoExec;
+            const action = document.createElement('button');
+            action.type = 'button';
+            action.className = 'mini';
+            action.textContent = strings.bind;
+            action.addEventListener('click', () => openBind(item));
+            row.appendChild(action);
+            envGroups.appendChild(row);
+          }
+        }
+
+        if (missing.length > 0) {
+          envMissingWrap.hidden = false;
+          envMissingLabel.textContent = `${strings.groupMissing} · ${missing.length}`;
+          envMissing.replaceChildren();
+          for (const item of missing) {
+            const { row, meta } = cliRow(item, 'missing');
+            const how = (item.bin?.[0] ? `bin: ${item.bin[0]}` : (item.appNames?.[0] ?? ''));
+            meta.textContent = how;
+            envMissing.appendChild(row);
+          }
+        } else {
+          envMissingWrap.hidden = true;
+        }
+
+        envStatus.textContent = ready.length === 0 ? strings.noneReady : '';
+      }
+
+      async function runScan() {
+        if (scanning || invoke === null) return;
+        scanning = true;
+        rescan.disabled = true;
+        envError.textContent = '';
+        setStatus(envStatus, strings.scanning, true);
+        try {
+          const result = await invoke('env_scan');
+          if (result?.ok === true) {
+            renderRegistry(result.registry);
+          } else {
+            envError.textContent = `${strings.scanFailed} · ${String(result?.detail ?? '')}`;
+            setStatus(envStatus, '', false);
+          }
+        } catch (err) {
+          envError.textContent = `${strings.scanFailed} · ${textOf(err)}`;
+          setStatus(envStatus, '', false);
+        } finally {
+          scanning = false;
+          rescan.disabled = false;
+          envStatus.classList.remove('busy');
+        }
+      }
+
+      function openBind(item) {
+        binding = item ?? null;
+        bind.hidden = false;
+        envError.textContent = '';
+        bindName.value = item?.name ?? '';
+        bindPath.value = '';
+        bindName.focus();
+      }
+
+      function closeBind() {
+        binding = null;
+        bind.hidden = true;
+        bindName.value = '';
+        bindPath.value = '';
+      }
+
+      async function saveBind() {
+        const name = bindName.value.trim();
+        const path = bindPath.value.trim();
+        envError.textContent = '';
+        if (name.length === 0 || path.length === 0) {
+          envError.textContent = strings.bindHint;
+          return;
+        }
+        bindSave.disabled = true;
+        try {
+          const result = await invoke('env_add_cli', { name, path });
+          if (result?.ok === true) {
+            envStatus.textContent = fill(strings.saved, { name });
+            closeBind();
+            await runScan();
+            return;
+          }
+          envError.textContent = textOf(result?.message ?? '');
+        } catch (err) {
+          envError.textContent = textOf(err);
+        } finally {
+          bindSave.disabled = false;
+        }
+      }
+
+      // ----------------------------------------------------------- projects
+
+      function renderProjects() {
+        const items = knownRoots.filter((root) => typeof root === 'string' && root.length > 0);
         recentWrap.hidden = items.length === 0;
+        projectsEmpty.hidden = items.length > 0;
         recentList.replaceChildren();
         for (const root of items) {
           const row = document.createElement('li');
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.title = root;
-          button.appendChild(folderIcon());
+          const pick = document.createElement('button');
+          pick.type = 'button';
+          pick.className = 'pick';
+          pick.title = root;
+          if (boundRoot === root) pick.setAttribute('aria-current', 'true');
+          pick.appendChild(folderIcon());
           const text = document.createElement('span');
           text.className = 'recent-text';
           const name = document.createElement('span');
@@ -232,18 +539,41 @@
           pathText.textContent = root;
           text.appendChild(name);
           text.appendChild(pathText);
-          button.appendChild(text);
-          button.addEventListener('click', () => {
+          pick.appendChild(text);
+          pick.addEventListener('click', () => {
             if (busy) return;
             input.value = root;
-            error.textContent = '';
-            resetOpenLabel();
-            open.disabled = false;
             void submit();
           });
-          row.appendChild(button);
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'remove';
+          remove.textContent = '\u00d7';
+          remove.title = strings.remove;
+          remove.addEventListener('click', async () => {
+            if (busy) return;
+            try {
+              await invoke('forget_project', { root });
+            } catch { /* a failed removal keeps the list as it is */ }
+            knownRoots = knownRoots.filter((item) => item !== root);
+            renderProjects();
+          });
+          row.appendChild(pick);
+          row.appendChild(remove);
           recentList.appendChild(row);
         }
+      }
+
+      function showProjects() {
+        envStep.hidden = true;
+        projectStep.hidden = false;
+        renderProjects();
+        if (knownRoots.length === 0) input.focus();
+      }
+
+      function showEnv() {
+        projectStep.hidden = true;
+        envStep.hidden = false;
       }
 
       function stopPolling() {
@@ -254,7 +584,11 @@
       function fail(message) {
         stopPolling();
         setBusy(false);
-        setStatus('', false);
+        // A failure message has to land on a visible step. The automatic entry
+        // at boot can fail before the user ever saw the project step, so the
+        // failure itself is what reveals it.
+        showProjects();
+        setStatus(status, '', false);
         error.textContent = message ?? '';
         open.textContent = info.retry || info.open || '';
         input.focus();
@@ -276,8 +610,6 @@
             const state = await invoke('startup_status');
             if (state?.ready) {
               stopPolling();
-              // The shell navigates to the daemon-served UI as soon as the
-              // channel is live; keep the transient line until that happens.
               return;
             }
           } catch {
@@ -293,15 +625,16 @@
         const root = input.value.trim();
         error.textContent = '';
         if (root.length === 0) {
-          setStatus('', false);
+          setStatus(status, '', false);
           error.textContent = info.missing ?? '';
           input.focus();
           return;
         }
         setBusy(true);
-        setStatus(info.connecting ?? '', true);
+        setStatus(status, info.connecting ?? '', true);
         try {
           await invoke('open_project', { root });
+          boundRoot = root;
           startPolling();
         } catch (err) {
           fail(textOf(err));
@@ -310,42 +643,95 @@
 
       async function boot() {
         if (invoke === null) {
-          setStatus('Maestro desktop runtime unavailable.', false);
+          setStatus(envStatus, 'Maestro desktop runtime unavailable.', false);
           return;
         }
         try {
           info = await invoke('startup_info');
         } catch (err) {
-          setStatus('', false);
-          error.textContent = textOf(err);
+          setStatus(envStatus, '', false);
+          envError.textContent = textOf(err);
           return;
         }
+
+        strings = info.env ?? {};
+        const projects = info.projects ?? {};
+        knownRoots = Array.isArray(info.knownRoots) ? info.knownRoots.slice() : [];
+        boundRoot = typeof info.project === 'string' ? info.project : null;
 
         hint.textContent = info.hint ?? '';
+        envTitle.textContent = strings.title ?? '';
+        envAdd.textContent = strings.bindOther ?? '';
+        envContinue.textContent = strings.continue ?? '';
+        rescan.textContent = strings.rescan ?? '';
+        envWhy.textContent = strings.why ?? '';
+        bindHint.textContent = strings.bindHint ?? '';
+        bindNameLabel.textContent = strings.nameLabel ?? '';
+        bindPathLabel.textContent = strings.pathLabel ?? '';
+        bindPick.textContent = strings.pickFile ?? '';
+        bindSave.textContent = strings.save ?? '';
+        bindCancel.textContent = strings.cancel ?? '';
+
+        projectsTitle.textContent = projects.title ?? '';
+        projectsHint.textContent = projects.hint ?? '';
+        projectsEmpty.textContent = projects.empty ?? '';
+        projectPick.textContent = projects.open ?? '';
+        recentLabel.textContent = projects.last ?? '';
+        backEnv.textContent = strings.back ?? '';
         pathLabel.textContent = info.pathLabel ?? '';
         browse.textContent = info.browse ?? '';
-        recentLabel.textContent = info.recentLabel ?? '';
-        resetOpenLabel();
-        renderRecent(info.recent);
+        open.textContent = info.open ?? '';
 
-        if (info.project) {
-          input.value = info.project;
-          setBusy(true);
-          setStatus(info.connecting ?? '', true);
-          startPolling();
-          return;
-        }
+        if (boundRoot) input.value = boundRoot;
         if (info.invalid) {
           input.value = info.invalid;
-          error.textContent = info.invalidMessage ?? '';
-          open.disabled = false;
-          input.focus();
-          input.select();
-          return;
+          knownRoots = [info.invalid, ...knownRoots.filter((root) => root !== info.invalid)];
         }
-        setStatus(info.missing ?? '', false);
-        input.focus();
+
+        // Step one starts immediately: the scan is the first thing the app
+        // does, because every later screen depends on its result.
+        void runScan();
+        // ... but a core that is already bound is not a thing to click through.
+        // The start page is the first-run path; on a launch that already knows
+        // its project the window enters it as soon as the channel answers, and
+        // the scan above keeps running alongside (it refreshes the machine
+        // registry either way).
+        if (boundRoot) startPolling();
       }
+
+      // ----------------------------------------------------------- handlers
+
+      rescan.addEventListener('click', () => { void runScan(); });
+      envContinue.addEventListener('click', () => showProjects());
+      backEnv.addEventListener('click', () => showEnv());
+      envAdd.addEventListener('click', () => openBind(null));
+      bindCancel.addEventListener('click', () => closeBind());
+      bindSave.addEventListener('click', () => { void saveBind(); });
+      bindPick.addEventListener('click', async () => {
+        try {
+          const picked = await invoke('pick_file');
+          if (typeof picked === 'string' && picked.length > 0) {
+            bindPath.value = picked;
+            if (bindName.value.trim().length === 0) bindName.value = baseName(picked);
+          }
+        } catch (err) {
+          envError.textContent = textOf(err);
+        }
+      });
+
+      projectPick.addEventListener('click', async () => {
+        if (busy) return;
+        error.textContent = '';
+        try {
+          const picked = await invoke('pick_project');
+          if (typeof picked === 'string' && picked.length > 0) {
+            input.value = picked;
+            await submit();
+          }
+        } catch (err) {
+          error.textContent = textOf(err);
+        }
+      });
 
       browse.addEventListener('click', async () => {
         if (busy) return;
@@ -354,9 +740,8 @@
           const picked = await invoke('pick_project');
           if (typeof picked === 'string' && picked.length > 0) {
             input.value = picked;
-            resetOpenLabel();
             open.disabled = false;
-            setStatus('', false);
+            setStatus(status, '', false);
             input.focus();
             input.select();
           }
@@ -368,12 +753,15 @@
       input.addEventListener('input', () => {
         error.textContent = '';
         if (!busy) open.disabled = input.value.trim().length === 0;
-        resetOpenLabel();
       });
 
       input.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
           error.textContent = '';
+        }
+        if (event.key === 'Enter' && !busy && input.value.trim().length > 0) {
+          event.preventDefault();
+          void submit();
         }
       });
 

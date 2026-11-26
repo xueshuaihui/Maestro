@@ -168,6 +168,7 @@ fn main() {
         .manage(state)
         .invoke_handler(tauri::generate_handler![
             config::remember_project_command,
+            config::forget_project_command,
             config::read_view_command,
             config::write_view_command,
             probe::probe_emit,
@@ -175,6 +176,9 @@ fn main() {
             startup_status,
             pick_project,
             open_project,
+            pick_file,
+            env_scan,
+            env_add_cli,
         ])
         .setup(move |app| {
             // Daemon child first: it starts serving while the window builds.
@@ -214,7 +218,7 @@ fn main() {
             if let Some(root) = spawn_root.as_deref() {
                 if daemon_pid != 0 || adopted {
                     let stop = app.state::<ShellState>().stop.clone();
-                    start_tray_status_poller(app.handle().clone(), root.to_path_buf(), stop);
+                    start_tray_status_poller(app.handle().clone(), stop);
                     start_project_services(app.handle().clone(), root.to_path_buf());
                 }
             }
@@ -310,6 +314,47 @@ fn startup_info(app: tauri::AppHandle) -> Value {
         "retry": labels.project_action_retry,
         "recentLabel": labels.project_recent,
         "recent": config::recent_projects(5),
+        // Step one of the startup page: the machine-level environment. The
+        // shell owns none of this wording; it is handed down like every other
+        // shell label.
+        "env": {
+            "title": labels.env_title,
+            "scanning": labels.env_scanning,
+            "summary": labels.env_summary,
+            "groupReady": labels.env_group_ready,
+            "groupPartial": labels.env_group_partial,
+            "groupMissing": labels.env_group_missing,
+            "reasonNotOnPath": labels.env_reason_not_on_path,
+            "reasonNoExec": labels.env_reason_no_exec,
+            "bind": labels.env_bind,
+            "bindOther": labels.env_bind_other,
+            "bindHint": labels.env_bind_hint,
+            "nameLabel": labels.env_name_label,
+            "pathLabel": labels.env_path_label,
+            "pickFile": labels.env_pick_file,
+            "save": labels.env_save,
+            "cancel": labels.env_cancel,
+            "rescan": labels.env_rescan,
+            "continue": labels.env_continue,
+            "skip": labels.env_skip,
+            "why": labels.env_why,
+            "noneReady": labels.env_none_ready,
+            "pickTitle": labels.env_pick_title,
+            "scanFailed": labels.env_scan_failed,
+            "saved": labels.env_saved,
+            "back": labels.env_back,
+        },
+        // Step two: the project list. `recent` above stays for compatibility
+        // with the old single-step page.
+        "projects": {
+            "title": labels.projects_title,
+            "hint": labels.projects_hint,
+            "open": labels.projects_open,
+            "remove": labels.projects_remove,
+            "empty": labels.projects_empty,
+            "last": labels.projects_last,
+        },
+        "knownRoots": config::recent_projects(12),
     })
 }
 
@@ -373,8 +418,8 @@ pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
         return Err(labels.project_invalid_for(trimmed));
     }
     let current = app.state::<ShellState>().project_root.lock().unwrap().clone();
-    if let Some(current) = current {
-        if current == root {
+    if let Some(bound) = current.as_ref() {
+        if bound == &root {
             // "试了还是连不上" must be a real retry: the same root re-enters the
             // same ensure path, which retires a wedged core and respawns it.
             app.state::<ShellState>()
@@ -386,7 +431,18 @@ pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
             }
             return Ok(pid);
         }
-        return Err(labels.conn_failed.clone());
+    }
+
+    // A different root is a real switch. One project is bound at a time, so the
+    // old core is retired before the new one starts: two cores would race for
+    // the tray, the notification stream and the single-instance lock's idea of
+    // "the current project". A clean stop is preferred; a wedged core (alive
+    // but not answering) is cleared so its socket and record cannot be adopted
+    // by the next launch.
+    let switching = current.is_some();
+    if let Some(old) = current.as_ref() {
+        spawn::retire_core(old, 3000);
+        spawn::clear_stale(old);
     }
 
     config::remember_project(&root);
@@ -400,15 +456,29 @@ pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
 
     let (pid, adopted) = ensure_daemon(app, &root);
     if pid == 0 && !adopted {
-        app.state::<ShellState>().project_root.lock().unwrap().take();
+        // The switch failed: restore the previous binding so the window keeps
+        // pointing at a project that works instead of a half-bound state.
+        *app.state::<ShellState>().project_root.lock().unwrap() = current.clone();
         return Err(labels.conn_failed);
     }
-    let stop = app.state::<ShellState>().stop.clone();
-    start_tray_status_poller(app.clone(), root.clone(), stop);
-    start_project_services(app.clone(), root.clone());
+
+    if switching {
+        // The long-lived workers already read `project_root` every tick, so a
+        // switch needs no thread restart — only the navigation is re-armed.
+        spawn::wait_desktop_channel(app.clone(), root.clone());
+    } else {
+        let stop = app.state::<ShellState>().stop.clone();
+        start_tray_status_poller(app.clone(), stop);
+        start_project_services(app.clone(), root.clone());
+    }
     probe::event(
-        "project-opened",
-        json!({ "root": root, "daemonPid": pid, "adopted": adopted }),
+        if switching { "project-switched" } else { "project-opened" },
+        json!({
+            "root": root,
+            "daemonPid": pid,
+            "adopted": adopted,
+            "from": current.as_ref().map(|path| path.to_string_lossy().to_string()),
+        }),
     );
     Ok(pid)
 }
@@ -417,6 +487,99 @@ pub fn bind_project(app: &tauri::AppHandle, raw: &str) -> Result<u32, String> {
 fn open_project(app: tauri::AppHandle, root: String) -> Result<Value, String> {
     let pid = bind_project(&app, &root)?;
     Ok(json!({ "ok": true, "daemonPid": pid }))
+}
+
+/// Native file picker for the environment page's manual binding path.
+///
+/// No extension filter: agent CLIs ship without one on Unix, and a filter would
+/// simply hide them. Runs async so the blocking dialog never freezes the page.
+#[tauri::command]
+async fn pick_file(app: tauri::AppHandle) -> Option<String> {
+    use tauri_plugin_dialog::DialogExt;
+
+    let title = app
+        .state::<ShellState>()
+        .labels
+        .lock()
+        .unwrap()
+        .env_pick_title
+        .clone();
+    app.dialog()
+        .file()
+        .set_title(title)
+        .blocking_pick_file()
+        .and_then(|picked| picked.into_path().ok())
+        .map(|path| path.to_string_lossy().to_string())
+}
+
+/// Scan the machine for agent CLIs before any project exists.
+///
+/// This deliberately bypasses the daemon: the daemon is per project, and the
+/// whole point of the first screen is that it runs with no project bound. The
+/// returned registry is the same shape `orch cli scan --format json` prints.
+#[tauri::command(async)]
+fn env_scan(app: tauri::AppHandle) -> Value {
+    let args: Vec<String> = ["cli", "scan", "--all", "--format", "json"]
+        .iter()
+        .map(|item| item.to_string())
+        .collect();
+    match spawn::run_orch(&app, &args, Duration::from_secs(30)) {
+        Ok(out) => match serde_json::from_str::<Value>(&out.stdout) {
+            Ok(registry) => {
+                // The start page scans on its own, before the user touches
+                // anything. Recording it in the probe stream is what makes
+                // "opening the app scans the machine" checkable end to end.
+                let clis = registry
+                    .get("clis")
+                    .and_then(Value::as_array)
+                    .cloned()
+                    .unwrap_or_default();
+                let ready = clis
+                    .iter()
+                    .filter(|item| {
+                        item.get("executable")
+                            .and_then(Value::as_str)
+                            .map(|path| !path.is_empty())
+                            .unwrap_or(false)
+                    })
+                    .count();
+                let known = registry
+                    .get("known")
+                    .and_then(Value::as_array)
+                    .map(|items| items.len())
+                    .unwrap_or(0);
+                crate::probe::event(
+                    "env-scan",
+                    json!({ "detected": clis.len(), "ready": ready, "known": known }),
+                );
+                json!({ "ok": true, "registry": registry })
+            }
+            Err(err) => {
+                let head: String = out.stdout.chars().take(400).collect();
+                json!({ "ok": false, "detail": format!("{err}: {head}") })
+            }
+        },
+        Err(err) => json!({ "ok": false, "detail": err }),
+    }
+}
+
+/// Record a manually chosen executable. The CLI layer owns validation (it is
+/// the only place that knows what a usable path means); this returns its
+/// verdict verbatim so the page shows the same sentence the terminal would.
+#[tauri::command(async)]
+fn env_add_cli(app: tauri::AppHandle, name: String, path: String) -> Value {
+    let args: Vec<String> = vec![
+        "cli".to_string(),
+        "add".to_string(),
+        "--name".to_string(),
+        name,
+        "--path".to_string(),
+        path,
+    ];
+    match spawn::run_orch(&app, &args, Duration::from_secs(15)) {
+        Ok(out) => json!({ "ok": out.code == 0, "message": out.stdout.trim() }),
+        Err(err) => json!({ "ok": false, "message": err }),
+    }
 }
 
 /// Start the per-project background workers exactly once. `stop` is owned by
@@ -433,12 +596,15 @@ fn start_project_services(app: tauri::AppHandle, root: PathBuf) {
         return;
     }
     probe::start_window_probe_watcher(root.clone());
-    spawn::wait_desktop_channel(app.clone(), root.clone());
+    // Warm, do not navigate: the start page keeps the window until the user
+    // picks a project (or confirms the environment step). `startup_status`
+    // performs the navigation on the first ready poll.
+    spawn::warm_desktop_channel(app.clone(), root.clone());
     // D-8 tray polling is started by each entry point, where the `.handle()`
     // form is available and the startup ordering stays visible.
     // Notification delivery: always subscribe; the delivery switch inside
     // `deliver_intent` is what `--no-notify` flips.
-    start_notify_stream(app, root, stop);
+    start_notify_stream(app, stop);
 }
 
 // ------------------------------------------------------- loopback HTTP helpers
@@ -492,18 +658,31 @@ pub fn http_post_json(port: u16, path: &str, token: &str) -> Option<Value> {
 /// D-8 refresh: poll `GET /instances` every 2s and push the projected numbers
 /// into the tray. On channel loss every field becomes `None`, which renders the
 /// disconnected info line and emits a `tray-status` line with null numbers.
-fn start_tray_status_poller(app: tauri::AppHandle, root: PathBuf, stop: Arc<AtomicBool>) {
+/// Current project root as the shell state holds it. Both long-lived workers
+/// read it every tick instead of capturing a root at start-up, so switching
+/// projects needs no thread restart: the old core goes away, the next tick
+/// finds the new root and follows it.
+fn current_root(app: &tauri::AppHandle) -> Option<PathBuf> {
+    app.state::<ShellState>().project_root.lock().unwrap().clone()
+}
+
+fn start_tray_status_poller(app: tauri::AppHandle, stop: Arc<AtomicBool>) {
     std::thread::spawn(move || {
         // Wait for a channel that actually answers before the first poll so a
         // cold start never emits a spurious disconnected line (and a stale
         // `desktop.json` is not mistaken for a live one).
         while !stop.load(Ordering::Relaxed) {
-            if spawn::channel_ready(&root) {
-                break;
+            match current_root(&app) {
+                Some(root) if spawn::channel_ready(&root) => break,
+                _ => std::thread::sleep(Duration::from_millis(200)),
             }
-            std::thread::sleep(Duration::from_millis(200));
         }
         while !stop.load(Ordering::Relaxed) {
+            let Some(root) = current_root(&app) else {
+                tray::update_status(&app, None, None, Vec::new());
+                std::thread::sleep(Duration::from_secs(2));
+                continue;
+            };
             let status = config::read_desktop_json(&root).and_then(|meta| {
                 let port = meta.get("port")?.as_u64()? as u16;
                 let token = meta.get("token")?.as_str()?.to_string();
@@ -544,10 +723,10 @@ fn start_tray_status_poller(app: tauri::AppHandle, root: PathBuf, stop: Arc<Atom
 
 /// Subscribe to `GET /notifications/stream` and hand every frame to the
 /// delivery layer. Reconnects after a drop; both loops observe the stop flag.
-fn start_notify_stream(app: tauri::AppHandle, root: PathBuf, stop: Arc<AtomicBool>) {
+fn start_notify_stream(app: tauri::AppHandle, stop: Arc<AtomicBool>) {
     std::thread::spawn(move || {
         while !stop.load(Ordering::Relaxed) {
-            let channel = config::read_desktop_json(&root).and_then(|meta| {
+            let channel = current_root(&app).and_then(|root| config::read_desktop_json(&root)).and_then(|meta| {
                 let port = meta.get("port")?.as_u64()? as u16;
                 let token = meta.get("token")?.as_str()?.to_string();
                 if port == 0 { None } else { Some((port, token)) }

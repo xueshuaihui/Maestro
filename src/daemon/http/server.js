@@ -294,7 +294,22 @@ export function createHttpServer({
       try {
         const studio = await import('./studio-routes.js');
         if (typeof studio.createStudioRoutes === 'function') {
-          registerRoutes(studio.createStudioRoutes({ root }));
+          registerRoutes(studio.createStudioRoutes({
+            root,
+            // The studio layer prepares the compiled yaml and the host configs;
+            // the orchestrator owns the actual instance. Injecting it here is
+            // what turns an "engine" run from a prepared record into a real
+            // execution with an instance id.
+            startEngine: typeof orchestrator?.startRun === 'function'
+              ? async ({ workflowId, task, hostId }) => orchestrator.startRun({
+                cwd: root,
+                task,
+                template: workflowId,
+                earlyReturn: true,
+                ...(hostId === null || hostId === undefined ? {} : { hostId })
+              })
+              : null
+          }));
           studioRoutesRegistered = true;
         }
       } catch {

@@ -7,9 +7,10 @@
  *                   `.orch/kb/<runId>/` marked `mode: simulated` — this proves
  *                   the orchestration and the knowledge-base layout without
  *                   claiming a model ever ran;
- *   - `engine`    : additionally compile to `.orch/roles|workflows/*.yaml` and
- *                   report whether a host is configured. It never pretends a
- *                   real CLI session happened when there is no CLI.
+ *   - `engine`    : compile to `.orch/roles|workflows/*.yaml`, bind a host for
+ *                   every CLI the team's employees use, and launch a real
+ *                   engine instance. A team with no usable CLI stops at
+ *                   `prepared` and says why — it never pretends a session ran.
  */
 
 import fs from 'node:fs/promises';
@@ -23,6 +24,7 @@ import { checkTeam } from './team.js';
 import { addTask, transitionTask } from './tasks.js';
 import { compileStudio } from './compile.js';
 import { hostConfigPath } from '../adapter/host-config.js';
+import { bindHost, hostIdForCli } from './host.js';
 
 const KB_DIR = '.orch/kb';
 const ENGINE_ROLES_DIR = '.orch/roles';
@@ -293,7 +295,52 @@ export async function approveRun({ root, doc, runId, stageId, approve = true }) 
 }
 
 /** Compile the run's team+flow into engine assets (B bridge, no process). */
-export async function prepareEngine({ root, doc, team, flow }) {
+/**
+ * Bind a host config for every CLI the team's employees use.
+ *
+ * The engine launches a host by id, and the host config is the only place that
+ * knows the executable and its ACP arguments. Skipping this step was why an
+ * engine run prepared its yaml and then stopped: the team looked complete in
+ * the UI while the engine had no host it could start.
+ *
+ * Idempotent: re-binding the same CLI overwrites the same file, so repeated
+ * runs do not accumulate configs.
+ */
+async function ensureTeamHosts(root, doc, team, clis) {
+  const roleIds = new Set(team.roleIds ?? []);
+  const wanted = new Set();
+  for (const employee of doc.employees ?? []) {
+    if (!roleIds.has(employee.roleId)) continue;
+    if (typeof employee.cliId === 'string' && employee.cliId.length > 0) {
+      wanted.add(employee.cliId);
+    }
+  }
+
+  const bound = [];
+  const missing = [];
+  for (const cliId of wanted) {
+    const cli = (clis ?? []).find((item) => item.cli_id === cliId);
+    if (!cli || typeof cli.executable !== 'string' || cli.executable.length === 0) {
+      missing.push(cliId);
+      continue;
+    }
+    const args = Array.isArray(cli.acp_args) && cli.acp_args.length > 0
+      ? cli.acp_args
+      : ['--acp'];
+    const result = await bindHost(root, {
+      id: hostIdForCli(cliId),
+      cliId,
+      command: cli.executable,
+      args
+    });
+    if (result.ok) bound.push(result.host);
+    else missing.push(cliId);
+  }
+  return { bound, missing };
+}
+
+/** `engine` mode: compile assets, bind hosts, then report what can start. */
+export async function prepareEngine({ root, doc, team, flow, clis = [] }) {
   const compiled = compileStudio({ doc, team, flow });
   if (!compiled.ok) return compiled;
   const written = [];
@@ -310,41 +357,80 @@ export async function prepareEngine({ root, doc, team, flow }) {
   if (!out.ok) return out;
   written.push(path.relative(root, flowTarget));
 
-  const hosts = ['.orch/hosts/dsh.json', '.orch/hosts/workbuddy.json'].map((p) => path.join(root, p));
-  const available = [];
-  for (const candidate of hosts) {
-    try {
-      await fs.access(candidate);
-      available.push(path.relative(root, candidate));
-    } catch {
-      // A missing host config is the normal case on a machine with no CLI.
-    }
-  }
+  const hosts = await ensureTeamHosts(root, doc, team, clis);
+  // "Can this team start?" is about the team, not about leftovers on disk: a
+  // team with no employees has nothing to execute, and a team whose employee
+  // CLI is missing has a hole. Both are reported instead of papered over by an
+  // old host config from a previous team.
+  const needed = hosts.bound.length + hosts.missing.length;
+  const hostConfigured = needed > 0 && hosts.missing.length === 0;
   return {
     ok: true,
     written,
-    hostConfigured: available.length > 0,
-    hosts: available,
+    hostConfigured,
+    hosts: hosts.bound.map((host) => host.id),
+    missingClis: hosts.missing,
     workflowId: compiled.workflow.id,
     roleIds: compiled.roles.map((role) => role.id)
   };
 }
 
-/** `engine` mode: prepare assets, then report whether a real run is possible. */
-export async function engineRun({ root, doc, run, team, flow }) {
-  const prepared = await prepareEngine({ root, doc, team, flow });
+/**
+ * `engine` mode: prepare, then launch. The launch itself belongs to the daemon
+ * (it owns the orchestrator), so the caller passes `launch` in; this function
+ * only records the outcome on the run so the page never shows a made-up state.
+ */
+export async function engineRun({ root, doc, run, team, flow, clis = [], launch = null }) {
+  const prepared = await prepareEngine({ root, doc, team, flow, clis });
   if (!prepared.ok) return prepared;
+
   run.engine = {
     preparedAt: new Date().toISOString(),
     workflowId: prepared.workflowId,
     roleIds: prepared.roleIds,
     hostConfigured: prepared.hostConfigured,
+    hostIds: prepared.hosts,
     launched: false,
-    reason: prepared.hostConfigured ? 'host_configured_launch_pending' : 'no_host_config'
+    instanceId: null,
+    reason: prepared.hostConfigured ? 'launch_pending' : 'no_host_config'
   };
+
   if (!prepared.hostConfigured) {
     run.status = 'prepared';
-    return { ok: true, prepared, launched: false, reason: 'no_host_config', hint: hostConfigPath(root) };
+    return {
+      ok: true,
+      prepared,
+      launched: false,
+      reason: 'no_host_config',
+      missingClis: prepared.missingClis,
+      hint: hostConfigPath(root, prepared.hosts[0] ?? 'host')
+    };
   }
-  return { ok: true, prepared, launched: false, reason: 'host_configured_launch_pending' };
+
+  if (typeof launch !== 'function') {
+    run.status = 'prepared';
+    return { ok: true, prepared, launched: false, reason: 'launch_pending' };
+  }
+
+  const started = await launch({ workflowId: prepared.workflowId });
+  if (started && started.ok === true && typeof started.instanceId === 'string') {
+    run.engine.launched = true;
+    run.engine.instanceId = started.instanceId;
+    run.engine.reason = null;
+    run.status = 'running';
+    return { ok: true, prepared, launched: true, instanceId: started.instanceId };
+  }
+
+  // A launch that failed is still information: keep the reason visible instead
+  // of silently leaving the run looking "prepared".
+  run.engine.reason = 'launch_failed';
+  run.engine.error = started?.code ?? null;
+  run.status = 'prepared';
+  return {
+    ok: true,
+    prepared,
+    launched: false,
+    reason: 'launch_failed',
+    error: started?.code ?? null
+  };
 }

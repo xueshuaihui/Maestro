@@ -1,5 +1,12 @@
 /**
- * Read/write <root>/.orch/cli-registry.json.
+ * Read/write the CLI registry.
+ *
+ * Scope: a CLI is a property of the machine, not of a project. When the shell
+ * runs us (`MAESTRO_CONFIG_DIR` points at the per-user config dir) the registry
+ * lives beside `projects.json` and every project shares one copy. With no such
+ * variable — a bare `orch cli list` in a checkout, and every existing test —
+ * the path stays `<root>/.orch/cli-registry.json`, so nothing that predates the
+ * machine scope changes behaviour.
  *
  * Discipline:
  * - The registry is a cache of a scan, never the source of truth. A stale
@@ -20,7 +27,25 @@ import { SCHEMA_VERSION, CLI_STATUS } from './known-agents.js';
 
 export const CLI_REGISTRY_FILE = path.join('.orch', 'cli-registry.json');
 
+/** Per-user config dir handed down by the desktop shell, if any. */
+function machineConfigDir() {
+  const dir = process.env.MAESTRO_CONFIG_DIR;
+  return typeof dir === 'string' && dir.length > 0 ? dir : null;
+}
+
+export function isMachineRegistry() {
+  return machineConfigDir() !== null;
+}
+
 export function cliRegistryPath(root) {
+  const dir = machineConfigDir();
+  if (dir !== null) return path.join(dir, 'cli-registry.json');
+  return path.join(root, CLI_REGISTRY_FILE);
+}
+
+/** The pre-machine-scope location, read once so manual entries survive. */
+function legacyRegistryPath(root) {
+  if (typeof root !== 'string' || root.length === 0) return null;
   return path.join(root, CLI_REGISTRY_FILE);
 }
 
@@ -100,21 +125,37 @@ async function resolveUserConfig(root, options, findings) {
   return [...map.values()];
 }
 
+function parseRegistry(text, filePath) {
+  const parsed = JSON.parse(text);
+  if (!parsed || parsed.schemaVersion !== SCHEMA_VERSION || !Array.isArray(parsed.clis)) {
+    return { ok: false, code: 'CLI_REGISTRY_INVALID', params: { path: filePath } };
+  }
+  // Older registries predate the user_config segment; expose it as [].
+  if (!Array.isArray(parsed.user_config)) parsed.user_config = [];
+  return { ok: true, registry: parsed, path: filePath };
+}
+
 export async function loadCliRegistry(root) {
   const filePath = cliRegistryPath(root);
   try {
-    const text = await fs.readFile(filePath, 'utf8');
-    const parsed = JSON.parse(text);
-    if (!parsed || parsed.schemaVersion !== SCHEMA_VERSION || !Array.isArray(parsed.clis)) {
-      return { ok: false, code: 'CLI_REGISTRY_INVALID', params: { path: filePath } };
-    }
-    // Older registries predate the user_config segment; expose it as [].
-    if (!Array.isArray(parsed.user_config)) parsed.user_config = [];
-    return { ok: true, registry: parsed, path: filePath };
+    return parseRegistry(await fs.readFile(filePath, 'utf8'), filePath);
   } catch (err) {
-    if (err?.code === 'ENOENT') return { ok: true, registry: emptyRegistry(null), path: filePath };
-    return { ok: false, code: 'CLI_REGISTRY_INVALID', params: { path: filePath, cause: err?.message ?? String(err) } };
+    if (err?.code !== 'ENOENT') {
+      return { ok: false, code: 'CLI_REGISTRY_INVALID', params: { path: filePath, cause: err?.message ?? String(err) } };
+    }
   }
+  // Machine scope: a project that was scanned before this change still holds a
+  // project-local registry. Read it so manually registered paths are not lost;
+  // the next save writes them to the machine-level file and the old copy turns
+  // into a stale cache nobody reads again.
+  const legacy = legacyRegistryPath(root);
+  if (isMachineRegistry() && legacy !== null) {
+    try {
+      const adopted = parseRegistry(await fs.readFile(legacy, 'utf8'), filePath);
+      if (adopted.ok) return { ...adopted, migratedFrom: legacy };
+    } catch { /* no legacy registry: fall through to the empty one */ }
+  }
+  return { ok: true, registry: emptyRegistry(null), path: filePath };
 }
 
 export async function saveCliRegistry(root, scanResult, options = {}) {

@@ -1047,27 +1047,39 @@ export function createApp({ labels, project, io = {}, modules = {} } = {}) {
       return api;
     },
 
-    /** Native folder picker + daemon rebind (first-run project page). */
+    /** Native folder picker + daemon rebind (project page). */
     async pickProject() {
       const invoke = tauriInvoke();
       if (invoke === null) return api;
       let picked = null;
       try {
         picked = await invoke('pick_project');
-      } catch {
-        picked = null;
+      } catch (err) {
+        showToast(shellRefsOf(), String(err?.message ?? err));
+        return api;
       }
       if (typeof picked !== 'string' || picked.length === 0) return api;
       try {
         await invoke('open_project', { root: picked });
-      } catch {
-        // A failed bind keeps the current page; the connection line shows it.
+      } catch (err) {
+        // A silent failure here is indistinguishable from a dead button: the
+        // old page keeps rendering and nothing explains why. Say it out loud.
+        showToast(shellRefsOf(), String(err?.message ?? err));
         return api;
       }
-      state.project = resolveProject({ root: picked, message: null });
-      if (typeof window !== 'undefined' && typeof window.location?.reload === 'function') {
-        window.location.reload();
+      // The shell retires the old core, binds the new root and navigates when
+      // its channel answers. Reloading here would race that navigation with a
+      // reload of the *old* project's page, so poll instead and let the shell
+      // take the window.
+      const deadline = Date.now() + 25000;
+      while (Date.now() < deadline) {
+        try {
+          const next = await invoke('startup_status');
+          if (next?.ready === true) return api;
+        } catch { /* treated as "not switched yet" */ }
+        await new Promise((resolve) => setTimeout(resolve, 400));
       }
+      showToast(shellRefsOf(), labelText('DESKTOP_V2_SWITCH_FAILED', {}));
       return api;
     },
 

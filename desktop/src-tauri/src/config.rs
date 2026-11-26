@@ -41,6 +41,40 @@ pub struct Labels {
     pub tray_pause_none: String,
     /// A-2 提示：系统通知投递失败时显示一次（经 `/ui/labels` 下发）。
     pub notify_unavailable: String,
+    /// 启动页第一步：机器级 Agent CLI 环境（扫描结果 + 手动指定路径）。
+    pub env_title: String,
+    pub env_scanning: String,
+    pub env_summary: String,
+    pub env_group_ready: String,
+    pub env_group_partial: String,
+    pub env_group_missing: String,
+    pub env_reason_not_on_path: String,
+    pub env_reason_no_exec: String,
+    pub env_bind: String,
+    pub env_bind_other: String,
+    pub env_bind_hint: String,
+    pub env_name_label: String,
+    pub env_path_label: String,
+    pub env_pick_file: String,
+    pub env_save: String,
+    pub env_cancel: String,
+    pub env_rescan: String,
+    pub env_continue: String,
+    pub env_skip: String,
+    pub env_why: String,
+    pub env_none_ready: String,
+    pub env_pick_title: String,
+    pub env_scan_failed: String,
+    pub env_saved: String,
+    /// 返回环境页的链接（项目页左侧）。
+    pub env_back: String,
+    /// 启动页第二步：项目列表。
+    pub projects_title: String,
+    pub projects_hint: String,
+    pub projects_open: String,
+    pub projects_remove: String,
+    pub projects_empty: String,
+    pub projects_last: String,
 }
 
 impl Default for Labels {
@@ -55,7 +89,7 @@ impl Default for Labels {
             project_invalid: "项目 不可用 · {path}".into(),
             conn_connecting: "正在连接守护进程…".into(),
             conn_failed: "连接守护进程失败 · 请确认项目目录后重试".into(),
-            project_hint: "选择一个项目目录，Maestro 会在其中启动守护进程".into(),
+            project_hint: "一个目录就是一个项目：团队、工作流和运行记录都存在其中".into(),
             project_path_label: "项目目录".into(),
             project_action_open: "打开项目".into(),
             project_action_browse: "选择文件夹…".into(),
@@ -69,6 +103,37 @@ impl Default for Labels {
             tray_pause_summary: "{n} 个实例已暂停，{m} 个已跳过".into(),
             tray_pause_none: "没有可暂停的实例".into(),
             notify_unavailable: "通知不可用 · 队列仍可用".into(),
+            env_title: "Agent CLI".into(),
+            env_scanning: "正在扫描本机 Agent CLI…".into(),
+            env_summary: "{ready} 个可用 · {partial} 个有痕迹 · {total} 个已知".into(),
+            env_group_ready: "可用".into(),
+            env_group_partial: "已安装但不可用".into(),
+            env_group_missing: "未安装".into(),
+            env_reason_not_on_path: "不在 PATH 上，应用包里也没有找到可执行文件".into(),
+            env_reason_no_exec: "只找到配置痕迹，没有可执行文件".into(),
+            env_bind: "指定路径".into(),
+            env_bind_other: "添加其他 CLI".into(),
+            env_bind_hint: "知道它在哪？粘贴路径或选择文件，我会记住——不修改你的系统".into(),
+            env_name_label: "名称".into(),
+            env_path_label: "可执行文件路径".into(),
+            env_pick_file: "选择文件…".into(),
+            env_save: "保存".into(),
+            env_cancel: "取消".into(),
+            env_rescan: "重新扫描".into(),
+            env_continue: "继续".into(),
+            env_skip: "先跳过".into(),
+            env_why: "Maestro 的员工绑定具体 CLI：没有可用的 CLI，团队里就没有能干活的人。".into(),
+            env_none_ready: "还没有可用的 CLI。可以先继续，之后在设置里补。".into(),
+            env_pick_title: "选择 Agent CLI 可执行文件".into(),
+            env_scan_failed: "扫描失败".into(),
+            env_saved: "已登记 {name}".into(),
+            env_back: "上一步".into(),
+            projects_title: "选择项目".into(),
+            projects_hint: "团队、工作流和运行记录都存在项目目录里，一个目录就是一个项目。".into(),
+            projects_open: "打开其他目录…".into(),
+            projects_remove: "从列表移除".into(),
+            projects_empty: "还没有打开过项目。选一个目录开始。".into(),
+            projects_last: "最近打开".into(),
         }
     }
 }
@@ -179,6 +244,13 @@ fn config_dir() -> PathBuf {
 
 fn projects_path() -> PathBuf {
     config_dir().join("projects.json")
+}
+
+/// Per-user config dir, exposed so the spawner can pin the same value for the
+/// daemon and the one-shot CLI runs (they all resolve the machine-level CLI
+/// registry from it).
+pub fn config_dir_path() -> PathBuf {
+    config_dir()
 }
 
 /// First remembered project root, if the file exists and is well-formed.
@@ -359,6 +431,30 @@ pub fn fetch_labels(root: &Path) -> Option<Labels> {
 #[tauri::command]
 pub fn remember_project_command(root: String) {
     remember_project(Path::new(&root));
+}
+
+/// Drop a root from the remembered list. The directory is never touched: this
+/// is list hygiene, not a delete.
+pub fn forget_project(root: &str) {
+    let path = projects_path();
+    let Ok(text) = std::fs::read_to_string(&path) else { return };
+    let Ok(value) = serde_json::from_str::<Value>(&text) else { return };
+    let Some(items) = value.get("projects").and_then(Value::as_array) else { return };
+    let kept: Vec<String> = items
+        .iter()
+        .filter_map(Value::as_str)
+        .filter(|item| *item != root)
+        .map(str::to_string)
+        .collect();
+    let next = serde_json::json!({ "projects": kept });
+    if let Ok(body) = serde_json::to_string_pretty(&next) {
+        let _ = std::fs::write(&path, format!("{body}\n"));
+    }
+}
+
+#[tauri::command]
+pub fn forget_project_command(root: String) {
+    forget_project(&root);
 }
 
 #[tauri::command]

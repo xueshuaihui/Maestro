@@ -25,6 +25,7 @@ import {
   loadCliRegistry,
   saveCliRegistry,
   buildMatrixData,
+  KNOWN_AGENT_CLI,
   CLI_STATUS
 } from '../adapter/cli-discovery/index.js';
 import { CLI_DISCOVERY_TEXT as T, fill } from './labels.js';
@@ -94,6 +95,21 @@ function matrixCell(value) {
   if (value === null || value === undefined || value === '') return T.NOT_PROBED;
   if (typeof value === 'boolean') return value ? T.PROBE_ACP_YES : T.PROBE_ACP_NO;
   return String(value);
+}
+
+/**
+ * The known table as data: what Maestro can drive, independent of what this
+ * machine happens to have installed. The environment page needs the name and
+ * how the CLI normally ships (PATH name, config dir, app bundle name).
+ */
+function knownTable() {
+  return KNOWN_AGENT_CLI.map((entry) => ({
+    cli_id: entry.cli_id,
+    name: entry.name,
+    bin: entry.bin ?? [],
+    homeDirs: entry.homeDirs ?? [],
+    appNames: entry.appNames ?? []
+  }));
 }
 
 function sourceOverview(clis) {
@@ -176,6 +192,10 @@ export async function cliDiscoveryMain(argv) {
     } else if (token === '--path') {
       flags.path = tokens[i + 1];
       i += 1;
+    } else if (token === '--all') {
+      // `scan --all` also reports the known table, so a caller with no screen
+      // of its own can still answer "which agents does Maestro support?".
+      flags.all = true;
     } else if (typeof token === 'string' && token.startsWith('--')) {
       process.stdout.write(`${T.USAGE}\n`);
       return EXIT_USAGE;
@@ -203,7 +223,10 @@ export async function cliDiscoveryMain(argv) {
         return EXIT_FAILED;
       }
       if (asJson) {
-        process.stdout.write(`${JSON.stringify(saved.registry, null, 2)}\n`);
+        const payload = flags.all === true
+          ? { ...saved.registry, known: knownTable() }
+          : saved.registry;
+        process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
       } else {
         process.stdout.write(`${fill(T.SCAN_DONE, { n: scan.findings.length })}\n`);
         process.stdout.write(`${renderList(saved.registry.clis, saved.registry.scanned_at)}\n`);

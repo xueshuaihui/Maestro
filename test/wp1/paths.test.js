@@ -109,3 +109,23 @@ test('pipeName 对 Windows 路径大小写不敏感', { skip: process.platform !
   // 多余的尾分隔符 / ./ 不应改变端点名。
   assert.equal(paths.pipeName(`${root}${path.sep}`), paths.pipeName(root));
 });
+
+test('pipeName 超长项目路径退到短端点', { skip: process.platform === 'win32' }, async () => {
+  // macOS 的 sun_path 是定长 104 字节，超长路径会被内核静默截断：核心绑到
+  // `core.soc`，客户端连 `core.sock`，整条 IPC 无声消失（桌面端表现为永远
+  // 「正在连接」）。所以长路径必须换到一个装得下的端点。
+  const base = await makeTempDir();
+  const deep = path.join(base, 'd'.repeat(60));
+  await fs.mkdir(deep, { recursive: true });
+  const root = paths.projectRoot(deep);
+
+  const natural = path.join(root, '.orch', 'core.sock');
+  assert.ok(Buffer.byteLength(natural) > 103, '夹具必须真的超出上限');
+
+  const pipe = paths.pipeName(root);
+  assert.notEqual(pipe, natural, '超长路径不得继续使用项目内的端点');
+  assert.ok(Buffer.byteLength(pipe) <= 103, `短端点仍过长：${pipe}`);
+  // 核心与 CLI 两端都要靠同一条推导连上，必须稳定。
+  assert.equal(paths.pipeName(root), pipe);
+  assert.notEqual(paths.pipeName(base), pipe, '不同项目不得共用端点');
+});

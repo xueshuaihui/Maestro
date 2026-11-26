@@ -17,9 +17,99 @@ use tauri::Manager;
 
 use crate::ShellState;
 
+/// Usable bytes in a POSIX `sun_path` (excluding the trailing NUL). macOS caps
+/// it at 104, Linux at 108; the smaller value is the safe target.
+#[cfg(unix)]
+const POSIX_SUN_PATH_MAX: usize = 103;
+
 /// Locate the bundled resources directory for the running executable.
 pub fn resource_dir(app: &tauri::AppHandle) -> Option<PathBuf> {
     app.path().resource_dir().ok()
+}
+
+/// Result of a one-shot `bin/orch.js` run.
+pub struct OrchOutput {
+    pub code: i32,
+    pub stdout: String,
+}
+
+/// Run a bundled CLI subcommand and capture its stdout.
+///
+/// The environment page scans before any project — and therefore any daemon —
+/// exists, so this cannot go through the core: it runs the same discovery
+/// module the daemon uses, inside the bundled interpreter, with the config dir
+/// pinned so the registry lands in the per-user file rather than in whatever
+/// working directory the app happened to start from.
+pub fn run_orch(
+    app: &tauri::AppHandle,
+    args: &[String],
+    timeout: Duration,
+) -> Result<OrchOutput, String> {
+    let Some(resources) = resource_dir(app) else {
+        return Err("bundle incomplete: no resource dir".into());
+    };
+    #[cfg(windows)]
+    let node = resources.join("runtime").join("node.exe");
+    #[cfg(not(windows))]
+    let node = resources.join("runtime").join("node");
+    let entry = resources.join("bin").join("orch.js");
+    if !node.is_file() || !entry.is_file() {
+        return Err(format!(
+            "bundle incomplete: {} or {} missing",
+            node.display(),
+            entry.display()
+        ));
+    }
+
+    let mut command = Command::new(&node);
+    command
+        .arg(&entry)
+        .args(args)
+        .env("MAESTRO_CONFIG_DIR", crate::config::config_dir_path())
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null());
+    #[cfg(windows)]
+    {
+        // No console for a GUI app: keep the helper window silent.
+        command.creation_flags(0x0800_0000);
+    }
+
+    let mut child = command
+        .spawn()
+        .map_err(|err| format!("spawn failed: {err}"))?;
+    let pipe = child.stdout.take();
+    // stdout has to be drained while the child runs: a scan of a dozen CLIs can
+    // produce more than a pipe buffer, and a full pipe would deadlock the wait.
+    let reader = std::thread::spawn(move || {
+        let mut buf = String::new();
+        if let Some(mut handle) = pipe {
+            let _ = std::io::Read::read_to_string(&mut handle, &mut buf);
+        }
+        buf
+    });
+
+    let deadline = Instant::now() + timeout;
+    loop {
+        match child.try_wait() {
+            Ok(Some(status)) => {
+                let stdout = reader.join().unwrap_or_default();
+                return Ok(OrchOutput {
+                    code: status.code().unwrap_or(-1),
+                    stdout,
+                });
+            }
+            Ok(None) => {
+                if Instant::now() >= deadline {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    return Err(format!("timed out after {}ms", timeout.as_millis()));
+                }
+                std::thread::sleep(Duration::from_millis(20));
+            }
+            Err(err) => return Err(format!("wait failed: {err}")),
+        }
+    }
 }
 
 /// Spawn the daemon child:
@@ -55,7 +145,11 @@ pub fn spawn_daemon(app: &tauri::AppHandle, root: &Path) -> u32 {
         .arg("--project")
         .arg(&root_arg)
         .arg("--desktop")
-        .stdout(Stdio::null());
+        .stdout(Stdio::null())
+        // A GUI process does not inherit a login shell's environment, so the
+        // daemon has to be told where the per-user config lives. Both sides
+        // resolve the machine-level CLI registry from it, and they must agree.
+        .env("MAESTRO_CONFIG_DIR", crate::config::config_dir_path());
     // Windows: 子进程 cwd 显式设成项目根，并把 stderr 收进 `.orch/daemon-spawn.log`。
     // 为什么（真实 CI 实测，run 43716408317）：打包后的 Windows 版壳能拿到 pid，
     // 但子进程什么也没落盘；而用同一份包内运行时**直接**起 daemon 却能正常
@@ -155,7 +249,22 @@ fn capture_stderr(stderr: Option<std::process::ChildStderr>, root: &Path) {
 
 #[cfg(unix)]
 fn pipe_path(root: &Path) -> PathBuf {
-    root.join(".orch").join("core.sock")
+    // Same rule as `src/persistence/paths.js::pipeName`: the kernel silently
+    // truncates a `sun_path` that does not fit, so a deep project directory
+    // leaves the core bound to `core.soc` while every client connects to
+    // `core.sock` and is refused. The window then never leaves "connecting".
+    // For such a root the core records its short endpoint in `.orch/core.json`;
+    // the shell reads it instead of guessing (no hashing on this side).
+    let canonical = std::fs::canonicalize(root).unwrap_or_else(|_| root.to_path_buf());
+    let natural = canonical.join(".orch").join("core.sock");
+    if natural.as_os_str().len() <= POSIX_SUN_PATH_MAX {
+        return natural;
+    }
+    let recorded = std::fs::read_to_string(canonical.join(".orch").join("core.json"))
+        .ok()
+        .and_then(|text| serde_json::from_str::<Value>(&text).ok())
+        .and_then(|meta| meta.get("pipeName").and_then(Value::as_str).map(PathBuf::from));
+    recorded.unwrap_or(natural)
 }
 
 /// One request/response over the NDJSON pipe. `None` when the core is absent.
@@ -553,6 +662,35 @@ pub fn navigate_to_ui(app: &tauri::AppHandle, root: &std::path::Path) -> bool {
 /// The old loop returned on the first readable `desktop.json`, so a record
 /// left over from a crashed core navigated the window to a dead port and the
 /// connecting line never cleared.
+/// Prefetch labels once the channel answers, without taking the window away
+/// from the start page.
+///
+/// The start page now owns the decision of when to enter a project: it polls
+/// `startup_status`, and the first ready answer navigates. Warming the labels
+/// here means the tray and the project page already speak the daemon's wording
+/// by the time the user picks a project.
+pub fn warm_desktop_channel(app: tauri::AppHandle, root: PathBuf) {
+    std::thread::spawn(move || {
+        let deadline = Instant::now() + Duration::from_secs(20);
+        while Instant::now() < deadline {
+            if channel_ready(&root) {
+                if let Some(labels) = crate::config::fetch_labels(&root) {
+                    let state = app.state::<ShellState>();
+                    *state.labels.lock().unwrap() = labels;
+                    drop(state);
+                    crate::tray::refresh(app.clone());
+                }
+                return;
+            }
+            std::thread::sleep(Duration::from_millis(200));
+        }
+        crate::probe::event(
+            "desktop-channel-timeout",
+            json!({ "root": root.to_string_lossy() }),
+        );
+    });
+}
+
 pub fn wait_desktop_channel(app: tauri::AppHandle, root: PathBuf) {
     std::thread::spawn(move || {
         let deadline = Instant::now() + Duration::from_secs(20);

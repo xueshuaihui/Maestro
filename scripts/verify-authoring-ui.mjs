@@ -312,6 +312,30 @@ try {
   const editedTeam = ((await state()).teams ?? []).find((team) => team.name === 'UI 验证团队');
   step('团队抽屉编辑保存到磁盘', editOpened === 'clicked' && editedTeam?.runMode === 'manual',
     `edit=${editOpened} runMode=${editedTeam?.runMode}`);
+
+  // The run page has to prefill the engine task: the engine rejects a task with
+  // no product line, and a user who never saw that syntax would read the
+  // rejection as "the start button is broken".
+  const runTab = await frameEval(`
+    const tab=[...d.querySelectorAll('button[data-tab]')].find(b=>b.getAttribute('data-tab')==='runs');
+    if(!tab) return 'no-tab'; tab.click(); return 'ok';
+  `);
+  await sleep(500);
+  const scaffold = await frameEval(`
+    const area=d.querySelector('textarea.task-input');
+    if(!area) return {area:false, lines:0};
+    return {area:true, lines: area.value.split('\\n').filter((line)=>line.trim().length>0).length};
+  `);
+  const runsBefore = ((await state()).runs ?? []).length;
+  const startedRun = await frameEval(`
+    const b=[...d.querySelectorAll('button')].find(x=>x.textContent.trim()==='开始运行');
+    if(!b) return 'no-button'; b.click(); return 'clicked';
+  `);
+  await waitFor(async () => ((await state()).runs ?? []).length === runsBefore + 1, 12000);
+  const afterRun = ((await state()).runs ?? []).length;
+  step('运行页预填任务且能启动',
+    runTab === 'ok' && scaffold.area === true && scaffold.lines > 1 && afterRun === runsBefore + 1,
+    `tab=${runTab} area=${scaffold.area} lines=${scaffold.lines} runs=${runsBefore}->${afterRun}`);
 } catch (err) {
   step('脚本执行', false, String(err?.stack ?? err).slice(0, 400));
 } finally {
