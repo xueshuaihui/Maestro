@@ -1,5 +1,0 @@
-# AC-33 架构检查原始帧（requirement.md:797）
-at=2026-11-16T18:10:26Z  repo=D:/WWW/Maestro
-
-## grep -REn 'setInterval|setTimeout\(.*open|useEffect.*open' desktop/ui/drill/host-jump.js  (期望 exit=1 零命中)
-exit=1  (hits=0)

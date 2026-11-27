@@ -1,8 +1,0 @@
-### acc6 AC-43（补留 verdict）
-[AC-43] 通过 7/7 0.8s → probe/acc6-f-parts/AC-43.md
-[run] 完成：通过 1 / 不通过 0 / 阻塞 0 / 未登记 0
-[run] 证据：docs/iterations/iteration-6/evidence/ ；分节：/private/tmp/maestro-reg-i16b/probe/acc6-f-parts ；结果：/private/tmp/maestro-reg-i16b/probe/acc6-f-results.jsonl
-### acc5 AC-42（补留 verdict）
-[watchdog] TIMEOUT 120s（清理阶段挂起，判定以分节为准）
-[supp] AC-42 分节判定（隔离树 parts 摘录）:
-- 判定：**通过**（核对 5/5 通过）

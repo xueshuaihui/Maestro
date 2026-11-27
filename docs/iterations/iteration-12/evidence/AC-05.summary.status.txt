@@ -1,3 +1,0 @@
-freshness.ok=true stale=false
-chain.ok=true
-delivered=HO-003 escalations=0

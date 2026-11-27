@@ -1,8 +1,0 @@
-{
-  "ok": true,
-  "scenario": "slow",
-  "exitCodes": [
-    null
-  ],
-  "runMs": 10000
-}

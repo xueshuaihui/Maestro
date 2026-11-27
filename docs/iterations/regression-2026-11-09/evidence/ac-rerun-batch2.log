@@ -1,8 +1,0 @@
-### acc6 AC-49
-[AC-49] 不通过 15/21 42.2s → probe/acc6-f-parts/AC-49.md
-[run] 完成：通过 0 / 不通过 1 / 阻塞 0 / 未登记 0
-[run] 证据：docs/iterations/iteration-6/evidence/ ；分节：/private/tmp/maestro-reg-i16/probe/acc6-f-parts ；结果：/private/tmp/maestro-reg-i16/probe/acc6-f-results.jsonl
-### acc6 AC-51
-[AC-51] 通过 11/11 1.3s → probe/acc6-f-parts/AC-51.md
-[run] 完成：通过 1 / 不通过 0 / 阻塞 0 / 未登记 0
-[run] 证据：docs/iterations/iteration-6/evidence/ ；分节：/private/tmp/maestro-reg-i16/probe/acc6-f-parts ；结果：/private/tmp/maestro-reg-i16/probe/acc6-f-results.jsonl

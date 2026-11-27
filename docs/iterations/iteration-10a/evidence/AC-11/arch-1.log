@@ -1,2 +1,0 @@
-desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/registry/role-instances.js:export function decideStatus({
-desktop/src-tauri/target/release/bundle/macos/Maestro.app/Contents/Resources/src/registry/role-instances.js:    const { status, statusReason } = decideStatus({

@@ -1,7 +1,0 @@
-{
-  "eventsHash": "d1a6dadf9d8a23103298a21f519621d778088517f3f2e54fa1b51e623f6c9c6d",
-  "tracesHash": "b4236fd54dac246a4def4e28d57699bddbc3f79bd87e35e585e6ac0d81f29491",
-  "stateHash": "67948e0d1c8d781e5db970a5b2bd2d40c54835200e53230fe95296689445081a",
-  "stateText": "{\"instanceId\":\"INST-001\",\"state\":\"running\",\"nodeCount\":2}",
-  "eventCount": 3
-}

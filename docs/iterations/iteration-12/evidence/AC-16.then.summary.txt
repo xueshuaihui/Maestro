@@ -1,5 +1,0 @@
-expected=迁移完成  共 2 处引用已升级
-actual-cli=MIGRATE .orch/roles/derived.yaml derived_from parent 1 2
-MIGRATE .orch/workflows/wf.yaml subworkflows sub 1 3
-MIGRATION DONE 2 REFERENCES UPGRADED
-flat-label=迁移完成  共 [N] 处引用已升级

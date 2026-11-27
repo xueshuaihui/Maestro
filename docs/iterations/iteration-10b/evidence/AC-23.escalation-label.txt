@@ -1,5 +1,0 @@
-exit=0
-TPL=升级 {id} 已处理 · 状态 {state}
-STATE=已处理
-LINE=升级 ESC-001 已处理 · 状态 已处理
-

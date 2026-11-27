@@ -1,2 +1,0 @@
-{"node_id":"T-1","trace_id":"trace-A","round":1,"start_time":1000,"end_time":1500,"status":"ok","handoff_ids":["HO-1"]}
-{"node_id":"T-2","trace_id":"trace-A","round":1,"start_time":1600,"end_time":2100,"status":"ok","handoff_ids":["HO-2"]}

@@ -1,5 +1,0 @@
-15: * - `z = abnormal ? 1 : 0`; abnormality never enters layer or coordinate
-16: *   math, and an edge inherits z = 1 when either endpoint is abnormal.
-104:  // ---- nodes: x/y from layer/row; z only from abnormal (AC-18) ------------
-121:        z: node.abnormal === true ? 1 : 0,
-126:  // either endpoint (AC-18: edges connected to the abnormal node lift too) --

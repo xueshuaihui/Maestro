@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] 循环检测基于已访问 ref 集合，不用 while(true)
-$ grep -REn "while \\(true\\)" "desktop/ui/drill/subflow.js"
-expect=zero exit=1 hits=0 OK
-(零命中)

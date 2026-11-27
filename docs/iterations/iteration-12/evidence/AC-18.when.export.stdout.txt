@@ -1,1 +1,0 @@
-EXPORT OK EVENTS 3 SPANS 2 -> C:\Users\xuesh\AppData\Local\Temp\maestro-i112-otel-ac18\otel-export.json

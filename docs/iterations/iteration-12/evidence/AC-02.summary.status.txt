@@ -1,3 +1,0 @@
-verdict-pending; checks=21
-old=3 new=2
-render=链完整，共 5 条

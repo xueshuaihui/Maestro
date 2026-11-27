@@ -1,4 +1,0 @@
-364:    if (method === 'POST' && pathname === '/__test__/graph/pulse') return true;
-367:    if (method === 'POST' && pathname === '/__test__/window-probe') return true;
-464:      if (req.method === 'POST' && pathname === '/__test__/graph/pulse') {
-472:      if (req.method === 'POST' && pathname === '/__test__/window-probe') {

@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] 详情只读：drill.js 无写盘/发事件
-$ grep -REn "saveState|emit\\(|appendSpan" "src/daemon/drill.js"
-expect=zero exit=1 hits=0 OK
-(零命中)

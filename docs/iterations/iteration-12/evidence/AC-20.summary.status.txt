@@ -1,7 +1,0 @@
-verdict=pending
-level=PERF_LEVEL_MOCK/mock 实测
-instances=20
-sessions=50
-median=560
-p95=700
-max=720

@@ -1,9 +1,0 @@
-{
-  "ok": false,
-  "needsHumanReview": true,
-  "blocked": true,
-  "reason": "missing_human_gate",
-  "nodeIds": [
-    "T-001"
-  ]
-}

@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] 渲染层不抛异常（throw new Error 零命中）
-$ grep -REn "throw new Error" "desktop/ui/drill/"
-expect=zero exit=1 hits=0 OK
-(零命中)

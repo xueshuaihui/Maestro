@@ -1,5 +1,0 @@
-first=MIGRATE .orch/roles/derived.yaml derived_from parent 1 2
-MIGRATION DONE 1 REFERENCES UPGRADED
-second=NO MIGRATION NEEDED
-afterFirst={".orch/roles/derived.yaml":{"text":"id: derived\nderived_from: parent@2\n","sha256":"bddaf643521b510d1a522785b5e26fac7c098784f7077f9dce56d4b0b8ce517a"}}
-afterSecond={".orch/roles/derived.yaml":{"text":"id: derived\nderived_from: parent@2\n","sha256":"bddaf643521b510d1a522785b5e26fac7c098784f7077f9dce56d4b0b8ce517a"}}

@@ -1,2 +1,0 @@
-MAESTRO_FAULT=checkpoint_write:fail
-NODE_ENV=test

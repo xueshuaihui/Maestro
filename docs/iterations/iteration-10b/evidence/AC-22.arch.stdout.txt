@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] 界面与 HTTP 层不得直接改状态，只能调既有裁决
-$ grep -REn "state = 'running'|node.state = " "src/daemon/http/" "desktop/ui/drill/"
-expect=zero exit=1 hits=0 OK
-(零命中)

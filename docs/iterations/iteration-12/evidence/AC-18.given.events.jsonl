@@ -1,3 +1,0 @@
-{"seq":1,"object":"handoff","reason":"handoff.delivered","objectId":"HO-1","node_id":"T-1","round":1}
-{"seq":2,"reason":"session.first_event","objectId":"T-1","node_id":"T-1","round":1}
-{"seq":3,"object":"handoff","reason":"handoff.delivered","objectId":"HO-2","node_id":"T-2","round":1}

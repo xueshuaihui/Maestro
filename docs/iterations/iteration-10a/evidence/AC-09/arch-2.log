@@ -1,7 +1,0 @@
-71: * `now`, `setTimer` and `clearTimer` are all injectable so unit tests can
-77:  now,
-85:  const clock = typeof now === 'function' ? now : Date.now;
-199:  const now = typeof clock === 'function' ? clock : Date.now;
-206:  /** Latest known rev per instance (whitelist events and pulse steps only). */
-230:    now,
-484:        now,

@@ -1,2 +1,0 @@
-16:#   2. 门禁（gate.mjs）必须在打包之前；产物冒烟必须在上传之前（AC-40）。
-83:        run: node scripts/desktop/gate.mjs

@@ -1,1 +1,0 @@
-10: *   的单 CAS 裁决），allow/deny 走 `approval.resolve`（含会话存活校验），

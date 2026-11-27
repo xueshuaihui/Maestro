@@ -1,5 +1,0 @@
-ReferenceError: path is not defined
-    at Module.run (file:///D:/WWW/Maestro/probe/acc8-cases/AC-67.mjs:55:22)
-    at async runOne (file:///D:/WWW/Maestro/probe/acc8-f-run.mjs:110:9)
-    at async main (file:///D:/WWW/Maestro/probe/acc8-f-run.mjs:208:13)
-    at async file:///D:/WWW/Maestro/probe/acc8-f-run.mjs:213:20

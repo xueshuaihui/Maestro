@@ -1,2 +1,0 @@
-OK: 零 CJK 命中（src/registry, src/cli/roles.js）
-

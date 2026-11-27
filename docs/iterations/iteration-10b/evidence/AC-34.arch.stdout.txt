@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] 主链三文件无产品改动（git diff --stat 空）
-$ git diff --stat HEAD -- src/cli/main.js src/core/state-machine.js src/core/orchestrator.js
-expect=zero exit=0 hits=0 OK
-(零命中)

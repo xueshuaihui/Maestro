@@ -1,2 +1,0 @@
-86:export const REV_WHITELIST = Object.freeze([
-96:  return typeof event?.object === 'string' && REV_WHITELIST.includes(event.object);

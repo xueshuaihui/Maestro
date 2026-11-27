@@ -1,9 +1,0 @@
-src/daemon/server.js:1015: * `instance.get` 的只读投影：补齐渲染层需要的 `template` / `pendingEscalations`，
-src/daemon/server.js:1021:  const pendingEscalations = Number.isInteger(snapshot.pendingEscalations)
-src/daemon/server.js:1022:    ? snapshot.pendingEscalations
-src/daemon/server.js:1028:    pendingEscalations,
-src/daemon/queue.js:139:  const escalations = Number.isInteger(snapshot.pendingEscalations)
-src/daemon/queue.js:140:    ? snapshot.pendingEscalations
-src/daemon/queue.js:179:      totals: { pendingEscalations: 0, pendingApprovals: 0 },
-src/daemon/queue.js:204:      pendingEscalations: sumSnapshotField(instances, 'pendingEscalations'),
-src/daemon/http/routes.js:280:      escalations: Number.isInteger(snapshot?.pendingEscalations) ? snapshot.pendingEscalations : 0,

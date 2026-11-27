@@ -1,8 +1,0 @@
-[
-  {
-    "from": "T-002",
-    "to": "T-001",
-    "kind": "backflow",
-    "aggregate": "accepted"
-  }
-]

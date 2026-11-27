@@ -1,2 +1,0 @@
-src/daemon/assets-view.js:75:export const BODY_PREVIEW_LINES = 20;
-src/daemon/assets-view.js:523:  const preview = lines.slice(0, BODY_PREVIEW_LINES);

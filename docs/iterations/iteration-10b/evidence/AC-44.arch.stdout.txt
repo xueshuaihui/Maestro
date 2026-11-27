@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] 空列表不短路渲染（if (!items.length) return 零命中）
-$ grep -REn "if \\(!items[.]length\\) return" "desktop/ui/drill/escalation-panel.js"
-expect=zero exit=1 hits=0 OK
-(零命中)

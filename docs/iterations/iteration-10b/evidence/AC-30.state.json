@@ -1,5 +1,0 @@
-{
-  "__note": "本 AC 走仓库静态机检面；依赖/文案键/CJK/purity 指纹见 test.source 与 tests.stdout",
-  "ac": "AC-30",
-  "NODE_ENV": "test"
-}

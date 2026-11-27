@@ -1,9 +1,0 @@
-desktop/src-tauri/src/tray.rs-155-}
-desktop/src-tauri/src/tray.rs-156-
-desktop/src-tauri/src/tray.rs-157-/// Full quit flow. The stop request frame is sent from this function only —
-desktop/src-tauri/src/tray.rs-158-/// it is the single stop-site of the whole crate (AC-02 architectural rule).
-desktop/src-tauri/src/tray.rs-159-pub fn quit(app: AppHandle) {
-desktop/src-tauri/src/tray.rs-160-    probe::event("quit-start", json!({}));
-desktop/src-tauri/src/tray.rs-161-    // AC-02: the stop request literal must live within 8 lines of `pub fn quit`.
-desktop/src-tauri/src/tray.rs-162-    let frame = json!({
-desktop/src-tauri/src/tray.rs:163:        "v": 1, "kind": "req", "id": "shell-stop", "method": "core.stop", "params": {}

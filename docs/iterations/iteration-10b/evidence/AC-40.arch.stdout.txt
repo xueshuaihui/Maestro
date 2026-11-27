@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] 不按注册表存在性过滤节点（filter(.*registry|hasRole( 零命中）
-$ grep -REn "filter\\(.*registry|hasRole\\(" "desktop/ui/drill/"
-expect=zero exit=1 hits=0 OK
-(零命中)

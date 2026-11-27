@@ -1,6 +1,0 @@
-desktop/src-tauri/src/single-instance.rs:3://! record the `activated` probe event (into the second instance's probe file
-desktop/src-tauri/src/single-instance.rs:11:    tauri_plugin_single_instance::init(|app, argv, _cwd| {
-desktop/src-tauri/src/single-instance.rs:16:                "activated",
-desktop/src-tauri/src/single-instance.rs:20:                "activated",
-desktop/src-tauri/src/main.rs:9:mod single_instance;
-desktop/src-tauri/src/main.rs:108:        .plugin(single_instance::init())

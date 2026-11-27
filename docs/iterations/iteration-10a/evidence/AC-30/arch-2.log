@@ -1,3 +1,0 @@
-304:  const fallbackActivity = typeof snapshot.updatedAt === 'string' ? snapshot.updatedAt : null;
-330:    node.lastActivity = latestEndFor(boundIds) ?? fallbackActivity;
-339:  // ---- definition-derived nodes (special, fallback and unknown types) ------

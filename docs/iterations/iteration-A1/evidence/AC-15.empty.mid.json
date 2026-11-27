@@ -1,6 +1,0 @@
-{
-  "fixtureRoot": "/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-15",
-  "scanStdout": "{\"ok\":true,\"schemaVersion\":1,\"scanned_at\":\"2026-11-23T14:43:21.671Z\",\"sources\":{\"path_entries\":0,\"home\":\"/var/folders/d0/57v137rs2mdfkc6yx8pslf6h0000gn/T/maestro-acc-a1/AC-15/home\",\"app_dirs\":0,\"npm_global_root\":null},\"findings\":[]}",
-  "findings": [],
-  "listStdout": "本机 Agent CLI\n扫描时间: 2026-11-23T14:43:21.671Z\n\n未发现可用的 Agent CLI\n请安装一个 Agent CLI（如 Codex / Claude Code / Gemini CLI）后重新扫描\n修复建议：可用 orch cli add --name <名称> --path <可执行路径> 手动登记该 CLI\nCLI 能力矩阵\n\nACP  |  stdio·transport  |  会话恢复方言  |  并发上限  |  证据钩子\n----------------------------------------------------\n\n来源概览: path:0  home:0  app:0  npm-global:0  user-config:0\n"
-}

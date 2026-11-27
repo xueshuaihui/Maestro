@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] drill 中文走文案键（无中文模板字面量）
-$ grep -REn "已运行|轮次|依赖" "desktop/ui/drill/"
-expect=zero exit=1 hits=0 OK
-(零命中)

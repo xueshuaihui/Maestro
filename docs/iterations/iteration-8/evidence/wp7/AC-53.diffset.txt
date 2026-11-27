@@ -1,9 +1,0 @@
-# 本次失败集合 23 条（TAP 计 fail=23）
-# 基线红名单 22 条（probe/i18-s2/baseline-014fa6a-reds.txt）
-
-## 新增失败（差集，必须为空）
-+ --host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）
-+ reconcileOnBoot：v2 旧 generation 运行中实例按实例记录恢复；v1 保持原样
-
-## 基线红本次未复现（允许）
-- live 取消：四项全 null、终态 cancelled/ended、不阻断取消

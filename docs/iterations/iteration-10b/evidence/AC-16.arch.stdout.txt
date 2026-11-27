@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] 看板列名只由既有模块提供，下钻层不复制
-$ grep -REn "DESKTOP_BOARD_COLUMN_|被阻塞|可调度" "desktop/ui/drill/"
-expect=zero exit=1 hits=0 OK
-(零命中)

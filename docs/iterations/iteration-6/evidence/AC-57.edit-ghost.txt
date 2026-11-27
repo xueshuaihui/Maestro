@@ -1,3 +1,0 @@
-找不到角色：ghost-id
-可用角色：执行 orch role list 查看
-

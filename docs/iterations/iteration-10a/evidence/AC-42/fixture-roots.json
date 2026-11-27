@@ -1,7 +1,0 @@
-{
-  "ac": "AC-42",
-  "tmpdir": "/tmp/maestro-i10a-acc10/AC-42",
-  "requirement": "§3.3 每个 AC 独立项目根 /tmp/maestro-i10a-*，绝不进仓库；一律 NODE_ENV=test",
-  "count": 0,
-  "roots": []
-}

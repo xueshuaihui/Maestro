@@ -1,2 +1,0 @@
-list={"items":[],"total":0}
-cli=NO MIGRATION NEEDED

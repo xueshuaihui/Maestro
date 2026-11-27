@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] 面板数据按实例过滤，不 listAll/instanceIds
-$ grep -REn "listAll|instanceIds" "desktop/ui/drill/escalation-panel.js"
-expect=zero exit=1 hits=0 OK
-(零命中)

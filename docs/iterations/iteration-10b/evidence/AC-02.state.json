@@ -1,7 +1,0 @@
-{
-  "__note": "本 AC 走 createApp/createDrillView 纯投影机检面；夹具指纹见 test.source 与 tests.stdout",
-  "ac": "AC-02",
-  "NODE_ENV": "test",
-  "host": "mock",
-  "root": "C:\\Users\\xuesh\\AppData\\Local\\Temp\\maestro-i10b-acc10b-f\\AC-02"
-}

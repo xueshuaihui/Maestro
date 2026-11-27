@@ -1,1 +1,0 @@
-112:  if (summary === null) return null;

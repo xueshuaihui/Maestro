@@ -1,2 +1,0 @@
-已存在同名项目技能：.orch/skills/quote/SKILL.md（加 --force 覆盖）
-

@@ -1,9 +1,0 @@
-{"object":"run","objectId":"RUN-1","result":"applied","reason":"run.started"}
-{"object":"node","objectId":"T-001","from":"ready","to":"running","reason":"state.change"}
-{"object":"handoff","objectId":"HO-001","from":null,"to":"created","reason":"handoff.created"}
-{"object":"handoff","objectId":"HO-001","from":"created","to":"delivered","reason":"handoff.delivered"}
-{"object":"health","objectId":"H-1","reason":"health.changed"}
-{"object":"instance","objectId":"INST-1","reason":"core.suspend"}
-{"object":"connection","objectId":"C-1","reason":"aggregate.changed"}
-{"object":"role_instance","objectId":"R-1","reason":"state.change"}
-{"object":"session","objectId":"S-1","reason":"state"}

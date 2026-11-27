@@ -1,3 +1,0 @@
-3://! `.orch/desktop/views/<instanceId>.json` read/write, plus label fetching
-179:// ---------------------------------------------------------------- views
-182:    root.join(".orch").join("desktop").join("views").join(format!("{instance_id}.json"))

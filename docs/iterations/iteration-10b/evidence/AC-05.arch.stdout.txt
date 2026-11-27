@@ -1,6 +1,0 @@
-架构检查（需求同号原文，grep -REn / ERE）
-
-[1] dag.js 不做图遍历 BFS
-$ grep -REn "BFS|bfs|visited|queue" "desktop/ui/drill/dag.js"
-expect=zero exit=1 hits=0 OK
-(零命中)

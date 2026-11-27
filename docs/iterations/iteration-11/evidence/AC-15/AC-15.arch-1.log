@@ -1,1 +1,0 @@
-src/core/escalation.js:89:  if (!entry || entry.state !== 'pending') return { ok: false, code: 'ESCALATION_NOT_PENDING' };

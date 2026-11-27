@@ -1,7 +1,0 @@
-{
-  "instanceId": "INST-001",
-  "nodeId": "T-001",
-  "needsHumanReview": true,
-  "blocked": true,
-  "reason": "awaiting_human_review"
-}

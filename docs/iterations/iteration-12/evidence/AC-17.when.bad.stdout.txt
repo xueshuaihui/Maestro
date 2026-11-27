@@ -1,2 +1,0 @@
-MIGRATE .orch/roles/derived.yaml derived_from ghost 1 
-MIGRATION REJECTED MIGRATION_TARGET_MISSING
