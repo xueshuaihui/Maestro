@@ -1,0 +1,29 @@
+T02 B1 修复复验摘要（机器 A / feature/v32-T02-cli-pool）
+
+[1] 单测
+命令: NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-cli-pool.test.js"
+结果: # tests 12 / # pass 12 / # fail 0 / # cancelled 0 / # skipped 0 / # todo 0
+TAP 全文: docs/v32/reports/raw/T02/v32-cli-pool.test.tap
+
+[2] LABEL_KEYS 与实际渲染键差集证明
+脚本: /tmp/v32t/v32-cli-label-diff.mjs（读取 cli-page.js，剔除 LABEL_KEYS 定义块后提取所有 'V32_CLI_*' 字面量；动态键经数组字面量进入 tr(ctx,key,fallback)，同样计入）
+结果:
+  exportedCount  = 31
+  usedCount      = 31
+  exportedMinusUsed = []
+  usedMinusExported = []
+  equal = true
+完整 JSON: docs/v32/reports/raw/T02/v32-cli-label-diff.txt
+
+[3] 零 CJK 自查
+命令: python3 -c "import re,sys; pat=re.compile('[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]'); files=['src/v32/cli-pool.js','src/daemon/http/v32/cli-routes.js','desktop/ui/v32/cli-page.js']; ..."
+结果: CJK_HITS none
+
+[4] 其他门禁
+git diff --check: 无输出（通过）
+
+[5] 改动范围
+- desktop/ui/v32/cli-page.js: 从 LABEL_KEYS 删除 V32_CLI_SCAN_STARTED / V32_CLI_SCAN_FINISHED（31 键）
+- test/wp21/v32-cli-pool.test.js: 用双向差集断言替代旧的裸计数断言；summary 的 labelKeys 取导出集合大小（动态）
+- docs/v32/reports/raw/T02/: 本摘要 + TAP + 差集 JSON（仅取证文件）
+未提交、未改认领台账/报告/memory。
