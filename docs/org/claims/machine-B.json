@@ -1,6 +1,6 @@
 {
   "machine": "B",
-  "updatedAt": "2026-11-28T09:25:00.000Z",
+  "updatedAt": "2026-11-28T17:45:43.000Z",
   "claims": [
     {
       "task": "T19",
@@ -14,6 +14,14 @@
         "blockingCount": 0,
         "at": "2026-11-28T09:22:00.000Z"
       }
+    },
+    {
+      "task": "T04",
+      "phase": "developing",
+      "branch": "feature/org-T04-employees",
+      "claimedAt": "2026-11-28T17:45:43.000Z",
+      "reviewRounds": 0,
+      "note": "W1 Employee Profile (P08); dependency T01 done on main; T03/T05 owned by machine A"
     }
   ]
 }
