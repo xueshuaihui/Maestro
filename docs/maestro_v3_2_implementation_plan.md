@@ -46,14 +46,14 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 
 | 步骤 | 动作 | 硬性要求 |
 |---|---|---|
-| 1 | **认领** + 建分支 | **先按 §0.11 读共享台账、判定任务状态并原子认领；未认领禁止开工**；认领成功后才 `git fetch origin` → `git switch main` → `git pull --ff-only origin main` → `git switch -c feature/v32-TXX-<slug> origin/main`；确认 `git rev-parse HEAD` 等于 §0.2 公布的基线（或已合入的前序任务 sha） |
+| 1 | **建分支 + 认领 + 立即广播认领状态** | `git fetch origin` → `git switch main` → `git pull --ff-only origin main` → `git switch -c feature/v32-TXX-<slug> origin/main` → 按 §0.11 读台账判定状态并认领（**在功能分支上**把自己台账写成 `phase: developing`）→ `git commit -m "chore(v32): claim TXX on machine X"` → `git switch main` → `git pull --ff-only origin main` → `git merge --ff-only feature/v32-TXX-<slug>` → `git push origin main` → **`git switch feature/v32-TXX-<slug>` 切回功能分支继续开发**。认领状态必须立刻出现在 `origin/main`，对方机器才能看到；完整命令与冲突处理见 §0.11.3。确认功能分支基于 §0.2 公布的基线（或已合入的前序任务 sha） |
 | 2 | 读规格 | 由主 Agent 把本任务 REQ 标注的规格章节（`index.md` / `page_spec.md` 的 §/P/V32 编号）封进**干净子 Agent** 的 prompt，逐条转成实现清单；**再**看原型对应交互（附录 A）理解页面形态。REQ 与原型演示不一致时以规格为准，并在报告记录差异 |
 | 3 | 实现 | **只由新创建的干净开发子 Agent 执行**（§0.11.5），主 Agent 不直接写产品代码；只改「文件所有权」列出的路径；共享文件按 §1.2 归唯一任务所有 |
 | 4 | 自测 | 开发子 Agent 写任务专属单测（文件名见任务详情），运行「验证清单」的命令；**不得删断言/降阈值** |
 | 5 | 失败循环 | 按 §0.5 分类、修复、复跑，直到本任务全部验证项通过 |
 | 5b | **独立审核循环** | 开发子 Agent 报完成后，主 Agent **另建一个干净审核 Agent**（不继承开发上下文），按 §0.11.5–§0.11.6 审核；有阻塞性问题就派修复、再审核，循环到审核结论为「无阻塞项 / PASS」，否则不得提交 |
 | 6 | 报告 + 提交 | 审核 PASS 后才写 `docs/v32/reports/TXX.md`（模板见 §0.6），再 `git add <仅本任务文件 + 报告 + 自己的认领台账文件>` → `git commit -m "feat(v32): TXX <标题>"`；不 `--amend` 已合入提交 |
-| 7 | 合入 main | `git fetch origin` → `git rebase origin/main` → **更新报告 `headSha` 并 fixup/ Amend 到本任务提交（仅限未合入的 feature 提交）** → 复跑验证 → `git switch main && git merge --ff-only feature/v32-TXX-<slug>` → `git push origin main` |
+| 7 | **全部功能完成后合入 main** | 认领提交、开发提交、报告提交**都在同一条功能分支上**；`git fetch origin` → `git rebase origin/main` → **更新报告 `headSha` 并 fixup/amend 到本任务提交（仅限未合入的 feature 提交）** → 复跑验证 → `git switch main && git merge --ff-only feature/v32-TXX-<slug>`（把该分支上**全部**提交一次性合入 main）→ `git push origin main`。不得只挑部分提交合入 |
 | 8 | push 竞争恢复 | 若 push 被对方抢先导致非 ff：`git fetch origin && git switch main && git reset --hard origin/main && git merge --ff-only feature/v32-TXX-<slug> && git push origin main`；`reset --hard` 仅限本地 main 且已确认功能提交保存在 feature 分支；禁止 force |
 | 9 | 合入后核验 | 在 main 上 `git log --oneline -1` 确认是自己的合入；报告中的 `headSha` 应与该提交一致，只读核验即可，不再改报告 |
 
@@ -243,9 +243,29 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
    node -e 'const fs=require("fs"),cp=require("child_process");const md=fs.readFileSync(process.argv[1],"utf8");const m=md.match(/headSha:\s*([0-9a-f]{7,40})/);if(!m)throw Error("headSha missing");const ok=cp.spawnSync("git",["merge-base","--is-ancestor",m[1],"origin/main"]).status===0;console.log(process.argv[1],m[1],ok?"MERGED":"NOT-MERGED")' docs/v32/reports/T02.md
    ```
 3. **选任务**：优先选 §3.1 分配给本机且状态为 `available` 的任务；若自己排程里的任务已被对方认领/完成，**不得重做**，顺延到下一个 `available` 任务并在自己的 `note` 写明「按台账顺延」。若本机已有活跃任务，先完成它再认领。
-4. **原子认领**：只在自己的 `claims/machine-X.json` 追加/更新条目，`phase: developing`，`claimedAt` 取当前 ISO 时间；`git add docs/v32/claims/machine-X.json` → `git commit -m "chore(v32): claim TXX on machine X"` → `git push origin main`。**这是唯一允许直接在 `main` 上提交的例外**：只提交自己的台账文件，绝不夹带产品代码或测试（§0.3 的「禁止在 main 上直接改代码」对其余文件仍然有效）。认领提交会随后续 `git switch -c feature/v32-TXX-<slug> origin/main` 一起进入功能分支。
-5. **push 冲突恢复**：若 push 被拒（非 ff），`git fetch origin` 后回到步骤 2 重新判定；发现该任务已被对方认领则立即放弃并换任务，禁止强行覆盖或直接开工。
-6. 认领成功后才执行 §0.3 step 1 中的建分支命令；报告提交时把认领台账的 `phase` 更新为 `done` 一并提交（见 §0.11.7）。
+4. **建功能分支 + 原子认领 + 立即广播到 main**（一条龙，不可拆散）：
+
+   ```bash
+   # 4a. 从已同步的 origin/main 建功能分支
+   git switch -c feature/v32-TXX-<slug> origin/main
+
+   # 4b. 在功能分支上只改自己的台账：phase=developing、claimedAt、branch
+   git add docs/v32/claims/machine-X.json
+   git commit -m "chore(v32): claim TXX on machine X"
+
+   # 4c. 切到 main，把认领提交合并进去并推送——对方机器此刻就能看到任务已被认领
+   git switch main && git pull --ff-only origin main
+   git merge --ff-only feature/v32-TXX-<slug>
+   git push origin main
+
+   # 4d. 立刻切回功能分支继续开发（功能分支全程不删）
+   git switch feature/v32-TXX-<slug>
+   ```
+
+   **关键**：台账变更写在**功能分支**上，靠「合并到 main 并推送」广播；**不是**在 main 上直接改文件（§0.3 的「禁止在 main 上直接改代码」继续有效）。4c 的合并只含台账提交，绝不夹带产品代码或测试。
+
+5. **合并 / push 冲突恢复**：若 4c 的 `git merge --ff-only` 因对方已 push 而失败：`git switch feature/v32-TXX-<slug> && git rebase origin/main` → 回到 4c 重试；rebase 后重读台账，发现任务已被对方认领则立即放弃并换任务。若 `git push` 被拒（非 ff）：`git fetch origin` → 回到步骤 2 重新判定。全程禁止 force。
+6. 切回功能分支后按 §0.3 step 2–6 继续开发；开发、审核、报告完成后的**全部提交**（认领 + 开发 + 报告 + 台账 `done` 更新）在 §0.3 step 7 一次性 ff-only 合入 main，不允许只挑部分提交合入。
 
 **禁止**：不读台账直接开工；修改对方台账文件；同一任务两台机器同时开发；认领后跨波次无进展却不释放（写 `note` 并改回 `available` 后由对方或本机重新认领）。
 
@@ -298,6 +318,8 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 | 合入 main 后 | 主 Agent 只读复核 `git merge-base --is-ancestor <headSha> origin/main`；若失败，在自己的台账写 `phase: blocked` 并说明 |
 | 其它机器读取时 | **不信任台账里的 `done` 字面值**，按 §0.11.1 复核三条件；`headSha` 不是 `origin/main` 祖先时按 `reviewing` 对待，在自己台账 `note` 记录提醒（禁止改对方文件），必要时报主线负责人 |
 | 遇阻塞/放弃 | 写 `phase: blocked` 或释放为 `available`，`note` 必填 |
+
+**同一功能分支两次合入 main**：第一次在认领后（§0.11.3 step 4c），只把 `developing` 台账提交合并推送，让对方立刻看到；第二次在全部功能完成后（§0.3 step 7），把分支上剩余的开发、报告与 `done` 台账提交一次性合并推送。两次都走 `--ff-only`，第二次合并时功能分支已包含第一次的提交，因此仍是纯快进；功能分支从建分支到第二次合入期间一直保留，不删除、不重建。
 
 §3.2 同步点时两台机器都重新执行 §0.11.3 step 2 的全量状态读取，用台账交叉核对「对方任务是否真的合入」，不能只看本地分支或对方台账里的 `done` 字面值。
 
