@@ -1,6 +1,6 @@
 {
   "machine": "A",
-  "updatedAt": "2026-11-28T08:08:58.000Z",
+  "updatedAt": "2026-11-28T08:10:10.000Z",
   "claims": [
     {
       "task": "T01",
@@ -14,6 +14,15 @@
         "at": "2026-11-28T08:08:58.000Z"
       },
       "note": "2 review rounds; first CJK scope misapplied and downgraded by main agent; second PASS"
+    },
+    {
+      "task": "T02",
+      "phase": "developing",
+      "branch": "feature/v32-T02-cli-pool",
+      "claimedAt": "2026-11-28T08:10:10.000Z",
+      "reviewRounds": 0,
+      "lastReview": null,
+      "note": ""
     }
   ]
 }
