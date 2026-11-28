@@ -1,0 +1,35 @@
+# I1.10a · Windows 平台敏感的既有失败项（win32 门禁基线补充）
+#
+# 来源：真实红 run `43712132192`（workflow_dispatch，windows-latest，HEAD 2042c97）
+#   全量单测 tests=1398 pass=1371 fail=18；其中 2 条落在历史 8 条基线内，
+#   另外 16 条为本文件登记项。原始帧：`evidence/release/run-43712132192-win-gate.log`。
+#
+# 口径（与 `baseline-failures.txt` 同一套「差集」哲学，不改历史基线文件）：
+#   * 这 16 条**不表示在 Windows 上通过**，只表示「已知平台敏感、不作为本次改动的回归判据」。
+#   * 任何**新出现的**失败（不在 8 条历史基线 + AC-04 允许项 + 本文件内）照旧判红。
+#   * 这些用例在 macOS 上是判定基线的一部分（macOS job 全绿），本文件只被 win32 加载。
+#
+# 归因（实测现象，能定性的定性、不能定性的写清「待定性」，不臆造根因）：
+#   [CRLF]   夹具/资源「逐字节相等」类断言：Windows 检出为 CRLF，与仓库内 LF 样本不等
+#   [PATH]   路径分隔符与 realpath 大小写语义差异
+#   [LSOF]   依赖 `lsof` 观察监听地址，Windows 无此工具
+#   [SIGNAL] 进程终止/回收语义差异（POSIX 信号 vs `taskkill /T /F`），影响重试次数与收尾时序
+#   [TIMING] 事件条数/跨度窗口/时钟精度类断言，Windows 调度粒度更粗；归因待定性
+#
+# --- 登记项（逐字取自真实 TAP，勿改写成近似标题）---
+A-1: developer.yaml matches the documented sample byte for byte
+A-1: code-change/SKILL.md matches the documented sample byte for byte
+两份 legacy 夹具的 state/events sha256 与 SHA256SUMS 一致
+resolveEvidenceRef 纯路径判定（越界 / artifacts / policy）
+可注入 fs：stat 结果决定通过，且不产生任何写
+the desktop port listens on loopback only (lsof shows 127.0.0.1)
+AC-27：读操作不写实例、四组状态不变、仅回环监听、数据面无凭据 401
+--host-error 早返回（-32603）也在返回前写 attempts=1（AC-63）
+promptFailures:2 -> attempts 依次 1/2/3，前 2 次 -32603 第 3 次 end_turn
+newState 只追加 health 与 traceId 两个字段、既有初始字段与顺序不动；缺 health 按 30000 缺省且不批量回填
+execution.summary 每会话恰一条，成功/失败/取消三种收尾都有，缺项为 null
+--fail-tool 合并四项；--fail-tool-no-refs 缺项为 null 且 command 不被工具名冒充
+--stop-after 3 冻结窗口恰 3 条跨度、7 字段、无 handoff_ids、HO-002 读取时推导
+grep -c "object: 'session'" ≤ 13；会话级新增事件类型只有 execution.summary
+single / code-loop / task-loop 三主链运行期输出不出现健康度 / 追踪新行
+S-07: thirteen directly written role files are read by the registry (--host mock)
