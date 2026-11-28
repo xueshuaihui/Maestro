@@ -45,8 +45,9 @@ git rev-parse HEAD            # T00 公布它作为唯一 baseSha
 | 5b | **独立审核循环** | 开发子 Agent 报完成后，主 Agent **另建干净审核 Agent**（不继承开发上下文），按 §0.10.5–§0.10.6 审核；有阻塞项就派修复再审核，循环到 PASS 才可提交 |
 | 6 | 报告 + 提交 | 审核 PASS 后才写 `docs/org/reports/TXX.md`（§0.7），`git add <本任务文件 + 报告 + 自己的台账>` → `git commit -m "feat(org): TXX <标题>"`；不 `--amend` 已合入提交 |
 | 7 | **全部完成后合入 main** | 认领/开发/报告提交都在同一功能分支；`git fetch origin` → `git rebase origin/main` → 更新报告 `headSha` 并 fixup/amend → 复跑验证 → `git switch main && git merge --ff-only <feature>`（**全部**提交一次性合入）→ `git push origin main`；不得只挑部分提交 |
+| 7b | **合入后立即删除功能分支（用户强制约束）** | main 推送成功后必须 `git push origin --delete <feature>`（远端无该分支则跳过）→ `git branch -d <feature>`（仅在确认已合入时用 `-d`；绝不 `-D` 丢弃未合入提交）→ 再次 `git fetch origin` 确认远端残留分支已清；**删除并推送完成前禁止认领下一个任务**（§0.10.3 step 1 前置检查） |
 | 8 | push 竞争恢复 | 非 ff 时 `git fetch origin && git switch main && git reset --hard origin/main && git merge --ff-only <feature> && git push origin main`；`reset --hard` 仅限本地 main 且功能提交已在 feature；禁止 force |
-| 9 | 合入后核验 | main 上确认自己的合入 sha 与报告 `headSha` 一致，只读核验不再改报告 |
+| 9 | 合入后核验 | main 上确认自己的合入 sha 与报告 `headSha` 一致，只读核验不再改报告；同时确认功能分支本地与远端均已删除（`git branch --list feature/org-T*` 与 `git ls-remote --heads origin` 均无该分支） |
 
 **禁止**：在 main 上直接改代码；跨任务改别人文件；合入未验证代码；`git push --force`；把验证失败当 flake 而不独占复跑。
 
@@ -89,7 +90,7 @@ git rev-parse HEAD            # T00 公布它作为唯一 baseSha
 
 ### 0.7 全局技术红线（含最高优先分支纪律）
 
-**分支纪律（最高优先）**：每个任务的**全部功能开发必须在 `feature/org-TXX-<slug>` 功能分支上**——从建分支到合入 main 之前，产品代码、测试、报告只写在这条分支。`main` 只接收审核通过的 ff-only 合并，禁止在 main 上直接写产品代码/测试/报告。唯一例外是 §0.10.3 step 4c 的认领广播（只含自己台账）。派工前主 Agent 必须用 `git branch --show-current` 确认当前是功能分支。
+**分支纪律（最高优先）**：每个任务的**全部功能开发必须在 `feature/org-TXX-<slug>` 功能分支上**——从建分支到合入 main 之前，产品代码、测试、报告只写在这条分支。`main` 只接收审核通过的 ff-only 合并，禁止在 main 上直接写产品代码/测试/报告。唯一例外是 §0.10.3 step 4c 的认领广播（只含自己台账）。派工前主 Agent 必须用 `git branch --show-current` 确认当前是功能分支。**任务收口即删分支**：审核 PASS、全部提交合入 main 并推送后，必须删除该功能的本地与远端分支（§0.3 step 7b）；**未删除并推送前禁止认领下一个任务**。分支是任务期内的一次性容器，不是历史档案——历史可追溯性由 main 上的提交与 `docs/org/reports/TXX.md` 报告保证，不靠保留分支。
 
 0. **需求权威**：对象/状态枚举/迁移/异常边界/验收标准只认两份规格正文字面；原型是本地模拟演示（原型定位：`index.md` §15 L683–L707 / `page_spec.md` §15 L756–L780），不得反推字段或状态。凡标「实现约定」的均非规格符合性断言。
 1. V3.2 状态写入唯一入口 `store.transit()`；引擎状态仍只走 `orchestrator.transit()`（`src/core/orchestrator.js:947`）；严禁直接 `store.save` 改引擎状态。
@@ -155,7 +156,12 @@ git rev-parse HEAD            # T00 公布它作为唯一 baseSha
 
 #### 0.10.3 认领协议（每个新任务开始前逐条执行）
 
-1. `git fetch origin` → `git switch main` → `git pull --ff-only origin main`。
+1. `git fetch origin` → `git switch main` → `git pull --ff-only origin main`。**认领前置检查（用户强制约束）**：确认本机上一个任务已「合入 main → 推送 → 删除本地与远端功能分支」全部完成，否则禁止认领下一任务——
+   ```bash
+   git branch --list 'feature/org-T*'                       # 本地应为空（main 除外）
+   git ls-remote --heads origin 'refs/heads/feature/org-T*'  # 远端应为空
+   ```
+   若仍有残留分支：先核实其提交是否已合入（`git merge-base --is-ancestor <head> origin/main`），已合入才执行 §0.3 step 7b 删除；未合入则先完成该任务的审核/合入流程，不得丢弃。
 2. **读全量状态**：合并读两份台账 + `git ls-tree -r --name-only origin/main docs/org/reports/` + 逐报告 `git merge-base --is-ancestor` 复核 `headSha`，得 §0.10.1 全局状态表。速查：
    ```bash
    node -e 'const fs=require("fs");for(const m of ["A","B"]){const j=JSON.parse(fs.readFileSync(`docs/org/claims/machine-${m}.json`,"utf8"));console.log(m,JSON.stringify(j.claims))}'
@@ -177,6 +183,7 @@ git rev-parse HEAD            # T00 公布它作为唯一 baseSha
    台账写在**功能分支**，靠合并到 main 广播，不是在 main 直接改（§0.7 分支纪律）；4c 合并只含台账提交，绝不夹带产品代码/测试。
 5. **冲突恢复**：4c 的 `merge --ff-only` 因对方先推失败 → `git switch <feature> && git rebase origin/main` → 回 4c 重试，rebase 后重读台账，若任务已被对方认领则放弃换任务；`git push` 非 ff → `git fetch origin` → 回步骤 2。全程禁止 force。
 6. 切回功能分支后按 §0.3 step 2–6 继续；**所有实现/单测/报告都在这条分支，禁止在 main 写产品代码**（§0.7）。全部提交（认领 + 开发 + 报告 + 台账 `done`）在 §0.3 step 7 一次性 ff-only 合入，不允许挑部分提交。
+7. **合入并推送后按 §0.3 step 7b 删除本地与远端功能分支**，确认无残留后才算本任务结束；下一任务从 step 1（读台账）重新开始，不得复用已删除的分支名。
 
 **禁止**：不读台账直接开工；改对方台账；同一任务两机同时开发；认领后跨波次无进展却不释放（写 `note` 改回 `available`）。
 
@@ -214,11 +221,11 @@ git rev-parse HEAD            # T00 公布它作为唯一 baseSha
 | 开发报完成送审 | `phase: reviewing`，`reviewRounds +1` |
 | 每轮审核结论 | `lastReview={verdict,blockingCount,at}`；FAIL 继续循环 |
 | 审核 PASS 且提交已推送 | 随功能提交写 `phase: done`、`lastReview.verdict: PASS` |
-| 合入 main 后 | 只读复核 `merge-base --is-ancestor <headSha> origin/main`；失败写 `blocked` |
+| 合入 main 后 | 只读复核 `merge-base --is-ancestor <headSha> origin/main`；失败写 `blocked`；随后按 §0.3 step 7b 删除本地/远端功能分支，未删完不得认领下一任务 |
 | 其它机器读取时 | **不信任 `done` 字面值**，按 §0.10.1 复核三条件；非祖先按 `reviewing` 对待，在自己 `note` 记提醒（禁止改对方文件），必要时报主线 |
 | 阻塞/放弃 | `phase: blocked` 或释放 `available`，`note` 必填 |
 
-**同一功能分支两次合入 main**：第一次认领后（step 4c）只带 `developing` 台账提交，让对方立刻看到；第二次全部完成后（§0.3 step 7）带剩余开发/报告/`done` 提交。两次均 `--ff-only`，第二次时功能分支已含第一次提交，仍是纯快进；分支从创建到第二次合入一直保留，不删不重建。§3.2 同步点时两机都重跑 §0.10.3 step 2 全量读取，用台账交叉核对对方是否真合入。
+**同一功能分支两次合入 main**：第一次认领后（step 4c）只带 `developing` 台账提交，让对方立刻看到；第二次全部完成后（§0.3 step 7）带剩余开发/报告/`done` 提交。两次均 `--ff-only`，第二次时功能分支已含第一次提交，仍是纯快进；**任务期内分支保留不重建，但第二次合入并推送后立即按 §0.3 step 7b 删除本地与远端分支**——分支是一次性容器，删分支前先确认 `merge-base --is-ancestor <headSha> origin/main` 成立，禁止 `-D` 强删未合入提交。§3.2 同步点时两机都重跑 §0.10.3 step 2 全量读取，用台账交叉核对对方是否真合入。
 
 ---
 
@@ -888,7 +895,7 @@ python3 -c 'import re,pathlib,sys; roots=[pathlib.Path("src/org"),pathlib.Path("
 4. 全量失败集合差集 = 0、新增红 = 0、门禁 exit 0、T00-R4 两份基线文件存在且未改写。
 5. `docs/org/reports/T01.md`～`T18.md` 全部存在且含 baseSha/headSha/验证结果/认领记录/审核轮次。
 6. 每任务按 §0.10 完成认领并经干净审核 Agent 审核 PASS（无阻塞项）后才提交；台账全任务 `phase: done` 且 `headSha` 均为 `origin/main` 祖先。
-7. 两机确认自己分支已合入且无遗留 WIP，两份台账无活跃 `developing`/`reviewing` 条目。
+7. 两机确认自己分支已合入、按 §0.3 step 7b 删除本地与远端全部 `feature/org-T*` 分支（`git branch --list` 与 `git ls-remote --heads origin` 均无残留）、无遗留 WIP，两份台账无活跃 `developing`/`reviewing` 条目。
 
 ### 5.3 阻塞升级规则
 
