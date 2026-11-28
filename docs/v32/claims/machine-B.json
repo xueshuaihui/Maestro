@@ -1,1 +1,14 @@
-{"machine":"B","updatedAt":"","claims":[]}
+{
+  "machine": "B",
+  "updatedAt": "2026-11-28T09:00:00.000Z",
+  "claims": [
+    {
+      "task": "T19",
+      "phase": "developing",
+      "branch": "feature/org-T19-rename",
+      "claimedAt": "2026-11-28T09:00:00.000Z",
+      "reviewRounds": 0,
+      "note": "global rename v32->org (dirs, routes, tests, fixtures, ledger dir, label keys, error codes, branch prefix); spec case IDs V32-01~17 kept"
+    }
+  ]
+}
