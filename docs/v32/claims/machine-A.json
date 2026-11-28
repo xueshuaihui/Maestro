@@ -1,15 +1,19 @@
 {
   "machine": "A",
-  "updatedAt": "2026-11-28T07:45:02.000Z",
+  "updatedAt": "2026-11-28T08:08:58.000Z",
   "claims": [
     {
       "task": "T01",
-      "phase": "reviewing",
+      "phase": "done",
       "branch": "feature/v32-T01-contracts",
       "claimedAt": "2026-11-28T07:06:40.000Z",
-      "reviewRounds": 1,
-      "lastReview": null,
-      "note": "dev reported done; clean review agent dispatched"
+      "reviewRounds": 2,
+      "lastReview": {
+        "verdict": "PASS",
+        "blockingCount": 0,
+        "at": "2026-11-28T08:08:58.000Z"
+      },
+      "note": "2 review rounds; first CJK scope misapplied and downgraded by main agent; second PASS"
     }
   ]
 }
