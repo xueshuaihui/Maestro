@@ -2,10 +2,11 @@
 
 > 生成时间：2026-11-28
 > 版本：v2（同日按真实代码审核修订；修订记录见 §0.8）
+> 版本：v3（纠正需求权威层级：规格正文为准，原型仅为交互与演示参考；见 §0.9）
 > 原型提交：`0551b9e`（已合入本地 `main`）
 > 任务基线：**本规划合入后的 `main` HEAD**（由 T00 在开工前公布并推送到 `origin/main`）
-> 需求来源：`docs/index.md`（V3.2 口径，L80–L745）、`docs/maestro_v3_2_page_spec.md`（P00–P16 / §3–§9 / §13 / §16）
-> 交互基准：`docs/maestro_v3_2_prototype.html`（1167 行，含 17 条验收用例落点表）
+> **需求权威（唯一）**：`docs/index.md`（V3.2 正文，L80–L745）与 `docs/maestro_v3_2_page_spec.md`（§1–§17）。业务对象、状态机、异常边界、验收标准一律以这两份规格正文为准。
+> **辅助参考（非需求来源）**：`docs/maestro_v3_2_prototype.html`（1167 行）——只用于理解页面布局、交互形态与演示流程；原型中的字段、状态、按钮、错误码**不构成需求**，与规格冲突时以规格为准（见 §0.9）。
 > 代码现状：引擎底座完整；V3.2 的 Work Item / Assignment / 两层 Session / Delivery 在 `src/` 中**完全没有**；`src/studio/` 的 Team / Employee 语义与 V3.2 冲突（见 §1.1）。
 
 ---
@@ -14,12 +15,12 @@
 
 ### 0.1 本次需求范围与非目标
 
-**目标**：把 V3.2 原型中演示的行为实现为真实产品能力——真实 CLI 扫描、真实 Daemon API、真实 Task Assignment、真实 ACP 会话、真实恢复与审计，覆盖 P00–P16、§3–§9、§13 状态机、V32-01～V32-17 全部验收用例。
+**目标**：把规格正文（`docs/index.md` 与 `docs/maestro_v3_2_page_spec.md` §1–§17）定义的需求实现为真实产品能力——真实 CLI 扫描、真实 Daemon API、真实 Task Assignment、真实 ACP 会话、真实恢复与审计，覆盖 P00–P16、§3–§9、§13 状态机、§14 异常边界、V32-01～V32-17 全部验收用例。原型仅作交互形态参考，**不定义需求**（见 §0.9）。
 
 **非目标**（不要自作主张扩大范围）：
 
 1. 不重写既有引擎（`src/core/**`、`src/daemon/server.js`、`src/persistence/**`、`src/adapter/**` 主体、`test/wp1`～`test/wp16`）。
-2. 不改动 `docs/index.md`、`docs/maestro_v3_2_page_spec.md`、`docs/maestro_v3_2_prototype.html`——它们是冻结的规格与交互基准。
+2. 不改动 `docs/index.md`、`docs/maestro_v3_2_page_spec.md`、`docs/maestro_v3_2_prototype.html`——前两者是冻结的需求权威，原型是冻结的交互参考（非需求来源）。
 3. 不在本次把 `src/studio/**` v2 语义就地改造成 V3.2；采用 §1.1 的隔离新域方案。
 4. 不引入第三方 npm 依赖（`package.json` 必须保持 `dependencies: {}`）。
 5. 不做 Windows 签名、Release 发布、多语言；只交付功能实现与验证证据。
@@ -42,7 +43,7 @@ git rev-parse HEAD                      # 两台机器都应从此 sha 建分支
 | 步骤 | 动作 | 硬性要求 |
 |---|---|---|
 | 1 | 领取与建分支 | `git fetch origin` → `git switch main` → `git pull --ff-only origin main` → `git switch -c feature/v32-TXX-<slug> origin/main`；确认 `git rev-parse HEAD` 等于 §0.2 公布的基线（或已合入的前序任务 sha） |
-| 2 | 读规格 | 读本任务「需求描述」列出的规格章节 + 原型对应函数（附录 A），逐条转成 REQ 清单 |
+| 2 | 读规格 | **先读**本任务 REQ 标注的规格章节（`index.md` / `page_spec.md` 的 §/P/V32 编号），逐条转成实现清单；**再**看原型对应交互（附录 A）理解页面形态。REQ 与原型演示不一致时以规格为准，并在报告记录差异 |
 | 3 | 实现 | 只改「文件所有权」列出的路径；共享文件按 §1.2 归唯一任务所有 |
 | 4 | 自测 | 写任务专属单测（文件名见任务详情），运行「验证清单」的命令；**不得删断言/降阈值** |
 | 5 | 失败循环 | 按 §0.5 分类、修复、复跑，直到本任务全部验证项通过 |
@@ -87,6 +88,7 @@ git rev-parse HEAD                      # 两台机器都应从此 sha 建分支
 
 ### 0.7 全局技术红线（每条任务都要遵守）
 
+0. **需求权威**：业务对象、状态枚举、迁移、异常边界、验收标准只认 `docs/index.md` 与 `docs/maestro_v3_2_page_spec.md` 的正文字面；原型是演示用本地模拟数据（`index.md` §15 L707 / `page_spec.md` §15 L780），**不得**从原型反推字段或状态。任何 REQ 若声称「与规格一致」，必须能在规格正文找到对应条文；找不到就是实现约定，须显式标注。
 1. V3.2 领域状态写入**唯一入口**是 `store.transit()`；引擎实例状态仍只走 `orchestrator.transit()`（`src/core/orchestrator.js:947`），严禁直接 `store.save` 改引擎状态。
 2. 事件**先落盘再广播**；事件 `ts` 与状态变更同一时刻；事件带 `prevHash/hash` 哈希链。
 3. `Prepared` 不建任何 Session；`Locked` 才开始创建/唤醒会话；人工节点永不建 Session、不选 CLI。
@@ -117,6 +119,33 @@ git rev-parse HEAD                      # 两台机器都应从此 sha 建分支
 | 12 | 中 | 原流程 step 7 合入 main 后 step 8 才写报告，等于在 main 直接提交。 | 报告随功能分支提交，再合入 |
 | 13 | 中 | 部分任务验证命令缺 `NODE_ENV=test`/短 `TMPDIR`，会假红或 socket 失败。 | 统一 §1.4 命令模板 |
 | 14 | 中 | 预检若把「没有可用 CLI」当成创建失败，会与 V32-08「创建时不分配 CLI」混淆。 | T07 明确：预检只查能力覆盖并给错误码，不创建 Assignment |
+
+### 0.9 需求权威层级（v3 纠正，先看这条再执行任务）
+
+**起因**：v2 版把 HTML 原型当作需求基准，导致从原型演示反推出规格正文没有的状态、字段与接口。原型定位见 `index.md` §15 L683–L707 与 `page_spec.md` §15 L756–L780：它用本地模拟数据演示状态变化，**不真实扫描 CLI、不连 Daemon、不启动 Agent、不调用 ACP**。规格正文没有任何「原型冲突时以谁为准」的条款，因为原型本就不是规则来源。
+
+**权威顺序**（自上而下，下层不得覆盖上层）：
+
+| 层级 | 来源 | 用途 |
+|---|---|---|
+| 1（权威） | `docs/index.md` V3.2 正文 + `docs/maestro_v3_2_page_spec.md` §1–§17 | 对象与隔离规则、状态枚举与迁移、异常边界、页面职责、17 条验收用例——逐字实现 |
+| 2（设计约束） | 本规划 §1 架构决策、§0.7 全局红线、既有引擎底座事实 | 在层级 1 之下细化实现方式（新增 `src/v32/` 域、复用 adapter、CAS 存储等） |
+| 3（参考） | `docs/maestro_v3_2_prototype.html` | 页面布局、交互形态、演示流程；**不产生 REQ、不定义状态/字段/错误码** |
+
+**冲突裁决**：层级 1 与层级 3 不一致时，一律以层级 1 为准；实现者不得为「和原型一致」而增加规格没有的状态或字段。确需在报告中说明的，写「原型演示 X，规格 §Y 规定 Z，按规格实现 Z」。
+
+**v3 已从原型纠正回规格的项**（执行时按纠正后的口径，不要再按原型）：
+
+| 项 | 原型演示 | 规格正文 | 本规划改为 |
+|---|---|---|---|
+| Node Task 状态 | `waiting_queue`、`human_waiting` | §13.4 仅 12 态：`waiting_dependency/ready/assignment_prepared/preflight/creating_session/running/succeeded` + `interrupted/blocked/failed/cancelled/skipped` | `TASK_STATUS` 与迁移表删除这两态；排队用调度标记（§6.3），人工等待用 Work Item `waiting_human`（§13.1） |
+| Assignment 状态 | `cancelled` 迁移 | §13.5 `draft→preferred→preflight→locked→released` 或 `failed`，无 `cancelled` | 迁移表删除 `cancelled` 边 |
+| 人工审批方式 | 会签/默认动作/升级 | §4.3 只要求审批人/条件，不建会话不分 CLI；§14 无「升级」异常 | T13 删除会签/默认动作/升级，驳回按 §14-3 |
+| 交付记录字段 | 固定 7 字段模板 + 缺项报错 | §16 V32-17 只要求产物/测试/风险/验收可追溯 | `deliveryRecord` 标为实现载体，断言可追溯链而非固定模板 |
+| 队列 API | `POST .../queue` | §6.3 只要求 Scheduler 排队，未定义公开 API | 标为实现约定，不作为规格验收项 |
+| CLI 探测细节 | 健康四态、fingerprint 算法 | §7.1 只列 8 项信息与「健康/认证/恢复能力」语义 | 标为实现约定，不作为规格符合性断言 |
+
+**仍属实现约定（规格未规定、规划需要、可自由调整）**：错误码全集、事件类型全集、审计类型全集、哈希链格式、`nextId` 算法、路由具体路径、零 CJK/深链兼容/门禁基线数字。这些写在 §1 是为了双机并行不冲突，**不是规格符合性断言**；T18 汇总时不得把它们写成「规格要求」。
 
 ---
 
@@ -181,16 +210,18 @@ export const WORK_ITEM_STATUS = Object.freeze([
   'draft','configured','ready_to_run','running','waiting_human','blocked',
   'ready_for_acceptance','accepted','delivered','cancelled'
 ]);
+// 严格逐字对齐规格 §13.4（index.md L654-656 / page_spec.md L723-725）：7 个正常态 + 5 个异常态，共 12 态。
+// 原型中的 waiting_queue / human_waiting 不在规格内，禁止加入此枚举。
 export const TASK_STATUS = Object.freeze([
-  'waiting_dependency','ready','assignment_prepared','preflight','creating_session',
-  'waiting_queue','running','succeeded','human_waiting','interrupted','blocked',
-  'failed','cancelled','skipped'
+  'waiting_dependency','ready','assignment_prepared','preflight','creating_session','running','succeeded',
+  'interrupted','blocked','failed','cancelled','skipped'
 ]);
 export const ASSIGNMENT_STATUS = Object.freeze([
   'draft','prepared','preflight','locked','released','failed'
 ]);
 export const ASSET_STATUS = Object.freeze(['draft','published','deprecated']);
 export const NODE_TYPES = Object.freeze(['agent','human']);
+/** 审计类型全集（实现约定；§12 P16 只要求三类操作留审计事件，未规定枚举字面）。 */
 export const AUDIT_TYPES = Object.freeze([
   'role.published','employee.updated','team.published','team.deprecated',
   'workflow.published','workflow.deprecated','work_item.created','plan.revised',
@@ -198,7 +229,7 @@ export const AUDIT_TYPES = Object.freeze([
   'recovery.failed','human.approved','delivery.accepted','delivery.delivered'
 ]);
 
-/** 事件类型全集：所有任务只能从这里取值，禁止各写各的字符串。 */
+/** 事件类型全集（实现约定，规格未定义枚举）：所有任务只能从这里取值，禁止各写各的字符串。 */
 export const EVENT_TYPES = Object.freeze([
   'cli.scan.started','cli.scan.finished','cli.health.checked',
   'role.created','role.updated','role.published','role.deprecated',
@@ -216,7 +247,7 @@ export const EVENT_TYPES = Object.freeze([
   'delivery.accepted','delivery.delivered','artifact.created'
 ]);
 
-/** 错误码全集：HTTP 层与领域层共用，测试只认这些码。 */
+/** 错误码全集（实现约定，规格未定义枚举）：HTTP 层与领域层共用，测试只认这些码。 */
 export const ERROR_CODES = Object.freeze([
   'V32_INVALID_INPUT','V32_NOT_FOUND','V32_REV_CONFLICT','V32_ILLEGAL_TRANSITION',
   'V32_FORBIDDEN_FIELD','V32_DUPLICATE_ID','V32_DUPLICATE_VERSION','V32_ROLE_NOT_QUALIFIED','V32_ROLE_GAP',
@@ -241,13 +272,11 @@ export const TRANSITIONS = Object.freeze({
   },
   task: {
     waiting_dependency: ['ready', 'skipped', 'cancelled'],
-    ready: ['assignment_prepared', 'cancelled'],
-    assignment_prepared: ['preflight', 'waiting_queue', 'cancelled'],
+    ready: ['assignment_prepared', 'blocked', 'cancelled'],  // 人工节点停在 ready，由 WorkItem.waiting_human 表达等待
+    assignment_prepared: ['preflight', 'blocked', 'cancelled'], // 排队用 run.queue 标记，不改 Task 状态（§6.3）
     preflight: ['creating_session', 'failed', 'assignment_prepared'],
     creating_session: ['running', 'failed', 'interrupted'],
-    waiting_queue: ['assignment_prepared', 'cancelled'],
     running: ['succeeded', 'interrupted', 'blocked', 'failed', 'cancelled'],
-    human_waiting: ['succeeded', 'blocked', 'cancelled'],
     interrupted: ['preflight', 'running', 'cancelled'],
     blocked: ['ready', 'failed', 'cancelled'],
     failed: ['ready', 'cancelled'],
@@ -255,13 +284,14 @@ export const TRANSITIONS = Object.freeze({
     cancelled: [],
     skipped: []
   },
+  // §13.5 只定义 6 态，无 cancelled；assignment 取消走 failed / released
   assignment: {
-    draft: ['prepared', 'cancelled'],
-    prepared: ['preflight', 'draft', 'cancelled'],
+    draft: ['prepared'],
+    prepared: ['preflight', 'draft'],
     preflight: ['locked', 'failed', 'prepared'],
     locked: ['released', 'failed'],
     released: [],
-    failed: ['draft', 'prepared', 'cancelled']
+    failed: ['draft', 'prepared']
   },
   team: { draft: ['published', 'deprecated'], published: ['deprecated'], deprecated: [] },
   workflow: { draft: ['published', 'deprecated'], published: ['deprecated'], deprecated: [] }
@@ -279,7 +309,8 @@ export const ID_PATTERN = /^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{3,}$/;
   rev: <number>,                 // 每次 transit +1，重启不回退
   updatedAt: <ISO string>,
   roles: [], employees: [], teams: [], workflows: [],
-  workItems: [], assignments: [], sessions: {employees:[], hostBindings:[], attempts:[]},
+  workItems: [], nodeExecutorPlans: [],   // §1.1 / §2：Node Executor Plan 是 10 个核心对象之一，独立建模
+  assignments: [], sessions: {employees:[], hostBindings:[], attempts:[]},
   runs: [], deliveries: [], cliPool: {installs:[], scan:{mode,startedAt,finishedAt,status}},
   artifacts: []
 }
@@ -322,14 +353,14 @@ store.events({ workItemId, runId, type, limit }); store.audit({ type, limit });
 | Employee | `id,name,description,qualifications:[roleId],enabled,createdAt,updatedAt` | `cliId`, `teamId`, `sessionId`, 单一 `roleId` |
 | Team | `id,name,description,version,status,versions[],members:[{employeeId,roles[],primary,priority,participate,capacity}],createdAt` | `workflowId`, CLI / Session 字段 |
 | Workflow | `id,name,description,version,status,kind,nodes[],edges[],versions[],createdAt` | `employeeId`, `teamId`, `cliId` |
-| Node(agent) | `id,type:'agent',name,roleId,instruction,inputs[],outputs[],deps[],capabilities{},acceptance[],timeout,failurePolicy,retry,fallback,handoff,condition` | 员工 ID / CLI ID |
-| Node(human) | `id,type:'human',name,human:{approver,mode,condition},inputs[],outputs[],deps[],acceptance[]` | `roleId` 之外的执行人/CLI/Session |
-| WorkItem | `id,title,description,background,goal,projectDir,attachments[],priority,creator,createdAt,status,workflowSnapshot,teamSnapshot,nodeExecutorPlan,runId,historyRuns[],planRevisions[],deliveryRecord` | 宿主会话细节 |
-| Assignment | `id,runId,taskId,nodeId,employeeId,cliInstallationId,cliFingerprint,adapterVersion,workingDir,inputArtifactRefs[],permissionSnapshot,status,createdAt,updatedAt` | 员工档案/团队定义快照本体 |
+| Node(agent) | `id,type:'agent',name,roleId,instruction,inputs[],outputs[],deps[],capabilities{},acceptance[],timeout,failurePolicy,retry,fallback,escalation,handoff,condition`（§4.1 四项并行：Retry / Fallback / Escalation / Failure Policy） | 员工 ID / CLI ID |
+| Node(human) | `id,type:'human',name,human:{approver,condition},inputs[],outputs[],deps[],acceptance[]`（§4.3 审批人/条件；会签/默认动作/升级为规格外，不建） | `roleId` 之外的执行人/CLI/Session |
+| WorkItem | `id,title,description,background,goal,projectDir,workspace,attachments[],referenceRefs[],priority,creator,createdAt,status,workflowSnapshot,teamSnapshot,nodeExecutorPlanId,runId,historyRuns[],planRevisions[],deliveryRecord`（§5.1 含「项目/工作空间」「输入附件和参考资料」） | 宿主会话细节 |
+| NodeExecutorPlan | `id,workItemId,workflowSnapshotId,teamSnapshotId,mapping:{[nodeId]:employeeId|null},createdAt,updatedAt`（§1.1 独立核心对象；属于 WorkItem 执行方案，不写回 Workflow/Team） | 宿主会话/CLI 绑定 |
 | EmployeeSession | `id,employeeId,status,contextRefs[],checkpointRef,createdAt,updatedAt` | 员工档案属性 |
 | HostBinding | `id,employeeSessionId,cliInstallationId,adapter,hostSessionId,resumable,compatible,capabilities,status,lastActivity` | 员工身份本身 |
 | Attempt | `id,taskId,assignmentId,employeeSessionId,hostBindingId,resumedFrom,status,startedAt,endedAt,checkpointRef,artifactRefs[],activity[],error` | — |
-| Run | `id,workItemId,workflowVersion,teamVersion,tasks[],status,createdAt,finishedAt,stats` | — |
+| Run | `id,workItemId,workflowVersion,teamVersion,tasks[],queue:[{taskId,reason,queuedAt}],status,createdAt,finishedAt,stats`（§6.3 排队是 Scheduler 行为，用队列标记，不设 Task 状态） | — |
 | Artifact | `id,name,kind,workItemId,runId,taskId,employeeId,cliInstallationId,attemptId,handoffId,path,createdAt` | — |
 
 错误与事件格式：
@@ -365,7 +396,7 @@ store.events({ workItemId, runId, type, limit }); store.audit({ type, limit });
 | `/v32/mapping` | `GET /:workItemId/candidates`、`PUT /:workItemId`、`GET /:workItemId/conflicts` | T08 |
 | `/v32/assignments` | `POST /prepare`、`GET /:id`、`PUT /:id`、`POST /:id/start`、`POST /:id/release` | T09 |
 | `/v32/sessions` | `GET /:employeeId`、`GET /:employeeId/bindings`、`POST /:employeeId/ensure`、`POST /:bindingId/wake` | T10 |
-| `/v32/runs` | `GET /`、`GET /:id`、`POST /:id/tasks/:taskId/queue`、`POST /:id/tasks/:taskId/complete`、`POST /:id/tasks/:taskId/interrupt`、`GET /:id/events` | T11 |
+| `/v32/runs` | `GET /`、`GET /:id`、`POST /:id/tasks/:taskId/queue`（实现约定，规格 §6.3 只要求 Scheduler 排队）、`POST /:id/tasks/:taskId/complete`、`POST /:id/tasks/:taskId/interrupt`、`GET /:id/events` | T11 |
 | `/v32/recovery` | `GET /:taskId/options`、`POST /:taskId/recover-original`、`POST /:taskId/recover-checkpoint` | T12 |
 | `/v32/human` | `POST /:taskId/approve`、`POST /:taskId/reject`、`GET /:taskId/policy` | T13 |
 | `/v32/records` | `GET /artifacts`、`GET /artifacts/:id/trace`、`GET /events`、`GET /audit`、`GET /:workItemId/delivery`、`POST /:workItemId/deliver` | T14 |
@@ -408,7 +439,7 @@ export const actions = {                    // 由 T16 注册进 handleAction �
 
 **导航**：规格 §11 的 9 组（启动与资源 / 需求工作台 / 执行中心 / 团队库 / 工作流库 / 员工档案 / 角色库 / 产物与事件 / 系统设置）由 T16 在 `desktop/ui/shell/nav.js` 扩展；保留现有 5 组与全部历史 view ID 的深链兼容。页面模块不得直接改导航。
 
-**流程图**：`desktop/ui/v32/graph.js`（T06 独占）导出 `layoutDag(nodes,edges)`、`validateDag(nodes,edges)`、`renderGraph({nodes,edges,mode,stateMap,selected,onSelect,onEdit})`；`mode` 取 `definition | runtime | edit`，交互至少含缩放 50%–200%、适应画布、拖动平移、点选、上下游高亮；行为对齐原型 `showWorkflowDag` / `graphHTML` / `graphRefresh`。`renderGraph` 返回 SVG/DOM 节点，不返回字符串。
+**流程图**：`desktop/ui/v32/graph.js`（T06 独占）导出 `layoutDag(nodes,edges)`、`validateDag(nodes,edges)`、`renderGraph({nodes,edges,mode,stateMap,selected,onSelect,onEdit})`；`mode` 取 `definition | runtime | edit`，交互含缩放、适应画布、拖动平移、点选、上下游高亮（实现约定，形态参考原型 `showWorkflowDag` / `graphHTML` / `graphRefresh`；规格 P07/P11 只要求 DAG 画布与多视图）。`renderGraph` 返回 SVG/DOM 节点，不返回字符串。
 
 #### 1.3.4 与引擎的桥接（T10 独占，按真实导出实现）
 
@@ -470,7 +501,7 @@ export function createBridge({ root, store, now }) {
 | §12 P00–P16 | 见 §2.2 | 见 §2.2 | — |
 | §13 状态机 | 见 §2.4 | 见 §2.4 | — |
 | §14 异常边界 | 10 条，见 §2.6 | T05–T14 | — |
-| §15/§7.2 原型覆盖 | 19 项，见附录 A | 全部 | — |
+| §15 原型覆盖范围 | 原型是演示参考（非需求来源），17 条验收用例以 §16 为准；交互形态见附录 A | T16 | — |
 | §16 验收用例 | V32-01～17，见 §2.5 | T17 | 全部 |
 
 ### 2.2 P00–P16 → 任务
@@ -494,8 +525,8 @@ export function createBridge({ root, store, now }) {
 | Work Item §13.1 | `draft→configured→ready_to_run→running→waiting_human/blocked→ready_for_acceptance→accepted→delivered`，另 `cancelled` | T07 + T11 + T14 | 非法迁移返回 `V32_ILLEGAL_TRANSITION` 且不落盘 |
 | Team §13.2 | `draft→published→deprecated` | T05 | publish 生成新版本；deprecated 不可选为新需求 |
 | Workflow §13.3 | `draft→published→deprecated` | T06 | 发布后修改生成新版本；旧 Work Item 快照不变 |
-| Node Task §13.4 | `waiting_dependency→ready→assignment_prepared→preflight→creating_session→running→succeeded`，分支 `interrupted/blocked/failed/cancelled/skipped/waiting_queue/human_waiting` | T11 | 依赖未完成时不可 `ready`；完成后下游解锁 |
-| Assignment §13.5 | `draft→prepared→preflight→locked→released`，分支 `failed` | T09 | `prepared` 无 Session；`locked` 后员工/CLI 不可改 |
+| Node Task §13.4 | `waiting_dependency→ready→assignment_prepared→preflight→creating_session→running→succeeded`，异常 `interrupted/blocked/failed/cancelled/skipped`（严格 12 态，无 `waiting_queue`/`human_waiting`） | T11 | 依赖未完成时不可 `ready`；完成后下游解锁；排队用 Run.queue 标记，人工等待用 WorkItem `waiting_human` |
+| Assignment §13.5 | `draft→prepared→preflight→locked→released`，分支 `failed`（无 `cancelled`） | T09 | `prepared` 无 Session；`locked` 后员工/CLI 不可改 |
 | 会话 §13.6 | Employee Session 长期稳定；Host Binding 按 CLI/Adapter，不跨 CLI 复用 | T10 | 跨 CLI 必然新 Binding；Employee Session ID 不变 |
 
 ### 2.4 V32-01～17 → 任务与验证落点
@@ -603,7 +634,7 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T01-contracts`
 - **依赖**：无（必须最先合入）
 - **需求描述**：
-  - **T01-R1** 按 §1.3.1 导出全部常量：ID 前缀、四类状态枚举、资产状态、节点类型、审计类型；枚举必须与规格 §13 逐字一致（含 `waiting_queue` / `human_waiting`）。
+  - **T01-R1** 按 §1.3.1 导出全部常量：ID 前缀、四类状态枚举、资产状态、节点类型、审计类型；状态枚举必须与规格 §13 **逐字一致且不多不少**——Node Task 恰为 §13.4 的 12 态，**不得**出现原型里的 `waiting_queue` / `human_waiting`；Assignment 恰为 §13.5 的 6 态，无 `cancelled`。单测断言枚举数组与规格 §13 逐项相等。
   - **T01-R2** 实现 `validate(kind,obj)`：按 §1.3.1 对象表逐字段校验；额外强制「不该保存的字段」不存在（如 Employee 有 `cliId`、Team 有 `workflowId`、Workflow 节点有 `employeeId`、人工节点有 `cliId`）→ 返回 `V32_FORBIDDEN_FIELD`。
   - **T01-R3** 实现 `createV32Store()`：读 `.orch/v32/state.json`；不存在时按顶层结构初始化；`read()` 返回深拷贝；`get/list` 只读。
   - **T01-R4** `transit(mutator,{expectedRev,reason,actor})` 是唯一写入口：基于磁盘最新快照校验 `expectedRev`，不等则 `V32_REV_CONFLICT`；mutator 内改 draft；成功后 `rev+1`、原子写、再追加事件/审计，**最后**返回新快照；任何失败不得改内存状态。
@@ -619,7 +650,7 @@ node scripts/desktop/gate.mjs --skip-tests
   - **T01-R14** 资产版本：`version` 用 `major.minor` 字符串，首次发布 `1.0`；之后每次 publish 递增 minor（`1.0→1.1`），`versions` append-only；同一版本不得重复发布，重复返回 `V32_DUPLICATE_VERSION`。
 - **实现步骤**：① 常量与校验 → ② 原子写与 CAS → ③ 事件链 → ④ 夹具 → ⑤ 单测。
 - **验证清单**：
-  - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-contracts.test.js"`：断言禁止字段全部被拒、枚举逐字一致、非法迁移被拒、未知错误码/事件类型被拒。
+  - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-contracts.test.js"`：断言禁止字段全部被拒、四类状态枚举与规格 §13 逐项相等（含「无 waiting_queue / human_waiting / assignment.cancelled」的反向断言）、非法迁移被拒、未知错误码/事件类型被拒。
   - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-store.test.js"`：断言并发 `transit` 只有一个成功、rev 递增、`expectedRev` 过期返回冲突、失败不改文件、并发 `nextId` 不重号、快照深拷贝隔离。
   - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-events.test.js"`：断言哈希链、顺序、过滤、审计自动写入。
   - 全量差集 0（对照 `origin/main` 基线树）。
@@ -635,8 +666,8 @@ node scripts/desktop/gate.mjs --skip-tests
   - **T02-R1**（P00 / §7.1）快扫与完整扫描两阶段：快扫发现路径与名称；完整扫描补齐版本、Adapter/协议、能力声明、健康状态、认证状态、会话恢复能力；扫描过程写 `cliPool.scan` 进度，界面可显示阶段。**探测不到的字段写 `unknown` 并注明原因，不得伪造为可用/已认证**。
   - **T02-R2** 复用 `src/adapter/cli-discovery/discover.js` 与 `probe.js`，**只读引用**；不把 `npx geiger-scan` 作运行时依赖。
   - **T02-R3** 扫描只更新 CLI 资源池；断言不创建 Employee / Team / Session / WorkItem。
-  - **T02-R4** 手动添加路径：落库 `installs[]`，字段含 `id,name,path,version,adapter,capabilities,health,auth,resumable,fingerprint,source:'scan'|'manual'`；`fingerprint = sha256(realpath + version + adapter)`，重复按 fingerprint 去重；同一路径二进制升级后 fingerprint 变化，旧记录标记 `stale` 而不是静默覆盖。
-  - **T02-R5** 健康检查回写 `health`，枚举固定 `ok | degraded | unavailable | unknown`；`unavailable` 的 CLI 可被 Assignment 选中但启动预检必须拒绝（由 T09 消费），`unknown` 不阻断但界面提示需复检。
+  - **T02-R4**（§7.1 八项信息）手动添加路径：落库 `installs[]`，字段至少覆盖规格列出的名称/路径/版本/Adapter·协议/能力声明/健康状态/认证状态/会话恢复能力；`fingerprint` 算法、`source`、`stale` 为**实现约定**（规格未规定），用于去重与 Assignment 固定执行环境。
+  - **T02-R5** 健康检查回写 `health`（§7.1 要求信息可见；四态枚举为实现约定）：失效 CLI 可被 Assignment 选中但启动预检必须拒绝（由 T09 消费）；探测不到的字段写 `unknown`，不伪造为可用。
   - **T02-R6** `GET /v32/cli/:id/capabilities` 输出能力矩阵，供节点能力预检（T07/T09）使用。
   - **T02-R7**（P00 页面）`desktop/ui/v32/cli-page.js` 展示扫描进度、发现/可用/异常数量、CLI 明细与「重新扫描 / 完整扫描 / 手动添加 / 健康检查」入口；文案键 `V32_CLI_*` 列表写入报告交 T16。
 - **实现步骤**：① 包装发现层 → ② 扫描状态机 → ③ 路由片段 → ④ 页面 → ⑤ 单测（mock probe）。
@@ -655,7 +686,7 @@ node scripts/desktop/gate.mjs --skip-tests
 - **需求描述**：
   - **T03-R1** Role CRUD：字段按 §1.3.1；`duties/skills/inputs/outputs/acceptance` 均为数组，`requires` 用 `src/studio/schema.js:74 CAPABILITY_DIMENSIONS` 同款五维（只读引用，不改它）。
   - **T03-R2** 版本与状态：`draft→published→deprecated`；publish 生成新版本并写 `role.published` 审计；deprecated 不可被工作流节点引用。
-  - **T03-R3** 三层联动可读性：API `GET /v32/roles/:id/refs` 返回「被哪些工作流节点引用 / 哪些员工声明资格 / 哪些团队声明承担」（只读汇总，不反向写入）。
+  - **T03-R3**（实现约定，规格 P09 未要求）可选只读汇总 `GET /v32/roles/:id/refs`：返回被哪些工作流节点引用 / 哪些员工声明资格 / 哪些团队声明承担；不作为 P09 交付验收项。
   - **T03-R4**（P09）页面展示职责、技能、输入输出、能力要求、验收规则，支持新建/编辑/发布/停用；文案键交 T16。
 - **验证清单**：
   - `test/wp21/v32-roles.test.js`：字段校验、非法迁移、发布新版本、停用后节点引用被拒、`refs` 汇总正确。
@@ -706,12 +737,12 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T06-workflows`
 - **依赖**：T01、T03（角色 ID 来源）
 - **需求描述**：
-  - **T06-R1**（§4.1）Workflow 定义含 ID/名称/描述/版本、节点 DAG、Agent 节点 Role ID、输入输出契约、验收条件、依赖、并行/汇合、条件分支、Human Task / Approval Gate、Handoff、Retry/Fallback/Escalation/Failure Policy；**禁止** Employee ID / Team ID / CLI。
-  - **T06-R2**（§4.2）Agent 节点 11 项字段齐全（见 §1.3.1）；缺任一字段 validate 拒绝。
+  - **T06-R1**（§4.1）Workflow 定义含 ID/名称/描述/版本、节点 DAG、Agent 节点 Role ID、输入输出契约、验收条件、依赖、并行/汇合、条件分支、Human Task / Approval Gate、Handoff，以及 **Retry / Fallback / Escalation / Failure Policy 四项并列策略**（四项缺一不可，§4.1 L173–L175）；**禁止** Employee ID / Team ID / CLI。
+  - **T06-R2**（§4.2）Agent 节点 11 项字段齐全（见 §1.3.1，含 `escalation` 承载的升级策略）；缺任一字段 validate 拒绝。
   - **T06-R3**（§4.3 / V32-16）Human 节点只有 `human:{approver,mode,condition,timeout}` 与契约字段；禁止节点级 `roleId/employeeId/cliId/sessionId`（审批角色只能放在 `human.approver` 内）；人工节点不参与员工映射。
   - **T06-R4**（P06）库列表展示名称/版本/用途/节点数/Agent 与人工节点数/主要阶段与并行关系/内置·草稿·已发布；支持编辑、复制、发布新版本、用于新需求。
   - **T06-R5**（P07）编辑器支持：画布定义 DAG；Agent 节点选 Role ID；Human 节点定义审批人/条件；配置依赖、并行、汇合、条件、输入输出、验收、失败策略；**不出现**员工/团队/CLI 选择。
-  - **T06-R6** 后端 `src/v32/graph.js` 只做纯计算：`layoutDag` 按依赖层级布局、`validateDag` 检测未知依赖与环；前端 `desktop/ui/v32/graph.js` 做 `renderGraph`，支持 definition/runtime/edit 三模式、缩放 50%–200%、适应画布、拖动平移、点选、上下游高亮，行为对齐原型 `showWorkflowDag / graphHTML / graphRefresh / graphAutoLayout`。两者共享同一份 `{level,order}` 布局数据，不各自发明排序。
+  - **T06-R6** 后端 `src/v32/graph.js` 只做纯计算：`layoutDag` 按依赖层级布局、`validateDag` 检测未知依赖与环；前端 `desktop/ui/v32/graph.js` 做 `renderGraph`，支持 definition/runtime/edit 三模式、缩放 50%–200%、适应画布、拖动平移、点选、上下游高亮。规格 P07/P11 只要求「画布定义 DAG / 提供视图」，**交互细节（三模式、缩放比例、高亮）是实现约定，参考原型 `showWorkflowDag / graphHTML / graphRefresh / graphAutoLayout` 的形态，不作为规格符合性断言**。两者共享同一份 `{level,order}` 布局数据，不各自发明排序。
   - **T06-R7**（§4.4 / V32-04）工作流可被多个团队复用；对象内无 Team/Employee 字段；DAG 图模式可渲染。
   - **T06-R8**（V32-15 / §14-5）修改按 T01-R14 发布新版本；既有 WorkItem 快照与运行中 Run 继续用旧版本。
   - **T06-R9**（V32-02）支持「保存到库」与「仅用于本次需求」。
@@ -728,7 +759,7 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T07-work-items`
 - **依赖**：T02–T06（W1 全部合入）
 - **需求描述**：
-  - **T07-R1**（§5.1）Work Item 14 字段齐全；创建后 `status='configured'`；`workflowSnapshot`/`teamSnapshot` 固化所选版本，`nodeExecutorPlan` 固化映射；`runId` 指向新建 Run，`historyRuns=[]`，`deliveryRecord=null`。
+  - **T07-R1**（§5.1）Work Item 字段齐全：Work Item ID、标题、需求描述、背景与目标、项目/工作空间、输入附件和参考资料、优先级、创建人和创建时间、Workflow Snapshot 及版本、Team Snapshot 及版本、Node Executor Plan、当前 Workflow Run；创建后 `status='configured'`；两快照固化所选版本，`nodeExecutorPlanId` 指向独立建模的执行方案对象（§1.1 十个核心对象之一）；`runId` 指向新建 Run，`historyRuns=[]`，`deliveryRecord=null`。
   - **T07-R2**（§5.2 / 链路 A/B）四种组合全部可用：已有+已有、已有+新建、新建+已有、新建+新建；新建资产可选「仅本次」（进 snapshot 不进资产库）或「保存到库」（先建资产版本再引用）。
   - **T07-R3**（§5.3 / P02）五步向导严格为：①需求信息（标题/描述/背景/目标/项目目录/附件）②工作流③团队④节点执行人映射（调用 T08 面板）⑤预检确认（覆盖、员工有效性、并行冲突、CLI 能力、输入资料）。
   - **T07-R4**（§6.2 / V32-06）`preflight` 返回逐项结果；角色未覆盖返回 `V32_ROLE_GAP` 并列出缺失角色，阻止创建；员工失效返回 `V32_INVALID_INPUT`；CLI 资源池无法覆盖节点能力时返回 `V32_CLI_CAPABILITY_GAP` 并提示先扫描/添加 CLI，阻止创建。**预检只检查能力覆盖，不创建 Assignment，也不要求此刻选定具体 CLI**（与 V32-08 一致）。
@@ -750,7 +781,7 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T08-mapping`
 - **依赖**：T01（与 T07 并行；W2 同步点与向导第 4 步联调）
 - **需求描述**：
-  - **T08-R1**（§6.1）映射属于 Work Item 执行方案，**不写回** Workflow / Team；示例映射结构 `{[nodeId]: employeeId|null}`；human 节点固定 `null`。
+  - **T08-R1**（§6.1 / §1.1）映射写入独立 `NodeExecutorPlan` 对象（由 WorkItem `nodeExecutorPlanId` 引用），属于本次 Work Item 执行方案，**不写回** Workflow / Team；结构 `{[nodeId]: employeeId|null}`；human 节点固定 `null`（§6.2）。
   - **T08-R2**（§6.2）候选只来自本次团队快照的成员；成员必须具备节点 Role ID 资格；唯一候选自动预选；多候选按 `priority` 预选且可改；无候选返回 `V32_NO_CANDIDATE` 并提示补成员/调资格。
   - **T08-R3**（§6.3 / V32-07）并行判定使用**可达闭包**：两节点互不可达才算并行，传递依赖不得误报；同一员工被映射给并行节点时返回警告 `V32_SERIAL_QUEUE`，提示「同一员工将串行处理这两个节点」，可改派或接受排队。
   - **T08-R4**（§6.4）节点未启动可改映射并写 `plan.revised` 审计；已启动节点不可覆盖当前 Attempt 执行者，须先中断/结束再新建 Assignment，且必须显式选择是否继承检查点与产物上下文；已完成节点历史执行者不可变。
@@ -772,7 +803,7 @@ node scripts/desktop/gate.mjs --skip-tests
   - **T09-R2**（§7.3 / §13.5）状态机 `draft→prepared→preflight→locked→released`，失败进 `failed`；`prepared` 可改员工与 CLI；`locked` 后禁止修改（返回 `V32_ASSIGNMENT_LOCKED`）；`released` 在任务结束/取消时写。
   - **T09-R3**（V32-10）保存 Prepared **不创建** Employee Session / Host Session；断言 `sessions.employees` 与 `hostBindings` 数量不变。
   - **T09-R4**（V32-09 / V32-12）CLI 选择按能力匹配；更换 CLI 只影响本次 Assignment，Employee Profile 与 Team 定义逐字不变；失效 CLI 在 preflight 阶段拒绝，Assignment 保持 `prepared` 可编辑。
-  - **T09-R5**（§14-2 / V32-07）占用冲突：目标员工正执行其它任务时提供「改派」与「保留并排队」；选择排队后 **Task 进入 `waiting_queue`，Assignment 保持 `prepared`**（不 `locked`、不建 Session），员工释放后才重新走 `preflight→locked`；**禁止**并发写同一 Employee Session。
+  - **T09-R5**（§6.3 / §14-2 / V32-07）占用冲突：目标员工正执行其它任务时提供「改派」与「保留并排队」；选择排队后在 `Run.queue` 追加 `{taskId,reason,queuedAt}` 标记（规格 §6.3 只要求 Scheduler 排队，**未定义 Task 状态**，禁止用原型的 `waiting_queue`），Task 保持 `assignment_prepared`、Assignment 保持 `prepared`（不 `locked`、不建 Session），员工释放后出队重新走 `preflight→locked`；**禁止**并发写同一 Employee Session。
   - **T09-R6**（P12）面板展示节点角色要求、合格成员（默认选中映射成员）、本机 CLI 候选及能力、会话计划（创建/复用/唤醒/恢复）、「保存 Prepared」「保存并启动」；启动按钮走 `preflight→locked` 并通知 T10 建会话。
   - **T09-R7** Assignment 每次状态变化写事件，`locked` 写审计。
 - **验证清单**：
@@ -810,11 +841,11 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T11-runs`
 - **依赖**：T09、T10（与 T12 并行开发）
 - **需求描述**：
-  - **T11-R1**（§13.4）Task 状态机完整实现；上游依赖未完成不可 `ready`；`succeeded` 后解锁下游；人工节点进 `human_waiting` 等 T13；异常进 `interrupted/blocked/failed`；`waiting_queue` 由 T09 排队触发。
+  - **T11-R1**（§13.4，严格 12 态）Task 状态机完整实现；上游依赖未完成不可 `ready`；`succeeded` 后解锁下游；人工节点停在 `ready`、WorkItem 进入 `waiting_human`（§13.1）等 T13 审批；异常进 `interrupted/blocked/failed/cancelled/skipped`；排队由 T09 写 `Run.queue` 标记，**不引入规格外 Task 状态**。
   - **T11-R2**（链路 C）执行步骤：Ready → 读映射 → 成员有效性/空闲检查 → 确认员工 → 选 CLI → Prepared → 启动 → Locked → 建会话 → Attempt → 活动展示 → 完成验收与下游推进。
   - **T11-R3**（§14-4/5）团队/工作流资产修改后，Run 继续使用创建时版本快照；成员停用时未启动节点标记需重映射。
   - **T11-R4**（P10）执行中心列表：Run ID、Work Item、Workflow 版本、Team 版本、状态、完成率、Ready/执行中/中断/人工待处理数量；实时计算完成率（不能用硬编码）。
-  - **T11-R5**（P11）执行视图：按节点展示名称/Role/计划与实际执行人/状态/CLI（Assignment 完成后才显示）/员工会话状态（创建后才显示）/最近活动；提供任务表格与事件时间线；默认进入流程图模式（复用 T06 `renderGraph` 的 `runtime` 模式），线性视图保留。
+  - **T11-R5**（P11）执行视图：按节点展示名称/Role/计划与实际执行人/状态/CLI（Assignment 完成后才显示）/员工会话状态（创建后才显示）/最近活动；提供任务表格与事件时间线（规格明列的三类视图）；默认进入流程图模式（复用 T06 `renderGraph` 的 `runtime` 模式，属实现约定），线性视图保留。
   - **T11-R6**（P13）活动面板：员工身份、所属团队/角色、当前 WorkItem/节点/CLI、Employee/Host Session ID（存在才显示）、Attempt、开始时间、运行时长、最近活动；只展示公开事件；由事件/Attempt/产物动态生成，不用静态文案。
   - **T11-R7**（P03 修订入口）执行方案修订：未启动节点可改映射，旧 Run 归档到 `historyRuns`、`planRevisions` 追加、新建 Run 并更新 `workItem.runId`；已完成节点历史不变。
   - **T11-R8**（P14）任务详情：Task ID、Node ID、Role、计划/实际执行人、Assignment 历史、Attempt 历史、Employee Session、Host Binding 历史、产物/Handoff/错误证据。
@@ -853,10 +884,10 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T13-human-gates`
 - **依赖**：T06、T11
 - **需求描述**：
-  - **T13-R1** Human Task / Approval Gate 定义：审批方式（单人/多人/会签）、审批人（角色或指定员工）、人工补充输入条件、超时与默认动作；字段存在 node.human 内。
+  - **T13-R1**（§4.3 / P07）Human Task / Approval Gate 定义：审批人（角色或指定员工）、人工补充输入条件，字段存在 `node.human` 内；规格未定义会签、超时默认动作与「升级」异常分支，不实现为需求。
   - **T13-R2**（V32-16）人工节点**不分配员工、不分配 CLI、不创建 Employee Session / Host Binding / Attempt**；批准动作只改 Task 状态并写审计。
-  - **T13-R3** 审批校验：审批人身份/角色必须符合 node.human 定义；不符合返回 `V32_APPROVER_INVALID`；驳回走异常边界（回退或升级，按节点失败策略）。
-  - **T13-R4** 批准后：Task `succeeded`，调用 T11 的 `advanceRun` 解锁下游；**不得**自行把 WorkItem 置为 `ready_for_acceptance`（该状态唯一 owner 是 T11）。
+  - **T13-R3** 审批校验：审批人身份/角色必须符合 `node.human` 定义；不符合返回 `V32_APPROVER_INVALID`；驳回按 §14-3（未启动节点重映射、运行中节点走中断恢复）处理，不自造「升级」分支。
+  - **T13-R4** 批准后：Task 从 `ready` 迁到 `succeeded`（规格 §13.4 无 `human_waiting` 态），调用 T11 的 `advanceRun` 解锁下游，WorkItem 退出 `waiting_human`；**不得**自行把 WorkItem 置为 `ready_for_acceptance`（该状态唯一 owner 是 T11）。
   - **T13-R5**（P07 编辑器）Human 节点属性区可配置审批方式/审批人/条件/超时，且不出现员工 Agent 分配或 CLI 控件。
   - **T13-R6** 审批/驳回均写 `human.approved` 类审计事件，可追溯审批人与时间。
 - **验证清单**：
@@ -873,7 +904,7 @@ node scripts/desktop/gate.mjs --skip-tests
 - **需求描述**：
   - **T14-R1**（P16）Artifact 可追踪七维：WorkItem、Workflow Run、Task、Employee、CLI、Attempt、Handoff；`GET /artifacts/:id/trace` 返回完整链路与事件引用。
   - **T14-R2**（P16）事件记录覆盖：团队/工作流版本选择、节点映射、Task Assignment、会话创建与恢复；人工审批、异常恢复、交付验收**必须**写审计（与 T01 审计类型对齐）。
-  - **T14-R3**（§13.1 / V32-17）交付验收：T14 独占 `POST /v32/records/:workItemId/deliver`；`ready_for_acceptance→accepted→delivered`（先 accepted 再 delivered，允许一次请求内完成两步但必须逐次写事件）；`deliveryRecord` 固定字段 `{artifacts:[], tests:[{name,result,evidence}], risks:[], acceptedBy, acceptedAt, note}`；缺少产物或测试记录返回 `V32_DELIVERY_INCOMPLETE`，不得伪造通过。
+  - **T14-R3**（§13.1 / V32-17）交付验收：T14 独占 `POST /v32/records/:workItemId/deliver`；`ready_for_acceptance→accepted→delivered`（先 accepted 再 delivered，逐次写事件）；V32-17 只要求「产物、测试、风险和人工验收记录可追溯」，因此 `deliveryRecord` 是**实现载体**（建议含 artifacts/tests/risks/acceptedBy/acceptedAt），断言落在可追溯链与审计事件上，**不把固定字段模板或 `V32_DELIVERY_INCOMPLETE` 当规格要求**。
   - **T14-R4** 需求详情产物卡片：展示本 WorkItem 全部 Artifact（名称/ID/类型/节点/Task/Employee/CLI/Attempt/Handoff）与「溯源」入口。
   - **T14-R5**（P16）记录页：产物表、事件时间线（结构化表格：时间/类型/对象/操作者/载荷摘要）、审计链校验状态；支持按 WorkItem 过滤。
   - **T14-R6** 事件/审计只读；不得提供删除入口；哈希链校验失败时页面显示明确告警。
@@ -912,7 +943,7 @@ node scripts/desktop/gate.mjs --skip-tests
   - **T16-R4** 零 CJK：V3.2 新增源码（含注释）用 `python3 -c` 正则 `[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]` 扫描为 0；变量不得叫 `editor`（31 词禁表，按整词扫）；分隔符用空格或 `·`。
   - **T16-R5** 输入控件带 `data-field`；动作在 `pointerdown` 响应且同时派发 `click`（600ms 去重窗口）；导航锚点唯一化（`.sidebar [data-section=…]` / `.secbar .sec-tab[data-tab=…]`）。
   - **T16-R6** `updateStudio` 类 mutator 返回 `{ok:true,value:{...}}`，只透传 `.value`；`atomicWrite` 异步需 await。
-  - **T16-R7** 组织页不再是 iframe 内另一套视觉：V3.2 页面直接使用主壳标签栏与样式（原型中此问题为已知遗留，实现时纠正）。
+  - **T16-R7** 页面视觉统一：V3.2 页面直接使用主壳标签栏与样式；规格 §11 要求 9 组一级导航在同一信息架构下，不得出现 iframe 内另一套视觉。
   - **T16-R8** `test/wp13/v32-shell.test.js`：从导航进入 9 个分组、页面渲染非空、动作可触发、`data-field` 存在；旧 5 组与历史 view 深链仍可进入。
   - **T16-R9** 9 组导航扩展必须同步更新所有冻结断言（尤其 `test/wp13/labels-desktop.test.js` 的键总数与值表）；新增键只追加，既有键值逐字不变；若某旧测试无法在不放松断言的前提下兼容，报告 `BLOCKED` 由主线裁决。
   - **T16-R10** `PAGE_BY_VIEW` 新增 view 后，`fallbackPage` 不得被误用；未装载数据时页面显示明确的 loading/empty 状态，不能白屏。
@@ -1004,26 +1035,30 @@ python3 -c 'import re,pathlib,sys; roots=[pathlib.Path("src/v32"),pathlib.Path("
 
 ---
 
-## 附录 A：原型函数 → 实现落点
+## 附录 A：原型交互参考 → 实现落点（非需求来源）
 
-| 原型函数（docs/maestro_v3_2_prototype.html） | 实现任务 |
-|---|---|
-| `scanPage` / `scanCli` / `checkCli` / `addCliPath` / `confirmAddCli` | T02 |
-| `workItemsPage` / `openWorkItem` / `workItemDetail` / `startRun` / `cancelWorkItem` | T07 |
-| `startWorkItemWizard` / `wizardWorkflow` / `wizardTeam` / `wizardNext` / `wizardBack` / `createWorkItem` / `preflightWizard` / `changeWizardMode` / `changeWizardAsset` / `readWizardTeam` | T07 |
-| `showExecutionPlan` / `reviseExecutionPlan` / `saveExecRevision` / `showRunHistory` | T11 |
-| `showWizardNodeDesigner` / `saveWizardNodes` / `parallelPairs` / `parallelConflicts` / `eligibleMembers` | T08 + T06 |
-| `teamsPage` / `editTeam` / `toggleTeamRoleBox` / `saveTeam` / `copyTeam` / `deprecateTeam` / `showTeamVersions` | T05 |
-| `workflowsPage` / `editWorkflow` / `wfGraphEditor` / `graphAddNode` / `graphAddEdge` / `graphAutoLayout` / `checkWorkflowDag` / `saveWorkflow` / `publishWorkflow` / `showWorkflowDag` | T06 |
-| `employeesPage` / `newEmployee` / `saveEmployee` / `editEmployeeProfile` / `saveEmployeeProfile` / `employeeDetail` | T04 |
-| `rolesPage` / `roleDetail` / `editRole` / `createRole` / `saveRole` | T03 |
-| `runsPage` / `openRun` / `runRuntimeCards` / `runDetail` / `setRunTab` | T11 |
-| `taskActionBtn` / `assignTask` / `cliCapsHtml` / `saveTaskAssignment` / `reassignTask` / `confirmQueue` / `drainQueue` / `startTask` | T09 |
-| `sessionExplain` / `activityPanel` / `taskDetail` | T10 + T11 |
-| `completeTask` / `unlockDownstream` / `interruptTask` / `resumeTask` / `failResume` / `confirmResume` / `pauseRun` / `continueRun` | T11 + T12 |
-| `approveHumanTask` | T13 |
-| `openDelivery` / `confirmDelivery` / `artifactTrace` / `showEvents` / `setRecordsTab` / `recordsPage` / `runAcceptanceCheck` | T14 |
-| `settingsPage` / `saveSettings` / `nav` / `render` | T16 |
+> 本表只帮助实现者找到「原型里某个交互对应哪个任务」，**不构成需求**。行为规则以规格正文（§/P/V32 编号）为准，冲突时以规格为准（§0.9）。
+
+| 原型交互（docs/maestro_v3_2_prototype.html） | 实现任务 | 规则依据（规格正文） |
+|---|---|---|
+| `scanPage` / `scanCli` / `checkCli` / `addCliPath` / `confirmAddCli` | T02 | §7.1 / P00 |
+| `workItemsPage` / `openWorkItem` / `workItemDetail` / `startRun` / `cancelWorkItem` | T07 | §5.1 / §13.1 / P01 / P03 |
+| `startWorkItemWizard` / `wizardWorkflow` / `wizardTeam` / `wizardNext` / `wizardBack` / `createWorkItem` / `preflightWizard` / `changeWizardMode` / `changeWizardAsset` / `readWizardTeam` | T07 | §5.2 / §5.3 / §14-1 / P02 |
+| `showExecutionPlan` / `reviseExecutionPlan` / `saveExecRevision` / `showRunHistory` | T11 | §2.1-10 / §14-4 / P03 |
+| `showWizardNodeDesigner` / `saveWizardNodes` / `parallelPairs` / `parallelConflicts` / `eligibleMembers` | T08 + T06 | §6.1–§6.3 / §14-2 / P02-4 |
+| `teamsPage` / `editTeam` / `toggleTeamRoleBox` / `saveTeam` / `copyTeam` / `deprecateTeam` / `showTeamVersions` | T05 | §3.1–§3.3 / §13.2 / P04 / P05 |
+| `workflowsPage` / `editWorkflow` / `wfGraphEditor` / `graphAddNode` / `graphAddEdge` / `graphAutoLayout` / `checkWorkflowDag` / `saveWorkflow` / `publishWorkflow` / `showWorkflowDag` | T06 | §4.1–§4.4 / §13.3 / P06 / P07 |
+| `employeesPage` / `newEmployee` / `saveEmployee` / `editEmployeeProfile` / `saveEmployeeProfile` / `employeeDetail` | T04 | §1.1 / §8.1 / P08 |
+| `rolesPage` / `roleDetail` / `editRole` / `createRole` / `saveRole` | T03 | §1.1 / P09 |
+| `runsPage` / `openRun` / `runRuntimeCards` / `runDetail` / `setRunTab` | T11 | §10 链路 C / §13.4 / P10 |
+| `taskActionBtn` / `assignTask` / `cliCapsHtml` / `saveTaskAssignment` / `reassignTask` / `confirmQueue` / `drainQueue` / `startTask` | T09 | §7.2 / §7.3 / §13.5 / §14-2 / P12 |
+| `sessionExplain` / `activityPanel` / `taskDetail` | T10 + T11 | §8.1–§8.4 / P13 / P14 |
+| `completeTask` / `unlockDownstream` / `interruptTask` / `resumeTask` / `failResume` / `confirmResume` / `pauseRun` / `continueRun` | T11 + T12 | §9 / §13.4 / P15 |
+| `approveHumanTask` | T13 | §4.3 / P07 / P16 |
+| `openDelivery` / `confirmDelivery` / `artifactTrace` / `showEvents` / `setRecordsTab` / `recordsPage` / `runAcceptanceCheck` | T14 | §12 P16 / §16 V32-17 |
+| `settingsPage` / `saveSettings` / `nav` / `render` | T16 | §11 / P00 设置项 |
+
+> 对照方法：先看右列规格条文确认需求，再回看左列原型交互确定页面形态；两者冲突时按 §0.9 以规格为准。原型函数名称来自 `docs/maestro_v3_2_prototype.html`，未纳入本规划文件所有权，任何任务都不得为了「对齐原型」而修改它。
 
 ## 附录 B：已知坑位速查（来自本仓库历史）
 
