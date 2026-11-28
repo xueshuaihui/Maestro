@@ -3,6 +3,7 @@
 > 生成时间：2026-11-28
 > 版本：v2（同日按真实代码审核修订；修订记录见 §0.8）
 > 版本：v3（纠正需求权威层级：规格正文为准，原型仅为交互与演示参考；见 §0.9）
+> 版本：v4（补充双机运行时认领台账与主 Agent / 干净开发子 Agent / 干净审核 Agent 质量闭环；见 §0.11）
 > 原型提交：`0551b9e`（已合入本地 `main`）
 > 任务基线：**本规划合入后的 `main` HEAD**（由 T00 在开工前公布并推送到 `origin/main`）
 > **需求权威（唯一）**：`docs/index.md`（V3.2 正文，L80–L744）与 `docs/maestro_v3_2_page_spec.md`（§1–§17）。业务对象、状态机、异常边界、验收标准一律以这两份规格正文为准。
@@ -45,12 +46,13 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 
 | 步骤 | 动作 | 硬性要求 |
 |---|---|---|
-| 1 | 领取与建分支 | `git fetch origin` → `git switch main` → `git pull --ff-only origin main` → `git switch -c feature/v32-TXX-<slug> origin/main`；确认 `git rev-parse HEAD` 等于 §0.2 公布的基线（或已合入的前序任务 sha） |
-| 2 | 读规格 | **先读**本任务 REQ 标注的规格章节（`index.md` / `page_spec.md` 的 §/P/V32 编号），逐条转成实现清单；**再**看原型对应交互（附录 A）理解页面形态。REQ 与原型演示不一致时以规格为准，并在报告记录差异 |
-| 3 | 实现 | 只改「文件所有权」列出的路径；共享文件按 §1.2 归唯一任务所有 |
-| 4 | 自测 | 写任务专属单测（文件名见任务详情），运行「验证清单」的命令；**不得删断言/降阈值** |
+| 1 | **认领** + 建分支 | **先按 §0.11 读共享台账、判定任务状态并原子认领；未认领禁止开工**；认领成功后才 `git fetch origin` → `git switch main` → `git pull --ff-only origin main` → `git switch -c feature/v32-TXX-<slug> origin/main`；确认 `git rev-parse HEAD` 等于 §0.2 公布的基线（或已合入的前序任务 sha） |
+| 2 | 读规格 | 由主 Agent 把本任务 REQ 标注的规格章节（`index.md` / `page_spec.md` 的 §/P/V32 编号）封进**干净子 Agent** 的 prompt，逐条转成实现清单；**再**看原型对应交互（附录 A）理解页面形态。REQ 与原型演示不一致时以规格为准，并在报告记录差异 |
+| 3 | 实现 | **只由新创建的干净开发子 Agent 执行**（§0.11.5），主 Agent 不直接写产品代码；只改「文件所有权」列出的路径；共享文件按 §1.2 归唯一任务所有 |
+| 4 | 自测 | 开发子 Agent 写任务专属单测（文件名见任务详情），运行「验证清单」的命令；**不得删断言/降阈值** |
 | 5 | 失败循环 | 按 §0.5 分类、修复、复跑，直到本任务全部验证项通过 |
-| 6 | 报告 + 提交 | 先写 `docs/v32/reports/TXX.md`（模板见 §0.6），再 `git add <仅本任务文件 + 报告>` → `git commit -m "feat(v32): TXX <标题>"`；不 `--amend` 已合入提交 |
+| 5b | **独立审核循环** | 开发子 Agent 报完成后，主 Agent **另建一个干净审核 Agent**（不继承开发上下文），按 §0.11.5–§0.11.6 审核；有阻塞性问题就派修复、再审核，循环到审核结论为「无阻塞项 / PASS」，否则不得提交 |
+| 6 | 报告 + 提交 | 审核 PASS 后才写 `docs/v32/reports/TXX.md`（模板见 §0.6），再 `git add <仅本任务文件 + 报告 + 自己的认领台账文件>` → `git commit -m "feat(v32): TXX <标题>"`；不 `--amend` 已合入提交 |
 | 7 | 合入 main | `git fetch origin` → `git rebase origin/main` → **更新报告 `headSha` 并 fixup/ Amend 到本任务提交（仅限未合入的 feature 提交）** → 复跑验证 → `git switch main && git merge --ff-only feature/v32-TXX-<slug>` → `git push origin main` |
 | 8 | push 竞争恢复 | 若 push 被对方抢先导致非 ff：`git fetch origin && git switch main && git reset --hard origin/main && git merge --ff-only feature/v32-TXX-<slug> && git push origin main`；`reset --hard` 仅限本地 main 且已确认功能提交保存在 feature 分支；禁止 force |
 | 9 | 合入后核验 | 在 main 上 `git log --oneline -1` 确认是自己的合入；报告中的 `headSha` 应与该提交一致，只读核验即可，不再改报告 |
@@ -59,8 +61,9 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 
 ### 0.4 双机并行与冲突避免
 
-- 机器 A、机器 B 各自只认领「排程表」中分配给自己的任务；同一波次内两机文件集合**互斥**（见 §1.2）。
+- 机器 A、机器 B 的**运行时认领状态以 §0.11 的共享台账为唯一真相**，§3.1 排程表只是静态建议；同一波次内两机文件集合**互斥**（见 §1.2）。
 - 每个任务有**独占文件所有权**；若实现中发现必须改他人文件，停下来在报告中写 `BLOCKED`，由主线负责人裁决，不自行越界。
+- 两台机器都必须走同一套「读台账 → 认领 → 干净开发子 Agent → 干净审核 Agent → 循环到无阻塞项 → 提交合入 → 更新台账」流程（§0.11）；**不允许任一机器跳过认领或审核**。
 - 同步点（§3.2）：每完成一个波次，两机都 `git fetch`，确认 main 已包含对方任务；跨模块的集成断言在同步点补，不提前写死对方尚未实现的行为。
 - 所有任务以 §1.3 契约为准并行开发；**任何任务不得自行追加** `src/v32/contracts.js`（T01 独占）。契约字段不够用时统一按 §5.3 写 `BLOCKED`，由主线负责人裁决；禁止各自加私有字段。
 
@@ -82,7 +85,9 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 - branchPointSha: <实际建分支点；落后 origin/main 时先 rebase 并记录新的 branchPointSha>
 - headSha: <rebase 后、合入前的本任务提交 sha>
 - 机器 / 任务窗口: A | B
+- 认领记录: claimedAt=<ISO 时间> / branch=<分支名> / 台账=<claims/machine-X.json>（§0.11）
 - 需求逐条结论: TXX-R1 PASS / TXX-R2 PASS / ...（FAIL 需写原因与修复轮次）
+- 审核循环: 共 N 轮；每轮 verdict=<PASS|FAIL> + 阻塞项数；FAIL 项逐条写修复方式
 - 验证命令与结果: 命令原文 + 关键摘要行 + 失败集合差集结论
 - 证据分级: 已实测（真实宿主） / mock 实测 / 阻塞（三选一，附可复核原始帧路径）
 - 已知偏差 / 未覆盖: 无则写「无」
@@ -182,6 +187,119 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 | 口径 | 附录 A 保留原型 `pauseRun`/`continueRun`；T08-R4 要求显式选继承 | 标注「不实现」，按 §9 中断恢复表达；改默认沿用检查点与产物引用 |
 | 口径 | §2.1 三处交叉引用错位、`preferred` 笔误、`index.md` 行数写成 L745 | 逐项修正 |
 
+---
+
+### 0.11 双机任务认领与质量关卡（两台机器必须同时遵守）
+
+**起因**：§3.1 的波次表是静态建议，不是运行时真相。两台机器可能一快一慢、抢同一个任务、误判对方已完成，或者自己写代码自己审核而放过大问题。因此把「认领 + 分层 Agent 审核」升级为每台机器每个新任务的**强制入口**，两边完全一致，不允许一边做一边不做。
+
+#### 0.11.1 任务状态（运行时唯一口径）
+
+| 状态 | 含义 | 判定依据（按优先级） |
+|---|---|---|
+| `available` | 可认领 | 两台机器的台账都无该任务的活跃条目 **且** `origin/main` 上不存在 `docs/v32/reports/TXX.md` **且** 前置依赖任务已是 `done` |
+| `claimed` | 已认领、开发中 | 某台机器台账里 `phase: developing`，且该机器条目未释放 |
+| `reviewing` | 开发完成、审核中 | 台账 `phase: reviewing`，审核 Agent 尚未给出「无阻塞项 / PASS」 |
+| `done` | 已完成 | 台账 `phase: done` **且** `origin/main` 含该任务报告 **且** 报告 `headSha` 是 `origin/main` 的祖先；三者缺一不可 |
+| `blocked` | 阻塞 | 台账 `phase: blocked`，必须写明 `note`（原因 + 待谁裁决），由主线负责人处理 |
+
+> `done` 不能只看报告文件存在：报告可能已在 feature 分支而未合入。**必须**用 `git merge-base --is-ancestor <报告headSha> origin/main` 验证。
+
+#### 0.11.2 共享认领台账（每机只写自己的文件）
+
+路径：`docs/v32/claims/machine-A.json`、`docs/v32/claims/machine-B.json`。由 T00-R0-2b 初始化为两个空文件，各自只由对应机器写入，**禁止修改对方的台账文件**（这正是避免两台机器并发写同一文件产生 merge conflict 的关键）。
+
+```json
+{
+  "machine": "A",
+  "updatedAt": "2026-11-28T15:00:00.000Z",
+  "claims": [
+    {
+      "task": "T02",
+      "phase": "developing",
+      "branch": "feature/v32-T02-cli-pool",
+      "claimedAt": "2026-11-28T14:55:00.000Z",
+      "reviewRounds": 0,
+      "lastReview": null,
+      "note": ""
+    }
+  ]
+}
+```
+
+字段约束：`phase` 只能取 `developing | reviewing | done | blocked`；`reviewRounds` 每完成一次审核 +1；`lastReview` 记 `{verdict, blockingCount, at}`；`note` 在 `blocked` 时必填。**同一台机器同一时刻最多 1 条 `developing`/`reviewing` 记录**——避免主 Agent 同时派多个子 Agent 触发平台限流，也保证审核 Agent 不与开发 Agent 抢资源；做完一个并合入后，再认领下一个。
+
+#### 0.11.3 认领协议（每个新任务开始前逐条执行）
+
+1. `git fetch origin` → `git switch main` → `git pull --ff-only origin main`，确保看到对方最新提交。
+2. **读全量状态**：合并读取两份台账 + `git ls-tree -r --name-only origin/main docs/v32/reports/`（已合入报告）+ `git merge-base --is-ancestor` 复核每个报告的 headSha，得到 §0.11.1 的全局状态表。速查命令：
+
+   ```bash
+   # 两台机器的认领视图（合并看 phase）
+   node -e 'const fs=require("fs");for(const m of ["A","B"]){const j=JSON.parse(fs.readFileSync(`docs/v32/claims/machine-${m}.json`,"utf8"));console.log(m,JSON.stringify(j.claims))}'
+   # origin/main 上已存在的报告（才可能是 done）
+   git ls-tree -r --name-only origin/main docs/v32/reports/
+   # 逐个复核报告的 headSha 是否真的合入（TXX 换成任务号）
+   node -e 'const fs=require("fs"),cp=require("child_process");const md=fs.readFileSync(process.argv[1],"utf8");const m=md.match(/headSha:\s*([0-9a-f]{7,40})/);if(!m)throw Error("headSha missing");const ok=cp.spawnSync("git",["merge-base","--is-ancestor",m[1],"origin/main"]).status===0;console.log(process.argv[1],m[1],ok?"MERGED":"NOT-MERGED")' docs/v32/reports/T02.md
+   ```
+3. **选任务**：优先选 §3.1 分配给本机且状态为 `available` 的任务；若自己排程里的任务已被对方认领/完成，**不得重做**，顺延到下一个 `available` 任务并在自己的 `note` 写明「按台账顺延」。若本机已有活跃任务，先完成它再认领。
+4. **原子认领**：只在自己的 `claims/machine-X.json` 追加/更新条目，`phase: developing`，`claimedAt` 取当前 ISO 时间；`git add docs/v32/claims/machine-X.json` → `git commit -m "chore(v32): claim TXX on machine X"` → `git push origin main`。**这是唯一允许直接在 `main` 上提交的例外**：只提交自己的台账文件，绝不夹带产品代码或测试（§0.3 的「禁止在 main 上直接改代码」对其余文件仍然有效）。认领提交会随后续 `git switch -c feature/v32-TXX-<slug> origin/main` 一起进入功能分支。
+5. **push 冲突恢复**：若 push 被拒（非 ff），`git fetch origin` 后回到步骤 2 重新判定；发现该任务已被对方认领则立即放弃并换任务，禁止强行覆盖或直接开工。
+6. 认领成功后才执行 §0.3 step 1 中的建分支命令；报告提交时把认领台账的 `phase` 更新为 `done` 一并提交（见 §0.11.7）。
+
+**禁止**：不读台账直接开工；修改对方台账文件；同一任务两台机器同时开发；认领后跨波次无进展却不释放（写 `note` 并改回 `available` 后由对方或本机重新认领）。
+
+#### 0.11.4 主 Agent 的职责边界
+
+每台机器的主 Agent 是**质量把控与进度把控者**，不是实现者：
+
+- **做**：读台账认领、读规格拆 REQ、创建并派发干净子 Agent、跟踪进度、运行审核循环、裁决阻塞、执行提交与合入、更新台账。
+- **不做**：直接写/改产品代码或测试；跳过审核自己给 PASS；在审核 PASS 之前把台账写成 `done`（PASS 之后的写入与读取复核规则见 §0.11.7）。
+- **上下文纪律**：每个任务**新开一个干净的开发子 Agent**，其 prompt 必须自包含——任务 REQ 清单、规格章节引用、§1.2 文件所有权、验证清单命令、§0.7 红线、§0.9 权威层级；不得依赖主 Agent 的隐含上下文。审核 Agent 也必须是新的干净上下文，不继承开发过程。
+- **限流**：同一时刻主 Agent 只维持「1 个开发子 Agent 或 1 个审核子 Agent」活跃，不同时派多个大 Agent（平台限流历史教训）。
+
+#### 0.11.5 开发 → 审核 → 修复循环
+
+```
+认领成功
+  → 主 Agent 创建干净【开发子 Agent】，按 §0.3 step 2–5 实现并自测
+  → 开发子 Agent 报完成（附 REQ 逐条结论 + 验证输出）
+  → 主 Agent 创建新的干净【审核子 Agent】（不继承开发上下文）
+  → 审核 Agent 按 §0.11.6 输出 PASS / FAIL + 阻塞项清单
+       ├─ PASS（无阻塞项）→ 进入 §0.3 step 6–7 报告、提交、合入
+       └─ FAIL → 主 Agent 把阻塞项作为修复任务派回（优先复用开发子 Agent 保留实现上下文；
+                  连续两轮同类 FAIL 则重建干净子 Agent 重做该项），
+                  修完再新建审核 Agent → 循环直到无阻塞项
+```
+
+- 非阻塞建议（命名、注释、可选优化）记入报告「已知偏差」，**不阻塞**合入；阻塞项必须逐条修复并复验。
+- 审核轮次写进台账 `reviewRounds`，报告里写每轮 FAIL 原因与修复方式；**任务只有在审核结论为无阻塞项后才算结束**。
+
+#### 0.11.6 审核 Agent 必查清单（逐条给结论）
+
+| # | 检查项 | 阻塞判定 |
+|---|---|---|
+| 1 | REQ 覆盖：每个 `TXX-Rn` 都有实现落点与验证断言 | 任一 REQ 无落点 → 阻塞 |
+| 2 | 规格权威：状态枚举、字段、异常边界与 `index.md` / `page_spec.md` 正文逐字一致，无原型污染（§0.9） | 不一致 → 阻塞 |
+| 3 | 文件所有权：`git diff --name-only` 只含 §1.2 分配给本任务的路径（含报告与自己的台账） | 越界改他人文件 → 阻塞 |
+| 4 | 验证命令：§0.5 差集口径、测试条数下限、原始帧落盘 `docs/v32/reports/raw/TXX/` | 缺命令/缺证据/新增红 → 阻塞 |
+| 5 | 报告完整性：baseSha / branchPointSha / headSha / 逐条结论 / 证据分级齐全 | 缺项 → 阻塞 |
+| 6 | 红线合规：§0.7 全项（唯一写入口、事件先落盘、零 CJK、测试环境变量等） | 违反 → 阻塞 |
+| 7 | 合入前置：审核 PASS 后才允许提交与合入；报告随功能分支提交 | 顺序错 → 阻塞 |
+
+#### 0.11.7 台账更新时机
+
+| 时机 | 动作 |
+|---|---|
+| 认领成功（§0.11.3 step 4） | 写 `phase: developing`、`claimedAt`、`branch` |
+| 开发子 Agent 报完成、送审 | 写 `phase: reviewing`，`reviewRounds +1` |
+| 每轮审核出结论 | 写 `lastReview: {verdict, blockingCount, at}`；FAIL 则继续循环 |
+| 审核 PASS 且报告/功能提交已推送 | 随功能提交把 `phase` 更新为 `done`、`lastReview.verdict` 写 `PASS`（§0.3 step 7 是 ff-only 合入，提交 sha 会成为 main 上的 `headSha`） |
+| 合入 main 后 | 主 Agent 只读复核 `git merge-base --is-ancestor <headSha> origin/main`；若失败，在自己的台账写 `phase: blocked` 并说明 |
+| 其它机器读取时 | **不信任台账里的 `done` 字面值**，按 §0.11.1 复核三条件；`headSha` 不是 `origin/main` 祖先时按 `reviewing` 对待，在自己台账 `note` 记录提醒（禁止改对方文件），必要时报主线负责人 |
+| 遇阻塞/放弃 | 写 `phase: blocked` 或释放为 `available`，`note` 必填 |
+
+§3.2 同步点时两台机器都重新执行 §0.11.3 step 2 的全量状态读取，用台账交叉核对「对方任务是否真的合入」，不能只看本地分支或对方台账里的 `done` 字面值。
 
 ---
 
@@ -202,7 +320,7 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 
 | 所有者 | 独占路径（其它任务禁止修改） |
 |---|---|
-| T00 | `docs/iterations/iteration-7/baseline-failures.txt`、`docs/iterations/iteration-10a/baseline-failures-win32.txt`（仅从 `7b71cd4` 恢复，不得改写内容）、`docs/v32/reports/` 占位 |
+| T00 | `docs/iterations/iteration-7/baseline-failures.txt`、`docs/iterations/iteration-10a/baseline-failures-win32.txt`（仅从 `7b71cd4` 恢复，不得改写内容）、`docs/v32/reports/` 占位、`docs/v32/claims/machine-A.json`、`docs/v32/claims/machine-B.json`（仅初始化为空台账；运行期各机只写自己的文件，见 §0.11.2） |
 | T01 | `src/v32/contracts.js`、`ids.js`、`errors.js`、`store.js`、`events.js`、`audit.js`、`index.js`（骨架）、`test/wp21/v32-contracts.test.js`、`v32-store.test.js`、`v32-events.test.js`、`test/wp21/fixtures/v32-*.json` |
 | T02 | `src/v32/cli-pool.js`、`src/daemon/http/v32/cli-routes.js`、`desktop/ui/v32/cli-page.js`、`test/wp21/v32-cli-pool.test.js` |
 | T03 | `src/v32/roles.js`、`src/daemon/http/v32/roles-routes.js`、`desktop/ui/v32/roles-page.js`、`test/wp21/v32-roles.test.js` |
@@ -221,7 +339,9 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 | T16 | `desktop/ui/shell/nav.js`、`shell/index.js`、`shell/chrome.js`、`shell/pages.js`、`desktop/ui/app.js`、`desktop/ui/v32/index.js`、`desktop/ui/v32/v32.css`、`desktop/ui/index.html`（加 `<link>`）、`src/daemon/http/labels.js`、`src/cli/labels.js`、`scripts/verify-v32-ui.mjs`、`test/wp21/v32-labels.test.js`、`test/wp13/v32-shell.test.js`、`test/wp13/labels-desktop.test.js`（仅 append 键与值）、`scripts/verify-nav.mjs`、`scripts/verify-scenarios.mjs`、`scripts/verify-desktop-boot.mjs`（仅把「恰好 5 段」改为「原有 5 段仍可进入 + 新增 4 段可进入」） |
 | T17 | `scripts/verify-v32.mjs`、`test/wp21/v32-acceptance.test.js`、`package.json`（只加 `verify:v32` script）、`docs/v32/reports/acceptance.md` |
 | T18 | `docs/v32/reports/final-verification.md`（不新增源码；只做全量回归与门禁复跑） |
-| 主线负责人 | `docs/maestro_v3_2_implementation_plan.md`（本文档，只读）、`.workbuddy/memory/**`、分支合并裁决 |
+| 主线负责人 | `docs/maestro_v3_2_implementation_plan.md`（本文档，只读）、`.workbuddy/memory/**`、分支合并裁决、阻塞升级裁决（§5.3） |
+| 机器 A 主 Agent | `docs/v32/claims/machine-A.json`（独占写）；其认领任务的 `docs/v32/reports/raw/TXX/`（取证，随任务报告提交） |
+| 机器 B 主 Agent | `docs/v32/claims/machine-B.json`（独占写）；其认领任务的 `docs/v32/reports/raw/TXX/`（取证，随任务报告提交） |
 
 **共享但只读的既有模块**（任何任务都不得修改）：`src/core/**`、`src/persistence/**`、`src/adapter/cli-discovery/**`、`src/daemon/server.js`、`src/templates/**`、`scripts/desktop/gate.mjs`。若确需改动，写入报告 `BLOCKED` 交给主线负责人。
 
@@ -623,6 +743,8 @@ export function createBridge({ root, store, now }) {
 | W5 接入 | T15 路由聚合 | T16 桌面壳与文案 | `/v32/*` 全通；桌面可从导航进入全部 V3.2 页面 |
 | W6 收口 | T17 17 条验收自动化 | T18 全量回归与门禁 | 17/17 通过；差集 0；门禁 exit 0 |
 
+> **本表是静态建议，不是认领结果**：每次开工前必须按 §0.11.3 读共享台账判定实际状态（已认领 / 已完成 / 可认领）；若分配给自己机器的任务已被对方认领或完成，顺延到下一个 `available` 任务，禁止重复实现。两台机器执行同一套认领与审核流程。
+>
 > W3b 的 T12 与 T11 并行开发时，只能依赖 T01 契约 + `test/wp21/fixtures/v32-run.json` 假数据；不得提前引用 T11 未合入的函数签名。
 
 ### 3.2 同步点检查（每个波次结束执行）
@@ -657,14 +779,23 @@ node scripts/desktop/gate.mjs --skip-tests
     git commit -m "chore(v32): 恢复门禁基线文件"
     ```
   - **R0-2** 建 `docs/v32/reports/` 目录占位。
-  - **R0-3** 确认本地 `main` 已含本规划与 R0-1 提交，推送 `main` 到 `origin/main`。
+  - **R0-2b** 初始化 §0.11 的双机共享认领台账（**必须在 R0-4 公布 baseSha 之前**，否则两台机器开工时读不到台账）：
+    ```bash
+    mkdir -p docs/v32/claims
+    printf '{"machine":"A","updatedAt":"","claims":[]}\n' > docs/v32/claims/machine-A.json
+    printf '{"machine":"B","updatedAt":"","claims":[]}\n' > docs/v32/claims/machine-B.json
+    git add docs/v32/claims/
+    git commit -m "chore(v32): 初始化双机认领台账"
+    ```
+  - **R0-3** 确认本地 `main` 已含本规划、R0-1 与 R0-2b 提交，推送 `main` 到 `origin/main`。
   - **R0-4** `git rev-parse HEAD`，公布此时的 HEAD 作为**唯一 `baseSha`**（必须已包含 R0-1 的基线恢复提交）。
 - **验证**：
   - `git rev-parse origin/main` 与公布的 `baseSha` 一致。
   - `node scripts/desktop/gate.mjs --skip-tests` exit 0（**注意**：`--skip-tests` 分支不读基线文件，通过不代表全量门禁可跑）。
   - 只读探针（必须执行）：`node -e "const fs=require('fs');['docs/iterations/iteration-7/baseline-failures.txt','docs/iterations/iteration-10a/baseline-failures-win32.txt'].forEach(f=>{if(!fs.readFileSync(f,'utf8').trim())throw Error(f+' empty')});console.log('baselines readable')"`。
   - `test -s docs/iterations/iteration-7/baseline-failures.txt` 且行数与 `git show 7b71cd4:docs/iterations/iteration-7/baseline-failures.txt | wc -l` 一致。
-- **完成**：两台机器都能从该 sha 建分支；两份基线文件已在 `origin/main` 上且只读探针通过。全量门禁首次可跑在 T01 合入后的同步点复验。
+  - 台账只读探针（必须执行）：`node -e "const fs=require('fs');['A','B'].forEach(m=>{const p='docs/v32/claims/machine-'+m+'.json';const j=JSON.parse(fs.readFileSync(p,'utf8'));if(j.machine!==m||j.claims.length!==0)throw Error(p+' invalid')});console.log('claims ready')"`。
+- **完成**：两台机器都能从该 sha 建分支；两份基线文件已在 `origin/main` 上且只读探针通过；两份空台账已推送，可供 §0.11.3 读取。全量门禁首次可跑在 T01 合入后的同步点复验。
 
 ---
 
@@ -1060,8 +1191,9 @@ python3 -c 'import re,pathlib,sys; roots=[pathlib.Path("src/v32"),pathlib.Path("
 2. 17 条验收用例全部由真实 API / 状态驱动通过，不是页面文案检查。
 3. P00–P16 在桌面壳内可从导航进入并操作，无 iframe 内第二套视觉。
 4. 全量失败集合差集 = 0；新增红 = 0；门禁 exit 0；T00-R4 的两份基线文件存在且未被改写。
-5. `docs/v32/reports/T01.md` ～ `T18.md` 全部存在且含 baseSha / headSha / 验证结果。
-6. 每台机器确认自己分支已合入且无遗留 WIP。
+5. `docs/v32/reports/T01.md` ～ `T18.md` 全部存在且含 baseSha / headSha / 验证结果 / 认领记录 / 审核轮次。
+6. 每个任务都按 §0.11 完成认领，并经干净审核 Agent 审核 PASS（无阻塞项）后才提交；台账中所有任务 `phase: done` 且 `headSha` 均为 `origin/main` 祖先。
+7. 每台机器确认自己分支已合入且无遗留 WIP，两份认领台账无活跃 `developing` / `reviewing` 条目。
 
 ### 5.3 阻塞升级规则
 
@@ -1072,6 +1204,8 @@ python3 -c 'import re,pathlib,sys; roots=[pathlib.Path("src/v32"),pathlib.Path("
 - 新增 npm 依赖才能完成。
 - 前序任务未合入导致无法验证，且等待超过一个同步点。
 - 全量回归出现新增红且独占复跑仍红。
+- 审核 Agent 连续两轮给出同类阻塞项，且按 §0.11.5 重建干净子 Agent 后仍 FAIL。
+- 认领台账与 main 实际状态冲突（两机都声称同一任务 `done`，或报告的 `headSha` 不是 `origin/main` 祖先）。
 
 ---
 
