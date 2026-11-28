@@ -1,14 +1,19 @@
 {
   "machine": "B",
-  "updatedAt": "2026-11-28T09:00:00.000Z",
+  "updatedAt": "2026-11-28T09:25:00.000Z",
   "claims": [
     {
       "task": "T19",
-      "phase": "developing",
+      "phase": "done",
       "branch": "feature/org-T19-rename",
       "claimedAt": "2026-11-28T09:00:00.000Z",
-      "reviewRounds": 0,
-      "note": "global rename v32->org (dirs, routes, tests, fixtures, ledger dir, label keys, error codes, branch prefix); spec case IDs V32-01~17 kept"
+      "reviewRounds": 2,
+      "note": "global rename v32->org; round1 FAIL camelCase leftovers (createV32Store/createV32CliRoutes/errors msg), fixed in 269c60c; round2 PASS; spec case IDs V32-01~17 kept",
+      "lastReview": {
+        "verdict": "PASS",
+        "blockingCount": 0,
+        "at": "2026-11-28T09:22:00.000Z"
+      }
     }
   ]
 }
