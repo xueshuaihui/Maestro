@@ -1,6 +1,6 @@
 {
   "machine": "A",
-  "updatedAt": "2026-11-28T08:38:52.000Z",
+  "updatedAt": "2026-11-28T17:50:24.000Z",
   "claims": [
     {
       "task": "T01",
@@ -27,6 +27,14 @@
         "at": "2026-11-28T08:38:52.000Z"
       },
       "note": "round1 FAIL unused label keys; fixed in dev round; round2 PASS"
+    },
+    {
+      "task": "T03",
+      "phase": "developing",
+      "branch": "feature/org-T03-roles",
+      "claimedAt": "2026-11-28T17:50:24.000Z",
+      "reviewRounds": 0,
+      "note": "W1 Role library (P09); dependency T01 done on main; T04/T06 owned by machine B"
     }
   ]
 }
