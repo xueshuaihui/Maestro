@@ -1,6 +1,7 @@
 # Maestro V3.2 实现任务拆分规划（双机并行版）
 
 > 生成时间：2026-11-28
+> 版本：v2（同日按真实代码审核修订；修订记录见 §0.8）
 > 原型提交：`0551b9e`（已合入本地 `main`）
 > 任务基线：**本规划合入后的 `main` HEAD**（由 T00 在开工前公布并推送到 `origin/main`）
 > 需求来源：`docs/index.md`（V3.2 口径，L80–L745）、`docs/maestro_v3_2_page_spec.md`（P00–P16 / §3–§9 / §13 / §16）
@@ -45,9 +46,9 @@ git rev-parse HEAD                      # 两台机器都应从此 sha 建分支
 | 3 | 实现 | 只改「文件所有权」列出的路径；共享文件按 §1.2 归唯一任务所有 |
 | 4 | 自测 | 写任务专属单测（文件名见任务详情），运行「验证清单」的命令；**不得删断言/降阈值** |
 | 5 | 失败循环 | 按 §0.5 分类、修复、复跑，直到本任务全部验证项通过 |
-| 6 | 提交 | `git add <仅本任务文件>` → `git commit -m "feat(v32): TXX <标题>"`；不 `--amend` 已合入提交 |
-| 7 | 合入 main | `git fetch origin` → `git rebase origin/main` → 复跑验证 → `git switch main && git merge --ff-only feature/v32-TXX-<slug>` → `git push origin main` |
-| 8 | 报告 | 写 `docs/v32/reports/TXX.md`（模板见 §0.6），再提交该报告（同一提交或紧随其后的独立提交均可） |
+| 6 | 报告 + 提交 | 先写 `docs/v32/reports/TXX.md`（模板见 §0.6），再 `git add <仅本任务文件 + 报告>` → `git commit -m "feat(v32): TXX <标题>"`；不 `--amend` 已合入提交 |
+| 7 | 合入 main | `git fetch origin` → `git rebase origin/main` → 复跑验证 → `git switch main && git merge --ff-only feature/v32-TXX-<slug>` → `git push origin main`；若 push 被对方抢先，重新 fetch/rebase 后重试，禁止 force |
+| 8 | 合入后核验 | 在 main 上 `git log --oneline -1` 确认是自己的合入；把最终 `headSha` 补进报告（如需要二次提交，只改报告文件） |
 
 **禁止**：在 `main` 上直接改代码；跨任务改别人的文件；把未验证的代码合入；用 `git push --force`；把验证失败当 flake 上报而不做独占复跑。
 
@@ -96,6 +97,27 @@ git rev-parse HEAD                      # 两台机器都应从此 sha 建分支
 8. 全量命令：`NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/**/*.test.js"`（引号必须保留；`npm test` 会 MODULE_NOT_FOUND）。
 9. 门禁：`node scripts/desktop/gate.mjs`；基线 1157 条、9 条允许失败、测试数只增不减、`dependencies={}`、31 词纯净双扫、版本三处对齐。
 
+### 0.8 本次审核修订记录（先看这里，再执行任务）
+
+审核方式：对照真实源码逐项验证，而不是只看文档结构。以下问题已在本文修订；执行时以修订后的要求为准。
+
+| # | 严重度 | 审核发现（grounded） | 本文修订 |
+|---|---|---|---|
+| 1 | 阻塞 | `docs/iterations` 已被删除；`scripts/desktop/gate.mjs:24,90` 全量模式会 `readFileSync` 缺失的 `iteration-7/baseline-failures.txt` 直接抛错。实测 `gate.mjs --skip-tests` 通过，但全量门禁不可用。 | T00-R4 从 `7b71cd4` 恢复两份基线文件；T18 先验证门禁可跑 |
+| 2 | 阻塞 | `createRoutes` 要求 `orchestrator.startRun`（`src/daemon/http/routes.js:368`）；`http/server.js:263-284` 对路由工厂异常是静默 catch，V32 路由构造期读盘/抛错会让整个 REST 退化 503。 | T15 改为请求期懒初始化 store；构造期零 IO；明确挂载点 |
+| 3 | 阻塞 | `src/adapter/factory.js` 只导出 `createAdapterFactory`，`create()` 内部总是 `newSession`，**不能恢复原 Host Session**；`buildAdapter` 是未导出内部函数。 | T10 改为 `createAdapterFactory` 建新会话；唤醒走 `createStdioTransport + createAcpClient + loadSession`；新增 host profile |
+| 4 | 阻塞 | 现有桌面页面 `render(ctx)` 返回 DOM 节点（`desktop/ui/shell/pages.js` 文件头），不是 HTML 字符串；`buildShellContext`（`app.js:2950`）没有 `api/nav/toast/modal/refresh`。 | 重写 §1.3.3 页面契约；T16 增加 `ctx.v32` 与集中 loader |
+| 5 | 高 | `test/wp13/labels-desktop.test.js:68,495,776` 是**精确键集合**断言；新增 `V32_*` 键必须同时改该测试的清单与值表，否则必红。 | 把该测试加入 T16 独占所有权 |
+| 6 | 高 | 现有 `SECTIONS` 只有 5 组（`desktop/ui/shell/nav.js:22`），规格要求 9 组；直接扩展会撞冻结文案/壳测试。 | T16 明确 9 组扩展、同步测试、保留历史 view ID |
+| 7 | 高 | 并发创建资产/需求时若用「数组长度 + 1」会重号（原型已踩过 ID 跳号/重复）。T01 未定义分配器。 | T01 增加 `nextId(kind)`，只在 `transit` 内原子分配 |
+| 8 | 高 | 只列了状态枚举，没有迁移表；各任务会各写一套迁移判断。 | T01 增加 `TRANSITIONS` + `canTransition/assertTransition` |
+| 9 | 高 | `workflowSnapshot/teamSnapshot` 形状未定义；若存引用，资产改版会污染旧 Work Item。 | T01 定义 `snapshotOf` 深拷贝结构与 ephemeral ID |
+| 10 | 中 | `ready_for_acceptance` 在 T11/T13 重复赋值；`POST /work-items/:id/deliver` 同时出现在 T07/T14 路由表。 | 统一归 T11 / T14，删除重复入口 |
+| 11 | 中 | CLI 的认证状态/健康在现有探测层不一定可得；`fingerprint` 未定义，Assignment 无法固定执行环境。 | T02 增加 `unknown` 语义与 fingerprint 计算规则 |
+| 12 | 中 | 原流程 step 7 合入 main 后 step 8 才写报告，等于在 main 直接提交。 | 报告随功能分支提交，再合入 |
+| 13 | 中 | 部分任务验证命令缺 `NODE_ENV=test`/短 `TMPDIR`，会假红或 socket 失败。 | 统一 §1.4 命令模板 |
+| 14 | 中 | 预检若把「没有可用 CLI」当成创建失败，会与 V32-08「创建时不分配 CLI」混淆。 | T07 明确：预检只查能力覆盖并给错误码，不创建 Assignment |
+
 ---
 
 ## 1. 架构决策与模块边界
@@ -115,22 +137,23 @@ git rev-parse HEAD                      # 两台机器都应从此 sha 建分支
 
 | 所有者 | 独占路径（其它任务禁止修改） |
 |---|---|
+| T00 | `docs/iterations/iteration-7/baseline-failures.txt`、`docs/iterations/iteration-10a/baseline-failures-win32.txt`（仅从 `7b71cd4` 恢复，不得改写内容）、`docs/v32/reports/` 占位 |
 | T01 | `src/v32/contracts.js`、`ids.js`、`errors.js`、`store.js`、`events.js`、`audit.js`、`index.js`（骨架）、`test/wp21/v32-contracts.test.js`、`v32-store.test.js`、`v32-events.test.js`、`test/wp21/fixtures/v32-*.json` |
 | T02 | `src/v32/cli-pool.js`、`src/daemon/http/v32/cli-routes.js`、`desktop/ui/v32/cli-page.js`、`test/wp21/v32-cli-pool.test.js` |
 | T03 | `src/v32/roles.js`、`src/daemon/http/v32/roles-routes.js`、`desktop/ui/v32/roles-page.js`、`test/wp21/v32-roles.test.js` |
 | T04 | `src/v32/employees.js`、`src/daemon/http/v32/employees-routes.js`、`desktop/ui/v32/employees-page.js`、`test/wp21/v32-employees.test.js` |
 | T05 | `src/v32/teams.js`、`src/daemon/http/v32/teams-routes.js`、`desktop/ui/v32/teams-page.js`、`test/wp21/v32-teams.test.js` |
-| T06 | `src/v32/workflows.js`、`src/v32/graph.js`、`src/daemon/http/v32/workflows-routes.js`、`desktop/ui/v32/workflows-page.js`、`test/wp21/v32-workflows.test.js`、`test/wp21/v32-dag.test.js` |
+| T06 | `src/v32/workflows.js`、`src/v32/graph.js`、`src/daemon/http/v32/workflows-routes.js`、`desktop/ui/v32/workflows-page.js`、`desktop/ui/v32/graph.js`、`test/wp21/v32-workflows.test.js`、`test/wp21/v32-dag.test.js` |
 | T07 | `src/v32/work-items.js`、`src/v32/preflight.js`、`src/daemon/http/v32/work-items-routes.js`、`desktop/ui/v32/work-items-page.js`、`desktop/ui/v32/wizard.js`、`test/wp21/v32-work-items.test.js`、`v32-preflight.test.js` |
 | T08 | `src/v32/mapping.js`、`src/daemon/http/v32/mapping-routes.js`、`desktop/ui/v32/mapping-panel.js`、`test/wp21/v32-mapping.test.js` |
 | T09 | `src/v32/assignments.js`、`src/daemon/http/v32/assignments-routes.js`、`desktop/ui/v32/assignment-panel.js`、`test/wp21/v32-assignments.test.js` |
-| T10 | `src/v32/sessions.js`、`src/v32/bridge.js`、`src/daemon/http/v32/sessions-routes.js`、`desktop/ui/v32/session-panel.js`、`test/wp21/v32-sessions.test.js`、`v32-bridge.test.js` |
+| T10 | `src/v32/sessions.js`、`src/v32/bridge.js`、`src/v32/host-profile.js`、`src/daemon/http/v32/sessions-routes.js`、`desktop/ui/v32/session-panel.js`、`test/wp21/v32-sessions.test.js`、`v32-bridge.test.js` |
 | T11 | `src/v32/runs.js`、`src/daemon/http/v32/runs-routes.js`、`desktop/ui/v32/run-page.js`、`desktop/ui/v32/activity-panel.js`、`test/wp21/v32-runs.test.js` |
 | T12 | `src/v32/recovery.js`、`src/daemon/http/v32/recovery-routes.js`、`desktop/ui/v32/recovery-panel.js`、`test/wp21/v32-recovery.test.js` |
 | T13 | `src/v32/human-gates.js`、`src/daemon/http/v32/human-routes.js`、`desktop/ui/v32/human-gate-dialog.js`、`test/wp21/v32-human.test.js` |
 | T14 | `src/v32/delivery.js`、`src/v32/records.js`、`src/daemon/http/v32/records-routes.js`、`desktop/ui/v32/records-page.js`、`desktop/ui/v32/delivery-dialog.js`、`test/wp21/v32-delivery.test.js`、`v32-audit.test.js` |
-| T15 | `src/daemon/http/v32-routes.js`、`src/daemon/http/routes.js`（仅加挂载两行）、`test/wp21/v32-api-contract.test.js` |
-| T16 | `desktop/ui/shell/nav.js`、`shell/index.js`、`shell/chrome.js`、`shell/pages.js`、`desktop/ui/app.js`、`desktop/ui/v32/index.js`、`desktop/ui/v32/v32.css`、`src/daemon/http/labels.js`、`src/cli/labels.js`、`test/wp21/v32-labels.test.js`、`test/wp13/v32-shell.test.js` |
+| T15 | `src/daemon/http/v32-routes.js`、`src/daemon/http/routes.js`（仅加 import、`v32Routes` 构造、`routes.push` 三处）、`test/wp21/v32-api-contract.test.js` |
+| T16 | `desktop/ui/shell/nav.js`、`shell/index.js`、`shell/chrome.js`、`shell/pages.js`、`desktop/ui/app.js`、`desktop/ui/v32/index.js`、`desktop/ui/v32/v32.css`、`src/daemon/http/labels.js`、`src/cli/labels.js`、`test/wp21/v32-labels.test.js`、`test/wp13/v32-shell.test.js`、`test/wp13/labels-desktop.test.js`（仅 append 键与值） |
 | T17 | `scripts/verify-v32.mjs`、`test/wp21/v32-acceptance.test.js`、`package.json`（只加 `verify:v32` script）、`docs/v32/reports/acceptance.md` |
 | T18 | `docs/v32/reports/final-verification.md`（不新增源码；只做全量回归与门禁复跑） |
 | 主线负责人 | `docs/maestro_v3_2_implementation_plan.md`（本文档，只读）、`.workbuddy/memory/**`、分支合并裁决 |
@@ -174,6 +197,78 @@ export const AUDIT_TYPES = Object.freeze([
   'mapping.changed','assignment.locked','session.created','recovery.succeeded',
   'recovery.failed','human.approved','delivery.accepted','delivery.delivered'
 ]);
+
+/** 事件类型全集：所有任务只能从这里取值，禁止各写各的字符串。 */
+export const EVENT_TYPES = Object.freeze([
+  'cli.scan.started','cli.scan.finished','cli.health.checked',
+  'role.created','role.updated','role.published','role.deprecated',
+  'employee.created','employee.updated','employee.toggled',
+  'team.created','team.updated','team.published','team.deprecated','team.copied',
+  'workflow.created','workflow.updated','workflow.published','workflow.deprecated','workflow.copied',
+  'work_item.created','work_item.started','work_item.cancelled',
+  'plan.revised','mapping.changed',
+  'assignment.prepared','assignment.preflight_failed','assignment.locked','assignment.released',
+  'session.created','host.bound','host.woken',
+  'attempt.started','attempt.finished',
+  'task.ready','task.started','task.succeeded','task.interrupted','task.failed','task.queued',
+  'human.approved','human.rejected',
+  'recovery.succeeded','recovery.failed',
+  'delivery.accepted','delivery.delivered','artifact.created'
+]);
+
+/** 错误码全集：HTTP 层与领域层共用，测试只认这些码。 */
+export const ERROR_CODES = Object.freeze([
+  'V32_INVALID_INPUT','V32_NOT_FOUND','V32_REV_CONFLICT','V32_ILLEGAL_TRANSITION',
+  'V32_FORBIDDEN_FIELD','V32_DUPLICATE_ID','V32_DUPLICATE_VERSION','V32_ROLE_NOT_QUALIFIED','V32_ROLE_GAP',
+  'V32_NO_CANDIDATE','V32_SERIAL_QUEUE','V32_ASSIGNMENT_LOCKED','V32_CLI_UNAVAILABLE',
+  'V32_CLI_CAPABILITY_GAP','V32_SESSION_CONFLICT','V32_RECOVERY_UNAVAILABLE',
+  'V32_APPROVER_INVALID','V32_DELIVERY_INCOMPLETE','V32_SNAPSHOT_MISMATCH'
+]);
+
+/** 合法迁移表；`assertTransition` 是唯一判定入口。 */
+export const TRANSITIONS = Object.freeze({
+  workItem: {
+    draft: ['configured', 'cancelled'],
+    configured: ['ready_to_run', 'cancelled'],
+    ready_to_run: ['running', 'cancelled'],
+    running: ['waiting_human', 'blocked', 'ready_for_acceptance', 'cancelled'],
+    waiting_human: ['running', 'blocked', 'cancelled'],
+    blocked: ['running', 'cancelled'],
+    ready_for_acceptance: ['accepted', 'cancelled'],
+    accepted: ['delivered'],
+    delivered: [],
+    cancelled: []
+  },
+  task: {
+    waiting_dependency: ['ready', 'skipped', 'cancelled'],
+    ready: ['assignment_prepared', 'cancelled'],
+    assignment_prepared: ['preflight', 'waiting_queue', 'cancelled'],
+    preflight: ['creating_session', 'failed', 'assignment_prepared'],
+    creating_session: ['running', 'failed', 'interrupted'],
+    waiting_queue: ['assignment_prepared', 'cancelled'],
+    running: ['succeeded', 'interrupted', 'blocked', 'failed', 'cancelled'],
+    human_waiting: ['succeeded', 'blocked', 'cancelled'],
+    interrupted: ['preflight', 'running', 'cancelled'],
+    blocked: ['ready', 'failed', 'cancelled'],
+    failed: ['ready', 'cancelled'],
+    succeeded: [],
+    cancelled: [],
+    skipped: []
+  },
+  assignment: {
+    draft: ['prepared', 'cancelled'],
+    prepared: ['preflight', 'draft', 'cancelled'],
+    preflight: ['locked', 'failed', 'prepared'],
+    locked: ['released', 'failed'],
+    released: [],
+    failed: ['draft', 'prepared', 'cancelled']
+  },
+  team: { draft: ['published', 'deprecated'], published: ['deprecated'], deprecated: [] },
+  workflow: { draft: ['published', 'deprecated'], published: ['deprecated'], deprecated: [] }
+});
+
+/** ID 格式：前缀 + 至少三位序号；快照 ID 形如 `WF-SNAPSHOT-WI-001`。 */
+export const ID_PATTERN = /^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{3,}$/;
 ```
 
 状态文件结构（顶层数组固定，新字段只能追加在末尾）：
@@ -199,14 +294,30 @@ store.get(kind, id); store.list(kind);
 store.transit(mutator, { expectedRev, reason, actor });
 //  mutator(draft) 内只能改 draft；返回 { ok:true, value, events?:[] } 或 { ok:false, code, params }
 //  成功：原子写 state.json（rev+1）→ 追加 events.jsonl / audit.jsonl → 再广播
+store.nextId(kind);                    // 只能在 transit mutator 内调用，按现有最大序号 +1
+store.snapshot(kind, id, version);     // 深拷贝 + {snapshotOf:{kind,id,version}, capturedAt}
+store.assertTransition(kind, from, to); // 走 TRANSITIONS，失败返回 V32_ILLEGAL_TRANSITION
 store.appendEvent(event); store.appendAudit(event);  // 仅供 transit 内部调用
 store.events({ workItemId, runId, type, limit }); store.audit({ type, limit });
 ```
+
+**快照结构**（Work Item 的 `workflowSnapshot` / `teamSnapshot` 必须按此存，不能只存 ID）：
+
+```js
+{
+  snapshotOf: { kind: 'workflow' | 'team', id, version },
+  capturedAt: '<ISO>',
+  definition: { /* 选定版本当时的完整深拷贝：nodes/edges/members 等 */ }
+}
+```
+
+「仅用于本次需求」的资产：生成 `WF-SNAPSHOT-<workItemId>` / `TEAM-SNAPSHOT-<workItemId>` 作为 `snapshotOf.id`，不写入 `workflows[]` / `teams[]`；「保存到库」则先分配正式 ID 与版本，再快照引用。
 
 对象形状（最小字段，允许追加；**禁止**出现「不该保存的字段」列）：
 
 | 实体 | 必需字段 | 禁止字段 |
 |---|---|---|
+| CLIInstall | `id,name,path,version,adapter,capabilities,health,auth,resumable,fingerprint,source` | 员工 / 团队 / Session 归属 |
 | Role | `id,name,description,duties,skills[],inputs[],outputs[],requires{},acceptance[],version,status,versions[]` | 员工 / 团队 / CLI ID |
 | Employee | `id,name,description,qualifications:[roleId],enabled,createdAt,updatedAt` | `cliId`, `teamId`, `sessionId`, 单一 `roleId` |
 | Team | `id,name,description,version,status,versions[],members:[{employeeId,roles[],primary,priority,participate,capacity}],createdAt` | `workflowId`, CLI / Session 字段 |
@@ -245,56 +356,89 @@ store.events({ workItemId, runId, type, limit }); store.audit({ type, limit });
 
 | 前缀 | 方法/路径 | 所属任务 |
 |---|---|---|
-| `/v32/cli` | `GET /scan?mode=quick\|full`、`GET /`、`POST /`、`POST /:id/health`、`GET /:id/capabilities` | T02 |
-| `/v32/roles` | `GET /`、`POST /`、`GET /:id`、`PUT /:id`、`POST /:id/publish`、`POST /:id/deprecate` | T03 |
+| `/v32/cli` | `GET /`、`POST /`、`POST /scan`（body `{mode:'quick'\|'full'}`）、`POST /:id/health`、`GET /:id/capabilities` | T02 |
+| `/v32/roles` | `GET /`、`POST /`、`GET /:id`、`GET /:id/refs`、`PUT /:id`、`POST /:id/publish`、`POST /:id/deprecate` | T03 |
 | `/v32/employees` | `GET /`、`POST /`、`GET /:id`、`PUT /:id`、`POST /:id/toggle` | T04 |
 | `/v32/teams` | `GET /`、`POST /`、`GET /:id`、`PUT /:id`、`POST /:id/publish`、`POST /:id/deprecate`、`POST /:id/copy` | T05 |
 | `/v32/workflows` | `GET /`、`POST /`、`GET /:id`、`PUT /:id`、`GET /:id/graph`、`POST /:id/publish`、`POST /:id/deprecate`、`POST /:id/copy` | T06 |
-| `/v32/work-items` | `GET /`、`POST /`、`GET /:id`、`POST /:id/preflight`、`POST /:id/start`、`POST /:id/cancel`、`POST /:id/revise`、`POST /:id/deliver` | T07 |
+| `/v32/work-items` | `GET /`、`POST /`、`GET /:id`、`POST /:id/preflight`、`POST /:id/start`、`POST /:id/cancel`、`POST /:id/revise` | T07 |
 | `/v32/mapping` | `GET /:workItemId/candidates`、`PUT /:workItemId`、`GET /:workItemId/conflicts` | T08 |
 | `/v32/assignments` | `POST /prepare`、`GET /:id`、`PUT /:id`、`POST /:id/start`、`POST /:id/release` | T09 |
 | `/v32/sessions` | `GET /:employeeId`、`GET /:employeeId/bindings`、`POST /:employeeId/ensure`、`POST /:bindingId/wake` | T10 |
 | `/v32/runs` | `GET /`、`GET /:id`、`POST /:id/tasks/:taskId/queue`、`POST /:id/tasks/:taskId/complete`、`POST /:id/tasks/:taskId/interrupt`、`GET /:id/events` | T11 |
 | `/v32/recovery` | `GET /:taskId/options`、`POST /:taskId/recover-original`、`POST /:taskId/recover-checkpoint` | T12 |
 | `/v32/human` | `POST /:taskId/approve`、`POST /:taskId/reject`、`GET /:taskId/policy` | T13 |
-| `/v32/records` | `GET /artifacts`、`GET /artifacts/:id/trace`、`GET /events`、`GET /audit`、`GET /:workItemId/delivery` | T14 |
+| `/v32/records` | `GET /artifacts`、`GET /artifacts/:id/trace`、`GET /events`、`GET /audit`、`GET /:workItemId/delivery`、`POST /:workItemId/deliver` | T14 |
 
-#### 1.3.3 桌面 UI 契约
+**T15 的精确挂载点**（必须按此实现，避免动到冻结 seam）：
 
-- 新增 `desktop/ui/v32/` 页面模块；每模块导出：
+- `src/daemon/http/routes.js` 顶部增加 `import { createV32Routes } from './v32-routes.js';`。
+- 在 `createRoutes` 内、`const routes = [` 之前增加 `const v32Routes = createV32Routes({ root: projectRoot });`；在 `return routes;` 之前增加 `routes.push(...v32Routes);`。
+- `createV32Routes` **不得**在构造期读 `.orch/v32/**`、不得建目录、不得抛异常；store 在首次请求时懒创建并缓存（`http/server.js:263-284` 会静默吞掉构造异常，构造期抛错会让整个 REST 退化 503）。
+- 保持 `route` 描述形状 `{method, pattern, handler}`；`handler(req,res,url,params)` 与现有路由一致。不得改 `shapeSnapshot`、既有路由顺序或 `attachLazySeams`。
+
+#### 1.3.3 桌面 UI 契约（对齐现有壳，不另起一套）
+
+**现状**：`desktop/ui/shell/pages.js` 的页面函数签名是 `render(ctx)`，返回 `DocumentFragment`/DOM 节点；`ctx` 由 `buildShellContext`（`desktop/ui/app.js:2950`）构造，现有字段为 `{state, model, labels, t, st, actions, view, instanceId, instanceRow, graph, viewTitle, crumbs, ...}`，**没有** `api/nav/toast/modal/refresh`。`PAGE_BY_VIEW` 是 `desktop/ui/shell/index.js:25` 的冻结映射。
+
+**V3.2 页面模块契约**（与现有壳一致）：
 
 ```js
-export default {
-  viewId: 'v32-work-items',        // 唯一
-  section: 'work_items',           // 对应导航分组
-  labelKey: 'V32_NAV_WORK_ITEMS',
-  render(ctx, model) { /* 返回 HTML 字符串，事件只用 data-action / data-arg */ },
-  actions: { 'v32-wi-open': (arg, ctx) => {} }
+// desktop/ui/v32/<domain>-page.js
+export const viewId = 'v32-work-items';     // 唯一，加入 PAGE_BY_VIEW
+export const section = 'work_items';        // 对应 nav.js 分组 id
+export function render(ctx) {               // 返回 DocumentFragment；纯渲染，不 fetch
+  const frag = document.createDocumentFragment();
+  // 只用 ctx.v32.data / ctx.t / ctx.st；事件只写 data-action / data-arg
+  return frag;
+}
+export const actions = {                    // 由 T16 注册进 handleAction 的 v32-* 分派
+  'v32-wi-open': async (arg, ctx) => {}
 };
 ```
 
-- `ctx = { t, st, api, nav, toast, modal, closeModal, refresh, state }`；`api` 是 `fetch('/v32/...')` 的薄封装，错误按 `{ok:false,code,params}` 抛出。
-- 所有文案 `ctx.t('V32_...')`；新增键必须用 append-only 方式同时加入 `src/daemon/http/labels.js` 的 `UI_LABEL_KEYS` 与值表，CLI 可见的再镜像到 `src/cli/labels.js`（T16 统一做，其他任务只写键名并在报告列出）。
-- 导航与页签结构由 T16 在 `desktop/ui/shell/nav.js` 注册；页面模块不得直接改导航。
-- `desktop/ui/v32/graph.js`（T06 独占）导出 `layoutDag(nodes,edges)`、`validateDag(nodes,edges)`、`renderGraph({nodes,edges,mode,stateMap,selected,onSelect,onEdit})`；`mode` 取 `definition | runtime | edit`，交互至少含缩放 50%–200%、适应画布、拖动平移、点选、上下游高亮；行为对齐原型 `showWorkflowDag` / `graphHTML` / `graphRefresh`。
+**数据装载**（T16 统一实现，页面不各自 fetch）：
 
-#### 1.3.4 与引擎的桥接（T10 独占）
+- `app.state()` 增加 `v32: { view, data, loading, error, selected }`；`app.loadV32(view, params)` 调 `/v32/*`，成功后 `state.v32 = {...}` 再 `paint()`。
+- `buildShellContext` 增加 `v32: state.v32` 与 `v32Api: { get, post, put }`（薄封装，错误按 `{ok:false,code,params}` 抛出）。
+- `handleAction` 在 `nav`/`v32-*` 分支里先 `await app.loadV32(...)` 再 `paint()`；页面 `render` 只消费已装载的 `ctx.v32`。
+- 输入控件必须带 `data-field`；`pointerdown` 与 `click` 同时派发（600ms 去重）；导航锚点唯一化（`.sidebar [data-section=…]`、`.secbar .sec-tab[data-tab=…]`）。
 
-`src/v32/bridge.js` 只封装既有实现，不改引擎：
+**文案**：所有用户可见字符串走 `ctx.t('V32_...')`；新增键必须同时加入 `src/daemon/http/labels.js` 的 `UI_LABEL_KEYS` 与值表，以及 `test/wp13/labels-desktop.test.js` 的 `EXPECTED_V2_KEYS`/`EXPECTED_V2_VALUES`（**append-only，既有行逐字不变**）；CLI 可见的再镜像到 `src/cli/labels.js`。键必须真被 `GET /ui/labels` 下发。
+
+**导航**：规格 §11 的 9 组（启动与资源 / 需求工作台 / 执行中心 / 团队库 / 工作流库 / 员工档案 / 角色库 / 产物与事件 / 系统设置）由 T16 在 `desktop/ui/shell/nav.js` 扩展；保留现有 5 组与全部历史 view ID 的深链兼容。页面模块不得直接改导航。
+
+**流程图**：`desktop/ui/v32/graph.js`（T06 独占）导出 `layoutDag(nodes,edges)`、`validateDag(nodes,edges)`、`renderGraph({nodes,edges,mode,stateMap,selected,onSelect,onEdit})`；`mode` 取 `definition | runtime | edit`，交互至少含缩放 50%–200%、适应画布、拖动平移、点选、上下游高亮；行为对齐原型 `showWorkflowDag` / `graphHTML` / `graphRefresh`。`renderGraph` 返回 SVG/DOM 节点，不返回字符串。
+
+#### 1.3.4 与引擎的桥接（T10 独占，按真实导出实现）
+
+**已核对的现状**：
+
+- `src/adapter/factory.js` 只导出 `createAdapterFactory({root,hostId,env,clock})`，返回 `{create({hostId,cwd})}`；内部 `buildAdapter` 是**未导出**函数。
+- `factory.create()` 内部固定 `initialize → newSession`，因此它只能用于**首次创建** Host Session，**不能**用于恢复原 Host Session。
+- `src/adapter/acp-client.js` 导出 `createAcpClient({transport,limits,clock})`，返回的客户端含 `initialize`、`newSession`、`resumeSession`、`loadSession`、`prompt`、`cancel`、`closeSession` 等；`normalizeCapabilities` 可判断 `canResume/canLoad`。
+- `createAdapterFactory` 读 `<root>/.orch/hosts/<hostId>.json`（`host-config.js:39`）；不会读 V3.2 的 CLI 安装记录。
+
+**桥接实现要求**：
 
 ```js
-export function createBridge({ store, adapterFactory, now }) {
+// src/v32/bridge.js
+export function createBridge({ root, store, now }) {
   return {
-    async startHost({ assignment, node, workItem }),   // buildAdapter + createSession，返回 HostBinding
-    async wakeHost({ binding, attempt }),              // 原宿主恢复（策略 A）
-    async createHost({ assignment, employeeSession }), // 新宿主（策略 B / 首次）
-    async pollActivity({ bindingId, since }),          // 公开事件，不含私有推理
+    // 首次启动 / 策略 B：写 host profile（不覆盖已有文件）后走 factory.create
+    async createHost({ assignment, employeeSession }),
+    // 策略 A / 复用：直接 createStdioTransport + createAcpClient
+    // → initialize → resumeSession(hostSessionId) 或 loadSession(hostSessionId)
+    async wakeHost({ binding, attempt }),
+    async pollActivity({ bindingId, since }),
     async stopHost({ bindingId, reason })
   };
 }
 ```
 
-复用点：`src/adapter/factory.js:43 buildAdapter`、`acp-client.js:27 normalizeCapabilities / :44 canResume / :48 canLoad`、`session-state.js:42 createNormalizer`、`stdio-transport.js:25`、`dsh-launch.js:69 resolveDshLaunch`。
+- `src/v32/host-profile.js`（T10 独占）：为每个 CLI 安装生成 `.orch/hosts/v32-<installId>.json`，内容 `{id, launch:{command,args,env}, limits:{...}}`；只创建/更新 `v32-` 前缀文件，**绝不覆盖**用户已有宿主配置。`hostId` 用 `v32-` + 安装 ID 的安全 slug。
+- `wakeHost` 必须先 `initialize` 读能力，再按 `canResume → resumeSession`、`canLoad → loadSession` 的顺序尝试；两者都不可用返回 `V32_RECOVERY_UNAVAILABLE`，**不得**回落到 `newSession`（那是策略 B，必须由 T12 显式选择）。
+- 复用点：`createAdapterFactory`（新会话）、`createStdioTransport`、`createAcpClient`、`normalizeCapabilities`、`createNormalizer`、`resolveDshLaunch`。T10 不得修改 `src/adapter/**`。
 
 ### 1.4 测试组织约定
 
@@ -303,6 +447,7 @@ export function createBridge({ store, adapterFactory, now }) {
 - 本域全跑：`NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-*.test.js"`。
 - 全量：`NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/**/*.test.js"`。
 - 所有测试使用临时目录（`fs.mkdtempSync(path.join(os.tmpdir(),'v32-'))`），结束清理；禁止读写真实 `~/.maestro`、`~/.orch` 或仓库内其它迭代证据目录。
+- 任务详情里若只写了 `test/wp21/xxx.test.js` 简写，执行时必须补全为 `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/xxx.test.js"`；漏 `NODE_ENV=test` 会让 `/__test__/*` 接缝不注册而假红。
 
 ---
 
@@ -400,7 +545,7 @@ export function createBridge({ store, adapterFactory, now }) {
 
 | 波次 | 机器 A | 机器 B | 同步点（必须都合入 main 才进下一波） |
 |---|---|---|---|
-| W0（阻塞） | T01 契约与存储 | 等待 / 只做文档阅读 | `origin/main` 含 `src/v32/contracts.js` 与 store 测试全绿 |
+| W0（阻塞） | T01 契约与存储 | 等待 / 只做文档阅读 | `origin/main` 含 `src/v32/contracts.js`、store 测试全绿、T00-R4 门禁基线已恢复且 `gate --skip-tests` 通过 |
 | W1 资产 | T02 CLI 池、T03 角色库、T05 团队库 | T04 员工档案、T06 工作流与 DAG | 四类资产 API + 页面可独立打开，资产域测试全绿 |
 | W2 需求 | T07 Work Item 与五步向导 | T08 映射与并行冲突 | 能创建含快照+映射的 WorkItem；预检拒绝角色缺口 |
 | W3 分配 | T09 Assignment 生命周期 | T10 两层会话与桥接 | `prepared` 无会话、`locked` 有会话；跨 CLI 不复用 Binding |
@@ -430,9 +575,26 @@ node scripts/desktop/gate.mjs --skip-tests
 ### T00（前置，主线负责人）冻结基线并推送
 
 - **分支**：不建功能分支，直接在 `main` 操作。
-- **需求**：R0-1 确认本规划已合入本地 `main`，推送 `main` 到 `origin/main`；R0-2 公布此时的 `HEAD` 作为唯一 `baseSha`；R0-3 建 `docs/v32/reports/` 目录占位。
-- **验证**：`git rev-parse origin/main` 与公布的 `baseSha` 一致。
-- **完成**：两台机器都能从该 sha 建分支。
+- **需求**：
+  - **R0-1** 确认本规划已合入本地 `main`，推送 `main` 到 `origin/main`。
+  - **R0-2** 公布此时的 `HEAD` 作为唯一 `baseSha`。
+  - **R0-3** 建 `docs/v32/reports/` 目录占位。
+  - **R0-4** 恢复门禁基线文件（`docs/iterations` 已在 `806d17c` 被删，`gate.mjs` 全量模式依赖它们）：
+    ```bash
+    mkdir -p docs/iterations/iteration-7 docs/iterations/iteration-10a
+    git show 7b71cd4:docs/iterations/iteration-7/baseline-failures.txt \
+      > docs/iterations/iteration-7/baseline-failures.txt
+    git show 7b71cd4:docs/iterations/iteration-10a/baseline-failures-win32.txt \
+      > docs/iterations/iteration-10a/baseline-failures-win32.txt
+    git add docs/iterations/iteration-7/baseline-failures.txt \
+      docs/iterations/iteration-10a/baseline-failures-win32.txt
+    git commit -m "chore(v32): 恢复门禁基线文件"
+    ```
+- **验证**：
+  - `git rev-parse origin/main` 与公布的 `baseSha` 一致。
+  - `node scripts/desktop/gate.mjs --skip-tests` exit 0。
+  - `test -s docs/iterations/iteration-7/baseline-failures.txt` 且行数与 `git show 7b71cd4:... | wc -l` 一致。
+- **完成**：两台机器都能从该 sha 建分支；全量门禁不再因缺文件崩溃。
 
 ---
 
@@ -445,14 +607,20 @@ node scripts/desktop/gate.mjs --skip-tests
   - **T01-R2** 实现 `validate(kind,obj)`：按 §1.3.1 对象表逐字段校验；额外强制「不该保存的字段」不存在（如 Employee 有 `cliId`、Team 有 `workflowId`、Workflow 节点有 `employeeId`、人工节点有 `cliId`）→ 返回 `V32_FORBIDDEN_FIELD`。
   - **T01-R3** 实现 `createV32Store()`：读 `.orch/v32/state.json`；不存在时按顶层结构初始化；`read()` 返回深拷贝；`get/list` 只读。
   - **T01-R4** `transit(mutator,{expectedRev,reason,actor})` 是唯一写入口：基于磁盘最新快照校验 `expectedRev`，不等则 `V32_REV_CONFLICT`；mutator 内改 draft；成功后 `rev+1`、原子写、再追加事件/审计，**最后**返回新快照；任何失败不得改内存状态。
-  - **T01-R5** 事件/审计哈希链：`seq` 单调、`prevHash` 指向上一条、字段顺序规范化后 sha256；`verifyChain()` 可校验全链；`events()/audit()` 支持按 workItemId/runId/type 过滤与 limit。
+  - **T01-R5** 事件/审计哈希链：`id` 分别为 `EVT-###` / `AUD-###`，`seq` 单调、`prevHash` 指向上一条、字段顺序规范化后 sha256；`verifyChain()` 可校验全链；`events()/audit()` 支持按 workItemId/runId/type 过滤与 limit。
   - **T01-R6** 每次 `transit` 若 `events` 中含 §1.3.1 `AUDIT_TYPES`，自动写入 `audit.jsonl`；人工审批 / 恢复 / 交付三类缺一不可。
   - **T01-R7** 提供 `test/wp21/fixtures/v32-*.json` 假数据：role、employee、team、workflow（含 agent+human 节点）、workItem、run、assignment；供后续并行任务使用，字段必须完全符合契约。
   - **T01-R8** `src/v32/index.js` 骨架只导出已实现模块；后续任务追加自己的导出（各自改自己文件，index.js 由 T01 预留 `export *` 聚合写法或每个任务在自己文件被 import 时使用相对路径——**不要**多个任务同时编辑 index.js）。
+  - **T01-R9** ID 分配：`nextId(kind)` 只在 `transit` mutator 内可用，按该前缀现有最大序号 +1（不是数组长度），同一次事务内多次调用连续递增；生成后必须匹配 `ID_PATTERN`，重复返回 `V32_DUPLICATE_ID`。快照 ID 用 `snapshotId(kind, workItemId)`（`WF-SNAPSHOT-WI-001` / `TEAM-SNAPSHOT-WI-001`）。
+  - **T01-R10** 状态迁移：导出 `TRANSITIONS` 与 `canTransition/assertTransition`；所有领域模块的状态写入必须调用 `assertTransition`，非法迁移返回 `V32_ILLEGAL_TRANSITION` 且**不落盘**。错误码只能取 `ERROR_CODES`。
+  - **T01-R11** 快照：`snapshot(kind,id,version)` 返回 `{snapshotOf:{kind,id,version},capturedAt,definition}`，`definition` 是深拷贝；`transit` 保存后外部修改原对象不得影响快照；读取快照返回深拷贝。
+  - **T01-R12** 事件类型只能取 `EVENT_TYPES`；`transit` 对未知事件类型返回 `V32_INVALID_INPUT`。事件 `refs` 只放相关 ID，缺失用 `null`，不得省略字段。
+  - **T01-R13** `root` 必须是绝对路径；`read()` 在文件不存在时返回空结构且**不创建目录**；首次 `transit` 才创建 `.orch/v32/`。所有测试用临时 root，不得读写真实项目。
+  - **T01-R14** 资产版本：`version` 用 `major.minor` 字符串，首次发布 `1.0`；之后每次 publish 递增 minor（`1.0→1.1`），`versions` append-only；同一版本不得重复发布，重复返回 `V32_DUPLICATE_VERSION`。
 - **实现步骤**：① 常量与校验 → ② 原子写与 CAS → ③ 事件链 → ④ 夹具 → ⑤ 单测。
 - **验证清单**：
-  - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-contracts.test.js"`：断言禁止字段全部被拒、枚举逐字一致。
-  - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-store.test.js"`：断言并发 `transit` 只有一个成功、rev 递增、`expectedRev` 过期返回冲突、失败不改文件。
+  - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-contracts.test.js"`：断言禁止字段全部被拒、枚举逐字一致、非法迁移被拒、未知错误码/事件类型被拒。
+  - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-store.test.js"`：断言并发 `transit` 只有一个成功、rev 递增、`expectedRev` 过期返回冲突、失败不改文件、并发 `nextId` 不重号、快照深拷贝隔离。
   - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-events.test.js"`：断言哈希链、顺序、过滤、审计自动写入。
   - 全量差集 0（对照 `origin/main` 基线树）。
 - **完成定义**：三套单测全绿 + 夹具被至少 2 个后续任务实际引用 + 报告落盘。
@@ -464,17 +632,17 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T02-cli-pool`
 - **依赖**：T01
 - **需求描述**：
-  - **T02-R1**（P00 / §7.1）快扫与完整扫描两阶段：快扫发现路径与名称；完整扫描补齐版本、Adapter/协议、能力声明、健康状态、认证状态、会话恢复能力；扫描过程写 `cliPool.scan` 进度，界面可显示阶段。
+  - **T02-R1**（P00 / §7.1）快扫与完整扫描两阶段：快扫发现路径与名称；完整扫描补齐版本、Adapter/协议、能力声明、健康状态、认证状态、会话恢复能力；扫描过程写 `cliPool.scan` 进度，界面可显示阶段。**探测不到的字段写 `unknown` 并注明原因，不得伪造为可用/已认证**。
   - **T02-R2** 复用 `src/adapter/cli-discovery/discover.js` 与 `probe.js`，**只读引用**；不把 `npx geiger-scan` 作运行时依赖。
   - **T02-R3** 扫描只更新 CLI 资源池；断言不创建 Employee / Team / Session / WorkItem。
-  - **T02-R4** 手动添加路径：落库 `installs[]`，字段含 `id,name,path,version,adapter,capabilities,health,auth,resumable,fingerprint,source:'scan'|'manual'`；重复路径按 fingerprint 去重。
-  - **T02-R5** 健康检查回写 `health`；失效 CLI 标记 `health:'unavailable'`，Assignment 可选它但启动预检必须拒绝（由 T09 消费）。
+  - **T02-R4** 手动添加路径：落库 `installs[]`，字段含 `id,name,path,version,adapter,capabilities,health,auth,resumable,fingerprint,source:'scan'|'manual'`；`fingerprint = sha256(realpath + version + adapter)`，重复按 fingerprint 去重；同一路径二进制升级后 fingerprint 变化，旧记录标记 `stale` 而不是静默覆盖。
+  - **T02-R5** 健康检查回写 `health`，枚举固定 `ok | degraded | unavailable | unknown`；`unavailable` 的 CLI 可被 Assignment 选中但启动预检必须拒绝（由 T09 消费），`unknown` 不阻断但界面提示需复检。
   - **T02-R6** `GET /v32/cli/:id/capabilities` 输出能力矩阵，供节点能力预检（T07/T09）使用。
   - **T02-R7**（P00 页面）`desktop/ui/v32/cli-page.js` 展示扫描进度、发现/可用/异常数量、CLI 明细与「重新扫描 / 完整扫描 / 手动添加 / 健康检查」入口；文案键 `V32_CLI_*` 列表写入报告交 T16。
 - **实现步骤**：① 包装发现层 → ② 扫描状态机 → ③ 路由片段 → ④ 页面 → ⑤ 单测（mock probe）。
 - **验证清单**：
-  - `node --test "test/wp21/v32-cli-pool.test.js"`：mock 3 个 CLI（2 可用 1 失效），断言 8 项信息齐全、快扫/完整扫描阶段事件、手动添加落库、扫描不产生其它实体。
-  - API 冒烟：起测试 daemon，`GET /v32/cli/scan?mode=quick` → 200 且 `scan.status` 从 `running` 到 `done`；`GET /v32/cli` 返回数组。
+  - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-cli-pool.test.js"`：mock 4 个 CLI（2 可用、1 失效、1 unknown），断言 8 项信息齐全、快扫/完整扫描阶段事件、手动添加落库、fingerprint 去重、扫描不产生其它实体。
+  - API 冒烟：起测试 daemon，`POST /v32/cli/scan` body `{mode:'quick'}` → 200 且 `scan.status` 从 `running` 到 `done`；`GET /v32/cli` 返回数组。
   - CDP 页面检查：`cli-page` 渲染后存在进度条与 3 行 CLI，无 CJK 字面量（跑 §0.7 正则自查）。
 - **证据分级**：mock 实测（真实 CLI 探测依赖宿主，报告如实标注）。
 
@@ -519,7 +687,7 @@ node scripts/desktop/gate.mjs --skip-tests
 - **需求描述**：
   - **T05-R1**（§3.1）Team 定义含 ID/名称/描述/版本、成员列表、成员 Employee ID、团队内角色资格、主备与优先级、是否参与新分配、可选容量；**禁止** `workflowId` 与任何 CLI/Session 字段。
   - **T05-R2**（§3.2）成员可承担一个或多个角色；团队角色必须是员工全局资格的子集，超集返回 `V32_ROLE_NOT_QUALIFIED`。
-  - **T05-R3**（§3.3）支持创建、编辑成员、增删成员、调整角色、主备/优先级、复制、发布新版本、停用；每次 publish 生成新版本并写审计。
+  - **T05-R3**（§3.3）支持创建、编辑成员、增删成员、调整角色、主备/优先级、复制、发布新版本、停用；每次 publish 按 T01-R14 生成新版本并写审计。
   - **T05-R4**（P04）团队库展示名称/版本/说明/成员数/角色覆盖/成员明细/最近使用 WorkItem；**不显示**「适用工作流」，**不提供** CLI 配置。
   - **T05-R5**（P05）编辑器从员工档案勾选成员、逐人选择团队内角色、设置主备与优先级；保存产生新版本。
   - **T05-R6**（V32-03）同一团队可被多个不同工作流引用，团队对象不变。
@@ -540,12 +708,12 @@ node scripts/desktop/gate.mjs --skip-tests
 - **需求描述**：
   - **T06-R1**（§4.1）Workflow 定义含 ID/名称/描述/版本、节点 DAG、Agent 节点 Role ID、输入输出契约、验收条件、依赖、并行/汇合、条件分支、Human Task / Approval Gate、Handoff、Retry/Fallback/Escalation/Failure Policy；**禁止** Employee ID / Team ID / CLI。
   - **T06-R2**（§4.2）Agent 节点 11 项字段齐全（见 §1.3.1）；缺任一字段 validate 拒绝。
-  - **T06-R3**（§4.3 / V32-16）Human 节点只有 `human:{approver,mode,condition}` 与契约字段，禁止 `roleId` 之外的执行人、CLI、Session；人工节点不参与员工映射。
+  - **T06-R3**（§4.3 / V32-16）Human 节点只有 `human:{approver,mode,condition,timeout}` 与契约字段；禁止节点级 `roleId/employeeId/cliId/sessionId`（审批角色只能放在 `human.approver` 内）；人工节点不参与员工映射。
   - **T06-R4**（P06）库列表展示名称/版本/用途/节点数/Agent 与人工节点数/主要阶段与并行关系/内置·草稿·已发布；支持编辑、复制、发布新版本、用于新需求。
   - **T06-R5**（P07）编辑器支持：画布定义 DAG；Agent 节点选 Role ID；Human 节点定义审批人/条件；配置依赖、并行、汇合、条件、输入输出、验收、失败策略；**不出现**员工/团队/CLI 选择。
-  - **T06-R6** 实现 `src/v32/graph.js`：`layoutDag` 按依赖层级布局；`validateDag` 检测未知依赖与环；`renderGraph` 支持 definition/runtime/edit 三模式、缩放 50%–200%、适应画布、拖动平移、点选、上下游高亮，行为对齐原型 `showWorkflowDag / graphHTML / graphRefresh / graphAutoLayout`。
+  - **T06-R6** 后端 `src/v32/graph.js` 只做纯计算：`layoutDag` 按依赖层级布局、`validateDag` 检测未知依赖与环；前端 `desktop/ui/v32/graph.js` 做 `renderGraph`，支持 definition/runtime/edit 三模式、缩放 50%–200%、适应画布、拖动平移、点选、上下游高亮，行为对齐原型 `showWorkflowDag / graphHTML / graphRefresh / graphAutoLayout`。两者共享同一份 `{level,order}` 布局数据，不各自发明排序。
   - **T06-R7**（§4.4 / V32-04）工作流可被多个团队复用；对象内无 Team/Employee 字段；DAG 图模式可渲染。
-  - **T06-R8**（V32-15 / §14-5）修改发布新版本；既有 WorkItem 快照与运行中 Run 继续用旧版本。
+  - **T06-R8**（V32-15 / §14-5）修改按 T01-R14 发布新版本；既有 WorkItem 快照与运行中 Run 继续用旧版本。
   - **T06-R9**（V32-02）支持「保存到库」与「仅用于本次需求」。
 - **验证清单**：
   - `test/wp21/v32-workflows.test.js`：11 项字段校验、禁止字段、human 节点约束、publish 版本、快照隔离、四种复用来源。
@@ -563,9 +731,9 @@ node scripts/desktop/gate.mjs --skip-tests
   - **T07-R1**（§5.1）Work Item 14 字段齐全；创建后 `status='configured'`；`workflowSnapshot`/`teamSnapshot` 固化所选版本，`nodeExecutorPlan` 固化映射；`runId` 指向新建 Run，`historyRuns=[]`，`deliveryRecord=null`。
   - **T07-R2**（§5.2 / 链路 A/B）四种组合全部可用：已有+已有、已有+新建、新建+已有、新建+新建；新建资产可选「仅本次」（进 snapshot 不进资产库）或「保存到库」（先建资产版本再引用）。
   - **T07-R3**（§5.3 / P02）五步向导严格为：①需求信息（标题/描述/背景/目标/项目目录/附件）②工作流③团队④节点执行人映射（调用 T08 面板）⑤预检确认（覆盖、员工有效性、并行冲突、CLI 能力、输入资料）。
-  - **T07-R4**（§6.2 / V32-06）`preflight` 返回逐项结果；角色未覆盖返回 `V32_ROLE_GAP` 并列出缺失角色，阻止创建；员工失效、CLI 能力不足同样阻止。
-  - **T07-R5**（V32-08）创建时只建 Task DAG，**不创建** Assignment / Employee Session / Host Binding；断言三者数量为 0。
-  - **T07-R6**（§13.1）状态机：`configured→ready_to_run`（用户点启动）`→running`；`waiting_human/blocked` 由 T11 触发；`ready_for_acceptance→accepted→delivered` 由 T14 触发；`cancelled` 可从非终态进入；非法迁移拒绝。
+  - **T07-R4**（§6.2 / V32-06）`preflight` 返回逐项结果；角色未覆盖返回 `V32_ROLE_GAP` 并列出缺失角色，阻止创建；员工失效返回 `V32_INVALID_INPUT`；CLI 资源池无法覆盖节点能力时返回 `V32_CLI_CAPABILITY_GAP` 并提示先扫描/添加 CLI，阻止创建。**预检只检查能力覆盖，不创建 Assignment，也不要求此刻选定具体 CLI**（与 V32-08 一致）。
+  - **T07-R5**（V32-08）创建时只建 Task DAG，**不创建** Assignment / Employee Session / Host Binding；断言三者数量为 0。`workflowSnapshot/teamSnapshot` 按 §1.3.1 深拷贝结构保存，禁止只存 ID 或引用。
+  - **T07-R6**（§13.1）状态机：创建过程 `draft→configured` 原子完成；用户点「启动」`configured→ready_to_run`（只创建/激活 Run，不直接建会话）；`ready_to_run→running` 由 T11 的首个任务启动触发；`waiting_human/blocked` 由 T11 触发；`ready_for_acceptance` 只由 T11 在所有 Task `succeeded` 后设置；`accepted→delivered` 由 T14 触发；`cancelled` 可从非终态进入；非法迁移拒绝。
   - **T07-R7**（P01）工作台展示需求数量、执行中、待人工、待验收；列表含标题/关联工作流/团队/状态/创建时间。
   - **T07-R8**（P03）详情页展示需求内容、Workflow Snapshot、Team Snapshot、Node Executor Plan、当前与历史 Run、产物与事件入口；提供流程视图 / 节点列表 / 执行历史；显示「执行方案快照」与「修订」入口（修订逻辑 T11 提供）。
   - **T07-R9**（§14-9/10）仅本次的资产不进入公共库；保存到库的资产先有版本号再被引用。
@@ -600,11 +768,11 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T09-assignments`
 - **依赖**：T07、T08、T02
 - **需求描述**：
-  - **T09-R1**（§7.2）节点进入 Ready 后创建 Assignment，11 项字段齐全；员工默认取 Node Executor Plan，可在本次团队内改选符合角色的成员；CLI 从本机资源池选且必须满足节点 `capabilities`；设置工作目录与权限快照；输入产物引用来自上游 Artifact。
+  - **T09-R1**（§7.2）节点进入 Ready 后创建 Assignment，规格 11 项齐全（Task ID 与 Node ID 合并计一项，对应 12 个字段）；员工默认取 Node Executor Plan，可在本次团队内改选符合角色的成员；CLI 从本机资源池选且必须满足节点 `capabilities`；设置工作目录与权限快照；输入产物引用来自上游 Artifact。
   - **T09-R2**（§7.3 / §13.5）状态机 `draft→prepared→preflight→locked→released`，失败进 `failed`；`prepared` 可改员工与 CLI；`locked` 后禁止修改（返回 `V32_ASSIGNMENT_LOCKED`）；`released` 在任务结束/取消时写。
   - **T09-R3**（V32-10）保存 Prepared **不创建** Employee Session / Host Session；断言 `sessions.employees` 与 `hostBindings` 数量不变。
   - **T09-R4**（V32-09 / V32-12）CLI 选择按能力匹配；更换 CLI 只影响本次 Assignment，Employee Profile 与 Team 定义逐字不变；失效 CLI 在 preflight 阶段拒绝，Assignment 保持 `prepared` 可编辑。
-  - **T09-R5**（§14-2 / V32-07）占用冲突：目标员工正执行其它任务时提供「改派」与「保留并排队」；排队节点进入 `waiting_queue`，**禁止**并发写同一 Employee Session。
+  - **T09-R5**（§14-2 / V32-07）占用冲突：目标员工正执行其它任务时提供「改派」与「保留并排队」；选择排队后 **Task 进入 `waiting_queue`，Assignment 保持 `prepared`**（不 `locked`、不建 Session），员工释放后才重新走 `preflight→locked`；**禁止**并发写同一 Employee Session。
   - **T09-R6**（P12）面板展示节点角色要求、合格成员（默认选中映射成员）、本机 CLI 候选及能力、会话计划（创建/复用/唤醒/恢复）、「保存 Prepared」「保存并启动」；启动按钮走 `preflight→locked` 并通知 T10 建会话。
   - **T09-R7** Assignment 每次状态变化写事件，`locked` 写审计。
 - **验证清单**：
@@ -621,14 +789,17 @@ node scripts/desktop/gate.mjs --skip-tests
 - **需求描述**：
   - **T10-R1**（§8.1）以下操作**都不创建会话**：创建 Employee Profile、加入团队、创建 Work Item、选工作流/团队、保存映射、保存 Prepared；每条都有单测断言。
   - **T10-R2**（§8.2）Employee Session 是员工长期逻辑身份；Host Binding 按 CLI/Adapter 维护；跨 CLI **不得**复用 Host Session ID；同一 Employee Session ID 在不同 CLI 下可有多个 Binding。
-  - **T10-R3**（§8.3）节点启动 8 步：读执行员工 → 查 Employee Session → 无则创建 → 按 CLI 查 Binding → 兼容可恢复则唤醒 → 否则新建 Binding → 记录 Host Session ID → 创建 Attempt 并写事件。
+  - **T10-R3**（§8.3）节点启动 8 步：读执行员工 → 查 Employee Session → 无则创建 → 按 CLI 查 Binding → 兼容可恢复则唤醒 → **正常启动路径**下无可用 Binding 才新建 Binding → 记录 Host Session ID → 创建 Attempt 并写事件。恢复路径（T12）必须走 T10-R9：原宿主不可恢复就报错，不得在这里回落到新建。
   - **T10-R4**（§8.4 / §14-8）员工在别的 WorkItem 执行时：排队 / 选备选成员 / 用户改派；同一员工同一时刻只允许一个前台 Attempt；不引入子会话。
   - **T10-R5** `src/v32/bridge.js` 按 §1.3.4 封装既有 adapter，**不改** `src/adapter/**` / `src/core/**`；ACP 方言差异收敛在 bridge 内；公开活动只取宿主状态/工具/文件/命令/产物事件，不取私有推理。
   - **T10-R6**（P14 部分）`session-panel.js` 展示 Employee Session ID、Host Binding 历史（CLI/Adapter/Host Session ID/恢复能力/状态）、Attempt 列表；无会话时显示「节点启动后创建」。
   - **T10-R7** 会话创建/唤醒写事件，创建写审计。
+  - **T10-R8** `src/v32/host-profile.js`：按 `Assignment.cliInstallationId` 生成 `.orch/hosts/v32-<installId>.json`（`launch.command/args/env` 来自 CLI 资源池），只写 `v32-` 前缀，绝不覆盖用户配置；`createHost` 用 `createAdapterFactory({root,hostId}).create({cwd})` 建**新**会话。
+  - **T10-R9** `wakeHost` **不得**用 `factory.create`（它总是 `newSession`）：必须 `createStdioTransport + createAcpClient → initialize → canResume?resumeSession:canLoad?loadSession`；两者都不可用返回 `V32_RECOVERY_UNAVAILABLE`，不得回落 `newSession`（回落是策略 B，由 T12 显式触发）。
+  - **T10-R10** 同一员工并发：store 中维护/派生 `activeAttemptId`；同一员工已有 `running` Attempt 时，新启动返回 `V32_SESSION_CONFLICT`，由 T09/T11 转为排队或改派；不得靠 UI 禁用冒充约束。
 - **验证清单**：
   - `test/wp21/v32-sessions.test.js`：6 种不建会话操作、8 步启动顺序、跨 CLI 新 Binding、同员工并发被排队、Attempt 关联正确。
-  - `test/wp21/v32-bridge.test.js`：mock adapter 下 startHost/wakeHost/createHost/pollActivity 调用顺序与参数；无真实 ACP 依赖。
+  - `test/wp21/v32-bridge.test.js`：mock transport/adapter 下 `createHost` 走 factory/create，`wakeHost` 走 `initialize→resume/load` 且两者不可用时报 `V32_RECOVERY_UNAVAILABLE`（不回落到 newSession），host profile 只写 `v32-` 前缀且不覆盖既有文件。
   - API `GET /v32/sessions/:employeeId` 与 `/bindings` 结构正确。
   - 运行时错误 0；纯 CJK 自查通过。
 
@@ -648,6 +819,8 @@ node scripts/desktop/gate.mjs --skip-tests
   - **T11-R7**（P03 修订入口）执行方案修订：未启动节点可改映射，旧 Run 归档到 `historyRuns`、`planRevisions` 追加、新建 Run 并更新 `workItem.runId`；已完成节点历史不变。
   - **T11-R8**（P14）任务详情：Task ID、Node ID、Role、计划/实际执行人、Assignment 历史、Attempt 历史、Employee Session、Host Binding 历史、产物/Handoff/错误证据。
   - **T11-R9** 所有状态迁移写事件，关键迁移（启动/完成/人工等待）写审计。
+  - **T11-R10** `advanceRun(runId)` 是**幂等**的推进入口：读当前 Run/Task/事件，只推进满足条件的节点；重复调用不得重复建 Assignment、不得重复写同一事件；并发调用以 `store.transit(expectedRev)` 串行化，冲突时重读重试一次。
+  - **T11-R11** `ready_for_acceptance` **只由 T11** 在所有 Task 均为 `succeeded` 后设置；T13 的人工批准只调用 `advanceRun`，不得自行改 WorkItem 状态。WorkItem 进入该状态时写 `work_item` 事件与审计。
 - **验证清单**：
   - `test/wp21/v32-runs.test.js`：依赖解锁、非法迁移、完成率计算、快照隔离、修订归档与 runId 更新、活动面板由事件生成。
   - API：`GET /v32/runs` 列表字段；`POST /:id/tasks/:taskId/complete` 后下游变 `ready`。
@@ -683,7 +856,7 @@ node scripts/desktop/gate.mjs --skip-tests
   - **T13-R1** Human Task / Approval Gate 定义：审批方式（单人/多人/会签）、审批人（角色或指定员工）、人工补充输入条件、超时与默认动作；字段存在 node.human 内。
   - **T13-R2**（V32-16）人工节点**不分配员工、不分配 CLI、不创建 Employee Session / Host Binding / Attempt**；批准动作只改 Task 状态并写审计。
   - **T13-R3** 审批校验：审批人身份/角色必须符合 node.human 定义；不符合返回 `V32_APPROVER_INVALID`；驳回走异常边界（回退或升级，按节点失败策略）。
-  - **T13-R4** 批准后：Task `succeeded`、解锁下游；若所有节点完成，WorkItem 进入 `ready_for_acceptance` 并写审计。
+  - **T13-R4** 批准后：Task `succeeded`，调用 T11 的 `advanceRun` 解锁下游；**不得**自行把 WorkItem 置为 `ready_for_acceptance`（该状态唯一 owner 是 T11）。
   - **T13-R5**（P07 编辑器）Human 节点属性区可配置审批方式/审批人/条件/超时，且不出现员工 Agent 分配或 CLI 控件。
   - **T13-R6** 审批/驳回均写 `human.approved` 类审计事件，可追溯审批人与时间。
 - **验证清单**：
@@ -700,14 +873,14 @@ node scripts/desktop/gate.mjs --skip-tests
 - **需求描述**：
   - **T14-R1**（P16）Artifact 可追踪七维：WorkItem、Workflow Run、Task、Employee、CLI、Attempt、Handoff；`GET /artifacts/:id/trace` 返回完整链路与事件引用。
   - **T14-R2**（P16）事件记录覆盖：团队/工作流版本选择、节点映射、Task Assignment、会话创建与恢复；人工审批、异常恢复、交付验收**必须**写审计（与 T01 审计类型对齐）。
-  - **T14-R3**（§13.1 / V32-17）交付验收：`ready_for_acceptance→accepted→delivered`；`deliveryRecord` 结构化保存产物清单、测试结果、风险/遗留问题、验收人、验收时间；审计可追溯。
+  - **T14-R3**（§13.1 / V32-17）交付验收：T14 独占 `POST /v32/records/:workItemId/deliver`；`ready_for_acceptance→accepted→delivered`（先 accepted 再 delivered，允许一次请求内完成两步但必须逐次写事件）；`deliveryRecord` 固定字段 `{artifacts:[], tests:[{name,result,evidence}], risks:[], acceptedBy, acceptedAt, note}`；缺少产物或测试记录返回 `V32_DELIVERY_INCOMPLETE`，不得伪造通过。
   - **T14-R4** 需求详情产物卡片：展示本 WorkItem 全部 Artifact（名称/ID/类型/节点/Task/Employee/CLI/Attempt/Handoff）与「溯源」入口。
   - **T14-R5**（P16）记录页：产物表、事件时间线（结构化表格：时间/类型/对象/操作者/载荷摘要）、审计链校验状态；支持按 WorkItem 过滤。
   - **T14-R6** 事件/审计只读；不得提供删除入口；哈希链校验失败时页面显示明确告警。
 - **验证清单**：
   - `test/wp21/v32-delivery.test.js`：状态迁移、deliveryRecord 字段、审计写入、非法迁移拒绝。
   - `test/wp21/v32-audit.test.js`：七维溯源、事件过滤、哈希链校验、三类必须审计事件存在。
-  - API：`GET /v32/records/artifacts/:id/trace` 返回七维非空（人工节点产物允许 Employee 为空）。
+  - API：`GET /v32/records/artifacts/:id/trace` 返回七维非空（人工节点产物允许 Employee 为空）；`POST /v32/records/:workItemId/deliver` 缺产物/测试时返回 `V32_DELIVERY_INCOMPLETE` 且状态不变。
   - CDP：记录页表格可读、无横向溢出；交付弹窗字段齐全。
 
 ---
@@ -717,9 +890,9 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T15-api`
 - **依赖**：T02–T14 全部路由片段
 - **需求描述**：
-  - **T15-R1** 新建 `src/daemon/http/v32-routes.js`：`createV32Routes(deps)` 汇总所有片段，统一错误响应与 JSON 头，统一 404/405。
-  - **T15-R2** 在 `src/daemon/http/routes.js` 仅加两行：import + 把 `createV32Routes` 返回的路由展开进 `routes` 数组；**不得改动** `shapeSnapshot` 及任何既有路由。
-  - **T15-R3** 统一请求校验：所有 POST/PUT body 走契约 validate；错误码与 HTTP 状态映射固定（400/404/409）。
+  - **T15-R1** 新建 `src/daemon/http/v32-routes.js`：`createV32Routes({root})` 汇总所有片段，统一错误响应与 JSON 头，统一 404/405；**构造期零 IO**，store 在首次请求时懒创建并缓存，并把同一个 `{store, root}` 注入各片段（片段不得各自 new store）。
+  - **T15-R2** 按 §1.3.2 的「精确挂载点」改 `src/daemon/http/routes.js`（import + `const v32Routes` + `routes.push(...v32Routes)`）；**不得改动** `shapeSnapshot`、既有路由顺序或 `attachLazySeams`。构造异常会让 `http/server.js:263-284` 静默退化为 503，必须避免。
+  - **T15-R3** 统一请求校验：所有 POST/PUT body 走契约 validate；错误码与 HTTP 状态映射固定（400 校验 / 404 不存在 / 409 状态冲突）；响应体统一 `{ok:false,code,params}`。
   - **T15-R4** `test/wp21/v32-api-contract.test.js` 逐条打 §1.3.2 路由表，断言状态码与响应形状；已有片段缺失时只报告缺哪条，不替别人实现。
 - **验证清单**：
   - `test/wp21/v32-api-contract.test.js` 全绿（路由表条数 = 表中条数）。
@@ -734,18 +907,20 @@ node scripts/desktop/gate.mjs --skip-tests
 - **依赖**：T15 + 全部页面模块（可依 §1.3.3 契约并行开发页面，联调在 W5 同步点）
 - **需求描述**：
   - **T16-R1**（§11）导航按「启动与资源 / 需求工作台 / 执行中心 / 团队库 / 工作流库 / 员工档案 / 角色库 / 产物与事件 / 系统设置」分组；在 `desktop/ui/shell/nav.js` 注册 V3.2 view，保留历史 view ID 兼容既有深链。
-  - **T16-R2** `desktop/ui/v32/index.js` 汇总所有页面模块；`desktop/ui/app.js` 的 `handleAction` 增加 `v32-*` 动作分派；页面只用 `data-action/data-arg`，不改全局渲染契约。
-  - **T16-R3** 所有文案键注册到 `src/daemon/http/labels.js` 的 `UI_LABEL_KEYS` 与值表（append-only，冻结断言逐字比对），CLI 可见的镜像到 `src/cli/labels.js`；**键必须真被 `GET /ui/labels` 下发**，否则空表头/空按钮。
+  - **T16-R2** `desktop/ui/v32/index.js` 汇总页面模块；`desktop/ui/shell/index.js` 的 `PAGE_BY_VIEW` 增加 V3.2 view；`desktop/ui/app.js` 增加 `state.v32`、`loadV32(view,params)`，并在 `handleAction` 增加 `v32-*` 分派。页面 `render(ctx)` 返回 DOM 节点（与现有 `pages.js` 一致），只消费 `ctx.v32.data`，不在 render 内 fetch；`loadV32` 负责取数后 `paint()`。
+  - **T16-R3** 所有文案键注册到 `src/daemon/http/labels.js` 的 `UI_LABEL_KEYS` 与值表（append-only），并同步追加到 `test/wp13/labels-desktop.test.js` 的 `EXPECTED_V2_KEYS` / `EXPECTED_V2_VALUES`（既有行逐字不变）；CLI 可见的镜像到 `src/cli/labels.js`。**键必须真被 `GET /ui/labels` 下发**，否则空表头/空按钮。
   - **T16-R4** 零 CJK：V3.2 新增源码（含注释）用 `python3 -c` 正则 `[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]` 扫描为 0；变量不得叫 `editor`（31 词禁表，按整词扫）；分隔符用空格或 `·`。
   - **T16-R5** 输入控件带 `data-field`；动作在 `pointerdown` 响应且同时派发 `click`（600ms 去重窗口）；导航锚点唯一化（`.sidebar [data-section=…]` / `.secbar .sec-tab[data-tab=…]`）。
   - **T16-R6** `updateStudio` 类 mutator 返回 `{ok:true,value:{...}}`，只透传 `.value`；`atomicWrite` 异步需 await。
   - **T16-R7** 组织页不再是 iframe 内另一套视觉：V3.2 页面直接使用主壳标签栏与样式（原型中此问题为已知遗留，实现时纠正）。
-  - **T16-R8** `test/wp13/v32-shell.test.js`：从导航进入 9 个分组、页面渲染非空、动作可触发、`data-field` 存在。
+  - **T16-R8** `test/wp13/v32-shell.test.js`：从导航进入 9 个分组、页面渲染非空、动作可触发、`data-field` 存在；旧 5 组与历史 view 深链仍可进入。
+  - **T16-R9** 9 组导航扩展必须同步更新所有冻结断言（尤其 `test/wp13/labels-desktop.test.js` 的键总数与值表）；新增键只追加，既有键值逐字不变；若某旧测试无法在不放松断言的前提下兼容，报告 `BLOCKED` 由主线裁决。
+  - **T16-R10** `PAGE_BY_VIEW` 新增 view 后，`fallbackPage` 不得被误用；未装载数据时页面显示明确的 loading/empty 状态，不能白屏。
 - **验证清单**：
-  - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-labels.test.js" "test/wp13/v32-shell.test.js"` 全绿。
+  - `NODE_ENV=test TMPDIR=/tmp/v32t node --test "test/wp21/v32-labels.test.js" "test/wp13/v32-shell.test.js" "test/wp13/labels-desktop.test.js"` 全绿。
   - `python3 -c` 零 CJK 自查（对 `desktop/ui/v32/**`、`src/v32/**` 新增文件）。
   - CDP 逐一打开 9 个导航入口，截图核对浅色布局无溢出；`npm run verify:nav` 无新增红。
-  - `GET /ui/labels` 返回所有 `V32_*` 键且值非空。
+  - `GET /ui/labels` 返回所有 `V32_*` 键且值非空；键总数 = 原 312 + `EXPECTED_V2_KEYS.length` 的预期增量（以测试实际断言为准，不硬编码）。
 
 ---
 
@@ -754,7 +929,7 @@ node scripts/desktop/gate.mjs --skip-tests
 - **分支**：`feature/v32-T17-acceptance`
 - **依赖**：T16
 - **需求描述**：
-  - **T17-R1** `scripts/verify-v32.mjs`：起隔离临时项目（`MAESTRO_CONFIG_DIR` 必须隔离，避免污染真实 `~/.maestro/projects.json`），通过 HTTP API 依序执行 17 条用例，每条输出 `PASS/FAIL` 与关键状态片段。
+  - **T17-R1** `scripts/verify-v32.mjs`：用 `fs.mkdtempSync(os.tmpdir(),'v32-accept-')` 建隔离项目，`spawn(process.execPath, [src/daemon/serve-entry.js, '--project', root, '--desktop'])` 起真实 daemon，`HOME`/`USERPROFILE`/`MAESTRO_CONFIG_DIR` 全部指向临时目录（禁止污染真实 `~/.maestro/projects.json`）；从 `<root>/.orch/desktop.json` 读 port/token，通过 HTTP API 依序执行 17 条用例，每条输出 `PASS/FAIL` 与关键状态片段；结束 kill daemon 并清理临时目录。
   - **T17-R2** 17 条用例严格按 §2.4 的场景与通过标准断言；**不得只检查文字存在**，要检查对象字段、状态与事件。
   - **T17-R3** 覆盖四链路 A/B/C/D 的端到端脚本：A（已有+已有）、B（新建+新建）、C（Ready→Assignment→Session→完成）、D（中断→恢复 A 失败→恢复 B 成功）。
   - **T17-R4** 断言禁止硬编码测试条数；用 `fail=0 && pass===tests && tests>=17`。
@@ -778,6 +953,7 @@ node scripts/desktop/gate.mjs --skip-tests
   - **T18-R3** 门禁 `node scripts/desktop/gate.mjs` exit 0；若失败按 §0.5 判定，不得以「历史基线也有」掩盖新增红。
   - **T18-R4** 复核覆盖矩阵 §2：每个章节、页面、状态、异常、用例都有已合入任务与证据链接。
   - **T18-R5** `docs/v32/reports/final-verification.md` 汇总：基线 sha、最终 sha、逐任务结论、17/17、差集结论、门禁结论、已知偏差。
+  - **T18-R6** 门禁前置：确认 T00-R4 恢复的两份基线文件存在且内容与 `7b71cd4` 逐字一致；否则全量 `gate.mjs` 会在 `readFileSync` 处崩溃（`--skip-tests` 不会暴露此问题）。若文件缺失，先按 T00-R4 恢复，不得绕过门禁。
 - **验证清单**：全量测试 + 门禁 + `npm run verify:v32` 三项全绿；报告落盘后合入 main。
 - **完成定义**：两机确认所有任务已合入，main 上从零复跑三项验证仍全绿。
 
@@ -804,7 +980,7 @@ npm run verify:v32
 node scripts/desktop/gate.mjs
 
 # 5) 零 CJK 与文案键
-python3 -c 'import re,pathlib,sys; bad=[(str(p),n) for p in pathlib.Path("src/v32").rglob("*.js") for n,l in enumerate(p.read_text().splitlines(),1) if re.search(r"[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]",l)]; print(bad); sys.exit(1 if bad else 0)'
+python3 -c 'import re,pathlib,sys; roots=[pathlib.Path("src/v32"),pathlib.Path("desktop/ui/v32")]; bad=[(str(p),n) for r in roots for p in r.rglob("*.js") for n,l in enumerate(p.read_text().splitlines(),1) if re.search(r"[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]",l)]; print(bad); sys.exit(1 if bad else 0)'
 ```
 
 ### 5.2 完成定义（缺一不可）
@@ -812,7 +988,7 @@ python3 -c 'import re,pathlib,sys; bad=[(str(p),n) for p in pathlib.Path("src/v3
 1. §2 覆盖矩阵中每一行都有已合入任务，且报告中对应 REQ 全部 PASS。
 2. 17 条验收用例全部由真实 API / 状态驱动通过，不是页面文案检查。
 3. P00–P16 在桌面壳内可从导航进入并操作，无 iframe 内第二套视觉。
-4. 全量失败集合差集 = 0；新增红 = 0；门禁 exit 0。
+4. 全量失败集合差集 = 0；新增红 = 0；门禁 exit 0；T00-R4 的两份基线文件存在且未被改写。
 5. `docs/v32/reports/T01.md` ～ `T18.md` 全部存在且含 baseSha / headSha / 验证结果。
 6. 每台机器确认自己分支已合入且无遗留 WIP。
 
