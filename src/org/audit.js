@@ -10,9 +10,9 @@ export function isAuditable(type) {
   return AUDIT_TYPES.includes(type);
 }
 
-/** 审计事件构造；非审计类型返回 V32_INVALID_INPUT。 */
+/** 审计事件构造；非审计类型返回 ORG_INVALID_INPUT。 */
 export function createAuditEvent(fields) {
-  if (!isAuditable(fields && fields.type)) return fail('V32_INVALID_INPUT', { field: 'type', value: fields && fields.type });
+  if (!isAuditable(fields && fields.type)) return fail('ORG_INVALID_INPUT', { field: 'type', value: fields && fields.type });
   return createEvent(fields);
 }
 
@@ -21,7 +21,7 @@ export function readAudit(file) {
 }
 
 export function appendAudit(file, events) {
-  if (!Array.isArray(events)) return fail('V32_INVALID_INPUT', { field: 'events' });
+  if (!Array.isArray(events)) return fail('ORG_INVALID_INPUT', { field: 'events' });
   appendJsonl(file, events);
   return ok(events.length);
 }

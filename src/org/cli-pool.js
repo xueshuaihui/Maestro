@@ -330,8 +330,8 @@ export function createCliPool({
    * Two-stage scan. Writes only cliPool.installs[] and cliPool.scan:
    * running (started event) -> discovery -> optional full probes -> done (finished event).
    */
-  async function scan({ mode = 'full', reason = 'v32-cli-scan', actor = 'system' } = {}) {
-    if (!CLI_SCAN_MODES.includes(mode)) return fail('V32_INVALID_INPUT', { field: 'mode', value: mode });
+  async function scan({ mode = 'full', reason = 'org-cli-scan', actor = 'system' } = {}) {
+    if (!CLI_SCAN_MODES.includes(mode)) return fail('ORG_INVALID_INPUT', { field: 'mode', value: mode });
     const store = getStore();
     const startedAt = now();
 
@@ -361,12 +361,12 @@ export function createCliPool({
     let findings;
     try {
       const discovered = await discoverFn({ ...discoveryOptions });
-      if (!discovered?.ok) return fail('V32_INVALID_INPUT', {
+      if (!discovered?.ok) return fail('ORG_INVALID_INPUT', {
         field: 'discovery', code: discovered?.code ?? 'CLI_DISCOVERY_FAILED'
       });
       findings = Array.isArray(discovered.findings) ? discovered.findings : [];
     } catch (error) {
-      return fail('V32_INVALID_INPUT', { field: 'discovery', message: String(error?.message ?? error) });
+      return fail('ORG_INVALID_INPUT', { field: 'discovery', message: String(error?.message ?? error) });
     }
 
     const built = [];
@@ -443,10 +443,10 @@ export function createCliPool({
   }
 
   /** Re-probe one installation. Data stays visible even when the probe fails. */
-  async function checkHealth({ id, reason = 'v32-cli-health', actor = 'system' } = {}) {
+  async function checkHealth({ id, reason = 'org-cli-health', actor = 'system' } = {}) {
     const store = getStore();
     const current = store.get('cliInstall', id);
-    if (!current) return fail('V32_NOT_FOUND', { kind: 'cliInstall', id });
+    if (!current) return fail('ORG_NOT_FOUND', { kind: 'cliInstall', id });
     const finding = {
       cli_id: current.cliId ?? null,
       name: current.name,
@@ -462,7 +462,7 @@ export function createCliPool({
     const checkedAt = now();
     const result = store.transit((draft) => {
       const target = draft.cliPool.installs.find((item) => item.id === id);
-      if (!target) return fail('V32_NOT_FOUND', { kind: 'cliInstall', id });
+      if (!target) return fail('ORG_NOT_FOUND', { kind: 'cliInstall', id });
       Object.assign(target, updated.value, {
         id,
         fingerprint: current.fingerprint,
@@ -485,12 +485,12 @@ export function createCliPool({
   }
 
   /** Manual add. Duplicate fingerprint returns the existing row unchanged. */
-  function addManual(input = {}, { reason = 'v32-cli-manual-add', actor = 'system' } = {}) {
+  function addManual(input = {}, { reason = 'org-cli-manual-add', actor = 'system' } = {}) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) {
-      return fail('V32_INVALID_INPUT', { field: 'input' });
+      return fail('ORG_INVALID_INPUT', { field: 'input' });
     }
     const installPath = isText(input.path) ? input.path.trim() : null;
-    if (!installPath || !path.isAbsolute(installPath)) return fail('V32_INVALID_INPUT', {
+    if (!installPath || !path.isAbsolute(installPath)) return fail('ORG_INVALID_INPUT', {
       field: 'path', reason: REASONS.BAD_PATH
     });
     const fingerprint = fingerprintFor(installPath);
@@ -562,7 +562,7 @@ export function createCliPool({
   function capabilitiesOfInstall(id) {
     const store = getStore();
     const install = store.get('cliInstall', id);
-    if (!install) return fail('V32_NOT_FOUND', { kind: 'cliInstall', id });
+    if (!install) return fail('ORG_NOT_FOUND', { kind: 'cliInstall', id });
     const caps = install.capabilities ?? capabilitiesOf();
     const session = Array.isArray(caps.session) ? caps.session : [];
     const lower = session.map((item) => String(item).toLowerCase());

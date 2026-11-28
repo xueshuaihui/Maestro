@@ -1,46 +1,46 @@
 /**
- * V3.2 CLI pool page (P00). Pure renderer: consumes ctx.v32.data and returns a
+ * V3.2 CLI pool page (P00). Pure renderer: consumes ctx.org.data and returns a
  * DocumentFragment without fetching. All user-visible text goes through
- * ctx.t('V32_CLI_*', asciiFallback); keys are listed in LABEL_KEYS for T16.
+ * ctx.t('ORG_CLI_*', asciiFallback); keys are listed in LABEL_KEYS for T16.
  *
  * Zero CJK in this file by design (plan section 0.7 red line 5).
  */
 
-export const viewId = 'v32-cli';
+export const viewId = 'org-cli';
 export const section = 'startup_resources';
 
 export const LABEL_KEYS = Object.freeze([
-  'V32_CLI_TITLE',
-  'V32_CLI_SUBTITLE',
-  'V32_CLI_SCAN_PROGRESS',
-  'V32_CLI_SCAN_PHASE',
-  'V32_CLI_SCAN_MODE',
-  'V32_CLI_STAT_DISCOVERED',
-  'V32_CLI_STAT_AVAILABLE',
-  'V32_CLI_STAT_UNHEALTHY',
-  'V32_CLI_RESCAN',
-  'V32_CLI_FULL_SCAN',
-  'V32_CLI_MANUAL_ADD',
-  'V32_CLI_HEALTH_CHECK',
-  'V32_CLI_FIELD_NAME',
-  'V32_CLI_FIELD_PATH',
-  'V32_CLI_FIELD_VERSION',
-  'V32_CLI_FIELD_ADAPTER',
-  'V32_CLI_FIELD_CAPABILITIES',
-  'V32_CLI_FIELD_HEALTH',
-  'V32_CLI_FIELD_AUTH',
-  'V32_CLI_FIELD_RESUMABLE',
-  'V32_CLI_FIELD_FINGERPRINT',
-  'V32_CLI_FIELD_SOURCE',
-  'V32_CLI_FIELD_STALE',
-  'V32_CLI_UNKNOWN',
-  'V32_CLI_REASON',
-  'V32_CLI_EMPTY',
-  'V32_CLI_FORM_NAME',
-  'V32_CLI_FORM_PATH',
-  'V32_CLI_FORM_VERSION',
-  'V32_CLI_FORM_ADAPTER',
-  'V32_CLI_FORM_SUBMIT'
+  'ORG_CLI_TITLE',
+  'ORG_CLI_SUBTITLE',
+  'ORG_CLI_SCAN_PROGRESS',
+  'ORG_CLI_SCAN_PHASE',
+  'ORG_CLI_SCAN_MODE',
+  'ORG_CLI_STAT_DISCOVERED',
+  'ORG_CLI_STAT_AVAILABLE',
+  'ORG_CLI_STAT_UNHEALTHY',
+  'ORG_CLI_RESCAN',
+  'ORG_CLI_FULL_SCAN',
+  'ORG_CLI_MANUAL_ADD',
+  'ORG_CLI_HEALTH_CHECK',
+  'ORG_CLI_FIELD_NAME',
+  'ORG_CLI_FIELD_PATH',
+  'ORG_CLI_FIELD_VERSION',
+  'ORG_CLI_FIELD_ADAPTER',
+  'ORG_CLI_FIELD_CAPABILITIES',
+  'ORG_CLI_FIELD_HEALTH',
+  'ORG_CLI_FIELD_AUTH',
+  'ORG_CLI_FIELD_RESUMABLE',
+  'ORG_CLI_FIELD_FINGERPRINT',
+  'ORG_CLI_FIELD_SOURCE',
+  'ORG_CLI_FIELD_STALE',
+  'ORG_CLI_UNKNOWN',
+  'ORG_CLI_REASON',
+  'ORG_CLI_EMPTY',
+  'ORG_CLI_FORM_NAME',
+  'ORG_CLI_FORM_PATH',
+  'ORG_CLI_FORM_VERSION',
+  'ORG_CLI_FORM_ADAPTER',
+  'ORG_CLI_FORM_SUBMIT'
 ]);
 
 const UNKNOWN_TEXT = 'unknown';
@@ -70,10 +70,10 @@ function button(doc, label, action, arg) {
 }
 
 function fieldLine(doc, ctx, label, value, reason) {
-  const row = el(doc, 'div', 'v32-cli-field');
+  const row = el(doc, 'div', 'org-cli-field');
   row.appendChild(el(doc, 'span', 'k', label));
   row.appendChild(el(doc, 'span', 'v', value ?? UNKNOWN_TEXT));
-  if (reason) row.appendChild(el(doc, 'small', 'why', `${tr(ctx, 'V32_CLI_REASON', 'reason')}: ${reason}`));
+  if (reason) row.appendChild(el(doc, 'small', 'why', `${tr(ctx, 'ORG_CLI_REASON', 'reason')}: ${reason}`));
   return row;
 }
 
@@ -86,7 +86,7 @@ function statsOf(installs) {
 }
 
 function dataOf(ctx) {
-  const data = (ctx && ctx.v32 && ctx.v32.data) || {};
+  const data = (ctx && ctx.org && ctx.org.data) || {};
   const installs = Array.isArray(data.value)
     ? data.value
     : (Array.isArray(data.installs) ? data.installs : []);
@@ -104,34 +104,34 @@ function progressPercent(scan) {
 }
 
 function renderProgress(doc, ctx, scan) {
-  const box = el(doc, 'div', 'v32-cli-progress-box');
-  box.setAttribute('data-testid', 'v32-cli-progress');
-  box.appendChild(el(doc, 'div', 'v32-cli-progress-label',
-    tr(ctx, 'V32_CLI_SCAN_PROGRESS', 'Scan progress')));
+  const box = el(doc, 'div', 'org-cli-progress-box');
+  box.setAttribute('data-testid', 'org-cli-progress');
+  box.appendChild(el(doc, 'div', 'org-cli-progress-label',
+    tr(ctx, 'ORG_CLI_SCAN_PROGRESS', 'Scan progress')));
   const bar = el(doc, 'div', 'progress');
   const fill = el(doc, 'i', null);
   fill.style.width = `${progressPercent(scan)}%`;
   bar.appendChild(fill);
   box.appendChild(bar);
-  const meta = el(doc, 'div', 'v32-cli-progress-meta');
+  const meta = el(doc, 'div', 'org-cli-progress-meta');
   meta.appendChild(el(doc, 'span', 'phase',
-    `${tr(ctx, 'V32_CLI_SCAN_PHASE', 'Phase')}: ${scan.phase ?? scan.status ?? 'idle'}`));
+    `${tr(ctx, 'ORG_CLI_SCAN_PHASE', 'Phase')}: ${scan.phase ?? scan.status ?? 'idle'}`));
   meta.appendChild(el(doc, 'span', 'mode',
-    `${tr(ctx, 'V32_CLI_SCAN_MODE', 'Mode')}: ${scan.mode ?? UNKNOWN_TEXT}`));
+    `${tr(ctx, 'ORG_CLI_SCAN_MODE', 'Mode')}: ${scan.mode ?? UNKNOWN_TEXT}`));
   meta.appendChild(el(doc, 'span', 'status', String(scan.status ?? 'idle')));
   box.appendChild(meta);
   return box;
 }
 
 function renderStats(doc, ctx, stats) {
-  const row = el(doc, 'div', 'v32-cli-stats');
+  const row = el(doc, 'div', 'org-cli-stats');
   const tiles = [
-    ['V32_CLI_STAT_DISCOVERED', 'Discovered', stats.discovered],
-    ['V32_CLI_STAT_AVAILABLE', 'Available', stats.available],
-    ['V32_CLI_STAT_UNHEALTHY', 'Unhealthy', stats.unhealthy]
+    ['ORG_CLI_STAT_DISCOVERED', 'Discovered', stats.discovered],
+    ['ORG_CLI_STAT_AVAILABLE', 'Available', stats.available],
+    ['ORG_CLI_STAT_UNHEALTHY', 'Unhealthy', stats.unhealthy]
   ];
   for (const [key, fallback, value] of tiles) {
-    const tile = el(doc, 'div', 'metric v32-cli-stat');
+    const tile = el(doc, 'div', 'metric org-cli-stat');
     tile.setAttribute('data-stat', key);
     tile.appendChild(el(doc, 'div', 'l', tr(ctx, key, fallback)));
     tile.appendChild(el(doc, 'div', 'v', String(value ?? 0)));
@@ -141,33 +141,33 @@ function renderStats(doc, ctx, stats) {
 }
 
 function renderActions(doc, ctx) {
-  const row = el(doc, 'div', 'v32-cli-actions');
-  row.appendChild(button(doc, tr(ctx, 'V32_CLI_RESCAN', 'Rescan'), 'v32-cli-rescan', 'quick'));
-  row.appendChild(button(doc, tr(ctx, 'V32_CLI_FULL_SCAN', 'Full scan'), 'v32-cli-full-scan', 'full'));
-  row.appendChild(button(doc, tr(ctx, 'V32_CLI_MANUAL_ADD', 'Manual add'), 'v32-cli-manual-add'));
-  row.appendChild(button(doc, tr(ctx, 'V32_CLI_HEALTH_CHECK', 'Health check'), 'v32-cli-health-check'));
+  const row = el(doc, 'div', 'org-cli-actions');
+  row.appendChild(button(doc, tr(ctx, 'ORG_CLI_RESCAN', 'Rescan'), 'org-cli-rescan', 'quick'));
+  row.appendChild(button(doc, tr(ctx, 'ORG_CLI_FULL_SCAN', 'Full scan'), 'org-cli-full-scan', 'full'));
+  row.appendChild(button(doc, tr(ctx, 'ORG_CLI_MANUAL_ADD', 'Manual add'), 'org-cli-manual-add'));
+  row.appendChild(button(doc, tr(ctx, 'ORG_CLI_HEALTH_CHECK', 'Health check'), 'org-cli-health-check'));
   return row;
 }
 
 function renderForm(doc, ctx) {
-  const form = el(doc, 'form', 'v32-cli-form');
-  form.setAttribute('data-form', 'v32-cli-manual-add');
+  const form = el(doc, 'form', 'org-cli-form');
+  form.setAttribute('data-form', 'org-cli-manual-add');
   const specs = [
-    ['name', 'V32_CLI_FORM_NAME', 'Name'],
-    ['path', 'V32_CLI_FORM_PATH', 'Path'],
-    ['version', 'V32_CLI_FORM_VERSION', 'Version'],
-    ['adapter', 'V32_CLI_FORM_ADAPTER', 'Adapter']
+    ['name', 'ORG_CLI_FORM_NAME', 'Name'],
+    ['path', 'ORG_CLI_FORM_PATH', 'Path'],
+    ['version', 'ORG_CLI_FORM_VERSION', 'Version'],
+    ['adapter', 'ORG_CLI_FORM_ADAPTER', 'Adapter']
   ];
   for (const [name, key, fallback] of specs) {
-    const label = el(doc, 'label', 'v32-cli-form-label', tr(ctx, key, fallback));
-    const input = el(doc, 'input', 'v32-cli-form-input');
+    const label = el(doc, 'label', 'org-cli-form-label', tr(ctx, key, fallback));
+    const input = el(doc, 'input', 'org-cli-form-input');
     input.type = 'text';
     input.name = name;
     input.setAttribute('data-field', name);
     label.appendChild(input);
     form.appendChild(label);
   }
-  const submit = button(doc, tr(ctx, 'V32_CLI_FORM_SUBMIT', 'Add CLI'), 'v32-cli-manual-add');
+  const submit = button(doc, tr(ctx, 'ORG_CLI_FORM_SUBMIT', 'Add CLI'), 'org-cli-manual-add');
   submit.type = 'submit';
   form.appendChild(submit);
   return form;
@@ -176,56 +176,56 @@ function renderForm(doc, ctx) {
 function displayValue(ctx, install, field, value) {
   if (value !== undefined && value !== null && value !== '' && value !== UNKNOWN_TEXT) return String(value);
   const reason = install.unknownFields && install.unknownFields[field];
-  return reason ? `${tr(ctx, 'V32_CLI_UNKNOWN', UNKNOWN_TEXT)} (${reason})` : tr(ctx, 'V32_CLI_UNKNOWN', UNKNOWN_TEXT);
+  return reason ? `${tr(ctx, 'ORG_CLI_UNKNOWN', UNKNOWN_TEXT)} (${reason})` : tr(ctx, 'ORG_CLI_UNKNOWN', UNKNOWN_TEXT);
 }
 
 function renderRow(doc, ctx, install) {
-  const row = el(doc, 'article', 'v32-cli-row');
+  const row = el(doc, 'article', 'org-cli-row');
   row.setAttribute('data-cli-id', String(install.id ?? ''));
-  row.appendChild(el(doc, 'h4', 'v32-cli-row-title', install.name ?? UNKNOWN_TEXT));
+  row.appendChild(el(doc, 'h4', 'org-cli-row-title', install.name ?? UNKNOWN_TEXT));
 
   const caps = install.capabilities && typeof install.capabilities === 'object' ? install.capabilities : {};
   const capText = Array.isArray(caps.items) && caps.items.length > 0
     ? caps.items.join(', ')
     : displayValue(ctx, install, 'capabilities', null);
   const fields = [
-    ['V32_CLI_FIELD_NAME', 'Name', install.name],
-    ['V32_CLI_FIELD_PATH', 'Path', install.path],
-    ['V32_CLI_FIELD_VERSION', 'Version', install.version],
-    ['V32_CLI_FIELD_ADAPTER', 'Adapter/Protocol', install.adapter !== UNKNOWN_TEXT
+    ['ORG_CLI_FIELD_NAME', 'Name', install.name],
+    ['ORG_CLI_FIELD_PATH', 'Path', install.path],
+    ['ORG_CLI_FIELD_VERSION', 'Version', install.version],
+    ['ORG_CLI_FIELD_ADAPTER', 'Adapter/Protocol', install.adapter !== UNKNOWN_TEXT
       ? `${install.adapter}${install.protocol && install.protocol !== UNKNOWN_TEXT ? ` / ${install.protocol}` : ''}`
       : UNKNOWN_TEXT],
-    ['V32_CLI_FIELD_CAPABILITIES', 'Capabilities', capText],
-    ['V32_CLI_FIELD_HEALTH', 'Health', install.health],
-    ['V32_CLI_FIELD_AUTH', 'Auth', install.auth],
-    ['V32_CLI_FIELD_RESUMABLE', 'Resumable', install.resumableStatus ?? String(Boolean(install.resumable))],
-    ['V32_CLI_FIELD_FINGERPRINT', 'Fingerprint', install.fingerprint],
-    ['V32_CLI_FIELD_SOURCE', 'Source', install.source],
-    ['V32_CLI_FIELD_STALE', 'Stale', String(Boolean(install.stale))]
+    ['ORG_CLI_FIELD_CAPABILITIES', 'Capabilities', capText],
+    ['ORG_CLI_FIELD_HEALTH', 'Health', install.health],
+    ['ORG_CLI_FIELD_AUTH', 'Auth', install.auth],
+    ['ORG_CLI_FIELD_RESUMABLE', 'Resumable', install.resumableStatus ?? String(Boolean(install.resumable))],
+    ['ORG_CLI_FIELD_FINGERPRINT', 'Fingerprint', install.fingerprint],
+    ['ORG_CLI_FIELD_SOURCE', 'Source', install.source],
+    ['ORG_CLI_FIELD_STALE', 'Stale', String(Boolean(install.stale))]
   ];
   for (const [key, fallback, value] of fields) {
     const label = tr(ctx, key, fallback);
     const reason = install.unknownFields && install.unknownFields[fieldNameOf(key)];
     row.appendChild(fieldLine(doc, ctx, label, displayValue(ctx, install, fieldNameOf(key), value), reason));
   }
-  row.appendChild(button(doc, tr(ctx, 'V32_CLI_HEALTH_CHECK', 'Health check'),
-    'v32-cli-health-check', install.id));
+  row.appendChild(button(doc, tr(ctx, 'ORG_CLI_HEALTH_CHECK', 'Health check'),
+    'org-cli-health-check', install.id));
   return row;
 }
 
 function fieldNameOf(key) {
   const map = {
-    V32_CLI_FIELD_NAME: 'name',
-    V32_CLI_FIELD_PATH: 'path',
-    V32_CLI_FIELD_VERSION: 'version',
-    V32_CLI_FIELD_ADAPTER: 'adapter',
-    V32_CLI_FIELD_CAPABILITIES: 'capabilities',
-    V32_CLI_FIELD_HEALTH: 'health',
-    V32_CLI_FIELD_AUTH: 'auth',
-    V32_CLI_FIELD_RESUMABLE: 'resumable',
-    V32_CLI_FIELD_FINGERPRINT: 'fingerprint',
-    V32_CLI_FIELD_SOURCE: 'source',
-    V32_CLI_FIELD_STALE: 'stale'
+    ORG_CLI_FIELD_NAME: 'name',
+    ORG_CLI_FIELD_PATH: 'path',
+    ORG_CLI_FIELD_VERSION: 'version',
+    ORG_CLI_FIELD_ADAPTER: 'adapter',
+    ORG_CLI_FIELD_CAPABILITIES: 'capabilities',
+    ORG_CLI_FIELD_HEALTH: 'health',
+    ORG_CLI_FIELD_AUTH: 'auth',
+    ORG_CLI_FIELD_RESUMABLE: 'resumable',
+    ORG_CLI_FIELD_FINGERPRINT: 'fingerprint',
+    ORG_CLI_FIELD_SOURCE: 'source',
+    ORG_CLI_FIELD_STALE: 'stale'
   };
   return map[key] ?? '';
 }
@@ -239,9 +239,9 @@ export function render(ctx) {
   const frag = doc.createDocumentFragment();
   const { installs, scan, stats } = dataOf(ctx);
 
-  const head = el(doc, 'header', 'page-head v32-cli-head');
-  head.appendChild(el(doc, 'h1', null, tr(ctx, 'V32_CLI_TITLE', 'Agent CLI pool')));
-  head.appendChild(el(doc, 'p', null, tr(ctx, 'V32_CLI_SUBTITLE',
+  const head = el(doc, 'header', 'page-head org-cli-head');
+  head.appendChild(el(doc, 'h1', null, tr(ctx, 'ORG_CLI_TITLE', 'Agent CLI pool')));
+  head.appendChild(el(doc, 'p', null, tr(ctx, 'ORG_CLI_SUBTITLE',
     'Scan local agents, inspect capabilities and check health')));
   frag.appendChild(head);
 
@@ -250,10 +250,10 @@ export function render(ctx) {
   frag.appendChild(renderActions(doc, ctx));
   frag.appendChild(renderForm(doc, ctx));
 
-  const list = el(doc, 'section', 'v32-cli-list');
-  list.setAttribute('data-testid', 'v32-cli-list');
+  const list = el(doc, 'section', 'org-cli-list');
+  list.setAttribute('data-testid', 'org-cli-list');
   if (installs.length === 0) {
-    list.appendChild(el(doc, 'p', 'v32-cli-empty', tr(ctx, 'V32_CLI_EMPTY', 'No CLI installed yet')));
+    list.appendChild(el(doc, 'p', 'org-cli-empty', tr(ctx, 'ORG_CLI_EMPTY', 'No CLI installed yet')));
   }
   for (const install of installs) list.appendChild(renderRow(doc, ctx, install));
   frag.appendChild(list);
@@ -275,21 +275,21 @@ function fieldsFrom(ctx, arg) {
 }
 
 async function callApi(ctx, method, url, body) {
-  const api = ctx && ctx.v32Api;
-  if (!api || typeof api[method] !== 'function') return { ok: false, code: 'V32_INVALID_INPUT' };
+  const api = ctx && ctx.orgApi;
+  if (!api || typeof api[method] !== 'function') return { ok: false, code: 'ORG_INVALID_INPUT' };
   const result = method === 'get' ? await api.get(url) : await api[method](url, body);
-  if (ctx && typeof ctx.reloadV32 === 'function') await ctx.reloadV32();
+  if (ctx && typeof ctx.reloadOrg === 'function') await ctx.reloadOrg();
   else if (ctx && typeof ctx.refresh === 'function') await ctx.refresh();
   return result;
 }
 
 export const actions = Object.freeze({
-  'v32-cli-rescan': async (arg, ctx) => callApi(ctx, 'post', '/v32/cli/scan', { mode: 'quick' }),
-  'v32-cli-full-scan': async (arg, ctx) => callApi(ctx, 'post', '/v32/cli/scan', { mode: 'full' }),
-  'v32-cli-manual-add': async (arg, ctx) => callApi(ctx, 'post', '/v32/cli', fieldsFrom(ctx, arg)),
-  'v32-cli-health-check': async (arg, ctx) => {
+  'org-cli-rescan': async (arg, ctx) => callApi(ctx, 'post', '/org/cli/scan', { mode: 'quick' }),
+  'org-cli-full-scan': async (arg, ctx) => callApi(ctx, 'post', '/org/cli/scan', { mode: 'full' }),
+  'org-cli-manual-add': async (arg, ctx) => callApi(ctx, 'post', '/org/cli', fieldsFrom(ctx, arg)),
+  'org-cli-health-check': async (arg, ctx) => {
     const id = typeof arg === 'string' ? arg : (arg && arg.id);
-    if (!id) return { ok: false, code: 'V32_INVALID_INPUT' };
-    return callApi(ctx, 'post', `/v32/cli/${encodeURIComponent(id)}/health`, {});
+    if (!id) return { ok: false, code: 'ORG_INVALID_INPUT' };
+    return callApi(ctx, 'post', `/org/cli/${encodeURIComponent(id)}/health`, {});
   }
 });

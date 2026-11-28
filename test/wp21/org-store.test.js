@@ -9,21 +9,21 @@ import test from 'node:test';
 import {
   ERROR_CODES, EVENT_REF_FIELDS, ID_PATTERN, STATE_KEYS,
   createV32Store, eventHash, publishDefinition, validate
-} from '../../src/v32/index.js';
+} from '../../src/org/index.js';
 
 const FIXTURE_TIME = '2026-11-28T00:00:00.000Z';
 const fixture = (name) => JSON.parse(fs.readFileSync(new URL(`./fixtures/${name}.json`, import.meta.url), 'utf8'));
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
 function setup(t, options = {}) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'v32-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'org-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const store = createV32Store({ root, now: () => FIXTURE_TIME, ...options });
   return { store, root };
 }
 
 function addRole(draft, ctx, suffix = '') {
-  const role = clone(fixture('v32-role'));
+  const role = clone(fixture('org-role'));
   const id = ctx.nextId('role').value;
   role.id = id;
   role.name = `${role.name}${suffix}`;
@@ -55,12 +55,12 @@ test('R13 root 必须是绝对路径', (t) => {
   assert.doesNotThrow(() => createV32Store({ root }));
 });
 
-test('R13 首次 transit 才创建 .orch/v32 且路径均在临时 root 下', (t) => {
+test('R13 首次 transit 才创建 .orch/org 且路径均在临时 root 下', (t) => {
   const { store, root } = setup(t);
   assert.equal(fs.existsSync(path.join(root, '.orch')), false);
   const result = store.transit((draft, ctx) => ({ ok: true, value: addRole(draft, ctx) }), { expectedRev: 0 });
   assert.equal(result.ok, true);
-  assert.equal(fs.existsSync(path.join(root, '.orch', 'v32', 'state.json')), true);
+  assert.equal(fs.existsSync(path.join(root, '.orch', 'org', 'state.json')), true);
   for (const target of Object.values(store.paths)) {
     assert.equal(target.startsWith(root), true, target);
   }
@@ -78,7 +78,7 @@ test('R4 成功 transit：rev+1、原子落盘、返回新快照', (t) => {
   assert.equal(result.ok, true);
   assert.equal(result.value.rev, 1);
   assert.equal(result.value.updatedAt, FIXTURE_TIME);
-  const onDisk = JSON.parse(fs.readFileSync(path.join(root, '.orch', 'v32', 'state.json'), 'utf8'));
+  const onDisk = JSON.parse(fs.readFileSync(path.join(root, '.orch', 'org', 'state.json'), 'utf8'));
   assert.equal(onDisk.rev, 1);
   assert.equal(onDisk.roles.length, 1);
   assert.equal(validate('role', onDisk.roles[0]).ok, true);
@@ -88,7 +88,7 @@ test('R4 read/get/list 返回深拷贝，外部修改不影响内存状态', (t)
   const { store } = setup(t);
   store.transit((draft, ctx) => {
     const id = addRole(draft, ctx);
-    draft.teams.push({ ...fixture('v32-team'), id: ctx.nextId('team').value });
+    draft.teams.push({ ...fixture('org-team'), id: ctx.nextId('team').value });
     return { ok: true, value: id };
   }, { expectedRev: 0 });
 
@@ -107,12 +107,12 @@ test('R4 read/get/list 返回深拷贝，外部修改不影响内存状态', (t)
   assert.equal(store.get('role', 'ROLE-999'), null);
 });
 
-test('R4 expectedRev 不符返回 V32_REV_CONFLICT，mutator 不执行', (t) => {
+test('R4 expectedRev 不符返回 ORG_REV_CONFLICT，mutator 不执行', (t) => {
   const { store, root } = setup(t);
   let called = false;
   const result = store.transit(() => { called = true; return { ok: true, value: 1 }; }, { expectedRev: 7 });
   assert.equal(result.ok, false);
-  assert.equal(result.code, 'V32_REV_CONFLICT');
+  assert.equal(result.code, 'ORG_REV_CONFLICT');
   assert.equal(ERROR_CODES.includes(result.code), true);
   assert.equal(called, false);
   assert.equal(fs.existsSync(path.join(root, '.orch')), false);
@@ -122,18 +122,18 @@ test('R4 expectedRev 不符返回 V32_REV_CONFLICT，mutator 不执行', (t) => 
 test('R4 mutator 返回失败不落盘、不改内存；异常也不改内存', (t) => {
   const { store, root } = setup(t);
   const failed = store.transit((draft) => {
-    draft.roles.push(fixture('v32-role'));
-    return { ok: false, code: 'V32_NO_CANDIDATE', params: { nodeId: 'N-PM' } };
+    draft.roles.push(fixture('org-role'));
+    return { ok: false, code: 'ORG_NO_CANDIDATE', params: { nodeId: 'N-PM' } };
   }, { expectedRev: 0 });
   assert.equal(failed.ok, false);
-  assert.equal(failed.code, 'V32_NO_CANDIDATE');
+  assert.equal(failed.code, 'ORG_NO_CANDIDATE');
   assert.equal(store.read().roles.length, 0);
   assert.equal(store.read().rev, 0);
   assert.equal(fs.existsSync(path.join(root, '.orch')), false);
 
   const thrown = store.transit(() => { throw new Error('boom'); }, { expectedRev: 0 });
   assert.equal(thrown.ok, false);
-  assert.equal(thrown.code, 'V32_INVALID_INPUT');
+  assert.equal(thrown.code, 'ORG_INVALID_INPUT');
   assert.equal(store.read().rev, 0);
 });
 
@@ -155,9 +155,9 @@ test('R4 连续 transit 基于磁盘最新快照，rev 单调递增', (t) => {
 test('R9 nextId 按现有最大序号 +1，同事务多次调用连续递增', (t) => {
   const { store } = setup(t);
   store.transit((draft) => {
-    draft.roles.push({ ...fixture('v32-role'), id: 'ROLE-001' });
-    draft.roles.push({ ...fixture('v32-role'), id: 'ROLE-005' });
-    draft.roles.push({ ...fixture('v32-role'), id: 'ROLE-003' });
+    draft.roles.push({ ...fixture('org-role'), id: 'ROLE-001' });
+    draft.roles.push({ ...fixture('org-role'), id: 'ROLE-005' });
+    draft.roles.push({ ...fixture('org-role'), id: 'ROLE-003' });
     return { ok: true, value: null };
   }, { expectedRev: 0 });
 
@@ -172,20 +172,20 @@ test('R9 nextId 按现有最大序号 +1，同事务多次调用连续递增', (
   for (const id of result.mutatorValue) assert.equal(ID_PATTERN.test(id), true, id);
 });
 
-test('R9 nextId 事务外不可用；重复 ID 返回 V32_DUPLICATE_ID', (t) => {
+test('R9 nextId 事务外不可用；重复 ID 返回 ORG_DUPLICATE_ID', (t) => {
   const { store } = setup(t);
   const outside = store.nextId('role');
   assert.equal(outside.ok, false);
-  assert.equal(outside.code, 'V32_INVALID_INPUT');
+  assert.equal(outside.code, 'ORG_INVALID_INPUT');
   assert.equal(store.assertUniqueId('ROLE-001').ok, true);
 
   store.transit((draft) => {
-    draft.roles.push({ ...fixture('v32-role'), id: 'ROLE-001' });
+    draft.roles.push({ ...fixture('org-role'), id: 'ROLE-001' });
     return { ok: true, value: null };
   }, { expectedRev: 0 });
   const duplicate = store.assertUniqueId('ROLE-001');
   assert.equal(duplicate.ok, false);
-  assert.equal(duplicate.code, 'V32_DUPLICATE_ID');
+  assert.equal(duplicate.code, 'ORG_DUPLICATE_ID');
   assert.equal(ERROR_CODES.includes(duplicate.code), true);
 });
 
@@ -193,7 +193,7 @@ test('R9 nextId 事务外不可用；重复 ID 返回 V32_DUPLICATE_ID', (t) => 
 // R10 / R11 / R14 领域辅助在 transit 内可用
 // ---------------------------------------------------------------------------
 
-test('R10 transit 内非法迁移返回 V32_ILLEGAL_TRANSITION 且不落盘', (t) => {
+test('R10 transit 内非法迁移返回 ORG_ILLEGAL_TRANSITION 且不落盘', (t) => {
   const { store, root } = setup(t);
   const result = store.transit((draft, ctx) => {
     const check = ctx.assertTransition('workItem', 'cancelled', 'running');
@@ -201,7 +201,7 @@ test('R10 transit 内非法迁移返回 V32_ILLEGAL_TRANSITION 且不落盘', (t
     return check;
   }, { expectedRev: 0 });
   assert.equal(result.ok, false);
-  assert.equal(result.code, 'V32_ILLEGAL_TRANSITION');
+  assert.equal(result.code, 'ORG_ILLEGAL_TRANSITION');
   assert.equal(store.read().rev, 0);
   assert.equal(fs.existsSync(path.join(root, '.orch')), false);
 
@@ -213,7 +213,7 @@ test('R10 transit 内非法迁移返回 V32_ILLEGAL_TRANSITION 且不落盘', (t
 test('R10 已有对象直改 status 也强制走迁移表，非法迁移不落盘', (t) => {
   const { store } = setup(t);
   store.transit((draft, ctx) => {
-    draft.workItems.push({ ...fixture('v32-work-item'), id: ctx.nextId('workItem').value });
+    draft.workItems.push({ ...fixture('org-work-item'), id: ctx.nextId('workItem').value });
     return { ok: true, value: null };
   }, { expectedRev: 0 });
 
@@ -222,7 +222,7 @@ test('R10 已有对象直改 status 也强制走迁移表，非法迁移不落�
     return { ok: true, value: null };
   }, { expectedRev: 1 });
   assert.equal(illegal.ok, false);
-  assert.equal(illegal.code, 'V32_ILLEGAL_TRANSITION');
+  assert.equal(illegal.code, 'ORG_ILLEGAL_TRANSITION');
   assert.equal(store.get('workItem', 'WI-001').status, 'draft');
   assert.equal(store.read().rev, 1);
 
@@ -237,7 +237,7 @@ test('R10 已有对象直改 status 也强制走迁移表，非法迁移不落�
 test('R11 snapshot 深拷贝隔离，读取快照不污染状态', (t) => {
   const { store } = setup(t);
   store.transit((draft, ctx) => {
-    draft.workflows.push({ ...fixture('v32-workflow'), id: ctx.nextId('workflow').value });
+    draft.workflows.push({ ...fixture('org-workflow'), id: ctx.nextId('workflow').value });
     return { ok: true, value: null };
   }, { expectedRev: 0 });
 
@@ -250,13 +250,13 @@ test('R11 snapshot 深拷贝隔离，读取快照不污染状态', (t) => {
   const storeItem = store.get('workflow', 'WF-001');
   storeItem.nodes[0].name = '篡改读取结果';
   assert.notEqual(store.get('workflow', 'WF-001').nodes[0].name, '篡改读取结果');
-  assert.equal(store.snapshot('workflow', 'WF-999', '1.0').code, 'V32_NOT_FOUND');
+  assert.equal(store.snapshot('workflow', 'WF-999', '1.0').code, 'ORG_NOT_FOUND');
 });
 
 test('R14 publishDefinition 可在 transit 内复用，versions append-only', (t) => {
   const { store } = setup(t);
   store.transit((draft, ctx) => {
-    draft.roles.push({ ...fixture('v32-role'), id: ctx.nextId('role').value });
+    draft.roles.push({ ...fixture('org-role'), id: ctx.nextId('role').value });
     return { ok: true, value: null };
   }, { expectedRev: 0 });
 
@@ -313,7 +313,7 @@ test('R5 refs 字段齐全（§1.3.1 共 9 项），缺失一律为 null，不�
 test('R5 verifyChain 能识别被篡改的 hash', (t) => {
   const { store, root } = setup(t);
   store.transit(() => ({ ok: true, value: null, events: [{ type: 'role.created', payload: {} }] }), { expectedRev: 0 });
-  const file = path.join(root, '.orch', 'v32', 'events.jsonl');
+  const file = path.join(root, '.orch', 'org', 'events.jsonl');
   const events = JSON.parse(fs.readFileSync(file, 'utf8').trim());
   events.hash = '0'.repeat(64);
   fs.writeFileSync(file, `${JSON.stringify(events)}\n`, 'utf8');
@@ -364,13 +364,13 @@ test('R5 events/audit 过滤与 limit 截断', (t) => {
   assert.equal(store.audit({ type: 'role.created' }).length, 0);
 });
 
-test('R12 未知事件类型返回 V32_INVALID_INPUT 且不落盘', (t) => {
+test('R12 未知事件类型返回 ORG_INVALID_INPUT 且不落盘', (t) => {
   const { store, root } = setup(t);
   const result = store.transit(() => ({
     ok: true, value: null, events: [{ type: 'totally.unknown', payload: {} }]
   }), { expectedRev: 0 });
   assert.equal(result.ok, false);
-  assert.equal(result.code, 'V32_INVALID_INPUT');
+  assert.equal(result.code, 'ORG_INVALID_INPUT');
   assert.equal(store.read().rev, 0);
   assert.equal(fs.existsSync(path.join(root, '.orch')), false);
 });
@@ -380,7 +380,7 @@ test('R4 sink 在事件落盘后广播，且广播异常不影响已提交状态
   let root = null;
   let store = null;
   const sink = (event) => {
-    const onDisk = JSON.parse(fs.readFileSync(path.join(root, '.orch', 'v32', 'events.jsonl'), 'utf8').trim());
+    const onDisk = JSON.parse(fs.readFileSync(path.join(root, '.orch', 'org', 'events.jsonl'), 'utf8').trim());
     seen.push({ event, onDiskId: onDisk.id });
     throw new Error('sink failure');
   };
@@ -404,19 +404,19 @@ test('并发 transit：同一 expectedRev 只有一个成功，失败者不改�
   const results = await Promise.all(Array.from({ length: 20 }, (_, i) => Promise.resolve().then(() =>
     store.transit((draft, ctx) => {
       const id = ctx.nextId('role');
-      draft.roles.push({ ...fixture('v32-role'), id: id.value, name: `并发-${i}` });
+      draft.roles.push({ ...fixture('org-role'), id: id.value, name: `并发-${i}` });
       return { ok: true, value: id.value };
     }, { expectedRev: 0 })
   )));
   const succeeded = results.filter((result) => result.ok);
-  const conflicts = results.filter((result) => result.code === 'V32_REV_CONFLICT');
+  const conflicts = results.filter((result) => result.code === 'ORG_REV_CONFLICT');
   assert.equal(succeeded.length, 1);
   assert.equal(conflicts.length, 19);
   assert.equal(store.read().rev, 1);
   assert.equal(store.read().roles.length, 1);
   assert.equal(new Set(store.read().roles.map((role) => role.id)).size, 1);
   assert.equal(store.events().length, 0);
-  assert.equal(fs.existsSync(path.join(root, '.orch', 'v32', 'state.json')), true);
+  assert.equal(fs.existsSync(path.join(root, '.orch', 'org', 'state.json')), true);
 });
 
 test('并发 nextId 不重号：逐次提交后序号连续且唯一', (t) => {
@@ -425,7 +425,7 @@ test('并发 nextId 不重号：逐次提交后序号连续且唯一', (t) => {
   for (let i = 0; i < 12; i += 1) {
     const result = store.transit((draft, ctx) => {
       const id = ctx.nextId('employee').value;
-      draft.employees.push({ ...fixture('v32-employee'), id });
+      draft.employees.push({ ...fixture('org-employee'), id });
       return { ok: true, value: id };
     }, { expectedRev: i });
     assert.equal(result.ok, true);

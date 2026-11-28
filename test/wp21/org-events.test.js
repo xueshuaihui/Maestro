@@ -10,12 +10,12 @@ import {
   AUDIT_TYPES, ERROR_CODES, EVENT_REF_FIELDS, EVENT_TYPES,
   appendJsonl, canonicalize, createAuditEvent, createEvent, eventHash,
   isAuditable, queryAudit, queryJsonl, readJsonl, verifyAuditChain, verifyChain
-} from '../../src/v32/index.js';
+} from '../../src/org/index.js';
 
 const TS = '2026-11-28T00:00:00.000Z';
 
 function setup(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'v32-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'org-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   return { root, eventsFile: path.join(root, 'events.jsonl'), auditFile: path.join(root, 'audit.jsonl') };
 }
@@ -57,7 +57,7 @@ test('R5 eventHash 是 sha256 且对 payload 变化敏感', () => {
 test('R12/R5 createEvent 只接受 EVENT_TYPES 中的类型', () => {
   const bad = createEvent({ id: 'EVT-001', seq: 1, ts: TS, type: 'nope.never' });
   assert.equal(bad.ok, false);
-  assert.equal(bad.code, 'V32_INVALID_INPUT');
+  assert.equal(bad.code, 'ORG_INVALID_INPUT');
   assert.equal(ERROR_CODES.includes(bad.code), true);
   for (const type of EVENT_TYPES) {
     const built = createEvent({ id: 'EVT-999', seq: 1, ts: TS, type });
@@ -138,7 +138,7 @@ test('R6 AUDIT_TYPES 覆盖人工审批 / 异常恢复 / 交付三类', () => {
 test('R6 createAuditEvent 拒绝非审计类型，AUD 链可独立校验', () => {
   const bad = createAuditEvent({ id: 'AUD-001', seq: 1, ts: TS, type: 'role.created' });
   assert.equal(bad.ok, false);
-  assert.equal(bad.code, 'V32_INVALID_INPUT');
+  assert.equal(bad.code, 'ORG_INVALID_INPUT');
 
   const chain = buildChain(['human.approved', 'recovery.succeeded', 'delivery.accepted'], 'AUD');
   assert.equal(verifyAuditChain(chain).ok, true);

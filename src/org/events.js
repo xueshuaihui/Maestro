@@ -27,15 +27,15 @@ export function eventHash(event) {
 }
 
 /**
- * 构造单条事件；refs 八个字段齐全，缺失补 null；未知 type 返回 V32_INVALID_INPUT。
+ * 构造单条事件；refs 八个字段齐全，缺失补 null；未知 type 返回 ORG_INVALID_INPUT。
  */
 export function createEvent({
   id, seq, ts, type, actor = 'system', refs = {}, payload = {}, prevHash = null
 } = {}) {
-  if (!EVENT_TYPES.includes(type)) return fail('V32_INVALID_INPUT', { field: 'type', value: type });
-  if (typeof id !== 'string' || !ID_PATTERN.test(id)) return fail('V32_INVALID_INPUT', { field: 'id', value: id });
-  if (!Number.isInteger(seq) || seq < 1) return fail('V32_INVALID_INPUT', { field: 'seq', value: seq });
-  if (typeof ts !== 'string') return fail('V32_INVALID_INPUT', { field: 'ts', value: ts });
+  if (!EVENT_TYPES.includes(type)) return fail('ORG_INVALID_INPUT', { field: 'type', value: type });
+  if (typeof id !== 'string' || !ID_PATTERN.test(id)) return fail('ORG_INVALID_INPUT', { field: 'id', value: id });
+  if (!Number.isInteger(seq) || seq < 1) return fail('ORG_INVALID_INPUT', { field: 'seq', value: seq });
+  if (typeof ts !== 'string') return fail('ORG_INVALID_INPUT', { field: 'ts', value: ts });
 
   const normalizedRefs = {};
   for (const field of EVENT_REF_FIELDS) normalizedRefs[field] = refs[field] ?? null;
@@ -64,23 +64,23 @@ export function appendJsonl(file, events) {
  * 校验哈希链：seq 从 1 单调递增、prevHash 指向上一条、hash 与规范化重算一致。
  */
 export function verifyChain(events, prefix = 'EVT') {
-  if (!Array.isArray(events)) return fail('V32_INVALID_INPUT', { field: 'events' });
+  if (!Array.isArray(events)) return fail('ORG_INVALID_INPUT', { field: 'events' });
   const seen = new Set();
   for (let i = 0; i < events.length; i += 1) {
     const event = events[i];
-    if (!isPlainObject(event)) return fail('V32_INVALID_INPUT', { index: i, reason: 'not-object' });
+    if (!isPlainObject(event)) return fail('ORG_INVALID_INPUT', { index: i, reason: 'not-object' });
     if (typeof event.id !== 'string' || !event.id.startsWith(`${prefix}-`)) {
-      return fail('V32_INVALID_INPUT', { index: i, reason: 'id-prefix' });
+      return fail('ORG_INVALID_INPUT', { index: i, reason: 'id-prefix' });
     }
-    if (seen.has(event.id)) return fail('V32_INVALID_INPUT', { index: i, reason: 'duplicate-id' });
+    if (seen.has(event.id)) return fail('ORG_INVALID_INPUT', { index: i, reason: 'duplicate-id' });
     seen.add(event.id);
-    if (event.seq !== i + 1) return fail('V32_INVALID_INPUT', { index: i, reason: 'seq' });
+    if (event.seq !== i + 1) return fail('ORG_INVALID_INPUT', { index: i, reason: 'seq' });
     const expectedPrev = i === 0 ? null : events[i - 1].hash;
-    if ((event.prevHash ?? null) !== expectedPrev) return fail('V32_INVALID_INPUT', { index: i, reason: 'prevHash' });
-    if (eventHash(event) !== event.hash) return fail('V32_INVALID_INPUT', { index: i, reason: 'hash' });
+    if ((event.prevHash ?? null) !== expectedPrev) return fail('ORG_INVALID_INPUT', { index: i, reason: 'prevHash' });
+    if (eventHash(event) !== event.hash) return fail('ORG_INVALID_INPUT', { index: i, reason: 'hash' });
     for (const field of EVENT_REF_FIELDS) {
       if (!Object.prototype.hasOwnProperty.call(event.refs || {}, field)) {
-        return fail('V32_INVALID_INPUT', { index: i, reason: 'refs', field });
+        return fail('ORG_INVALID_INPUT', { index: i, reason: 'refs', field });
       }
     }
   }

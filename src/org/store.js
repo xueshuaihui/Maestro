@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  STATE_KEYS, V32_AUDIT_FILE, V32_EVENTS_FILE, V32_SCHEMA_VERSION, V32_STATE_FILE,
+  STATE_KEYS, ORG_AUDIT_FILE, ORG_EVENTS_FILE, ORG_SCHEMA_VERSION, ORG_STATE_FILE,
   assertTransition, assertUniqueId, canTransition, collectIds, deepClone, fail,
   isPlainObject, makeSnapshot, ok
 } from './contracts.js';
@@ -23,7 +23,7 @@ const COLLECTIONS = Object.freeze({
 
 function emptyState(now) {
   return {
-    schemaVersion: V32_SCHEMA_VERSION,
+    schemaVersion: ORG_SCHEMA_VERSION,
     rev: 0,
     updatedAt: now(),
     roles: [], employees: [], teams: [], workflows: [],
@@ -85,9 +85,9 @@ export function createV32Store({ root, now = () => new Date().toISOString(), sin
   if (typeof root !== 'string' || !path.isAbsolute(root)) {
     throw new TypeError('createV32Store: root must be an absolute path');
   }
-  const statePath = path.join(root, V32_STATE_FILE);
-  const eventsPath = path.join(root, V32_EVENTS_FILE);
-  const auditPath = path.join(root, V32_AUDIT_FILE);
+  const statePath = path.join(root, ORG_STATE_FILE);
+  const eventsPath = path.join(root, ORG_EVENTS_FILE);
+  const auditPath = path.join(root, ORG_AUDIT_FILE);
 
   const readDisk = () => {
     if (!fs.existsSync(statePath)) return emptyState(now);
@@ -109,9 +109,9 @@ export function createV32Store({ root, now = () => new Date().toISOString(), sin
   }
 
   function nextId(kind) {
-    if (!txn) return fail('V32_INVALID_INPUT', { field: 'nextId', reason: 'outside-transit' });
+    if (!txn) return fail('ORG_INVALID_INPUT', { field: 'nextId', reason: 'outside-transit' });
     const prefix = resolvePrefix(kind);
-    if (!prefix) return fail('V32_INVALID_INPUT', { field: 'kind', value: kind });
+    if (!prefix) return fail('ORG_INVALID_INPUT', { field: 'kind', value: kind });
 
     const existingIds = collectIds(txn.draft);
     let max = 0;
@@ -129,7 +129,7 @@ export function createV32Store({ root, now = () => new Date().toISOString(), sin
       offset += 1;
       candidate = formatId(prefix, max + offset + 1);
     }
-    if (!ID_PATTERN.test(candidate)) return fail('V32_DUPLICATE_ID', { id: candidate });
+    if (!ID_PATTERN.test(candidate)) return fail('ORG_DUPLICATE_ID', { id: candidate });
     txn.allocated.set(prefix, offset + 1);
     txn.usedIds.add(candidate);
     return ok(candidate);
@@ -138,13 +138,13 @@ export function createV32Store({ root, now = () => new Date().toISOString(), sin
   function snapshot(kind, id, version) {
     const target = txn ? txn.draft : state;
     const definition = getFrom(target, kind, id);
-    if (!definition) return fail('V32_NOT_FOUND', { kind, id });
+    if (!definition) return fail('ORG_NOT_FOUND', { kind, id });
     return makeSnapshot(kind, id, version, definition, now());
   }
 
   /** 唯一写入口。mutator 只能改 draft；任何失败都不改内存状态。 */
   function transit(mutator, { expectedRev, reason = null, actor = 'system' } = {}) {
-    if (typeof mutator !== 'function') return fail('V32_INVALID_INPUT', { field: 'mutator' });
+    if (typeof mutator !== 'function') return fail('ORG_INVALID_INPUT', { field: 'mutator' });
     let diskState;
     let existingEvents;
     let existingAudit;
@@ -156,7 +156,7 @@ export function createV32Store({ root, now = () => new Date().toISOString(), sin
       return fromError(error);
     }
     if (diskState.rev !== expectedRev) {
-      return fail('V32_REV_CONFLICT', { expectedRev, actualRev: diskState.rev });
+      return fail('ORG_REV_CONFLICT', { expectedRev, actualRev: diskState.rev });
     }
 
     const draft = deepClone(diskState);
@@ -175,7 +175,7 @@ export function createV32Store({ root, now = () => new Date().toISOString(), sin
     if (!isPlainObject(result) || result.ok !== true) {
       txn = null;
       if (isPlainObject(result) && result.ok === false && typeof result.code === 'string') return result;
-      return fail('V32_INVALID_INPUT', { field: 'mutator-result' });
+      return fail('ORG_INVALID_INPUT', { field: 'mutator-result' });
     }
 
     // 领域状态写入强制经 assertTransition：已有对象的 status 变化必须落在 TRANSITIONS 内。
@@ -215,7 +215,7 @@ export function createV32Store({ root, now = () => new Date().toISOString(), sin
     for (const raw of Array.isArray(result.events) ? result.events : []) {
       if (!isPlainObject(raw)) {
         txn = null;
-        return fail('V32_INVALID_INPUT', { field: 'events' });
+        return fail('ORG_INVALID_INPUT', { field: 'events' });
       }
       eventSeq += 1;
       const built = createEvent({
@@ -323,12 +323,12 @@ export function createV32Store({ root, now = () => new Date().toISOString(), sin
     verifyChain: verifyAllChains,
     /** appendEvent/appendAudit 仅供 transit 内部链路使用；外部调用返回失败。 */
     appendEvent: (event) => {
-      if (!txn) return fail('V32_INVALID_INPUT', { field: 'appendEvent', reason: 'outside-transit' });
+      if (!txn) return fail('ORG_INVALID_INPUT', { field: 'appendEvent', reason: 'outside-transit' });
       appendJsonl(eventsPath, [event]);
       return ok(event);
     },
     appendAudit: (event) => {
-      if (!txn) return fail('V32_INVALID_INPUT', { field: 'appendAudit', reason: 'outside-transit' });
+      if (!txn) return fail('ORG_INVALID_INPUT', { field: 'appendAudit', reason: 'outside-transit' });
       appendJsonl(auditPath, [event]);
       return ok(event);
     },

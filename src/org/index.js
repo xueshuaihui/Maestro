@@ -1,7 +1,7 @@
 /** V3.2 公共入口：只导出本任务已创建的模块，其他任务按约定直接相对路径 import 具体文件。 */
 
 export {
-  V32_SCHEMA_VERSION, V32_STATE_FILE, V32_EVENTS_FILE, V32_AUDIT_FILE,
+  ORG_SCHEMA_VERSION, ORG_STATE_FILE, ORG_EVENTS_FILE, ORG_AUDIT_FILE,
   ID_PREFIX, ID_PATTERN, formatId, parseSequence, resolvePrefix, snapshotId,
   ERROR_CODES, fail, ok, fromError, isErrorCode,
   WORK_ITEM_STATUS, TASK_STATUS, ASSIGNMENT_STATUS, ASSET_STATUS, NODE_TYPES,

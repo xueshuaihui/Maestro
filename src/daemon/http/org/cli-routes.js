@@ -10,8 +10,8 @@
  */
 
 import { readBody } from '../stream.js';
-import { fail } from '../../../v32/contracts.js';
-import { createCliPool } from '../../../v32/cli-pool.js';
+import { fail } from '../../../org/contracts.js';
+import { createCliPool } from '../../../org/cli-pool.js';
 
 const BODY_LIMIT = 128 * 1024;
 
@@ -26,13 +26,13 @@ function sendJson(res, status, body) {
 }
 
 function statusFor(code) {
-  if (code === 'V32_NOT_FOUND') return 404;
-  if (code === 'V32_REV_CONFLICT' || code === 'V32_DUPLICATE_ID' || code === 'V32_CLI_UNAVAILABLE') return 409;
+  if (code === 'ORG_NOT_FOUND') return 404;
+  if (code === 'ORG_REV_CONFLICT' || code === 'ORG_DUPLICATE_ID' || code === 'ORG_CLI_UNAVAILABLE') return 409;
   return 400;
 }
 
 function sendFailure(res, result) {
-  const code = result?.code ?? 'V32_INVALID_INPUT';
+  const code = result?.code ?? 'ORG_INVALID_INPUT';
   return sendJson(res, statusFor(code), {
     ok: false,
     code,
@@ -85,7 +85,7 @@ export function createV32CliRoutes(deps = {}) {
       const result = await fn();
       return result?.ok === false ? sendFailure(res, result) : sendJson(res, 200, result);
     } catch (error) {
-      return sendFailure(res, fail('V32_INVALID_INPUT', {
+      return sendFailure(res, fail('ORG_INVALID_INPUT', {
         field: 'request', message: String(error?.message ?? error)
       }));
     }
@@ -94,7 +94,7 @@ export function createV32CliRoutes(deps = {}) {
   return [
     {
       method: 'GET',
-      pattern: '/v32/cli',
+      pattern: '/org/cli',
       handler(_req, res) {
         return wrapped(res, () => {
           const pool = getPool();
@@ -113,7 +113,7 @@ export function createV32CliRoutes(deps = {}) {
     },
     {
       method: 'POST',
-      pattern: '/v32/cli',
+      pattern: '/org/cli',
       async handler(req, res) {
         return wrapped(res, async () => {
           const body = await readJson(req);
@@ -126,7 +126,7 @@ export function createV32CliRoutes(deps = {}) {
     },
     {
       method: 'POST',
-      pattern: '/v32/cli/scan',
+      pattern: '/org/cli/scan',
       async handler(req, res) {
         return wrapped(res, async () => {
           const body = await readJson(req);
@@ -137,14 +137,14 @@ export function createV32CliRoutes(deps = {}) {
     },
     {
       method: 'POST',
-      pattern: '/v32/cli/:id/health',
+      pattern: '/org/cli/:id/health',
       async handler(_req, res, _url, params) {
         return wrapped(res, () => getPool().checkHealth({ id: params.id }));
       }
     },
     {
       method: 'GET',
-      pattern: '/v32/cli/:id/capabilities',
+      pattern: '/org/cli/:id/capabilities',
       handler(_req, res, _url, params) {
         return wrapped(res, () => getPool().capabilitiesOf(params.id));
       }

@@ -7,24 +7,24 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
-import { createV32Store } from '../../src/v32/store.js';
-import { validate } from '../../src/v32/contracts.js';
+import { createV32Store } from '../../src/org/store.js';
+import { validate } from '../../src/org/contracts.js';
 import {
   CLI_AUTH, CLI_HEALTH, CLI_RESUME, CLI_SOURCES, UNKNOWN,
   buildInstall, createCliPool, fingerprintFor
-} from '../../src/v32/cli-pool.js';
+} from '../../src/org/cli-pool.js';
 import {
   CLI_STATUS, acpArgsFor, withProbeResults
 } from '../../src/adapter/cli-discovery/index.js';
-import { createV32CliRoutes } from '../../src/daemon/http/v32/cli-routes.js';
+import { createV32CliRoutes } from '../../src/daemon/http/org/cli-routes.js';
 import { matchPattern } from '../../src/daemon/http/server.js';
-import { LABEL_KEYS, actions, render, section, viewId } from '../../desktop/ui/v32/cli-page.js';
+import { LABEL_KEYS, actions, render, section, viewId } from '../../desktop/ui/org/cli-page.js';
 
 const TIME = '2026-11-28T01:02:03.000Z';
 const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
 
 function setup(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'v32-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'org-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const store = createV32Store({ root, now: () => TIME });
   const bin = path.join(root, 'bin');
@@ -263,7 +263,7 @@ test('R4 manual add stores all eight items and dedups by fingerprint', async (t)
 
   const bad = pool.addManual({ name: 'Bad', path: 'relative/path' });
   assert.equal(bad.ok, false);
-  assert.equal(bad.code, 'V32_INVALID_INPUT');
+  assert.equal(bad.code, 'ORG_INVALID_INPUT');
 });
 
 test('R4 buildInstall leaves no fabricated values for probes with no verdict', () => {
@@ -324,11 +324,11 @@ test('R6 capability matrix exposes acp/session/resume/health/auth preflight data
 
   const missing = pool.capabilitiesOf('CLI-999');
   assert.equal(missing.ok, false);
-  assert.equal(missing.code, 'V32_NOT_FOUND');
+  assert.equal(missing.code, 'ORG_NOT_FOUND');
 });
 
 // ---------------------------------------------------------------------------
-// Route fragment level smoke (no real daemon: T15 mounts /v32 later)
+// Route fragment level smoke (no real daemon: T15 mounts /org later)
 // ---------------------------------------------------------------------------
 
 function makeRes() {
@@ -358,7 +358,7 @@ test('routes construct with zero IO and lazy store; scan/list/capabilities smoke
   assert.ok(routes.length >= 5);
   assert.equal(fs.existsSync(path.join(root, '.orch')), false, 'construction must not touch disk');
 
-  const scanned = await callRoute(routes, 'POST', '/v32/cli/scan', { mode: 'quick' });
+  const scanned = await callRoute(routes, 'POST', '/org/cli/scan', { mode: 'quick' });
   assert.equal(scanned.status, 200);
   assert.equal(scanned.body.ok, true);
   assert.equal(scanned.body.value.scan.status, 'done');
@@ -368,25 +368,25 @@ test('routes construct with zero IO and lazy store; scan/list/capabilities smoke
   assert.equal(typeof onDisk.cliPool.scan.startedAt, 'string');
   assert.equal(typeof onDisk.cliPool.scan.finishedAt, 'string');
 
-  const listed = await callRoute(routes, 'GET', '/v32/cli');
+  const listed = await callRoute(routes, 'GET', '/org/cli');
   assert.equal(listed.status, 200);
   assert.equal(Array.isArray(listed.body.value), true);
   assert.equal(listed.body.value.length, 4);
   assert.equal(typeof listed.body.scan.discovered, 'number');
 
   const id = listed.body.value[0].id;
-  const caps = await callRoute(routes, 'GET', `/v32/cli/${id}/capabilities`);
+  const caps = await callRoute(routes, 'GET', `/org/cli/${id}/capabilities`);
   assert.equal(caps.status, 200);
   assert.equal(typeof caps.body.value.matrix, 'object');
 
-  const badMode = await callRoute(routes, 'POST', '/v32/cli/scan', { mode: 'turbo' });
+  const badMode = await callRoute(routes, 'POST', '/org/cli/scan', { mode: 'turbo' });
   assert.equal(badMode.status, 400);
-  assert.equal(badMode.body.code, 'V32_INVALID_INPUT');
-  const missing = await callRoute(routes, 'GET', '/v32/cli/CLI-999/capabilities');
+  assert.equal(badMode.body.code, 'ORG_INVALID_INPUT');
+  const missing = await callRoute(routes, 'GET', '/org/cli/CLI-999/capabilities');
   assert.equal(missing.status, 404);
-  assert.equal(missing.body.code, 'V32_NOT_FOUND');
+  assert.equal(missing.body.code, 'ORG_NOT_FOUND');
 
-  const manual = await callRoute(routes, 'POST', '/v32/cli', {
+  const manual = await callRoute(routes, 'POST', '/org/cli', {
     name: 'Routed CLI', path: path.join(root, 'bin', 'routed')
   });
   assert.equal(manual.status, 200);
@@ -471,8 +471,8 @@ test('R7 page renders progress, four entries, fields and rows without fetching',
   const ctx = {
     document: doc,
     t: (key, fallback) => fallback,
-    v32: { data: { ok: true, value: pool.list(), scan: pool.scanStatus(), stats: pool.scanStatus() } },
-    v32Api: {
+    org: { data: { ok: true, value: pool.list(), scan: pool.scanStatus(), stats: pool.scanStatus() } },
+    orgApi: {
       get: async (url) => { calls.push(['get', url]); return { ok: true }; },
       post: async (url, body) => { calls.push(['post', url, body]); return { ok: true }; }
     }
@@ -483,26 +483,26 @@ test('R7 page renders progress, four entries, fields and rows without fetching',
   const nodes = [];
   walk(frag, (node) => nodes.push(node));
   const attrs = (key) => nodes.filter((node) => node.getAttribute(key) !== null);
-  assert.ok(nodes.some((node) => node.getAttribute('data-testid') === 'v32-cli-progress'));
-  assert.ok(nodes.some((node) => node.getAttribute('data-testid') === 'v32-cli-list'));
+  assert.ok(nodes.some((node) => node.getAttribute('data-testid') === 'org-cli-progress'));
+  assert.ok(nodes.some((node) => node.getAttribute('data-testid') === 'org-cli-list'));
   assert.equal(attrs('data-cli-id').length, 4);
   assert.equal(attrs('data-field').length, 4);
 
   const actionNames = new Set(attrs('data-action').map((node) => node.getAttribute('data-action')));
   for (const expected of [
-    'v32-cli-rescan', 'v32-cli-full-scan', 'v32-cli-manual-add', 'v32-cli-health-check'
+    'org-cli-rescan', 'org-cli-full-scan', 'org-cli-manual-add', 'org-cli-health-check'
   ]) {
     assert.equal(actionNames.has(expected), true, `missing action ${expected}`);
   }
   assert.equal(calls.length, 0, 'render must not fetch');
 
-  assert.equal(viewId, 'v32-cli');
+  assert.equal(viewId, 'org-cli');
   assert.equal(typeof section, 'string');
 
-  const pageSource = fs.readFileSync(path.join(REPO_ROOT, 'desktop/ui/v32/cli-page.js'), 'utf8');
+  const pageSource = fs.readFileSync(path.join(REPO_ROOT, 'desktop/ui/org/cli-page.js'), 'utf8');
   const usageSource = pageSource.replace(/export const LABEL_KEYS = Object\.freeze\(\[[\s\S]*?\]\);/, '');
   const usedKeys = new Set(
-    [...usageSource.matchAll(/'V32_CLI_[A-Z_]+'/g)].map((match) => match[0].slice(1, -1))
+    [...usageSource.matchAll(/'ORG_CLI_[A-Z_]+'/g)].map((match) => match[0].slice(1, -1))
   );
   const exportedKeys = new Set(LABEL_KEYS);
   const unusedKeys = [...exportedKeys].filter((key) => !usedKeys.has(key));
@@ -510,9 +510,9 @@ test('R7 page renders progress, four entries, fields and rows without fetching',
   assert.deepEqual(unusedKeys, [], `LABEL_KEYS contains unused keys: ${unusedKeys.join(', ')}`);
   assert.deepEqual(undeclaredKeys, [], `render uses undeclared keys: ${undeclaredKeys.join(', ')}`);
 
-  assert.ok(actions['v32-cli-rescan'] && actions['v32-cli-full-scan']);
-  await actions['v32-cli-rescan']('quick', ctx);
-  await actions['v32-cli-health-check']('CLI-001', ctx);
+  assert.ok(actions['org-cli-rescan'] && actions['org-cli-full-scan']);
+  await actions['org-cli-rescan']('quick', ctx);
+  await actions['org-cli-health-check']('CLI-001', ctx);
   assert.ok(calls.length >= 2);
 
   const summary = {
@@ -525,8 +525,8 @@ test('R7 page renders progress, four entries, fields and rows without fetching',
     undeclaredKeys,
     rendersWithoutFetch: calls.length >= 2
   };
-  fs.mkdirSync('/tmp/v32t', { recursive: true });
-  fs.writeFileSync('/tmp/v32t/v32-cli-page-summary.json', JSON.stringify(summary, null, 2), 'utf8');
+  fs.mkdirSync('/tmp/orgt', { recursive: true });
+  fs.writeFileSync('/tmp/orgt/org-cli-page-summary.json', JSON.stringify(summary, null, 2), 'utf8');
 });
 
 // ---------------------------------------------------------------------------
@@ -536,9 +536,9 @@ test('R7 page renders progress, four entries, fields and rows without fetching',
 test('zero CJK literals in new daemon, ui and domain files', () => {
   const pattern = /[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]/;
   for (const relative of [
-    'src/daemon/http/v32/cli-routes.js',
-    'desktop/ui/v32/cli-page.js',
-    'src/v32/cli-pool.js'
+    'src/daemon/http/org/cli-routes.js',
+    'desktop/ui/org/cli-page.js',
+    'src/org/cli-pool.js'
   ]) {
     const source = fs.readFileSync(path.join(REPO_ROOT, relative), 'utf8');
     assert.equal(pattern.test(source), false, `CJK found in ${relative}`);

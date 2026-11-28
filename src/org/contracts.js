@@ -6,10 +6,10 @@ import { ID_PATTERN, ID_PREFIX } from './ids.js';
 export { ERROR_CODES, fail, fromError, isErrorCode, ok } from './errors.js';
 export { ID_PATTERN, ID_PREFIX, formatId, parseSequence, resolvePrefix, snapshotId } from './ids.js';
 
-export const V32_SCHEMA_VERSION = 1;
-export const V32_STATE_FILE = '.orch/v32/state.json';
-export const V32_EVENTS_FILE = '.orch/v32/events.jsonl';
-export const V32_AUDIT_FILE = '.orch/v32/audit.jsonl';
+export const ORG_SCHEMA_VERSION = 1;
+export const ORG_STATE_FILE = '.orch/org/state.json';
+export const ORG_EVENTS_FILE = '.orch/org/events.jsonl';
+export const ORG_AUDIT_FILE = '.orch/org/audit.jsonl';
 
 /**
  * 状态枚举必须逐字对齐规格 §13（docs/index.md L634-667 / page_spec.md L701-733）。
@@ -270,43 +270,43 @@ function matchesType(value, type) {
 export function validate(kind, obj) {
   const key = normalizeKind(kind);
   if (key === 'node') {
-    if (!isPlainObject(obj) || !NODE_TYPES.includes(obj.type)) return fail('V32_INVALID_INPUT', { kind: 'node', field: 'type' });
+    if (!isPlainObject(obj) || !NODE_TYPES.includes(obj.type)) return fail('ORG_INVALID_INPUT', { kind: 'node', field: 'type' });
     return validate(obj.type === 'human' ? 'nodeHuman' : 'nodeAgent', obj);
   }
   const spec = FIELD_SPECS[key];
-  if (!spec) return fail('V32_INVALID_INPUT', { kind, field: 'kind' });
-  if (!isPlainObject(obj)) return fail('V32_INVALID_INPUT', { kind: key, field: 'object' });
+  if (!spec) return fail('ORG_INVALID_INPUT', { kind, field: 'kind' });
+  if (!isPlainObject(obj)) return fail('ORG_INVALID_INPUT', { kind: key, field: 'object' });
 
   for (const field of spec.forbidden) {
-    if (has(obj, field)) return fail('V32_FORBIDDEN_FIELD', { kind: key, field });
+    if (has(obj, field)) return fail('ORG_FORBIDDEN_FIELD', { kind: key, field });
   }
   for (const [field, type] of Object.entries(spec.required)) {
     if (!has(obj, field) || !matchesType(obj[field], type)) {
-      return fail('V32_INVALID_INPUT', { kind: key, field, expected: type });
+      return fail('ORG_INVALID_INPUT', { kind: key, field, expected: type });
     }
   }
 
   if (key === 'role' || key === 'team' || key === 'workflow') {
-    if (!ASSET_STATUS.includes(obj.status)) return fail('V32_INVALID_INPUT', { kind: key, field: 'status', value: obj.status });
+    if (!ASSET_STATUS.includes(obj.status)) return fail('ORG_INVALID_INPUT', { kind: key, field: 'status', value: obj.status });
   }
   if (key === 'workItem' && !WORK_ITEM_STATUS.includes(obj.status)) {
-    return fail('V32_INVALID_INPUT', { kind: key, field: 'status', value: obj.status });
+    return fail('ORG_INVALID_INPUT', { kind: key, field: 'status', value: obj.status });
   }
   if (key === 'assignment' && !ASSIGNMENT_STATUS.includes(obj.status)) {
-    return fail('V32_INVALID_INPUT', { kind: key, field: 'status', value: obj.status });
+    return fail('ORG_INVALID_INPUT', { kind: key, field: 'status', value: obj.status });
   }
   if (key === 'run') {
     for (let i = 0; i < obj.tasks.length; i += 1) {
       const task = obj.tasks[i];
       if (!isPlainObject(task) || !TASK_STATUS.includes(task.status)) {
-        return fail('V32_INVALID_INPUT', { kind: key, field: `tasks[${i}].status` });
+        return fail('ORG_INVALID_INPUT', { kind: key, field: `tasks[${i}].status` });
       }
     }
   }
   if (key === 'nodeHuman') {
     const approver = obj.human && obj.human.approver;
     if (typeof approver === 'string' && /^EMP-\d+$/.test(approver)) {
-      return fail('V32_FORBIDDEN_FIELD', { kind: key, field: 'human.approver' });
+      return fail('ORG_FORBIDDEN_FIELD', { kind: key, field: 'human.approver' });
     }
   }
   if (key === 'workflow') {
@@ -330,7 +330,7 @@ export function canTransition(kind, from, to) {
 export function assertTransition(kind, from, to) {
   return canTransition(kind, from, to)
     ? ok(true)
-    : fail('V32_ILLEGAL_TRANSITION', { kind, from, to });
+    : fail('ORG_ILLEGAL_TRANSITION', { kind, from, to });
 }
 
 // ---------------------------------------------------------------------------
@@ -356,8 +356,8 @@ export function collectIds(state) {
 }
 
 export function assertUniqueId(state, id) {
-  if (typeof id !== 'string' || !ID_PATTERN.test(id)) return fail('V32_INVALID_INPUT', { field: 'id', value: id });
-  return collectIds(state).includes(id) ? fail('V32_DUPLICATE_ID', { id }) : ok(id);
+  if (typeof id !== 'string' || !ID_PATTERN.test(id)) return fail('ORG_INVALID_INPUT', { field: 'id', value: id });
+  return collectIds(state).includes(id) ? fail('ORG_DUPLICATE_ID', { id }) : ok(id);
 }
 
 export const INITIAL_VERSION = '1.0';
@@ -379,16 +379,16 @@ export function makeVersionEntry(version, now, extra = {}) {
 }
 
 /**
- * 可复用的发布辅助（T03/T05/T06）：同版本重复发布返回 V32_DUPLICATE_VERSION。
+ * 可复用的发布辅助（T03/T05/T06）：同版本重复发布返回 ORG_DUPLICATE_VERSION。
  * 不修改入参，versions 保持 append-only。
  */
 export function publishDefinition(definition, now, extra = {}) {
   if (!isPlainObject(definition) || !Array.isArray(definition.versions) || typeof definition.version !== 'string') {
-    return fail('V32_INVALID_INPUT', { field: 'versions' });
+    return fail('ORG_INVALID_INPUT', { field: 'versions' });
   }
   const next = bumpVersion(definition.version) || INITIAL_VERSION;
   if (definition.versions.some((entry) => isPlainObject(entry) && entry.version === next)) {
-    return fail('V32_DUPLICATE_VERSION', { version: next });
+    return fail('ORG_DUPLICATE_VERSION', { version: next });
   }
   return ok({
     ...definition,

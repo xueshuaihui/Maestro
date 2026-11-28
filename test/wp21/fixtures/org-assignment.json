@@ -5,9 +5,9 @@
   "nodeId": "N-PM",
   "employeeId": "EMP-001",
   "cliInstallationId": "CLI-001",
-  "cliFingerprint": "fp-v32-001",
+  "cliFingerprint": "fp-org-001",
   "adapterVersion": "1.0",
-  "workingDir": "/tmp/v32t/project",
+  "workingDir": "/tmp/orgt/project",
   "inputArtifactRefs": [],
   "permissions": { "network": false },
   "status": "draft"
