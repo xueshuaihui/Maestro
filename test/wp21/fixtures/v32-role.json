@@ -1,0 +1,14 @@
+{
+  "id": "ROLE-001",
+  "name": "产品经理",
+  "description": "负责需求澄清、拆解与最终验收",
+  "duties": ["需求拆解", "验收标准制定"],
+  "skills": ["PRD", "需求分析"],
+  "inputs": ["需求背景", "目标"],
+  "outputs": ["PRD", "验收标准"],
+  "requires": { "capabilities": ["reasoning", "writing"] },
+  "acceptance": ["需求点覆盖完整"],
+  "version": "1.0",
+  "status": "published",
+  "versions": [{ "version": "1.0", "publishedAt": "2026-11-28T00:00:00.000Z" }]
+}

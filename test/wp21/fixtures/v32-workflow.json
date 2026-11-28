@@ -1,0 +1,42 @@
+{
+  "id": "WF-001",
+  "name": "需求交付工作流",
+  "description": "从需求拆解到人工验收的最小 DAG",
+  "version": "1.0",
+  "status": "published",
+  "kind": "delivery",
+  "nodes": [
+    {
+      "id": "N-PM",
+      "type": "agent",
+      "name": "需求拆解",
+      "roleId": "ROLE-001",
+      "instruction": "输出 PRD 与验收标准",
+      "inputs": ["需求描述"],
+      "outputs": ["PRD"],
+      "deps": [],
+      "capabilities": { "reasoning": true },
+      "acceptance": ["PRD 已评审"],
+      "timeout": 600000,
+      "failurePolicy": "retry",
+      "retry": { "max": 1 },
+      "fallback": null,
+      "escalation": null,
+      "handoff": null,
+      "condition": null
+    },
+    {
+      "id": "N-ACCEPT",
+      "type": "human",
+      "name": "人工验收",
+      "human": { "approver": "ROLE-001", "condition": "PRD 已完成" },
+      "inputs": ["PRD"],
+      "outputs": ["验收结论"],
+      "deps": ["N-PM"],
+      "acceptance": ["验收人确认"]
+    }
+  ],
+  "edges": [{ "from": "N-PM", "to": "N-ACCEPT" }],
+  "versions": [{ "version": "1.0", "publishedAt": "2026-11-28T00:00:00.000Z" }],
+  "createdAt": "2026-11-28T00:00:00.000Z"
+}

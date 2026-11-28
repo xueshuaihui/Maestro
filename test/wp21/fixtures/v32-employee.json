@@ -1,0 +1,9 @@
+{
+  "id": "EMP-001",
+  "name": "小深",
+  "description": "具备产品与评审角色的数字员工",
+  "qualifications": ["ROLE-001"],
+  "enabled": true,
+  "createdAt": "2026-11-28T00:00:00.000Z",
+  "updatedAt": "2026-11-28T00:00:00.000Z"
+}

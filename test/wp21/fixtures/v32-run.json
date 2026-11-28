@@ -1,0 +1,19 @@
+{
+  "id": "RUN-001",
+  "workItemId": "WI-001",
+  "workflowVersion": "1.0",
+  "teamVersion": "1.0",
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "nodeId": "N-PM",
+      "status": "ready",
+      "createdAt": "2026-11-28T00:00:00.000Z"
+    }
+  ],
+  "queue": [],
+  "status": "draft",
+  "createdAt": "2026-11-28T00:00:00.000Z",
+  "finishedAt": null,
+  "stats": { "succeeded": 0, "failed": 0 }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "TEAM-001",
+  "name": "端到端研发团队",
+  "description": "覆盖产品拆解与验收的复用团队",
+  "version": "1.0",
+  "status": "published",
+  "versions": [{ "version": "1.0", "publishedAt": "2026-11-28T00:00:00.000Z" }],
+  "members": [
+    {
+      "employeeId": "EMP-001",
+      "roles": ["ROLE-001"],
+      "primary": true,
+      "priority": 1,
+      "participate": true,
+      "capacity": 1
+    }
+  ],
+  "createdAt": "2026-11-28T00:00:00.000Z"
+}
