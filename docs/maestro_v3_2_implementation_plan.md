@@ -48,7 +48,7 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 |---|---|---|
 | 1 | **建分支 + 认领 + 立即广播认领状态** | `git fetch origin` → `git switch main` → `git pull --ff-only origin main` → `git switch -c feature/v32-TXX-<slug> origin/main` → 按 §0.11 读台账判定状态并认领（**在功能分支上**把自己台账写成 `phase: developing`）→ `git commit -m "chore(v32): claim TXX on machine X"` → `git switch main` → `git pull --ff-only origin main` → `git merge --ff-only feature/v32-TXX-<slug>` → `git push origin main` → **`git switch feature/v32-TXX-<slug>` 切回功能分支继续开发**。认领状态必须立刻出现在 `origin/main`，对方机器才能看到；完整命令与冲突处理见 §0.11.3。确认功能分支基于 §0.2 公布的基线（或已合入的前序任务 sha） |
 | 2 | 读规格 | 由主 Agent 把本任务 REQ 标注的规格章节（`index.md` / `page_spec.md` 的 §/P/V32 编号）封进**干净子 Agent** 的 prompt，逐条转成实现清单；**再**看原型对应交互（附录 A）理解页面形态。REQ 与原型演示不一致时以规格为准，并在报告记录差异 |
-| 3 | 实现 | **只由新创建的干净开发子 Agent 执行**（§0.11.5），主 Agent 不直接写产品代码；只改「文件所有权」列出的路径；共享文件按 §1.2 归唯一任务所有 |
+| 3 | 实现 | **只由新创建的干净开发子 Agent，在 step 1 创建的功能分支上执行**（§0.11.5 / §0.7 分支纪律）；主 Agent 不直接写产品代码；只改「文件所有权」列出的路径；共享文件按 §1.2 归唯一任务所有 |
 | 4 | 自测 | 开发子 Agent 写任务专属单测（文件名见任务详情），运行「验证清单」的命令；**不得删断言/降阈值** |
 | 5 | 失败循环 | 按 §0.5 分类、修复、复跑，直到本任务全部验证项通过 |
 | 5b | **独立审核循环** | 开发子 Agent 报完成后，主 Agent **另建一个干净审核 Agent**（不继承开发上下文），按 §0.11.5–§0.11.6 审核；有阻塞性问题就派修复、再审核，循环到审核结论为「无阻塞项 / PASS」，否则不得提交 |
@@ -97,6 +97,8 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 **证据落盘红线**：测试默认写 `%TEMP%` / `TMPDIR=/tmp/v32t`；**不得**写 `docs/iterations/**/evidence/**`（历史教训：会改写其它迭代证据）。原始帧放 `docs/v32/reports/raw/TXX/`，且 `.gitattributes` 不对其做空白 strip。
 
 ### 0.7 全局技术红线（每条任务都要遵守）
+
+**分支纪律（最高优先，独立于下列编号）**：每个任务的**全部功能开发必须在 `feature/v32-TXX-<slug>` 功能分支上进行**——从建分支那一刻到全部完成合入 main 之前，产品代码、测试、报告都只写在这条分支上。`main` 只接收已通过审核的 ff-only 合并，**禁止**在 main 上直接写任何产品代码、测试或报告。唯一例外是 §0.11.3 step 4c 的认领状态广播，且只含自己的台账文件。开发子 Agent 启动前，主 Agent 必须先确认 `git branch --show-current` 返回的是功能分支名，否则不得派工。
 
 0. **需求权威**：业务对象、状态枚举、迁移、异常边界、验收标准只认 `docs/index.md` 与 `docs/maestro_v3_2_page_spec.md` 的正文字面；原型是演示用本地模拟数据（`index.md` §15 L707 / `page_spec.md` §15 L780），**不得**从原型反推字段或状态。任何 REQ 若声称「与规格一致」，必须能在规格正文找到对应条文；找不到就是实现约定，须显式标注。
 1. V3.2 领域状态写入**唯一入口**是 `store.transit()`；引擎实例状态仍只走 `orchestrator.transit()`（`src/core/orchestrator.js:947`），严禁直接 `store.save` 改引擎状态。
@@ -265,7 +267,7 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
    **关键**：台账变更写在**功能分支**上，靠「合并到 main 并推送」广播；**不是**在 main 上直接改文件（§0.3 的「禁止在 main 上直接改代码」继续有效）。4c 的合并只含台账提交，绝不夹带产品代码或测试。
 
 5. **合并 / push 冲突恢复**：若 4c 的 `git merge --ff-only` 因对方已 push 而失败：`git switch feature/v32-TXX-<slug> && git rebase origin/main` → 回到 4c 重试；rebase 后重读台账，发现任务已被对方认领则立即放弃并换任务。若 `git push` 被拒（非 ff）：`git fetch origin` → 回到步骤 2 重新判定。全程禁止 force。
-6. 切回功能分支后按 §0.3 step 2–6 继续开发；开发、审核、报告完成后的**全部提交**（认领 + 开发 + 报告 + 台账 `done` 更新）在 §0.3 step 7 一次性 ff-only 合入 main，不允许只挑部分提交合入。
+6. 切回功能分支后按 §0.3 step 2–6 继续开发；**所有功能实现、单测、报告都必须发生在这条功能分支上，禁止在 main 上写任何产品代码、测试或报告**（§0.7 分支纪律）。开发、审核、报告完成后的**全部提交**（认领 + 开发 + 报告 + 台账 `done` 更新）在 §0.3 step 7 一次性 ff-only 合入 main，不允许只挑部分提交合入。
 
 **禁止**：不读台账直接开工；修改对方台账文件；同一任务两台机器同时开发；认领后跨波次无进展却不释放（写 `note` 并改回 `available` 后由对方或本机重新认领）。
 
@@ -275,7 +277,7 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 
 - **做**：读台账认领、读规格拆 REQ、创建并派发干净子 Agent、跟踪进度、运行审核循环、裁决阻塞、执行提交与合入、更新台账。
 - **不做**：直接写/改产品代码或测试；跳过审核自己给 PASS；在审核 PASS 之前把台账写成 `done`（PASS 之后的写入与读取复核规则见 §0.11.7）。
-- **上下文纪律**：每个任务**新开一个干净的开发子 Agent**，其 prompt 必须自包含——任务 REQ 清单、规格章节引用、§1.2 文件所有权、验证清单命令、§0.7 红线、§0.9 权威层级；不得依赖主 Agent 的隐含上下文。审核 Agent 也必须是新的干净上下文，不继承开发过程。
+- **上下文纪律**：每个任务**新开一个干净的开发子 Agent**，其 prompt 必须自包含——任务 REQ 清单、规格章节引用、§1.2 文件所有权、验证清单命令、§0.7 红线、§0.9 权威层级，**以及当前分支名 `feature/v32-TXX-<slug>` 和「只在该功能分支写文件、禁止在 main 上改任何文件」的显式指令**；不得依赖主 Agent 的隐含上下文。派工前主 Agent 须先用 `git branch --show-current` 确认当前就在该功能分支上。审核 Agent 也必须是新的干净上下文，不继承开发过程。
 - **限流**：同一时刻主 Agent 只维持「1 个开发子 Agent 或 1 个审核子 Agent」活跃，不同时派多个大 Agent（平台限流历史教训）。
 
 #### 0.11.5 开发 → 审核 → 修复循环
@@ -306,6 +308,7 @@ git rev-parse HEAD                      # T00 公布它作为唯一 baseSha
 | 5 | 报告完整性：baseSha / branchPointSha / headSha / 逐条结论 / 证据分级齐全 | 缺项 → 阻塞 |
 | 6 | 红线合规：§0.7 全项（唯一写入口、事件先落盘、零 CJK、测试环境变量等） | 违反 → 阻塞 |
 | 7 | 合入前置：审核 PASS 后才允许提交与合入；报告随功能分支提交 | 顺序错 → 阻塞 |
+| 8 | **分支纪律**：`git branch --show-current` 为 `feature/v32-TXX-<slug>`；本任务全部改动都来自该分支，`main` 上没有未审核的产品代码/测试/报告（认领广播除外） | 不在功能分支、或 main 上有本任务未审核改动 → 阻塞 |
 
 #### 0.11.7 台账更新时机
 
