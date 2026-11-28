@@ -81,9 +81,9 @@ function fileSize(file) {
  * @param {{root:string, now?:()=>string, sink?:(event:object,meta:object)=>void}} options
  * root 必须是绝对路径；read()/首次 transit 之前不创建任何目录。
  */
-export function createV32Store({ root, now = () => new Date().toISOString(), sink = null } = {}) {
+export function createOrgStore({ root, now = () => new Date().toISOString(), sink = null } = {}) {
   if (typeof root !== 'string' || !path.isAbsolute(root)) {
-    throw new TypeError('createV32Store: root must be an absolute path');
+    throw new TypeError('createOrgStore: root must be an absolute path');
   }
   const statePath = path.join(root, ORG_STATE_FILE);
   const eventsPath = path.join(root, ORG_EVENTS_FILE);

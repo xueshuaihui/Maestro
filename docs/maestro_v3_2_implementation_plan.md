@@ -858,7 +858,7 @@ node scripts/desktop/gate.mjs --skip-tests
 
 - **背景**：用户裁决目录名 `src/v32/` 不合适（版本号编码进架构命名），重命名为 `src/org/`；T02 合入后、T03 认领前的窗口执行，改名面最小（v32 代码尚无外部引用方、标签键未进 labels 冻结断言）。
 - **T19-R1** 目录与文件改名：`src/v32/`→`src/org/`、`src/daemon/http/v32/`→`src/daemon/http/org/`、`desktop/ui/v32/`→`desktop/ui/org/`、`test/wp21/org-*.test.js`（原 v32-*）、`test/wp21/fixtures/org-*.json`、`docs/v32/{claims,reports}/`→`docs/org/{claims,reports}/`；T01/T02 证据原始帧文件名不改写（历史记录）。
-- **T19-R2** 内容标识符改名：错误码 `V32_*`→`ORG_*`（21 个）、标签键 `V32_CLI_*`→`ORG_CLI_*`、`ctx.v32`→`ctx.org`、`state.v32`→`state.org`、`loadV32`→`loadOrg`、视图/路由 `v32-*`→`org-*`、`.orch/v32/**`→`.orch/org/**`、宿主档案 `org-<installId>.json` 前缀；**保留规格用例编号 `V32-01~17` 与 `maestro_v3_2_*` 文件名**。
+- **T19-R2** 内容标识符改名：错误码 `V32_*`→`ORG_*`（21 个）、工厂/导出 `createV32Store`→`createOrgStore`、`createV32CliRoutes`→`createOrgCliRoutes`、标签键 `V32_CLI_*`→`ORG_CLI_*`、`ctx.v32`→`ctx.org`、`state.v32`→`state.org`、`loadV32`→`loadOrg`、视图/路由 `v32-*`→`org-*`、`.orch/v32/**`→`.orch/org/**`、宿主档案 `org-<installId>.json` 前缀；**保留规格用例编号 `V32-01~17` 与 `maestro_v3_2_*` 文件名**。
 - **T19-R3** 规划文档全量引用同步（含 §0.3–§0.10 命令、§1.2 所有权、§1.3 契约、§2 覆盖矩阵、T00–T18 任务详单、附录），命名决策记入 §1.1。
 - **T19-R4** 临时目录约定改为 `/tmp/orgt`，验证命令前必须 `mkdir -p /tmp/orgt`（mkdtemp 不自建父目录；T19 实测缺目录导致 35 条假红）。
 - **验证**：`mkdir -p /tmp/orgt && NODE_ENV=test TMPDIR=/tmp/orgt node --test "test/wp21/org-*.test.js"` → 63/63 PASS fail=0；全仓库 tracked 文件 grep `[vV]32` 仅剩 `V32-` 用例编号、`maestro_v3_2_*` 规格文件名与 T01/T02 证据原始帧路径。

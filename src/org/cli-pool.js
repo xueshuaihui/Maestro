@@ -20,7 +20,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 
 import { fail, ok, validate } from './contracts.js';
-import { createV32Store } from './store.js';
+import { createOrgStore } from './store.js';
 import {
   CLI_STATUS, discoverAgentClis, resolveNpmGlobalRoot
 } from '../adapter/cli-discovery/discover.js';
@@ -288,7 +288,7 @@ export function createCliPool({
       if (!isText(root) || !path.isAbsolute(root)) {
         throw new TypeError('createCliPool: absolute root or injected store required');
       }
-      cachedStore = createV32Store({ root, now });
+      cachedStore = createOrgStore({ root, now });
     }
     return cachedStore;
   };

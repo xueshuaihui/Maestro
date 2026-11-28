@@ -224,7 +224,7 @@ test('R10 canTransition / assertTransition 合法与非法', () => {
 test('R10 错误码只能取 ERROR_CODES 全集', () => {
   assert.equal(ERROR_CODES.includes('ORG_FORBIDDEN_FIELD'), true);
   assert.equal(ERROR_CODES.includes('ORG_SNAPSHOT_MISMATCH'), true);
-  assert.throws(() => fail('ORG_MADE_UP'), /Unknown V32 error code/);
+  assert.throws(() => fail('ORG_MADE_UP'), /Unknown ORG error code/);
 });
 
 // ---------------------------------------------------------------------------

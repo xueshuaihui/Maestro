@@ -8,7 +8,7 @@ import test from 'node:test';
 
 import {
   ERROR_CODES, EVENT_REF_FIELDS, ID_PATTERN, STATE_KEYS,
-  createV32Store, eventHash, publishDefinition, validate
+  createOrgStore, eventHash, publishDefinition, validate
 } from '../../src/org/index.js';
 
 const FIXTURE_TIME = '2026-11-28T00:00:00.000Z';
@@ -18,7 +18,7 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 function setup(t, options = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'org-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  const store = createV32Store({ root, now: () => FIXTURE_TIME, ...options });
+  const store = createOrgStore({ root, now: () => FIXTURE_TIME, ...options });
   return { store, root };
 }
 
@@ -50,9 +50,9 @@ test('R3/R13 空状态结构完整，read() 不创建目录', (t) => {
 
 test('R13 root 必须是绝对路径', (t) => {
   const { root } = setup(t);
-  assert.throws(() => createV32Store({ root: 'relative/path' }), /absolute path/);
-  assert.throws(() => createV32Store({}), /absolute path/);
-  assert.doesNotThrow(() => createV32Store({ root }));
+  assert.throws(() => createOrgStore({ root: 'relative/path' }), /absolute path/);
+  assert.throws(() => createOrgStore({}), /absolute path/);
+  assert.doesNotThrow(() => createOrgStore({ root }));
 });
 
 test('R13 首次 transit 才创建 .orch/org 且路径均在临时 root 下', (t) => {

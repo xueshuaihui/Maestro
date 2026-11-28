@@ -20,4 +20,4 @@ export {
   isAuditable, createAuditEvent, readAudit, appendAudit, verifyAuditChain, queryAudit
 } from './audit.js';
 
-export { createV32Store } from './store.js';
+export { createOrgStore } from './store.js';

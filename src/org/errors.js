@@ -20,11 +20,11 @@ export function ok(value, extra = {}) {
 
 /** 失败返回：{ ok:false, code, params }；未知码直接抛错，避免拼写漂移。 */
 export function fail(code, params = {}) {
-  if (!isErrorCode(code)) throw new TypeError(`Unknown V32 error code: ${code}`);
+  if (!isErrorCode(code)) throw new TypeError(`Unknown ORG error code: ${code}`);
   return { ok: false, code, params };
 }
 
-/** 把异常规整成领域失败结果；保留已有 V32 码。 */
+/** 把异常规整成领域失败结果；保留已有 ORG 码。 */
 export function fromError(error, fallbackCode = 'ORG_INVALID_INPUT') {
   if (error && typeof error === 'object' && isErrorCode(error.code)) {
     return fail(error.code, error.params && typeof error.params === 'object' ? error.params : { message: String(error.message || '') });

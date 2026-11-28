@@ -1,7 +1,7 @@
 /**
  * V3.2 CLI pool HTTP route fragment.
  *
- * createV32CliRoutes(deps) is side-effect free: no disk IO, no store creation
+ * createOrgCliRoutes(deps) is side-effect free: no disk IO, no store creation
  * and no throw at construction time. The store/pool is created on the first
  * request and cached, because the daemon swallows route factory exceptions.
  *
@@ -51,7 +51,7 @@ function sendFailure(res, result) {
  * @param {object} [deps.probeOptions] probe options
  * @param {Function} [deps.readBody] body reader override (tests)
  */
-export function createV32CliRoutes(deps = {}) {
+export function createOrgCliRoutes(deps = {}) {
   let cachedPool = deps.cliPool ?? null;
 
   const getPool = () => {

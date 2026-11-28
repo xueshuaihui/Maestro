@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
-import { createV32Store } from '../../src/org/store.js';
+import { createOrgStore } from '../../src/org/store.js';
 import { validate } from '../../src/org/contracts.js';
 import {
   CLI_AUTH, CLI_HEALTH, CLI_RESUME, CLI_SOURCES, UNKNOWN,
@@ -16,7 +16,7 @@ import {
 import {
   CLI_STATUS, acpArgsFor, withProbeResults
 } from '../../src/adapter/cli-discovery/index.js';
-import { createV32CliRoutes } from '../../src/daemon/http/org/cli-routes.js';
+import { createOrgCliRoutes } from '../../src/daemon/http/org/cli-routes.js';
 import { matchPattern } from '../../src/daemon/http/server.js';
 import { LABEL_KEYS, actions, render, section, viewId } from '../../desktop/ui/org/cli-page.js';
 
@@ -26,7 +26,7 @@ const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
 function setup(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'org-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  const store = createV32Store({ root, now: () => TIME });
+  const store = createOrgStore({ root, now: () => TIME });
   const bin = path.join(root, 'bin');
   fs.mkdirSync(bin, { recursive: true });
   const exe = (name) => path.join(bin, name);
@@ -353,8 +353,8 @@ async function callRoute(routes, method, pathname, body = {}) {
 
 test('routes construct with zero IO and lazy store; scan/list/capabilities smoke', async (t) => {
   const { root, discovery, probe } = setup(t);
-  assert.doesNotThrow(() => createV32CliRoutes({}));
-  const routes = createV32CliRoutes({ root, now: () => TIME, readBody: async (req) => req.body, discovery, probe });
+  assert.doesNotThrow(() => createOrgCliRoutes({}));
+  const routes = createOrgCliRoutes({ root, now: () => TIME, readBody: async (req) => req.body, discovery, probe });
   assert.ok(routes.length >= 5);
   assert.equal(fs.existsSync(path.join(root, '.orch')), false, 'construction must not touch disk');
 
@@ -363,7 +363,7 @@ test('routes construct with zero IO and lazy store; scan/list/capabilities smoke
   assert.equal(scanned.body.ok, true);
   assert.equal(scanned.body.value.scan.status, 'done');
   assert.equal(scanned.body.value.scan.mode, 'quick');
-  const onDisk = createV32Store({ root, now: () => TIME }).read();
+  const onDisk = createOrgStore({ root, now: () => TIME }).read();
   assert.equal(onDisk.cliPool.scan.status, 'done');
   assert.equal(typeof onDisk.cliPool.scan.startedAt, 'string');
   assert.equal(typeof onDisk.cliPool.scan.finishedAt, 'string');
@@ -391,7 +391,7 @@ test('routes construct with zero IO and lazy store; scan/list/capabilities smoke
   });
   assert.equal(manual.status, 200);
   assert.equal(manual.body.value.source, CLI_SOURCES.MANUAL);
-  assert.equal(createV32Store({ root, now: () => TIME }).read().cliPool.installs.length, 5);
+  assert.equal(createOrgStore({ root, now: () => TIME }).read().cliPool.installs.length, 5);
 });
 
 // ---------------------------------------------------------------------------
