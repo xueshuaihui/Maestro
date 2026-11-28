@@ -1,6 +1,6 @@
 {
   "machine": "A",
-  "updatedAt": "2026-11-28T08:10:10.000Z",
+  "updatedAt": "2026-11-28T08:25:31.000Z",
   "claims": [
     {
       "task": "T01",
@@ -17,12 +17,12 @@
     },
     {
       "task": "T02",
-      "phase": "developing",
+      "phase": "reviewing",
       "branch": "feature/v32-T02-cli-pool",
       "claimedAt": "2026-11-28T08:10:10.000Z",
-      "reviewRounds": 0,
+      "reviewRounds": 1,
       "lastReview": null,
-      "note": ""
+      "note": "dev reported done; clean review agent dispatched"
     }
   ]
 }
